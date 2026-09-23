@@ -15,9 +15,21 @@ local f = ns.Frames.player
 local bar = f.absorb
 
 -- A bar over the health bar, filling from the right.
-H.check("on the health bar", bar:GetParent(), f.health)
-H.check("covers it", bar._allPoints, f.health)
-H.checkTrue("fills from the right end", bar._reverse)
+-- Docked where the health fill ends, after the incoming heals, like them
+-- as wide as the health bar and cut at its end by a clipping frame.
+local function point(region, name)
+    for i = 1, #region._points do
+        local p = { region:GetPoint(i) }
+        if p[1] == name then return p end
+    end
+end
+H.check("inside its clip", bar:GetParent(), f.absorbClip)
+H.check("clip on the health bar", f.absorbClip:GetParent(), f.health)
+H.checkTrue("clip cuts", f.absorbClip._clips)
+H.check("starts after the incoming heals", point(bar, "TOPLEFT")[2], f.healAll:GetStatusBarTexture())
+H.check("at their end", point(bar, "TOPLEFT")[3], "TOPRIGHT")
+H.check("as wide as the health bar", bar:GetWidth(), f.healthWidth)
+H.check("fills from the left", bar._reverse, false)
 H.checkTrue("above the health bar", bar:GetFrameLevel() > f.health:GetFrameLevel())
 H.checkTrue("shown by default", bar:IsShown())
 -- The shield darkens what lies under it (any class colour) and carries
@@ -75,7 +87,7 @@ H.check("the shade stays grey", bar._color[3], ns.Absorb.SHADE)
 
 -- Off: hidden and left alone.
 C.Set("player", "absorbEnabled", false)
-H.check("off: hidden", bar:IsShown(), false)
+H.check("off: hidden", f.absorbClip:IsShown(), false)
 M.units.player.absorbs = 99
 M.FireEvent("UNIT_ABSORB_AMOUNT_CHANGED", "player")
 H.check("off: not updated", bar:GetValue(), 50)
@@ -102,3 +114,12 @@ ns.TestMode.Set(false)
 H.check("real value back", bar:GetValue(), 99)
 H.check("preview flag cleared", bar.preview, nil)
 H.check("party sample dropped", ns.Party.fakes[1].absorb.preview, nil)
+
+-- Without incoming heals shown, the shield starts right at the health.
+ns.TestMode.Set(false)
+C.Set("player", "healPrediction", false)
+local p = { bar:GetPoint(1) }
+local start
+for i = 1, #bar._points do local q = { bar:GetPoint(i) } if q[1] == "TOPLEFT" then start = q end end
+H.check("no heals: after the health fill", start[2], f.health:GetStatusBarTexture())
+C.Set("player", "healPrediction", true)
