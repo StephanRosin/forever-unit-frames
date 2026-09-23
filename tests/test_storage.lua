@@ -21,19 +21,19 @@ H.check("provider value", p.player.width, 310)
 ns = H.LoadAddon()
 ForeverUnitFrames.RegisterStorageProvider("Broken", { load = function() error("boom") end, save = function() end })
 p, src = ns.Storage.Load(nil)
-H.check("broken provider skipped", src, "defaults")
+H.check("broken provider skipped", src, "Defaults")
 
 -- 3. Macro backup next.
 ns = H.LoadAddon()
 ns.MacroBackup.Write("1;pW320")
 p, src = ns.Storage.Load(nil)
-H.check("source macro", src, "macro backup")
+H.check("source macro", src, "MacroBackup")
 H.check("macro value", p.player.width, 320)
 
 -- 4. Defaults last.
 ns = H.LoadAddon()
 p, src = ns.Storage.Load(nil)
-H.check("source defaults", src, "defaults")
+H.check("source defaults", src, "Defaults")
 H.check("empty profile", next(p.player), nil)
 
 -- Macro backup details
@@ -122,3 +122,63 @@ local names = {}
 for _, m in ipairs(M.macros) do names[m.name] = true end
 H.checkTrue("re-sort: both names present", names["FUF Save 1"] and names["FUF Save 2"])
 H.check("re-sort: read back", ns.MacroBackup.Read(), long)
+
+-- SavedVariables are sanitised: unknown scopes/keys and invalid values go.
+ns = H.LoadAddon()
+p = ns.Storage.Load({ profile = {
+    player = { width = "wide", height = 50, bogus = 1 },
+    nonsense = { width = 100 },
+    general = { width = 300, fontSize = 14 },
+} })
+H.check("SV invalid value dropped", p.player.width, nil)
+H.check("SV valid value kept", p.player.height, 50)
+H.check("SV unknown key dropped", p.player.bogus, nil)
+H.check("SV unknown scope dropped", p.nonsense, nil)
+H.check("SV frame-only key dropped from general", p.general.width, nil)
+H.check("SV general value kept", p.general.fontSize, 14)
+ns.Config.Use(p)
+H.checkTrue("save after sanitised load does not throw", pcall(ns.Storage.Save))
+
+-- A refused macro write is retried: on the next Save and when the macro
+-- window closes. Each distinct error is reported once.
+local function countChat(text)
+    local n = 0
+    for _, line in ipairs(M.chat) do if line:find(text, 1, true) then n = n + 1 end end
+    return n
+end
+ns = H.LoadAddon()
+ns.Config.Use({})
+M.macroFrameShown = true
+ns.Config.Set("player", "width", 290)
+H.check("retry: refused while window open", ns.MacroBackup.Read(), nil)
+H.check("retry: error printed", countChat(ns.L.MACRO_FRAME_OPEN), 1)
+H.check("retry: last macro error kept", ns.Storage.MacroError(), "MACRO_FRAME_OPEN")
+ns.Config.Set("player", "width", 291)
+H.check("retry: same error not printed again", countChat(ns.L.MACRO_FRAME_OPEN), 1)
+M.macroFrameShown = false
+MacroFrame:GetScript("OnHide")(MacroFrame)
+H.check("retry: written when window closes", ns.MacroBackup.Read(), "1;pW291")
+H.check("retry: error cleared", ns.Storage.MacroError(), nil)
+
+-- Same profile, write refused, then a plain Save retries the macro.
+ns = H.LoadAddon()
+ns.Config.Use({})
+M.macroFrameShown = true
+ns.Config.Set("player", "width", 292)
+M.macroFrameShown = false
+ns.Storage.Save()
+H.check("retry: unchanged profile still retried on Save", ns.MacroBackup.Read(), "1;pW292")
+
+-- Load-on-demand macro window: hooked once Blizzard_MacroUI loads.
+ns = H.LoadAddon()
+_G.MacroFrame = nil
+ns.Config.Use({})
+M.macroFrameShown = true
+_G.MacroFrame = M.NewMacroFrame()
+ns.Config.Set("player", "width", 293)
+H.check("lod: refused while window open", ns.MacroBackup.Read(), nil)
+M.FireEvent("ADDON_LOADED", "Blizzard_MacroUI")
+M.macroFrameShown = false
+H.checkTrue("lod: OnHide hooked", MacroFrame:GetScript("OnHide"))
+if MacroFrame:GetScript("OnHide") then MacroFrame:GetScript("OnHide")(MacroFrame) end
+H.check("lod: written when window closes", ns.MacroBackup.Read(), "1;pW293")

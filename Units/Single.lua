@@ -117,7 +117,9 @@ local function registerUnitEvents()
     end
 end
 
-function Single.CreateAll()
+-- onBuilt (optional) runs right after the frames exist, inside the same
+-- out-of-combat run that built them.
+function Single.CreateAll(onBuilt)
     ns.AfterCombat("createSingle", function()
         for _, def in ipairs(ns.Units.List) do
             if not ns.Frames[def.key] then
@@ -128,6 +130,7 @@ function Single.CreateAll()
             end
         end
         registerUnitEvents()
+        if onBuilt then onBuilt() end
     end)
 end
 

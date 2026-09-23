@@ -1,22 +1,21 @@
-local ADDON, ns = ...
+local _, ns = ...
 
--- Startup order: settings first (ADDON_LOADED), frames once the player
--- exists (PLAYER_LOGIN). Every settings change is persisted.
+-- Startup happens at PLAYER_LOGIN: SavedVariables are available, dependent
+-- addons have had their ADDON_LOADED to register storage providers, and
+-- character macros can be read. Every settings change is persisted.
 
-ns.On("ADDON_LOADED", function(_, name)
-    if name ~= ADDON or ns.booted then return end
-    ns.booted = true
-    ForeverUnitFramesDB = ForeverUnitFramesDB or {}
-    local profile = ns.Storage.Load(ForeverUnitFramesDB)
-    ns.Config.Use(profile)
-    ns.Storage.Attach(ForeverUnitFramesDB)
-end)
+local function attachMovers()
+    for _, frame in pairs(ns.Frames) do ns.Movers.Attach(frame) end
+end
 
 ns.On("PLAYER_LOGIN", function()
-    ns.Single.CreateAll()
-    ns.AfterCombat("attachMovers", function()
-        for _, frame in pairs(ns.Frames) do ns.Movers.Attach(frame) end
-    end)
+    if ns.booted then return end
+    ns.booted = true
+    ForeverUnitFramesDB = ForeverUnitFramesDB or {}
+    ns.Config.Use(ns.Storage.Load(ForeverUnitFramesDB))
+    ns.Storage.Attach(ForeverUnitFramesDB)
+    -- Movers go on in the same (possibly deferred) run that builds frames.
+    ns.Single.CreateAll(attachMovers)
     ns.Blizzard.HideDefaults()
 end)
 

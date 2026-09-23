@@ -150,7 +150,7 @@ function M.Reset()
         WARRIOR = { r = 0.78, g = 0.61, b = 0.43, GetRGB = function(c) return c.r, c.g, c.b end },
     }
     _G.Constants = { MacroConsts = { MAX_ACCOUNT_MACROS = 120, MAX_CHARACTER_MACROS = 30 } }
-    _G.MacroFrame = { IsShown = function() return M.macroFrameShown end }
+    _G.MacroFrame = M.NewMacroFrame()
     _G.CreateColor = function(r, g, b, a) return { r = r, g = g, b = b, a = a, GetRGB = function(c) return c.r, c.g, c.b end } end
     _G.ForeverUnitFrames = nil
     _G.ForeverUnitFramesDB = nil
@@ -240,6 +240,14 @@ function M.Reset()
     _G.DeleteMacro = function(index) table.remove(M.macros, index - 120) end
 
     _G.SlashCmdList = {}
+end
+
+-- Blizzard's macro window (load-on-demand in the client). Shown state is
+-- driven by M.macroFrameShown; tests call its OnHide script to close it.
+function M.NewMacroFrame()
+    local f = newWidget("Frame", "MacroFrame")
+    function f:IsShown() return M.macroFrameShown end
+    return f
 end
 
 function M.SetCombat(v)

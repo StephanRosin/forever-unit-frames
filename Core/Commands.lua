@@ -29,11 +29,18 @@ local function status()
     local version, build, _, interface = GetBuildInfo()
     ns.Print(L.STATUS_BUILD:format(version, build, interface))
     ns.Print(L.STATUS_PROJECT:format(WOW_PROJECT_ID or 0))
-    ns.Print(L.STATUS_SOURCE:format(ns.Storage.Source()))
+    local src, isProvider = ns.Storage.Source()
+    ns.Print(L.STATUS_SOURCE:format(isProvider and src or L["SOURCE_" .. src]))
+    local macroError = ns.Storage.MacroError()
+    if macroError then ns.Print(L[macroError]) end
 end
 
 SLASH_FOREVERUNITFRAMES1 = "/fuf"
 SlashCmdList.FOREVERUNITFRAMES = function(msg)
+    if ns.Config.Profile() == nil then
+        ns.Print(L.NOT_READY)
+        return
+    end
     local cmd, rest = (msg or ""):match("^%s*(%S*)%s*(.-)%s*$")
     cmd = cmd:lower()
     if cmd == "unlock" then
@@ -51,7 +58,6 @@ SlashCmdList.FOREVERUNITFRAMES = function(msg)
             ns.Print(L.UNKNOWN_FRAME)
             return
         end
-        ns.Storage.Save()
         ns.Print(L.RESET_DONE)
     elseif cmd == "set" then
         local scope, key, raw = rest:match("^(%S+)%s+(%S+)%s+(.+)$")
@@ -59,8 +65,6 @@ SlashCmdList.FOREVERUNITFRAMES = function(msg)
         local value = parseValue(def, raw)
         if value == nil or not ns.Config.Set(scope, key, value) then
             ns.Print(L.INVALID_VALUE)
-        else
-            ns.Storage.Save()
         end
     else
         ns.Print(L.HELP)
