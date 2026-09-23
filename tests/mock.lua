@@ -118,6 +118,7 @@ function M.Reset()
     M.cvars = {}
     M.macros = {}          -- list of { name=, icon=, body=, perChar= }
     M.macroFrameShown = false
+    M.errors = {}          -- whatever reached the global error handler
 
     _G.UIParent = newWidget("Frame", "UIParent")
     _G.UIParent._w, _G.UIParent._h = 1920, 1080
@@ -135,6 +136,9 @@ function M.Reset()
         return w
     end
     _G.InCombatLockdown = function() return M.combat end
+    _G.geterrorhandler = function()
+        return function(err) table.insert(M.errors, err) end
+    end
     _G.WOW_PROJECT_MAINLINE = 1
     _G.WOW_PROJECT_ID = 1
     _G.GetBuildInfo = function() return "1.60.1", "69977", "Sep 22 2026", 16001 end

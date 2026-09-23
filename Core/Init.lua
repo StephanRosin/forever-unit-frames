@@ -63,13 +63,16 @@ function ns.PendingCombatWork()
     return #order
 end
 
+-- The queue is emptied completely before any job runs, and each job runs
+-- protected: a throwing job is reported but never strands the jobs after it
+-- or blocks its key from being queued again.
 ns.On("PLAYER_REGEN_ENABLED", function()
-    local keys = order
-    order = {}
+    local keys, jobs = order, pending
+    order, pending = {}, {}
+    local handler = geterrorhandler and geterrorhandler() or print
     for i = 1, #keys do
-        local fn = pending[keys[i]]
-        pending[keys[i]] = nil
-        if fn then fn() end
+        local fn = jobs[keys[i]]
+        if fn then xpcall(fn, handler) end
     end
 end)
 
