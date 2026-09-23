@@ -86,6 +86,8 @@ local TEXT_TAGS = { "NONE", "NAME", "NAME_LEVEL", "LEVEL", "CURRENT", "CURRENT_M
 Settings.TEXT_TAGS = TEXT_TAGS
 
 -- General appearance (inherited by every frame, overridable per frame)
+-- The font settings, in the order the options page lists them.
+Settings.FONT_KEYS = { "fontFace", "fontSize", "fontOutline", "fontShadow" }
 Settings.Define({ key = "fontFace", code = "FF", scope = "inherit", type = "media", mediaKind = "font", default = "Friz Quadrata" })
 Settings.Define({ key = "fontSize", code = "FS", scope = "inherit", type = "int", min = 6, max = 32, default = 12 })
 Settings.Define({ key = "fontOutline", code = "FO", scope = "inherit", type = "enum",

@@ -82,6 +82,18 @@ function Config.ClearOverride(scope, key)
     ns.Fire("CONFIG_CHANGED", scope, key)
 end
 
+-- Removes the given keys from every frame scope, so each frame falls back
+-- to General again. General itself keeps its values. One CONFIG_CHANGED
+-- for everything.
+function Config.ClearFrameOverrides(keys)
+    for _, scope in ipairs(Settings.SCOPES) do
+        if scope ~= "general" then
+            for _, key in ipairs(keys) do profile[scope][key] = nil end
+        end
+    end
+    ns.Fire("CONFIG_CHANGED", nil, nil)
+end
+
 -- Copying reproduces the source frame's look as it is shown, including the
 -- per-frame defaults it does not override. Position and whether the frame
 -- is shown at all stay with the target: copying must not stack two frames

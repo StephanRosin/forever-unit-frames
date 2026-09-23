@@ -225,6 +225,9 @@ local function sectionHeader(page, id)
     return header
 end
 
+-- Defined with the other blocks below; a section's action button.
+local actionBlock
+
 local function buildSettingsPage(page, scope, tab)
     local stack = newStack(page)
     for _, section in ipairs(tab.sections) do
@@ -235,6 +238,7 @@ local function buildSettingsPage(page, scope, tab)
         if #keys > 0 then
             stack.add(sectionHeader(page, section.id))
             for _, key in ipairs(keys) do stack.add(settingRow(page, scope, key)) end
+            if section.action then stack.add(actionBlock(page, section.action)) end
         end
     end
     stack.finish()
@@ -276,6 +280,26 @@ local function confirmButton(parent, text, action)
     button:HookScript("OnLeave", paintArmed)
     button.Disarm = disarm
     return button
+end
+
+-- Section actions: what the button does. Two clicks, like Reset.
+local ACTIONS = {
+    applyFontToFrames = function() Config.ClearFrameOverrides(ns.Settings.FONT_KEYS) end,
+}
+-- The buttons by action id, for the tests and for disarming on close.
+Options.actionButtons = {}
+
+function actionBlock(page, id)
+    local block = newBlock(page)
+    local button = confirmButton(block, L["ACTION_" .. id], ACTIONS[id])
+    button:SetPoint("TOPLEFT", block, "TOPLEFT", INSET, -6)
+    local hint = Style.Text(block, 10, "muted")
+    hint:SetPoint("LEFT", button, "RIGHT", FOOTER_GAP, 0)
+    hint:SetText(L["ACTION_HINT_" .. id])
+    Options.actionButtons[id] = button
+    function block:SetEnabled(on) button:SetEnabled(on) end
+    block:SetHeight(BUTTON_H + 12)
+    return block
 end
 
 local function exportBlock(page)
@@ -702,6 +726,7 @@ local function createWindow()
         Widgets.CloseList()
         Options.resetFrameButton.Disarm()
         if Options.resetAllButton then Options.resetAllButton.Disarm() end
+        for _, button in pairs(Options.actionButtons) do button.Disarm() end
     end)
     frame:Hide()
     table.insert(UISpecialFrames, WINDOW_NAME)

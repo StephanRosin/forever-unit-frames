@@ -4,7 +4,8 @@ ns.Schema = Schema
 
 Schema.GENERAL = {
     { id = "appearance", sections = {
-        { id = "font", keys = { "fontFace", "fontSize", "fontOutline", "fontShadow" } },
+        -- action: a two-click button under the rows (Options/Window.lua).
+        { id = "font", keys = { "fontFace", "fontSize", "fontOutline", "fontShadow" }, action = "applyFontToFrames" },
         { id = "bars", keys = { "barTexture", "backgroundColor" } },
         { id = "border", keys = { "borderSize", "borderColor" } },
     } },
