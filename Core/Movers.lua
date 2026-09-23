@@ -28,6 +28,7 @@ function Movers.Sync(frame)
 end
 
 function Movers.OnDragStop(mover)
+    mover.dragging = false
     mover:StopMovingOrSizing()
     local mx, my = mover:GetCenter()
     local ux, uy = UIParent:GetCenter()
@@ -52,6 +53,7 @@ function Movers.Attach(frame)
     mover:RegisterForDrag("LeftButton")
     mover:SetScript("OnDragStart", function(self)
         if InCombatLockdown() then return end
+        self.dragging = true
         self:StartMoving()
     end)
     mover:SetScript("OnDragStop", Movers.OnDragStop)
@@ -93,7 +95,14 @@ end
 function Movers.Lock()
     unlocked = false
     for _, frame in pairs(ns.Frames) do
-        if frame.mover then frame.mover:StopMovingOrSizing() end
+        local mover = frame.mover
+        if mover then
+            if mover.dragging then
+                Movers.OnDragStop(mover)
+            else
+                mover:StopMovingOrSizing()
+            end
+        end
     end
     ns.AfterCombat("lockMovers", function()
         if unlocked then return end

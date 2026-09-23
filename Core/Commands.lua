@@ -43,7 +43,11 @@ SlashCmdList.FOREVERUNITFRAMES = function(msg)
     end
     local cmd, rest = (msg or ""):match("^%s*(%S*)%s*(.-)%s*$")
     cmd = cmd:lower()
-    if cmd == "unlock" then
+    if cmd == "" then
+        ns.Options.Toggle()
+    elseif cmd == "help" then
+        ns.Print(L.HELP)
+    elseif cmd == "unlock" then
         ns.Movers.Unlock()
     elseif cmd == "lock" then
         ns.Movers.Lock()

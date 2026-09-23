@@ -65,10 +65,18 @@ local function newWidget(kind, name, parent)
     function w:SetPoint(...) table.insert(self._points, { ... }) end
     function w:GetPoint(i) local p = self._points[i or 1]; if p then return unpack(p) end end
     function w:GetCenter() return self._cx or 0, self._cy or 0 end
-    function w:Show() self._shown = true end
-    function w:Hide() self._shown = false end
+    -- OnShow/OnHide fire on a real change of the frame's own state (the
+    -- mock does not propagate them to children).
+    function w:SetShown(v)
+        v = not not v
+        if v == self._shown then return end
+        self._shown = v
+        local script = self._scripts[v and "OnShow" or "OnHide"]
+        if script then script(self) end
+    end
+    function w:Show() self:SetShown(true) end
+    function w:Hide() self:SetShown(false) end
     function w:IsShown() return self._shown end
-    function w:SetShown(v) self._shown = not not v end
     function w:SetParent(p) self._parent = p end
     function w:GetParent() return self._parent end
     function w:SetAlpha(a) self._alpha = a end
@@ -91,13 +99,72 @@ local function newWidget(kind, name, parent)
     function w:SetColorTexture(r, g, b, a) self._color = { r, g, b, a } end
     function w:SetVertexColor(r, g, b, a) self._color = { r, g, b, a } end
     function w:SetAllPoints(p) self._allPoints = p or true end
-    -- FontString
+    -- FontString / EditBox. An EditBox without a font cannot take text in
+    -- the client, so the mock refuses it too.
     function w:SetFont(path, size, flags) self._font = { path, size, flags }; return true end
-    function w:SetText(t) self._text = t end
+    function w:SetFontObject(o) self._fontObject = o end
+    function w:SetText(t)
+        if self._kind == "EditBox" then
+            assert(self._font or self._fontObject, "EditBox:SetText(): Font not set")
+        end
+        self._text = t
+    end
+    function w:SetTextColor(r, g, b, a) self._color = { r, g, b, a } end
     function w:GetText() return self._text end
     function w:SetFormattedText(fmt, ...) self._fmt = fmt; self._args = { ... } end
     function w:SetShadowOffset(x, y) self._shadow = { x, y } end
     function w:SetJustifyH(v) self._justifyH = v end
+    function w:SetWordWrap(v) self._wordWrap = not not v end
+    function w:GetWordWrap() return self._wordWrap ~= false end
+    -- Rough text width: half the font size per character.
+    function w:GetStringWidth()
+        local size = self._font and self._font[2] or 12
+        return #(self._text or "") * size / 2
+    end
+    -- Enable state (Button, CheckButton, EditBox, Slider)
+    function w:SetEnabled(v) self._enabled = not not v end
+    function w:IsEnabled() return self._enabled ~= false end
+    function w:Enable() self._enabled = true end
+    function w:Disable() self._enabled = false end
+    function w:EnableMouseWheel(v) self._mouseWheel = v end
+    function w:IsMouseOver() return self._mouseOver or false end
+    function w:EnableKeyboard(v) self._keyboard = v end
+    function w:SetPropagateKeyboardInput(v)
+        assert(not M.combat, "SetPropagateKeyboardInput is restricted in combat")
+        self._propagate = v
+    end
+    -- Slider
+    function w:SetOrientation(v) self._orientation = v end
+    function w:SetValueStep(v) self._step = v end
+    function w:SetObeyStepOnDrag(v) self._obeyStep = v end
+    function w:SetThumbTexture(asset)
+        self._thumb = self._thumb or newWidget("Texture", nil, self)
+        self._thumb._texture = asset
+    end
+    function w:GetThumbTexture() return self._thumb end
+    -- CheckButton
+    function w:SetChecked(v) self._checked = not not v end
+    function w:GetChecked() return self._checked or false end
+    function w:SetCheckedTexture(asset)
+        self._checkedTex = self._checkedTex or newWidget("Texture", nil, self)
+        self._checkedTex._texture = asset
+    end
+    function w:GetCheckedTexture() return self._checkedTex end
+    -- EditBox
+    function w:SetAutoFocus(v) self._autoFocus = v end
+    function w:SetFocus() self._focus = true end
+    function w:ClearFocus() self._focus = false end
+    function w:HasFocus() return self._focus or false end
+    function w:SetCursorPosition(p) self._cursor = p end
+    function w:HighlightText(a, b) self._highlighted = { a, b } end
+    function w:SetMaxLetters(n) self._maxLetters = n end
+    function w:SetMultiLine(v) self._multiLine = v end
+    -- ScrollFrame
+    function w:SetScrollChild(c) self._scrollChild = c end
+    function w:GetScrollChild() return self._scrollChild end
+    function w:SetVerticalScroll(v) self._vscroll = v end
+    function w:GetVerticalScroll() return self._vscroll or 0 end
+    function w:GetVerticalScrollRange() return self._vrange or 0 end
     -- Creation
     function w:CreateTexture(n) return newWidget("Texture", n, self) end
     function w:CreateFontString(n) return newWidget("FontString", n, self) end
@@ -121,6 +188,7 @@ function M.Reset()
     M.macros = {}          -- list of { name=, icon=, body=, perChar= }
     M.macroFrameShown = false
     M.errors = {}          -- whatever reached the global error handler
+    M.timers = {}          -- queued C_Timer.After callbacks
 
     _G.UIParent = newWidget("Frame", "UIParent")
     _G.UIParent._w, _G.UIParent._h = 1920, 1080
@@ -183,6 +251,9 @@ function M.Reset()
         return p
     end
     _G.C_StringUtil = { TruncateWhenZero = function(n) return n end }
+    _G.UnitPowerMissing = function(unit) local d = u(unit); return d and d.powerMissing or 0 end
+
+    _G.C_Timer = { After = function(sec, fn) table.insert(M.timers, { sec = sec, fn = fn }) end }
 
     -- Curves: Evaluate passes secrets through as secrets.
     _G.C_CurveUtil = {
@@ -242,6 +313,54 @@ function M.Reset()
     _G.DeleteMacro = function(index) table.remove(M.macros, index - 120) end
 
     _G.SlashCmdList = {}
+    _G.UISpecialFrames = {}
+    _G.C_AddOns = { GetAddOnMetadata = function() return "0.1.0" end }
+    -- Post-hook: the original runs first, then fn with the same arguments.
+    _G.hooksecurefunc = function(tbl, name, fn)
+        if type(tbl) == "string" then tbl, name, fn = _G, tbl, name end
+        local original = tbl[name]
+        tbl[name] = function(...)
+            local r = { original(...) }
+            fn(...)
+            return unpack(r)
+        end
+    end
+
+    -- Key bindings: only ESC is bound (to the game menu).
+    _G.GetBindingFromClick = function(key)
+        if key == "ESCAPE" then return "TOGGLEGAMEMENU" end
+    end
+
+    -- Colour picker. Like the client, opening it sets the wheel colour, which
+    -- fires OnColorSelect -> swatchFunc/opacityFunc before the alpha is set.
+    M.colorPicker = nil
+    M.pickRGB, M.pickA = { 1, 1, 1 }, 1
+    _G.ColorPickerFrame = newWidget("Frame", "ColorPickerFrame")
+    _G.ColorPickerFrame._shown = false
+    function ColorPickerFrame:SetupColorPickerAndShow(info)
+        M.colorPicker = info
+        self.swatchFunc, self.opacityFunc, self.cancelFunc = info.swatchFunc, info.opacityFunc, info.cancelFunc
+        info.previousValues = { r = info.r, g = info.g, b = info.b, a = info.opacity }
+        M.pickRGB = { info.r, info.g, info.b }
+        if info.swatchFunc then info.swatchFunc() end
+        if info.opacityFunc then info.opacityFunc() end
+        self:Show()
+    end
+    function ColorPickerFrame:GetColorRGB() return M.pickRGB[1], M.pickRGB[2], M.pickRGB[3] end
+    function ColorPickerFrame:GetColorAlpha() return M.pickA end
+    function ColorPickerFrame:GetPreviousValues()
+        local p = M.colorPicker.previousValues
+        return p.r, p.g, p.b, p.a
+    end
+end
+
+-- Presses a key: the frame gets OnKeyDown only while it takes keyboard
+-- input. Returns whether the key went on to the game (propagated).
+function M.PressKey(frame, key)
+    if not frame._keyboard or not frame:IsShown() then return true end
+    local handler = frame._scripts.OnKeyDown
+    if handler then handler(frame, key) end
+    return frame._propagate or false
 end
 
 -- Blizzard's macro window (load-on-demand in the client). Shown state is
@@ -255,6 +374,26 @@ end
 function M.SetCombat(v)
     M.combat = v
     if not v then M.FireEvent("PLAYER_REGEN_ENABLED") end
+end
+
+-- Runs and clears every queued C_Timer.After callback. Timers a callback
+-- itself queues are appended and run too, so this drains to empty.
+-- With maxSeconds, only timers of at most that delay run; longer ones stay
+-- queued (e.g. run a 0.5 s save but not a 15 s timeout).
+function M.RunTimers(maxSeconds)
+    while true do
+        local due, later = {}, {}
+        for _, t in ipairs(M.timers) do
+            if maxSeconds == nil or t.sec <= maxSeconds then
+                due[#due + 1] = t
+            else
+                later[#later + 1] = t
+            end
+        end
+        if #due == 0 then return end
+        M.timers = later
+        for _, t in ipairs(due) do t.fn() end
+    end
 end
 
 function M.FireEvent(event, ...)

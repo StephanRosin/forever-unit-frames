@@ -75,3 +75,45 @@ function Config.ResetAll()
     for _, scope in ipairs(Settings.SCOPES) do profile[scope] = {} end
     ns.Fire("CONFIG_CHANGED", nil, nil)
 end
+
+function Config.ClearOverride(scope, key)
+    if not profile[scope] then return end
+    profile[scope][key] = nil
+    ns.Fire("CONFIG_CHANGED", scope, key)
+end
+
+-- Copying reproduces the source frame's look as it is shown, including the
+-- per-frame defaults it does not override. Position and whether the frame
+-- is shown at all stay with the target: copying must not stack two frames
+-- or switch one on or off. Each value is stored the way Set stores it, as
+-- an override only where it differs from the target's own fallback.
+local NOT_COPIED = { x = true, y = true, enabled = true }
+
+local function copyValue(v)
+    if type(v) == "table" then return { v[1], v[2], v[3], v[4] } end
+    return v
+end
+
+function Config.CopyScope(from, to)
+    if not profile[from] or not profile[to] or from == to then return end
+    local target = profile[to]
+    for _, def in ipairs(Settings.All()) do
+        local key = def.key
+        if not NOT_COPIED[key] and Settings.AppliesTo(def, to) and Settings.AppliesTo(def, from) then
+            local v = Config.Get(from, key)
+            if sameValue(v, fallback(to, def)) then
+                target[key] = nil
+            else
+                target[key] = copyValue(v)
+            end
+        end
+    end
+    ns.Fire("CONFIG_CHANGED", to, nil)
+end
+
+function Config.Import(p)
+    for _, scope in ipairs(Settings.SCOPES) do
+        profile[scope] = type(p[scope]) == "table" and p[scope] or {}
+    end
+    ns.Fire("CONFIG_CHANGED", nil, nil)
+end

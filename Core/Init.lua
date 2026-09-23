@@ -50,12 +50,26 @@ end
 -- repeated requests for the same work collapse into one run.
 local pending, order = {}, {}
 
-function ns.AfterCombat(key, fn)
+-- mode == "last" moves an already-queued key to the end of the queue
+-- instead of leaving it at its first position, so a job that must run after
+-- everything else queued so far (and everything queued after it, right up
+-- to combat ending) stays last no matter how many more keys get queued.
+function ns.AfterCombat(key, fn, mode)
     if not InCombatLockdown() then
         fn()
         return
     end
-    if not pending[key] then order[#order + 1] = key end
+    if mode == "last" and pending[key] then
+        for i = 1, #order do
+            if order[i] == key then
+                table.remove(order, i)
+                break
+            end
+        end
+        order[#order + 1] = key
+    elseif not pending[key] then
+        order[#order + 1] = key
+    end
     pending[key] = fn
 end
 
