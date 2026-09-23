@@ -92,6 +92,14 @@ H.check("wheel down steps by step", wheelValue, 8)
 wheel.slider:GetScript("OnMouseWheel")(wheel.slider, 1)
 wheel.slider:GetScript("OnMouseWheel")(wheel.slider, 1)
 H.check("wheel clamps to max", wheelValue, 10)
+local rejectWheel = W.Slider(parent, { label = "Reject", min = 0, max = 10, step = 1,
+    get = function() return 3 end, set = function() return false end })
+rejectWheel:Refresh()
+rejectWheel.slider:GetScript("OnMouseWheel")(rejectWheel.slider, 1)
+H.check("wheel shows the stored value when set is rejected", rejectWheel.edit:GetText(), "3")
+wheel:SetEnabled(false)
+wheel.slider:GetScript("OnMouseWheel")(wheel.slider, -1)
+H.check("wheel does nothing while disabled", wheelValue, 10)
 
 M.timers = {}
 sl:SetEnabled(true)
@@ -102,6 +110,15 @@ H.check("invalid entry flashes border red", sl.edit.edges[1]._color[1], red[1])
 H.check("red flash lasts 0.6 s", M.timers[1] and M.timers[1].sec, 0.6)
 M.RunTimers()
 H.check("border back to normal after flash", sl.edit.edges[1]._color[1], ns.Style.COLORS.border[1])
+sl.edit:SetText("abc")
+sl.edit:GetScript("OnEnterPressed")(sl.edit)
+local firstFlashEnds = table.remove(M.timers, 1).fn
+sl.edit:SetText("abc")
+sl.edit:GetScript("OnEnterPressed")(sl.edit)
+firstFlashEnds()
+H.check("older flash timer does not end a newer flash", sl.edit.edges[1]._color[1], red[1])
+M.RunTimers()
+H.check("newer flash ends on its own timer", sl.edit.edges[1]._color[1], ns.Style.COLORS.border[1])
 sl.edit:SetText("50")
 sl.edit:GetScript("OnEditFocusLost")(sl.edit)
 H.check("focus loss commits", value, 50)
@@ -159,9 +176,19 @@ H.check("rows re-used for the new items", big.list.rows[3]:IsShown(), true)
 W.CloseList()
 
 dd.button:GetScript("OnClick")(dd.button)
-H.checkTrue("esc handler consumes ESC while open", M.PressEscape())
+H.check("other keys go on to the game", M.PressKey(dd.list, "W"), true)
+H.checkTrue("other keys leave the list open", dd.list:IsShown())
+H.check("ESC is not passed on (window stays open)", M.PressKey(dd.list, "ESCAPE"), false)
 H.check("ESC closes list", dd.list:IsShown(), false)
-H.check("ESC not consumed when closed", M.PressEscape(), false)
+H.check("closed list takes no keyboard input", dd.list._keyboard, false)
+
+dd.button:GetScript("OnClick")(dd.button)
+M.combat = true
+M.FireEvent("PLAYER_REGEN_DISABLED")
+H.check("combat start closes list", dd.list:IsShown(), false)
+dd.button:GetScript("OnClick")(dd.button)
+H.check("list does not open in combat", dd.list:IsShown(), false)
+M.combat = false
 
 dd.button:GetScript("OnClick")(dd.button)
 dd:GetScript("OnHide")(dd)
@@ -199,6 +226,10 @@ M.colorPicker.opacityFunc()
 H.check("opacity callback sets alpha", col2[4], 0.5)
 M.colorPicker.cancelFunc(M.colorPicker.previousValues)
 H.check("cancel restores all channels", col2[1] .. "," .. col2[4], "0.2,0.8")
+sets = 0
+cw2.swatch:GetScript("OnClick")(cw2.swatch)
+M.colorPicker.cancelFunc(M.colorPicker.previousValues)
+H.check("cancel without a change does not write settings", sets, 0)
 
 -- Button --------------------------------------------------------------------
 local clicks = 0
@@ -223,7 +254,8 @@ local area = W.TextArea(parent, { width = 400, height = 120, readOnly = true })
 area:SetText("FUF1:abc")
 H.check("text area text", area:GetText(), "FUF1:abc")
 area.edit:GetScript("OnEditFocusGained")(area.edit)
-H.checkTrue("read-only selects all on focus", area.edit._highlighted)
+H.check("read-only selects all on focus (no range = whole text)",
+    area.edit._highlighted and #area.edit._highlighted, 0)
 area.edit:SetText("FUF1:abcX")
 area.edit:GetScript("OnTextChanged")(area.edit, true)
 H.check("read-only reverts typing", area:GetText(), "FUF1:abc")

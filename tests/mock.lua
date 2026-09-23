@@ -113,6 +113,11 @@ local function newWidget(kind, name, parent)
     function w:Disable() self._enabled = false end
     function w:EnableMouseWheel(v) self._mouseWheel = v end
     function w:IsMouseOver() return self._mouseOver or false end
+    function w:EnableKeyboard(v) self._keyboard = v end
+    function w:SetPropagateKeyboardInput(v)
+        assert(not M.combat, "SetPropagateKeyboardInput is restricted in combat")
+        self._propagate = v
+    end
     -- Slider
     function w:SetOrientation(v) self._orientation = v end
     function w:SetValueStep(v) self._step = v end
@@ -294,18 +299,9 @@ function M.Reset()
 
     _G.SlashCmdList = {}
 
-    -- ESC handlers of Blizzard_GameMenuEsc: lowest priority first, the first
-    -- handler returning true consumes the key.
-    M.escHandlers = {}
-    _G.GameMenuEscPriority = { Dialog = 1, Menu = 2, Casting = 4, FrameworkPre = 5,
-        Framework = 6, FrameworkPost = 7, AddOn = 8, AddOnPost = 9, AddOnPost2 = 10, World = 11 }
-    _G.RegisterGameMenuEscHandler = function(priority, handler)
-        assert(priority and handler, "RegisterGameMenuEscHandler requires a priority and a handler")
-        table.insert(M.escHandlers, { priority = priority, handler = handler, order = #M.escHandlers })
-        table.sort(M.escHandlers, function(a, b)
-            if a.priority == b.priority then return a.order < b.order end
-            return a.priority < b.priority
-        end)
+    -- Key bindings: only ESC is bound (to the game menu).
+    _G.GetBindingFromClick = function(key)
+        if key == "ESCAPE" then return "TOGGLEGAMEMENU" end
     end
 
     -- Colour picker. Like the client, opening it sets the wheel colour, which
@@ -330,12 +326,13 @@ function M.Reset()
     end
 end
 
--- Presses ESC: runs the registered ESC handlers; true if one consumed it.
-function M.PressEscape()
-    for _, entry in ipairs(M.escHandlers) do
-        if entry.handler() then return true end
-    end
-    return false
+-- Presses a key: the frame gets OnKeyDown only while it takes keyboard
+-- input. Returns whether the key went on to the game (propagated).
+function M.PressKey(frame, key)
+    if not frame._keyboard or not frame:IsShown() then return true end
+    local handler = frame._scripts.OnKeyDown
+    if handler then handler(frame, key) end
+    return frame._propagate or false
 end
 
 -- Blizzard's macro window (load-on-demand in the client). Shown state is

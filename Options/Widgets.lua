@@ -121,9 +121,15 @@ local function newNumberBox(row, anchor)
     return e
 end
 
+-- Each flash gets a token so the timer of an earlier flash cannot end a
+-- newer one early.
 local function flashError(box)
+    local token = {}
+    box.flashToken = token
     Style.SetBorderColor(box, "error")
-    C_Timer.After(ERROR_FLASH_SECONDS, function() Style.SetBorderColor(box, "border") end)
+    C_Timer.After(ERROR_FLASH_SECONDS, function()
+        if box.flashToken == token then Style.SetBorderColor(box, "border") end
+    end)
 end
 
 function Widgets.Slider(parent, opts)
@@ -151,8 +157,9 @@ function Widgets.Slider(parent, opts)
         commit(r)
     end)
     s:SetScript("OnMouseWheel", function(_, delta)
+        if not s:IsEnabled() then return end
         local v = math.max(opts.min, math.min(opts.max, opts.get() + delta * step))
-        commit(v); show(v)
+        commit(v); show(opts.get())
     end)
     local function editCommit(self)
         local n = tonumber(self:GetText())
@@ -273,9 +280,17 @@ local function renderList()
     renderScrollThumb()
 end
 
+-- Also the list's OnHide, so a hide from elsewhere cleans up the same way.
+local function releaseList()
+    list:UnregisterEvent("GLOBAL_MOUSE_DOWN")
+    list:EnableKeyboard(false)
+    list.owner = nil
+end
+
 function Widgets.CloseList()
     if not list or not list:IsShown() then return false end
     list:Hide()
+    releaseList()
     return true
 end
 
@@ -315,9 +330,18 @@ local function closeOnOutsideClick()
     Widgets.CloseList()
 end
 
-local function registerEscape()
-    if not (RegisterGameMenuEscHandler and GameMenuEscPriority) then return end
-    RegisterGameMenuEscHandler(GameMenuEscPriority.Menu, Widgets.CloseList)
+-- ESC closes only the list (the window behind stays open); every other key
+-- goes on to the game. Same technique as Blizzard's colour picker, and it
+-- leaves Blizzard's ESC handler table untouched (no taint on that path).
+-- SetPropagateKeyboardInput is restricted in combat, so the list is never
+-- open in combat.
+local function onListKeyDown(self, key)
+    if GetBindingFromClick(key) == "TOGGLEGAMEMENU" then
+        Widgets.CloseList()
+        self:SetPropagateKeyboardInput(false)
+    else
+        self:SetPropagateKeyboardInput(true)
+    end
 end
 
 local function createList()
@@ -336,12 +360,9 @@ local function createList()
     list.items, list.offset = {}, 0
     list:SetScript("OnMouseWheel", scrollList)
     list:SetScript("OnEvent", closeOnOutsideClick)
-    list:SetScript("OnHide", function(self)
-        self:UnregisterEvent("GLOBAL_MOUSE_DOWN")
-        self.owner = nil
-    end)
+    list:SetScript("OnKeyDown", onListKeyDown)
+    list:SetScript("OnHide", releaseList)
     list:Hide()
-    registerEscape()
     Widgets.list = list
 end
 
@@ -356,15 +377,18 @@ local function openList(owner)
     renderList()
     list:Show()
     list:RegisterEvent("GLOBAL_MOUSE_DOWN")
+    list:EnableKeyboard(true)
 end
 
 local function toggleList(owner)
     if list:IsShown() and list.owner == owner then
         Widgets.CloseList()
-    else
+    elseif not InCombatLockdown() then
         openList(owner)
     end
 end
+
+ns.On("PLAYER_REGEN_DISABLED", function() Widgets.CloseList() end)
 
 -- Dropdown ------------------------------------------------------------------
 
@@ -462,6 +486,7 @@ local function openPicker(row, opts)
         r = r, g = g, b = b, opacity = a, hasOpacity = true,
         swatchFunc = apply, opacityFunc = apply,
         cancelFunc = function()
+            if sameColor(previous, opts.get()) then return end
             opts.set({ previous[1], previous[2], previous[3], previous[4] })
             row:Refresh()
         end,
