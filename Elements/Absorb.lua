@@ -15,7 +15,8 @@ Absorb.SAMPLE = 0.3
 function Absorb.Build(frame)
     local bar = CreateFrame("StatusBar", nil, frame.health)
     bar:SetAllPoints(frame.health)
-    bar:SetFrameLevel(frame.health:GetFrameLevel() + 2)
+    -- Above the incoming heals (health + 1 .. + 3), below the overlay.
+    bar:SetFrameLevel(frame.health:GetFrameLevel() + 4)
     bar:SetReverseFill(true)
     bar:SetMinMaxValues(0, 1)
     bar:SetValue(0)

@@ -150,6 +150,8 @@ Settings.Define({ key = "healthColorMode", code = "HM", scope = "inherit", type 
     values = { "CLASS", "REACTION", "STATIC", "GRADIENT" }, default = "STATIC" })
 Settings.Define({ key = "healthColor", code = "HC", scope = "inherit", type = "color", default = { 0.2, 0.75, 0.3, 1 } })
 Settings.Define({ key = "absorbColor", code = "AC", scope = "inherit", type = "color", default = { 0.8, 0.9, 1, 0.45 } })
+Settings.Define({ key = "healMyColor", code = "MC", scope = "inherit", type = "color", default = { 0.3, 0.95, 0.45, 0.65 } })
+Settings.Define({ key = "healOtherColor", code = "OC", scope = "inherit", type = "color", default = { 0.15, 0.65, 0.3, 0.55 } })
 
 -- Frame layout
 Settings.Define({ key = "enabled", code = "E", scope = "frame", type = "bool", default = true })
@@ -167,6 +169,10 @@ Settings.Define({ key = "healthPercent", code = "HP", scope = "frame", type = "i
 Settings.Define({ key = "powerPercent", code = "PP", scope = "frame", type = "int", min = 0, max = 90, default = 25 })
 Settings.Define({ key = "powerEnabled", code = "PE", scope = "frame", type = "bool", default = true })
 Settings.Define({ key = "absorbEnabled", code = "AB", scope = "frame", type = "bool", default = true })
+-- Incoming heals; the overheal lane gives the end of the health row to
+-- heals past full health.
+Settings.Define({ key = "healPrediction", code = "IH", scope = "frame", type = "bool", default = true })
+Settings.Define({ key = "healOverflow", code = "OV", scope = "frame", type = "bool", default = false })
 Settings.Define({ key = "x", code = "X", scope = "frame", type = "int", min = -4000, max = 4000,
     default = { player = -300, target = 300, targettarget = 480, pet = -352, focus = -300, party = -760, _ = 0 } })
 Settings.Define({ key = "y", code = "Y", scope = "frame", type = "int", min = -4000, max = 4000,

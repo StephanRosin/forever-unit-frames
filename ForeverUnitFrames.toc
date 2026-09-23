@@ -20,6 +20,7 @@ Core\Corners.lua
 Core\Border.lua
 Units\Units.lua
 Elements\Health.lua
+Elements\HealPrediction.lua
 Elements\Absorb.lua
 Elements\Power.lua
 Elements\Texts.lua
