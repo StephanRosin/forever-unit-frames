@@ -114,6 +114,13 @@ local function newWidget(kind, name, parent)
     function w:SetFormattedText(fmt, ...) self._fmt = fmt; self._args = { ... } end
     function w:SetShadowOffset(x, y) self._shadow = { x, y } end
     function w:SetJustifyH(v) self._justifyH = v end
+    function w:SetWordWrap(v) self._wordWrap = not not v end
+    function w:GetWordWrap() return self._wordWrap ~= false end
+    -- Rough text width: half the font size per character.
+    function w:GetStringWidth()
+        local size = self._font and self._font[2] or 12
+        return #(self._text or "") * size / 2
+    end
     -- Enable state (Button, CheckButton, EditBox, Slider)
     function w:SetEnabled(v) self._enabled = not not v end
     function w:IsEnabled() return self._enabled ~= false end
@@ -332,6 +339,7 @@ function M.Reset()
     _G.ColorPickerFrame._shown = false
     function ColorPickerFrame:SetupColorPickerAndShow(info)
         M.colorPicker = info
+        self.swatchFunc, self.opacityFunc, self.cancelFunc = info.swatchFunc, info.opacityFunc, info.cancelFunc
         info.previousValues = { r = info.r, g = info.g, b = info.b, a = info.opacity }
         M.pickRGB = { info.r, info.g, info.b }
         if info.swatchFunc then info.swatchFunc() end

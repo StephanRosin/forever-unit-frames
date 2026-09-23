@@ -10,6 +10,8 @@ local Style, L = ns.Style, ns.L
 
 Widgets.ROW_H, Widgets.CONTROL_X, Widgets.CONTROL_W = 30, 240, 260
 local LABEL_X = 16
+-- Label and hint end this far left of the control.
+local LABEL_MAX_W = Widgets.CONTROL_X - LABEL_X - 12
 local DISABLED_ALPHA = 0.45
 local FONT = "Friz Quadrata"
 local ERROR_FLASH_SECONDS = 0.6
@@ -30,6 +32,17 @@ local function trackHover(row, control)
     control:HookScript("OnLeave", function() hideHoverIfOutside(row) end)
 end
 
+-- One line, left aligned, never running under the control. A clipped text
+-- is a bug in the string: keep labels and hints short enough to fit.
+local function fitLeftColumn(fontString, alwaysFull)
+    fontString:SetWordWrap(false)
+    fontString:SetJustifyH("LEFT")
+    -- A label keeps its natural width (the inherit marker follows it).
+    if alwaysFull or fontString:GetStringWidth() > LABEL_MAX_W then
+        fontString:SetWidth(LABEL_MAX_W)
+    end
+end
+
 local function newRow(parent, opts)
     local row = CreateFrame("Frame", nil, parent)
     row:SetHeight(Widgets.ROW_H)
@@ -41,10 +54,12 @@ local function newRow(parent, opts)
     row.label = Style.Text(row, 12, "text")
     row.label:SetPoint("LEFT", row, "LEFT", LABEL_X, opts.hint and 5 or 0)
     row.label:SetText(opts.label or "")
+    fitLeftColumn(row.label)
     if opts.hint then
         row.hintText = Style.Text(row, 10, "muted")
         row.hintText:SetPoint("TOPLEFT", row.label, "BOTTOMLEFT", 0, -1)
         row.hintText:SetText(opts.hint)
+        fitLeftColumn(row.hintText, true)
     end
     if opts.inherit then
         row.inherited = Style.Text(row, 10, "muted")
@@ -454,43 +469,91 @@ local function sameColor(a, b)
     return a[1] == b[1] and a[2] == b[2] and a[3] == b[3] and a[4] == b[4]
 end
 
+local SWATCH_W, SWATCH_H, CHECKER_CELL = 40, 16, 4
+
+-- Alternating control/muted squares inside the 1 px border, so a dark or
+-- transparent colour is still visible. Edge cells are clipped to fit.
+local function drawChecker(s)
+    s.checker = {}
+    local innerW, innerH = SWATCH_W - 2, SWATCH_H - 2
+    local row = 0
+    for y = 0, innerH - 1, CHECKER_CELL do
+        local col = 0
+        for x = 0, innerW - 1, CHECKER_CELL do
+            local cell = s:CreateTexture(nil, "BACKGROUND", nil, 1)
+            local c = Style.COLORS[(row + col) % 2 == 0 and "control" or "muted"]
+            cell:SetColorTexture(c[1], c[2], c[3], c[4])
+            cell:SetSize(math.min(CHECKER_CELL, innerW - x), math.min(CHECKER_CELL, innerH - y))
+            cell:SetPoint("TOPLEFT", s, "TOPLEFT", 1 + x, -1 - y)
+            s.checker[#s.checker + 1] = cell
+            col = col + 1
+        end
+        row = row + 1
+    end
+end
+
 local function newSwatch(row)
     local s = CreateFrame("Button", nil, row)
-    s:SetSize(40, 16)
+    s:SetSize(SWATCH_W, SWATCH_H)
     s:SetPoint("LEFT", row, "LEFT", Widgets.CONTROL_X, 0)
-    controlBox(s)
+    Style.Fill(s, "control")
+    Style.Border(s, "muted")
+    drawChecker(s)
     s.color = s:CreateTexture(nil, "ARTWORK")
     s.color:SetPoint("TOPLEFT", 1, -1)
     s.color:SetPoint("BOTTOMRIGHT", -1, 1)
     s:SetScript("OnEnter", function(self) Style.SetBorderColor(self, "accent") end)
-    s:SetScript("OnLeave", function(self) Style.SetBorderColor(self, "border") end)
+    s:SetScript("OnLeave", function(self) Style.SetBorderColor(self, "muted") end)
     trackHover(row, s)
     return s
 end
 
+-- The picker session we opened last. Its callbacks only act while it is
+-- still the current one and never in combat (Config.Set would reach
+-- secure frames); starting combat ends it.
+local pickerInfo
+
+local function pickerIsOurs()
+    return pickerInfo ~= nil and ColorPickerFrame:IsShown()
+        and ColorPickerFrame.swatchFunc == pickerInfo.swatchFunc
+end
+
+-- Hiding does not run the picker's cancelFunc: the colour previewed so far
+-- stays (it was set before combat), and no callback writes in combat.
+ns.On("PLAYER_REGEN_DISABLED", function()
+    if pickerIsOurs() then
+        pickerInfo = nil
+        ColorPickerFrame:Hide()
+    end
+end)
+
 local function openPicker(row, opts)
     local r, g, b, a = unpack(opts.get())
     local previous = { r, g, b, a }
+    local info
+    local function active() return pickerInfo == info and not InCombatLockdown() end
     -- Opening the picker sets its wheel, which already fires swatchFunc -
     -- before the alpha is set. Those calls are ignored.
     local opening = true
     local function apply()
-        if opening then return end
+        if opening or not active() then return end
         local nr, ng, nb = ColorPickerFrame:GetColorRGB()
         local picked = { nr, ng, nb, ColorPickerFrame:GetColorAlpha() }
         if sameColor(picked, opts.get()) then return end
         opts.set(picked)
         row:Refresh()
     end
-    ColorPickerFrame:SetupColorPickerAndShow({
+    info = {
         r = r, g = g, b = b, opacity = a, hasOpacity = true,
         swatchFunc = apply, opacityFunc = apply,
         cancelFunc = function()
-            if sameColor(previous, opts.get()) then return end
+            if not active() or sameColor(previous, opts.get()) then return end
             opts.set({ previous[1], previous[2], previous[3], previous[4] })
             row:Refresh()
         end,
-    })
+    }
+    pickerInfo = info
+    ColorPickerFrame:SetupColorPickerAndShow(info)
     opening = false
 end
 

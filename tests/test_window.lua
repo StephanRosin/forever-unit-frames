@@ -239,3 +239,13 @@ H.check("restored relative point", relP, "BOTTOMLEFT")
 H.check("restored x", x, 10)
 H.check("restored y", y, 20)
 H.check("window strata", ns.Options.frame:GetFrameStrata(), "HIGH")
+
+-- Every header on the profile page is translated.
+O = ns.Options
+O.Open("general", "profile")
+local headers = {}
+for _, f in ipairs(M.frames) do
+    if f.label and f.line and f.label:GetText() then headers[f.label:GetText()] = true end
+end
+H.checkTrue("profile reset header translated", headers[ns.L.RESET] and ns.L.RESET == "Reset")
+H.check("no raw RESET key shown", headers.RESET, nil)

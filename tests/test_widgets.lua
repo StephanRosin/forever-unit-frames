@@ -231,6 +231,79 @@ cw2.swatch:GetScript("OnClick")(cw2.swatch)
 M.colorPicker.cancelFunc(M.colorPicker.previousValues)
 H.check("cancel without a change does not write settings", sets, 0)
 
+-- Swatches stay visible on the dark window: a muted border and a
+-- checkerboard behind the colour so alpha shows.
+local muted, accent = ns.Style.COLORS.muted, ns.Style.COLORS.accent
+local sw = cw2.swatch
+H.check("swatch size kept", sw:GetWidth() .. "x" .. sw:GetHeight(), "40x16")
+H.check("swatch border is muted", sw.edges[1]._color[1], muted[1])
+sw:GetScript("OnEnter")(sw)
+H.check("swatch hover border accent", sw.edges[1]._color[1], accent[1])
+sw:GetScript("OnLeave")(sw)
+H.check("swatch leave restores muted border", sw.edges[4]._color[1], muted[1])
+H.checkTrue("swatch has a checkerboard", sw.checker and #sw.checker >= 2)
+if sw.checker and #sw.checker >= 2 then
+    local a, b = sw.checker[1], sw.checker[2]
+    H.check("checker cell size", a._w .. "x" .. a._h, "4x4")
+    H.checkTrue("checker cells alternate", a._color[1] ~= b._color[1])
+    local colours = {}
+    for _, cell in ipairs(sw.checker) do colours[cell._color[1]] = true end
+    H.checkTrue("checker uses control and muted",
+        colours[ns.Style.COLORS.control[1]] and colours[muted[1]])
+    local covered = 0
+    for _, cell in ipairs(sw.checker) do covered = covered + cell._w * cell._h end
+    H.check("checker fills the inside of the swatch", covered, 38 * 14)
+end
+
+-- The colour picker is closed when combat starts and ignores callbacks in
+-- combat: nothing calls set() then.
+local col3 = { 0.1, 0.2, 0.3, 1 }
+local sets3 = 0
+local cw3 = W.Color(parent, { label = "Colour 3", get = function() return col3 end,
+    set = function(v) col3 = v; sets3 = sets3 + 1; return true end })
+cw3:Refresh()
+cw3.swatch:GetScript("OnClick")(cw3.swatch)
+H.checkTrue("picker shown", ColorPickerFrame:IsShown())
+local info3 = M.colorPicker
+M.combat = true
+M.pickRGB, M.pickA = { 0.7, 0.7, 0.7 }, 1
+info3.swatchFunc()
+info3.opacityFunc()
+info3.cancelFunc(info3.previousValues)
+H.check("no set from picker callbacks in combat", sets3, 0)
+M.FireEvent("PLAYER_REGEN_DISABLED")
+H.check("combat start hides our picker", ColorPickerFrame:IsShown(), false)
+M.SetCombat(false)
+info3.swatchFunc()
+info3.cancelFunc(info3.previousValues)
+H.check("callbacks of the aborted picker stay ignored", sets3, 0)
+-- A picker opened by someone else is left alone.
+ColorPickerFrame:SetupColorPickerAndShow({ r = 1, g = 1, b = 1, swatchFunc = function() end })
+M.combat = true
+M.FireEvent("PLAYER_REGEN_DISABLED")
+H.checkTrue("foreign picker left open", ColorPickerFrame:IsShown())
+M.SetCombat(false)
+ColorPickerFrame:Hide()
+-- Out of combat our picker still works as before.
+cw3.swatch:GetScript("OnClick")(cw3.swatch)
+M.pickRGB, M.pickA = { 0.5, 0.5, 0.5 }, 1
+M.colorPicker.swatchFunc()
+H.check("picker works again after combat", col3[1], 0.5)
+
+-- Label and hint stay left of the control; the hint is one line.
+local LABEL_MAX = W.CONTROL_X - 16 - 12
+local long = W.Checkbox(parent, { label = string.rep("Very long label ", 6),
+    hint = string.rep("A very long hint text ", 5), get = function() return true end, set = function() end })
+H.check("hint width constrained", long.hintText:GetWidth(), LABEL_MAX)
+H.check("hint does not wrap", long.hintText:GetWordWrap(), false)
+H.check("hint left aligned", long.hintText._justifyH, "LEFT")
+H.checkTrue("long label width constrained", long.label:GetWidth() > 0 and long.label:GetWidth() <= LABEL_MAX)
+H.check("label does not wrap", long.label:GetWordWrap(), false)
+H.check("label left aligned", long.label._justifyH, "LEFT")
+H.checkTrue("enabled hint fits without truncation",
+    long.hintText.GetStringWidth({ _text = ns.L.HINT_enabled, _font = { nil, 10 } }) <= LABEL_MAX)
+H.check("enabled hint shortened", ns.L.HINT_enabled, "Needs /reload after re-enabling")
+
 -- Button --------------------------------------------------------------------
 local clicks = 0
 local btn = W.Button(parent, { text = "Apply", width = 120, onClick = function() clicks = clicks + 1 end })
