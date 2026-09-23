@@ -67,9 +67,10 @@ end
 
 -- Soft outline. The client only has OUTLINE and THICKOUTLINE, both hard
 -- at small sizes. SOFT draws the text without a flag over four black
--- copies of itself, shifted one step left, right, up and down. The copies
--- are made once per text, the first time it is styled SOFT, and follow
--- every write, secret or not: arguments are passed on untouched.
+-- copies of itself, shifted one physical pixel left, right, up and down.
+-- The copies are made once per text, the first time it is styled SOFT,
+-- and follow every write, secret or not: arguments are passed on
+-- untouched.
 local SOFT_OFFSETS = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }
 local MIRRORED = { "SetText", "SetFormattedText", "SetJustifyH", "SetWordWrap" }
 
@@ -119,8 +120,10 @@ function Texts.SetFont(fs, font, size, outline)
     if soft and not fs.softCopies then makeCopies(fs) end
     if not fs.softCopies then return end
     fs.soft = soft
-    -- One UI unit, on the pixel grid (never less than a pixel).
-    local step = ns.Pixel.Snap(1, fs, 1)
+    -- Exactly one physical pixel: thinner than the client's OUTLINE.
+    -- Recomputed on every restyle, which a UI scale or window size change
+    -- triggers too.
+    local step = ns.Pixel.One(fs)
     for i, copy in ipairs(fs.softCopies) do
         local x, y = SOFT_OFFSETS[i][1] * step, SOFT_OFFSETS[i][2] * step
         copy:SetFont(font, size, "")

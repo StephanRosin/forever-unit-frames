@@ -50,6 +50,11 @@ function Pixel.Snap(v, region, minPixels)
     return PixelUtil.GetNearestPixelSize(v, scaleOf(region), minPixels)
 end
 
+-- One physical pixel in region's (default UIParent's) units.
+function Pixel.One(region)
+    return PixelUtil.GetPixelToUIUnitFactor() / scaleOf(region)
+end
+
 -- Offset for a centre anchor: a span of the given (snapped) size centred
 -- there has both edges on pixels.
 function Pixel.Centre(v, size, region)

@@ -62,8 +62,15 @@ H.check("portrait as high as the frame", f.portraitBg:GetHeight(), f:GetHeight()
 checkGrid("text offset", pointOf(f.texts.healthLeft, "LEFT")[4])
 checkGrid("text gap", pointOf(f.texts.healthLeft, "RIGHT")[4])
 checkGrid("right text offset", pointOf(f.texts.healthRight, "RIGHT")[4])
-checkGrid("soft copy offset", pointOf(f.texts.healthLeft.softCopies[1], "TOPLEFT")[4])
-H.check("soft copy offset at least a pixel", pointOf(f.texts.healthLeft.softCopies[1], "TOPLEFT")[4] >= px, true)
+-- The soft outline is exactly one physical pixel wide, whatever the scale.
+local function near(a, b) return math.abs(a - b) < 1e-9 end
+for i, want in ipairs({ { px, 0 }, { -px, 0 }, { 0, px }, { 0, -px } }) do
+    local cp = pointOf(f.texts.healthLeft.softCopies[i], "TOPLEFT")
+    H.check("soft copy " .. i .. " x is one pixel", near(cp[4], want[1]), true)
+    H.check("soft copy " .. i .. " y is one pixel", near(cp[5], want[2]), true)
+    local cb = pointOf(f.castbar.time.softCopies[i], "BOTTOMRIGHT")
+    H.check("castbar soft copy " .. i .. " is one pixel", near(cb[4], want[1]) and near(cb[5], want[2]), true)
+end
 
 -- Castbar: docked, then detached with its mover.
 local bar = f.castbar
@@ -114,6 +121,8 @@ checkGrid("rescaled frame width", f:GetWidth())
 checkGrid("rescaled mover width", mover:GetWidth())
 checkGrid("rescaled mover left edge", pointOf(mover, "CENTER")[4] - mover:GetWidth() / 2)
 checkGrid("rescaled text offset", pointOf(f.texts.healthLeft, "LEFT")[4])
+H.check("rescaled soft copy: one pixel", near(pointOf(f.texts.healthLeft.softCopies[1], "TOPLEFT")[4], px), true)
+H.check("rescaled castbar soft copy: one pixel", near(pointOf(f.castbar.text.softCopies[2], "TOPLEFT")[4], -px), true)
 checkGrid("rescaled party mover", pm:GetWidth())
 checkGrid("rescaled castbar mover", cm:GetWidth())
 M.screenH = 1080
@@ -121,6 +130,7 @@ px = 768 / 1080 / 0.64
 M.FireEvent("DISPLAY_SIZE_CHANGED")
 checkGrid("resized screen: frame height", f:GetHeight())
 checkGrid("resized screen: party mover", pm:GetHeight())
+H.check("resized screen: soft copy one pixel", near(pointOf(f.texts.powerRight.softCopies[3], "TOPLEFT")[5], px), true)
 
 -- Frames without a mover (created before the movers exist) are placed
 -- on the grid too.
