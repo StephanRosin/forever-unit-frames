@@ -59,16 +59,16 @@ local function checkCopies(label, fs)
     end
 end
 
-for _, field in ipairs({ "healthLeft", "healthRight", "powerLeft", "powerRight" }) do
+for _, field in ipairs({ "title", "healthLeft", "healthRight", "powerLeft", "powerRight" }) do
     checkCopies(field, f.texts[field])
 end
 H.check("left text keeps no word wrap on copies", f.texts.healthLeft.softCopies[1]:GetWordWrap(), false)
 
 -- Every write reaches the copies, secrets passed through untouched.
-local hl, hr, pr = f.texts.healthLeft, f.texts.healthRight, f.texts.powerRight
-H.check("formatted text mirrored", hl.softCopies[3]._fmt, "%s %s")
-H.check("formatted args mirrored", hl.softCopies[3]._args[2], "Tester")
-H.check("secret formatted arg mirrored", hr.softCopies[2]._args[1], M.units.player.health)
+local tt, hl, pr = f.texts.title, f.texts.healthLeft, f.texts.powerRight
+H.check("formatted text mirrored", tt.softCopies[3]._fmt, "%s %s")
+H.check("formatted args mirrored", tt.softCopies[3]._args[2], "Tester")
+H.check("secret formatted arg mirrored", hl.softCopies[2]._args[1], M.units.player.health)
 H.check("secret text mirrored", pr.softCopies[4]._text, M.units.player.power)
 hl:SetText("plain")
 for i = 1, 4 do H.check("SetText mirrored " .. i, hl.softCopies[i]._text, "plain") end

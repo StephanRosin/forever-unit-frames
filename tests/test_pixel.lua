@@ -51,8 +51,10 @@ H.checkTrue("mover near its setting", math.abs(p[4] - -251) < px)
 checkGrid("health height", f.health:GetHeight())
 checkGrid("power height", f.power:GetHeight())
 checkGrid("health left inset", pointOf(f.health, "TOPLEFT")[4])
-H.check("health + gap + power fill the frame",
-    math.abs(f.health:GetHeight() + f.gap + f.power:GetHeight() - f:GetHeight()) < 1e-6, true)
+checkGrid("title height", f.titleHeight)
+H.check("title + health + gap + power fill the frame",
+    math.abs(f.titleHeight + f.health:GetHeight() + f.gap + f.power:GetHeight() - f:GetHeight()) < 1e-6, true)
+checkGrid("health below the title", pointOf(f.health, "TOPLEFT")[5])
 checkGrid("border", f.border[1]:GetHeight())
 H.check("one-unit border is at least a pixel", f.border[1]:GetHeight() >= px, true)
 checkGrid("border offset", pointOf(f.border[1], "BOTTOMLEFT")[4])

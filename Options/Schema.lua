@@ -19,7 +19,7 @@ Schema.FRAME = {
     { id = "layout", sections = {
         { id = "frame", keys = { "enabled" } },
         { id = "size", keys = { "width", "height" } },
-        { id = "barHeights", keys = { "healthPercent", "powerPercent", "powerEnabled" } },
+        { id = "barHeights", keys = { "titlePercent", "healthPercent", "powerPercent", "powerEnabled" } },
         { id = "portrait", keys = { "portraitMode", "portraitStyle" } },
         { id = "group", keys = { "partyOrientation", "partySpacing", "partyShowPlayer", "partyShowSolo" } },
         { id = "position", keys = { "x", "y" } },
@@ -30,6 +30,7 @@ Schema.FRAME = {
         { id = "border", keys = { "borderSize", "borderColor" } },
     } },
     { id = "text", sections = {
+        { id = "titleText", keys = { "titleText", "titleColorMode" } },
         { id = "healthText", keys = { "textHealthLeft", "textHealthRight" } },
         { id = "powerText", keys = { "textPowerLeft", "textPowerRight" } },
         { id = "font", keys = { "fontFace", "fontSize", "fontOutline", "fontShadow" } },

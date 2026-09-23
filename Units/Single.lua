@@ -36,23 +36,31 @@ local function place(frame)
 end
 
 -- The split is worked out in whole units, then put on the pixel grid:
--- power bar and gap are snapped, health takes the rest of the (snapped)
--- frame height, so the three always fill the frame exactly.
+-- title row, power bar and gap are snapped, health takes the rest of the
+-- (snapped) frame height, so the rows always fill the frame exactly.
 local function layoutBars(frame)
     local scope = frame.key
     local _, height = Single.Size(scope)
     local powerOn = Config.Get(scope, "powerEnabled")
-    local _, gap, ph = Layout.Bars(Config.Get(scope, "height"), Config.Get(scope, "healthPercent"),
-        Config.Get(scope, "powerPercent"), powerOn)
+    local th, _, gap, ph = Layout.Rows(Config.Get(scope, "height"), Config.Get(scope, "titlePercent"),
+        Config.Get(scope, "healthPercent"), Config.Get(scope, "powerPercent"), powerOn)
     local powerShown = powerOn and ph > 0
     local pixel = Pixel.Snap(1, nil, 1)
+    local titleH = th > 0 and Pixel.Snap(th, nil, 1) or 0
     local powerH = powerShown and Pixel.Snap(ph, nil, 1) or 0
     gap = powerShown and Pixel.Snap(gap) or 0
-    local healthH = math.max(height - gap - powerH, pixel)
+    local healthH = math.max(height - titleH - gap - powerH, pixel)
     local left, right = Layout.PortraitInsets(Config.Get(scope, "portraitMode"), height)
+    local title = frame.title
+    title:ClearAllPoints()
+    title:SetPoint("TOPLEFT", frame, "TOPLEFT", left, 0)
+    title:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -right, 0)
+    title:SetHeight(math.max(titleH, pixel))
+    title:SetShown(titleH > 0)
+    frame.titleHeight = titleH
     frame.health:ClearAllPoints()
-    frame.health:SetPoint("TOPLEFT", frame, "TOPLEFT", left, 0)
-    frame.health:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -right, 0)
+    frame.health:SetPoint("TOPLEFT", frame, "TOPLEFT", left, -titleH)
+    frame.health:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -right, -titleH)
     frame.health:SetHeight(healthH)
     if frame.power then
         frame.power:ClearAllPoints()

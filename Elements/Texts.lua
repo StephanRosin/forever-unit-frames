@@ -9,7 +9,10 @@ ns.Texts = Texts
 
 local Config, Secrets = ns.Config, ns.Secrets
 
+-- bar: the row the text sits on; kind: whose values it shows (health or
+-- power, default the bar).
 local SLOTS = {
+    { field = "title", setting = "titleText", bar = "title", kind = "health", point = "LEFT", x = 4 },
     { field = "healthLeft", setting = "textHealthLeft", bar = "health", point = "LEFT", x = 4, before = "healthRight" },
     { field = "healthRight", setting = "textHealthRight", bar = "health", point = "RIGHT", x = -4 },
     { field = "powerLeft", setting = "textPowerLeft", bar = "power", point = "LEFT", x = 4, before = "powerRight" },
@@ -139,8 +142,10 @@ end
 function Texts.Build(frame)
     frame.texts = {}
     for _, slot in ipairs(SLOTS) do
-        -- Parent to the bar so the text sits above it.
-        frame.texts[slot.field] = frame[slot.bar]:CreateFontString(nil, "OVERLAY")
+        -- Parent to the bar so the text sits above it; the title row is a
+        -- texture, its text goes on the frame.
+        local parent = slot.bar == "title" and frame or frame[slot.bar]
+        frame.texts[slot.field] = parent:CreateFontString(nil, "OVERLAY")
     end
 end
 
@@ -165,12 +170,25 @@ function Texts.Style(frame)
         end
         fs:SetJustifyH(slot.point)
     end
+    local title = frame.texts.title
+    title:SetPoint("RIGHT", frame.title, "RIGHT", ns.Pixel.Snap(-4, title), 0)
+    title:SetWordWrap(false)
+    title:SetShown(frame.titleHeight > 0)
+end
+
+-- Title text colour: class (players) or reaction, or plain white.
+local function paintTitle(frame)
+    local mode = Config.Get(frame.key, "titleColorMode")
+    local r, g, b = 1, 1, 1
+    if mode ~= "WHITE" then r, g, b = ns.Health.UnitColor(frame.unit, mode) end
+    frame.texts.title:SetTextColor(r, g, b, 1)
 end
 
 function Texts.Update(frame)
     for _, slot in ipairs(SLOTS) do
-        Texts.Apply(frame.texts[slot.field], Config.Get(frame.key, slot.setting), frame.unit, slot.bar)
+        Texts.Apply(frame.texts[slot.field], Config.Get(frame.key, slot.setting), frame.unit, slot.kind or slot.bar)
     end
+    paintTitle(frame)
 end
 
 ns.RegisterElement(Texts)

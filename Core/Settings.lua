@@ -100,7 +100,7 @@ Settings.Define({ key = "borderColor", code = "BO", scope = "inherit", type = "c
 
 -- Colors
 Settings.Define({ key = "healthColorMode", code = "HM", scope = "inherit", type = "enum",
-    values = { "CLASS", "REACTION", "STATIC", "GRADIENT" }, default = "CLASS" })
+    values = { "CLASS", "REACTION", "STATIC", "GRADIENT" }, default = "STATIC" })
 Settings.Define({ key = "healthColor", code = "HC", scope = "inherit", type = "color", default = { 0.2, 0.75, 0.3, 1 } })
 
 -- Frame layout
@@ -109,7 +109,13 @@ Settings.Define({ key = "width", code = "W", scope = "frame", type = "int", min 
     default = { player = 220, target = 220, focus = 160, party = 160, _ = 120 } })
 Settings.Define({ key = "height", code = "H", scope = "frame", type = "int", min = 8, max = 200,
     default = { player = 46, target = 46, focus = 36, party = 36, _ = 28 } })
-Settings.Define({ key = "healthPercent", code = "HP", scope = "frame", type = "int", min = 10, max = 100, default = 75 })
+-- Rows, top to bottom: title, health, power; each a share of the frame
+-- height, the rest is the gap between health and power. A title of 0 is
+-- the two-row layout.
+Settings.Define({ key = "titlePercent", code = "TP", scope = "frame", type = "int", min = 0, max = 60,
+    default = { player = 30, target = 30, focus = 30, _ = 0 } })
+Settings.Define({ key = "healthPercent", code = "HP", scope = "frame", type = "int", min = 10, max = 100,
+    default = { player = 45, target = 45, focus = 45, _ = 75 } })
 Settings.Define({ key = "powerPercent", code = "PP", scope = "frame", type = "int", min = 0, max = 90, default = 25 })
 Settings.Define({ key = "powerEnabled", code = "PE", scope = "frame", type = "bool", default = true })
 Settings.Define({ key = "x", code = "X", scope = "frame", type = "int", min = -4000, max = 4000,
@@ -152,11 +158,16 @@ Settings.Define({ key = "castbarIcon", code = "CI", scope = "frame", only = CAST
 Settings.Define({ key = "castbarName", code = "CN", scope = "frame", only = CASTBAR, type = "bool", default = true })
 Settings.Define({ key = "castbarTime", code = "CT", scope = "frame", only = CASTBAR, type = "bool", default = true })
 
--- Texts
-Settings.Define({ key = "textHealthLeft", code = "TL", scope = "frame", type = "enum", values = TEXT_TAGS,
+-- Texts. With a title row the name moves up there and the health bar
+-- shows values.
+Settings.Define({ key = "titleText", code = "NT", scope = "frame", type = "enum", values = TEXT_TAGS,
     default = { player = "NAME_LEVEL", target = "NAME_LEVEL", _ = "NAME" } })
+Settings.Define({ key = "titleColorMode", code = "NC", scope = "frame", type = "enum",
+    values = { "CLASS", "REACTION", "WHITE" }, default = "CLASS" })
+Settings.Define({ key = "textHealthLeft", code = "TL", scope = "frame", type = "enum", values = TEXT_TAGS,
+    default = { player = "CURRENT_MAX", target = "CURRENT_MAX", focus = "NONE", _ = "NAME" } })
 Settings.Define({ key = "textHealthRight", code = "TR", scope = "frame", type = "enum", values = TEXT_TAGS,
-    default = { player = "CURRENT_MAX", target = "PERCENT", focus = "PERCENT", party = "PERCENT", _ = "NONE" } })
+    default = { player = "PERCENT", target = "PERCENT", focus = "PERCENT", party = "PERCENT", _ = "NONE" } })
 Settings.Define({ key = "textPowerLeft", code = "UL", scope = "frame", type = "enum", values = TEXT_TAGS, default = "NONE" })
 Settings.Define({ key = "textPowerRight", code = "UR", scope = "frame", type = "enum", values = TEXT_TAGS,
     default = { player = "CURRENT", _ = "NONE" } })

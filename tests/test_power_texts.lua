@@ -7,24 +7,26 @@ M.units.player = { name = "Tester", level = 60, class = "WARLOCK", className = "
 ns.Single.CreateAll()
 local f = ns.Frames.player
 
-local _, _, ph = ns.Layout.Bars(46, 75, 25, true)
+local _, _, _, ph = ns.Layout.Rows(46, 30, 45, 25, true)
 H.check("power height", f.power:GetHeight(), ph)
 H.check("power value secret passthrough", f.power:GetValue(), M.units.player.power)
 H.check("mana colour", f.power._color[3], ns.Power.COLORS[0][3])
 
--- Player defaults: health left NAME_LEVEL, health right CURRENT_MAX, power right CURRENT.
+-- Player defaults: title NAME_LEVEL, health left CURRENT_MAX, health right
+-- PERCENT, power right CURRENT.
 local t = f.texts
-H.check("name level format", t.healthLeft._fmt, "%s %s")
-H.check("name level level arg", t.healthLeft._args[1], "60")
-H.check("current/max format", t.healthRight._fmt, "%s / %s")
-H.check("current/max passes secret", t.healthRight._args[1], M.units.player.health)
+H.check("name level format", t.title._fmt, "%s %s")
+H.check("name level level arg", t.title._args[1], "60")
+H.check("current/max format", t.healthLeft._fmt, "%s / %s")
+H.check("current/max passes secret", t.healthLeft._args[1], M.units.player.health)
+H.check("percent on the right", t.healthRight._fmt, "%.0f%%")
 H.check("power current secret", t.powerRight._text, M.units.player.power)
 H.check("unused slot empty", t.powerLeft._text, "")
 
 -- Readable values are abbreviated.
 M.units.player.health, M.units.player.healthMax = 12345, 20000
 M.FireEvent("UNIT_HEALTH", "player")
-H.check("abbreviated when readable", t.healthRight._args[1], "12.3k")
+H.check("abbreviated when readable", t.healthLeft._args[1], "12.3k")
 
 -- Percent uses the curve and a format, never Lua maths.
 ns.Config.Set("player", "textHealthRight", "PERCENT")
@@ -37,12 +39,12 @@ H.check("deficit passes through", t.healthRight._text, M.units.player.healthMiss
 -- Level ?? for unknown (-1) level
 M.units.target = { name = "Boss", level = -1, health = 1, healthMax = 1 }
 M.FireEvent("PLAYER_TARGET_CHANGED")
-H.check("boss level", ns.Frames.target.texts.healthLeft._args[1], "??")
+H.check("boss level", ns.Frames.target.texts.title._args[1], "??")
 
 -- Power bar off hides it and health fills the frame.
 ns.Config.Set("player", "powerEnabled", false)
 H.check("power hidden", f.power:IsShown(), false)
-H.check("health full height", f.health:GetHeight(), 46)
+H.check("health takes all below the title", f.health:GetHeight(), 46 - f.titleHeight)
 
 -- Fonts follow config
 ns.Config.Set("general", "fontSize", 15)

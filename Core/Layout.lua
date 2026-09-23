@@ -6,20 +6,34 @@ ns.Layout = Layout
 
 local function round(v) return math.floor(v + 0.5) end
 
--- Split a frame height into health bar, gap and power bar. Percentages are
--- of the whole frame; whatever they leave over becomes the gap. With the
--- power bar off, health takes everything.
-function Layout.Bars(height, healthPercent, powerPercent, powerEnabled)
-    if not powerEnabled or powerPercent <= 0 then
-        return height, 0, 0
+-- Split a frame height into title row, health bar, gap and power bar.
+-- Percentages are of the whole frame; whatever they leave over becomes the
+-- gap between health and power. A title of 0 % means no title row; with
+-- the power bar off, health takes everything below the title. Health keeps
+-- at least 1: the title gives way first.
+function Layout.Rows(height, titlePercent, healthPercent, powerPercent, powerEnabled)
+    local powered = powerEnabled and powerPercent > 0
+    local powerH = powered and math.max(1, math.floor(height * powerPercent / 100)) or 0
+    local titleH = 0
+    if titlePercent > 0 then
+        titleH = math.max(1, round(height * titlePercent / 100))
+        titleH = math.max(0, math.min(titleH, height - powerH - 1))
     end
-    local powerH = math.max(1, math.floor(height * powerPercent / 100))
+    if not powered then
+        return titleH, height - titleH, 0, 0
+    end
     local healthH = round(height * healthPercent / 100)
-    if healthH + powerH > height then
-        healthH = height - powerH
+    if titleH + healthH + powerH > height then
+        healthH = height - titleH - powerH
     end
     healthH = math.max(1, healthH)
-    return healthH, height - healthH - powerH, powerH
+    return titleH, healthH, height - titleH - healthH - powerH, powerH
+end
+
+-- The two-row split (no title row): health, gap, power.
+function Layout.Bars(height, healthPercent, powerPercent, powerEnabled)
+    local _, healthH, gap, powerH = Layout.Rows(height, 0, healthPercent, powerPercent, powerEnabled)
+    return healthH, gap, powerH
 end
 
 -- Space the portrait takes from the bars: a square as tall as the frame,
