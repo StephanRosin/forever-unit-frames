@@ -5,6 +5,8 @@ local _, ns = ...
 -- from the plain defaults are listed. Saved profiles store differences
 -- from these, so changing a value here changes it for everyone who kept
 -- the default.
+-- healOverflow: the overheal lane at the bar's end shows shields (and
+-- heals) that go past full health.
 local PRESET = {
     general = {
         -- Same file as LibSharedMedia's "Blizzard Raid Bar", built in.
@@ -17,6 +19,7 @@ local PRESET = {
         shadowEnabled = true,
     },
     player = {
+        healOverflow = true,
         buffsAnchor = "FRAME",
         buffsEnabled = true,
         buffsHighlightOwn = true,
@@ -46,6 +49,7 @@ local PRESET = {
         x = -400,
     },
     target = {
+        healOverflow = true,
         combatFeedback = true,
         buffsAnchor = "FRAME",
         buffsHighlightOwn = true,
@@ -76,6 +80,7 @@ local PRESET = {
         x = 400,
     },
     targettarget = {
+        healOverflow = true,
         buffsMax = 9,
         buffsSize = 14,
         debuffsSize = 14,
@@ -86,16 +91,19 @@ local PRESET = {
     -- Left of the player frame, top edges aligned: the plain default sits
     -- inside the wider shipped player frame.
     pet = {
+        healOverflow = true,
         x = -622,
         y = -199,
     },
     focus = {
+        healOverflow = true,
         combatFeedback = true,
         powerPercent = 21,
         x = 575,
         y = 124,
     },
     party = {
+        healOverflow = true,
         buffsAnchor = "FRAME",
         buffsFramePoint = "RIGHT",
         buffsMax = 8,
