@@ -1,6 +1,7 @@
 local _, ns = ...
 
--- Castbar of a unit frame, docked below it.
+-- Castbar of a unit frame: docked below or above it, or (single frames)
+-- detached with a mover of its own.
 --
 -- Another unit's cast can arrive as secret values: name, icon, start and
 -- end time. They are only ever handed to widgets: the bar's range is the
@@ -60,15 +61,36 @@ local function showRemaining(fontString, duration)
 end
 
 -- Seconds left: computed when the end time is readable, otherwise asked
--- of the duration object (guarded), otherwise left empty.
+-- of the duration object (guarded), otherwise left empty. A duration
+-- object that refused once is dropped: it is not asked every frame.
 function Castbar.UpdateTime(bar, nowMs)
     local cast = bar.cast
     if not cast or not bar.time:IsShown() then return end
     local endMs = Secrets.Number(cast.endMs)
     if endMs then
         bar.time:SetFormattedText("%.1f", math.max(0, (endMs - (nowMs or now())) / 1000))
-    elseif not (type(cast.duration) ~= "nil" and pcall(showRemaining, bar.time, cast.duration)) then
-        bar.time:SetText("")
+        return
+    end
+    if type(cast.duration) ~= "nil" and pcall(showRemaining, bar.time, cast.duration) then return end
+    cast.duration = nil
+    bar.time:SetText("")
+end
+
+-- The value is always the clock, so the fill grows. A cast shows that
+-- growth in the cast colour. A channel must drain: the fill takes the
+-- (opaque) background colour and the background behind it the channel
+-- colour, so the coloured part shrinks. Opaque, or the channel colour
+-- would shine through the drained part.
+local function paint(bar)
+    local bg = Config.Get(bar.scope, "backgroundColor")
+    if bar.cast and bar.cast.channel then
+        local c = Castbar.CHANNEL_COLOR
+        bar:SetStatusBarColor(bg[1], bg[2], bg[3], 1)
+        bar.bg:SetVertexColor(c[1], c[2], c[3], 1)
+    else
+        local c = Castbar.CAST_COLOR
+        bar:SetStatusBarColor(c[1], c[2], c[3])
+        bar.bg:SetVertexColor(bg[1], bg[2], bg[3], bg[4])
     end
 end
 
@@ -86,8 +108,7 @@ function Castbar.Begin(bar, unit, channel, castGUID)
         duration = durationOf(unit, channel) }
     bar:SetMinMaxValues(info[4], info[5])
     bar:SetReverseFill(channel)
-    local c = channel and Castbar.CHANNEL_COLOR or Castbar.CAST_COLOR
-    bar:SetStatusBarColor(c[1], c[2], c[3])
+    paint(bar)
     bar.text:SetText(info[1])
     bar.icon:SetTexture(info[3])
     bar:SetValue(now())
@@ -130,6 +151,7 @@ end
 function Castbar.Build(frame)
     if not Castbar.Applies(frame.key) then return end
     local bar = CreateFrame("StatusBar", nil, frame)
+    bar.scope = frame.key
     bar.bg = bar:CreateTexture(nil, "BACKGROUND")
     bar.bg:SetAllPoints(bar)
     bar.icon = bar:CreateTexture(nil, "ARTWORK")
@@ -140,12 +162,74 @@ function Castbar.Build(frame)
     frame.castbar = bar
 end
 
+-- BELOW, ABOVE or DETACHED. Party castbars only dock.
+function Castbar.Placement(scope)
+    if Settings.AppliesTo(Settings.Get("castbarPosition"), scope) then
+        return Config.Get(scope, "castbarPosition")
+    end
+    return Config.Get(scope, "castbarDock")
+end
+
+-- Room a docked castbar takes next to its frame: gap, bar and its outer
+-- border. Zero when the castbar is off or detached.
+function Castbar.DockedDepth(scope)
+    if not Castbar.Applies(scope) or not Config.Get(scope, "castbarEnabled")
+        or Castbar.Placement(scope) == "DETACHED" then
+        return 0
+    end
+    return Castbar.Gap(scope) + Config.Get(scope, "castbarHeight") + Config.Get(scope, "borderSize")
+end
+
+-- Whole castbar size, icon included: the frame's width.
+local function size(scope)
+    return Config.Get(scope, "width"), Config.Get(scope, "castbarHeight")
+end
+
 -- The icon sits left of the bar, inside the castbar's own rectangle.
 local function anchor(bar, frame, scope, inset)
+    local placement = Castbar.Placement(scope)
     local gap = Castbar.Gap(scope)
     bar:ClearAllPoints()
-    bar:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", inset, -gap)
-    bar:SetPoint("TOPRIGHT", frame, "BOTTOMRIGHT", 0, -gap)
+    if placement == "DETACHED" then
+        if bar.mover then
+            ns.Movers.Sync(bar)
+            bar:SetPoint("TOPLEFT", bar.mover, "TOPLEFT", inset, 0)
+            bar:SetPoint("BOTTOMRIGHT", bar.mover, "BOTTOMRIGHT", 0, 0)
+        else
+            local w, h = size(scope)
+            bar:SetPoint("TOPLEFT", UIParent, "CENTER",
+                Config.Get(scope, "castbarX") - w / 2 + inset, Config.Get(scope, "castbarY") + h / 2)
+            bar:SetWidth(w - inset)
+        end
+    elseif placement == "ABOVE" then
+        bar:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", inset, gap)
+        bar:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", 0, gap)
+    else
+        bar:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", inset, -gap)
+        bar:SetPoint("TOPRIGHT", frame, "BOTTOMRIGHT", 0, -gap)
+    end
+end
+
+-- Handle for a detached castbar; shown while unlocked only if detached.
+function Castbar.MoverSpec(frame)
+    local scope = frame.key
+    return {
+        id = "castbar:" .. scope, scope = scope, xKey = "castbarX", yKey = "castbarY", anchor = false,
+        label = ns.L.MOVER_CASTBAR:format(ns.L["FRAME_" .. scope]),
+        size = function() return size(scope) end,
+        active = function()
+            return Config.Get(scope, "enabled") and Config.Get(scope, "castbarEnabled")
+                and Castbar.Placement(scope) == "DETACHED"
+        end,
+    }
+end
+
+-- Single frames only (party castbars cannot be detached).
+function Castbar.AttachMover(frame)
+    local bar = frame.castbar
+    if not bar or not Settings.AppliesTo(Settings.Get("castbarPosition"), frame.key) then return end
+    ns.Movers.Attach(bar, Castbar.MoverSpec(frame))
+    ns.AfterCombat("castbarStyle:" .. frame.key, function() Castbar.Style(frame) end)
 end
 
 function Castbar.Style(frame)
@@ -159,8 +243,7 @@ function Castbar.Style(frame)
     local tex = ns.Media.StatusBar(Config.Get(scope, "barTexture"))
     bar:SetStatusBarTexture(tex)
     bar.bg:SetTexture(tex)
-    local bg = Config.Get(scope, "backgroundColor")
-    bar.bg:SetVertexColor(bg[1], bg[2], bg[3], bg[4])
+    paint(bar)
     ns.Single.DrawBorder(bar, scope)
     bar.icon:ClearAllPoints()
     bar.icon:SetPoint("TOPRIGHT", bar, "TOPLEFT", 0, 0)

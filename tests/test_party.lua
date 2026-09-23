@@ -32,7 +32,8 @@ H.checkTrue("header shown", header:IsShown())
 local point, rel, relPoint, x, y = header:GetPoint(1)
 H.check("block anchored top left", point, "TOPLEFT")
 H.check("block x from centre", x, -760 - 80)
-H.check("block y from centre", y, 120 + (4 * 36 + 3 * 12) / 2)
+-- Between members: spacing 12 plus the docked castbar (12 + gap 4 + border 1).
+H.check("block y from centre", y, 120 + (4 * 36 + 3 * (12 + 17)) / 2)
 
 -- Solo: no member buttons in use.
 H.check("solo: first button has no unit", header:GetAttribute("child1"):GetAttribute("unit"), nil)

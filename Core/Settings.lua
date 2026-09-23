@@ -133,6 +133,17 @@ Settings.Define({ key = "partyShowSolo", code = "SO", scope = "frame", only = PA
 local CASTBAR = { player = true, target = true, targettarget = true, focus = true, party = true }
 Settings.Define({ key = "castbarEnabled", code = "CE", scope = "frame", only = CASTBAR, type = "bool",
     default = { player = false, _ = true } })
+-- Single frames may detach their castbar (own mover); party castbars
+-- dock above or below each member.
+local CASTBAR_SINGLE = { player = true, target = true, targettarget = true, focus = true }
+Settings.Define({ key = "castbarPosition", code = "CP", scope = "frame", only = CASTBAR_SINGLE, type = "enum",
+    values = { "BELOW", "ABOVE", "DETACHED" }, default = "BELOW" })
+Settings.Define({ key = "castbarDock", code = "CD", scope = "frame", only = PARTY, type = "enum",
+    values = { "BELOW", "ABOVE" }, default = "BELOW" })
+Settings.Define({ key = "castbarX", code = "CX", scope = "frame", only = CASTBAR_SINGLE, type = "int", min = -4000, max = 4000,
+    default = { target = 300, targettarget = 480, focus = -300, _ = 0 } })
+Settings.Define({ key = "castbarY", code = "CY", scope = "frame", only = CASTBAR_SINGLE, type = "int", min = -4000, max = 4000,
+    default = { player = -160, focus = -170, _ = -300 } })
 Settings.Define({ key = "castbarHeight", code = "CH", scope = "frame", only = CASTBAR, type = "int", min = 4, max = 60,
     default = { player = 18, target = 16, focus = 16, _ = 12 } })
 Settings.Define({ key = "castbarIcon", code = "CI", scope = "frame", only = CASTBAR, type = "bool", default = true })

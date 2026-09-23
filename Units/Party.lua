@@ -25,9 +25,18 @@ function Party.Slots()
     return Party.MEMBERS + (get("partyShowPlayer") and 1 or 0)
 end
 
+-- Distance between two members. Stacked vertically, a docked castbar
+-- (above or below each member) sits in between, so its room is added:
+-- the next member starts past the castbar's border.
+function Party.Spacing()
+    local spacing = get("partySpacing")
+    if get("partyOrientation") == "HORIZONTAL" then return spacing end
+    return spacing + ns.Castbar.DockedDepth(Party.KEY)
+end
+
 -- Width and height of the whole block with every slot filled.
 function Party.BlockSize()
-    local w, h, s, n = get("width"), get("height"), get("partySpacing"), Party.Slots()
+    local w, h, s, n = get("width"), get("height"), Party.Spacing(), Party.Slots()
     if get("partyOrientation") == "HORIZONTAL" then
         return n * w + (n - 1) * s, h
     end
@@ -38,9 +47,9 @@ end
 function Party.SlotOffset(i)
     local step = i - 1
     if get("partyOrientation") == "HORIZONTAL" then
-        return step * (get("width") + get("partySpacing")), 0
+        return step * (get("width") + Party.Spacing()), 0
     end
-    return 0, -step * (get("height") + get("partySpacing"))
+    return 0, -step * (get("height") + Party.Spacing())
 end
 
 function Party.MoverSpec()
@@ -56,7 +65,7 @@ end
 
 local function headerAttributes()
     local horizontal = get("partyOrientation") == "HORIZONTAL"
-    local spacing = get("partySpacing")
+    local spacing = Party.Spacing()
     return {
         template = Party.TEMPLATE, templateType = "Button", sortMethod = "INDEX",
         showParty = true, showPlayer = get("partyShowPlayer"), showSolo = get("partyShowSolo"),

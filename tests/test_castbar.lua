@@ -45,6 +45,7 @@ H.check("value is the clock", bar:GetValue(), 1000000)
 H.check("name", bar.text:GetText(), "Fireball")
 H.check("icon", bar.icon._texture, 135812)
 H.check("cast colour", bar._color[1], ns.Castbar.CAST_COLOR[1])
+H.check("cast: background keeps the background colour", bar.bg._color[4], C.Get("target", "backgroundColor")[4])
 H.check("fills left to right", bar._reverse, false)
 H.check("time text", bar.time._args[1], 2.5)
 M.Tick(1)
@@ -88,15 +89,37 @@ H.check("duration: secret seconds passed through", bar.time._args[1], remaining)
 M.units.target.castDuration = M.Secret({})
 M.FireEvent("UNIT_SPELLCAST_START", "target", "guid-c", 686)
 H.check("secret duration object: empty", bar.time:GetText(), "")
+-- A duration object that fails once is not asked again on later frames.
+local asked = 0
+M.units.target.castDuration = { GetRemainingDuration = function() asked = asked + 1; error("refused") end }
+M.FireEvent("UNIT_SPELLCAST_START", "target", "guid-d", 686)
+H.check("failing duration: asked once", asked, 1)
+H.check("failing duration: dropped", bar.cast.duration, nil)
+H.check("failing duration: empty", bar.time:GetText(), "")
+M.Tick(0.1)
+M.Tick(0.1)
+H.check("failing duration: not asked again", asked, 1)
+H.check("failing duration: still empty", bar.time:GetText(), "")
 M.units.target.cast, M.units.target.castDuration = nil, nil
-M.FireEvent("UNIT_SPELLCAST_FAILED", "target", "guid-c", 686)
+M.FireEvent("UNIT_SPELLCAST_FAILED", "target", "guid-d", 686)
 H.check("failed: hidden", bar:IsShown(), false)
 
 -- Channels drain from the right and end on their own stop.
 M.units.target.channel = { name = "Drain Life", texture = 1, startMs = 1001000, endMs = 1006000 }
 M.FireEvent("UNIT_SPELLCAST_CHANNEL_START", "target", "c-1", 689)
 H.checkTrue("channel shown", bar:IsShown())
-H.check("channel colour", bar._color[2], ns.Castbar.CHANNEL_COLOR[2])
+-- The coloured part drains: the fill (which grows with the clock) takes
+-- the background colour, the background behind it the channel colour.
+local bgColor = C.Get("target", "backgroundColor")
+H.check("channel: fill is background red", bar._color[1], bgColor[1])
+H.check("channel: fill is background green", bar._color[2], bgColor[2])
+H.check("channel: fill is opaque", bar._color[4], 1)
+H.check("channel: background is channel red", bar.bg._color[1], ns.Castbar.CHANNEL_COLOR[1])
+H.check("channel: background is channel green", bar.bg._color[2], ns.Castbar.CHANNEL_COLOR[2])
+H.check("channel: background is opaque", bar.bg._color[4], 1)
+ns.Castbar.Style(t)
+H.check("restyled mid-channel: fill stays background", bar._color[2], bgColor[2])
+H.check("restyled mid-channel: background stays channel", bar.bg._color[2], ns.Castbar.CHANNEL_COLOR[2])
 H.check("channel fills from the right", bar._reverse, true)
 M.FireEvent("UNIT_SPELLCAST_STOP", "target", "x", 1)
 H.checkTrue("a cast stop does not end a running channel", bar:IsShown())
@@ -107,6 +130,9 @@ H.check("channel stop hides", bar:IsShown(), false)
 -- A missed stop: a readable end time in the past ends the bar.
 M.units.target.cast = { name = "Heal", startMs = 1001000, endMs = 1001500 }
 M.FireEvent("UNIT_SPELLCAST_START", "target", "h-1", 2050)
+H.check("cast after a channel: fill is cast colour", bar._color[2], ns.Castbar.CAST_COLOR[2])
+H.check("cast after a channel: background colour back", bar.bg._color[2], bgColor[2])
+H.check("cast after a channel: background alpha back", bar.bg._color[4], bgColor[4])
 M.Tick(1)
 H.check("past a readable end: hidden", bar:IsShown(), false)
 

@@ -12,6 +12,8 @@ M.FireEvent("PLAYER_LOGIN")
 M.RunTimers()
 local P, C = ns.Party, ns.Config
 local header = P.header
+-- Plain spacing here; room for docked castbars: test_castbar_place.lua.
+C.Set("party", "castbarEnabled", false)
 
 -- Vertical by default: the header stacks downwards with the spacing.
 H.check("point", header:GetAttribute("point"), "TOP")

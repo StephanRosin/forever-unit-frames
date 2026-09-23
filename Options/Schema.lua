@@ -34,8 +34,9 @@ Schema.FRAME = {
         { id = "font", keys = { "fontFace", "fontSize", "fontOutline", "fontShadow" } },
     } },
     { id = "castbar", sections = {
-        { id = "castbar", keys = { "castbarEnabled", "castbarHeight" } },
+        { id = "castbar", keys = { "castbarEnabled", "castbarPosition", "castbarDock", "castbarHeight" } },
         { id = "castbarContent", keys = { "castbarIcon", "castbarName", "castbarTime" } },
+        { id = "castbarDetached", keys = { "castbarX", "castbarY" } },
     } },
 }
 
