@@ -140,7 +140,8 @@ end
 local tryRestore  -- defined with the wait below
 
 local function writeMacro(encoded)
-    if encoded == lastMacro then return end
+    -- Nothing to write: the one-shot permission is spent all the same.
+    if encoded == lastMacro then overwriteAllowed = nil; return end
     -- Checked again here: this may run after combat, long after Save().
     if backupUnclaimed() and tryRestore() then return end
     local ok, written = pcall(ns.MacroBackup.Write, encoded, overwriteAllowed)
@@ -173,9 +174,7 @@ function Storage.Save()
         end
         for _, p in ipairs(providers) do pcall(p.save, encoded) end
     end
-    if encoded ~= lastMacro then
-        ns.AfterCombat("macroBackup", function() writeMacro(encoded) end)
-    end
+    ns.AfterCombat("macroBackup", function() writeMacro(encoded) end)
 end
 
 -- Sliders fire many changes per second; one save per half second is plenty.

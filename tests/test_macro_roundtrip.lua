@@ -215,6 +215,23 @@ do
     H.check("way out: newer error", n.MacroBackup.LastError(), "MACRO_NEWER")
 end
 
+do
+    -- The permission is one-shot: a save with nothing new to write retires
+    -- it. Here the backup turns unreadable after it was loaded (edited by
+    -- hand in the macro window), so the profile still encodes to the string
+    -- last read and the save has nothing to write.
+    local n = login(macroWith(HEADER .. "1;pW260\n"))
+    M.macros[1].body = GARBLED
+    n.Storage.AllowMacroOverwrite()
+    n.Storage.Save()
+    M.RunTimers()
+    H.check("one-shot: nothing to write", M.macros[1].body, GARBLED)
+    n.Config.Set("player", "width", 300)
+    M.RunTimers()
+    H.check("one-shot: ordinary change refused", M.macros[1].body, GARBLED)
+    H.check("one-shot: refusal reported", n.Storage.MacroError(), "MACRO_UNREADABLE")
+end
+
 -- Told once per session, even if another refusal comes in between.
 do
     local n = login(macroWith(GARBLED))
