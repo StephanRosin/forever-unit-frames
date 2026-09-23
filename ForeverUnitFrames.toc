@@ -29,6 +29,7 @@ Elements\Castbar.lua
 Elements\AuraButton.lua
 Elements\AuraContainers.lua
 Elements\Auras.lua
+Elements\Classification.lua
 Elements\Shape.lua
 Units\Events.lua
 Units\Single.lua

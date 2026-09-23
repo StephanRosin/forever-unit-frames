@@ -295,6 +295,10 @@ local function styleBadge(frame)
     local left = x - size / 2
     frame.classBadgeInRow = left < -frame.titleRight and left > frame.titleLeft - width
     frame.classBadgeY = y
+    -- The badge's box from the frame's top right corner, for what must
+    -- stay clear of it (Elements/Classification.lua).
+    local half = size / 2
+    frame.classBadgeBox = { left = left, right = x + half, bottom = y - half, top = y + half }
 end
 
 function Texts.Build(frame)

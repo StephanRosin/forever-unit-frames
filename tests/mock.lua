@@ -793,7 +793,10 @@ function M.Reset()
         WARRIOR = { 0, 0.25, 0, 0.25 },
         WARLOCK = { 0.7421875, 0.98828125, 0.25, 0.5 },
     }
-    M.atlases = { ["classicon-warrior"] = true, ["classicon-warlock"] = true }
+    M.atlases = { ["classicon-warrior"] = true, ["classicon-warlock"] = true,
+        -- Classification badges (Blizzard_NamePlateClassificationFrame.lua).
+        ["nameplates-icon-elite-gold"] = true, ["nameplates-icon-elite-silver"] = true,
+        ["UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Star"] = true }
     _G.C_Texture = {
         GetAtlasInfo = function(atlas)
             if M.atlases[atlas] then return { file = atlas, width = 64, height = 64 } end
@@ -853,6 +856,10 @@ function M.Reset()
     -- Shields and heals (UnitDocumentation.lua): the total absorb is never
     -- nil; incoming heals are nil when nothing is known. d.absorbs;
     -- d.healsAll / d.healsMine.
+    -- What a unit is (UnitDocumentation.lua): d.classification (default
+    -- "normal", never nil) and d.bossMob.
+    _G.UnitClassification = function(unit) local d = u(unit); return d and d.classification or "normal" end
+    _G.UnitIsBossMob = function(unit) local d = u(unit); return d and d.bossMob or false end
     _G.UnitGetTotalAbsorbs = function(unit) local d = u(unit); return d and d.absorbs or 0 end
     _G.UnitGetIncomingHeals = function(unit, healer)
         local d = u(unit)

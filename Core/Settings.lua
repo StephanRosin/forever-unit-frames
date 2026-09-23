@@ -184,6 +184,10 @@ Settings.Define({ key = "portraitMode", code = "PM", scope = "frame", type = "en
 Settings.Define({ key = "portraitStyle", code = "PS", scope = "frame", type = "enum",
     values = { "2D", "3D" }, default = "2D" })
 
+-- Elite / rare marker: frames that show units other than you and your pet.
+Settings.Define({ key = "eliteMarker", code = "EM", scope = "frame",
+    only = { target = true, targettarget = true, focus = true, party = true }, type = "bool", default = true })
+
 -- Party block (party only)
 local PARTY = { party = true }
 Settings.Define({ key = "partyOrientation", code = "OR", scope = "frame", only = PARTY, type = "enum",
