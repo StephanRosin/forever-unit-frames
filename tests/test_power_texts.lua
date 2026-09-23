@@ -47,7 +47,11 @@ H.check("health full height", f.health:GetHeight(), 46)
 -- Fonts follow config
 ns.Config.Set("general", "fontSize", 15)
 H.check("font size applied", t.healthLeft._font[2], 15)
+-- Default SOFT: no client flag, the outline comes from shadow copies.
+H.check("soft outline: no client flag", t.healthLeft._font[3], "")
+ns.Config.Set("general", "fontOutline", "OUTLINE")
 H.check("font outline applied", t.healthLeft._font[3], "OUTLINE")
+ns.Config.Set("general", "fontOutline", "SOFT")
 
 -- Shapeshift: UNIT_DISPLAYPOWER alone must refresh the power texts.
 M.units.player.power, M.units.player.powerType = 77, 1

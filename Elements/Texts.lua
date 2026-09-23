@@ -65,6 +65,71 @@ function Texts.Apply(fs, tag, unit, kind)
     end
 end
 
+-- Soft outline. The client only has OUTLINE and THICKOUTLINE, both hard
+-- at small sizes. SOFT draws the text without a flag over four black
+-- copies of itself, shifted one step left, right, up and down. The copies
+-- are made once per text, the first time it is styled SOFT, and follow
+-- every write, secret or not: arguments are passed on untouched.
+local SOFT_OFFSETS = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }
+local MIRRORED = { "SetText", "SetFormattedText", "SetJustifyH", "SetWordWrap" }
+
+local function mirror(fs, method)
+    local original = fs[method]
+    fs[method] = function(self, ...)
+        original(self, ...)
+        for _, copy in ipairs(self.softCopies) do copy[method](copy, ...) end
+    end
+end
+
+local function showCopies(fs)
+    local shown = fs.soft and fs:IsShown()
+    for _, copy in ipairs(fs.softCopies) do copy:SetShown(shown) end
+end
+
+local function follow(fs, method)
+    local original = fs[method]
+    fs[method] = function(self, ...)
+        original(self, ...)
+        showCopies(self)
+    end
+end
+
+local function makeCopies(fs)
+    local parent = fs:GetParent()
+    local layer, sublevel = fs:GetDrawLayer()
+    local copies = {}
+    for i = 1, #SOFT_OFFSETS do
+        local copy = parent:CreateFontString(nil, layer)
+        copy:SetDrawLayer(layer, math.max(sublevel - 1, -8))
+        copy:SetTextColor(0, 0, 0, 1)
+        copy:SetShadowOffset(0, 0)
+        copy:SetText(fs:GetText())
+        copies[i] = copy
+    end
+    fs.softCopies = copies
+    for _, method in ipairs(MIRRORED) do mirror(fs, method) end
+    for _, method in ipairs({ "SetShown", "Show", "Hide" }) do follow(fs, method) end
+end
+
+-- Sets font, size and outline style of a text. Returns nothing.
+function Texts.SetFont(fs, font, size, outline)
+    local soft = outline == "SOFT"
+    local flags = (outline == "NONE" or soft) and "" or outline
+    fs:SetFont(font, size, flags)
+    if soft and not fs.softCopies then makeCopies(fs) end
+    if not fs.softCopies then return end
+    fs.soft = soft
+    local step = 1
+    for i, copy in ipairs(fs.softCopies) do
+        local x, y = SOFT_OFFSETS[i][1] * step, SOFT_OFFSETS[i][2] * step
+        copy:SetFont(font, size, "")
+        copy:ClearAllPoints()
+        copy:SetPoint("TOPLEFT", fs, "TOPLEFT", x, y)
+        copy:SetPoint("BOTTOMRIGHT", fs, "BOTTOMRIGHT", x, y)
+    end
+    showCopies(fs)
+end
+
 function Texts.Build(frame)
     frame.texts = {}
     for _, slot in ipairs(SLOTS) do
@@ -78,11 +143,10 @@ function Texts.Style(frame)
     local font = ns.Media.Font(Config.Get(scope, "fontFace"))
     local size = Config.Get(scope, "fontSize")
     local outline = Config.Get(scope, "fontOutline")
-    local flags = (outline == "NONE") and "" or outline
     local shadow = Config.Get(scope, "fontShadow")
     for _, slot in ipairs(SLOTS) do
         local fs = frame.texts[slot.field]
-        fs:SetFont(font, size, flags)
+        Texts.SetFont(fs, font, size, outline)
         fs:SetShadowOffset(shadow and 1 or 0, shadow and -1 or 0)
         fs:ClearAllPoints()
         fs:SetPoint(slot.point, frame[slot.bar], slot.point, slot.x, 0)

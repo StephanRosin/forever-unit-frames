@@ -89,7 +89,7 @@ Settings.TEXT_TAGS = TEXT_TAGS
 Settings.Define({ key = "fontFace", code = "FF", scope = "inherit", type = "media", mediaKind = "font", default = "Friz Quadrata" })
 Settings.Define({ key = "fontSize", code = "FS", scope = "inherit", type = "int", min = 6, max = 32, default = 12 })
 Settings.Define({ key = "fontOutline", code = "FO", scope = "inherit", type = "enum",
-    values = { "NONE", "OUTLINE", "THICKOUTLINE", "MONOCHROME" }, default = "OUTLINE" })
+    values = { "NONE", "OUTLINE", "THICKOUTLINE", "MONOCHROME", "SOFT" }, default = "SOFT" })
 Settings.Define({ key = "fontShadow", code = "FH", scope = "inherit", type = "bool", default = false })
 Settings.Define({ key = "barTexture", code = "BT", scope = "inherit", type = "media", mediaKind = "statusbar", default = "Flat" })
 Settings.Define({ key = "backgroundColor", code = "BC", scope = "inherit", type = "color", default = { 0, 0, 0, 0.6 } })

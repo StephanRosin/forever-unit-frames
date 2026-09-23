@@ -263,9 +263,8 @@ function Castbar.Style(frame)
     bar.icon:SetShown(showIcon)
     local font = ns.Media.Font(Config.Get(scope, "fontFace"))
     local outline = Config.Get(scope, "fontOutline")
-    local flags = (outline == "NONE") and "" or outline
     local fontSize = math.min(Config.Get(scope, "fontSize"), height)
-    for _, fs in ipairs({ bar.text, bar.time }) do fs:SetFont(font, fontSize, flags) end
+    for _, fs in ipairs({ bar.text, bar.time }) do ns.Texts.SetFont(fs, font, fontSize, outline) end
     bar.text:ClearAllPoints()
     bar.text:SetPoint("LEFT", bar, "LEFT", 4, 0)
     -- The name ends where the time begins (zero wide when hidden or empty).

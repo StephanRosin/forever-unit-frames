@@ -211,6 +211,13 @@ local function newWidget(kind, name, parent)
     function w:SetColorTexture(r, g, b, a) self._color = { r, g, b, a } end
     function w:SetVertexColor(r, g, b, a) self._color = { r, g, b, a } end
     function w:SetAllPoints(p) self._allPoints = p or true end
+    -- Region draw layer; sublevel -8..7 like the client.
+    function w:SetDrawLayer(layer, sublevel)
+        sublevel = sublevel or 0
+        assert(sublevel >= -8 and sublevel <= 7, "SetDrawLayer: sublevel out of range")
+        self._layer, self._sublevel = layer, sublevel
+    end
+    function w:GetDrawLayer() return self._layer, self._sublevel or 0 end
     -- FontString / EditBox. An EditBox without a font cannot take text in
     -- the client, so the mock refuses it too.
     function w:SetFont(path, size, flags) self._font = { path, size, flags }; return true end
@@ -279,7 +286,11 @@ local function newWidget(kind, name, parent)
     function w:GetVerticalScrollRange() return self._vrange or 0 end
     -- Creation
     function w:CreateTexture(n) return newWidget("Texture", n, self) end
-    function w:CreateFontString(n) return newWidget("FontString", n, self) end
+    function w:CreateFontString(n, layer)
+        local fs = newWidget("FontString", n, self)
+        fs._layer, fs._sublevel = layer or "ARTWORK", 0
+        return fs
+    end
     -- PlayerModel
     function w:SetUnit(unit) self._modelUnit = unit; return true end
     function w:ClearModel() self._modelUnit = nil; self._cleared = true end
