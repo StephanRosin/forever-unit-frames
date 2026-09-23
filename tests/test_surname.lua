@@ -41,7 +41,9 @@ H.check("off: NAME_LEVEL format", title._fmt, "%s %s")
 H.check("off: NAME_LEVEL name", title._args[2], "Aria")
 H.check("off: soft copy follows", title.softCopies[1]._args[2], "Aria")
 
--- Off, with the surname inside the first value: split at the separator.
+-- Off, with the surname inside the first value (regional unique names):
+-- split at the separator, players only.
+M.regionalUniqueNames = true
 M.units.player.surname = nil
 M.units.player.name = "Aria Brightwood"
 M.FireEvent("UNIT_NAME_UPDATE", "player")
@@ -58,6 +60,31 @@ H.check("off: space without the constant", left._text, "Aria")
 M.units.player.name = "Aria"
 M.FireEvent("UNIT_NAME_UPDATE", "player")
 H.check("off: single name unchanged", left._text, "Aria")
+
+-- Without regional unique names nothing is split.
+M.regionalUniqueNames = false
+M.units.player.name = "Aria Brightwood"
+M.FireEvent("UNIT_NAME_UPDATE", "player")
+H.check("off: no regional names, no split", left._text, "Aria Brightwood")
+local regional = _G.RegionalUniqueNamesEnabled
+_G.RegionalUniqueNamesEnabled = nil
+M.FireEvent("UNIT_NAME_UPDATE", "player")
+H.check("off: API missing, no split", left._text, "Aria Brightwood")
+_G.RegionalUniqueNamesEnabled = regional
+
+-- NPC names with spaces are never shortened.
+M.regionalUniqueNames = true
+M.units.player.isPlayer = false
+M.FireEvent("UNIT_NAME_UPDATE", "player")
+H.check("off: npc name kept whole", left._text, "Aria Brightwood")
+M.units.player.isPlayer = true
+
+-- A separate surname: off shows the first value only, unsplit.
+M.units.player.name = "Aria Anne"
+M.units.player.surname = "Brightwood"
+M.FireEvent("UNIT_NAME_UPDATE", "player")
+H.check("off: surname returned apart, first value whole", left._text, "Aria Anne")
+M.units.player.surname = nil
 
 -- Off, secret name: passed through whole (it cannot be split).
 M.units.player.name = M.Secret("Aria Brightwood")
@@ -105,6 +132,13 @@ found = nil
 for _, row in ipairs(O.rows) do if row.key == "showSurname" then found = true end end
 H.checkTrue("on the frame's Text tab", found)
 O.Close()
+
+-- An NPC target with a spaced name, option off.
+M.units.target = { name = "Kobold Vermin", level = 2, health = 1, healthMax = 1, reaction = 2 }
+C.Set("general", "showSurname", false)
+M.FireEvent("PLAYER_TARGET_CHANGED")
+local tt = ns.Frames.target.texts.title
+H.check("npc title full", tt._args[2], "Kobold Vermin")
 
 -- Codec round trip.
 C.Set("general", "showSurname", false)

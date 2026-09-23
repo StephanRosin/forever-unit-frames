@@ -47,6 +47,15 @@ local function separator()
     return " "
 end
 
+-- Whether the first value may hold "First<separator>Surname": only for
+-- players, and only with regional unique names, as Blizzard's
+-- NameUtil.GetUnitFirstName. NPC names with spaces are never split.
+local function mayHoldSurname(unit)
+    if type(RegionalUniqueNamesEnabled) ~= "function" then return false end
+    if Secrets.Bool(RegionalUniqueNamesEnabled) ~= true then return false end
+    return Secrets.Bool(UnitIsPlayer, unit) == true
+end
+
 -- The part before the separator of a readable name. A secret name is
 -- returned whole: it cannot be split, so it shows with its surname.
 local function firstName(name)
@@ -58,10 +67,12 @@ end
 
 -- Writes the unit's name into fs, after `prefix` (the level) if given.
 -- Every text that shows a name goes through here; soft-outline copies
--- follow through the mirrored setters.
+-- follow through the mirrored setters. Off: a surname returned apart is
+-- simply left out; one inside the first value is cut off (see above).
 function Texts.SetName(fs, unit, showSurname, prefix)
     local name, surname = UnitName(unit)
-    if showSurname and type(surname) ~= "nil" then
+    local hasSurname = type(surname) ~= "nil"
+    if showSurname and hasSurname then
         if prefix then
             fs:SetFormattedText("%s %s %s", prefix, name, surname)
         else
@@ -69,7 +80,7 @@ function Texts.SetName(fs, unit, showSurname, prefix)
         end
         return
     end
-    if not showSurname then name = firstName(name) end
+    if not showSurname and not hasSurname and mayHoldSurname(unit) then name = firstName(name) end
     if prefix then
         fs:SetFormattedText("%s %s", prefix, name)
     else

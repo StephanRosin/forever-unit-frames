@@ -320,6 +320,8 @@ function M.Reset()
     M.chat = {}
     M.combat = false
     M.units = {}
+    -- RegionalUniqueNamesEnabled() answer; the client's default is unknown.
+    M.regionalUniqueNames = false
     M.cvars = {}
     M.macros = {}          -- list of { name=, icon=, body=, perChar= }
     M.macroFrameShown = false
@@ -399,6 +401,7 @@ function M.Reset()
     local function u(unit) return M.units[unit] end
     _G.UnitExists = function(unit) return u(unit) ~= nil end
     -- name, surname (nil when the unit has none).
+    _G.RegionalUniqueNamesEnabled = function() return M.regionalUniqueNames == true end
     _G.UnitName = function(unit) local d = u(unit); if d then return d.name, d.surname end end
     _G.UnitLevel = function(unit) local d = u(unit); return d and d.level or 0 end
     _G.UnitClass = function(unit) local d = u(unit); if d then return d.className, d.class end end
