@@ -49,3 +49,12 @@ local el, er, eb, et = box("pet")
 local _, _, plb, plt = box("player")
 H.checkTrue("pet left of the player", er < pl)
 H.check("pet top on the player's top", et, plt)
+
+-- Damage and heal numbers on target and focus too; the shield in a blue
+-- that shows on white and grey health bars.
+H.check("numbers on the target", C.Get("target", "combatFeedback"), true)
+H.check("numbers on the focus", C.Get("focus", "combatFeedback"), true)
+H.check("numbers on the player", C.Get("player", "combatFeedback"), true)
+local shield = C.Get("target", "absorbColor")
+H.checkTrue("shield darker than white", shield[1] + shield[2] + shield[3] < 2)
+H.checkTrue("shield opaque enough", shield[4] >= 0.6)

@@ -7,6 +7,9 @@ local _, ns = ...
 -- the default.
 local PRESET = {
     general = {
+        -- A stronger blue: the plain pale one vanishes on white or grey
+        -- (class colour) health bars.
+        absorbColor = { 0.15, 0.45, 1, 0.6 },
         -- Same file as LibSharedMedia's "Blizzard Raid Bar", built in.
         barTexture = "Raid",
         borderStyle = "GOLD",
@@ -46,6 +49,7 @@ local PRESET = {
         x = -400,
     },
     target = {
+        combatFeedback = true,
         buffsAnchor = "FRAME",
         buffsHighlightOwn = true,
         buffsMax = 24,
@@ -89,6 +93,7 @@ local PRESET = {
         y = -199,
     },
     focus = {
+        combatFeedback = true,
         powerPercent = 21,
         x = 575,
         y = 124,
