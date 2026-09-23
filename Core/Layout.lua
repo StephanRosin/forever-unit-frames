@@ -44,6 +44,53 @@ function Layout.PortraitInsets(mode, height)
     return 0, 0
 end
 
+-- Aura icons ------------------------------------------------------------------
+-- Icons grow in a primary direction and wrap into rows that run across
+-- it. Offsets are measured from the corner the icons grow away from.
+local VECTOR = { RIGHT = { 1, 0 }, LEFT = { -1, 0 }, UP = { 0, 1 }, DOWN = { 0, -1 } }
+local HORIZONTAL = { RIGHT = true, LEFT = true }
+
+-- The row direction, or the default one (down for horizontal growth,
+-- right for vertical) when it does not run across the primary direction.
+function Layout.AuraRowDirection(primary, row)
+    if HORIZONTAL[primary] then
+        if row == "UP" or row == "DOWN" then return row end
+        return "DOWN"
+    end
+    if row == "LEFT" or row == "RIGHT" then return row end
+    return "RIGHT"
+end
+
+-- Where the first icon sits: TOPLEFT for icons growing right with rows
+-- going down, and so on.
+function Layout.AuraCorner(primary, row)
+    row = Layout.AuraRowDirection(primary, row)
+    local horizontal, vertical = primary, row
+    if not HORIZONTAL[primary] then horizontal, vertical = row, primary end
+    local v = vertical == "DOWN" and "TOP" or "BOTTOM"
+    local h = horizontal == "RIGHT" and "LEFT" or "RIGHT"
+    return v .. h
+end
+
+-- Offset of icon i (1-based) from that corner; step = icon size + spacing.
+function Layout.AuraOffset(i, perRow, step, primary, row)
+    row = Layout.AuraRowDirection(primary, row)
+    local col, line = (i - 1) % perRow, math.floor((i - 1) / perRow)
+    local p, r = VECTOR[primary], VECTOR[row]
+    return (p[1] * col + r[1] * line) * step, (p[2] * col + r[2] * line) * step
+end
+
+-- Width and height of count icons laid out this way (0, 0 for none).
+function Layout.AuraExtent(count, perRow, size, spacing, primary)
+    if count <= 0 then return 0, 0 end
+    local cols = math.min(count, perRow)
+    local lines = math.ceil(count / perRow)
+    local along = cols * size + (cols - 1) * spacing
+    local across = lines * size + (lines - 1) * spacing
+    if HORIZONTAL[primary] then return along, across end
+    return across, along
+end
+
 -- Pixel grid ------------------------------------------------------------------
 -- Sizes and offsets are rounded to whole physical pixels with Blizzard's
 -- PixelUtil (Blizzard_SharedXML, loaded for every game type): one pixel is
