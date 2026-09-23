@@ -33,9 +33,15 @@ end
 local widget = {}
 widget.__index = function(t, k)
     -- Unknown CamelCase keys are widget methods that do nothing; anything
-    -- else is addon data and must be nil, as in the game.
+    -- else is addon data and must be nil, as in the game. Strict objects
+    -- (Blizzard aura containers and their buttons) have only the methods
+    -- the mock gives them. Under an aura button, even a no-op method
+    -- refuses while auras are secret.
     if type(k) ~= "string" or not k:match("^%u") then return nil end
-    local f = function() end
+    if rawget(t, "_strict") then error("mock: " .. tostring(rawget(t, "_kind")) .. " has no method " .. k, 2) end
+    local f = function(self)
+        if M.AurasSecret() and M.IsAuraRestricted(self) then error("aura button: tainted access while auras are secret", 2) end
+    end
     rawset(t, k, f)
     return f
 end
@@ -128,11 +134,299 @@ local function makeGroupHeader(w)
     end
 end
 
+-- Blizzard_AuraContainer's CustomAuraContainerTemplate: the inbound calls
+-- an addon can make (Blizzard_AuraContainer.lua, Blizzard_CustomAuraContainer.lua,
+-- Blizzard_AuraContainerFlowLayout.lua, Blizzard_CustomAuraButton.lua,
+-- Blizzard_AuraButton.lua), with the source's argument checks. It shows no
+-- auras: it records what it is told, and tests read the records
+-- (_unit, _updates, _groups[key], _flow). Stricter than the client where
+-- the client would silently accept a mistake: unknown option keys and
+-- unknown methods raise.
+-- Buttons: AddAuraGroup makes one batch (FrameCreationBatchSize) with
+-- CustomAuraButtonTemplate and hands each to initializeFrame; after that
+-- a button and everything under it refuse tainted access while auras are
+-- secret (DenyTaintedAccessWhenAurasAreSecret; in the mock: in combat, or
+-- while M.aurasSecret is set, as in an instance out of combat).
+-- Once it has a group, only frames with the UntrustedLayoutScriptExecution
+-- aspect may anchor to the container.
+M.AURA_BATCH = 10
+local AURA_FILTERS = { HELPFUL = true, HARMFUL = true, PLAYER = true, RAID = true, CANCELABLE = true,
+    INCLUDE_NAME_PLATE_ONLY = true, MAW = true, EXTERNAL_DEFENSIVE = true, CROWD_CONTROL = true,
+    RAID_IN_COMBAT = true, RAID_PLAYER_DISPELLABLE = true, BIG_DEFENSIVE = true, IMPORTANT = true,
+    DISPELLABLE = true }
+local LAYOUT_KEYS = { elementSpacing = "number", lineSpacing = "number", groupSpacing = "number",
+    groupLineSpacing = "number", forceNewLine = "boolean", elementWidth = "size", elementHeight = "size",
+    layoutIndex = "number" }
+local LAYOUT_DEFAULTS = { elementSpacing = 0, lineSpacing = 0, groupSpacing = 0, groupLineSpacing = 0,
+    forceNewLine = false }
+local GROUP_KEYS = { maxFrameCount = true, templateNames = true, initializeFrame = true, candidateFilters = true,
+    sortMethod = true, sortDirection = true, layout = true }
+local TOOLTIP_ANCHORS = { ANCHOR_LEFT = true, ANCHOR_RIGHT = true, ANCHOR_BOTTOMLEFT = true, ANCHOR_BOTTOM = true,
+    ANCHOR_BOTTOMRIGHT = true, ANCHOR_TOPLEFT = true, ANCHOR_TOP = true, ANCHOR_TOPRIGHT = true,
+    ANCHOR_CURSOR = true, ANCHOR_NONE = true, ANCHOR_PRESERVE = true, ANCHOR_CURSOR_LEFT = true,
+    ANCHOR_CURSOR_RIGHT = true }
+local DISPEL_TEXTURE_KEYS = { showAlways = true, showWhenHarmful = true, showWhenHelpful = true,
+    showWithoutDispelType = true, stealableFilter = true, style = true, customDispelAssetMap = true,
+    customDispelColorMap = true, customDispelColorCurve = true }
+
+local function validFilter(filter)
+    if type(filter) ~= "string" then return false end
+    for part in filter:gmatch("[^| ]+") do
+        local negated = part:sub(1, 1) == "!"
+        if negated then part = part:sub(2) end
+        if part == "" or not AURA_FILTERS[part] then return false end
+    end
+    return true
+end
+
+local function isEnumValue(enum, v)
+    for _, value in pairs(enum) do
+        if value == v then return true end
+    end
+    return false
+end
+
+local function copyLayout(layout)
+    assert(layout == nil or type(layout) == "table", "layout must be a table or nil.")
+    local out = {}
+    for k, v in pairs(LAYOUT_DEFAULTS) do out[k] = v end
+    for k, v in pairs(layout or {}) do
+        local kind = LAYOUT_KEYS[k]
+        assert(kind, "mock: unknown layout key " .. tostring(k))
+        if kind == "size" then
+            assert(type(v) == "number" and v >= 0, k .. " must be a non-negative number.")
+        else
+            assert(type(v) == kind, k .. " must be a " .. kind .. ".")
+        end
+        out[k] = v
+    end
+    return out
+end
+
+local function validMax(n)
+    return n == math.huge or (type(n) == "number" and n >= 0 and n == math.floor(n))
+end
+
+local function restricted(obj)
+    while type(obj) == "table" do
+        if rawget(obj, "_auraRestricted") then return true end
+        obj = rawget(obj, "_parent")
+    end
+    return false
+end
+M.IsAuraRestricted = restricted
+
+function M.AurasSecret() return M.combat or M.aurasSecret end
+
+function M.HasLayoutAspect(obj)
+    while type(obj) == "table" do
+        if rawget(obj, "_layoutForbidden") then return true end
+        obj = rawget(obj, "_parent")
+    end
+    return false
+end
+
+-- Every method of obj and its descendants refuses while auras are secret.
+local function guardTree(obj)
+    for k, v in pairs(obj) do
+        if type(k) == "string" and k:match("^%u") and type(v) == "function" then
+            obj[k] = function(...)
+                if M.AurasSecret() and restricted(obj) then
+                    error("aura button: tainted access while auras are secret", 2)
+                end
+                return v(...)
+            end
+        end
+    end
+    for _, child in ipairs(rawget(obj, "_children") or {}) do guardTree(child) end
+end
+
+local function isDescendant(obj, owner)
+    local p = type(obj) == "table" and rawget(obj, "_parent")
+    while type(p) == "table" do
+        if p == owner then return true end
+        p = rawget(p, "_parent")
+    end
+    return false
+end
+
+-- AuraContainerUtil.ValidateInboundScriptObject: the right object type,
+-- below the button.
+local function inbound(button, obj, kind)
+    assert(type(obj) == "table" and rawget(obj, "_kind") == kind,
+        "bad object in function call (expected object type '" .. kind .. "')")
+    assert(isDescendant(obj, button), "bad object in function call (must be a descendant of owner)")
+end
+
+local function newAuraButton(container, group)
+    local b = M.newWidget("Button", nil, container)
+    b._template = "CustomAuraButtonTemplate"
+    b._strict = true
+    b._layoutForbidden = true
+    b._dispelTextures = {}
+    b._tooltipAnchor = { "ANCHOR_BOTTOMLEFT", 0, 0 }
+    b._shown = false
+    function b:SetIcon(texture) inbound(self, texture, "Texture"); self._icon = texture end
+    function b:SetDurationCooldown(cooldown) inbound(self, cooldown, "Cooldown"); self._durationCooldown = cooldown end
+    function b:SetApplicationCount(fontString, options)
+        inbound(self, fontString, "FontString")
+        for k in pairs(options or {}) do assert(k == "formatter", "mock: unknown count option " .. tostring(k)) end
+        self._applicationCount = fontString
+        -- UpdateAuraDisplay writes the (empty) count at once.
+        fontString:SetText("")
+    end
+    function b:SetDurationText(fontString) inbound(self, fontString, "FontString"); self._durationText = fontString end
+    function b:AddDispelTypeTexture(texture, options)
+        inbound(self, texture, "Texture")
+        for _, entry in ipairs(self._dispelTextures) do
+            assert(entry.texture ~= texture, "Display element has already been added.")
+        end
+        for k in pairs(options or {}) do assert(DISPEL_TEXTURE_KEYS[k], "mock: unknown dispel option " .. tostring(k)) end
+        if options and options.style ~= nil then
+            assert(isEnumValue(Enum.CustomAuraButtonDispelTypeTextureStyle, options.style), "invalid style")
+        end
+        table.insert(self._dispelTextures, { texture = texture, options = options })
+    end
+    function b:SetTooltipAnchorPoint(point, x, y)
+        assert(TOOLTIP_ANCHORS[point], "point must be a valid tooltip anchor point name")
+        assert(x == nil or type(x) == "number", "offsetX must be a number or nil")
+        assert(y == nil or type(y) == "number", "offsetY must be a number or nil")
+        self._tooltipAnchor = { point, x or 0, y or 0 }
+    end
+    function b:SetHideTooltipInCombat(v) self._tooltipHideInCombat = v == true end
+    -- UntrustedScriptExecution: scripts an addon sets would never run.
+    function b:SetScript() error("mock: an aura button runs no addon scripts", 2) end
+    function b:HookScript() error("mock: an aura button runs no addon scripts", 2) end
+    if group.initializeFrame then
+        -- securecallfunction: an error is reported, not raised.
+        xpcall(function() group.initializeFrame(b) end, geterrorhandler())
+    end
+    b._auraRestricted = true
+    guardTree(b)
+    table.insert(group.frames, b)
+    return b
+end
+
+-- One more batch for a group, as when it shows more auras than it has
+-- buttons (this can happen in combat).
+function M.GrowAuraGroup(container, key)
+    local group = assert(container._groups[key], "no such group")
+    for _ = 1, M.AURA_BATCH do newAuraButton(container, group) end
+end
+
+function M.NewAuraContainer(w, template)
+    assert(template == "CustomAuraContainerTemplate", "mock: only CustomAuraContainerTemplate is modelled")
+    w._strict = true
+    w._unit = "none"
+    w._enabled = true
+    w._updates = 0
+    w._groups = {}
+    w._groupOrder = {}
+    w._flow = { axis = AnchorUtil.FlowLayoutAxis.Horizontal, anchor = "TOPLEFT",
+        horizontal = AnchorUtil.FlowDirection.Right, vertical = AnchorUtil.FlowDirection.Down,
+        padding = { 0, 0, 0, 0 }, lineSize = math.huge }
+    local function required(self, key)
+        return assert(self._groups[key], "aura group '" .. tostring(key) .. "' was not found with this key.")
+    end
+    function w:GetUnit() return self._unit end
+    function w:SetUnit(unit)
+        assert(type(unit) == "string")
+        if self._unit ~= unit then
+            self._unit = unit
+            self._updates = self._updates + 1
+        end
+    end
+    function w:IsEnabled() return self._enabled end
+    function w:SetEnabled(v) self._enabled = v end
+    function w:UpdateAllAuras() self._updates = self._updates + 1 end
+    function w:AddAuraGroup(key, filter, options)
+        assert(type(key) == "string" and key ~= "", "groupKey must be a non-empty string.")
+        assert(validFilter(filter), "invalid filter string")
+        assert(not self._groups[key], "aura group '" .. key .. "' already exists with this key.")
+        options = options or {}
+        for k in pairs(options) do assert(GROUP_KEYS[k], "mock: unknown group option " .. tostring(k)) end
+        assert(options.initializeFrame == nil or type(options.initializeFrame) == "function",
+            "initializeFrame must be a function or nil.")
+        assert(options.templateNames == nil or type(options.templateNames) == "table",
+            "templateNames must be a table or nil.")
+        assert(options.candidateFilters == nil or type(options.candidateFilters) == "table",
+            "candidateFilters must be a table or nil.")
+        assert(options.sortMethod == nil or isEnumValue(AuraContainerSortMethod, options.sortMethod),
+            "sortMethod must be a valid AuraContainerSortMethod.")
+        assert(options.sortDirection == nil or isEnumValue(AuraContainerSortDirection, options.sortDirection),
+            "sortDirection must be a valid AuraContainerSortDirection.")
+        local max = options.maxFrameCount
+        if max == nil then max = math.huge end
+        assert(validMax(max), "maxFrameCount must be a non-negative integer or infinity.")
+        local group = { key = key, filter = filter, max = max, enabled = true, layout = copyLayout(options.layout),
+            initializeFrame = options.initializeFrame, frames = {} }
+        self._groups[key] = group
+        table.insert(self._groupOrder, key)
+        for _ = 1, M.AURA_BATCH do newAuraButton(self, group) end
+        self._layoutForbidden = true
+        self._updates = self._updates + 1
+    end
+    function w:HasAuraGroup(key) return self._groups[key] ~= nil end
+    function w:IsAuraGroupEnabled(key) return required(self, key).enabled end
+    function w:SetAuraGroupEnabled(key, enabled)
+        assert(type(enabled) == "boolean", "enabled must be a boolean.")
+        required(self, key).enabled = enabled
+    end
+    function w:SetAuraGroupFilterString(key, filter)
+        local group = required(self, key)
+        assert(validFilter(filter), "invalid filter string")
+        group.filter = filter
+    end
+    function w:SetAuraGroupMaxFrameCount(key, max)
+        local group = required(self, key)
+        assert(validMax(max), "maxFrameCount must be a non-negative integer or infinity.")
+        group.max = max
+    end
+    -- Replaces the whole layout (merged with the defaults), like the source.
+    function w:SetAuraGroupLayout(key, layout) required(self, key).layout = copyLayout(layout) end
+    function w:GetAuraGroupFrameCount(key)
+        local group = self._groups[key]
+        return group and #group.frames or 0
+    end
+    function w:GetAuraGroupFrame(key, index)
+        local group = self._groups[key]
+        return group and group.frames[index]
+    end
+    function w:SetFlowLayoutAxis(axis)
+        assert(isEnumValue(AnchorUtil.FlowLayoutAxis, axis), "layoutAxis must be valid.")
+        self._flow.axis = axis
+    end
+    function w:SetFlowLayoutAnchorPoint(point)
+        assert(type(point) == "string", "anchorPoint must be a string.")
+        self._flow.anchor = point
+    end
+    function w:SetFlowLayoutGrowthDirection(h, v)
+        assert(isEnumValue(AnchorUtil.FlowDirection, h), "horizontalDirection must be valid.")
+        assert(isEnumValue(AnchorUtil.FlowDirection, v), "verticalDirection must be valid.")
+        self._flow.horizontal, self._flow.vertical = h, v
+    end
+    function w:SetFlowLayoutPadding(l, r, t, b)
+        for _, v in ipairs({ l, r, t, b }) do assert(type(v) == "number", "padding must be numbers.") end
+        self._flow.padding = { l, r, t, b }
+    end
+    function w:SetFlowLayoutMaximumLineSize(size)
+        assert(size == nil or type(size) == "number", "maximumLineSize must be a number or nil.")
+        self._flow.lineSize = size or math.huge
+    end
+    M.auraContainers[#M.auraContainers + 1] = w
+end
+
 local function newWidget(kind, name, parent)
     local w = setmetatable({
         _kind = kind, _name = name, _parent = parent, _scripts = {},
         _events = {}, _attr = {}, _points = {}, _w = 0, _h = 0, _shown = true,
     }, widget)
+    -- Children in creation order (an aura button's are guarded with it).
+    if type(parent) == "table" then
+        local kids = rawget(parent, "_children") or {}
+        rawset(parent, "_children", kids)
+        kids[#kids + 1] = w
+    end
     -- A frame starts one level above its parent, as in the client.
     local parentLevel = type(parent) == "table" and rawget(parent, "_level")
     w._level = parentLevel and parentLevel + 1 or 0
@@ -173,7 +467,15 @@ local function newWidget(kind, name, parent)
     function w:GetHeight() return self._h end
     function w:ClearAllPoints() self._points = {} end
     -- Setting a point that is already anchored replaces that anchor.
+    -- Anchoring to an aura container that has groups needs the
+    -- UntrustedLayoutScriptExecution aspect (Blizzard_CustomAuraContainer.lua);
+    -- children have their parent's (ForbiddenAspectConstantsDocumentation.lua).
     function w:SetPoint(point, ...)
+        local relativeTo = ...
+        if type(relativeTo) == "table" and rawget(relativeTo, "_layoutForbidden")
+            and not M.HasLayoutAspect(self) then
+            error("mock: anchoring to an aura container needs DisableUntrustedLayoutScriptsTemplate", 2)
+        end
         for i, p in ipairs(self._points) do
             if p[1] == point then
                 self._points[i] = { point, ... }
@@ -354,6 +656,8 @@ local function newWidget(kind, name, parent)
     function w:StartMoving() end
     function w:StopMovingOrSizing() end
     function w:SetClampedToScreen() end
+    -- Made under an aura button after it was restricted: restricted too.
+    if restricted(w) then guardTree(w) end
     return w
 end
 M.newWidget = newWidget
@@ -374,6 +678,17 @@ function M.Reset()
     M.now = 1000           -- GetTime(), advanced by M.Tick
     M.group = {}           -- party unit tokens ("party1", ...) while grouped
     M.headerUpdates = 0    -- how often a group header laid out its buttons
+    -- Aura containers: every one made, in order; M.auraContainerMissing
+    -- makes CreateFrame refuse the type (a client without it).
+    M.auraContainers = {}
+    M.auraContainerMissing = false
+    M.aurasSecret = false
+    -- Blizzard_SharedXMLBase/AnchorUtil.lua and Blizzard_AuraContainerShared.lua.
+    _G.AnchorUtil = { FlowLayoutAxis = { Horizontal = 0, Vertical = 1 },
+        FlowDirection = { Left = -1, Right = 1, Up = 1, Down = -1 } }
+    _G.AuraContainerSortMethod = { Default = 0, BigDefensive = 1, UnitFrameDebuff = 2, ImportantOnly = 3,
+        Expiration = 4, ExpirationOnly = 5, Name = 6, NameOnly = 7, AuraInstanceIDOnly = 8 }
+    _G.AuraContainerSortDirection = { Normal = 0, Reverse = 1 }
 
     -- Pixel grid. By default one physical pixel is one UI unit (768 pixels
     -- high, scale 1), so layout numbers stay whole; tests change these.
@@ -409,8 +724,13 @@ function M.Reset()
         table.insert(M.chat, msg)
     end }
     _G.CreateFrame = function(kind, name, parent, template)
+        if kind == "AuraContainer" and M.auraContainerMissing then
+            error("CreateFrame: Unknown frame type 'AuraContainer'", 2)
+        end
         local w = newWidget(kind, name, parent)
         w._template = template
+        if template and template:find("DisableUntrustedLayoutScriptsTemplate") then w._layoutForbidden = true end
+        if kind == "AuraContainer" then M.NewAuraContainer(w, template) end
         if template and template:find("Secure") then w._protected = true end
         if kind == "StatusBar" then w._barTex = newWidget("Texture", nil, w) end
         if name then _G[name] = w end
@@ -526,6 +846,8 @@ function M.Reset()
         LuaCurveType = { Linear = 0, Step = 1, Cosine = 2, Cubic = 3 },
         UnitAuraSortRule = { Unsorted = 0, Default = 1, BigDefensive = 2, Expiration = 3, ExpirationOnly = 4,
             Name = 5, NameOnly = 6 },
+        CustomAuraButtonDispelTypeTextureStyle = { Border = 0, BorderWithIcon = 1, Icon = 2, PreserveAsset = 3,
+            CustomAsset = 4 },
     }
 
     -- Auras: M.units[unit].auras lists { auraInstanceID, icon, applications,
