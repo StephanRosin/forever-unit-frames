@@ -69,12 +69,10 @@ end
 -- Units/Single.lua's own CONFIG_CHANGED listener is registered earlier (see
 -- ForeverUnitFrames.toc), so it always restyles first; its AfterCombat job
 -- runs immediately and re-registers the unit watch through applyEnabled,
--- which this listener then undoes for every frame still in test mode. In
--- combat several distinct restyle:<scope> keys can be queued after this job
--- was first queued (one CONFIG_CHANGED per changed scope), so this uses the
--- "last" queue position: every CONFIG_CHANGED moves this job to the end of
--- the AfterCombat queue, so it always drains after every restyle job no
--- matter how many scopes changed while in combat.
+-- which this listener then undoes for every frame still in test mode.
+-- The "last" queue mode keeps this job behind every restyle queued in
+-- combat. That only matters if test mode is on during combat, which the
+-- release at combat start (below) prevents.
 --
 -- A frame's enabled state can also change while test mode is on: an
 -- enabled frame not yet owned by test mode is taken over (applyOn), and a
@@ -98,8 +96,18 @@ ns.Listen("CONFIG_CHANGED", function()
     end, "last")
 end)
 
--- Fires before secure lockdown takes effect, so turning test mode off here
--- is still allowed.
+-- Usually fires before secure lockdown takes effect, so turning test mode
+-- off here is still allowed. If lockdown has already started, test mode
+-- ends at once and the frames are handed back as soon as combat is over.
 ns.On("PLAYER_REGEN_DISABLED", function()
-    if on then TestMode.Set(false) end
+    if not on then return end
+    if not InCombatLockdown() then
+        TestMode.Set(false)
+        return
+    end
+    on = false
+    ns.AfterCombat("testmode", function()
+        for frame in pairs(saved) do applyOff(frame) end
+    end, "last")
+    ns.Fire("TEST_MODE", false)
 end)

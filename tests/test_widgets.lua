@@ -97,6 +97,20 @@ local rejectWheel = W.Slider(parent, { label = "Reject", min = 0, max = 10, step
 rejectWheel:Refresh()
 rejectWheel.slider:GetScript("OnMouseWheel")(rejectWheel.slider, 1)
 H.check("wheel shows the stored value when set is rejected", rejectWheel.edit:GetText(), "3")
+-- A refresh (any CONFIG_CHANGED) must not wipe what is being typed.
+local typedValue = 4
+local typed = W.Slider(parent, { label = "Typed", min = 0, max = 10, step = 1,
+    get = function() return typedValue end, set = function(v) typedValue = v; return true end })
+typed:Refresh()
+typed.edit:SetFocus()
+typed.edit:SetText("7")
+typedValue = 6
+typed:Refresh()
+H.check("refresh keeps text while typing", typed.edit:GetText(), "7")
+H.check("refresh still moves the slider while typing", typed.slider:GetValue(), 6)
+typed.edit:ClearFocus()
+typed:Refresh()
+H.check("refresh updates text without focus", typed.edit:GetText(), "6")
 wheel:SetEnabled(false)
 wheel.slider:GetScript("OnMouseWheel")(wheel.slider, -1)
 H.check("wheel does nothing while disabled", wheelValue, 10)

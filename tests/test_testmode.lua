@@ -90,3 +90,27 @@ H.check("combat ends test mode", ns.TestMode.IsOn(), false)
 M.combat = true
 H.check("no test mode in combat", ns.TestMode.Set(true), false)
 M.combat = false
+
+-- Lockdown already in effect when PLAYER_REGEN_DISABLED arrives: test mode
+-- ends at once and the frames are handed back after combat.
+local events = {}
+ns.Listen("TEST_MODE", function(state) events[#events + 1] = state end)
+H.checkTrue("setup: test mode on", ns.TestMode.Set(true))
+M.combat = true
+M.chat = {}
+M.FireEvent("PLAYER_REGEN_DISABLED")
+H.check("late combat start: test mode off", ns.TestMode.IsOn(), false)
+H.check("late combat start: listeners told", events[#events], false)
+H.check("late combat start: no refusal message", #M.chat, 0)
+H.check("late combat start: frames untouched in combat", t:GetAttribute("unit"), "player")
+ns.Config.Set("target", "width", 310)
+M.SetCombat(false)
+H.check("late combat start: unit restored after combat", t:GetAttribute("unit"), "target")
+H.check("late combat start: unit field restored", t.unit, "target")
+H.checkTrue("late combat start: watch restored", t._unitWatch)
+H.check("late combat start: player unit restored", p:GetAttribute("unit"), "player")
+H.checkTrue("late combat start: player watch restored", p._unitWatch)
+H.check("late combat start: nothing left queued", ns.PendingCombatWork(), 0)
+H.checkTrue("test mode can be turned on again", ns.TestMode.Set(true))
+H.check("on again: target shows player", t:GetAttribute("unit"), "player")
+ns.TestMode.Set(false)

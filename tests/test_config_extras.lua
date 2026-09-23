@@ -19,6 +19,24 @@ H.check("font copied", C.Get("target", "fontSize"), 15)
 H.check("x not copied", C.Get("target", "x"), 300)
 H.check("target's own override replaced", C.Get("target", "height"), 46)
 
+-- Copy reproduces the source's look, including its per-frame defaults.
+C.Import({ general = {}, player = { enabled = false }, target = { y = 12 } })
+H.check("setup: player has no text overrides", C.IsOverridden("player", "textHealthRight"), false)
+C.CopyScope("player", "target")
+H.check("copy: player's default health text", C.Get("target", "textHealthRight"), "CURRENT_MAX")
+H.check("copy: player's default power text", C.Get("target", "textPowerRight"), "CURRENT")
+H.check("copy: same default stays no override", C.IsOverridden("target", "width"), false)
+H.check("copy: enabled not copied", C.Get("target", "enabled"), true)
+H.check("copy: target's y kept", C.Get("target", "y"), 12)
+C.Set("target", "enabled", false)
+C.CopyScope("player", "target")
+H.check("copy: target's own enabled kept", C.Get("target", "enabled"), false)
+-- Inherited settings follow general unless the source overrides them.
+C.Import({ general = { fontSize = 10 }, player = {}, target = { fontSize = 16 } })
+C.CopyScope("player", "target")
+H.check("copy: inherited value", C.Get("target", "fontSize"), 10)
+H.check("copy: inherited value is no override", C.IsOverridden("target", "fontSize"), false)
+
 -- Import replaces everything
 C.Import({ general = { fontSize = 10 }, player = {}, target = { width = 111 } })
 H.check("import general", C.Get("player", "fontSize"), 10)

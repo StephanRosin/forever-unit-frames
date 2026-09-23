@@ -155,10 +155,11 @@ function Widgets.Slider(parent, opts)
     row.slider, row.edit = s, e
 
     local updating = false
-    local function show(v)
+    local function show(v, keepTyping)
         updating = true
         s:SetValue(v)
-        e:SetText(tostring(v))
+        -- A refresh must not wipe what is being typed into the box.
+        if not (keepTyping and e:HasFocus()) then e:SetText(tostring(v)) end
         updating = false
     end
     local function commit(v)
@@ -194,7 +195,7 @@ function Widgets.Slider(parent, opts)
     end)
     e:SetScript("OnEscapePressed", function(self) show(opts.get()); self:ClearFocus() end)
 
-    function row:Refresh() show(opts.get()); row:RefreshInherit() end
+    function row:Refresh() show(opts.get(), true); row:RefreshInherit() end
     function row:SetEnabled(on) s:SetEnabled(on); e:SetEnabled(on); dimRow(row, on) end
     return row
 end
