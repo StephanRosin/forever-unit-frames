@@ -187,6 +187,10 @@ Settings.Define({ key = "portraitStyle", code = "PS", scope = "frame", type = "e
 -- Elite / rare marker: frames that show units other than you and your pet.
 Settings.Define({ key = "eliteMarker", code = "EM", scope = "frame",
     only = { target = true, targettarget = true, focus = true, party = true }, type = "bool", default = true })
+-- Damage and heal numbers inside the frame (Blizzard shows them on the
+-- player and pet frames).
+Settings.Define({ key = "combatFeedback", code = "CF", scope = "frame", type = "bool",
+    default = { player = true, pet = true, _ = false } })
 
 -- Party block (party only)
 local PARTY = { party = true }

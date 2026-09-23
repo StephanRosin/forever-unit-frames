@@ -33,7 +33,7 @@ Schema.FRAME = {
         { id = "size", keys = { "width", "height" } },
         { id = "barHeights", keys = { "titlePercent", "healthPercent", "powerPercent", "powerEnabled" } },
         { id = "portrait", keys = { "portraitMode", "portraitStyle" } },
-        { id = "indicators", keys = { "eliteMarker" } },
+        { id = "indicators", keys = { "eliteMarker", "combatFeedback" } },
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },
         { id = "group", keys = { "partyOrientation", "partySpacing", "partyShowPlayer", "partyShowSolo" } },

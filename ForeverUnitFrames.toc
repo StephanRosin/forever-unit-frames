@@ -30,6 +30,7 @@ Elements\AuraButton.lua
 Elements\AuraContainers.lua
 Elements\Auras.lua
 Elements\Classification.lua
+Elements\CombatFeedback.lua
 Elements\Shape.lua
 Units\Events.lua
 Units\Single.lua

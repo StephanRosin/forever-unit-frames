@@ -664,6 +664,27 @@ local function newWidget(kind, name, parent)
         fs._layer, fs._sublevel = layer or "ARTWORK", 0
         return fs
     end
+    -- Animation groups: Play marks the group playing; M.FinishAnimations
+    -- ends every playing group like the client would when it is done.
+    function w:CreateAnimationGroup()
+        local group = newWidget("AnimationGroup", nil, self)
+        group._anims = {}
+        function group:CreateAnimation(kind)
+            local anim = newWidget(kind, nil, self)
+            function anim:SetFromAlpha(v) self._from = v end
+            function anim:SetToAlpha(v) self._to = v end
+            function anim:SetDuration(v) self._duration = v end
+            function anim:SetStartDelay(v) self._delay = v end
+            function anim:SetOrder(v) self._order = v end
+            table.insert(self._anims, anim)
+            return anim
+        end
+        function group:SetToFinalAlpha(v) self._toFinal = v end
+        function group:Play() self._playing = true; M.playing[self] = true end
+        function group:Stop() self._playing = false; M.playing[self] = nil end
+        function group:IsPlaying() return self._playing or false end
+        return group
+    end
     -- Cooldown. _cooldown holds { start, duration } or { object = duration
     -- object }; nil when cleared.
     function w:SetCooldown(start, duration) self._cooldown = { start, duration } end
@@ -709,6 +730,7 @@ function M.Reset()
     M.now = 1000           -- GetTime(), advanced by M.Tick
     M.group = {}           -- party unit tokens ("party1", ...) while grouped
     M.headerUpdates = 0    -- how often a group header laid out its buttons
+    M.playing = {}         -- animation groups that are playing
     -- Aura containers: every one made, in order; M.auraContainerMissing
     -- makes CreateFrame refuse the type (a client without it).
     M.auraContainers = {}
@@ -1139,6 +1161,20 @@ end
 function M.SetGroup(units)
     M.group = units
     M.FireEvent("GROUP_ROSTER_UPDATE")
+end
+
+-- Every playing animation group runs to its end: the animated frame takes
+-- the last alpha (SetToFinalAlpha), then OnFinished runs.
+function M.FinishAnimations()
+    local groups = M.playing
+    M.playing = {}
+    for group in pairs(groups) do
+        group._playing = false
+        local last = group._anims[#group._anims]
+        if group._toFinal and last then group:GetParent():SetAlpha(last._to) end
+        local done = group:GetScript("OnFinished")
+        if done then done(group) end
+    end
 end
 
 function M.SetCombat(v)
