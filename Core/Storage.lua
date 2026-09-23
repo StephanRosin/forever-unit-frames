@@ -182,12 +182,34 @@ local function endWait(newSource)
     end
 end
 
+-- Frames switched on at the moment, by scope.
+local function enabledFrames()
+    local states = {}
+    for _, scope in ipairs(ns.Settings.SCOPES) do
+        if scope ~= "general" then states[scope] = ns.Config.Get(scope, "enabled") end
+    end
+    return states
+end
+
+-- Blizzard's frames are already hidden for every frame that was on; one
+-- the backup turns off only gets Blizzard's back after a /reload.
+local function hintReload(before)
+    for scope, was in pairs(before) do
+        if was and not ns.Config.Get(scope, "enabled") then
+            ns.Print(ns.L.RELOAD_FOR_BLIZZARD)
+            return
+        end
+    end
+end
+
 -- Returns true once a complete backup has been read and imported.
 function tryRestore()
     local str = ns.MacroBackup.Read()
     local profile = fromString(str)
     if not profile then return false end
+    local before = enabledFrames()
     ns.Config.Import(profile)   -- its CONFIG_CHANGED save is held or queued
+    hintReload(before)
     lastMacro = str             -- already in the macros, no need to rewrite it
     endWait("MacroBackup")
     ns.Print(ns.L.RESTORED_FROM_MACRO)

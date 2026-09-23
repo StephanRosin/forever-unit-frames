@@ -31,12 +31,50 @@ function Blizzard.Conceal(frame)
     end
 end
 
+-- Blizzard's party: the member buttons live in a pool on PartyFrame; the
+-- raid-style CompactPartyFrame is created on demand as its child.
+local function concealParty()
+    local party = _G.PartyFrame
+    if party then
+        local pool = party.PartyMemberFramePool
+        if pool then
+            for member in pool:EnumerateActive() do Blizzard.Conceal(member) end
+        end
+        Blizzard.Conceal(party)
+    end
+    Blizzard.Conceal(_G.CompactPartyFrame)
+end
+
+local function enabled(scope) return ns.Config.Get(scope, "enabled") end
+
+-- Only frames we replace are hidden. Running again is harmless, so newly
+-- enabled frames are covered at once; getting a Blizzard frame back needs
+-- a /reload.
 function Blizzard.HideDefaults()
     ns.AfterCombat("hideBlizzard", function()
-        if ns.Config.Get("player", "enabled") then Blizzard.Conceal(_G.PlayerFrame) end
-        if ns.Config.Get("target", "enabled") then
+        if enabled("player") then
+            Blizzard.Conceal(_G.PlayerFrame)
+            if ns.Config.Get("player", "castbarEnabled") then Blizzard.Conceal(_G.PlayerCastingBarFrame) end
+        end
+        if enabled("target") then
             Blizzard.Conceal(_G.TargetFrame)
             Blizzard.Conceal(_G.ComboFrame)
         end
+        if enabled("targettarget") then Blizzard.Conceal(_G.TargetFrameToT) end
+        if enabled("pet") then Blizzard.Conceal(_G.PetFrame) end
+        if enabled("focus") then Blizzard.Conceal(_G.FocusFrame) end
+        if enabled("party") then concealParty() end
     end)
 end
+
+ns.Listen("CONFIG_CHANGED", function(_, key)
+    if key == nil or key == "enabled" or key == "castbarEnabled" then Blizzard.HideDefaults() end
+end)
+
+-- Blizzard's party code acquires member frames and creates the compact
+-- party frame when the roster changes; those are hidden as they come.
+ns.On("GROUP_ROSTER_UPDATE", function()
+    if ns.Config.Profile() and enabled("party") then
+        ns.AfterCombat("hideBlizzardParty", concealParty)
+    end
+end)
