@@ -10,3 +10,4 @@ Core\Init.lua
 Core\Secrets.lua
 Core\Settings.lua
 Core\Config.lua
+Core\Codec.lua
