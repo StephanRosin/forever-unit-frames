@@ -127,6 +127,7 @@ end
 local function settle(group, count, own)
     arrange(group, own or 0)
     group.count = count
+    if count == 0 then group.hasUnknownIDs = false end
     for i = count + 1, #group.buttons do AuraButton.Clear(group.buttons[i]) end
     fit(group)
 end
@@ -222,9 +223,11 @@ local function fill(frame, group, list, count)
     for i = 1, #list do
         if count >= group.max then break end
         local aura = list[i]
-        if not Secrets.IsSecret(aura) and type(aura) == "table"
-            and AuraButton.Show(acquire(frame, group, count + 1), frame.unit, aura, group.filter) then
+        local button = not Secrets.IsSecret(aura) and type(aura) == "table" and acquire(frame, group, count + 1)
+        if button and AuraButton.Show(button, frame.unit, aura, group.filter) then
             count = count + 1
+            -- Shown from a secret instance ID: later events cannot name it.
+            if not button.auraID then group.hasUnknownIDs = true end
         end
     end
     return count
@@ -246,6 +249,7 @@ local function readGroup(frame, group)
         other = query(frame, group.filter, group.max)
         if not other then return false end
     end
+    group.hasUnknownIDs = false
     local mine = own and fill(frame, group, own, 0) or 0
     local count = other and fill(frame, group, other, mine) or mine
     settle(group, count, mine)
@@ -269,7 +273,10 @@ end
 -- UNIT_AURA says what changed. A changed aura that is shown is asked for
 -- again on its own; an added or removed one that concerns a group makes
 -- that group read again; everything else is ignored. Anything unreadable
--- (a secret ID or flag, a refused call) falls back to a full read.
+-- (a secret ID or flag, a refused call) falls back to a full read. A group
+-- showing icons whose IDs were secret when read (hasUnknownIDs) cannot tell
+-- whether a removed or changed ID is one of them, so any such ID it does
+-- not know makes it read again.
 
 local function shownButton(group, id)
     for i = 1, group.count do
@@ -299,7 +306,7 @@ local function markRemoved(frame, id)
     id = readableID(id)
     for _, key in ipairs(ORDER) do
         local group = frame.auras[key]
-        if shownButton(group, id) then group.dirty = true end
+        if group.hasUnknownIDs or shownButton(group, id) then group.dirty = true end
     end
 end
 
@@ -308,6 +315,7 @@ local function refreshShown(frame, id)
     for _, key in ipairs(ORDER) do
         local group = frame.auras[key]
         local button = not group.dirty and shownButton(group, id)
+        if not button and group.hasUnknownIDs then group.dirty = true end
         if button then
             local aura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.unit, id)
             if Secrets.IsSecret(aura) or type(aura) ~= "table"

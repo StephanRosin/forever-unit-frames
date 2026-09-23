@@ -109,3 +109,35 @@ M.SetCombat(false)
 local before = #M.frames
 for _ = 1, 50 do M.FireEvent("UNIT_AURA", "target", { updatedAuraInstanceIDs = { 3 } }) end
 H.check("no frames made by updates", #M.frames, before)
+
+-- An icon shown from an aura whose instance ID was secret has no ID to
+-- match later events by. A readable removed or updated ID that matches no
+-- shown icon then re-reads that group: it may be the unknown one.
+ns.Config.Set("target", "buffsEnabled", false)
+ns.Config.Set("target", "debuffsHighlightOwn", false)
+for i = #list, 1, -1 do list[i] = nil end
+list[1] = aura(21, { auraInstanceID = M.Secret(21), dispelName = "Magic" })
+list[2] = aura(22, { dispelName = "Curse" })
+M.FireEvent("UNIT_AURA", "target", { isFullUpdate = true })
+H.check("unknown ID: shown", debuffs.count, 2)
+H.check("unknown ID: no ID kept", debuffs.buttons[1].auraID, nil)
+H.checkTrue("unknown ID: group knows", debuffs.hasUnknownIDs)
+list[1].applications = 4
+H.check("updated, readable, not matched: group read", counted(function()
+    M.FireEvent("UNIT_AURA", "target", { updatedAuraInstanceIDs = { 21 } })
+end), "1 lists, 0 lookups")
+H.check("updated: stacks refreshed", debuffs.buttons[1].count:GetText(), "4")
+table.remove(list, 1)
+M.FireEvent("UNIT_AURA", "target", { removedAuraInstanceIDs = { 21 } })
+H.check("removed, readable, not matched: icon gone", debuffs.count, 1)
+H.check("no unknown IDs left", debuffs.hasUnknownIDs, false)
+-- With every ID known, an unmatched ID is ignored again.
+H.check("known IDs: unmatched ignored", counted(function()
+    M.FireEvent("UNIT_AURA", "target", { removedAuraInstanceIDs = { 99 }, updatedAuraInstanceIDs = { 98 } })
+end), "0 lists, 0 lookups")
+-- A secret ID among the updated ones: a full read.
+H.check("secret updated id: full read", counted(function()
+    M.FireEvent("UNIT_AURA", "target", { updatedAuraInstanceIDs = { M.Secret(22) } })
+end), "1 lists, 0 lookups")
+H.check("secret updated id: icon kept", debuffs.count, 1)
+ns.Config.ResetScope("target")

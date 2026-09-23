@@ -188,6 +188,11 @@ H.check("lod: written when window closes", ns.MacroBackup.Read(), "1;pW293")
 
 -- Up to six macros, 213 characters of profile each (252 minus the header).
 local MARK = "#Forever Unit Frames backup"
+-- The header "i/n" keeps one digit each up to the last macro, so every
+-- header is 39 characters and the slack below 255 holds for all of them.
+local MB = ns.MacroBackup
+H.check("header length at the last macro", MB.MAX_MACROS and #MB.Header(MB.MAX_MACROS, MB.MAX_MACROS), 39)
+H.check("header length at the first", MB.Header and #MB.Header(1, 1), 39)
 local function bodies()
     local list = {}
     for i, m in ipairs(M.macros) do list[i] = m.name .. "=" .. m.body end

@@ -27,6 +27,9 @@ end
 local function header(i, n)
     return ("%s %d/%d - keep\n"):format(MARK, i, n)
 end
+-- For the tests: the header stays one length up to the last macro.
+MacroBackup.MAX_MACROS = MAX_MACROS
+MacroBackup.Header = header
 
 -- We only ever touch a macro that we made ourselves: empty, or already
 -- carrying our marker. Anything else belongs to the player.
