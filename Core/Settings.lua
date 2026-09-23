@@ -98,6 +98,8 @@ Settings.Define({ key = "fontOutline", code = "FO", scope = "inherit", type = "e
 Settings.Define({ key = "fontShadow", code = "FH", scope = "inherit", type = "bool", default = false })
 -- Secondary name (surname) next to the first name, like Blizzard's frames.
 Settings.Define({ key = "showSurname", code = "SN", scope = "inherit", type = "bool", default = true })
+-- Class icon at the right end of the title row (players only).
+Settings.Define({ key = "titleClassIcon", code = "CL", scope = "inherit", type = "bool", default = true })
 Settings.Define({ key = "barTexture", code = "BT", scope = "inherit", type = "media", mediaKind = "statusbar", default = "Flat" })
 Settings.Define({ key = "backgroundColor", code = "BC", scope = "inherit", type = "color", default = { 0, 0, 0, 0.6 } })
 Settings.Define({ key = "borderSize", code = "BS", scope = "inherit", type = "int", min = 0, max = 2, default = 1 })

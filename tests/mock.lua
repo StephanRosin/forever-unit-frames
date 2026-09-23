@@ -207,7 +207,14 @@ local function newWidget(kind, name, parent)
     function w:GetStatusBarTexture() return self._barTex end
     function w:SetReverseFill(v) self._reverse = v end
     -- Texture
-    function w:SetTexture(t) self._texture = t end
+    -- A texture shows either a file or an atlas; setting one replaces the
+    -- other.
+    function w:SetTexture(t) self._texture = t; self._atlas = nil end
+    function w:SetAtlas(atlas)
+        assert(type(atlas) == "string", "SetAtlas: atlas must be a string")
+        self._atlas = atlas; self._texture = nil
+    end
+    function w:SetTexCoord(...) self._texCoord = { ... } end
     function w:SetColorTexture(r, g, b, a) self._color = { r, g, b, a } end
     function w:SetVertexColor(r, g, b, a) self._color = { r, g, b, a } end
     function w:SetAllPoints(p) self._allPoints = p or true end
@@ -390,6 +397,19 @@ function M.Reset()
     _G.RAID_CLASS_COLORS = {
         WARLOCK = { r = 0.53, g = 0.53, b = 0.93, GetRGB = function(c) return c.r, c.g, c.b end },
         WARRIOR = { r = 0.78, g = 0.61, b = 0.43, GetRGB = function(c) return c.r, c.g, c.b end },
+    }
+    -- Class icons (Blizzard_SharedXML/SharedConstants.lua); atlases the
+    -- client knows are listed in M.atlases, GetAtlasInfo gives nothing for
+    -- any other name.
+    _G.CLASS_ICON_TCOORDS = {
+        WARRIOR = { 0, 0.25, 0, 0.25 },
+        WARLOCK = { 0.7421875, 0.98828125, 0.25, 0.5 },
+    }
+    M.atlases = { ["classicon-warrior"] = true, ["classicon-warlock"] = true }
+    _G.C_Texture = {
+        GetAtlasInfo = function(atlas)
+            if M.atlases[atlas] then return { file = atlas, width = 64, height = 64 } end
+        end,
     }
     _G.Constants = { MacroConsts = { MAX_ACCOUNT_MACROS = 120, MAX_CHARACTER_MACROS = 30 } }
     _G.MacroFrame = M.NewMacroFrame()

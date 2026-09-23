@@ -191,7 +191,62 @@ function Texts.SetFont(fs, font, size, outline)
     showCopies(fs)
 end
 
+-- Class icon at the title row's right end. Blizzard's own class icons are
+-- the atlases "classicon-<class>" (GetClassAtlas, lower-cased by the
+-- character creation screen of this game type); when the client has no
+-- such atlas, the class sheet with CLASS_ICON_TCOORDS, as Blizzard's
+-- raid and community lists use it.
+local CLASS_SHEET = "Interface\\Glues\\CharacterCreate\\UI-CharacterCreate-Classes"
+
+-- The class token of a player unit, or nil: not a player, or the class
+-- unknown or secret (identity can be restricted). A secret token is never
+-- used as an index or an atlas name.
+local function classToken(unit)
+    if Secrets.Bool(UnitIsPlayer, unit) ~= true then return nil end
+    local ok, _, token = pcall(UnitClass, unit)
+    if not ok or Secrets.IsSecret(token) or type(token) ~= "string" then return nil end
+    return token
+end
+
+-- Draws token's icon into tex. Returns false when there is none.
+local function drawClassIcon(tex, token)
+    local atlas = "classicon-" .. string.lower(token)
+    if C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(atlas) then
+        tex:SetAtlas(atlas)
+        tex:SetTexCoord(0, 1, 0, 1)
+        return true
+    end
+    local coords = CLASS_ICON_TCOORDS and CLASS_ICON_TCOORDS[token]
+    if not coords then return false end
+    tex:SetTexture(CLASS_SHEET)
+    tex:SetTexCoord(coords[1], coords[2], coords[3], coords[4])
+    return true
+end
+
+local function classIconWanted(frame)
+    return frame.titleHeight > 0 and Config.Get(frame.key, "titleClassIcon") == true
+end
+
+-- The title text ends before the icon when it shows, else at the row's
+-- right edge. No measuring: the text may be secret.
+local function placeTitleEnd(frame)
+    local title, icon = frame.texts.title, frame.classIcon
+    if icon:IsShown() then
+        title:SetPoint("RIGHT", icon, "LEFT", ns.Pixel.Snap(-2, title), 0)
+    else
+        title:SetPoint("RIGHT", frame.title, "RIGHT", ns.Pixel.Snap(-4, title), 0)
+    end
+end
+
+local function updateClassIcon(frame)
+    local token = classIconWanted(frame) and classToken(frame.unit)
+    frame.classIcon:SetShown(token and drawClassIcon(frame.classIcon, token) or false)
+    placeTitleEnd(frame)
+end
+
 function Texts.Build(frame)
+    frame.classIcon = frame:CreateTexture(nil, "OVERLAY")
+    frame.classIcon:Hide()
     frame.texts = {}
     for _, slot in ipairs(SLOTS) do
         -- Parent to the bar so the text sits above it; the title row is a
@@ -223,9 +278,15 @@ function Texts.Style(frame)
         fs:SetJustifyH(slot.point)
     end
     local title = frame.texts.title
-    title:SetPoint("RIGHT", frame.title, "RIGHT", ns.Pixel.Snap(-4, title), 0)
     title:SetWordWrap(false)
     title:SetShown(frame.titleHeight > 0)
+    -- Square, as tall as the title row (already on the pixel grid).
+    local icon, size = frame.classIcon, ns.Pixel.Snap(frame.titleHeight)
+    icon:ClearAllPoints()
+    icon:SetPoint("RIGHT", frame.title, "RIGHT", 0, 0)
+    icon:SetSize(size, size)
+    if not classIconWanted(frame) then icon:Hide() end
+    placeTitleEnd(frame)
 end
 
 -- Title text colour: class (players) or reaction, or plain white.
@@ -243,6 +304,7 @@ function Texts.Update(frame)
             showSurname)
     end
     paintTitle(frame)
+    updateClassIcon(frame)
 end
 
 ns.RegisterElement(Texts)
