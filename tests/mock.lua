@@ -65,10 +65,18 @@ local function newWidget(kind, name, parent)
     function w:SetPoint(...) table.insert(self._points, { ... }) end
     function w:GetPoint(i) local p = self._points[i or 1]; if p then return unpack(p) end end
     function w:GetCenter() return self._cx or 0, self._cy or 0 end
-    function w:Show() self._shown = true end
-    function w:Hide() self._shown = false end
+    -- OnShow/OnHide fire on a real change of the frame's own state (the
+    -- mock does not propagate them to children).
+    function w:SetShown(v)
+        v = not not v
+        if v == self._shown then return end
+        self._shown = v
+        local script = self._scripts[v and "OnShow" or "OnHide"]
+        if script then script(self) end
+    end
+    function w:Show() self:SetShown(true) end
+    function w:Hide() self:SetShown(false) end
     function w:IsShown() return self._shown end
-    function w:SetShown(v) self._shown = not not v end
     function w:SetParent(p) self._parent = p end
     function w:GetParent() return self._parent end
     function w:SetAlpha(a) self._alpha = a end
@@ -298,6 +306,18 @@ function M.Reset()
     _G.DeleteMacro = function(index) table.remove(M.macros, index - 120) end
 
     _G.SlashCmdList = {}
+    _G.UISpecialFrames = {}
+    _G.C_AddOns = { GetAddOnMetadata = function() return "0.1.0" end }
+    -- Post-hook: the original runs first, then fn with the same arguments.
+    _G.hooksecurefunc = function(tbl, name, fn)
+        if type(tbl) == "string" then tbl, name, fn = _G, tbl, name end
+        local original = tbl[name]
+        tbl[name] = function(...)
+            local r = { original(...) }
+            fn(...)
+            return unpack(r)
+        end
+    end
 
     -- Key bindings: only ESC is bound (to the game menu).
     _G.GetBindingFromClick = function(key)

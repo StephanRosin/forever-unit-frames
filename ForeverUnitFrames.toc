@@ -27,4 +27,5 @@ Options\Style.lua
 Options\Widgets.lua
 Options\Schema.lua
 Options\TestMode.lua
+Options\Window.lua
 Core\Boot.lua
