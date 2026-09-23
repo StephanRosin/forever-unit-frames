@@ -29,6 +29,12 @@ H.checkTrue("overlay above the shield", f.overlay:GetFrameLevel() > bar:GetFrame
 H.check("overlay covers the frame", f.overlay._allPoints, f)
 H.check("power text on its bar", f.texts.powerRight:GetParent(), f.power)
 H.checkTrue("badge still above the overlay", f.classBadge:GetFrameLevel() > f.overlay:GetFrameLevel())
+-- Aura icons over the health row draw above texts and shield, below the
+-- badge.
+local auraLevel = f:GetFrameLevel() + ns.Auras.LEVELS
+H.checkTrue("auras above the overlay", auraLevel > f.overlay:GetFrameLevel())
+H.checkTrue("auras above the shield", auraLevel > bar:GetFrameLevel())
+H.checkTrue("auras below the badge", auraLevel < f.classBadge:GetFrameLevel())
 
 -- Secret values pass straight through.
 local shield, hpMax = M.Secret(300), M.Secret(1000)

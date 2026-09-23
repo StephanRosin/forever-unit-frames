@@ -102,8 +102,18 @@ H.check("others' heals rounded", all:GetStatusBarTexture():GetNumMaskTextures(),
 H.check("lane rounded", f.overhealBg:GetNumMaskTextures(), 4)
 C.Set("general", "cornerRadius", 0)
 
--- Test mode: sample heals.
+-- Test mode: sample heals on a sample health, so both heal colours and
+-- the shield show inside the bar even when the player is at full health.
+M.units.player.health, M.units.player.healthMax = 1000, 1000
+M.FireEvent("UNIT_HEALTH", "player")
 ns.TestMode.Set(true)
+H.check("sample health", f.health:GetValue(), ns.Health.SAMPLE)
+H.check("sample health scale", select(2, f.health:GetMinMaxValues()), 1)
+H.checkTrue("room for both heals", ns.Health.SAMPLE + ns.HealPrediction.SAMPLE_ALL < 1)
+M.FireEvent("UNIT_HEALTH", "player")
+H.check("sample health kept", f.health:GetValue(), ns.Health.SAMPLE)
+H.check("target: sample health", ns.Frames.target.health:GetValue(), ns.Health.SAMPLE)
+H.check("party: sample health", ns.Party.fakes[1].health:GetValue(), ns.Health.SAMPLE)
 H.check("sample: all", all:GetValue(), ns.HealPrediction.SAMPLE_ALL)
 H.check("sample: yours", mine:GetValue(), ns.HealPrediction.SAMPLE_MINE)
 H.check("sample scale", select(2, all:GetMinMaxValues()), 1)
@@ -113,6 +123,9 @@ H.check("party sample", ns.Party.fakes[2].healMine:GetValue(), ns.HealPrediction
 H.check("shield sample alongside", f.absorb:GetValue(), ns.Absorb.SAMPLE)
 ns.TestMode.Set(false)
 H.check("real value back", all:GetValue(), 5)
+H.check("live health back", f.health:GetValue(), 1000)
+H.check("live health scale back", select(2, f.health:GetMinMaxValues()), 1000)
+H.check("health preview cleared", f.health.preview, nil)
 H.check("preview flag cleared", clip.preview, nil)
 
 -- Party members get the bars as well.

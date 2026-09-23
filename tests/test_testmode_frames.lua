@@ -14,7 +14,9 @@ for _, key in ipairs({ "player", "target", "targettarget", "pet", "focus" }) do
     H.checkTrue(key .. ": shown", f:IsShown())
     H.check(key .. ": no unit watch", f._unitWatch, nil)
 end
-H.check("pet health from the player", ns.Frames.pet.health:GetValue(), 5)
+-- The bar shows a sample health (room for sample heals); the unit is the player.
+H.check("pet health: the sample", ns.Frames.pet.health:GetValue(), ns.Health.SAMPLE)
+H.check("pet frame on the player", ns.Frames.pet.unit, "player")
 
 -- Sample casts on enabled castbars only (the player's is off by default).
 local tbar = ns.Frames.target.castbar
@@ -46,7 +48,8 @@ end
 -- Vertically the docked party castbar sits between members (Party.Spacing).
 H.check("fake 2 below fake 1", select(5, P.fakes[2]:GetPoint(1)),
     -(46 + 12 + ns.Castbar.DockedDepth("party")))
-H.check("fake health", P.fakes[3].health:GetValue(), 5)
+H.check("fake health: the sample", P.fakes[3].health:GetValue(), ns.Health.SAMPLE)
+H.check("fake on the player", P.fakes[3].unit, "player")
 H.checkTrue("fake sample cast", P.fakes[1].castbar:IsShown())
 H.check("fakes are not header buttons", #P.buttons, 1)
 
