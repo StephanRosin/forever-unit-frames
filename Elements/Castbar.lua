@@ -41,10 +41,13 @@ end
 local function barHeight(scope)
     return ns.Pixel.Snap(Config.Get(scope, "castbarHeight"))
 end
+Castbar.Height = barHeight
 
--- Gap between frame and castbar: room for both borders, on the pixel grid.
+-- Gap between frame and a docked castbar: one more row of the frame, so
+-- the same seam as between its own health and power rows. Frame and
+-- castbar sit in the unit's one border (Elements/Shape.lua).
 function Castbar.Gap(scope)
-    return 2 * ns.Single.BorderSize(scope) + ns.Pixel.Snap(2)
+    return ns.Single.RowGap(scope)
 end
 
 local function now() return GetTime() * 1000 end
@@ -189,8 +192,8 @@ function Castbar.Build(frame)
     bar.icon = bar:CreateTexture(nil, "ARTWORK")
     bar.text = bar:CreateFontString(nil, "OVERLAY")
     bar.time = bar:CreateFontString(nil, "OVERLAY")
-    -- The castbar's whole rectangle, icon included: its corners are
-    -- rounded, and a detached castbar's border goes around it.
+    -- The castbar's whole rectangle, icon included: a detached castbar's
+    -- corners are rounded and its border goes around it.
     bar.box = CreateFrame("Frame", nil, bar)
     for _, texture in ipairs({ bar.bg, bar.remain, bar.iconBg, bar.icon }) do ns.Corners.Add(bar, texture) end
     ns.Corners.Add(bar, function() return bar:GetStatusBarTexture() end)
@@ -208,14 +211,14 @@ function Castbar.Placement(scope)
     return Config.Get(scope, "castbarDock")
 end
 
--- Room a docked castbar takes next to its frame: gap, bar and its outer
--- border. Zero when the castbar is off or detached.
+-- Room a docked castbar takes next to its frame: gap, bar and the unit's
+-- outer border beyond it. Zero when the castbar is off or detached.
 function Castbar.DockedDepth(scope)
     if not Castbar.Applies(scope) or not Config.Get(scope, "castbarEnabled")
         or Castbar.Placement(scope) == "DETACHED" then
         return 0
     end
-    return Castbar.Gap(scope) + barHeight(scope) + ns.Single.BorderSize(scope)
+    return Castbar.Gap(scope) + barHeight(scope) + ns.Border.Extent(scope)
 end
 
 -- Whole castbar size, icon included: the frame's width.
@@ -285,7 +288,6 @@ function Castbar.Style(frame)
     bar.bg:SetTexture(tex)
     bar.remain:SetTexture(tex)
     paint(bar)
-    ns.Single.DrawBorder(bar, scope)
     bar.icon:ClearAllPoints()
     bar.icon:SetPoint("TOPRIGHT", bar, "TOPLEFT", 0, 0)
     bar.icon:SetSize(height, height)
@@ -296,7 +298,16 @@ function Castbar.Style(frame)
     bar.box:ClearAllPoints()
     bar.box:SetPoint("TOPLEFT", bar, "TOPLEFT", showIcon and -height or 0, 0)
     bar.box:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", 0, 0)
-    ns.Corners.Fit(bar.clip, bar.box, ns.Corners.Radius(scope))
+    -- Docked, the castbar is part of the unit's block: rounded with it and
+    -- inside its border (Elements/Shape.lua). Detached, it is a block of
+    -- its own with its own border.
+    if Castbar.Placement(scope) == "DETACHED" then
+        ns.Corners.Fit(bar.clip, bar.box, ns.Corners.Radius(scope))
+        ns.Border.Draw(bar, scope, bar.box)
+    else
+        ns.Corners.Fit(bar.clip, frame.unitBox or frame, ns.Corners.Radius(scope))
+        ns.Border.Hide(bar)
+    end
     local font = ns.Media.Font(Config.Get(scope, "fontFace"))
     local outline = Config.Get(scope, "fontOutline")
     local fontSize = math.min(Config.Get(scope, "fontSize"), Config.Get(scope, "castbarHeight"))

@@ -16,6 +16,7 @@ Core\Storage.lua
 Core\Media.lua
 Core\Layout.lua
 Core\Corners.lua
+Core\Border.lua
 Units\Units.lua
 Elements\Health.lua
 Elements\Power.lua

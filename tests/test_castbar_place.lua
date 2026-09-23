@@ -22,7 +22,7 @@ H.check("above: bar bottom", point, "BOTTOMLEFT")
 H.check("above: to the frame top", relPoint, "TOPLEFT")
 H.check("above: to the frame", rel, t)
 H.check("above: icon inset", x, 16)
-H.check("above: gap", y, 4)
+H.check("above: flush like the rows", y, 0)
 
 -- Detached: anchored to its own mover, which X / Y place.
 H.checkTrue("detachable castbar has a mover", bar.mover)

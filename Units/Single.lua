@@ -14,12 +14,20 @@ function Single.Size(scope)
     return Pixel.Snap(Config.Get(scope, "width")), Pixel.Snap(Config.Get(scope, "height"))
 end
 
--- Border thickness of scope on the pixel grid: at least one pixel unless
--- the border is off.
+-- Border thickness of scope on the pixel grid (ns.Border.Size).
 function Single.BorderSize(scope)
-    local size = Config.Get(scope, "borderSize")
-    if size <= 0 then return 0 end
-    return Pixel.Snap(size, nil, 1)
+    return ns.Border.Size(scope)
+end
+
+-- The seam between health and power on the pixel grid: what the row
+-- shares leave over, 0 without a power row. A docked castbar keeps the
+-- same seam to the frame.
+function Single.RowGap(scope)
+    local powerOn = Config.Get(scope, "powerEnabled")
+    local _, _, gap, ph = Layout.Rows(Config.Get(scope, "height"), Config.Get(scope, "titlePercent"),
+        Config.Get(scope, "healthPercent"), Config.Get(scope, "powerPercent"), powerOn)
+    if not (powerOn and ph > 0) then return 0 end
+    return Pixel.Snap(gap)
 end
 
 local function place(frame)
@@ -42,13 +50,13 @@ local function layoutBars(frame)
     local scope = frame.key
     local _, height = Single.Size(scope)
     local powerOn = Config.Get(scope, "powerEnabled")
-    local th, _, gap, ph = Layout.Rows(Config.Get(scope, "height"), Config.Get(scope, "titlePercent"),
+    local th, _, _, ph = Layout.Rows(Config.Get(scope, "height"), Config.Get(scope, "titlePercent"),
         Config.Get(scope, "healthPercent"), Config.Get(scope, "powerPercent"), powerOn)
     local powerShown = powerOn and ph > 0
     local pixel = Pixel.Snap(1, nil, 1)
     local titleH = th > 0 and Pixel.Snap(th, nil, 1) or 0
     local powerH = powerShown and Pixel.Snap(ph, nil, 1) or 0
-    gap = powerShown and Pixel.Snap(gap) or 0
+    local gap = Single.RowGap(scope)
     local healthH = math.max(height - titleH - gap - powerH, pixel)
     local left, right = Layout.PortraitInsets(Config.Get(scope, "portraitMode"), height)
     local title = frame.title
@@ -73,27 +81,6 @@ local function layoutBars(frame)
     frame.gap = gap
 end
 
--- A 1-2 px border just outside owner (a unit frame or its castbar), in the
--- border size and colour of scope.
-function Single.DrawBorder(owner, scope)
-    local size = Single.BorderSize(scope)
-    local c = Config.Get(scope, "borderColor")
-    if not owner.border then
-        owner.border = {}
-        for i = 1, 4 do owner.border[i] = owner:CreateTexture(nil, "OVERLAY") end
-    end
-    local b = owner.border
-    -- top, bottom, left, right; drawn just outside the owner
-    b[1]:ClearAllPoints(); b[1]:SetPoint("BOTTOMLEFT", owner, "TOPLEFT", -size, 0); b[1]:SetPoint("BOTTOMRIGHT", owner, "TOPRIGHT", size, 0); b[1]:SetHeight(size)
-    b[2]:ClearAllPoints(); b[2]:SetPoint("TOPLEFT", owner, "BOTTOMLEFT", -size, 0); b[2]:SetPoint("TOPRIGHT", owner, "BOTTOMRIGHT", size, 0); b[2]:SetHeight(size)
-    b[3]:ClearAllPoints(); b[3]:SetPoint("TOPRIGHT", owner, "TOPLEFT", 0, 0); b[3]:SetPoint("BOTTOMRIGHT", owner, "BOTTOMLEFT", 0, 0); b[3]:SetWidth(size)
-    b[4]:ClearAllPoints(); b[4]:SetPoint("TOPLEFT", owner, "TOPRIGHT", 0, 0); b[4]:SetPoint("BOTTOMLEFT", owner, "BOTTOMRIGHT", 0, 0); b[4]:SetWidth(size)
-    for i = 1, 4 do
-        b[i]:SetColorTexture(c[1], c[2], c[3], c[4])
-        b[i]:SetShown(size > 0)
-    end
-end
-
 local function applyEnabled(frame)
     if Config.Get(frame.key, "enabled") then
         RegisterUnitWatch(frame)
@@ -108,11 +95,11 @@ function Single.UpdateAll(frame, event)
     for _, el in ipairs(ns.Elements) do el.Update(frame, event) end
 end
 
--- Everything inside a unit button that is not itself protected: bars,
--- border, element regions. Party buttons use this in combat too.
+-- Everything inside a unit button that is not itself protected: bars and
+-- element regions (the border is Elements/Shape.lua). Party buttons use
+-- this in combat too.
 function Single.StyleContent(frame)
     layoutBars(frame)
-    Single.DrawBorder(frame, frame.key)
     for _, el in ipairs(ns.Elements) do el.Style(frame) end
 end
 

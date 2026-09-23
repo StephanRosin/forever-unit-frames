@@ -69,23 +69,49 @@ end
 -- other.
 function Auras.AnchorRegion(frame, key, live)
     local scope, to = frame.key, Config.Get(frame.key, key .. "Anchor")
+    -- The frame means the unit's block: a docked castbar included.
+    local unit = frame.unitBox or frame
     if to == "HEALTH" then return frame.health end
     if to == "POWER" then
         if frame.power and frame.power:IsShown() then return frame.power end
         return frame.health
     end
     if to == "CASTBAR" then
-        if frame.castbar and Config.Get(scope, "castbarEnabled") then return frame.castbar end
-        return frame
+        -- The castbar's whole rectangle, icon included.
+        if frame.castbar and Config.Get(scope, "castbarEnabled") then return frame.castbar.box end
+        return unit
     end
     if to == "OTHER" then
         -- Two groups hanging from each other: the debuffs take the frame.
-        if key == "debuffs" and Config.Get(scope, "buffsAnchor") == "OTHER" then return frame end
+        if key == "debuffs" and Config.Get(scope, "buffsAnchor") == "OTHER" then return unit end
         local other = GROUPS[key].other
         if live then return frame.auraContainers[other].container end
         return frame.auras[other].holder
     end
-    return frame
+    return unit
+end
+
+-- Horizontal and vertical side of each anchor point.
+local SIDES = {
+    TOPLEFT = { -1, 1 }, TOP = { 0, 1 }, TOPRIGHT = { 1, 1 },
+    LEFT = { -1, 0 }, CENTER = { 0, 0 }, RIGHT = { 1, 0 },
+    BOTTOMLEFT = { -1, -1 }, BOTTOM = { 0, -1 }, BOTTOMRIGHT = { 1, -1 },
+}
+
+-- A group's offset from its anchor region, on the pixel grid. Offsets
+-- count from the outer border: a group that sits outside the unit box or
+-- a castbar box, across the edge its frame point names, is pushed out by
+-- the border's extent on that axis.
+function Auras.AnchorOffset(frame, key, region)
+    local scope = frame.key
+    local x, y = Pixel.Snap(Config.Get(scope, key .. "X")), Pixel.Snap(Config.Get(scope, key .. "Y"))
+    local ringed = region == frame.unitBox or (frame.castbar ~= nil and region == frame.castbar.box)
+    if not ringed then return x, y end
+    local extent = ns.Border.Extent(scope)
+    local at, own = SIDES[Config.Get(scope, key .. "FramePoint")], SIDES[Config.Get(scope, key .. "Point")]
+    if at[1] ~= 0 and own[1] == -at[1] then x = x + at[1] * extent end
+    if at[2] ~= 0 and own[2] == -at[2] then y = y + at[2] * extent end
+    return x, y
 end
 
 -- Where icon i goes depends on how many of the shown icons are yours
@@ -187,8 +213,9 @@ function Auras.Style(frame)
     for _, key in ipairs(ORDER) do
         local group = frame.auras[key]
         group.holder:ClearAllPoints()
-        group.holder:SetPoint(get(frame, group, "Point"), Auras.AnchorRegion(frame, key), get(frame, group, "FramePoint"),
-            Pixel.Snap(get(frame, group, "X")), Pixel.Snap(get(frame, group, "Y")))
+        local region = Auras.AnchorRegion(frame, key)
+        group.holder:SetPoint(get(frame, group, "Point"), region, get(frame, group, "FramePoint"),
+            Auras.AnchorOffset(frame, key, region))
     end
     AuraContainers.Style(frame)
 end

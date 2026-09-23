@@ -55,8 +55,19 @@ local function resolve(target)
     return target
 end
 
--- Rounds the corners of box by radius (0: square, masks removed). A
--- texture is masked once; its own field remembers it.
+-- Puts masks on texture (on) or takes them off again. A texture is
+-- masked once; its own field remembers it.
+function Corners.SetMasked(texture, masks, on)
+    if on and not texture.fufRounded then
+        for _, mask in ipairs(masks) do texture:AddMaskTexture(mask) end
+        texture.fufRounded = true
+    elseif not on and texture.fufRounded then
+        for _, mask in ipairs(masks) do texture:RemoveMaskTexture(mask) end
+        texture.fufRounded = nil
+    end
+end
+
+-- Rounds the corners of box by radius (0: square, masks removed).
 function Corners.Fit(clip, box, radius)
     local on = radius > 0
     for i, mask in ipairs(clip.masks) do
@@ -67,12 +78,6 @@ function Corners.Fit(clip, box, radius)
     end
     for _, target in ipairs(clip.targets) do
         local texture = resolve(target)
-        if texture and on and not texture.fufRounded then
-            for _, mask in ipairs(clip.masks) do texture:AddMaskTexture(mask) end
-            texture.fufRounded = true
-        elseif texture and not on and texture.fufRounded then
-            for _, mask in ipairs(clip.masks) do texture:RemoveMaskTexture(mask) end
-            texture.fufRounded = nil
-        end
+        if texture then Corners.SetMasked(texture, clip.masks, on) end
     end
 end

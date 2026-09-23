@@ -187,11 +187,11 @@ local function restyle(entry, group)
 end
 
 local function place(frame, key)
-    local Config, Pixel = ns.Config, ns.Pixel
+    local Config = ns.Config
     local scope = frame.key
+    local region = ns.Auras.AnchorRegion(frame, key, true)
     frame.auraContainers[key].container:SetPoint(Config.Get(scope, key .. "Point"),
-        ns.Auras.AnchorRegion(frame, key, true), Config.Get(scope, key .. "FramePoint"),
-        Pixel.Snap(Config.Get(scope, key .. "X")), Pixel.Snap(Config.Get(scope, key .. "Y")))
+        region, Config.Get(scope, key .. "FramePoint"), ns.Auras.AnchorOffset(frame, key, region))
 end
 
 -- Settings (read by Auras.Style into frame.auras) onto the containers.

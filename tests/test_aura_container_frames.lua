@@ -37,10 +37,11 @@ H.check("buffs other: all", bc._groups.other.filter, "HELPFUL")
 H.check("flow anchor", dc._flow.anchor, "BOTTOMLEFT")
 H.check("flow growth", dc._flow.horizontal .. "," .. dc._flow.vertical, "1,1")
 H.check("flow row length", dc._flow.lineSize, C.Get("target", "width") + ns.Pixel.One() / 2)
--- Anchors: debuffs on the frame, buffs on the debuffs container.
+-- Anchors: debuffs on the unit box, 2 above its one-pixel border; buffs
+-- on the debuffs container.
 local p, rel, rp, x, y = dc:GetPoint(1)
-H.check("debuffs anchor", p .. ">" .. rp .. " " .. x .. "," .. y, "BOTTOMLEFT>TOPLEFT 0,2")
-H.check("debuffs on the frame", rel, t)
+H.check("debuffs anchor", p .. ">" .. rp .. " " .. x .. "," .. y, "BOTTOMLEFT>TOPLEFT 0,3")
+H.check("debuffs on the frame", rel, t.unitBox)
 H.check("buffs on the debuffs container", select(2, bc:GetPoint(1)), dc)
 
 -- Settings apply at once out of combat.
@@ -80,10 +81,10 @@ H.checkTrue("on again", dc:IsShown())
 C.Set("target", "debuffsAnchor", "HEALTH")
 H.check("health bar", select(2, dc:GetPoint(1)), t.health)
 C.Set("target", "debuffsAnchor", "OTHER")
-H.check("cycle broken", select(2, dc:GetPoint(1)), t)
+H.check("cycle broken", select(2, dc:GetPoint(1)), t.unitBox)
 C.Set("target", "buffsAnchor", "FRAME")
 H.check("debuffs on the buffs container", select(2, dc:GetPoint(1)), bc)
-H.check("buffs on the frame", select(2, bc:GetPoint(1)), t)
+H.check("buffs on the frame", select(2, bc:GetPoint(1)), t.unitBox)
 C.ResetScope("target")
 H.check("back: buffs on the debuffs", select(2, bc:GetPoint(1)), dc)
 

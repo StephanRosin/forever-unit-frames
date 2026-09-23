@@ -2,6 +2,11 @@ local _, ns = ...
 local Schema = {}
 ns.Schema = Schema
 
+-- The unit's outer border and its shadow: General > Appearance and each
+-- frame's Layout tab.
+local BORDER_KEYS = { "borderShow", "borderStyle", "borderSize", "borderPadding", "borderColor" }
+local SHADOW_KEYS = { "shadowEnabled", "shadowAlpha", "shadowSize" }
+
 Schema.GENERAL = {
     { id = "appearance", sections = {
         -- action: a two-click button under the rows (Options/Window.lua).
@@ -10,7 +15,8 @@ Schema.GENERAL = {
         { id = "titleText", keys = { "titleClassIcon", "classIconSize", "classIconX", "classIconY",
             "classIconRing", "classIconRingColor" } },
         { id = "bars", keys = { "barTexture", "backgroundColor" } },
-        { id = "border", keys = { "borderSize", "borderColor" } },
+        { id = "border", keys = BORDER_KEYS },
+        { id = "shadow", keys = SHADOW_KEYS },
         { id = "shape", keys = { "cornerRadius" } },
     } },
     { id = "colors", sections = {
@@ -25,13 +31,14 @@ Schema.FRAME = {
         { id = "size", keys = { "width", "height" } },
         { id = "barHeights", keys = { "titlePercent", "healthPercent", "powerPercent", "powerEnabled" } },
         { id = "portrait", keys = { "portraitMode", "portraitStyle" } },
+        { id = "border", keys = BORDER_KEYS },
+        { id = "shadow", keys = SHADOW_KEYS },
         { id = "group", keys = { "partyOrientation", "partySpacing", "partyShowPlayer", "partyShowSolo" } },
         { id = "position", keys = { "x", "y" } },
     } },
     { id = "bars", sections = {
         { id = "health", keys = { "healthColorMode", "healthColor" } },
         { id = "textures", keys = { "barTexture", "backgroundColor" } },
-        { id = "border", keys = { "borderSize", "borderColor" } },
         { id = "shape", keys = { "cornerRadius" } },
     } },
     { id = "text", sections = {

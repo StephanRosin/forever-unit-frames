@@ -540,8 +540,20 @@ local function newWidget(kind, name, parent)
         self._atlas = atlas; self._texture = nil
     end
     function w:SetTexCoord(...) self._texCoord = { ... } end
-    function w:SetColorTexture(r, g, b, a) self._color = { r, g, b, a } end
-    function w:SetVertexColor(r, g, b, a) self._color = { r, g, b, a } end
+    -- _color is the last colour given either way; _texColor keeps the
+    -- colour texture's own.
+    function w:SetColorTexture(r, g, b, a) self._color = { r, g, b, a }; self._texColor = self._color end
+    -- One vertex colour replaces a gradient's per-vertex colours.
+    function w:SetVertexColor(r, g, b, a) self._color = { r, g, b, a }; self._gradient = nil end
+    -- SetGradient(orientation, minColor, maxColor): colours are ColorMixin
+    -- objects (SimpleTextureBaseAPIDocumentation.lua).
+    function w:SetGradient(orientation, minColor, maxColor)
+        assert(orientation == "HORIZONTAL" or orientation == "VERTICAL", "SetGradient: bad orientation")
+        for _, c in ipairs({ minColor, maxColor }) do
+            assert(type(c) == "table" and type(c.r) == "number", "SetGradient: colours must be ColorMixin objects")
+        end
+        self._gradient = { orientation, minColor, maxColor }
+    end
     function w:SetAllPoints(p) self._allPoints = p or true end
     -- Region draw layer; sublevel -8..7 like the client.
     function w:SetDrawLayer(layer, sublevel)

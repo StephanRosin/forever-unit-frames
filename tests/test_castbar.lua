@@ -19,13 +19,14 @@ H.check("pet has none", ns.Frames.pet.castbar, nil)
 H.check("hidden while idle", bar:IsShown(), false)
 H.check("parented to the frame", bar:GetParent(), t)
 
--- Docked below the frame, the icon to its left, room for both borders.
+-- Docked below the frame, the icon to its left: one more row of the
+-- frame, with the rows' own seam (flush by default).
 local point, rel, relPoint, x, y = bar:GetPoint(1)
 H.check("docked below: point", point, "TOPLEFT")
 H.check("docked below: to the frame", rel, t)
 H.check("docked below: frame bottom", relPoint, "BOTTOMLEFT")
 H.check("icon inset", x, 16)
-H.check("gap", y, -4)
+H.check("gap", y, 0)
 H.check("height", bar:GetHeight(), 16)
 H.check("icon size", bar.icon:GetWidth(), 16)
 C.Set("target", "castbarIcon", false)

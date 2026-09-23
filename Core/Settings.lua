@@ -113,8 +113,19 @@ Settings.Define({ key = "classIconRingColor", code = "KC", scope = "inherit", ty
     default = { 0.78, 0.78, 0.8, 1 } })
 Settings.Define({ key = "barTexture", code = "BT", scope = "inherit", type = "media", mediaKind = "statusbar", default = "Flat" })
 Settings.Define({ key = "backgroundColor", code = "BC", scope = "inherit", type = "color", default = { 0, 0, 0, 0.6 } })
-Settings.Define({ key = "borderSize", code = "BS", scope = "inherit", type = "int", min = 0, max = 2, default = 1 })
+-- Outer border (Core/Border.lua): one ring around the unit, a docked
+-- castbar included. Hidden keeps size and padding for later. Styles are
+-- stored by index: append only.
+Settings.Define({ key = "borderShow", code = "BV", scope = "inherit", type = "bool", default = true })
+Settings.Define({ key = "borderStyle", code = "BY", scope = "inherit", type = "enum",
+    values = { "FLAT", "GOLD" }, default = "FLAT" })
+Settings.Define({ key = "borderSize", code = "BS", scope = "inherit", type = "int", min = 0, max = 8, default = 1 })
 Settings.Define({ key = "borderColor", code = "BO", scope = "inherit", type = "color", default = { 0, 0, 0, 1 } })
+Settings.Define({ key = "borderPadding", code = "BP", scope = "inherit", type = "int", min = 0, max = 8, default = 0 })
+-- Soft drop shadow around the ring: strength in percent, size in pixels.
+Settings.Define({ key = "shadowEnabled", code = "SE", scope = "inherit", type = "bool", default = false })
+Settings.Define({ key = "shadowAlpha", code = "SA", scope = "inherit", type = "int", min = 0, max = 100, default = 50 })
+Settings.Define({ key = "shadowSize", code = "SZ", scope = "inherit", type = "int", min = 1, max = 16, default = 4 })
 Settings.Define({ key = "cornerRadius", code = "CR", scope = "inherit", type = "int", min = 0, max = 12, default = 0 })
 
 -- Colors
