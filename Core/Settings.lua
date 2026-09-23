@@ -36,6 +36,23 @@ function Settings.Default(def, scope)
     return d
 end
 
+-- The shipped look (Core/Preset.lua) on top of the plain defaults:
+-- preset[scope][key] = value. A general value becomes the setting's base
+-- default, a frame value that frame's own default.
+function Settings.ApplyPreset(preset)
+    for scope, values in pairs(preset) do
+        for key, value in pairs(values) do
+            local def = assert(byKey[key], "preset: unknown setting " .. key)
+            assert(Settings.AppliesTo(def, scope), "preset: " .. key .. " does not apply to " .. scope)
+            assert(Settings.Validate(def, value) == value or def.type == "color", "preset: invalid " .. key)
+            local d = def.default
+            if type(d) ~= "table" or d._ == nil then d = { _ = d } end
+            if scope == "general" then d._ = value else d[scope] = value end
+            def.default = d
+        end
+    end
+end
+
 -- def.only (optional) limits a frame setting to some frames, e.g.
 -- { party = true } for the party layout.
 function Settings.AppliesTo(def, scope)

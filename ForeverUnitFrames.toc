@@ -9,6 +9,7 @@ Locales\enUS.lua
 Core\Init.lua
 Core\Secrets.lua
 Core\Settings.lua
+Core\Preset.lua
 Core\Config.lua
 Core\Codec.lua
 Core\MacroBackup.lua

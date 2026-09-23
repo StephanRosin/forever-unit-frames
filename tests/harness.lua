@@ -33,19 +33,37 @@ function H.TocFiles()
     return files
 end
 
+-- The shipped look. Tests run against the plain defaults so they do not
+-- change with the look; test_preset.lua loads it with H.LoadShipped.
+H.PRESET = "Core/Preset.lua"
+
+local function withoutPreset(files)
+    local out = {}
+    for _, f in ipairs(files) do
+        if f ~= H.PRESET then out[#out + 1] = f end
+    end
+    return out
+end
+
 -- Fresh mock + fresh namespace, every file loaded like the client does:
--- chunk(addonName, ns). `files` defaults to the whole TOC. XML files are
--- not loaded; the mock mirrors their templates (see M.templates).
+-- chunk(addonName, ns). `files` defaults to the whole TOC without the
+-- preset. XML files are not loaded; the mock mirrors their templates (see
+-- M.templates).
 function H.LoadAddon(files)
     M.Reset()
     local ns = {}
-    for _, f in ipairs(files or H.TocFiles()) do
+    for _, f in ipairs(files or withoutPreset(H.TocFiles())) do
         if not f:match("%.xml$") then
             local chunk = assert(loadfile(ADDONDIR .. "/" .. f))
             chunk("ForeverUnitFrames", ns)
         end
     end
     return ns
+end
+
+-- The addon exactly as shipped, preset included.
+function H.LoadShipped()
+    return H.LoadAddon(H.TocFiles())
 end
 
 -- Whole file as a string (for checks on XML the tests cannot load).
