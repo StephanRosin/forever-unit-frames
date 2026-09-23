@@ -98,10 +98,20 @@ local SIDES = {
     BOTTOMLEFT = { -1, -1 }, BOTTOM = { 0, -1 }, BOTTOMRIGHT = { 1, -1 },
 }
 
+-- The vertical side (1 top, -1 bottom) where region touches the frame and
+-- carries no ring: a docked castbar's side towards the frame. 0: none.
+local function seamSide(frame, region)
+    if not frame.castbar or region ~= frame.castbar.box then return 0 end
+    local placement = ns.Castbar.Placement(frame.key)
+    if placement == "BELOW" then return 1 end
+    if placement == "ABOVE" then return -1 end
+    return 0
+end
+
 -- A group's offset from its anchor region, on the pixel grid. Offsets
 -- count from the outer border: a group that sits outside the unit box or
--- a castbar box, across the edge its frame point names, is pushed out by
--- the border's extent on that axis.
+-- a castbar box, across an edge its frame point names that carries the
+-- ring, is pushed out by the border's extent on that axis.
 function Auras.AnchorOffset(frame, key, region)
     local scope = frame.key
     local x, y = Pixel.Snap(Config.Get(scope, key .. "X")), Pixel.Snap(Config.Get(scope, key .. "Y"))
@@ -110,7 +120,7 @@ function Auras.AnchorOffset(frame, key, region)
     local extent = ns.Border.Extent(scope)
     local at, own = SIDES[Config.Get(scope, key .. "FramePoint")], SIDES[Config.Get(scope, key .. "Point")]
     if at[1] ~= 0 and own[1] == -at[1] then x = x + at[1] * extent end
-    if at[2] ~= 0 and own[2] == -at[2] then y = y + at[2] * extent end
+    if at[2] ~= 0 and own[2] == -at[2] and at[2] ~= seamSide(frame, region) then y = y + at[2] * extent end
     return x, y
 end
 

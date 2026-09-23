@@ -112,12 +112,21 @@ local function paint(bar)
     end
 end
 
+-- Shows or hides the bar and tells the unit's shape: a docked castbar
+-- joins the frame's block while shown (Elements/Shape.lua). Told here, not
+-- from OnShow / OnHide: those do not fire while the frame is hidden.
+local function setShown(bar, shown)
+    bar:SetShown(shown)
+    local frame = bar:GetParent()
+    if frame.unitBox then ns.Shape.Refresh(frame) end
+end
+
 -- Idle: hidden, or with "Always show" an empty bar that holds its place.
 function Castbar.Stop(bar)
     bar.cast = nil
     local scope = bar.scope
     if not (Config.Get(scope, "castbarEnabled") and Config.Get(scope, "castbarAlwaysShow")) then
-        bar:Hide()
+        setShown(bar, false)
         return
     end
     bar:SetMinMaxValues(0, 1)
@@ -127,7 +136,7 @@ function Castbar.Stop(bar)
     bar.text:SetText("")
     bar.time:SetText("")
     bar.icon:SetTexture(nil)
-    bar:Show()
+    setShown(bar, true)
 end
 
 -- Puts the unit's current cast (or channel) on the bar. Returns false
@@ -144,7 +153,7 @@ function Castbar.Begin(bar, unit, channel, castGUID)
     bar.icon:SetTexture(info[3])
     bar:SetValue(now())
     Castbar.UpdateTime(bar)
-    bar:Show()
+    setShown(bar, true)
     return true
 end
 
@@ -302,10 +311,12 @@ function Castbar.Style(frame)
     -- inside its border (Elements/Shape.lua). Detached, it is a block of
     -- its own with its own border.
     if Castbar.Placement(scope) == "DETACHED" then
-        ns.Corners.Fit(bar.clip, bar.box, ns.Corners.Radius(scope))
-        ns.Border.Draw(bar, scope, bar.box)
+        local w, h = size(scope)
+        local radius = ns.Corners.Clamp(ns.Corners.Radius(scope), w, h)
+        ns.Corners.Fit(bar.clip, bar.box, radius)
+        ns.Border.Draw(bar, scope, bar.box, radius)
     else
-        ns.Corners.Fit(bar.clip, frame.unitBox or frame, ns.Corners.Radius(scope))
+        ns.Corners.Fit(bar.clip, frame.unitBox, ns.Shape.Radius(frame))
         ns.Border.Hide(bar)
     end
     local font = ns.Media.Font(Config.Get(scope, "fontFace"))
@@ -351,7 +362,7 @@ function Castbar.Preview(frame, on)
     bar.text:SetText(ns.L.TEST_CAST)
     bar.icon:SetTexture(Castbar.PREVIEW_ICON)
     bar.time:SetText(bar.time:IsShown() and "1.5" or "")
-    bar:Show()
+    setShown(bar, true)
 end
 
 function Castbar.Update(frame, event, _, castGUID)

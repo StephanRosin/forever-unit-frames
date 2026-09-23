@@ -488,12 +488,22 @@ local function newWidget(kind, name, parent)
     end
     function w:GetPoint(i) local p = self._points[i or 1]; if p then return unpack(p) end end
     function w:GetCenter() return self._cx or 0, self._cy or 0 end
-    -- OnShow/OnHide fire on a real change of the frame's own state (the
-    -- mock does not propagate them to children).
+    -- Shown, and every parent shown too.
+    function w:IsVisible()
+        if not self._shown then return false end
+        local parent = self._parent
+        if type(parent) ~= "table" or not parent.IsVisible then return true end
+        return parent:IsVisible()
+    end
+    -- OnShow/OnHide fire only when the frame's effective visibility
+    -- changes, as in the client: hiding a frame whose parent is hidden
+    -- fires nothing. (The mock does not propagate them to children.)
     function w:SetShown(v)
         v = not not v
         if v == self._shown then return end
+        local wasVisible = self:IsVisible()
         self._shown = v
+        if self:IsVisible() == wasVisible then return end
         local script = self._scripts[v and "OnShow" or "OnHide"]
         if script then script(self) end
     end

@@ -66,19 +66,22 @@ H.check("square: health background unmasked", masked(f.healthBg), 0)
 H.check("square: masks hidden", f.clip.masks[1]:IsShown(), false)
 H.check("radius 0", Co.Radius("target"), 0)
 
--- General radius 6 reaches every frame.
+-- General radius 6 reaches every frame. A frame with a docked castbar
+-- carries its four corner masks plus two for the castbar's side of the
+-- block (Elements/Shape.lua); the player's castbar is off.
+local BLOCK = 6
 C.Set("general", "cornerRadius", 6)
 H.check("radius", Co.Radius("target"), 6)
 for _, name in ipairs({ "title", "healthBg", "powerBg", "portraitBg", "portrait2D" }) do
-    H.check(name .. " rounded", masked(f[name]), 4)
+    H.check(name .. " rounded", masked(f[name]), BLOCK)
 end
-H.check("health fill rounded", masked(f.health:GetStatusBarTexture()), 4)
-H.check("power fill rounded", masked(f.power:GetStatusBarTexture()), 4)
+H.check("health fill rounded", masked(f.health:GetStatusBarTexture()), BLOCK)
+H.check("power fill rounded", masked(f.power:GetStatusBarTexture()), BLOCK)
 for i, mask in ipairs(f.clip.masks) do
     local point = Co.POINTS[i]
     local p, rel, relPoint = mask:GetPoint(1)
     H.check("mask " .. i .. " in its corner", p, point)
-    H.check("mask " .. i .. " of the unit box", rel, f.unitBox)
+    H.check("mask " .. i .. " of the frame", rel, f)
     H.check("mask " .. i .. " same corner", relPoint, point)
     H.check("mask " .. i .. " size", mask:GetWidth(), 6)
     H.check("mask " .. i .. " file", mask._texture, Co.TEXTURE)
@@ -94,7 +97,7 @@ H.check("badge ring not clipped", masked(f.classRing), badgeMasks)
 
 -- Restyling does not stack masks.
 C.Set("general", "cornerRadius", 8)
-H.check("still four masks", masked(f.healthBg), 4)
+H.check("no masks stacked", masked(f.healthBg), BLOCK)
 H.check("new size", f.clip.masks[1]:GetWidth(), 8)
 
 -- Castbar: its own block, icon (and the slot behind it) included.
@@ -120,4 +123,4 @@ H.check("other frames keep theirs", masked(ns.Frames.player.healthBg), 4)
 local header = ns.Party.Create()
 M.units.party1 = { name = "Ann", health = 1, healthMax = 2 }
 M.SetGroup({ "party1" })
-H.check("party rounded", masked(header:GetAttribute("child1").healthBg), 4)
+H.check("party rounded", masked(header:GetAttribute("child1").healthBg), BLOCK)

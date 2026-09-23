@@ -79,8 +79,12 @@ M.FireEvent("PLAYER_LOGIN")
 M.RunTimers()
 local C, B = ns.Config, ns.Border
 local f = ns.Frames.target
-local b = f.border
-local box = f.unitBox
+-- Two rings, each on a plain holder frame of its own: one around the
+-- frame, one around the unit box (frame plus the docked castbar's slot).
+-- Which one shows follows the castbar; nothing is re-anchored for that.
+local box = f.frameRing
+local b = box.border
+local unit = f.unitBox
 local function point(region, name)
     for i = 1, #region._points do
         local p = { region:GetPoint(i) }
@@ -103,17 +107,25 @@ H.checkTrue("shown", b[1]:IsShown() and b.corners[4]:IsShown())
 H.check("colour", b[2]._color[4], 1)
 H.check("flat: no gradient", b[1]._gradient, nil)
 H.check("flat: no inner line", b.line[1]:IsShown(), false)
-H.check("no shadow by default", f.shadow[1]:IsShown(), false)
+H.check("no shadow by default", box.shadow[1]:IsShown(), false)
 
--- The box is the frame while no castbar shows.
-H.check("idle castbar: box bottom on the frame", point(box, "BOTTOMRIGHT")[5], 0)
-H.check("box top on the frame", point(box, "TOPLEFT")[5], 0)
+-- The frame ring's holder covers the frame; the unit box takes in the
+-- docked castbar's slot for good (target: docked below).
+local reach = ns.Castbar.Gap("target") + ns.Castbar.Height("target")
+H.check("frame holder on the frame", box._allPoints, f)
+H.check("block holder on the unit box", f.blockRing._allPoints, unit)
+H.check("unit box: the castbar's slot below", point(unit, "BOTTOMRIGHT")[5], -reach)
+H.check("unit box top on the frame", point(unit, "TOPLEFT")[5], 0)
+H.check("idle castbar: frame ring", box:IsShown(), true)
+H.check("idle castbar: no block ring", f.blockRing:IsShown(), false)
 
--- The class badge stays above ring and shadow: they are textures of the
--- frame itself, the badge is a frame 20 levels up.
-H.check("ring drawn by the frame", b[1]:GetParent(), f)
-H.check("shadow drawn by the frame", f.shadow[1]:GetParent(), f)
+-- The class badge stays above ring and shadow: they are textures of
+-- plain holders just above the frame, the badge is 20 levels up.
+H.check("ring on its holder", b[1]:GetParent(), box)
+H.check("holder a plain child of the frame", box:GetParent(), f)
+H.check("shadow on the holder", box.shadow[1]:GetParent(), box)
 H.check("badge above", f.classBadge:GetFrameLevel(), f:GetFrameLevel() + 20)
+H.checkTrue("badge above the holders", f.classBadge:GetFrameLevel() > f.blockRing:GetFrameLevel())
 
 -- Thicker, padded.
 C.Set("general", "borderSize", 4)
@@ -151,7 +163,7 @@ C.Set("target", "borderSize", 0)
 H.check("override: off", b[1]:IsShown(), false)
 H.check("override: corners off", b.corners[1]:IsShown(), false)
 H.check("no border: no extent", B.Extent("target"), 0)
-H.checkTrue("other frames keep theirs", ns.Frames.player.border[1]:IsShown())
+H.checkTrue("other frames keep theirs", ns.Frames.player.frameRing.border[1]:IsShown())
 C.Set("target", "borderSize", 4)
 C.Set("target", "borderColor", { 1, 0, 0, 1 })
 H.check("own colour", b[1]._color[1], 1)
@@ -167,25 +179,42 @@ H.check("hidden: size setting kept", C.Get("target", "borderSize"), 4)
 C.Set("target", "borderShow", true)
 H.check("shown again", b[1]:IsShown(), true)
 
--- Gold: bevelled, lighter at the top and left, darker at the bottom and
--- right, a dark line along the inside; the colour setting is not used.
+-- Gold: lit from above, one continuous vertical shading over the whole
+-- ring: light at the top, dark at the bottom, with a dark line along the
+-- inside; the colour setting is not used.
 local function colour(c)
-    if c.r then return ("%.2f,%.2f,%.2f"):format(c.r, c.g, c.b) end
-    return ("%.2f,%.2f,%.2f"):format(c[1], c[2], c[3])
+    if c.r then return ("%.3f,%.3f,%.3f"):format(c.r, c.g, c.b) end
+    return ("%.3f,%.3f,%.3f"):format(c[1], c[2], c[3])
+end
+local function mix(a, z, t)
+    return { a[1] + (z[1] - a[1]) * t, a[2] + (z[2] - a[2]) * t, a[3] + (z[3] - a[3]) * t }
+end
+local function shade(piece) -- bottom colour, top colour of a vertical gradient
+    local g = piece._gradient
+    H.check("vertical gradient", g and g[1], "VERTICAL")
+    return g and colour(g[2]), g and colour(g[3])
 end
 C.Set("target", "borderStyle", "GOLD")
-local g = b[1]._gradient
-H.check("top edge: vertical gradient", g and g[1], "VERTICAL")
-H.check("top edge: light outside (top)", g and colour(g[3]), colour(B.GOLD.LIGHT))
-H.check("top edge: gold inside (bottom)", g and colour(g[2]), colour(B.GOLD.MID))
-g = b[2]._gradient
-H.check("bottom edge: dark outside (bottom)", g and colour(g[2]), colour(B.GOLD.DARK))
-g = b[3]._gradient
-H.check("left edge: horizontal", g and g[1], "HORIZONTAL")
-H.check("left edge: light outside (left)", g and colour(g[2]), colour(B.GOLD.LIGHT))
-g = b[4]._gradient
-H.check("right edge: dark outside (right)", g and colour(g[3]), colour(B.GOLD.DARK))
-H.checkTrue("corners shaded too", b.corners[1]._gradient and b.corners[4]._gradient)
+local G = B.GOLD
+local function checkGold(label, corner)
+    local t = 4 / corner -- the edges are 4 thick, the corner squares `corner`
+    local low, high = shade(b[1])
+    H.check(label .. "top edge: light outside", high, colour(G.LIGHT))
+    H.check(label .. "top edge: as far down the fade as it reaches", low, colour(mix(G.LIGHT, G.MID, t)))
+    low, high = shade(b.corners[1])
+    H.check(label .. "top corner: light to mid over its height", low .. " " .. high, colour(G.MID) .. " " .. colour(G.LIGHT))
+    H.check(label .. "top right corner the same", shade(b.corners[2]), colour(G.MID))
+    low, high = shade(b[3])
+    H.check(label .. "left edge: from the corner's mid", high, colour(G.MID))
+    H.check(label .. "left edge: down to the shade", low, colour(G.SHADE))
+    H.check(label .. "right edge the same", shade(b[4]), colour(G.SHADE))
+    low, high = shade(b.corners[3])
+    H.check(label .. "bottom corner: shade to dark", low .. " " .. high, colour(G.DARK) .. " " .. colour(G.SHADE))
+    low, high = shade(b[2])
+    H.check(label .. "bottom edge: dark outside", low, colour(G.DARK))
+    H.check(label .. "bottom edge: as far up the fade as it reaches", high, colour(mix(G.DARK, G.SHADE, t)))
+end
+checkGold("square: ", 4)
 H.check("white base under the gradient", b[1]._texColor and b[1]._texColor[1], 1)
 local line = b.line
 H.checkTrue("inner line shown", line[1]:IsShown() and line.corners[1]:IsShown())
@@ -194,6 +223,7 @@ H.check("inner line on the inside of the ring", point(line[1], "BOTTOMLEFT")[5],
 H.check("inner line dark", line[1]._color[1], B.GOLD.LINE[1])
 H.check("inner line over the ring", select(2, line[1]:GetDrawLayer()) > select(2, b[1]:GetDrawLayer()), true)
 C.Set("target", "cornerRadius", 5)
+checkGold("round: ", 5 + 6)
 H.check("gold, round: ring corner masked", b.corners[1]:GetNumMaskTextures(), 2)
 H.check("gold, round: inner line corner masked", line.corners[1]:GetNumMaskTextures(), 2)
 H.check("inner line concentric: its corner", line.corners[1]:GetWidth(), 5 + 2 + 1)
@@ -209,7 +239,7 @@ H.check("flat again: inner line hidden", line[1]:IsShown(), false)
 C.ClearOverride("target", "borderColor")
 
 -- Drop shadow: soft pieces around the ring, none under the frame.
-local sh = f.shadow
+local sh = box.shadow
 C.Set("target", "shadowEnabled", true)
 C.Set("target", "shadowSize", 5)
 C.Set("target", "shadowAlpha", 40)
@@ -248,76 +278,157 @@ C.Set("target", "shadowEnabled", false)
 H.check("shadow off", sh[1]:IsShown(), false)
 H.check("shadow corners off", sh.corners[2]:IsShown(), false)
 
--- A docked castbar joins the box while it shows.
+-- A docked castbar joins the block while it shows: the block ring shows
+-- instead of the frame ring, the frame's corners next to the castbar go
+-- square (their masks hidden), the block's corners below are round.
 local bar = f.castbar
+local blockRing = f.blockRing
+C.Set("general", "cornerRadius", 6)
+H.check("frame masks in the frame's corners", select(2, f.clip.masks[3]:GetPoint(1)), f)
+H.check("docked-side masks in the unit box's corners", select(2, f.dockClip.masks[1]:GetPoint(1)), unit)
+H.check("docked-side masks: bottom left", f.dockClip.masks[1]:GetPoint(1), "BOTTOMLEFT")
+H.check("docked-side masks: bottom right", f.dockClip.masks[2]:GetPoint(1), "BOTTOMRIGHT")
+H.check("frame textures carry both sets", f.healthBg:GetNumMaskTextures(), 6)
+H.check("docked castbar masks on the unit box", select(2, bar.clip.masks[4]:GetPoint(1)), unit)
+H.check("docked castbar rounded", bar.bg:GetNumMaskTextures(), 4)
+local function joined()
+    return blockRing:IsShown() and not box:IsShown()
+        and not f.clip.masks[3]:IsShown() and not f.clip.masks[4]:IsShown()
+        and f.clip.masks[1]:IsShown() and f.dockClip.masks[1]:IsShown() and f.dockClip.masks[2]:IsShown()
+end
+local function apart()
+    return box:IsShown() and not blockRing:IsShown()
+        and f.clip.masks[3]:IsShown() and f.clip.masks[4]:IsShown()
+        and not f.dockClip.masks[1]:IsShown() and not f.dockClip.masks[2]:IsShown()
+end
+H.checkTrue("idle: the frame alone", apart())
 M.units.target = { name = "Foe", health = 1, healthMax = 1,
     cast = { name = "Bolt", texture = 1, startMs = 1000000, endMs = 1002000 } }
 M.FireEvent("UNIT_SPELLCAST_START", "target", "c1", 1)
-local reach = ns.Castbar.Gap("target") + ns.Castbar.Height("target")
-H.check("casting: box takes the castbar in", point(box, "BOTTOMRIGHT")[5], -reach)
+H.checkTrue("casting: one block", joined())
 H.check("docked castbar: no border of its own", bar.border == nil or not bar.border[1]:IsShown(), true)
 -- One more row of the frame: the same seam as between its own rows.
 H.check("docked seam: the rows' gap", ns.Castbar.Gap("target"), f.gap)
 H.check("docked castbar right under the frame", point(bar, "TOPLEFT")[5], -f.gap)
 M.units.target.cast = nil
 M.FireEvent("UNIT_SPELLCAST_STOP", "target", "c1", 1)
-H.check("cast over: box back to the frame", point(box, "BOTTOMRIGHT")[5], 0)
+H.checkTrue("cast over: the frame alone again", apart())
+
+-- The castbar can hide while the frame is hidden (no OnHide then in the
+-- client); showing the frame again still brings back the frame alone.
+M.units.target.cast = { name = "Bolt", texture = 1, startMs = 1000000, endMs = 1002000 }
+M.FireEvent("UNIT_SPELLCAST_START", "target", "c1", 1)
+H.checkTrue("casting again", joined())
+f:Hide()
+M.units.target.cast = nil
+M.FireEvent("UNIT_SPELLCAST_STOP", "target", "c1", 1)
+f:Show()
+H.checkTrue("hidden while the cast ended: the frame alone", apart())
+f:Hide()
+bar:Show() -- a castbar shown while its frame was hidden
+f:Show()
+H.checkTrue("frame shown again: follows the castbar", joined())
+ns.Castbar.Stop(bar)
+
+-- In combat nothing is anchored: switching only shows and hides plain
+-- holders and masks.
+local function guard(region)
+    for _, method in ipairs({ "SetPoint", "ClearAllPoints", "SetAllPoints", "SetSize" }) do
+        local original = region[method]
+        region[method] = function(self, ...)
+            assert(not M.combat, "re-anchored in combat")
+            return original(self, ...)
+        end
+    end
+end
+for _, region in ipairs({ unit, box, blockRing, f.clip.masks[3], f.dockClip.masks[1], bar.clip.masks[1] }) do
+    guard(region)
+end
+M.combat = true
+M.units.target.cast = { name = "Bolt", texture = 1, startMs = 1000000, endMs = 1002000 }
+M.FireEvent("UNIT_SPELLCAST_START", "target", "c1", 1)
+H.checkTrue("combat cast: one block", joined())
+M.units.target.cast = nil
+M.FireEvent("UNIT_SPELLCAST_STOP", "target", "c1", 1)
+H.checkTrue("combat stop: the frame alone", apart())
+M.SetCombat(false)
+
+-- Above: the slot and the docked-side masks move to the top.
 C.Set("target", "castbarPosition", "ABOVE")
+H.check("above: unit box grows upwards", point(unit, "TOPLEFT")[5], reach)
+H.check("above: bottom on the frame", point(unit, "BOTTOMRIGHT")[5], 0)
+H.check("above: docked-side masks top left", f.dockClip.masks[1]:GetPoint(1), "TOPLEFT")
 ns.Castbar.Preview(f, true)
-H.check("above: box grows upwards", point(box, "TOPLEFT")[5], reach)
-H.check("above: bottom on the frame", point(box, "BOTTOMRIGHT")[5], 0)
+H.checkTrue("above: frame's top masks hidden", not f.clip.masks[1]:IsShown() and f.clip.masks[3]:IsShown())
 ns.Castbar.Preview(f, false)
+C.Set("target", "castbarPosition", "BELOW")
 
 -- Room for the border in the docked depth (party spacing uses it).
 H.check("docked depth counts the whole ring", ns.Castbar.DockedDepth("target"),
     ns.Castbar.Gap("target") + ns.Castbar.Height("target") + 6)
 
--- Rounded as one block: the masks sit in the unit box's corners, so the
--- frame's corners next to a shown castbar stay square and the castbar's
--- outer corners are round.
-C.Set("target", "castbarPosition", "BELOW")
-C.Set("general", "cornerRadius", 6)
-H.check("frame masks on the unit box", select(2, f.clip.masks[3]:GetPoint(1)), box)
-H.check("docked castbar masks on the unit box", select(2, bar.clip.masks[4]:GetPoint(1)), box)
-H.check("docked castbar still rounded", bar.bg:GetNumMaskTextures(), 4)
-ns.Castbar.Preview(f, true)
-H.check("castbar shows: box to its bottom", point(box, "BOTTOMRIGHT")[5], -reach)
-ns.Castbar.Preview(f, false)
-H.check("castbar gone: box is the frame, frame corners round again", point(box, "BOTTOMRIGHT")[5], 0)
-C.Set("general", "cornerRadius", 0)
+-- The radius never exceeds half the box's shorter side.
+H.check("clamp helper", ns.Corners.Clamp(12, 220, 8), 4)
+H.check("clamp helper: fits", ns.Corners.Clamp(3, 220, 8), 3)
+C.Set("target", "height", 8)
+C.Set("target", "cornerRadius", 12)
+H.check("low frame: masks clamped", f.clip.masks[1]:GetWidth(), 4)
+H.check("low frame: ring corner clamped", b.corners[1]:GetWidth(), 4 + 6)
+local sideInset = -point(b[3], "TOPRIGHT")[5]
+H.check("low frame: left edge from corner to corner", sideInset, 4)
+H.checkTrue("ring edge never negative", f:GetHeight() - 2 * sideInset >= 0)
+C.ClearOverride("target", "height")
 
 -- Detached: the castbar has its own ring around bar and icon.
 C.Set("target", "castbarPosition", "DETACHED")
 ns.Castbar.Preview(f, true)
 H.checkTrue("detached: own border", bar.border and bar.border[1]:IsShown())
 H.check("detached: around the castbar box", point(bar.border[1], "BOTTOMLEFT")[2], bar.box)
-H.check("detached: frame box without castbar", point(box, "TOPLEFT")[5], 0)
-H.check("detached: frame box bottom without castbar", point(box, "BOTTOMRIGHT")[5], 0)
+H.check("detached: unit box without castbar", point(unit, "TOPLEFT")[5], 0)
+H.check("detached: unit box bottom without castbar", point(unit, "BOTTOMRIGHT")[5], 0)
+H.checkTrue("detached: the frame ring", box:IsShown() and not blockRing:IsShown())
 H.check("detached: masks on its own box", select(2, bar.clip.masks[1]:GetPoint(1)), bar.box)
-H.check("detached: old gap no longer used", ns.Castbar.DockedDepth("target"), 0)
+H.check("detached: radius clamped to the castbar (16 high)", bar.clip.masks[1]:GetWidth(), 8)
+H.check("detached: ring clamped too", bar.border.corners[1]:GetWidth(), 8 + 6)
+H.check("detached: no docked depth", ns.Castbar.DockedDepth("target"), 0)
 C.Set("target", "castbarPosition", "BELOW")
 H.check("docked again: castbar ring hidden", bar.border[1]:IsShown(), false)
 ns.Castbar.Preview(f, false)
+C.ClearOverride("target", "cornerRadius")
 
 -- "Always show": the empty castbar belongs to the block all the time.
 C.Set("target", "castbarAlwaysShow", true)
-H.check("always shown: box takes it in", point(box, "BOTTOMRIGHT")[5], -reach)
+H.checkTrue("always shown: one block", joined())
 C.Set("target", "castbarAlwaysShow", false)
-H.check("not always: box back", point(box, "BOTTOMRIGHT")[5], 0)
+H.checkTrue("not always: the frame alone", apart())
 
 -- Auras anchored to the unit block land outside the ring.
 local debuffs = f.auras.debuffs
 local _, rel, _, x, y = debuffs.holder:GetPoint(1)
-H.check("auras on the unit box", rel, box)
+H.check("auras on the unit box", rel, unit)
 H.check("auras above the ring", y, C.Get("target", "debuffsY") + B.Extent("target"))
 H.check("x along the edge unchanged", x, 0)
 C.Set("target", "debuffsFramePoint", "BOTTOMLEFT")
 C.Set("target", "debuffsPoint", "TOPLEFT")
 _, rel, _, x, y = debuffs.holder:GetPoint(1)
-H.check("below the ring", y, C.Get("target", "debuffsY") - B.Extent("target"))
+H.check("below the ring (under the castbar's slot)", y, C.Get("target", "debuffsY") - B.Extent("target"))
 C.Set("target", "debuffsAnchor", "CASTBAR")
-_, rel = debuffs.holder:GetPoint(1)
+_, rel, _, x, y = debuffs.holder:GetPoint(1)
 H.check("castbar anchor: its whole box", rel, bar.box)
+H.check("castbar's outer edge: pushed", y, C.Get("target", "debuffsY") - B.Extent("target"))
+C.Set("target", "debuffsFramePoint", "TOPLEFT")
+C.Set("target", "debuffsPoint", "BOTTOMLEFT")
+_, rel, _, x, y = debuffs.holder:GetPoint(1)
+H.check("castbar's edge on the frame: no ring there, no push", y, C.Get("target", "debuffsY"))
+C.Set("target", "debuffsFramePoint", "RIGHT")
+C.Set("target", "debuffsPoint", "LEFT")
+_, rel, _, x = debuffs.holder:GetPoint(1)
+H.check("castbar's outer side: pushed", x, C.Get("target", "debuffsX") + B.Extent("target"))
+C.Set("target", "castbarPosition", "DETACHED")
+C.Set("target", "debuffsFramePoint", "TOPLEFT")
+C.Set("target", "debuffsPoint", "BOTTOMLEFT")
+_, rel, _, x, y = debuffs.holder:GetPoint(1)
+H.check("detached castbar: ringed all round", y, C.Get("target", "debuffsY") + B.Extent("target"))
 C.Set("target", "debuffsAnchor", "HEALTH")
 _, rel, _, x, y = debuffs.holder:GetPoint(1)
 H.check("inner regions: no push", y, C.Get("target", "debuffsY"))
@@ -328,5 +439,5 @@ C.Set("general", "borderSize", 4)
 ns.Options.Open("target")
 local hl = f.optionsHighlight
 H.check("highlight outside the border", point(hl[1], "BOTTOMLEFT")[5], B.Extent("target"))
-H.check("highlight around the unit box", point(hl[1], "BOTTOMLEFT")[2], box)
+H.check("highlight around the unit box", point(hl[1], "BOTTOMLEFT")[2], unit)
 M.RunTimers()

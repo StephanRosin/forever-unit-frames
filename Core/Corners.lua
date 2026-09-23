@@ -26,6 +26,15 @@ function Corners.Radius(scope)
     return Pixel.Snap(r, nil, 1)
 end
 
+-- radius, but never more than half the shorter side of a w x h box (whole
+-- pixels): a larger one would overlap the corners and turn the ring's
+-- edges inside out.
+function Corners.Clamp(radius, w, h)
+    local one = Pixel.One()
+    local limit = math.floor(math.min(w, h) / 2 / one + 1e-6) * one
+    return math.min(radius, limit)
+end
+
 -- Mask i (1..4, Corners.POINTS order) of file on owner.
 function Corners.NewMask(owner, file, i)
     local mask = owner:CreateMaskTexture()
@@ -43,10 +52,12 @@ function Corners.Add(owner, target)
     table.insert(owner.cornerTargets, target)
 end
 
--- The four masks of owner, made once, for the textures Corners.Add listed.
-function Corners.Clipper(owner)
+-- The masks of owner (four, or count), made once, for the textures
+-- Corners.Add listed. clip.corners (optional) names the corner each mask
+-- takes (Corners.POINTS index); by default mask i takes corner i.
+function Corners.Clipper(owner, count)
     local clip = { masks = {}, targets = owner.cornerTargets or {} }
-    for i = 1, 4 do clip.masks[i] = Corners.NewMask(owner, Corners.TEXTURE, i) end
+    for i = 1, count or 4 do clip.masks[i] = Corners.NewMask(owner, Corners.TEXTURE, i) end
     return clip
 end
 
@@ -55,15 +66,18 @@ local function resolve(target)
     return target
 end
 
--- Puts masks on texture (on) or takes them off again. A texture is
--- masked once; its own field remembers it.
+-- Puts a set of masks on texture (on) or takes it off again. A set goes
+-- on once; the texture remembers each set by its first mask, so several
+-- sets (a frame's corners, a docked castbar's) can share one texture.
 function Corners.SetMasked(texture, masks, on)
-    if on and not texture.fufRounded then
+    texture.fufMasked = texture.fufMasked or {}
+    local key = masks[1]
+    if on and not texture.fufMasked[key] then
         for _, mask in ipairs(masks) do texture:AddMaskTexture(mask) end
-        texture.fufRounded = true
-    elseif not on and texture.fufRounded then
+        texture.fufMasked[key] = true
+    elseif not on and texture.fufMasked[key] then
         for _, mask in ipairs(masks) do texture:RemoveMaskTexture(mask) end
-        texture.fufRounded = nil
+        texture.fufMasked[key] = nil
     end
 end
 
@@ -71,8 +85,11 @@ end
 function Corners.Fit(clip, box, radius)
     local on = radius > 0
     for i, mask in ipairs(clip.masks) do
+        local corner = clip.corners and clip.corners[i] or i
+        local c = Corners.COORDS[corner]
+        mask:SetTexCoord(c[1], c[2], c[3], c[4])
         mask:ClearAllPoints()
-        mask:SetPoint(Corners.POINTS[i], box, Corners.POINTS[i], 0, 0)
+        mask:SetPoint(Corners.POINTS[corner], box, Corners.POINTS[corner], 0, 0)
         mask:SetSize(radius, radius)
         mask:SetShown(on)
     end

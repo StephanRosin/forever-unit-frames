@@ -30,11 +30,12 @@ local HALF_U, HALF_V = 0.5 / SHADOW_WIDTH, 0.5 / CELL
 local EDGE_U, EDGE_V = (CELL - 0.5) / SHADOW_WIDTH, (CELL - 0.5) / CELL
 
 -- Gold shades. LIGHT and MID are Blizzard's own gold gradient (the
--- animated dispel border, Blizzard_PrivateAurasUI.lua); DARK and LINE
--- are the same hue, darker.
+-- animated dispel border, Blizzard_PrivateAurasUI.lua); SHADE, DARK and
+-- LINE are the same hue, darker.
 Border.GOLD = {
     LIGHT = { 1, 1, 0.557, 1 },
     MID = { 1, 0.792, 0.188, 1 },
+    SHADE = { 0.78, 0.59, 0.13, 1 },
     DARK = { 0.55, 0.38, 0.07, 1 },
     LINE = { 0.2, 0.12, 0.02, 1 },
 }
@@ -139,6 +140,7 @@ local function placeRing(ring, box, size, padding, radius)
     local corner = round and (radius + reach) or size
     placeEdges(ring, box, size, padding, reach, corner)
     placeCorners(ring, box, size, reach, corner, round)
+    return corner
 end
 
 local function showRing(ring, shown)
@@ -160,23 +162,33 @@ end
 
 local function color(c) return CreateColor(c[1], c[2], c[3], c[4]) end
 
--- Gradients, minColor first: VERTICAL runs bottom to top, HORIZONTAL left
--- to right. Outer halves: top and left light, bottom and right dark. The
--- top corners take the top edge's shading, the bottom ones the bottom's.
-local function goldShades()
-    local G = Border.GOLD
-    local top = { "VERTICAL", color(G.MID), color(G.LIGHT) }
-    local bottom = { "VERTICAL", color(G.DARK), color(G.MID) }
-    local left = { "HORIZONTAL", color(G.LIGHT), color(G.MID) }
-    local right = { "HORIZONTAL", color(G.MID), color(G.DARK) }
-    return { top, bottom, left, right, top, top, bottom, bottom }
+local function mix(from, to, share)
+    local c = {}
+    for i = 1, 4 do c[i] = from[i] + (to[i] - from[i]) * share end
+    return c
 end
 
-local function paintGold(ring)
-    local shades = goldShades()
+-- Lit from above: one vertical shading, continuous over the whole ring.
+-- The top corners fade LIGHT to MID over their height, the sides MID to
+-- SHADE, the bottom corners SHADE to DARK. An edge is only `share` of a
+-- corner's height thick (size / corner square), so it takes that part of
+-- its corner's fade and meets the corner without a step. Gradients are
+-- minColor (bottom) first.
+local function goldShades(share)
+    local G = Border.GOLD
+    local function vertical(bottom, top) return { color(bottom), color(top) } end
+    local top = vertical(mix(G.LIGHT, G.MID, share), G.LIGHT)
+    local bottom = vertical(G.DARK, mix(G.DARK, G.SHADE, share))
+    local side = vertical(G.SHADE, G.MID)
+    local topCorner, bottomCorner = vertical(G.MID, G.LIGHT), vertical(G.DARK, G.SHADE)
+    return { top, bottom, side, side, topCorner, topCorner, bottomCorner, bottomCorner }
+end
+
+local function paintGold(ring, share)
+    local shades = goldShades(share)
     for i, piece in ipairs(ringPieces(ring)) do
         piece:SetColorTexture(1, 1, 1, 1)
-        piece:SetGradient(shades[i][1], shades[i][2], shades[i][3])
+        piece:SetGradient("VERTICAL", shades[i][1], shades[i][2])
     end
 end
 
@@ -252,7 +264,7 @@ local function hideShadow(shadow)
     for i = 1, 4 do shadow.inner[i]:Hide() end
 end
 
-local function drawShadow(owner, scope, box)
+local function drawShadow(owner, scope, box, radius)
     local shadow = owner.shadow
     local size = Border.ShadowSize(scope)
     if size == 0 then
@@ -261,7 +273,6 @@ local function drawShadow(owner, scope, box)
     end
     for _, piece in ipairs(ringPieces(shadow)) do piece:Show() end
     local reach = Border.Extent(scope)
-    local radius = ns.Corners.Radius(scope)
     -- The ring's outer radius; square stays square, as the ring does.
     local outer = radius > 0 and radius + reach or 0
     placeShadowEdges(shadow, box, reach, outer, size)
@@ -282,15 +293,16 @@ local function pieces(owner)
 end
 
 -- Draws owner's border and shadow around box in scope's settings: show,
--- style, size, padding, colour, corner radius, shadow.
-function Border.Draw(owner, scope, box)
+-- style, size, padding, colour, shadow; rounded by radius (default: the
+-- scope's corner radius; callers clamp it to the box).
+function Border.Draw(owner, scope, box, radius)
     local ring = pieces(owner)
     local size, padding = Border.Size(scope), Border.Padding(scope)
-    local radius = ns.Corners.Radius(scope)
-    placeRing(ring, box, size, padding, radius)
+    radius = radius or ns.Corners.Radius(scope)
+    local corner = placeRing(ring, box, size, padding, radius)
     local isGold = Config.Get(scope, "borderStyle") == "GOLD"
     if isGold then
-        paintGold(ring)
+        paintGold(ring, corner > 0 and size / corner or 1)
     else
         paintFlat(ring, Config.Get(scope, "borderColor"))
     end
@@ -304,7 +316,7 @@ function Border.Draw(owner, scope, box)
         paintFlat(ring.line, Border.GOLD.LINE)
     end
     showRing(ring.line, hasLine)
-    drawShadow(owner, scope, box)
+    drawShadow(owner, scope, box, radius)
 end
 
 function Border.Hide(owner)
