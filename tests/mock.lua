@@ -75,6 +75,8 @@ local function newWidget(kind, name, parent)
     function w:GetAlpha() return self._alpha or 1 end
     function w:EnableMouse(v) self._mouse = v end
     function w:IsProtected() return self._protected or false end
+    function w:SetFrameStrata(v) self._strata = v end
+    function w:GetFrameStrata() return self._strata end
     function w:GetEffectiveScale() return 1 end
     -- StatusBar
     function w:SetMinMaxValues(a, b) self._min, self._max = a, b end

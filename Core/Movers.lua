@@ -44,6 +44,10 @@ function Movers.Attach(frame)
     local mover = CreateFrame("Frame", nil, UIParent)
     mover.frameKey = frame.key
     mover:SetMovable(true)
+    -- Unit frames sit at the default MEDIUM strata with opaque bars; without
+    -- this the mover's overlay/label are hidden underneath and the secure
+    -- unit button (mouse enabled) steals the drag instead of the mover.
+    mover:SetFrameStrata("DIALOG")
     mover:SetClampedToScreen(true)
     mover:RegisterForDrag("LeftButton")
     mover:SetScript("OnDragStart", function(self)

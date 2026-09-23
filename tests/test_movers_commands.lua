@@ -9,6 +9,11 @@ H.checkTrue("mover exists", f.mover)
 local _, rel = f:GetPoint(1)
 H.check("frame anchored to mover", rel, f.mover)
 
+-- The mover must draw above its unit frame: otherwise the frame's opaque
+-- bars hide the overlay/label and the secure unit button (mouse enabled)
+-- steals the drag.
+H.check("mover strata above unit frame", f.mover:GetFrameStrata(), "DIALOG")
+
 H.check("snap 13 -> 16", ns.Movers.Snap(13), 16)
 H.check("snap -13 -> -16", ns.Movers.Snap(-13), -16)
 H.check("snap 3 -> 0", ns.Movers.Snap(3), 0)
