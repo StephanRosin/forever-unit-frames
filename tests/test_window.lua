@@ -127,7 +127,7 @@ ns.Config.Set("player", "height", 60)
 click(O.copyRow.button)
 local list = ns.Widgets.list
 H.checkTrue("copy list open", list:IsShown())
-H.check("copy list offers other frames only", #list.items, 1)
+H.check("copy list offers other frames only", #list.items, #ns.Units.List - 1)
 H.check("copy item is player", list.items[1].value, "player")
 H.check("copy button keeps its label", O.copyRow.button.text:GetText(), L.COPY_FROM)
 click(list.rows[1])

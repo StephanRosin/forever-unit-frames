@@ -106,16 +106,41 @@ function Single.SetUnit(frame, unit)
     ns.UnitEvents.Bind(frame)
 end
 
+-- The event an Update gets when a timer, not the game, asked for it.
+Single.POLL = "FUF_POLL"
+
+-- Whole-frame refreshes: the unit changed (target, pet, ...).
+local function listen(frame, def)
+    local listener = CreateFrame("Frame")
+    for _, event in ipairs(def.events) do
+        local unit = def.eventUnit and def.eventUnit[event]
+        if unit then listener:RegisterUnitEvent(event, unit) else listener:RegisterEvent(event) end
+    end
+    listener:SetScript("OnEvent", function(_, event) Single.UpdateAll(frame, event) end)
+end
+
+-- Plain driver frame: OnUpdate on the secure button itself is not needed.
+function Single.Poll(frame, interval)
+    local driver, elapsedTotal = CreateFrame("Frame"), 0
+    driver:SetScript("OnUpdate", function(_, elapsed)
+        elapsedTotal = elapsedTotal + elapsed
+        if elapsedTotal < interval then return end
+        elapsedTotal = 0
+        if frame:IsShown() then Single.UpdateAll(frame, Single.POLL) end
+    end)
+    frame.pollDriver = driver
+end
+
 -- onBuilt (optional) runs right after the frames exist, inside the same
--- out-of-combat run that built them.
+-- out-of-combat run that built them. Group entries (party) are built by
+-- their own module.
 function Single.CreateAll(onBuilt)
     ns.AfterCombat("createSingle", function()
         for _, def in ipairs(ns.Units.List) do
-            if not ns.Frames[def.key] then
+            if def.unit and not ns.Frames[def.key] then
                 local frame = Single.Create(def)
-                for _, event in ipairs(def.events) do
-                    ns.On(event, function(e) Single.UpdateAll(frame, e) end)
-                end
+                listen(frame, def)
+                if def.poll then Single.Poll(frame, def.poll) end
             end
         end
         if onBuilt then onBuilt() end

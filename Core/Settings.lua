@@ -6,7 +6,7 @@ local _, ns = ...
 local Settings = {}
 ns.Settings = Settings
 
-Settings.SCOPES = { "general", "player", "target" }
+Settings.SCOPES = { "general", "player", "target", "targettarget", "pet", "focus", "party" }
 Settings.PREFIX = {
     general = "g", player = "p", target = "t", targettarget = "o",
     pet = "e", focus = "f", party = "y",
@@ -36,9 +36,13 @@ function Settings.Default(def, scope)
     return d
 end
 
+-- def.only (optional) limits a frame setting to some frames, e.g.
+-- { party = true } for the party layout.
 function Settings.AppliesTo(def, scope)
     if scope == "general" then return def.scope ~= "frame" end
-    return def.scope ~= "general"
+    if def.scope == "general" then return false end
+    if def.only then return def.only[scope] == true end
+    return true
 end
 
 local function inList(values, v)
@@ -100,22 +104,22 @@ Settings.Define({ key = "healthColor", code = "HC", scope = "inherit", type = "c
 -- Frame layout
 Settings.Define({ key = "enabled", code = "E", scope = "frame", type = "bool", default = true })
 Settings.Define({ key = "width", code = "W", scope = "frame", type = "int", min = 40, max = 600,
-    default = { player = 220, target = 220, _ = 120 } })
+    default = { player = 220, target = 220, focus = 160, party = 160, _ = 120 } })
 Settings.Define({ key = "height", code = "H", scope = "frame", type = "int", min = 8, max = 200,
-    default = { player = 46, target = 46, _ = 28 } })
+    default = { player = 46, target = 46, focus = 36, party = 36, _ = 28 } })
 Settings.Define({ key = "healthPercent", code = "HP", scope = "frame", type = "int", min = 10, max = 100, default = 75 })
 Settings.Define({ key = "powerPercent", code = "PP", scope = "frame", type = "int", min = 0, max = 90, default = 25 })
 Settings.Define({ key = "powerEnabled", code = "PE", scope = "frame", type = "bool", default = true })
 Settings.Define({ key = "x", code = "X", scope = "frame", type = "int", min = -4000, max = 4000,
-    default = { player = -300, target = 300, _ = 0 } })
+    default = { player = -300, target = 300, targettarget = 480, pet = -352, focus = -300, party = -760, _ = 0 } })
 Settings.Define({ key = "y", code = "Y", scope = "frame", type = "int", min = -4000, max = 4000,
-    default = { player = -220, target = -220, _ = 0 } })
+    default = { player = -220, target = -220, targettarget = -220, pet = -272, focus = -120, party = 120, _ = 0 } })
 
 -- Texts
 Settings.Define({ key = "textHealthLeft", code = "TL", scope = "frame", type = "enum", values = TEXT_TAGS,
     default = { player = "NAME_LEVEL", target = "NAME_LEVEL", _ = "NAME" } })
 Settings.Define({ key = "textHealthRight", code = "TR", scope = "frame", type = "enum", values = TEXT_TAGS,
-    default = { player = "CURRENT_MAX", target = "PERCENT", _ = "NONE" } })
+    default = { player = "CURRENT_MAX", target = "PERCENT", focus = "PERCENT", party = "PERCENT", _ = "NONE" } })
 Settings.Define({ key = "textPowerLeft", code = "UL", scope = "frame", type = "enum", values = TEXT_TAGS, default = "NONE" })
 Settings.Define({ key = "textPowerRight", code = "UR", scope = "frame", type = "enum", values = TEXT_TAGS,
     default = { player = "CURRENT", _ = "NONE" } })
