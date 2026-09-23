@@ -21,7 +21,7 @@ ZIP="$("$HERE/tools/package")"
 METADATA="$(python3 -c 'import json,sys; print(json.dumps({"changelog": sys.argv[1], "changelogType": "markdown", "displayName": "Forever Unit Frames " + sys.argv[2], "gameVersions": [int(sys.argv[3])], "releaseType": sys.argv[4]}))' \
     "$CHANGELOG" "$VERSION" "$GAME_VERSION_ID" "$TYPE")"
 curl -sS --fail-with-body -H "X-Api-Token: $AUTH" \
-    -F "metadata=$METADATA" -F "file=@$ZIP" \
+    --form-string "metadata=$METADATA" -F "file=@$ZIP" \
     "https://wow.curseforge.com/api/projects/$PROJECT_ID/upload-file"
 echo
 git -C "$HERE" tag -a "v$VERSION" -m "Forever Unit Frames $VERSION"
