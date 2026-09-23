@@ -13,11 +13,10 @@ local function place(frame)
     local scope = frame.key
     frame:SetSize(Config.Get(scope, "width"), Config.Get(scope, "height"))
     frame:ClearAllPoints()
-    local anchor = frame.mover or UIParent
     if frame.mover then
         frame:SetPoint("CENTER", frame.mover, "CENTER", 0, 0)
     else
-        frame:SetPoint("CENTER", anchor, "CENTER", Config.Get(scope, "x"), Config.Get(scope, "y"))
+        frame:SetPoint("CENTER", UIParent, "CENTER", Config.Get(scope, "x"), Config.Get(scope, "y"))
     end
 end
 
@@ -102,17 +101,17 @@ local unitEventsRegistered = false
 local function registerUnitEvents()
     if unitEventsRegistered then return end
     unitEventsRegistered = true
-    local seen = {}
+    -- One handler per (element, event) pair: several elements may share an
+    -- event (e.g. Health and Texts both watch UNIT_HEALTH) and each must
+    -- still run its own Update. registerUnitEvents only runs once, so this
+    -- does not create duplicate handlers on repeated calls.
     for _, el in ipairs(ns.Elements) do
         for _, event in ipairs(el.unitEvents or {}) do
-            if not seen[event] then
-                seen[event] = true
-                ns.On(event, function(_, unit)
-                    for _, frame in pairs(ns.Frames) do
-                        if frame.unit == unit and UnitExists(unit) then el.Update(frame, event) end
-                    end
-                end)
-            end
+            ns.On(event, function(_, unit)
+                for _, frame in pairs(ns.Frames) do
+                    if frame.unit == unit and UnitExists(unit) then el.Update(frame, event) end
+                end
+            end)
         end
     end
 end
@@ -132,7 +131,7 @@ function Single.CreateAll()
 end
 
 ns.Listen("CONFIG_CHANGED", function(scope)
-    ns.AfterCombat("restyle", function()
+    ns.AfterCombat("restyle:" .. (scope or "all"), function()
         for key, frame in pairs(ns.Frames) do
             if scope == nil or scope == "general" or scope == key then Single.StyleAll(frame) end
         end
