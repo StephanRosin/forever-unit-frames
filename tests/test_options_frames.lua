@@ -65,12 +65,44 @@ H.check("party castbar: no position", rows.castbarPosition, nil)
 O.Select("pet")
 H.check("pet falls back to its first tab", O.currentTab, "layout")
 
--- Selecting Party outlines the party block.
+-- Selecting Party outlines the whole block, not the raw header: solo
+-- without "show when solo" the header is a sliver of a pixel tall.
 O.Select("party")
-local hl = ns.Party.header.optionsHighlight
+local target = ns.Party.HighlightTarget()
+H.checkTrue("party highlight: not the header", target ~= ns.Party.header)
+local bw, bh = ns.Party.BlockSize()
+H.check("party highlight: block width", target:GetWidth(), bw)
+H.check("party highlight: block height", target:GetHeight(), bh)
+local point, rel, relPoint = target:GetPoint(1)
+H.check("party highlight: hangs from", point, "TOPLEFT")
+H.check("party highlight: the block mover", rel, ns.Party.header.mover)
+H.check("party highlight: its top left", relPoint, "TOPLEFT")
+H.check("party highlight: plain frame", target:IsProtected(), false)
+local hl = target.optionsHighlight
 H.checkTrue("party highlight created", hl)
 H.check("party highlight visible", hl[1]:GetAlpha(), 1)
 M.RunTimers()
+ns.Config.Set("party", "partySpacing", 30)
+O.Select("party")
+H.check("party highlight follows the block size", target:GetHeight(), select(2, ns.Party.BlockSize()))
+M.RunTimers()
+
+-- Switching the player castbar off brings Blizzard's back only after a
+-- /reload; the row says so, on the player page only.
+O.Select("player")
+O.SelectTab("castbar")
+rows = rowKeys()
+H.check("player castbar: reload hint", rows.castbarEnabled.hintText and rows.castbarEnabled.hintText:GetText(),
+    L.HINT_castbarEnabled)
+H.check("reload hint text", L.HINT_castbarEnabled, "Needs /reload after switching off")
+H.checkTrue("reload hint fits",
+    rows.castbarEnabled.hintText.GetStringWidth({ _text = L.HINT_castbarEnabled, _font = { nil, 10 } })
+        <= ns.Widgets.LABEL_MAX_W)
+for _, scope in ipairs({ "target", "party" }) do
+    O.Select(scope)
+    O.SelectTab("castbar")
+    H.check(scope .. " castbar: no reload hint", rowKeys().castbarEnabled.hintText, nil)
+end
 
 -- Every setting label fits the label column (mock: half the font size per
 -- character at 12 px).

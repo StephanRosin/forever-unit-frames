@@ -56,8 +56,10 @@ function Party.SlotOffset(i)
     return 0, -step * (get("height") + Party.Spacing())
 end
 
+-- No handle while the party frame is switched off.
 function Party.MoverSpec()
-    return { scope = Party.KEY, point = "TOPLEFT", size = Party.BlockSize, label = ns.L.FRAME_party }
+    return { scope = Party.KEY, point = "TOPLEFT", size = Party.BlockSize, label = ns.L.FRAME_party,
+        active = function() return get("enabled") end }
 end
 
 -- Header attributes are set in one go; a single relayout follows.
@@ -125,13 +127,10 @@ local function releaseFake(button)
     ns.UnitEvents.Bind(button)
 end
 
-local function showFakes()
-    local block = Party.testBlock
-    if not block then
-        block = CreateFrame("Frame", nil, UIParent)
-        block.key = Party.KEY
-        Party.testBlock = block
-    end
+-- A plain frame covering the whole block (every slot filled), where the
+-- header hangs. Anchored to the block's mover (a plain frame), never to
+-- the secure header, so it stays free to move in combat.
+local function fitToBlock(block)
     local w, h = Party.BlockSize()
     block:SetSize(w, h)
     block:ClearAllPoints()
@@ -141,6 +140,21 @@ local function showFakes()
         block:SetPoint("TOPLEFT", UIParent, "CENTER", get("x") - w / 2, get("y") + h / 2)
     end
     block:SetShown(get("enabled"))
+end
+
+local function plainBlock()
+    local block = CreateFrame("Frame", nil, UIParent)
+    block.key = Party.KEY
+    return block
+end
+
+local function showFakes()
+    local block = Party.testBlock
+    if not block then
+        block = plainBlock()
+        Party.testBlock = block
+    end
+    fitToBlock(block)
     local slots = Party.Slots()
     for i = 1, slots do
         local button = fakeButton(i)
@@ -209,10 +223,15 @@ function Party.OnUnitChanged(button, unit)
     Single.UpdateAll(button)
 end
 
--- What the options window outlines when Party is selected.
+-- What the options window outlines when Party is selected: the whole
+-- block. The header itself is only as big as its shown members, a sliver
+-- when there are none (solo without "show when solo").
 function Party.HighlightTarget()
     if testing and Party.testBlock then return Party.testBlock end
-    return Party.header
+    if not Party.header then return nil end
+    Party.highlightBlock = Party.highlightBlock or plainBlock()
+    fitToBlock(Party.highlightBlock)
+    return Party.highlightBlock
 end
 
 function Party.Create()

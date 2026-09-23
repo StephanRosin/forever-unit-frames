@@ -24,6 +24,11 @@ end
 local ns = H.LoadAddon()
 local B = blizzardFrames()
 ns.Config.Use({})
+-- Blizzard's focus frame goes only when ours exists (the focus unit may
+-- be unavailable, and then ours is never built).
+ns.Blizzard.HideDefaults()
+H.check("no focus frame of ours: focus kept", B.FocusFrame:GetAlpha(), 1)
+ns.Frames.focus = M.newWidget("Button", "ForeverUnitFramesFocus")
 ns.Blizzard.HideDefaults()
 H.check("tot: invisible", B.TargetFrameToT:GetAlpha(), 0)
 H.check("tot: hidden", B.TargetFrameToT:IsShown(), false)

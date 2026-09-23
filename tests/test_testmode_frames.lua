@@ -76,7 +76,7 @@ H.check("fakes hidden", P.fakes[1]:IsShown(), false)
 H.check("target back on target", ns.Frames.target:GetAttribute("unit"), "target")
 H.check("sample cast gone", tbar:IsShown(), false)
 H.check("preview flag cleared", tbar.preview, nil)
-H.check("highlight on the header again", P.HighlightTarget(), P.header)
+H.check("highlight on the block again", P.HighlightTarget(), P.highlightBlock)
 
 -- Released, not just hidden: no events, no sample cast; reused next time.
 local firstFake = P.fakes[1]

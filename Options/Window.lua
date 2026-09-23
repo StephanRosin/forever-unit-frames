@@ -177,10 +177,19 @@ local function inheritOpts(scope, key)
     }
 end
 
+-- Hints that only hold on some pages: only the player's castbar replaces
+-- a Blizzard castbar, which comes back after a /reload.
+local HINT_SCOPES = { castbarEnabled = { player = true } }
+
+local function hintFor(scope, key)
+    if HINT_SCOPES[key] and not HINT_SCOPES[key][scope] then return nil end
+    return localized("HINT_" .. key)
+end
+
 local function settingRow(parent, scope, key)
     local def = ns.Settings.Get(key)
     local opts = {
-        label = L["SETTING_" .. key], hint = localized("HINT_" .. key),
+        label = L["SETTING_" .. key], hint = hintFor(scope, key),
         get = function() return Config.Get(scope, key) end,
         set = function(v) return Config.Set(scope, key, v) end,
     }

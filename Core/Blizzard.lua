@@ -62,7 +62,8 @@ function Blizzard.HideDefaults()
         end
         if enabled("targettarget") then Blizzard.Conceal(_G.TargetFrameToT) end
         if enabled("pet") then Blizzard.Conceal(_G.PetFrame) end
-        if enabled("focus") then Blizzard.Conceal(_G.FocusFrame) end
+        -- Ours exists only when the focus unit is available on this client.
+        if enabled("focus") and ns.Frames.focus then Blizzard.Conceal(_G.FocusFrame) end
         if enabled("party") then concealParty() end
     end)
 end

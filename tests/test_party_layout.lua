@@ -78,6 +78,11 @@ UIParent._cx, UIParent._cy = 960, 540
 ns.Movers.OnDragStop(mover)
 H.check("drag writes party x", C.Get("party", "x"), -504)
 H.check("drag writes party y", C.Get("party", "y"), 104)
+-- No handle for a party block that is switched off.
+C.Set("party", "enabled", false)
+H.check("disabled party: no block mover", mover:IsShown(), false)
+C.Set("party", "enabled", true)
+H.checkTrue("enabled party: block mover back", mover:IsShown())
 ns.Movers.Lock()
 
 -- Generic movers: own position keys, no anchoring, shown only when active.
