@@ -147,6 +147,7 @@ function M.Reset()
     }
     _G.Constants = { MacroConsts = { MAX_ACCOUNT_MACROS = 120, MAX_CHARACTER_MACROS = 30 } }
     _G.MacroFrame = { IsShown = function() return M.macroFrameShown end }
+    _G.CreateColor = function(r, g, b, a) return { r = r, g = g, b = b, a = a, GetRGB = function(c) return c.r, c.g, c.b end } end
     _G.ForeverUnitFrames = nil
     _G.ForeverUnitFramesDB = nil
 
