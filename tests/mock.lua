@@ -121,6 +121,7 @@ function M.Reset()
     M.macros = {}          -- list of { name=, icon=, body=, perChar= }
     M.macroFrameShown = false
     M.errors = {}          -- whatever reached the global error handler
+    M.timers = {}          -- queued C_Timer.After callbacks
 
     _G.UIParent = newWidget("Frame", "UIParent")
     _G.UIParent._w, _G.UIParent._h = 1920, 1080
@@ -183,6 +184,9 @@ function M.Reset()
         return p
     end
     _G.C_StringUtil = { TruncateWhenZero = function(n) return n end }
+    _G.UnitPowerMissing = function(unit) local d = u(unit); return d and d.powerMissing or 0 end
+
+    _G.C_Timer = { After = function(sec, fn) table.insert(M.timers, { sec = sec, fn = fn }) end }
 
     -- Curves: Evaluate passes secrets through as secrets.
     _G.C_CurveUtil = {
@@ -255,6 +259,16 @@ end
 function M.SetCombat(v)
     M.combat = v
     if not v then M.FireEvent("PLAYER_REGEN_ENABLED") end
+end
+
+-- Runs and clears every queued C_Timer.After callback. Timers a callback
+-- itself queues are appended and run too, so this drains to empty.
+function M.RunTimers()
+    while #M.timers > 0 do
+        local timers = M.timers
+        M.timers = {}
+        for _, t in ipairs(timers) do t.fn() end
+    end
 end
 
 function M.FireEvent(event, ...)

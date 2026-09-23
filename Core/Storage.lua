@@ -118,6 +118,22 @@ function Storage.Save()
     end
 end
 
+-- Sliders fire many changes per second; one save per half second is plenty.
+local saveQueued = false
+
+function Storage.RequestSave()
+    if saveQueued then return end
+    saveQueued = true
+    C_Timer.After(0.5, function()
+        saveQueued = false
+        Storage.Save()
+    end)
+end
+
+function Storage.Flush()
+    Storage.Save()
+end
+
 -- Closing the macro window is the moment a refused write can succeed.
 -- The window is load-on-demand: hook it now if it exists, else once
 -- Blizzard_MacroUI has loaded.

@@ -24,6 +24,7 @@ H.checkTrue("status shows localised source",
 
 -- A change is saved everywhere.
 ns.Config.Set("player", "width", 290)
+M.RunTimers()
 H.check("SV table created", ForeverUnitFramesDB.profile.player.width, 290)
 H.check("macro backup written", ns.MacroBackup.Read(), "1;pW290")
 
@@ -69,4 +70,5 @@ _G.ForeverUnitFramesDB = { profile = { player = { width = "wide" } } }
 H.checkTrue("login with invalid SV", pcall(M.FireEvent, "PLAYER_LOGIN"))
 H.check("invalid SV width falls back", ns.Config.Get("player", "width"), 220)
 H.checkTrue("set after invalid SV", ns.Config.Set("player", "height", 50))
+M.RunTimers()
 H.check("saved after invalid SV", ForeverUnitFramesDB.profile.player.height, 50)

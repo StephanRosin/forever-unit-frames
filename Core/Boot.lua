@@ -20,5 +20,9 @@ ns.On("PLAYER_LOGIN", function()
 end)
 
 ns.Listen("CONFIG_CHANGED", function()
-    ns.Storage.Save()
+    ns.Storage.RequestSave()
+end)
+
+ns.On("PLAYER_LOGOUT", function()
+    ns.Storage.Flush()
 end)

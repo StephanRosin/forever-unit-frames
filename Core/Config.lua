@@ -75,3 +75,33 @@ function Config.ResetAll()
     for _, scope in ipairs(Settings.SCOPES) do profile[scope] = {} end
     ns.Fire("CONFIG_CHANGED", nil, nil)
 end
+
+function Config.ClearOverride(scope, key)
+    if not profile[scope] then return end
+    profile[scope][key] = nil
+    ns.Fire("CONFIG_CHANGED", scope, key)
+end
+
+-- Positions stay put: copying a frame's look must not stack two frames.
+local NOT_COPIED = { x = true, y = true }
+
+function Config.CopyScope(from, to)
+    if not profile[from] or not profile[to] or from == to then return end
+    local copy = {}
+    for key, value in pairs(profile[from]) do
+        local def = Settings.Get(key)
+        if def and not NOT_COPIED[key] and Settings.AppliesTo(def, to) then
+            copy[key] = type(value) == "table" and { value[1], value[2], value[3], value[4] } or value
+        end
+    end
+    for key in pairs(NOT_COPIED) do copy[key] = profile[to][key] end
+    profile[to] = copy
+    ns.Fire("CONFIG_CHANGED", to, nil)
+end
+
+function Config.Import(p)
+    for _, scope in ipairs(Settings.SCOPES) do
+        profile[scope] = type(p[scope]) == "table" and p[scope] or {}
+    end
+    ns.Fire("CONFIG_CHANGED", nil, nil)
+end

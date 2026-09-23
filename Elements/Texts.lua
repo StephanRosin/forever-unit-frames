@@ -58,8 +58,10 @@ function Texts.Apply(fs, tag, unit, kind)
         if kind == "health" then
             fs:SetText(C_StringUtil.TruncateWhenZero(UnitHealthMissing(unit)))
         else
-            fs:SetText("")
+            fs:SetText(C_StringUtil.TruncateWhenZero(UnitPowerMissing(unit)))
         end
+    else
+        fs:SetText("")
     end
 end
 

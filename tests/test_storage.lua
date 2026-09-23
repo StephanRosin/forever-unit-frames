@@ -150,10 +150,12 @@ ns = H.LoadAddon()
 ns.Config.Use({})
 M.macroFrameShown = true
 ns.Config.Set("player", "width", 290)
+M.RunTimers()
 H.check("retry: refused while window open", ns.MacroBackup.Read(), nil)
 H.check("retry: error printed", countChat(ns.L.MACRO_FRAME_OPEN), 1)
 H.check("retry: last macro error kept", ns.Storage.MacroError(), "MACRO_FRAME_OPEN")
 ns.Config.Set("player", "width", 291)
+M.RunTimers()
 H.check("retry: same error not printed again", countChat(ns.L.MACRO_FRAME_OPEN), 1)
 M.macroFrameShown = false
 MacroFrame:GetScript("OnHide")(MacroFrame)
