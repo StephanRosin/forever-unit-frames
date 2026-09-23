@@ -103,9 +103,14 @@ Settings.Define({ key = "titleClassIcon", code = "CL", scope = "inherit", type =
 -- The icon is a round badge on the frame's top right corner: its size and
 -- the offset of its centre from that corner. The defaults put it slightly
 -- inside horizontally and mostly above the top edge.
-Settings.Define({ key = "classIconSize", code = "KS", scope = "inherit", type = "int", min = 10, max = 48, default = 20 })
-Settings.Define({ key = "classIconX", code = "KX", scope = "inherit", type = "int", min = -64, max = 64, default = -4 })
-Settings.Define({ key = "classIconY", code = "KY", scope = "inherit", type = "int", min = -64, max = 64, default = 4 })
+Settings.Define({ key = "classIconSize", code = "KS", scope = "inherit", type = "int", min = 10, max = 48, default = 28 })
+Settings.Define({ key = "classIconX", code = "KX", scope = "inherit", type = "int", min = -64, max = 64, default = -6 })
+Settings.Define({ key = "classIconY", code = "KY", scope = "inherit", type = "int", min = -64, max = 64, default = 6 })
+-- The badge's own round ring, independent of the frame border: thickness
+-- (0 turns it off, the icon then fills the badge) and colour.
+Settings.Define({ key = "classIconRing", code = "KR", scope = "inherit", type = "int", min = 0, max = 4, default = 2 })
+Settings.Define({ key = "classIconRingColor", code = "KC", scope = "inherit", type = "color",
+    default = { 0.78, 0.78, 0.8, 1 } })
 Settings.Define({ key = "barTexture", code = "BT", scope = "inherit", type = "media", mediaKind = "statusbar", default = "Flat" })
 Settings.Define({ key = "backgroundColor", code = "BC", scope = "inherit", type = "color", default = { 0, 0, 0, 0.6 } })
 Settings.Define({ key = "borderSize", code = "BS", scope = "inherit", type = "int", min = 0, max = 2, default = 1 })

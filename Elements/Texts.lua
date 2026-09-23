@@ -233,8 +233,13 @@ local CIRCLE_MASK = "Interface\\CharacterFrame\\TempPortraitAlphaMask"
 -- The badge's frame level above the unit frame: over the bars, their
 -- texts and the border (textures of the frame itself).
 local BADGE_LEVELS = 20
--- The ring follows the border but stays thin.
-local MAX_RING = 2
+
+-- Ring thickness on the pixel grid: at least one pixel unless it is off.
+local function ringSize(scope)
+    local size = Config.Get(scope, "classIconRing")
+    if size <= 0 then return 0 end
+    return ns.Pixel.Snap(size, nil, 1)
+end
 
 local function makeRound(badge, tex)
     local mask = badge:CreateMaskTexture()
@@ -274,14 +279,14 @@ local function styleBadge(frame)
     local scope, Pixel = frame.key, ns.Pixel
     local badge = frame.classBadge
     local size = Pixel.Snap(Config.Get(scope, "classIconSize"), nil, 1)
-    local ring = math.min(ns.Single.BorderSize(scope), Pixel.Snap(MAX_RING, nil, 1))
+    local ring = ringSize(scope)
     local x = Pixel.Centre(Config.Get(scope, "classIconX"), size)
     local y = Pixel.Centre(Config.Get(scope, "classIconY"), size)
     badge:SetFrameLevel(frame:GetFrameLevel() + BADGE_LEVELS)
     badge:SetSize(size, size)
     badge:ClearAllPoints()
     badge:SetPoint("CENTER", frame, "TOPRIGHT", x, y)
-    local c = Config.Get(scope, "borderColor")
+    local c = Config.Get(scope, "classIconRingColor")
     frame.classRing:SetColorTexture(c[1], c[2], c[3], c[4])
     frame.classRingSize = ring
     frame.classIcon:SetSize(size - 2 * ring, size - 2 * ring)

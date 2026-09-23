@@ -13,9 +13,10 @@ H.check("label", ns.L.SETTING_titleClassIcon, "Show class icon")
 
 -- Badge size and position: inherited ints with their own permanent codes.
 for _, want in ipairs({
-    { key = "classIconSize", code = "KS", default = 20, min = 10, max = 48, label = "Class icon size" },
-    { key = "classIconX", code = "KX", default = -4, min = -64, max = 64, label = "Class icon X" },
-    { key = "classIconY", code = "KY", default = 4, min = -64, max = 64, label = "Class icon Y" },
+    { key = "classIconSize", code = "KS", default = 28, min = 10, max = 48, label = "Class icon size" },
+    { key = "classIconX", code = "KX", default = -6, min = -64, max = 64, label = "Class icon X" },
+    { key = "classIconY", code = "KY", default = 6, min = -64, max = 64, label = "Class icon Y" },
+    { key = "classIconRing", code = "KR", default = 2, min = 0, max = 4, label = "Badge ring" },
 }) do
     local d = S.Get(want.key)
     H.checkTrue(want.key .. ": exists", d)
@@ -27,6 +28,18 @@ for _, want in ipairs({
     H.check(want.key .. ": max", d and d.max, want.max)
     H.check(want.key .. ": label", ns.L["SETTING_" .. want.key], want.label)
     H.checkTrue(want.key .. ": hint", ns.L["HINT_" .. want.key])
+end
+
+-- Ring colour: its own permanent code, independent of the border colour.
+do
+    local d = S.Get("classIconRingColor")
+    H.checkTrue("classIconRingColor: exists", d)
+    H.check("classIconRingColor: code", d and d.code, "KC")
+    H.check("classIconRingColor: inherited", d and d.scope, "inherit")
+    H.check("classIconRingColor: color", d and d.type, "color")
+    H.check("classIconRingColor: default", d and table.concat(d.default, ","), "0.78,0.78,0.8,1")
+    H.check("classIconRingColor: label", ns.L.SETTING_classIconRingColor, "Badge ring colour")
+    H.checkTrue("classIconRingColor: hint", ns.L.HINT_classIconRingColor)
 end
 
 _G.ForeverUnitFramesDB = nil
@@ -58,19 +71,19 @@ H.checkTrue("badge exists", badge)
 H.check("badge is a child of the frame", badge:GetParent(), f)
 H.check("badge: centre", point(badge, "CENTER")[2], f)
 H.check("badge: on the frame's top right corner", point(badge, "CENTER")[3], "TOPRIGHT")
-H.check("badge: default x", point(badge, "CENTER")[4], -4)
-H.check("badge: default y", point(badge, "CENTER")[5], 4)
-H.check("badge: width", badge:GetWidth(), 20)
-H.check("badge: height", badge:GetHeight(), 20)
+H.check("badge: default x", point(badge, "CENTER")[4], -6)
+H.check("badge: default y", point(badge, "CENTER")[5], 6)
+H.check("badge: width", badge:GetWidth(), 28)
+H.check("badge: height", badge:GetHeight(), 28)
 H.checkTrue("badge above the health bar", badge:GetFrameLevel() > f.health:GetFrameLevel())
 H.checkTrue("badge above the power bar", badge:GetFrameLevel() > f.power:GetFrameLevel())
 H.checkTrue("badge above the frame's border", badge:GetFrameLevel() > f:GetFrameLevel())
 H.checkTrue("badge clear of texts on the bars", badge:GetFrameLevel() >= f:GetFrameLevel() + 10)
--- Icon inside a ring of the border colour (border size, 1 px by default).
+-- Icon inside its own ring (2 px by default), independent of the border.
 H.check("icon on the badge", icon:GetParent(), badge)
 H.check("icon centred", point(icon, "CENTER")[2], badge)
-H.check("icon inside the ring", icon:GetWidth(), 18)
-H.check("icon round", icon:GetHeight(), 18)
+H.check("icon inset by the ring", icon:GetWidth(), 24)
+H.check("icon round", icon:GetHeight(), 24)
 H.check("icon: one mask", icon:GetNumMaskTextures(), 1)
 H.check("icon: circular mask", icon._masks[1]._texture, CIRCLE)
 H.check("icon: mask clamps", icon._masks[1]._wrap[1], "CLAMPTOBLACKADDITIVE")
@@ -79,15 +92,15 @@ H.check("ring on the badge", ring:GetParent(), badge)
 H.checkTrue("ring shown with the icon", ring:IsShown())
 H.check("ring fills the badge", ring._allPoints, badge)
 H.check("ring: circular mask", ring._masks[1] and ring._masks[1]._texture, CIRCLE)
-H.check("ring: border colour", table.concat(ring._color, ","), "0,0,0,1")
+H.check("ring: own colour, not the border's", table.concat(ring._color, ","), "0.78,0.78,0.8,1")
 local _, iconSub = icon:GetDrawLayer()
 local _, ringSub = ring:GetDrawLayer()
 H.checkTrue("icon drawn over the ring", iconSub > ringSub)
--- Default X/Y: the badge's left edge (-14) is inside the title row.
+-- Default X/Y: the badge's left edge (-20) is inside the title row.
 H.check("title text ends at the badge", point(tt, "RIGHT")[2], badge)
 H.check("badge side", point(tt, "RIGHT")[3], "LEFT")
 H.check("2 px before the badge", point(tt, "RIGHT")[4], -2)
-H.check("text stays centred on the row", point(tt, "RIGHT")[5], -f.titleHeight / 2 - 4)
+H.check("text stays centred on the row", point(tt, "RIGHT")[5], -f.titleHeight / 2 - 6)
 
 -- Without the atlas: the character-create class texture with its coords.
 M.atlases["classicon-warlock"] = nil
@@ -153,9 +166,10 @@ H.checkTrue("frame override on", icon:IsShown())
 H.check("other frames stay off", target.classIcon:IsShown(), false)
 C.Set("general", "titleClassIcon", true)
 
--- Size and position settings; the ring follows the border.
+-- Size and position settings; the ring is its own setting, independent
+-- of the border.
 C.Set("player", "height", 60)
-H.check("badge size independent of the row", badge:GetHeight(), 20)
+H.check("badge size independent of the row", badge:GetHeight(), 28)
 C.Set("player", "height", 46)
 C.Set("general", "classIconX", 6)
 C.Set("general", "classIconY", -3)
@@ -166,25 +180,34 @@ C.Set("player", "classIconX", 30)
 H.check("frame x override", point(badge, "CENTER")[4], 30)
 H.check("left edge right of the row: title to the row edge", point(tt, "RIGHT")[2], f.title)
 H.check("row edge offset again", point(tt, "RIGHT")[4], -4)
-C.Set("player", "classIconX", -4)
+C.Set("player", "classIconX", -6)
 H.check("left edge in the row again", point(tt, "RIGHT")[2], badge)
 C.Set("player", "portraitMode", "RIGHT")
 H.check("badge over a right portrait: title to the row edge", point(tt, "RIGHT")[2], f.title)
 C.Set("player", "portraitMode", "OFF")
 C.Set("player", "classIconSize", 31)
 H.check("size setting: badge", badge:GetWidth(), 31)
-H.check("size setting: icon", icon:GetWidth(), 29)
-C.Set("player", "borderColor", { 1, 0, 0, 1 })
-H.check("ring colour follows", table.concat(ring._color, ","), "1,0,0,1")
+H.check("size setting: icon (default 2 px ring)", icon:GetWidth(), 27)
+C.Set("player", "classIconRingColor", { 1, 0, 0, 1 })
+H.check("ring colour is its own setting", table.concat(ring._color, ","), "1,0,0,1")
+C.Set("player", "classIconRing", 4)
+H.check("thicker ring", icon:GetWidth(), 23)
 C.Set("player", "borderSize", 2)
-H.check("thicker ring", icon:GetWidth(), 27)
+H.check("ring thickness independent of border size", icon:GetWidth(), 23)
+C.Set("player", "borderColor", { 0, 1, 0, 1 })
+H.check("ring colour independent of border colour", table.concat(ring._color, ","), "1,0,0,1")
 C.Set("player", "borderSize", 0)
-H.check("no border: no ring", ring:IsShown(), false)
-H.check("no border: icon fills the badge", icon:GetWidth(), 31)
+H.check("ring shown even with no border", ring:IsShown(), true)
 C.Set("player", "borderSize", 1)
-C.Set("player", "classIconSize", 20)
-C.Set("general", "classIconX", -4)
-C.Set("general", "classIconY", 4)
+C.Set("player", "borderColor", { 0, 0, 0, 1 })
+C.Set("player", "classIconRing", 0)
+H.check("ring hidden at 0", ring:IsShown(), false)
+H.check("zero ring: icon fills the badge", icon:GetWidth(), 31)
+C.Set("player", "classIconRing", 2)
+C.Set("player", "classIconRingColor", { 0.78, 0.78, 0.8, 1 })
+C.Set("player", "classIconSize", 28)
+C.Set("general", "classIconX", -6)
+C.Set("general", "classIconY", 6)
 
 -- No title row, no icon.
 C.Set("player", "titlePercent", 0)
@@ -203,9 +226,9 @@ M.FireEvent("UNIT_NAME_UPDATE", "party1")
 H.checkTrue("party: icon exists", member.classIcon)
 H.checkTrue("party: shown", member.classIcon:IsShown())
 H.check("party: atlas", member.classIcon._atlas, "classicon-warrior")
-H.check("party: badge size", member.classBadge:GetHeight(), 20)
+H.check("party: badge size", member.classBadge:GetHeight(), 28)
 H.check("party: badge on the corner", point(member.classBadge, "CENTER")[3], "TOPRIGHT")
-H.check("party: badge offset", point(member.classBadge, "CENTER")[5], 4)
+H.check("party: badge offset", point(member.classBadge, "CENTER")[5], 6)
 H.checkTrue("party: badge above the bars", member.classBadge:GetFrameLevel() > member.health:GetFrameLevel())
 H.check("party: masked", member.classIcon:GetNumMaskTextures(), 1)
 H.checkTrue("party: ring shown", member.classRing:IsShown())
@@ -228,7 +251,8 @@ local function rowsOf(scope, tab)
     for _, row in ipairs(O.rows) do if row.key then keys[row.key] = true end end
     return keys
 end
-for _, key in ipairs({ "titleClassIcon", "classIconSize", "classIconX", "classIconY" }) do
+for _, key in ipairs({ "titleClassIcon", "classIconSize", "classIconX", "classIconY", "classIconRing",
+    "classIconRingColor" }) do
     H.checkTrue("frame text tab: " .. key, rowsOf("player", "text")[key])
     H.checkTrue("general appearance: " .. key, rowsOf("general", "appearance")[key])
 end
@@ -240,15 +264,21 @@ C.Set("target", "titleClassIcon", true)
 C.Set("general", "classIconSize", 24)
 C.Set("party", "classIconX", -10)
 C.Set("target", "classIconY", 0)
+C.Set("general", "classIconRing", 3)
+C.Set("party", "classIconRingColor", { 1, 0, 0, 1 })
 local s = Codec.Encode(C.Profile())
 H.checkTrue("encoded general", s:find("gCL0", 1, true))
 H.checkTrue("encoded target", s:find("tCL1", 1, true))
 H.checkTrue("encoded size", s:find("gKS24", 1, true))
 H.checkTrue("encoded x", s:find("yKX-10", 1, true))
 H.checkTrue("encoded y", s:find("tKY0", 1, true))
+H.checkTrue("encoded ring", s:find("gKR3", 1, true))
+H.checkTrue("encoded ring color", s:find("yKC#ff0000ff", 1, true))
 local back = assert(Codec.Decode(s))
 H.check("decoded general", back.general.titleClassIcon, false)
 H.check("decoded target", back.target.titleClassIcon, true)
 H.check("decoded size", back.general.classIconSize, 24)
 H.check("decoded x", back.party.classIconX, -10)
 H.check("decoded y", back.target.classIconY, 0)
+H.check("decoded ring", back.general.classIconRing, 3)
+H.check("decoded ring color", table.concat(back.party.classIconRingColor, ","), "1,0,0,1")
