@@ -205,11 +205,100 @@ local function readAll(frame, keep)
     end
 end
 
-function Auras.Update(frame, event)
+-- Incremental aura events -------------------------------------------------------
+-- UNIT_AURA says what changed. A changed aura that is shown is asked for
+-- again on its own; an added or removed one that concerns a group makes
+-- that group read again; everything else is ignored. Anything unreadable
+-- (a secret ID or flag, a refused call) falls back to a full read.
+
+local function shownButton(group, id)
+    for i = 1, group.count do
+        local button = group.buttons[i]
+        if button.auraID == id then return button end
+    end
+end
+
+local function readableID(id)
+    if Secrets.IsSecret(id) or type(id) ~= "number" then error("unreadable aura instance ID") end
+    return id
+end
+
+local function markAdded(frame, aura)
+    local id = readableID(aura.auraInstanceID)
+    for _, key in ipairs(ORDER) do
+        local group = frame.auras[key]
+        if group.enabled then
+            local out = C_UnitAuras.IsAuraFilteredOutByInstanceID(frame.unit, id, group.filter)
+            if Secrets.IsSecret(out) then error("unreadable filter answer") end
+            if out == false then group.dirty = true end
+        end
+    end
+end
+
+local function markRemoved(frame, id)
+    id = readableID(id)
+    for _, key in ipairs(ORDER) do
+        local group = frame.auras[key]
+        if shownButton(group, id) then group.dirty = true end
+    end
+end
+
+local function refreshShown(frame, id)
+    id = readableID(id)
+    for _, key in ipairs(ORDER) do
+        local group = frame.auras[key]
+        local button = not group.dirty and shownButton(group, id)
+        if button then
+            local aura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.unit, id)
+            if Secrets.IsSecret(aura) or type(aura) ~= "table"
+                or not AuraButton.Show(button, frame.unit, aura, group.filter) then
+                group.dirty = true
+            end
+        end
+    end
+end
+
+-- Shared, never written: no table is made per event.
+local NONE = {}
+
+local function applyChanges(frame, info)
+    for _, aura in ipairs(info.addedAuras or NONE) do markAdded(frame, aura) end
+    for _, id in ipairs(info.removedAuraInstanceIDs or NONE) do markRemoved(frame, id) end
+    for _, id in ipairs(info.updatedAuraInstanceIDs or NONE) do refreshShown(frame, id) end
+end
+
+local function fullFlag(info) return info.isFullUpdate end
+
+local function clearDirty(frame)
+    for _, key in ipairs(ORDER) do frame.auras[key].dirty = false end
+end
+
+-- Returns false when a full read is needed instead.
+local function applyEvent(frame, info)
+    if type(info) ~= "table" or Secrets.IsSecret(info) then return false end
+    if Secrets.Bool(fullFlag, info) ~= false then return false end
+    clearDirty(frame)
+    if not pcall(applyChanges, frame, info) then
+        clearDirty(frame)
+        return false
+    end
+    for _, key in ipairs(ORDER) do
+        local group = frame.auras[key]
+        if group.dirty then
+            group.dirty = false
+            -- Refused: the group keeps its icons, as a full read would.
+            readGroup(frame, group)
+        end
+    end
+    return true
+end
+
+function Auras.Update(frame, event, _, info)
     if testing() then
         showSamples(frame)
         return
     end
+    if event == "UNIT_AURA" and not frame.auraSamples and applyEvent(frame, info) then return end
     local now = GetTime()
     if event == ns.Single.POLL then
         if frame.auraPolled and now - frame.auraPolled < Auras.POLL_SECONDS then return end

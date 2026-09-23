@@ -563,7 +563,18 @@ function M.Reset()
     end
     M.auraQueries = 0      -- GetUnitAuras calls
     M.lastAuraQuery = nil  -- { unit, filter, maxCount, sortRule } of the last one
+    M.auraLookups = 0      -- GetAuraDataByAuraInstanceID calls
     _G.C_UnitAuras = {
+        GetAuraDataByAuraInstanceID = function(unit, id)
+            refuseAuras()
+            M.auraLookups = M.auraLookups + 1
+            return auraByID(unit, id)
+        end,
+        IsAuraFilteredOutByInstanceID = function(unit, id, filter)
+            refuseAuras()
+            local a = auraByID(unit, id)
+            return not (a and auraMatches(a, filter))
+        end,
         GetUnitAuras = function(unit, filter, maxCount, sortRule)
             refuseAuras()
             M.auraQueries = M.auraQueries + 1
