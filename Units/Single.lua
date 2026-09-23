@@ -7,36 +7,59 @@ local Single = {}
 ns.Single = Single
 ns.Frames = {}
 
-local Config, Layout = ns.Config, ns.Layout
+local Config, Layout, Pixel = ns.Config, ns.Layout, ns.Pixel
+
+-- Width and height of a unit frame of scope, on the pixel grid.
+function Single.Size(scope)
+    return Pixel.Snap(Config.Get(scope, "width")), Pixel.Snap(Config.Get(scope, "height"))
+end
+
+-- Border thickness of scope on the pixel grid: at least one pixel unless
+-- the border is off.
+function Single.BorderSize(scope)
+    local size = Config.Get(scope, "borderSize")
+    if size <= 0 then return 0 end
+    return Pixel.Snap(size, nil, 1)
+end
 
 local function place(frame)
     local scope = frame.key
-    frame:SetSize(Config.Get(scope, "width"), Config.Get(scope, "height"))
+    local w, h = Single.Size(scope)
+    frame:SetSize(w, h)
     frame:ClearAllPoints()
     if frame.mover then
         frame:SetPoint("CENTER", frame.mover, "CENTER", 0, 0)
     else
-        frame:SetPoint("CENTER", UIParent, "CENTER", Config.Get(scope, "x"), Config.Get(scope, "y"))
+        frame:SetPoint("CENTER", UIParent, "CENTER",
+            Pixel.Centre(Config.Get(scope, "x"), w), Pixel.Centre(Config.Get(scope, "y"), h))
     end
 end
 
+-- The split is worked out in whole units, then put on the pixel grid:
+-- power bar and gap are snapped, health takes the rest of the (snapped)
+-- frame height, so the three always fill the frame exactly.
 local function layoutBars(frame)
     local scope = frame.key
-    local height = Config.Get(scope, "height")
+    local _, height = Single.Size(scope)
     local powerOn = Config.Get(scope, "powerEnabled")
-    local hh, gap, ph = Layout.Bars(height, Config.Get(scope, "healthPercent"),
+    local _, gap, ph = Layout.Bars(Config.Get(scope, "height"), Config.Get(scope, "healthPercent"),
         Config.Get(scope, "powerPercent"), powerOn)
+    local powerShown = powerOn and ph > 0
+    local pixel = Pixel.Snap(1, nil, 1)
+    local powerH = powerShown and Pixel.Snap(ph, nil, 1) or 0
+    gap = powerShown and Pixel.Snap(gap) or 0
+    local healthH = math.max(height - gap - powerH, pixel)
     local left, right = Layout.PortraitInsets(Config.Get(scope, "portraitMode"), height)
     frame.health:ClearAllPoints()
     frame.health:SetPoint("TOPLEFT", frame, "TOPLEFT", left, 0)
     frame.health:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -right, 0)
-    frame.health:SetHeight(hh)
+    frame.health:SetHeight(healthH)
     if frame.power then
         frame.power:ClearAllPoints()
         frame.power:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", left, 0)
         frame.power:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -right, 0)
-        frame.power:SetHeight(math.max(ph, 1))
-        frame.power:SetShown(powerOn and ph > 0)
+        frame.power:SetHeight(powerShown and powerH or pixel)
+        frame.power:SetShown(powerShown)
     end
     frame.gap = gap
 end
@@ -44,7 +67,7 @@ end
 -- A 1-2 px border just outside owner (a unit frame or its castbar), in the
 -- border size and colour of scope.
 function Single.DrawBorder(owner, scope)
-    local size = Config.Get(scope, "borderSize")
+    local size = Single.BorderSize(scope)
     local c = Config.Get(scope, "borderColor")
     if not owner.border then
         owner.border = {}
@@ -157,10 +180,12 @@ function Single.CreateAll(onBuilt)
     end)
 end
 
-ns.Listen("CONFIG_CHANGED", function(scope)
+local function restyle(scope)
     ns.AfterCombat("restyle:" .. (scope or "all"), function()
         for key, frame in pairs(ns.Frames) do
             if scope == nil or scope == "general" or scope == key then Single.StyleAll(frame) end
         end
     end)
-end)
+end
+ns.Listen("CONFIG_CHANGED", restyle)
+ns.Listen("PIXEL_GRID_CHANGED", function() restyle(nil) end)

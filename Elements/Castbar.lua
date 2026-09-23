@@ -37,9 +37,14 @@ function Castbar.Applies(scope)
     return Settings.AppliesTo(Settings.Get("castbarEnabled"), scope)
 end
 
--- Gap between frame and castbar: room for both borders.
+-- Castbar height on the pixel grid.
+local function barHeight(scope)
+    return ns.Pixel.Snap(Config.Get(scope, "castbarHeight"))
+end
+
+-- Gap between frame and castbar: room for both borders, on the pixel grid.
 function Castbar.Gap(scope)
-    return 2 * Config.Get(scope, "borderSize") + 2
+    return 2 * ns.Single.BorderSize(scope) + ns.Pixel.Snap(2)
 end
 
 local function now() return GetTime() * 1000 end
@@ -188,12 +193,12 @@ function Castbar.DockedDepth(scope)
         or Castbar.Placement(scope) == "DETACHED" then
         return 0
     end
-    return Castbar.Gap(scope) + Config.Get(scope, "castbarHeight") + Config.Get(scope, "borderSize")
+    return Castbar.Gap(scope) + barHeight(scope) + ns.Single.BorderSize(scope)
 end
 
 -- Whole castbar size, icon included: the frame's width.
 local function size(scope)
-    return Config.Get(scope, "width"), Config.Get(scope, "castbarHeight")
+    return ns.Pixel.Snap(Config.Get(scope, "width")), barHeight(scope)
 end
 
 -- The icon sits left of the bar, inside the castbar's own rectangle.
@@ -208,8 +213,10 @@ local function anchor(bar, frame, scope, inset)
             bar:SetPoint("BOTTOMRIGHT", bar.mover, "BOTTOMRIGHT", 0, 0)
         else
             local w, h = size(scope)
+            local Pixel = ns.Pixel
             bar:SetPoint("TOPLEFT", UIParent, "CENTER",
-                Config.Get(scope, "castbarX") - w / 2 + inset, Config.Get(scope, "castbarY") + h / 2)
+                Pixel.Centre(Config.Get(scope, "castbarX"), w) - w / 2 + inset,
+                Pixel.Centre(Config.Get(scope, "castbarY"), h) + h / 2)
             bar:SetWidth(w - inset)
         end
     elseif placement == "ABOVE" then
@@ -247,7 +254,7 @@ function Castbar.Style(frame)
     local bar = frame.castbar
     if not bar then return end
     local scope = frame.key
-    local height = Config.Get(scope, "castbarHeight")
+    local height = barHeight(scope)
     local showIcon = Config.Get(scope, "castbarIcon")
     anchor(bar, frame, scope, showIcon and height or 0)
     bar:SetHeight(height)
@@ -263,17 +270,18 @@ function Castbar.Style(frame)
     bar.icon:SetShown(showIcon)
     local font = ns.Media.Font(Config.Get(scope, "fontFace"))
     local outline = Config.Get(scope, "fontOutline")
-    local fontSize = math.min(Config.Get(scope, "fontSize"), height)
+    local fontSize = math.min(Config.Get(scope, "fontSize"), Config.Get(scope, "castbarHeight"))
     for _, fs in ipairs({ bar.text, bar.time }) do ns.Texts.SetFont(fs, font, fontSize, outline) end
     bar.text:ClearAllPoints()
-    bar.text:SetPoint("LEFT", bar, "LEFT", 4, 0)
+    local pad = ns.Pixel.Snap(4)
+    bar.text:SetPoint("LEFT", bar, "LEFT", pad, 0)
     -- The name ends where the time begins (zero wide when hidden or empty).
-    bar.text:SetPoint("RIGHT", bar.time, "LEFT", -4, 0)
+    bar.text:SetPoint("RIGHT", bar.time, "LEFT", -pad, 0)
     bar.text:SetWordWrap(false)
     bar.text:SetJustifyH("LEFT")
     bar.text:SetShown(Config.Get(scope, "castbarName"))
     bar.time:ClearAllPoints()
-    bar.time:SetPoint("RIGHT", bar, "RIGHT", -4, 0)
+    bar.time:SetPoint("RIGHT", bar, "RIGHT", -pad, 0)
     bar.time:SetJustifyH("RIGHT")
     bar.time:SetShown(Config.Get(scope, "castbarTime"))
     -- A hidden time keeps its size; empty, it frees the room for the name.

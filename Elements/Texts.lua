@@ -119,7 +119,8 @@ function Texts.SetFont(fs, font, size, outline)
     if soft and not fs.softCopies then makeCopies(fs) end
     if not fs.softCopies then return end
     fs.soft = soft
-    local step = 1
+    -- One UI unit, on the pixel grid (never less than a pixel).
+    local step = ns.Pixel.Snap(1, fs, 1)
     for i, copy in ipairs(fs.softCopies) do
         local x, y = SOFT_OFFSETS[i][1] * step, SOFT_OFFSETS[i][2] * step
         copy:SetFont(font, size, "")
@@ -149,12 +150,12 @@ function Texts.Style(frame)
         Texts.SetFont(fs, font, size, outline)
         fs:SetShadowOffset(shadow and 1 or 0, shadow and -1 or 0)
         fs:ClearAllPoints()
-        fs:SetPoint(slot.point, frame[slot.bar], slot.point, slot.x, 0)
+        fs:SetPoint(slot.point, frame[slot.bar], slot.point, ns.Pixel.Snap(slot.x, fs), 0)
         if slot.before then
             -- A left text ends where the right one begins (an empty right
             -- text is zero wide), so the two never overlap on a narrow
             -- bar. No measuring: the text may be secret.
-            fs:SetPoint("RIGHT", frame.texts[slot.before], "LEFT", -4, 0)
+            fs:SetPoint("RIGHT", frame.texts[slot.before], "LEFT", ns.Pixel.Snap(-4, fs), 0)
             fs:SetWordWrap(false)
         end
         fs:SetJustifyH(slot.point)

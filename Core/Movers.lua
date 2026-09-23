@@ -56,10 +56,15 @@ function Movers.Sync(target)
     local mover = target.mover
     if not mover then return end
     local spec = mover.spec
-    mover:SetSize(spec.size())
+    local Pixel = ns.Pixel
+    local w, h = spec.size()
+    w, h = Pixel.Snap(w), Pixel.Snap(h)
+    mover:SetSize(w, h)
     mover:ClearAllPoints()
+    -- On the pixel grid: the handle's edges, and so its target's, land on
+    -- whole pixels.
     mover:SetPoint("CENTER", UIParent, "CENTER",
-        ns.Config.Get(spec.scope, spec.xKey), ns.Config.Get(spec.scope, spec.yKey))
+        Pixel.Centre(ns.Config.Get(spec.scope, spec.xKey), w), Pixel.Centre(ns.Config.Get(spec.scope, spec.yKey), h))
 end
 
 function Movers.OnDragStop(mover)

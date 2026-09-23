@@ -33,7 +33,9 @@ local point, rel, relPoint, x, y = header:GetPoint(1)
 H.check("block anchored top left", point, "TOPLEFT")
 H.check("block x from centre", x, -760 - 80)
 -- Between members: spacing 12 plus the docked castbar (12 + gap 4 + border 1).
-H.check("block y from centre", y, 120 + (4 * 36 + 3 * (12 + 17)) / 2)
+-- The block is 231 high: centred at 120 its top would sit on a half
+-- pixel (235.5); on the pixel grid (one unit here) it moves to 236.
+H.check("block y from centre", y, 236)
 
 -- Solo: no member buttons in use.
 H.check("solo: first button has no unit", header:GetAttribute("child1"):GetAttribute("unit"), nil)

@@ -9,7 +9,7 @@ local _, ns = ...
 local Party = {}
 ns.Party = Party
 
-local Config, Single = ns.Config, ns.Single
+local Config, Single, Pixel = ns.Config, ns.Single, ns.Pixel
 
 Party.KEY = "party"
 Party.HEADER = "ForeverUnitFramesParty"
@@ -33,14 +33,16 @@ end
 -- (above or below each member) sits in between, so its room is added:
 -- the next member starts past the castbar's border.
 function Party.Spacing()
-    local spacing = get("partySpacing")
+    local spacing = Pixel.Snap(get("partySpacing"))
     if get("partyOrientation") == "HORIZONTAL" then return spacing end
     return spacing + ns.Castbar.DockedDepth(Party.KEY)
 end
 
 -- Width and height of the whole block with every slot filled.
+-- Everything below is on the pixel grid: button size, spacing, block.
 function Party.BlockSize()
-    local w, h, s, n = get("width"), get("height"), Party.Spacing(), Party.Slots()
+    local w, h = Single.Size(Party.KEY)
+    local s, n = Party.Spacing(), Party.Slots()
     if get("partyOrientation") == "HORIZONTAL" then
         return n * w + (n - 1) * s, h
     end
@@ -50,10 +52,11 @@ end
 -- Offset of slot i (1-based) from the block's top-left corner.
 function Party.SlotOffset(i)
     local step = i - 1
+    local w, h = Single.Size(Party.KEY)
     if get("partyOrientation") == "HORIZONTAL" then
-        return step * (get("width") + Party.Spacing()), 0
+        return step * (w + Party.Spacing()), 0
     end
-    return 0, -step * (get("height") + Party.Spacing())
+    return 0, -step * (h + Party.Spacing())
 end
 
 -- No handle while the party frame is switched off.
@@ -81,21 +84,28 @@ local function headerAttributes()
     }
 end
 
--- The block hangs from its top-left corner; X / Y are its centre, like
--- every other position. With a mover the header follows the mover.
+-- Top-left corner of the block, from the screen centre: X / Y are its
+-- centre, like every other position, on the pixel grid like a mover's.
+local function blockCorner()
+    local w, h = Party.BlockSize()
+    w, h = Pixel.Snap(w), Pixel.Snap(h)
+    return Pixel.Centre(get("x"), w) - w / 2, Pixel.Centre(get("y"), h) + h / 2
+end
+
+-- The block hangs from its top-left corner. With a mover the header
+-- follows the mover.
 local function place(header)
     if header.mover then
         ns.Movers.Sync(header)
         return
     end
-    local w, h = Party.BlockSize()
     header:ClearAllPoints()
-    header:SetPoint("TOPLEFT", UIParent, "CENTER", get("x") - w / 2, get("y") + h / 2)
+    header:SetPoint("TOPLEFT", UIParent, "CENTER", blockCorner())
 end
 
 function Party.StyleButton(button)
     if not InCombatLockdown() then
-        button:SetSize(get("width"), get("height"))
+        button:SetSize(Single.Size(Party.KEY))
     end
     Single.StyleContent(button)
     Single.UpdateAll(button)
@@ -132,12 +142,12 @@ end
 -- the secure header, so it stays free to move in combat.
 local function fitToBlock(block)
     local w, h = Party.BlockSize()
-    block:SetSize(w, h)
+    block:SetSize(Pixel.Snap(w), Pixel.Snap(h))
     block:ClearAllPoints()
     if Party.header.mover then
         block:SetPoint("TOPLEFT", Party.header.mover, "TOPLEFT", 0, 0)
     else
-        block:SetPoint("TOPLEFT", UIParent, "CENTER", get("x") - w / 2, get("y") + h / 2)
+        block:SetPoint("TOPLEFT", UIParent, "CENTER", blockCorner())
     end
     block:SetShown(get("enabled"))
 end
@@ -209,7 +219,7 @@ function Party.InitButton(button)
     Party.buttons[#Party.buttons + 1] = button
     -- Made in combat it keeps the XML size until the relayout after combat.
     if not InCombatLockdown() then
-        button:SetSize(get("width"), get("height"))
+        button:SetSize(Single.Size(Party.KEY))
     end
     Single.StyleContent(button)
 end
@@ -253,3 +263,4 @@ ns.Listen("CONFIG_CHANGED", function(scope)
     if scope ~= nil and scope ~= "general" and scope ~= Party.KEY then return end
     ns.AfterCombat("partyStyle", Party.StyleAll)
 end)
+ns.Listen("PIXEL_GRID_CHANGED", function() ns.AfterCombat("partyStyle", Party.StyleAll) end)

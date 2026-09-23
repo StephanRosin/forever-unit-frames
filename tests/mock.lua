@@ -196,7 +196,7 @@ local function newWidget(kind, name, parent)
     function w:IsProtected() return self._protected or false end
     function w:SetFrameStrata(v) self._strata = v end
     function w:GetFrameStrata() return self._strata end
-    function w:GetEffectiveScale() return 1 end
+    function w:GetEffectiveScale() return M.scale end
     -- StatusBar
     function w:SetMinMaxValues(a, b) self._min, self._max = a, b end
     function w:GetMinMaxValues() return self._min, self._max end
@@ -319,6 +319,33 @@ function M.Reset()
     M.now = 1000           -- GetTime(), advanced by M.Tick
     M.group = {}           -- party unit tokens ("party1", ...) while grouped
     M.headerUpdates = 0    -- how often a group header laid out its buttons
+
+    -- Pixel grid. By default one physical pixel is one UI unit (768 pixels
+    -- high, scale 1), so layout numbers stay whole; tests change these.
+    M.scale = 1
+    M.screenW, M.screenH = 1024, 768
+    _G.GetPhysicalScreenSize = function() return M.screenW, M.screenH end
+    -- Round is math.round in the client (MathUtil.lua): half away from zero.
+    _G.Round = function(v) if v < 0 then return -math.floor(-v + 0.5) end return math.floor(v + 0.5) end
+    -- Blizzard_SharedXML/PixelUtil.lua, the functions the addon uses.
+    _G.PixelUtil = {}
+    function PixelUtil.GetPixelToUIUnitFactor()
+        local _, physicalHeight = GetPhysicalScreenSize()
+        return 768.0 / physicalHeight
+    end
+    function PixelUtil.GetNearestPixelSize(uiUnitSize, layoutScale, minPixels)
+        if uiUnitSize == 0 and (not minPixels or minPixels == 0) then return 0 end
+        local uiUnitFactor = PixelUtil.GetPixelToUIUnitFactor()
+        local numPixels = Round((uiUnitSize * layoutScale) / uiUnitFactor)
+        if minPixels then
+            if uiUnitSize < 0.0 then
+                if numPixels > -minPixels then numPixels = -minPixels end
+            else
+                if numPixels < minPixels then numPixels = minPixels end
+            end
+        end
+        return numPixels * uiUnitFactor / layoutScale
+    end
 
     _G.UIParent = newWidget("Frame", "UIParent")
     _G.UIParent._w, _G.UIParent._h = 1920, 1080

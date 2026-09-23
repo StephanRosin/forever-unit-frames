@@ -92,13 +92,14 @@ end
 
 -- Drawn just outside the frame's own border.
 local function anchorOutline(unitFrame, edges)
-    local o = Config.Get(unitFrame.key, "borderSize")
-    local w = o + HIGHLIGHT_W
+    local o = ns.Single.BorderSize(unitFrame.key)
+    local hw = ns.Pixel.Snap(HIGHLIGHT_W, nil, 1)
+    local w = o + hw
     for _, t in ipairs(edges) do t:ClearAllPoints() end
-    edges[1]:SetPoint("BOTTOMLEFT", unitFrame, "TOPLEFT", -w, o); edges[1]:SetPoint("BOTTOMRIGHT", unitFrame, "TOPRIGHT", w, o); edges[1]:SetHeight(HIGHLIGHT_W)
-    edges[2]:SetPoint("TOPLEFT", unitFrame, "BOTTOMLEFT", -w, -o); edges[2]:SetPoint("TOPRIGHT", unitFrame, "BOTTOMRIGHT", w, -o); edges[2]:SetHeight(HIGHLIGHT_W)
-    edges[3]:SetPoint("TOPRIGHT", unitFrame, "TOPLEFT", -o, o); edges[3]:SetPoint("BOTTOMRIGHT", unitFrame, "BOTTOMLEFT", -o, -o); edges[3]:SetWidth(HIGHLIGHT_W)
-    edges[4]:SetPoint("TOPLEFT", unitFrame, "TOPRIGHT", o, o); edges[4]:SetPoint("BOTTOMLEFT", unitFrame, "BOTTOMRIGHT", o, -o); edges[4]:SetWidth(HIGHLIGHT_W)
+    edges[1]:SetPoint("BOTTOMLEFT", unitFrame, "TOPLEFT", -w, o); edges[1]:SetPoint("BOTTOMRIGHT", unitFrame, "TOPRIGHT", w, o); edges[1]:SetHeight(hw)
+    edges[2]:SetPoint("TOPLEFT", unitFrame, "BOTTOMLEFT", -w, -o); edges[2]:SetPoint("TOPRIGHT", unitFrame, "BOTTOMRIGHT", w, -o); edges[2]:SetHeight(hw)
+    edges[3]:SetPoint("TOPRIGHT", unitFrame, "TOPLEFT", -o, o); edges[3]:SetPoint("BOTTOMRIGHT", unitFrame, "BOTTOMLEFT", -o, -o); edges[3]:SetWidth(hw)
+    edges[4]:SetPoint("TOPLEFT", unitFrame, "TOPRIGHT", o, o); edges[4]:SetPoint("BOTTOMLEFT", unitFrame, "BOTTOMRIGHT", o, -o); edges[4]:SetWidth(hw)
 end
 
 local function setOutlineAlpha(edges, alpha)
