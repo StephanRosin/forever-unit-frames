@@ -98,7 +98,7 @@ local function paint(bar)
         remain:Show()
     else
         local c = Castbar.CAST_COLOR
-        bar:SetStatusBarColor(c[1], c[2], c[3])
+        bar:SetStatusBarColor(c[1], c[2], c[3], 1)
         bar.remain:Hide()
     end
 end
