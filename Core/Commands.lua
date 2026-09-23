@@ -1,0 +1,63 @@
+local _, ns = ...
+
+local L = ns.L
+
+local function parseValue(def, raw)
+    if not def or not raw then return nil end
+    if def.type == "int" then
+        local n = tonumber(raw)
+        -- tonumber("nan") can yield NaN; reject NaN and infinities too.
+        if not n or n ~= n or n == math.huge or n == -math.huge then return nil end
+        return n
+    end
+    if def.type == "bool" then
+        if raw == "on" or raw == "true" or raw == "1" then return true end
+        if raw == "off" or raw == "false" or raw == "0" then return false end
+        return nil
+    end
+    if def.type == "enum" then return raw:upper() end
+    if def.type == "media" then return raw end
+    return nil   -- colors are set in the options window
+end
+
+local function status()
+    local version, build, _, interface = GetBuildInfo()
+    ns.Print(L.STATUS_BUILD:format(version, build, interface))
+    ns.Print(L.STATUS_PROJECT:format(WOW_PROJECT_ID or 0))
+    ns.Print(L.STATUS_SOURCE:format(ns.Storage.Source()))
+end
+
+SLASH_FOREVERUNITFRAMES1 = "/fuf"
+SlashCmdList.FOREVERUNITFRAMES = function(msg)
+    local cmd, rest = (msg or ""):match("^%s*(%S*)%s*(.-)%s*$")
+    cmd = cmd:lower()
+    if cmd == "unlock" then
+        ns.Movers.Unlock()
+    elseif cmd == "lock" then
+        ns.Movers.Lock()
+    elseif cmd == "status" then
+        status()
+    elseif cmd == "reset" then
+        if rest == "all" then
+            ns.Config.ResetAll()
+        elseif ns.Config.Profile()[rest] then
+            ns.Config.ResetScope(rest)
+        else
+            ns.Print(L.INVALID_VALUE)
+            return
+        end
+        ns.Storage.Save()
+        ns.Print(L.RESET_DONE)
+    elseif cmd == "set" then
+        local scope, key, raw = rest:match("^(%S+)%s+(%S+)%s+(.+)$")
+        local def = key and ns.Settings.Get(key)
+        local value = parseValue(def, raw)
+        if value == nil or not ns.Config.Set(scope, key, value) then
+            ns.Print(L.INVALID_VALUE)
+        else
+            ns.Storage.Save()
+        end
+    else
+        ns.Print(L.HELP)
+    end
+end

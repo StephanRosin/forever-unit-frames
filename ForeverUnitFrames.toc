@@ -21,3 +21,5 @@ Elements\Power.lua
 Elements\Texts.lua
 Units\Single.lua
 Core\Blizzard.lua
+Core\Movers.lua
+Core\Commands.lua
