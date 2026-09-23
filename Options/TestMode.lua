@@ -12,17 +12,22 @@ local on = false
 -- [frame] = the unit it watched before test mode took over.
 local saved = {}
 
+-- Always the player's own unit, even when the frame's real unit currently
+-- exists: clearing that unit later (e.g. losing a target) must not leave
+-- test mode showing stale data with nothing left to refresh it, since the
+-- unit watch is unregistered for as long as test mode owns the frame.
 local function applyOn(frame)
     saved[frame] = frame.unit
-    if not UnitExists(frame.unit) then
-        frame.unit = "player"
-        frame:SetAttribute("unit", "player")
-    end
+    frame.unit = "player"
+    frame:SetAttribute("unit", "player")
     UnregisterUnitWatch(frame)
     frame:Show()
     ns.Single.UpdateAll(frame)
 end
 
+-- Restores the exact unit test mode took over from, regardless of what
+-- applyOn forced it to. A frame no longer enabled is hidden outright
+-- instead of re-registering its unit watch.
 local function applyOff(frame)
     local unit = saved[frame]
     saved[frame] = nil
@@ -30,6 +35,9 @@ local function applyOff(frame)
     frame:SetAttribute("unit", unit)
     if ns.Config.Get(frame.key, "enabled") then
         RegisterUnitWatch(frame)
+    else
+        UnregisterUnitWatch(frame)
+        frame:Hide()
     end
     ns.Single.UpdateAll(frame)
 end
@@ -57,18 +65,37 @@ function TestMode.Set(state)
     return true
 end
 
--- Single's own CONFIG_CHANGED listener (registered earlier, in
--- Units/Single.lua) restyles the frame first, which re-registers the unit
--- watch through applyEnabled. This listener is registered after it, so it
--- always runs afterwards and undoes that for any frame still in test mode.
+-- Out of combat, ns.Fire runs listeners in registration order, and
+-- Units/Single.lua's own CONFIG_CHANGED listener is registered earlier (see
+-- ForeverUnitFrames.toc), so it always restyles first; its AfterCombat job
+-- runs immediately and re-registers the unit watch through applyEnabled,
+-- which this listener then undoes for every frame still in test mode. In
+-- combat several distinct restyle:<scope> keys can be queued after this job
+-- was first queued (one CONFIG_CHANGED per changed scope), so this uses the
+-- "last" queue position: every CONFIG_CHANGED moves this job to the end of
+-- the AfterCombat queue, so it always drains after every restyle job no
+-- matter how many scopes changed while in combat.
+--
+-- A frame's enabled state can also change while test mode is on: an
+-- enabled frame not yet owned by test mode is taken over (applyOn), and a
+-- frame test mode owns that is no longer enabled is released (applyOff,
+-- which hides it since it is disabled).
 ns.Listen("CONFIG_CHANGED", function()
     if not on then return end
     ns.AfterCombat("testmode", function()
-        for frame in pairs(saved) do
-            UnregisterUnitWatch(frame)
-            frame:Show()
+        for _, frame in pairs(ns.Frames) do
+            local enabled = ns.Config.Get(frame.key, "enabled")
+            local owned = saved[frame] ~= nil
+            if enabled and not owned then
+                applyOn(frame)
+            elseif not enabled and owned then
+                applyOff(frame)
+            elseif enabled and owned then
+                UnregisterUnitWatch(frame)
+                frame:Show()
+            end
         end
-    end)
+    end, "last")
 end)
 
 -- Fires before secure lockdown takes effect, so turning test mode off here
