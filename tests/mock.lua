@@ -133,6 +133,14 @@ local function newWidget(kind, name, parent)
         _kind = kind, _name = name, _parent = parent, _scripts = {},
         _events = {}, _attr = {}, _points = {}, _w = 0, _h = 0, _shown = true,
     }, widget)
+    -- A frame starts one level above its parent, as in the client.
+    local parentLevel = type(parent) == "table" and rawget(parent, "_level")
+    w._level = parentLevel and parentLevel + 1 or 0
+    function w:SetFrameLevel(level)
+        assert(type(level) == "number" and level >= 0 and level <= 10000, "SetFrameLevel: level out of range")
+        self._level = level
+    end
+    function w:GetFrameLevel() return self._level end
     function w:GetName() return self._name end
     function w:GetObjectType() return self._kind end
     function w:SetScript(s, fn) self._scripts[s] = fn end
@@ -209,7 +217,14 @@ local function newWidget(kind, name, parent)
     -- Texture
     -- A texture shows either a file or an atlas; setting one replaces the
     -- other.
-    function w:SetTexture(t) self._texture = t; self._atlas = nil end
+    function w:SetTexture(t, wrapH, wrapV) self._texture = t; self._atlas = nil; self._wrap = { wrapH, wrapV } end
+    -- Masks (SimpleTextureAPI): only mask textures can be added.
+    function w:AddMaskTexture(mask)
+        assert(type(mask) == "table" and mask._kind == "MaskTexture", "AddMaskTexture: not a mask texture")
+        self._masks = self._masks or {}
+        table.insert(self._masks, mask)
+    end
+    function w:GetNumMaskTextures() return self._masks and #self._masks or 0 end
     function w:SetAtlas(atlas)
         assert(type(atlas) == "string", "SetAtlas: atlas must be a string")
         self._atlas = atlas; self._texture = nil
@@ -301,7 +316,16 @@ local function newWidget(kind, name, parent)
     function w:GetVerticalScroll() return self._vscroll or 0 end
     function w:GetVerticalScrollRange() return self._vrange or 0 end
     -- Creation
-    function w:CreateTexture(n) return newWidget("Texture", n, self) end
+    function w:CreateTexture(n, layer, _, sublevel)
+        local t = newWidget("Texture", n, self)
+        t._layer, t._sublevel = layer, sublevel
+        return t
+    end
+    function w:CreateMaskTexture(n, layer, _, sublevel)
+        local t = newWidget("MaskTexture", n, self)
+        t._layer, t._sublevel = layer, sublevel
+        return t
+    end
     function w:CreateFontString(n, layer)
         local fs = newWidget("FontString", n, self)
         fs._layer, fs._sublevel = layer or "ARTWORK", 0

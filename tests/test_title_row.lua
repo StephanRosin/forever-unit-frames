@@ -58,7 +58,7 @@ M.units.player = { name = "Me", level = 60, class = "WARLOCK", className = "Warl
 M.FireEvent("PLAYER_ENTERING_WORLD")
 local tt = f.texts.title
 H.check("title text on the title row", point(tt, "LEFT")[2], f.title)
-H.check("ends at the class icon", point(tt, "RIGHT")[2], f.classIcon)
+H.check("ends at the class icon badge", point(tt, "RIGHT")[2], f.classBadge)
 H.checkTrue("title text shown", tt:IsShown())
 H.check("name and level", tt._args[2], "Me")
 H.check("class colour", tt._color[1], RAID_CLASS_COLORS.WARLOCK.r)

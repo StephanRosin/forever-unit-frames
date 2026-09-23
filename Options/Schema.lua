@@ -7,7 +7,7 @@ Schema.GENERAL = {
         -- action: a two-click button under the rows (Options/Window.lua).
         { id = "font", keys = { "fontFace", "fontSize", "fontOutline", "fontShadow", "showSurname" },
             action = "applyFontToFrames" },
-        { id = "titleText", keys = { "titleClassIcon" } },
+        { id = "titleText", keys = { "titleClassIcon", "classIconSize", "classIconX", "classIconY" } },
         { id = "bars", keys = { "barTexture", "backgroundColor" } },
         { id = "border", keys = { "borderSize", "borderColor" } },
     } },
@@ -32,7 +32,8 @@ Schema.FRAME = {
         { id = "border", keys = { "borderSize", "borderColor" } },
     } },
     { id = "text", sections = {
-        { id = "titleText", keys = { "titleText", "titleColorMode", "titleClassIcon" } },
+        { id = "titleText", keys = { "titleText", "titleColorMode", "titleClassIcon", "classIconSize", "classIconX",
+            "classIconY" } },
         { id = "healthText", keys = { "textHealthLeft", "textHealthRight" } },
         { id = "powerText", keys = { "textPowerLeft", "textPowerRight" } },
         { id = "font", keys = { "fontFace", "fontSize", "fontOutline", "fontShadow", "showSurname" } },

@@ -191,7 +191,8 @@ function Texts.SetFont(fs, font, size, outline)
     showCopies(fs)
 end
 
--- Class icon at the title row's right end. Blizzard's own class icons are
+-- Class icon: a round badge on the frame's top right corner. Blizzard's
+-- own class icons are
 -- the atlases "classicon-<class>" (GetClassAtlas, lower-cased by the
 -- character creation screen of this game type); when the client has no
 -- such atlas, the class sheet with CLASS_ICON_TCOORDS, as Blizzard's
@@ -227,12 +228,35 @@ local function classIconWanted(frame)
     return frame.titleHeight > 0 and Config.Get(frame.key, "titleClassIcon") == true
 end
 
--- The title text ends before the icon when it shows, else at the row's
--- right edge. No measuring: the text may be secret.
+-- Round, as Blizzard's portrait icons: the circular alpha mask, clamped.
+local CIRCLE_MASK = "Interface\\CharacterFrame\\TempPortraitAlphaMask"
+-- The badge's frame level above the unit frame: over the bars, their
+-- texts and the border (textures of the frame itself).
+local BADGE_LEVELS = 20
+-- The ring follows the border but stays thin.
+local MAX_RING = 2
+
+local function makeRound(badge, tex)
+    local mask = badge:CreateMaskTexture()
+    mask:SetTexture(CIRCLE_MASK, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
+    mask:SetAllPoints(tex)
+    tex:AddMaskTexture(mask)
+end
+
+local function showClassIcon(frame, shown)
+    frame.classIcon:SetShown(shown)
+    frame.classRing:SetShown(shown and frame.classRingSize > 0)
+end
+
+-- The title text ends before the badge when it shows and its left edge
+-- lies within the title row, else at the row's right edge. No measuring:
+-- the text may be secret; the badge's place is plain numbers. The
+-- vertical offset keeps the text centred on the row.
 local function placeTitleEnd(frame)
-    local title, icon = frame.texts.title, frame.classIcon
-    if icon:IsShown() then
-        title:SetPoint("RIGHT", icon, "LEFT", ns.Pixel.Snap(-2, title), 0)
+    local title = frame.texts.title
+    if frame.classIcon:IsShown() and frame.classBadgeInRow then
+        title:SetPoint("RIGHT", frame.classBadge, "LEFT", ns.Pixel.Snap(-2, title),
+            -frame.titleHeight / 2 - frame.classBadgeY)
     else
         title:SetPoint("RIGHT", frame.title, "RIGHT", ns.Pixel.Snap(-4, title), 0)
     end
@@ -240,13 +264,47 @@ end
 
 local function updateClassIcon(frame)
     local token = classIconWanted(frame) and classToken(frame.unit)
-    frame.classIcon:SetShown(token and drawClassIcon(frame.classIcon, token) or false)
+    showClassIcon(frame, token and drawClassIcon(frame.classIcon, token) or false)
     placeTitleEnd(frame)
 end
 
+-- Size, ring and place of the badge, on the pixel grid. Its centre sits
+-- at the configured offset from the frame's top right corner.
+local function styleBadge(frame)
+    local scope, Pixel = frame.key, ns.Pixel
+    local badge = frame.classBadge
+    local size = Pixel.Snap(Config.Get(scope, "classIconSize"), nil, 1)
+    local ring = math.min(ns.Single.BorderSize(scope), Pixel.Snap(MAX_RING, nil, 1))
+    local x = Pixel.Centre(Config.Get(scope, "classIconX"), size)
+    local y = Pixel.Centre(Config.Get(scope, "classIconY"), size)
+    badge:SetFrameLevel(frame:GetFrameLevel() + BADGE_LEVELS)
+    badge:SetSize(size, size)
+    badge:ClearAllPoints()
+    badge:SetPoint("CENTER", frame, "TOPRIGHT", x, y)
+    local c = Config.Get(scope, "borderColor")
+    frame.classRing:SetColorTexture(c[1], c[2], c[3], c[4])
+    frame.classRingSize = ring
+    frame.classIcon:SetSize(size - 2 * ring, size - 2 * ring)
+    -- Edges relative to the frame's right edge.
+    local width = ns.Single.Size(scope)
+    local left = x - size / 2
+    frame.classBadgeInRow = left < -frame.titleRight and left > frame.titleLeft - width
+    frame.classBadgeY = y
+end
+
 function Texts.Build(frame)
-    frame.classIcon = frame:CreateTexture(nil, "OVERLAY")
-    frame.classIcon:Hide()
+    -- Its own frame so it draws above the bars; a child of the unit frame
+    -- so it hides with it.
+    local badge = CreateFrame("Frame", nil, frame)
+    frame.classBadge = badge
+    frame.classRing = badge:CreateTexture(nil, "ARTWORK", nil, 0)
+    frame.classRing:SetAllPoints(badge)
+    frame.classIcon = badge:CreateTexture(nil, "ARTWORK", nil, 1)
+    frame.classIcon:SetPoint("CENTER", badge, "CENTER", 0, 0)
+    makeRound(badge, frame.classRing)
+    makeRound(badge, frame.classIcon)
+    frame.classRingSize = 0
+    showClassIcon(frame, false)
     frame.texts = {}
     for _, slot in ipairs(SLOTS) do
         -- Parent to the bar so the text sits above it; the title row is a
@@ -280,12 +338,13 @@ function Texts.Style(frame)
     local title = frame.texts.title
     title:SetWordWrap(false)
     title:SetShown(frame.titleHeight > 0)
-    -- Square, as tall as the title row (already on the pixel grid).
-    local icon, size = frame.classIcon, ns.Pixel.Snap(frame.titleHeight)
-    icon:ClearAllPoints()
-    icon:SetPoint("RIGHT", frame.title, "RIGHT", 0, 0)
-    icon:SetSize(size, size)
-    if not classIconWanted(frame) then icon:Hide() end
+    styleBadge(frame)
+    if not classIconWanted(frame) then
+        showClassIcon(frame, false)
+    else
+        -- The ring may have been switched on or off with the border.
+        showClassIcon(frame, frame.classIcon:IsShown())
+    end
     placeTitleEnd(frame)
 end
 

@@ -100,6 +100,12 @@ Settings.Define({ key = "fontShadow", code = "FH", scope = "inherit", type = "bo
 Settings.Define({ key = "showSurname", code = "SN", scope = "inherit", type = "bool", default = true })
 -- Class icon at the right end of the title row (players only).
 Settings.Define({ key = "titleClassIcon", code = "CL", scope = "inherit", type = "bool", default = true })
+-- The icon is a round badge on the frame's top right corner: its size and
+-- the offset of its centre from that corner. The defaults put it slightly
+-- inside horizontally and mostly above the top edge.
+Settings.Define({ key = "classIconSize", code = "KS", scope = "inherit", type = "int", min = 10, max = 48, default = 20 })
+Settings.Define({ key = "classIconX", code = "KX", scope = "inherit", type = "int", min = -64, max = 64, default = -4 })
+Settings.Define({ key = "classIconY", code = "KY", scope = "inherit", type = "int", min = -64, max = 64, default = 4 })
 Settings.Define({ key = "barTexture", code = "BT", scope = "inherit", type = "media", mediaKind = "statusbar", default = "Flat" })
 Settings.Define({ key = "backgroundColor", code = "BC", scope = "inherit", type = "color", default = { 0, 0, 0, 0.6 } })
 Settings.Define({ key = "borderSize", code = "BS", scope = "inherit", type = "int", min = 0, max = 2, default = 1 })

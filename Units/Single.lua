@@ -58,6 +58,7 @@ local function layoutBars(frame)
     title:SetHeight(math.max(titleH, pixel))
     title:SetShown(titleH > 0)
     frame.titleHeight = titleH
+    frame.titleLeft, frame.titleRight = left, right
     frame.health:ClearAllPoints()
     frame.health:SetPoint("TOPLEFT", frame, "TOPLEFT", left, -titleH)
     frame.health:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -right, -titleH)
