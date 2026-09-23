@@ -6,14 +6,14 @@ local _, ns = ...
 -- back in a later session carries an extra line break, and the macro cache
 -- turns every line break into CRLF (header line + appended one: 3 extra
 -- characters), so chunks leave that much slack below the client's limit.
--- Up to four macros ("FUF Save 1" to "FUF Save 4"), only as many as the
+-- Up to six macros ("FUF Save 1" to "FUF Save 6"), only as many as the
 -- profile needs; the header "i/n" keeps one digit each, so its length and
 -- the slack stay the same for every macro.
 local MacroBackup = {}
 ns.MacroBackup = MacroBackup
 
 local PREFIX = "FUF Save "
-local MAX_MACROS = 4
+local MAX_MACROS = 6
 local BODY_LIMIT = 252
 local ICON = "INV_MISC_QUESTIONMARK"
 local MARK = "#Forever Unit Frames backup"

@@ -122,10 +122,11 @@ end
 
 local BIG = { macros = 2, minLength = 400, last = ";yY1234$", apply = bigProfile,
     check = function(n) return n.Config.Get("party", "y") == 1234 end }
--- All aura settings on five frames: four macros.
-local AURAS = { macros = 4, minLength = 640, last = ";fJY%-200$",
-    apply = function(n) auraProfile(n, { "player", "target", "targettarget", "pet", "focus" }) end,
-    check = function(n) return n.Config.Get("focus", "buffsY") == -200 end }
+-- All aura settings on all six frames: five macros.
+local ALL_FRAMES = { "player", "target", "targettarget", "pet", "focus", "party" }
+local AURAS = { macros = 5, minLength = 4 * 213 + 1, last = ";yJY%-200$",
+    apply = function(n) auraProfile(n, ALL_FRAMES) end,
+    check = function(n) return n.Config.Get("party", "buffsY") == -200 end }
 
 -- Three sessions in a row with SavedVariables never loaded: nothing may be
 -- lost, and an unchanged backup is not rewritten because of line endings.
@@ -169,7 +170,7 @@ threeSessions("CRLF restart", "\r\n", true, true)
 threeSessions("auras LF reload", "\n", false, false, AURAS)
 threeSessions("auras CRLF restart", "\r\n", true, true, AURAS)
 
--- Back to a small profile after the aura sessions: macros 2 to 4 are
+-- Back to a small profile after the aura sessions: the surplus macros are
 -- blanked, and the next sessions read the small profile.
 do
     local n = threeSessions("auras CRLF reload", "\r\n", true, false, AURAS)
@@ -177,8 +178,8 @@ do
     n.Config.Set("player", "width", 260)
     M.RunTimers()
     M.FireEvent("PLAYER_LOGOUT")
-    H.check("auras shrink: four macros kept", #M.macros, 4)
-    for i = 2, 4 do
+    H.check("auras shrink: five macros kept", #M.macros, 5)
+    for i = 2, 5 do
         H.check("auras shrink: macro " .. i .. " blanked", M.macros[i].body,
             ("#Forever Unit Frames backup %d/1 - keep\n"):format(i))
     end
@@ -193,19 +194,20 @@ do
     end
 end
 
--- All aura settings on all six frames are more than four macros hold: the
--- write is refused and the backup already there stays as it is.
+-- More than six macros hold: the write is refused and the backup already
+-- there stays as it is.
 do
     local n = login({})
-    auraProfile(n, { "player", "target", "targettarget", "pet", "focus" })
+    auraProfile(n, ALL_FRAMES)
     M.RunTimers()
     local before = n.MacroBackup.Read()
-    auraProfile(n, { "party" })
+    H.check("too long: setup has a backup", before ~= nil, true)
+    bigProfile(n)
     local encoded = n.Codec.Encode(n.Config.Profile())
-    H.check("auras six frames: longer than four macros", #encoded > 4 * 213, true)
-    H.check("auras six frames: refused", n.MacroBackup.Write(encoded), false)
-    H.check("auras six frames: error", n.MacroBackup.LastError(), "MACRO_TOO_LONG")
-    H.check("auras six frames: backup kept", n.MacroBackup.Read(), before)
+    H.check("too long: longer than six macros", #encoded > 6 * 213, true)
+    H.check("too long: refused", n.MacroBackup.Write(encoded), false)
+    H.check("too long: error", n.MacroBackup.LastError(), "MACRO_TOO_LONG")
+    H.check("too long: backup kept", n.MacroBackup.Read(), before)
 end
 
 -- A known code whose value cannot be parsed: what can be read is loaded,
