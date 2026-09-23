@@ -11,3 +11,5 @@ Core\Secrets.lua
 Core\Settings.lua
 Core\Config.lua
 Core\Codec.lua
+Core\MacroBackup.lua
+Core\Storage.lua
