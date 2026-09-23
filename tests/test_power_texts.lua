@@ -53,3 +53,27 @@ H.check("font outline applied", t.healthLeft._font[3], "OUTLINE")
 M.units.player.power, M.units.player.powerType = 77, 1
 M.FireEvent("UNIT_DISPLAYPOWER", "player")
 H.check("power text refreshed on display power change", t.powerRight._text, "77")
+
+-- Left texts stop short of the right text on narrow bars: a second anchor
+-- to the right text's left edge and no wrapping (no measuring, so secret
+-- text is fine; an empty right text is zero wide).
+do
+    local function pointOf(fs, name)
+        for i = 1, #fs._points do
+            local p = { fs:GetPoint(i) }
+            if p[1] == name then return p end
+        end
+    end
+    local texts = ns.Frames.player.texts
+    for _, pair in ipairs({ { "healthLeft", "healthRight" }, { "powerLeft", "powerRight" } }) do
+        local left, right = texts[pair[1]], texts[pair[2]]
+        local p = pointOf(left, "RIGHT")
+        H.checkTrue(pair[1] .. ": right anchor", p)
+        H.check(pair[1] .. ": anchored to the right text", p[2], right)
+        H.check(pair[1] .. ": its left edge", p[3], "LEFT")
+        H.check(pair[1] .. ": gap", p[4], -4)
+        H.check(pair[1] .. ": still starts at the bar", pointOf(left, "LEFT")[2], ns.Frames.player[pair[1]:sub(1, -5) == "health" and "health" or "power"])
+        H.check(pair[1] .. ": no word wrap", left:GetWordWrap(), false)
+        H.check(pair[2] .. ": single anchor", #right._points, 1)
+    end
+end

@@ -20,6 +20,9 @@ H.check("pet health from the player", ns.Frames.pet.health:GetValue(), 5)
 local tbar = ns.Frames.target.castbar
 H.checkTrue("target: sample cast", tbar:IsShown())
 H.check("sample cast name", tbar.text:GetText(), ns.L.TEST_CAST)
+-- A spell icon Blizzard's own UI uses (PET_WAIT_TEXTURE), so it exists.
+H.check("sample icon constant", ns.Castbar.PREVIEW_ICON, "Interface\\Icons\\Spell_Nature_TimeStop")
+H.check("sample icon shown", tbar.icon._texture, ns.Castbar.PREVIEW_ICON)
 H.check("player castbar off: no sample", ns.Frames.player.castbar:IsShown(), false)
 C.Set("player", "castbarEnabled", true)
 H.checkTrue("switched on during test mode: sample", ns.Frames.player.castbar:IsShown())

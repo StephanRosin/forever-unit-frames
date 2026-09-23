@@ -25,7 +25,8 @@ local Config, Secrets, Settings = ns.Config, ns.Secrets, ns.Settings
 
 Castbar.CAST_COLOR = { 1.0, 0.7, 0.0 }
 Castbar.CHANNEL_COLOR = { 0.3, 0.8, 0.3 }
-Castbar.PREVIEW_ICON = "Interface\\Icons\\INV_Misc_QuestionMark"
+-- Blizzard's own pet bar uses it (PET_WAIT_TEXTURE), so the file exists.
+Castbar.PREVIEW_ICON = "Interface\\Icons\\Spell_Nature_TimeStop"
 
 local STOP_EVENTS = {
     UNIT_SPELLCAST_STOP = true, UNIT_SPELLCAST_FAILED = true,
@@ -78,20 +79,27 @@ function Castbar.UpdateTime(bar, nowMs)
 end
 
 -- The value is always the clock, so the fill grows. A cast shows that
--- growth in the cast colour. A channel must drain: the fill takes the
--- (opaque) background colour and the background behind it the channel
--- colour, so the coloured part shrinks. Opaque, or the channel colour
--- would shine through the drained part.
+-- growth in the cast colour. A channel must drain: its fill (growing from
+-- the right) is invisible, and bar.remain paints the rest, from the bar's
+-- left edge to the fill's left edge, in the channel colour. The background
+-- keeps its own colour either way, translucency included. No arithmetic
+-- on cast values: the fill texture does the measuring.
 local function paint(bar)
     local bg = Config.Get(bar.scope, "backgroundColor")
+    bar.bg:SetVertexColor(bg[1], bg[2], bg[3], bg[4])
     if bar.cast and bar.cast.channel then
         local c = Castbar.CHANNEL_COLOR
-        bar:SetStatusBarColor(bg[1], bg[2], bg[3], 1)
-        bar.bg:SetVertexColor(c[1], c[2], c[3], 1)
+        bar:SetStatusBarColor(c[1], c[2], c[3], 0)
+        local remain = bar.remain
+        remain:ClearAllPoints()
+        remain:SetPoint("TOPLEFT", bar, "TOPLEFT", 0, 0)
+        remain:SetPoint("BOTTOMRIGHT", bar:GetStatusBarTexture(), "BOTTOMLEFT", 0, 0)
+        remain:SetVertexColor(c[1], c[2], c[3])
+        remain:Show()
     else
         local c = Castbar.CAST_COLOR
         bar:SetStatusBarColor(c[1], c[2], c[3])
-        bar.bg:SetVertexColor(bg[1], bg[2], bg[3], bg[4])
+        bar.remain:Hide()
     end
 end
 
@@ -155,6 +163,8 @@ function Castbar.Build(frame)
     bar.scope = frame.key
     bar.bg = bar:CreateTexture(nil, "BACKGROUND")
     bar.bg:SetAllPoints(bar)
+    bar.remain = bar:CreateTexture(nil, "BORDER")
+    bar.remain:Hide()
     bar.icon = bar:CreateTexture(nil, "ARTWORK")
     bar.text = bar:CreateFontString(nil, "OVERLAY")
     bar.time = bar:CreateFontString(nil, "OVERLAY")
@@ -244,6 +254,7 @@ function Castbar.Style(frame)
     local tex = ns.Media.StatusBar(Config.Get(scope, "barTexture"))
     bar:SetStatusBarTexture(tex)
     bar.bg:SetTexture(tex)
+    bar.remain:SetTexture(tex)
     paint(bar)
     ns.Single.DrawBorder(bar, scope)
     bar.icon:ClearAllPoints()
@@ -257,12 +268,17 @@ function Castbar.Style(frame)
     for _, fs in ipairs({ bar.text, bar.time }) do fs:SetFont(font, fontSize, flags) end
     bar.text:ClearAllPoints()
     bar.text:SetPoint("LEFT", bar, "LEFT", 4, 0)
+    -- The name ends where the time begins (zero wide when hidden or empty).
+    bar.text:SetPoint("RIGHT", bar.time, "LEFT", -4, 0)
+    bar.text:SetWordWrap(false)
     bar.text:SetJustifyH("LEFT")
     bar.text:SetShown(Config.Get(scope, "castbarName"))
     bar.time:ClearAllPoints()
     bar.time:SetPoint("RIGHT", bar, "RIGHT", -4, 0)
     bar.time:SetJustifyH("RIGHT")
     bar.time:SetShown(Config.Get(scope, "castbarTime"))
+    -- A hidden time keeps its size; empty, it frees the room for the name.
+    if not bar.time:IsShown() then bar.time:SetText("") end
     if bar.preview then
         Castbar.Preview(frame, true)
     elseif not Config.Get(scope, "castbarEnabled") then
@@ -287,7 +303,7 @@ function Castbar.Preview(frame, on)
     paint(bar)
     bar.text:SetText(ns.L.TEST_CAST)
     bar.icon:SetTexture(Castbar.PREVIEW_ICON)
-    bar.time:SetText("1.5")
+    bar.time:SetText(bar.time:IsShown() and "1.5" or "")
     bar:Show()
 end
 

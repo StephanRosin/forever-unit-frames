@@ -46,6 +46,7 @@ H.check("name", bar.text:GetText(), "Fireball")
 H.check("icon", bar.icon._texture, 135812)
 H.check("cast colour", bar._color[1], ns.Castbar.CAST_COLOR[1])
 H.check("cast: background keeps the background colour", bar.bg._color[4], C.Get("target", "backgroundColor")[4])
+H.check("cast: no remaining part", bar.remain:IsShown(), false)
 H.check("fills left to right", bar._reverse, false)
 H.check("time text", bar.time._args[1], 2.5)
 M.Tick(1)
@@ -108,18 +109,32 @@ H.check("failed: hidden", bar:IsShown(), false)
 M.units.target.channel = { name = "Drain Life", texture = 1, startMs = 1001000, endMs = 1006000 }
 M.FireEvent("UNIT_SPELLCAST_CHANNEL_START", "target", "c-1", 689)
 H.checkTrue("channel shown", bar:IsShown())
--- The coloured part drains: the fill (which grows with the clock) takes
--- the background colour, the background behind it the channel colour.
+-- The coloured part drains: the fill (which grows with the clock from the
+-- right) is invisible, and an extra texture in the channel colour covers
+-- the rest, from the bar's left edge to the fill's left edge. The
+-- background keeps its own (possibly translucent) colour.
 local bgColor = C.Get("target", "backgroundColor")
-H.check("channel: fill is background red", bar._color[1], bgColor[1])
-H.check("channel: fill is background green", bar._color[2], bgColor[2])
-H.check("channel: fill is opaque", bar._color[4], 1)
-H.check("channel: background is channel red", bar.bg._color[1], ns.Castbar.CHANNEL_COLOR[1])
-H.check("channel: background is channel green", bar.bg._color[2], ns.Castbar.CHANNEL_COLOR[2])
-H.check("channel: background is opaque", bar.bg._color[4], 1)
+H.check("channel: fill invisible", bar._color[4], 0)
+H.check("channel: background keeps the background colour", bar.bg._color[4], bgColor[4])
+H.check("channel: background keeps the background red", bar.bg._color[1], bgColor[1])
+local remain = bar.remain
+H.checkTrue("channel: remaining part shown", remain:IsShown())
+H.check("channel: remaining part is channel red", remain._color[1], ns.Castbar.CHANNEL_COLOR[1])
+H.check("channel: remaining part is channel green", remain._color[2], ns.Castbar.CHANNEL_COLOR[2])
+local function pointOf(tex, name)
+    for i = 1, #tex._points do
+        local p = { tex:GetPoint(i) }
+        if p[1] == name then return p end
+    end
+end
+local tl, br = pointOf(remain, "TOPLEFT"), pointOf(remain, "BOTTOMRIGHT")
+H.check("remaining: starts at the bar", tl[2], bar)
+H.check("remaining: bar's top left", tl[3], "TOPLEFT")
+H.check("remaining: ends at the fill", br[2], bar:GetStatusBarTexture())
+H.check("remaining: fill's bottom left", br[3], "BOTTOMLEFT")
 ns.Castbar.Style(t)
-H.check("restyled mid-channel: fill stays background", bar._color[2], bgColor[2])
-H.check("restyled mid-channel: background stays channel", bar.bg._color[2], ns.Castbar.CHANNEL_COLOR[2])
+H.check("restyled mid-channel: fill stays invisible", bar._color[4], 0)
+H.checkTrue("restyled mid-channel: remaining part stays", remain:IsShown())
 H.check("channel fills from the right", bar._reverse, true)
 M.FireEvent("UNIT_SPELLCAST_STOP", "target", "x", 1)
 H.checkTrue("a cast stop does not end a running channel", bar:IsShown())
@@ -133,6 +148,8 @@ M.FireEvent("UNIT_SPELLCAST_START", "target", "h-1", 2050)
 H.check("cast after a channel: fill is cast colour", bar._color[2], ns.Castbar.CAST_COLOR[2])
 H.check("cast after a channel: background colour back", bar.bg._color[2], bgColor[2])
 H.check("cast after a channel: background alpha back", bar.bg._color[4], bgColor[4])
+H.check("cast after a channel: fill opaque again", bar._color[4], nil)
+H.check("cast after a channel: remaining part hidden", bar.remain:IsShown(), false)
 M.Tick(1)
 H.check("past a readable end: hidden", bar:IsShown(), false)
 
@@ -183,3 +200,27 @@ H.checkTrue("party castbar built", member.castbar)
 M.units.party1.cast = { name = "Renew", startMs = 1002000, endMs = 1020000 }
 M.FireEvent("UNIT_SPELLCAST_START", "party1", "r-1", 139)
 H.checkTrue("party castbar shown", member.castbar:IsShown())
+
+-- The spell name stops short of the time text on a narrow castbar.
+do
+    local b = ns.Frames.target.castbar
+    ns.Castbar.Style(ns.Frames.target)
+    local p
+    for i = 1, #b.text._points do
+        local q = { b.text:GetPoint(i) }
+        if q[1] == "RIGHT" then p = q end
+    end
+    H.checkTrue("castbar name: right anchor", p)
+    H.check("castbar name: to the time text", p[2], b.time)
+    H.check("castbar name: its left edge", p[3], "LEFT")
+    H.check("castbar name: gap", p[4], -4)
+    H.check("castbar name: still starts at the bar", select(2, b.text:GetPoint(1)), b)
+    H.check("castbar name: no word wrap", b.text:GetWordWrap(), false)
+end
+do
+    local b = ns.Frames.target.castbar
+    b.time:SetText("9.9")
+    C.Set("target", "castbarTime", false)
+    H.check("castbar time off: emptied for the name", b.time:GetText(), "")
+    C.Set("target", "castbarTime", true)
+end

@@ -10,9 +10,9 @@ ns.Texts = Texts
 local Config, Secrets = ns.Config, ns.Secrets
 
 local SLOTS = {
-    { field = "healthLeft", setting = "textHealthLeft", bar = "health", point = "LEFT", x = 4 },
+    { field = "healthLeft", setting = "textHealthLeft", bar = "health", point = "LEFT", x = 4, before = "healthRight" },
     { field = "healthRight", setting = "textHealthRight", bar = "health", point = "RIGHT", x = -4 },
-    { field = "powerLeft", setting = "textPowerLeft", bar = "power", point = "LEFT", x = 4 },
+    { field = "powerLeft", setting = "textPowerLeft", bar = "power", point = "LEFT", x = 4, before = "powerRight" },
     { field = "powerRight", setting = "textPowerRight", bar = "power", point = "RIGHT", x = -4 },
 }
 
@@ -86,6 +86,13 @@ function Texts.Style(frame)
         fs:SetShadowOffset(shadow and 1 or 0, shadow and -1 or 0)
         fs:ClearAllPoints()
         fs:SetPoint(slot.point, frame[slot.bar], slot.point, slot.x, 0)
+        if slot.before then
+            -- A left text ends where the right one begins (an empty right
+            -- text is zero wide), so the two never overlap on a narrow
+            -- bar. No measuring: the text may be secret.
+            fs:SetPoint("RIGHT", frame.texts[slot.before], "LEFT", -4, 0)
+            fs:SetWordWrap(false)
+        end
         fs:SetJustifyH(slot.point)
     end
 end
