@@ -550,19 +550,29 @@ function M.Reset()
         if M.IsSecret(field) then return M.Secret(v) end
         return v
     end
-    -- Filter strings as the client reads them: "HELPFUL|PLAYER" and so on.
+    -- Filter strings as the client reads them: "HELPFUL|PLAYER" and so on;
+    -- a leading "!" negates a token ("!PLAYER": not cast by the player,
+    -- AuraUtil.AuraFilterNegationPrefix). An unknown token raises.
+    local FILTER_TOKENS = { HELPFUL = true, HARMFUL = true, PLAYER = true, RAID = true }
     local function auraMatches(a, filter)
         local want = {}
-        for token in filter:gmatch("[^|]+") do want[token] = true end
+        for token in filter:gmatch("[^|]+") do
+            local negated = token:sub(1, 1) == "!"
+            if negated then token = token:sub(2) end
+            if not FILTER_TOKENS[token] then error("Unknown aura filter component: " .. token, 3) end
+            want[token] = not negated
+        end
         local helpful = M.Reveal(a.isHelpful) == true
-        if want.HELPFUL and not helpful then return false end
-        if want.HARMFUL and helpful then return false end
-        if want.PLAYER and not a.mine then return false end
-        if want.RAID and not a.dispellable then return false end
+        local has = { HELPFUL = helpful, HARMFUL = not helpful, PLAYER = M.Reveal(a.mine) == true,
+            RAID = M.Reveal(a.dispellable) == true }
+        for token, on in pairs(want) do
+            if has[token] ~= on then return false end
+        end
         return true
     end
     M.auraQueries = 0      -- GetUnitAuras calls
     M.lastAuraQuery = nil  -- { unit, filter, maxCount, sortRule } of the last one
+    M.auraQueryLog = {}    -- the filter of every GetUnitAuras call, in order
     M.auraLookups = 0      -- GetAuraDataByAuraInstanceID calls
     _G.C_UnitAuras = {
         GetAuraDataByAuraInstanceID = function(unit, id)
@@ -579,6 +589,7 @@ function M.Reset()
             refuseAuras()
             M.auraQueries = M.auraQueries + 1
             M.lastAuraQuery = { unit = unit, filter = filter, maxCount = maxCount, sortRule = sortRule }
+            M.auraQueryLog[#M.auraQueryLog + 1] = filter
             local d, list = u(unit), {}
             for _, a in ipairs(d and d.auras or {}) do
                 if auraMatches(a, filter) and (not maxCount or #list < maxCount) then list[#list + 1] = a end

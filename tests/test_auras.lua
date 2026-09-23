@@ -92,7 +92,10 @@ H.check("sample swipe", sample.cooldown._cooldown[2], Auras.SAMPLES.debuffs[3].d
 H.check("samples repeat", debuffs.buttons[6].icon._texture, Auras.SAMPLES.debuffs[1].icon)
 
 -- Layout: 8 per row, growing right, rows going up, from the holder's
--- bottom left corner.
+-- bottom left corner. The plain layout: yours first and Auto per row are
+-- covered in test_aura_own.lua.
+C.Set("target", "debuffsHighlightOwn", false)
+C.Set("target", "debuffsPerRow", 8)
 local function offset(b)
     local p, _, rp, bx, by = b:GetPoint(1)
     return p .. ">" .. rp .. " " .. bx .. "," .. by

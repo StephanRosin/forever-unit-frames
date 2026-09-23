@@ -199,7 +199,13 @@ Settings.POINTS = { "TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BO
 local AURA_ANCHORS = { "FRAME", "HEALTH", "POWER", "CASTBAR", "OTHER" }
 local DIRECTIONS = { "RIGHT", "LEFT", "UP", "DOWN" }
 local AURA_SIZE = { party = 18, targettarget = 16, pet = 16, _ = 20 }
-local AURA_PER_ROW = { party = 6, focus = 6, targettarget = 6, pet = 6, _ = 8 }
+-- Own auras (cast by you, your pet or vehicle) are drawn this much bigger
+-- by default.
+local function ownSizes(sizes)
+    local out = {}
+    for scope, size in pairs(sizes) do out[scope] = math.floor(size * 1.3 + 0.5) end
+    return out
+end
 
 -- suffix, code letter, definition without key, code and default.
 local AURA_SETTINGS = {
@@ -216,8 +222,13 @@ local AURA_SETTINGS = {
     { "RowGrowth", "R", { type = "enum", values = DIRECTIONS } },
     { "Size", "S", { type = "int", min = 8, max = 64 } },
     { "Spacing", "D", { type = "int", min = 0, max = 20 } },
-    { "PerRow", "N", { type = "int", min = 1, max = 40 } },
+    -- 0 = Auto: as many as fit the frame's width (height when growing
+    -- up or down).
+    { "PerRow", "N", { type = "int", min = 0, max = 40, zeroText = "AUTO" } },
     { "Max", "C", { type = "int", min = 1, max = 40 } },
+    -- Own auras first, in their own rows, at their own size.
+    { "HighlightOwn", "H", { type = "bool" } },
+    { "OwnSize", "B", { type = "int", min = 10, max = 64 } },
 }
 
 -- Debuffs sit above the frame, buffs above the debuffs; party auras to
@@ -236,8 +247,9 @@ local AURA_DEFAULTS = {
         Y = { party = 0, _ = 2 },
         Growth = "RIGHT",
         RowGrowth = { party = "DOWN", _ = "UP" },
-        Size = AURA_SIZE, Spacing = 2, PerRow = AURA_PER_ROW,
+        Size = AURA_SIZE, Spacing = 2, PerRow = 0,
         Max = { party = 4, targettarget = 6, pet = 6, _ = 16 },
+        HighlightOwn = false, OwnSize = ownSizes(AURA_SIZE),
     },
     debuffs = {
         letter = "D",
@@ -252,8 +264,9 @@ local AURA_DEFAULTS = {
         Y = { party = 0, _ = 2 },
         Growth = "RIGHT",
         RowGrowth = { party = "DOWN", _ = "UP" },
-        Size = AURA_SIZE, Spacing = 2, PerRow = AURA_PER_ROW,
+        Size = AURA_SIZE, Spacing = 2, PerRow = 0,
         Max = { party = 6, targettarget = 6, pet = 6, _ = 16 },
+        HighlightOwn = { target = true, focus = true, _ = false }, OwnSize = ownSizes(AURA_SIZE),
     },
 }
 

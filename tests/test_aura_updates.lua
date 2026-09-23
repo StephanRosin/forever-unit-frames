@@ -38,13 +38,14 @@ H.check("updated elsewhere: nothing", counted(function()
     M.FireEvent("UNIT_AURA", "target", { updatedAuraInstanceIDs = { 99 } })
 end), "0 lists, 0 lookups")
 
--- A new debuff: only the debuffs are read again.
+-- A new debuff: only the debuffs are read again. The target shows your
+-- debuffs first, so reading them takes two lists: yours, then the rest.
 list[4] = aura(4, { dispelName = "Poison" })
-H.check("added debuff: one list", counted(function()
+H.check("added debuff: the debuffs' two lists", counted(function()
     M.FireEvent("UNIT_AURA", "target", { addedAuras = { list[4] } })
-end), "1 lists, 0 lookups")
+end), "2 lists, 0 lookups")
 H.check("added debuff shown", debuffs.count, 2)
-H.check("filter of that list", M.lastAuraQuery.filter, "HARMFUL")
+H.check("filter of that list", M.lastAuraQuery.filter, "HARMFUL|!PLAYER")
 
 -- A new buff someone else cast while buffs show only mine: nothing.
 ns.Config.Set("target", "buffsOnlyMine", true)
@@ -76,22 +77,23 @@ H.check("lookup finds nothing: group read", counted(function()
 end), "1 lists, 1 lookups")
 H.check("gone buff removed", buffs.count, 1)
 
--- Full updates, missing or secret details: everything is read.
+-- Full updates, missing or secret details: everything is read (one list
+-- for the buffs, two for the debuffs).
 H.check("full update", counted(function()
     M.FireEvent("UNIT_AURA", "target", { isFullUpdate = true })
-end), "2 lists, 0 lookups")
+end), "3 lists, 0 lookups")
 H.check("no info", counted(function()
     M.FireEvent("UNIT_AURA", "target")
-end), "2 lists, 0 lookups")
+end), "3 lists, 0 lookups")
 H.check("secret full flag", counted(function()
     M.FireEvent("UNIT_AURA", "target", { isFullUpdate = M.Secret(false) })
-end), "2 lists, 0 lookups")
+end), "3 lists, 0 lookups")
 H.check("secret removed id", counted(function()
     M.FireEvent("UNIT_AURA", "target", { removedAuraInstanceIDs = { M.Secret(3) } })
-end), "2 lists, 0 lookups")
+end), "3 lists, 0 lookups")
 H.check("secret added id", counted(function()
     M.FireEvent("UNIT_AURA", "target", { addedAuras = { aura(9, { auraInstanceID = M.Secret(9) }) } })
-end), "2 lists, 0 lookups")
+end), "3 lists, 0 lookups")
 
 -- Refused in combat: the full read that follows keeps the icons.
 M.SetCombat(true)

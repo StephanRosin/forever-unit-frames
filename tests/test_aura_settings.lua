@@ -50,7 +50,7 @@ H.check("party debuffs right", C.Get("party", "debuffsFramePoint"), "TOPRIGHT")
 H.check("party rows down", C.Get("party", "buffsRowGrowth"), "DOWN")
 H.check("party icon size", C.Get("party", "debuffsSize"), 18)
 H.check("target icon size", C.Get("target", "buffsSize"), 20)
-H.check("focus per row", C.Get("focus", "debuffsPerRow"), 6)
+H.check("focus per row: Auto", C.Get("focus", "debuffsPerRow"), 0)
 H.check("dispellable off", C.Get("target", "debuffsDispellable"), false)
 
 -- Ranges.

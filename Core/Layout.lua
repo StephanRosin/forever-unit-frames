@@ -91,6 +91,53 @@ function Layout.AuraExtent(count, perRow, size, spacing, primary)
     return across, along
 end
 
+-- Icons per row: a fixed number, or 0 for as many as fit the length (the
+-- frame's extent along the growth direction), at least one.
+function Layout.AuraPerRow(perRow, length, size, spacing)
+    if perRow > 0 then return perRow end
+    return math.max(1, math.floor((length + spacing) / (size + spacing)))
+end
+
+-- Two size classes: the first `own` icons (yours) in their own leading
+-- rows at shape.ownSize, shape.ownPerRow per row; the rest in the rows
+-- after them at shape.size, shape.perRow per row. shape also holds
+-- primary, row and spacing. Plain numbers in, plain numbers out: nothing
+-- is allocated.
+
+-- How far across the growth direction the own rows reach, with the gap to
+-- the rows after them (0 without own icons).
+local function ownDepth(shape, own)
+    if own <= 0 then return 0 end
+    local lines = math.ceil(own / shape.ownPerRow)
+    return lines * shape.ownSize + lines * shape.spacing
+end
+
+-- Offset of icon i from the corner, and its size.
+function Layout.AuraPlace(shape, i, own)
+    local row = Layout.AuraRowDirection(shape.primary, shape.row)
+    local p, r = VECTOR[shape.primary], VECTOR[row]
+    local index, perRow, size, shift = i, shape.ownPerRow, shape.ownSize, 0
+    if i > own then
+        index, perRow, size, shift = i - own, shape.perRow, shape.size, ownDepth(shape, own)
+    end
+    local step = size + shape.spacing
+    local along, across = ((index - 1) % perRow) * step, math.floor((index - 1) / perRow) * step + shift
+    -- + 0 turns a negative zero into 0.
+    return p[1] * along + r[1] * across + 0, p[2] * along + r[2] * across + 0, size
+end
+
+-- Width and height of count icons, the first `own` of them yours.
+function Layout.AuraBlock(shape, own, count)
+    own = math.min(own, count)
+    local ownAlong, ownAcross = Layout.AuraExtent(own, shape.ownPerRow, shape.ownSize, shape.spacing, "RIGHT")
+    local along, across = Layout.AuraExtent(count - own, shape.perRow, shape.size, shape.spacing, "RIGHT")
+    along = math.max(along, ownAlong)
+    if own > 0 and count > own then across = across + shape.spacing end
+    across = across + ownAcross
+    if HORIZONTAL[shape.primary] then return along, across end
+    return across, along
+end
+
 -- Pixel grid ------------------------------------------------------------------
 -- Sizes and offsets are rounded to whole physical pixels with Blizzard's
 -- PixelUtil (Blizzard_SharedXML, loaded for every game type): one pixel is

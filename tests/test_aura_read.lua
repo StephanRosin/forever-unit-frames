@@ -28,10 +28,12 @@ H.check("buff icon", buffs.buttons[1].icon._texture, 101)
 H.check("debuff stacks", debuffs.buttons[2].count:GetText(), "2")
 H.check("debuff border: curse", debuffs.buttons[2].border._color[3], 1)
 H.check("query unit", M.lastAuraQuery.unit, "target")
-H.check("query filter", M.lastAuraQuery.filter, "HARMFUL")
+-- Target debuffs show yours first: the last list is everyone else's.
+H.check("query filter", M.lastAuraQuery.filter, "HARMFUL|!PLAYER")
 H.check("query capped at the maximum", M.lastAuraQuery.maxCount, 16)
 H.check("client sorts: mine first", M.lastAuraQuery.sortRule, Enum.UnitAuraSortRule.Default)
-H.check("holder fits two icons", debuffs.holder:GetWidth(), 42)
+H.check("holder fits two icons: yours (26) above the other (20)", debuffs.holder:GetWidth() .. "x"
+    .. debuffs.holder:GetHeight(), "26x48")
 
 -- Filters: only mine, only dispellable.
 C.Set("target", "buffsOnlyMine", true)
@@ -55,7 +57,7 @@ for i = 30, 5, -1 do table.remove(M.units.target.auras, i) end
 C.Set("target", "buffsEnabled", false)
 local queries = M.auraQueries
 M.FireEvent("UNIT_AURA", "target", { isFullUpdate = true })
-H.check("one query: debuffs only", M.auraQueries - queries, 1)
+H.check("debuffs only: yours and the others", M.auraQueries - queries, 2)
 H.check("buffs off: empty", buffs.count, 0)
 C.ResetScope("target")
 

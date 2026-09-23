@@ -155,6 +155,8 @@ local function flashError(box)
     end)
 end
 
+-- opts.zeroText (optional): what the box shows for 0, e.g. "Auto"; typing
+-- it (any case) sets 0.
 function Widgets.Slider(parent, opts)
     local row = newRow(parent, opts)
     local step = opts.step or 1
@@ -162,12 +164,22 @@ function Widgets.Slider(parent, opts)
     local e = newNumberBox(row, s)
     row.slider, row.edit = s, e
 
+    local zeroText = opts.zeroText
+    local function display(v)
+        if zeroText and v == 0 then return zeroText end
+        return tostring(v)
+    end
+    local function parse(text)
+        if zeroText and text:lower() == zeroText:lower() then return 0 end
+        return tonumber(text)
+    end
+
     local updating = false
     local function show(v, keepTyping)
         updating = true
         s:SetValue(v)
         -- A refresh must not wipe what is being typed into the box.
-        if not (keepTyping and e:HasFocus()) then e:SetText(tostring(v)) end
+        if not (keepTyping and e:HasFocus()) then e:SetText(display(v)) end
         updating = false
     end
     local function commit(v)
@@ -177,7 +189,7 @@ function Widgets.Slider(parent, opts)
     s:SetScript("OnValueChanged", function(_, v, userInput)
         if updating or userInput == false then return end
         local r = round(v, step)
-        e:SetText(tostring(r))
+        e:SetText(display(r))
         commit(r)
     end)
     s:SetScript("OnMouseWheel", function(_, delta)
@@ -186,7 +198,7 @@ function Widgets.Slider(parent, opts)
         commit(v); show(opts.get())
     end)
     local function editCommit(self)
-        local n = tonumber(self:GetText())
+        local n = parse(self:GetText())
         if n and n == n and n >= opts.min and n <= opts.max then
             commit(round(n, step))
             show(opts.get())
@@ -198,7 +210,7 @@ function Widgets.Slider(parent, opts)
     end
     e:SetScript("OnEnterPressed", editCommit)
     e:SetScript("OnEditFocusLost", function(self)
-        if self:GetText() ~= tostring(opts.get()) then editCommit(self) end
+        if self:GetText() ~= display(opts.get()) then editCommit(self) end
         self:HighlightText(0, 0)
     end)
     e:SetScript("OnEscapePressed", function(self) show(opts.get()); self:ClearFocus() end)

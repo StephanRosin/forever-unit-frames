@@ -15,6 +15,8 @@ Auras.LEVELS = 5
 -- Frames refreshed by a timer (target of target) read auras at most this
 -- often.
 Auras.POLL_SECONDS = 0.5
+-- In test mode this many samples of a group count as yours.
+Auras.OWN_SAMPLES = 2
 -- The client sorts: auras you cast first (UnitAuraSortRule.Default).
 local SORT_RULE = Enum and Enum.UnitAuraSortRule and Enum.UnitAuraSortRule.Default
 
@@ -55,8 +57,8 @@ end
 function Auras.Build(frame)
     frame.auras = {}
     for _, key in ipairs(ORDER) do
-        frame.auras[key] = { key = key, isDebuff = GROUPS[key].isDebuff, holder = CreateFrame("Frame", nil, frame),
-            buttons = {}, count = 0 }
+        frame.auras[key] = { key = key, frame = frame, isDebuff = GROUPS[key].isDebuff,
+            holder = CreateFrame("Frame", nil, frame), buttons = {}, count = 0, own = 0 }
     end
     built[frame] = true
 end
@@ -81,11 +83,25 @@ function Auras.AnchorRegion(frame, key)
     return frame
 end
 
+-- Where icon i goes depends on how many of the shown icons are yours
+-- (group.own): those come first, at their own size. An icon is styled
+-- again only when its size changes.
 local function place(group, i)
     local button = group.buttons[i]
+    local x, y, size = Layout.AuraPlace(group, i, group.own)
+    if button.styledSize ~= size then
+        AuraButton.Style(button, group.frame.key, size, group.showTime)
+        button.styledSize = size
+    end
     button:ClearAllPoints()
-    button:SetPoint(group.corner, group.holder, group.corner,
-        Layout.AuraOffset(i, group.perRow, group.size + group.spacing, group.primary, group.row))
+    button:SetPoint(group.corner, group.holder, group.corner, x, y)
+end
+
+-- A different number of own icons moves every icon after them.
+local function arrange(group, own)
+    if own == group.own then return end
+    group.own = own
+    for i = 1, #group.buttons do place(group, i) end
 end
 
 -- The pool grows up to the group's maximum and never shrinks.
@@ -94,7 +110,6 @@ local function acquire(frame, group, i)
     if not button then
         button = AuraButton.Create(group.holder, group.isDebuff)
         group.buttons[i] = button
-        AuraButton.Style(button, frame.key, group.size, group.showTime)
         place(group, i)
     end
     return button
@@ -102,31 +117,50 @@ end
 
 -- As big as the shown icons; one pixel when there are none.
 local function fit(group)
-    local w, h = Layout.AuraExtent(group.count, group.perRow, group.size, group.spacing, group.primary)
+    local w, h = Layout.AuraBlock(group, group.own, group.count)
     local one = Pixel.One()
     group.holder:SetSize(math.max(w, one), math.max(h, one))
 end
 
--- Shows the first `count` icons of the group, hides the rest.
-local function settle(group, count)
+-- Shows the first `count` icons of the group, hides the rest; the first
+-- `own` of them are yours.
+local function settle(group, count, own)
+    arrange(group, own or 0)
     group.count = count
     for i = count + 1, #group.buttons do AuraButton.Clear(group.buttons[i]) end
     fit(group)
 end
 
+-- Growing sideways, rows wrap at the frame's width; growing up or down, at
+-- its height (a party button's own size).
+local function frameLength(frame, primary)
+    local side = (primary == "UP" or primary == "DOWN") and "height" or "width"
+    return Pixel.Snap(Config.Get(frame.key, side))
+end
+
 local function readSettings(frame, group)
     local filter = GROUPS[group.key].filter
-    if get(frame, group, "OnlyMine") then filter = filter .. "|PLAYER" end
+    local onlyMine = get(frame, group, "OnlyMine")
+    if onlyMine then filter = filter .. "|PLAYER" end
     if group.isDebuff and get(frame, group, "Dispellable") then filter = filter .. "|RAID" end
     group.filter = filter
+    -- Yours first: the client tells them apart ("PLAYER": cast by you,
+    -- your pet or vehicle; "!PLAYER": everything else), so no aura field
+    -- is ever compared here.
+    group.highlightOwn = get(frame, group, "HighlightOwn")
+    group.ownFilter = onlyMine and filter or filter .. "|PLAYER"
+    group.otherFilter = not onlyMine and filter .. "|!PLAYER" or nil
     group.enabled = get(frame, group, "Enabled")
     group.max = get(frame, group, "Max")
-    group.perRow = get(frame, group, "PerRow")
     group.size = Pixel.Snap(get(frame, group, "Size"), nil, 1)
+    group.ownSize = Pixel.Snap(get(frame, group, "OwnSize"), nil, 1)
     group.spacing = Pixel.Snap(get(frame, group, "Spacing"))
     group.primary = get(frame, group, "Growth")
     group.row = Layout.AuraRowDirection(group.primary, get(frame, group, "RowGrowth"))
     group.corner = Layout.AuraCorner(group.primary, group.row)
+    local perRow, length = get(frame, group, "PerRow"), frameLength(frame, group.primary)
+    group.perRow = Layout.AuraPerRow(perRow, length, group.size, group.spacing)
+    group.ownPerRow = Layout.AuraPerRow(perRow, length, group.ownSize, group.spacing)
     group.showTime = get(frame, group, "ShowTime")
 end
 
@@ -136,10 +170,11 @@ function Auras.Style(frame)
         readSettings(frame, group)
         group.holder:SetFrameLevel(frame:GetFrameLevel() + Auras.LEVELS)
         for i, button in ipairs(group.buttons) do
-            AuraButton.Style(button, frame.key, group.size, group.showTime)
+            button.styledSize = nil
             place(group, i)
         end
-        settle(group, group.enabled and math.min(group.count, group.max) or 0)
+        local count = group.enabled and math.min(group.count, group.max) or 0
+        settle(group, count, group.highlightOwn and math.min(group.own, count) or 0)
     end
     -- Anchors last: a group may hang from the other one.
     for _, key in ipairs(ORDER) do
@@ -155,16 +190,19 @@ local function showSamples(frame)
     for _, key in ipairs(ORDER) do
         local group, samples = frame.auras[key], Auras.SAMPLES[key]
         local count = group.enabled and group.max or 0
+        -- The first samples pass for yours, so "mine first" can be seen.
+        local own = group.highlightOwn and math.min(Auras.OWN_SAMPLES, count) or 0
+        arrange(group, own)
         for i = 1, count do
             AuraButton.ShowSample(acquire(frame, group, i), samples[(i - 1) % #samples + 1], sampleStart)
         end
-        settle(group, count)
+        settle(group, count, own)
     end
     frame.auraSamples = true
 end
 
 local function clear(frame)
-    for _, key in ipairs(ORDER) do settle(frame.auras[key], 0) end
+    for _, key in ipairs(ORDER) do settle(frame.auras[key], 0, 0) end
     frame.auraSamples = nil
 end
 
@@ -172,12 +210,15 @@ local function testing()
     return ns.TestMode ~= nil and ns.TestMode.IsOn()
 end
 
--- Reads one group in full. Returns false when the client refused; the
--- group is then left as it was.
-local function readGroup(frame, group)
-    local ok, list = pcall(C_UnitAuras.GetUnitAuras, frame.unit, group.filter, group.max, SORT_RULE)
-    if not ok or type(list) ~= "table" then return false end
-    local count = 0
+-- One list from the client; nil when it refused.
+local function query(frame, filter, max)
+    local ok, list = pcall(C_UnitAuras.GetUnitAuras, frame.unit, filter, max, SORT_RULE)
+    if ok and type(list) == "table" then return list end
+end
+
+-- Shows the auras of a list from icon count + 1 on, up to the maximum.
+-- Returns the new count.
+local function fill(frame, group, list, count)
     for i = 1, #list do
         if count >= group.max then break end
         local aura = list[i]
@@ -186,7 +227,28 @@ local function readGroup(frame, group)
             count = count + 1
         end
     end
-    settle(group, count)
+    return count
+end
+
+-- Reads one group in full. Returns false when the client refused; the
+-- group is then left as it was. With yours first that takes two lists,
+-- and both are asked for before anything is shown.
+local function readGroup(frame, group)
+    local own, other
+    if group.highlightOwn then
+        own = query(frame, group.ownFilter, group.max)
+        if not own then return false end
+        if group.otherFilter and #own < group.max then
+            other = query(frame, group.otherFilter, group.max)
+            if not other then return false end
+        end
+    else
+        other = query(frame, group.filter, group.max)
+        if not other then return false end
+    end
+    local mine = own and fill(frame, group, own, 0) or 0
+    local count = other and fill(frame, group, other, mine) or mine
+    settle(group, count, mine)
     return true
 end
 
@@ -197,10 +259,8 @@ local function readAll(frame, keep)
     frame.auraSamples = nil
     for _, key in ipairs(ORDER) do
         local group = frame.auras[key]
-        if not group.enabled then
-            settle(group, 0)
-        elseif not readGroup(frame, group) and not keep then
-            settle(group, 0)
+        if not group.enabled or (not readGroup(frame, group) and not keep) then
+            settle(group, 0, 0)
         end
     end
 end

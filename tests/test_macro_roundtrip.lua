@@ -98,7 +98,7 @@ end
 -- Every aura setting of the given frames away from its default, with the
 -- longest values (sliders at their minimum): the largest aura profile.
 local AURA_SUFFIXES = { "Enabled", "OnlyMine", "Dispellable", "ShowTime", "Anchor", "FramePoint",
-    "Point", "X", "Y", "Growth", "RowGrowth", "Size", "Spacing", "PerRow", "Max" }
+    "Point", "X", "Y", "Growth", "RowGrowth", "Size", "Spacing", "PerRow", "Max", "HighlightOwn", "OwnSize" }
 local function auraProfile(n, scopes)
     for _, scope in ipairs(scopes) do
         for _, group in ipairs(n.Settings.AURA_GROUPS) do
@@ -122,9 +122,10 @@ end
 
 local BIG = { macros = 2, minLength = 400, last = ";yY1234$", apply = bigProfile,
     check = function(n) return n.Config.Get("party", "y") == 1234 end }
--- All aura settings on all six frames: five macros.
+-- All aura settings on all six frames (with "mine first" and its size:
+-- about 1090 characters): six macros.
 local ALL_FRAMES = { "player", "target", "targettarget", "pet", "focus", "party" }
-local AURAS = { macros = 5, minLength = 4 * 213 + 1, last = ";yJY%-200$",
+local AURAS = { macros = 6, minLength = 5 * 213 + 1, last = ";yJY%-200$",
     apply = function(n) auraProfile(n, ALL_FRAMES) end,
     check = function(n) return n.Config.Get("party", "buffsY") == -200 end }
 
@@ -178,8 +179,8 @@ do
     n.Config.Set("player", "width", 260)
     M.RunTimers()
     M.FireEvent("PLAYER_LOGOUT")
-    H.check("auras shrink: five macros kept", #M.macros, 5)
-    for i = 2, 5 do
+    H.check("auras shrink: six macros kept", #M.macros, 6)
+    for i = 2, 6 do
         H.check("auras shrink: macro " .. i .. " blanked", M.macros[i].body,
             ("#Forever Unit Frames backup %d/1 - keep\n"):format(i))
     end

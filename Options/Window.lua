@@ -157,6 +157,7 @@ end
 local ROW_BUILDERS = {
     int = function(parent, def, opts)
         opts.min, opts.max, opts.step = def.min, def.max, 1
+        opts.zeroText = def.zeroText and L[def.zeroText]
         return Widgets.Slider(parent, opts)
     end,
     bool = function(parent, _, opts) return Widgets.Checkbox(parent, opts) end,
