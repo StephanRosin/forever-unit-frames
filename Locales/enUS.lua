@@ -77,3 +77,6 @@ L.ENUM_textHealthLeft_NONE = "Empty"
 
 L.INHERITED = "(inherited)"
 L.RESET_OVERRIDE = "Reset"
+
+L.TEST_MODE_COMBAT = "Test mode is not available in combat."
+L.TEST_MODE_ON = "Test mode"
