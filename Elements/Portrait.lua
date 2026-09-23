@@ -14,6 +14,9 @@ function Portrait.Build(frame)
     frame.portrait2D:SetAllPoints(frame.portraitBg)
     frame.portrait3D = CreateFrame("PlayerModel", nil, frame)
     frame.portrait3D:SetAllPoints(frame.portraitBg)
+    -- A model is no texture: the 3D portrait stays square.
+    ns.Corners.Add(frame, frame.portraitBg)
+    ns.Corners.Add(frame, frame.portrait2D)
 end
 
 function Portrait.Style(frame)

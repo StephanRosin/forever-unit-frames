@@ -528,6 +528,12 @@ local function newWidget(kind, name, parent)
         self._masks = self._masks or {}
         table.insert(self._masks, mask)
     end
+    function w:RemoveMaskTexture(mask)
+        assert(type(mask) == "table" and mask._kind == "MaskTexture", "RemoveMaskTexture: not a mask texture")
+        for i, m in ipairs(self._masks or {}) do
+            if m == mask then table.remove(self._masks, i) return end
+        end
+    end
     function w:GetNumMaskTextures() return self._masks and #self._masks or 0 end
     function w:SetAtlas(atlas)
         assert(type(atlas) == "string", "SetAtlas: atlas must be a string")

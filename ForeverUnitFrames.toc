@@ -15,6 +15,7 @@ Core\MacroBackup.lua
 Core\Storage.lua
 Core\Media.lua
 Core\Layout.lua
+Core\Corners.lua
 Units\Units.lua
 Elements\Health.lua
 Elements\Power.lua
@@ -24,6 +25,7 @@ Elements\Castbar.lua
 Elements\AuraButton.lua
 Elements\AuraContainers.lua
 Elements\Auras.lua
+Elements\Shape.lua
 Units\Events.lua
 Units\Single.lua
 Units\Party.lua

@@ -115,6 +115,7 @@ Settings.Define({ key = "barTexture", code = "BT", scope = "inherit", type = "me
 Settings.Define({ key = "backgroundColor", code = "BC", scope = "inherit", type = "color", default = { 0, 0, 0, 0.6 } })
 Settings.Define({ key = "borderSize", code = "BS", scope = "inherit", type = "int", min = 0, max = 2, default = 1 })
 Settings.Define({ key = "borderColor", code = "BO", scope = "inherit", type = "color", default = { 0, 0, 0, 1 } })
+Settings.Define({ key = "cornerRadius", code = "CR", scope = "inherit", type = "int", min = 0, max = 12, default = 0 })
 
 -- Colors
 Settings.Define({ key = "healthColorMode", code = "HM", scope = "inherit", type = "enum",

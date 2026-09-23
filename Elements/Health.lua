@@ -75,6 +75,9 @@ function Health.Build(frame)
     frame.health = CreateFrame("StatusBar", nil, frame)
     frame.healthBg = frame.health:CreateTexture(nil, "BACKGROUND")
     frame.healthBg:SetAllPoints(frame.health)
+    ns.Corners.Add(frame, frame.title)
+    ns.Corners.Add(frame, frame.healthBg)
+    ns.Corners.Add(frame, function() return frame.health:GetStatusBarTexture() end)
 end
 
 function Health.Style(frame)

@@ -11,6 +11,7 @@ Schema.GENERAL = {
             "classIconRing", "classIconRingColor" } },
         { id = "bars", keys = { "barTexture", "backgroundColor" } },
         { id = "border", keys = { "borderSize", "borderColor" } },
+        { id = "shape", keys = { "cornerRadius" } },
     } },
     { id = "colors", sections = {
         { id = "health", keys = { "healthColorMode", "healthColor" } },
@@ -31,6 +32,7 @@ Schema.FRAME = {
         { id = "health", keys = { "healthColorMode", "healthColor" } },
         { id = "textures", keys = { "barTexture", "backgroundColor" } },
         { id = "border", keys = { "borderSize", "borderColor" } },
+        { id = "shape", keys = { "cornerRadius" } },
     } },
     { id = "text", sections = {
         { id = "titleText", keys = { "titleText", "titleColorMode", "titleClassIcon", "classIconSize", "classIconX",

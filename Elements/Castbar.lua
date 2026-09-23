@@ -189,6 +189,12 @@ function Castbar.Build(frame)
     bar.icon = bar:CreateTexture(nil, "ARTWORK")
     bar.text = bar:CreateFontString(nil, "OVERLAY")
     bar.time = bar:CreateFontString(nil, "OVERLAY")
+    -- The castbar's whole rectangle, icon included: its corners are
+    -- rounded, and a detached castbar's border goes around it.
+    bar.box = CreateFrame("Frame", nil, bar)
+    for _, texture in ipairs({ bar.bg, bar.remain, bar.iconBg, bar.icon }) do ns.Corners.Add(bar, texture) end
+    ns.Corners.Add(bar, function() return bar:GetStatusBarTexture() end)
+    bar.clip = ns.Corners.Clipper(bar)
     bar:SetScript("OnUpdate", Castbar.OnUpdate)
     bar:Hide()
     frame.castbar = bar
@@ -287,6 +293,10 @@ function Castbar.Style(frame)
     bar.iconBg:ClearAllPoints()
     bar.iconBg:SetAllPoints(bar.icon)
     bar.iconBg:SetShown(showIcon)
+    bar.box:ClearAllPoints()
+    bar.box:SetPoint("TOPLEFT", bar, "TOPLEFT", showIcon and -height or 0, 0)
+    bar.box:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", 0, 0)
+    ns.Corners.Fit(bar.clip, bar.box, ns.Corners.Radius(scope))
     local font = ns.Media.Font(Config.Get(scope, "fontFace"))
     local outline = Config.Get(scope, "fontOutline")
     local fontSize = math.min(Config.Get(scope, "fontSize"), Config.Get(scope, "castbarHeight"))
