@@ -312,9 +312,9 @@ function Texts.Build(frame)
     showClassIcon(frame, false)
     frame.texts = {}
     for _, slot in ipairs(SLOTS) do
-        -- Parent to the bar so the text sits above it; the title row is a
-        -- texture, its text goes on the frame.
-        local parent = slot.bar == "title" and frame or frame[slot.bar]
+        -- Title and health texts sit on the overlay, above shields and
+        -- heals; power texts on their bar, so they hide with it.
+        local parent = slot.bar == "power" and frame.power or frame.overlay
         frame.texts[slot.field] = parent:CreateFontString(nil, "OVERLAY")
     end
 end

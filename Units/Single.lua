@@ -90,6 +90,13 @@ local function applyEnabled(frame)
     end
 end
 
+-- Test mode: every element with sample data shows (or drops) it.
+function Single.Preview(frame, on)
+    for _, el in ipairs(ns.Elements) do
+        if el.Preview then el.Preview(frame, on) end
+    end
+end
+
 function Single.UpdateAll(frame, event)
     if not frame.unit or not UnitExists(frame.unit) then return end
     for _, el in ipairs(ns.Elements) do el.Update(frame, event) end

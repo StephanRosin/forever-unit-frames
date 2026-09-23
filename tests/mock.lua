@@ -518,6 +518,7 @@ local function newWidget(kind, name, parent)
     function w:IsProtected() return self._protected or false end
     function w:SetFrameStrata(v) self._strata = v end
     function w:GetFrameStrata() return self._strata end
+    function w:SetClipsChildren(v) self._clips = v end
     function w:GetEffectiveScale() return M.scale end
     -- StatusBar
     function w:SetMinMaxValues(a, b) self._min, self._max = a, b end
@@ -849,6 +850,16 @@ function M.Reset()
     _G.UnitChannelDuration = function(unit) local d = u(unit); return d and d.castDuration end
     _G.C_StringUtil = { TruncateWhenZero = function(n) return n end }
     _G.UnitPowerMissing = function(unit) local d = u(unit); return d and d.powerMissing or 0 end
+    -- Shields and heals (UnitDocumentation.lua): the total absorb is never
+    -- nil; incoming heals are nil when nothing is known. d.absorbs;
+    -- d.healsAll / d.healsMine.
+    _G.UnitGetTotalAbsorbs = function(unit) local d = u(unit); return d and d.absorbs or 0 end
+    _G.UnitGetIncomingHeals = function(unit, healer)
+        local d = u(unit)
+        if not d then return nil end
+        if healer == "player" then return d.healsMine end
+        return d.healsAll
+    end
 
     _G.C_Timer = { After = function(sec, fn) table.insert(M.timers, { sec = sec, fn = fn }) end }
 

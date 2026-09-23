@@ -73,6 +73,11 @@ function Health.Build(frame)
     -- is Elements/Texts.lua's.
     frame.title = frame:CreateTexture(nil, "BACKGROUND")
     frame.health = CreateFrame("StatusBar", nil, frame)
+    -- Above the bars, their overlays (shields, heals) and a 3D portrait:
+    -- title and health texts live here. Below the class badge.
+    frame.overlay = CreateFrame("Frame", nil, frame)
+    frame.overlay:SetAllPoints(frame)
+    frame.overlay:SetFrameLevel(frame:GetFrameLevel() + 10)
     frame.healthBg = frame.health:CreateTexture(nil, "BACKGROUND")
     frame.healthBg:SetAllPoints(frame.health)
     ns.Corners.Add(frame, frame.title)

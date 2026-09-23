@@ -21,6 +21,7 @@ Schema.GENERAL = {
     } },
     { id = "colors", sections = {
         { id = "health", keys = { "healthColorMode", "healthColor" } },
+        { id = "absorbs", keys = { "absorbColor" } },
     } },
     { id = "profile", custom = "profile" },
 }
@@ -39,6 +40,7 @@ Schema.FRAME = {
     { id = "bars", sections = {
         { id = "health", keys = { "healthColorMode", "healthColor" } },
         { id = "textures", keys = { "barTexture", "backgroundColor" } },
+        { id = "absorbs", keys = { "absorbEnabled", "absorbColor" } },
         { id = "shape", keys = { "cornerRadius" } },
     } },
     { id = "text", sections = {
