@@ -8,3 +8,4 @@
 Locales\enUS.lua
 Core\Init.lua
 Core\Secrets.lua
+Core\Settings.lua
