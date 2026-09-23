@@ -68,7 +68,9 @@ function AuraContainers.Flow(group)
         anchor = Layout.AuraCorner(primary, row),
         horizontal = AnchorUtil.FlowDirection[FLOW_NAMES[h]],
         vertical = AnchorUtil.FlowDirection[FLOW_NAMES[v]],
-        lineSize = math.max(lineSize, group.size),
+        -- The client adds snapped sizes up one by one: half a pixel of slack,
+        -- so rounding cannot push the last icon of a row onto the next.
+        lineSize = math.max(lineSize, group.size) + ns.Pixel.One() / 2,
     }
 end
 
@@ -160,6 +162,8 @@ local function create(frame, key, made)
     local container = CreateFrame("AuraContainer", nil, frame, AuraContainers.TEMPLATE)
     local entry = { container = container, frame = frame, key = key, isDebuff = group.isDebuff, buttons = {} }
     made[key] = entry
+    -- Blizzard's Edit Mode would fill it with made-up auras.
+    container:SetEditModePreviewEnabled(false)
     for _, part in ipairs(AuraContainers.PARTS) do
         local p, own = AuraContainers.Part(group, part), part == "own"
         container:AddAuraGroup(part, p.filter, { maxFrameCount = p.max, layout = p.layout,
@@ -259,7 +263,7 @@ end
 -- support, or the client refused this frame's containers).
 function AuraContainers.Ensure(frame)
     if frame.auraContainers then return true end
-    if frame.auraContainerFailed or not AuraContainers.Supported() then return false end
+    if frame.pretend or frame.auraContainerFailed or not AuraContainers.Supported() then return false end
     if InCombatLockdown() then
         later(frame)
         return true
@@ -300,6 +304,14 @@ function AuraContainers.Refresh(frame, event)
         end
     end
 end
+
+-- Party slots reshuffled: party2 may now be someone else under the same
+-- token, which the container does not notice by itself.
+ns.On("GROUP_ROSTER_UPDATE", function()
+    for frame in pairs(all) do
+        if frame.key == ns.Party.KEY then AuraContainers.Refresh(frame, "GROUP_ROSTER_UPDATE") end
+    end
+end)
 
 -- Test mode shows our samples instead (a container shows only real auras).
 function AuraContainers.Hide(frame)

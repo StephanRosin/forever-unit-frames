@@ -35,12 +35,14 @@ for _, c in ipairs(cases) do
     H.check(label .. " vertical", f.vertical, c[6])
 end
 
+-- Half a pixel of slack against the client's rounding.
+local SLACK = ns.Pixel.One() / 2
 -- Row length: Auto is the frame's length; a fixed number is that many
 -- normal icons with the spacing between them; never below one icon.
-H.check("auto: frame length", AC.Flow(shape()).lineSize, 200)
-H.check("8 per row", AC.Flow(shape({ perRowSetting = 8 })).lineSize, 8 * 20 + 7 * 2)
-H.check("1 per row", AC.Flow(shape({ perRowSetting = 1 })).lineSize, 20)
-H.check("tiny frame: one icon", AC.Flow(shape({ length = 5 })).lineSize, 20)
+H.check("auto: frame length", AC.Flow(shape()).lineSize, 200 + SLACK)
+H.check("8 per row", AC.Flow(shape({ perRowSetting = 8 })).lineSize, 8 * 20 + 7 * 2 + SLACK)
+H.check("1 per row", AC.Flow(shape({ perRowSetting = 1 })).lineSize, 20 + SLACK)
+H.check("tiny frame: one icon", AC.Flow(shape({ length = 5 })).lineSize, 20 + SLACK)
 
 -- The container's wrap rule (AnchorUtil.ApplyFlowLayout): n icons fit a
 -- line when n * size + (n - 1) * spacing <= lineSize. Auto then gives

@@ -93,6 +93,21 @@ H.check("test off: samples gone", t.auras.debuffs.count, 0)
 H.check("test off: buffs off stay hidden", ns.Frames.player.auraContainers.buffs.container:IsShown(), false)
 H.check("test off: no reads", M.auraQueries, 0)
 
+-- Blizzard's Edit Mode preview (made-up auras) is off on ours.
+H.check("no edit mode preview", dc:IsEditModePreviewEnabled(), false)
+
+-- A pretend member never gets containers, not even when asked in combat.
+M.SetCombat(true)
+H.check("pretend member: refused", ns.AuraContainers.Ensure(P.fakes[1]), false)
+M.SetCombat(false)
+H.check("pretend member: none after combat", P.fakes[1].auraContainers, nil)
+
+-- A roster change under the same token: every party container refreshes.
+local partyContainer = b1.auraContainers.buffs.container
+local before = partyContainer._updates
+M.FireEvent("GROUP_ROSTER_UPDATE")
+H.checkTrue("roster change: party refreshed", partyContainer._updates > before)
+
 -- Without client support the addon reads (the fallback).
 ns = H.LoadAddon()
 M.auraContainerMissing = true

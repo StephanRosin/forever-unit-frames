@@ -119,6 +119,8 @@ local function fakeButton(i)
     if button then return button end
     button = CreateFrame("Button", "ForeverUnitFramesPartyTest" .. i, Party.testBlock, "SecureUnitButtonTemplate")
     button.key = Party.KEY
+    -- Shows samples only; never gets live aura containers.
+    button.pretend = true
     button:SetAttribute("*type1", "target")
     button:SetAttribute("*type2", "togglemenu")
     button:RegisterForClicks("AnyUp")

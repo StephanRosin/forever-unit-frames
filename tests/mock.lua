@@ -339,6 +339,8 @@ function M.NewAuraContainer(w, template)
     function w:IsEnabled() return self._enabled end
     function w:SetEnabled(v) self._enabled = v end
     function w:UpdateAllAuras() self._updates = self._updates + 1 end
+    function w:SetEditModePreviewEnabled(v) self._editModePreview = (v == true) end
+    function w:IsEditModePreviewEnabled() return self._editModePreview ~= false end
     function w:AddAuraGroup(key, filter, options)
         assert(type(key) == "string" and key ~= "", "groupKey must be a non-empty string.")
         assert(validFilter(filter), "invalid filter string")

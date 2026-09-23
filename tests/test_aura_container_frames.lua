@@ -36,7 +36,7 @@ H.check("buffs other: all", bc._groups.other.filter, "HELPFUL")
 -- Flow: right, rows up, from the bottom left; Auto wraps at the width.
 H.check("flow anchor", dc._flow.anchor, "BOTTOMLEFT")
 H.check("flow growth", dc._flow.horizontal .. "," .. dc._flow.vertical, "1,1")
-H.check("flow row length", dc._flow.lineSize, C.Get("target", "width"))
+H.check("flow row length", dc._flow.lineSize, C.Get("target", "width") + ns.Pixel.One() / 2)
 -- Anchors: debuffs on the frame, buffs on the debuffs container.
 local p, rel, rp, x, y = dc:GetPoint(1)
 H.check("debuffs anchor", p .. ">" .. rp .. " " .. x .. "," .. y, "BOTTOMLEFT>TOPLEFT 0,2")
@@ -61,7 +61,7 @@ H.check("other buttons resized", debuffs.buttons[M.AURA_BATCH + 1].button:GetWid
 H.check("own buttons resized", debuffs.buttons[1].button:GetWidth(), 36)
 H.check("layout follows", dc._groups.other.layout.elementWidth, 30)
 C.Set("target", "debuffsPerRow", 4)
-H.check("4 per row", dc._flow.lineSize, 4 * 30 + 3 * 2)
+H.check("4 per row", dc._flow.lineSize, 4 * 30 + 3 * 2 + ns.Pixel.One() / 2)
 C.Set("target", "debuffsGrowth", "LEFT")
 C.Set("target", "debuffsRowGrowth", "DOWN")
 H.check("left, down: corner", dc._flow.anchor, "TOPRIGHT")
