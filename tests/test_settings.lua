@@ -28,3 +28,7 @@ H.check("color ok", S.Validate(S.Get("healthColor"), { 1, 0, 0, 1 })[1], 1)
 H.checkTrue("width applies to player", S.AppliesTo(S.Get("width"), "player"))
 H.check("width not general", S.AppliesTo(S.Get("width"), "general"), false)
 H.checkTrue("fontSize inherits to frames", S.AppliesTo(S.Get("fontSize"), "target"))
+
+H.check("int NaN rejected", S.Validate(S.Get("width"), 0 / 0), nil)
+H.check("int +inf rejected", S.Validate(S.Get("width"), math.huge), nil)
+H.check("int -inf rejected", S.Validate(S.Get("width"), -math.huge), nil)

@@ -28,3 +28,21 @@ ns = H.LoadAddon()
 ns.Config.Use({})
 _G.PlayerFrame, _G.TargetFrame = nil, nil
 H.checkTrue("no error without frames", pcall(ns.Blizzard.HideDefaults))
+
+-- IsProtected may be secret or fail: either way, treat the frame as protected.
+ns = H.LoadAddon()
+ns.Config.Use({})
+_G.PlayerFrame = M.newWidget("Frame", "PlayerFrame")
+_G.PlayerFrame.IsProtected = function() return M.Secret(false) end
+local secretReparented
+_G.PlayerFrame.SetParent = function() secretReparented = true end
+_G.TargetFrame = M.newWidget("Frame", "TargetFrame")
+_G.TargetFrame.IsProtected = function() error("no") end
+local failReparented
+_G.TargetFrame.SetParent = function() failReparented = true end
+H.checkTrue("secret/failed IsProtected: no error", pcall(ns.Blizzard.HideDefaults))
+H.check("secret IsProtected: not reparented", secretReparented, nil)
+H.check("secret IsProtected: alpha 0", PlayerFrame:GetAlpha(), 0)
+H.check("failed IsProtected: not reparented", failReparented, nil)
+H.check("failed IsProtected: alpha 0", TargetFrame:GetAlpha(), 0)
+_G.PlayerFrame, _G.TargetFrame = nil, nil

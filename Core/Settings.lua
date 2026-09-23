@@ -50,6 +50,7 @@ function Settings.Validate(def, v)
     local t = def.type
     if t == "int" then
         if type(v) ~= "number" then return nil end
+        if v ~= v or v == math.huge or v == -math.huge then return nil end
         v = math.floor(v + 0.5)
         if def.min and v < def.min then v = def.min end
         if def.max and v > def.max then v = def.max end

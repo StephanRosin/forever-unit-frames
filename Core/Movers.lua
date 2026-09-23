@@ -84,14 +84,22 @@ function Movers.Unlock()
     return true
 end
 
+-- A drag in progress is stopped at once. In combat only the flag is
+-- cleared; hiding and disabling the movers waits until combat ends.
 function Movers.Lock()
     unlocked = false
     for _, frame in pairs(ns.Frames) do
-        if frame.mover then
-            frame.mover:EnableMouse(false)
-            frame.mover:Hide()
-        end
+        if frame.mover then frame.mover:StopMovingOrSizing() end
     end
+    ns.AfterCombat("lockMovers", function()
+        if unlocked then return end
+        for _, frame in pairs(ns.Frames) do
+            if frame.mover then
+                frame.mover:EnableMouse(false)
+                frame.mover:Hide()
+            end
+        end
+    end)
     ns.Print(L.LOCKED)
 end
 

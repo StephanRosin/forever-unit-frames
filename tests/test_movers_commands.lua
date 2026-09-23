@@ -70,6 +70,22 @@ local _, fakeRel = fake:GetPoint(1)
 H.check("deferred frame anchored to its mover", fakeRel, fake.mover)
 M.combat = false
 
+-- Lock stops a drag in progress. In combat it only clears the flag; the
+-- hide and mouse-off wait until combat ends.
+ns.Movers.Unlock()
+local stopped = 0
+local origStop = f.mover.StopMovingOrSizing
+f.mover.StopMovingOrSizing = function() stopped = stopped + 1 end
+M.combat = true
+ns.Movers.Lock()
+H.check("lock stops moving", stopped, 1)
+H.check("combat lock clears flag", ns.Movers.IsUnlocked(), false)
+H.check("combat lock defers hide", f.mover:IsShown(), true)
+M.SetCombat(false)
+H.check("combat lock hides after combat", f.mover:IsShown(), false)
+H.check("combat lock mouse off after combat", f.mover._mouse, false)
+f.mover.StopMovingOrSizing = origStop
+
 -- Unlock must not error over a frame that has no mover.
 local bare = M.newWidget("Button", nil, UIParent)
 bare.key = "target"

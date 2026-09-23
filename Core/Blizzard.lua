@@ -18,7 +18,8 @@ end
 function Blizzard.Conceal(frame)
     if not frame then return end
     frame:UnregisterAllEvents()
-    if frame:IsProtected() then
+    -- IsProtected may return a secret or fail; unknown counts as protected.
+    if ns.Secrets.Bool(frame.IsProtected, frame) ~= false then
         -- Protected frames may not be reparented; make them invisible and
         -- inert instead.
         frame:SetAlpha(0)

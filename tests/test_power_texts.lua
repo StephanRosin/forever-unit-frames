@@ -48,3 +48,8 @@ H.check("health full height", f.health:GetHeight(), 46)
 ns.Config.Set("general", "fontSize", 15)
 H.check("font size applied", t.healthLeft._font[2], 15)
 H.check("font outline applied", t.healthLeft._font[3], "OUTLINE")
+
+-- Shapeshift: UNIT_DISPLAYPOWER alone must refresh the power texts.
+M.units.player.power, M.units.player.powerType = 77, 1
+M.FireEvent("UNIT_DISPLAYPOWER", "player")
+H.check("power text refreshed on display power change", t.powerRight._text, "77")
