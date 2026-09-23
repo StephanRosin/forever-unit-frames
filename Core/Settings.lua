@@ -159,6 +159,10 @@ Settings.Define({ key = "partyShowSolo", code = "SO", scope = "frame", only = PA
 local CASTBAR = { player = true, target = true, targettarget = true, focus = true, party = true }
 Settings.Define({ key = "castbarEnabled", code = "CE", scope = "frame", only = CASTBAR, type = "bool",
     default = { player = false, _ = true } })
+-- Player only: conceals Blizzard's PlayerCastingBarFrame. Independent of
+-- castbarEnabled -- some players want both cast bars shown at once.
+Settings.Define({ key = "hideBlizzardCastbar", code = "CB", scope = "frame", only = { player = true },
+    type = "bool", default = false })
 -- Single frames may detach their castbar (own mover); party castbars
 -- dock above or below each member.
 local CASTBAR_SINGLE = { player = true, target = true, targettarget = true, focus = true }

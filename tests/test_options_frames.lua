@@ -9,6 +9,9 @@ local function rowKeys()
     for _, row in ipairs(O.rows) do if row.key then keys[row.key] = row end end
     return keys
 end
+local function rowIndex(key)
+    for i, row in ipairs(O.rows) do if row.key == key then return i end end
+end
 local function tabIds(scope)
     local ids = {}
     for _, tab in ipairs(ns.Schema.Tabs(scope)) do ids[#ids + 1] = tab.id end
@@ -87,21 +90,26 @@ O.Select("party")
 H.check("party highlight follows the block size", target:GetHeight(), select(2, ns.Party.BlockSize()))
 M.RunTimers()
 
--- Switching the player castbar off brings Blizzard's back only after a
--- /reload; the row says so, on the player page only.
+-- hideBlizzardCastbar only shows on the player page, below "Show
+-- castbar"; switching it off brings Blizzard's back only after a
+-- /reload, so the row says so there.
 O.Select("player")
 O.SelectTab("castbar")
 rows = rowKeys()
-H.check("player castbar: reload hint", rows.castbarEnabled.hintText and rows.castbarEnabled.hintText:GetText(),
-    L.HINT_castbarEnabled)
-H.check("reload hint text", L.HINT_castbarEnabled, "Needs /reload after switching off")
+H.checkTrue("player castbar: hide-Blizzard row", rows.hideBlizzardCastbar)
+H.checkTrue("player castbar: hide row below enabled", rowIndex("hideBlizzardCastbar") > rowIndex("castbarEnabled"))
+H.check("player castbar: reload hint",
+    rows.hideBlizzardCastbar.hintText and rows.hideBlizzardCastbar.hintText:GetText(),
+    L.HINT_hideBlizzardCastbar)
+H.check("reload hint text", L.HINT_hideBlizzardCastbar, "Needs /reload to show it again")
+H.check("castbarEnabled no longer hints", rows.castbarEnabled.hintText, nil)
 H.checkTrue("reload hint fits",
-    rows.castbarEnabled.hintText.GetStringWidth({ _text = L.HINT_castbarEnabled, _font = { nil, 10 } })
+    rows.hideBlizzardCastbar.hintText.GetStringWidth({ _text = L.HINT_hideBlizzardCastbar, _font = { nil, 10 } })
         <= ns.Widgets.LABEL_MAX_W)
 for _, scope in ipairs({ "target", "party" }) do
     O.Select(scope)
     O.SelectTab("castbar")
-    H.check(scope .. " castbar: no reload hint", rowKeys().castbarEnabled.hintText, nil)
+    H.check(scope .. " castbar: no hide-Blizzard row", rowKeys().hideBlizzardCastbar, nil)
 end
 
 -- Every setting label fits the label column (mock: half the font size per

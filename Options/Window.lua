@@ -179,9 +179,9 @@ local function inheritOpts(scope, key)
     }
 end
 
--- Hints that only hold on some pages: only the player's castbar replaces
--- a Blizzard castbar, which comes back after a /reload.
-local HINT_SCOPES = { castbarEnabled = { player = true } }
+-- Hints that only hold on some pages: only the player's own setting
+-- conceals a Blizzard castbar, which comes back after a /reload.
+local HINT_SCOPES = { hideBlizzardCastbar = { player = true } }
 
 local function hintFor(scope, key)
     if HINT_SCOPES[key] and not HINT_SCOPES[key][scope] then return nil end

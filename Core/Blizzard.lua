@@ -54,7 +54,7 @@ function Blizzard.HideDefaults()
     ns.AfterCombat("hideBlizzard", function()
         if enabled("player") then
             Blizzard.Conceal(_G.PlayerFrame)
-            if ns.Config.Get("player", "castbarEnabled") then Blizzard.Conceal(_G.PlayerCastingBarFrame) end
+            if ns.Config.Get("player", "hideBlizzardCastbar") then Blizzard.Conceal(_G.PlayerCastingBarFrame) end
         end
         if enabled("target") then
             Blizzard.Conceal(_G.TargetFrame)
@@ -69,7 +69,7 @@ function Blizzard.HideDefaults()
 end
 
 ns.Listen("CONFIG_CHANGED", function(_, key)
-    if key == nil or key == "enabled" or key == "castbarEnabled" then Blizzard.HideDefaults() end
+    if key == nil or key == "enabled" or key == "hideBlizzardCastbar" then Blizzard.HideDefaults() end
 end)
 
 -- Blizzard's party code acquires member frames and creates the compact

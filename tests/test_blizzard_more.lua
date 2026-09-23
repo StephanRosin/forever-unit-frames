@@ -40,8 +40,13 @@ H.check("party member: mouse off", B.member._mouse, false)
 H.check("compact party: hidden", B.CompactPartyFrame:IsShown(), false)
 H.check("player castbar kept while ours is off", B.PlayerCastingBarFrame:IsShown(), true)
 
--- Switching our player castbar on hides Blizzard's at once.
+-- Switching our player castbar on alone leaves Blizzard's untouched: the
+-- user wants to keep it unless they ask to hide it.
 ns.Config.Set("player", "castbarEnabled", true)
+H.check("player castbar untouched by castbarEnabled alone", B.PlayerCastingBarFrame:IsShown(), true)
+
+-- hideBlizzardCastbar conceals it at once.
+ns.Config.Set("player", "hideBlizzardCastbar", true)
 H.check("player castbar: hidden", B.PlayerCastingBarFrame:IsShown(), false)
 H.checkTrue("player castbar: reparented", B.PlayerCastingBarFrame:GetParent() ~= nil)
 
@@ -105,21 +110,21 @@ M.FireEvent("UPDATE_MACROS")
 H.check("restored width", ns.Config.Get("player", "width"), 300)
 H.check("no reload hint", table.concat(M.chat, "\n"):find(ns.L.RELOAD_FOR_BLIZZARD, 1, true), nil)
 
--- A backup that turns the player castbar back off also asks for a
+-- A backup that turns hideBlizzardCastbar back off also asks for a
 -- /reload: Blizzard's own castbar was already hidden (in response to it
 -- being switched on before the backup arrived) and does not come back on
--- its own. castbarEnabled defaults to false for the player, so a backup
--- that leaves it unset is enough.
+-- its own. hideBlizzardCastbar defaults to false for the player, so a
+-- backup that leaves it unset is enough.
 ns = H.LoadAddon()
 H.checkTrue("setup: castbar-off backup", ns.MacroBackup.Write("1;pW300"))
 backup = M.macros
 ns = H.LoadAddon()
 _G.ForeverUnitFramesDB = nil
 M.FireEvent("PLAYER_LOGIN")
-ns.Config.Set("player", "castbarEnabled", true)
+ns.Config.Set("player", "hideBlizzardCastbar", true)
 M.macros = backup
 M.chat = {}
 M.FireEvent("UPDATE_MACROS")
 H.check("restored width (castbar case)", ns.Config.Get("player", "width"), 300)
-H.check("castbar turned back off", ns.Config.Get("player", "castbarEnabled"), false)
+H.check("hide turned back off", ns.Config.Get("player", "hideBlizzardCastbar"), false)
 H.checkTrue("reload hint for castbar", table.concat(M.chat, "\n"):find(ns.L.RELOAD_FOR_BLIZZARD, 1, true))
