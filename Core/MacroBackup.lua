@@ -44,12 +44,18 @@ local function maxCharMacros()
     return 18
 end
 
-local HEADER_PATTERN = "^#Forever Unit Frames backup (%d+)/(%d+) %- keep\n(.*)$"
+local HEADER_PATTERN = "^#Forever Unit Frames backup (%d+)/(%d+) %- keep\r?\n(.*)$"
 
+-- A body that went through the server comes back with a line break
+-- appended, and the client's macro cache uses CRLF line endings. The codec
+-- never writes whitespace, and Write never ends a chunk on whitespace, so
+-- trailing whitespace is stripped from every chunk: with two macros the
+-- extra line break of the first would otherwise sit in the middle.
 local function parseHeader(body)
-    local i, n, chunk = (body or ""):match(HEADER_PATTERN)
+    body = (body or ""):gsub("\r\n?", "\n")
+    local i, n, chunk = body:match(HEADER_PATTERN)
     if not i then return nil end
-    return tonumber(i), tonumber(n), chunk
+    return tonumber(i), tonumber(n), (chunk:gsub("%s+$", ""))
 end
 
 -- An incomplete backup (a missing chunk, a foreign macro in the middle) is
@@ -76,6 +82,12 @@ local function split(str)
     while pos <= #str do
         local i = #chunks + 1
         local room = BODY_LIMIT - #header(i, MAX_MACROS)
+        -- Read strips trailing whitespace, so a chunk must not end in it
+        -- (a media name with a space may straddle the boundary).
+        while room > 1 and str:sub(pos + room - 1, pos + room - 1):match("%s")
+            and pos + room - 1 < #str do
+            room = room - 1
+        end
         chunks[i] = str:sub(pos, pos + room - 1)
         pos = pos + room
     end
@@ -94,11 +106,14 @@ function MacroBackup.Write(str)
     local chunks = split(str)
     if #chunks > MAX_MACROS then lastError = "MACRO_TOO_LONG"; return false end
     -- A backup in a format we cannot read was written by a newer version:
-    -- it is kept, never replaced by what this version knows.
+    -- it is kept, never replaced by what this version knows. Neither is one
+    -- with entries we should understand but cannot parse: overwriting it
+    -- would make the loss permanent.
     local existing = MacroBackup.Read()
     if existing then
-        local _, err = ns.Codec.Decode(existing)
+        local _, err, rejected = ns.Codec.Decode(existing)
         if err == "CODEC_VERSION" then lastError = "MACRO_NEWER"; return false end
+        if rejected and rejected > 0 then lastError = "MACRO_UNREADABLE"; return false end
     end
 
     -- Pass 1: look, never touch. Reject a foreign macro anywhere we would

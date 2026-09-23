@@ -430,7 +430,17 @@ function M.Reset()
         for i, m in ipairs(M.macros) do if m.name == name then return 120 + i end end
         return 0
     end
-    _G.GetMacroBody = function(index) local m = M.macros[index - 120]; return m and m.body end
+    -- Within a session the client hands back exactly what was written. A
+    -- body that went through the server comes back from a later session with
+    -- a line break appended, and the macro cache uses CRLF line endings
+    -- (measured in the client). M.RoundTripMacros simulates that.
+    _G.GetMacroBody = function(index)
+        local m = M.macros[index - 120]
+        if not m then return nil end
+        local body = m.body
+        if m.crlf then body = body:gsub("\n", "\r\n") end
+        return body .. (m.trailer or "")
+    end
     -- Like the client, creating or editing a macro re-sorts the list by
     -- name, so an index taken before the call may point elsewhere after it.
     local function sortMacros()
@@ -446,11 +456,11 @@ function M.Reset()
         assert(#body <= 255, "macro body over 255 characters")
         local m = M.macros[index - 120]
         m.name, m.icon, m.body = name, icon, body
+        m.trailer, m.crlf = nil, nil
         sortMacros()
         return GetMacroIndexByName(name)
     end
     _G.DeleteMacro = function(index) table.remove(M.macros, index - 120) end
-
     _G.SlashCmdList = {}
     _G.UISpecialFrames = {}
     _G.C_AddOns = { GetAddOnMetadata = function() return "0.1.0" end }
@@ -504,6 +514,15 @@ end
 
 -- Blizzard's macro window (load-on-demand in the client). Shown state is
 -- driven by M.macroFrameShown; tests call its OnHide script to close it.
+-- The macros as a later session reads them: every body gets `trailer`
+-- appended (and CRLF line endings if `crlf`) until it is written again.
+function M.RoundTripMacros(trailer, crlf)
+    for _, m in ipairs(M.macros) do
+        m.trailer = (m.trailer or "") .. (trailer or "")
+        m.crlf = m.crlf or crlf or nil
+    end
+end
+
 function M.NewMacroFrame()
     local f = newWidget("Frame", "MacroFrame")
     function f:IsShown() return M.macroFrameShown end

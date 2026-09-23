@@ -34,6 +34,23 @@ local function fromString(str)
     return (ns.Codec.Decode(str))
 end
 
+-- The macro backup as a profile, plus the string it came from (already
+-- normalised by Read). A backup with entries that could not be parsed is
+-- still loaded, as far as it goes, but must never be overwritten: saving
+-- the rest back would make the loss permanent. MacroBackup.Write refuses
+-- it; here the player is told once, at the moment it is loaded.
+local function fromMacro()
+    local str = ns.MacroBackup.Read()
+    if type(str) ~= "string" then return nil end
+    local profile, _, rejected = ns.Codec.Decode(str)
+    if not profile then return nil end
+    if rejected > 0 and macroError ~= "MACRO_UNREADABLE" then
+        macroError = "MACRO_UNREADABLE"
+        ns.Print(ns.L.MACRO_UNREADABLE)
+    end
+    return profile, str
+end
+
 function Storage.Attach(db)
     attached = db
 end
@@ -73,8 +90,11 @@ function Storage.Load(db)
         local profile = ok and fromString(str)
         if profile then return from(p.name, true, profile) end
     end
-    local profile = fromString(ns.MacroBackup.Read())
-    if profile then return from("MacroBackup", false, profile) end
+    local profile, str = fromMacro()
+    if profile then
+        lastMacro = str     -- already in the macros, no need to rewrite it
+        return from("MacroBackup", false, profile)
+    end
     return from("Defaults", false, fromString("1"))
 end
 
@@ -211,8 +231,7 @@ end
 
 -- Returns true once a complete backup has been read and imported.
 function tryRestore()
-    local str = ns.MacroBackup.Read()
-    local profile = fromString(str)
+    local profile, str = fromMacro()
     if not profile then return false end
     local before = enabledFrames()
     local beforeCastbar = ns.Config.Get("player", "castbarEnabled")
