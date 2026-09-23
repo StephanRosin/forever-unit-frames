@@ -40,3 +40,59 @@ function AuraContainers.Supported()
     if supported == nil then supported = probe() end
     return supported
 end
+
+-- Settings to container layout ---------------------------------------------------
+-- A settings group (frame.auras.buffs / .debuffs, after Auras.Style read
+-- its settings) becomes one container with two groups: "own" (yours, at
+-- their own size) and "other" (the rest, or everything when yours are not
+-- put first). Plain values in, plain tables out; no widget is touched.
+AuraContainers.PARTS = { "own", "other" }
+
+local HORIZONTAL = { RIGHT = true, LEFT = true }
+local FLOW_NAMES = { RIGHT = "Right", LEFT = "Left", UP = "Up", DOWN = "Down" }
+
+-- The container's flow: axis, the corner icons start in, both growth
+-- directions and the row length at which icons wrap. A fixed number per
+-- row is that many icons of the normal size; Auto is the frame's length.
+function AuraContainers.Flow(group)
+    local Layout = ns.Layout
+    local primary = group.primary
+    local row = Layout.AuraRowDirection(primary, group.row)
+    local horizontal = HORIZONTAL[primary]
+    local h, v = primary, row
+    if not horizontal then h, v = row, primary end
+    local perRow, lineSize = group.perRowSetting, group.length
+    if perRow > 0 then lineSize = perRow * group.size + (perRow - 1) * group.spacing end
+    return {
+        axis = horizontal and AnchorUtil.FlowLayoutAxis.Horizontal or AnchorUtil.FlowLayoutAxis.Vertical,
+        anchor = Layout.AuraCorner(primary, row),
+        horizontal = AnchorUtil.FlowDirection[FLOW_NAMES[h]],
+        vertical = AnchorUtil.FlowDirection[FLOW_NAMES[v]],
+        lineSize = math.max(lineSize, group.size),
+    }
+end
+
+-- One container group: shown or not, filter, maximum and layout. Yours
+-- first: "own" takes the PLAYER filter at the own size, "other" the rest
+-- on a new line (nothing when only yours are shown). Otherwise "own" is
+-- off and "other" shows everything the group's filter lets through.
+function AuraContainers.Part(group, part)
+    local own = part == "own"
+    local enabled, filter, size, newLine
+    if own then
+        enabled, filter, size, newLine = group.enabled and group.highlightOwn, group.ownFilter, group.ownSize, false
+    elseif group.highlightOwn then
+        enabled, filter, size, newLine = group.enabled and group.otherFilter ~= nil,
+            group.otherFilter or group.filter, group.size, true
+    else
+        enabled, filter, size, newLine = group.enabled, group.filter, group.size, false
+    end
+    local spacing = group.spacing
+    return {
+        enabled = enabled and true or false,
+        filter = filter,
+        max = group.max,
+        layout = { elementWidth = size, elementHeight = size, elementSpacing = spacing, lineSpacing = spacing,
+            groupLineSpacing = spacing, forceNewLine = newLine },
+    }
+end

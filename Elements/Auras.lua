@@ -160,6 +160,7 @@ local function readSettings(frame, group)
     group.row = Layout.AuraRowDirection(group.primary, get(frame, group, "RowGrowth"))
     group.corner = Layout.AuraCorner(group.primary, group.row)
     local perRow, length = get(frame, group, "PerRow"), frameLength(frame, group.primary)
+    group.perRowSetting, group.length = perRow, length
     group.perRow = Layout.AuraPerRow(perRow, length, group.size, group.spacing)
     group.ownPerRow = Layout.AuraPerRow(perRow, length, group.ownSize, group.spacing)
     group.showTime = get(frame, group, "ShowTime")
