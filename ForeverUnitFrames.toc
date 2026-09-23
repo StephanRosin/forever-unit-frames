@@ -17,4 +17,6 @@ Core\Media.lua
 Core\Layout.lua
 Units\Units.lua
 Elements\Health.lua
+Elements\Power.lua
+Elements\Texts.lua
 Units\Single.lua
