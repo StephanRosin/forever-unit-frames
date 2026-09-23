@@ -144,7 +144,8 @@ stored.
   - **growth:** primary direction (Right / Left / Up / Down) and row direction
   - size, spacing, per row, max
 - **Castbar** (Player, Target, Target of Target, Focus, Party; default off for
-  Player): enabled; docked above / below or detached (own mover); height; icon;
+  Player): enabled; docked above / below or detached (own mover, position X / Y);
+  height; icon;
   cast time; spell name.
 
 ## 5. Secret-value handling
@@ -214,6 +215,9 @@ Export/import in the Profile tab uses the same string.
   Top: tabs of the selected entry (General: Appearance / Colors / Profile;
   frames: Layout / Bars / Text / Auras / Castbar).
 - Every numeric control is a slider with an edit box for exact values.
+- **Every position is settable as numeric X / Y** in addition to dragging: each
+  frame, the party block as a whole, every detached castbar, and the aura
+  offsets. Dragging and the X / Y fields write the same settings.
 - Selecting a frame briefly highlights the real frame in the game world.
 - Buttons: Unlock (movers, 8 px grid), Test mode, Copy from …, Reset (per frame).
 - Test mode shows every frame with sample data, including party without a group.
