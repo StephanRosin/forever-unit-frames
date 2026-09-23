@@ -68,13 +68,13 @@ H.check("party: above", member.castbar:GetPoint(1), "BOTTOMLEFT")
 H.check("party: no mover", member.castbar.mover, nil)
 
 -- A docked party castbar never overlaps the next member: in a vertical
--- block the step between members makes room for castbar, gap and border.
+-- block the step between members makes room for castbar and border.
 local header = ns.Party.header
 M.units.party2 = { name = "Bob", health = 1, healthMax = 1 }
 M.SetGroup({ "party1", "party2" })
 local second = header:GetAttribute("child2")
 local spacing, border = C.Get("party", "partySpacing"), C.Get("party", "borderSize")
-local castbarDepth = C.Get("party", "castbarHeight") + ns.Castbar.Gap("party") + border
+local castbarDepth = C.Get("party", "castbarHeight") + border
 local _, below, _, _, offset = second:GetPoint(1)
 H.check("member 2 follows member 1", below, member)
 H.check("member 2 clears member 1's castbar", -offset, castbarDepth + spacing)
@@ -86,7 +86,7 @@ H.check("block height counts the castbars", bh, 4 * 46 + 3 * (castbarDepth + spa
 H.check("slot offset counts the castbars", select(2, ns.Party.SlotOffset(2)), -(46 + castbarDepth + spacing))
 C.Set("party", "castbarHeight", 20)
 H.check("taller castbar: more room", header:GetAttribute("yOffset"),
-    -(20 + ns.Castbar.Gap("party") + border + spacing))
+    -(20 + border + spacing))
 C.Set("party", "castbarEnabled", false)
 H.check("castbar off: plain spacing", header:GetAttribute("yOffset"), -spacing)
 C.Set("party", "castbarEnabled", true)

@@ -126,8 +126,9 @@ stored.
 ### Per frame (Player, Target, Target of Target, Pet, Focus, Party)
 
 - **Layout:** enabled; width; height; **Health %** and **Power %** of the frame
-  height (sum ≤ 100, the remainder becomes the gap between the bars; with the
-  power bar disabled the health bar fills the frame); portrait
+  height (the rows always fill the frame: room left over goes to health and
+  power in proportion, shares that do not fit shrink health; with the power
+  bar disabled the health bar fills the frame); portrait
   Off / Left / Right, 2D / 3D; position X / Y (numeric, also set by dragging).
   Party adds orientation (vertical / horizontal), spacing, show player, show
   when solo.

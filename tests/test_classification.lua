@@ -72,7 +72,7 @@ C.Set("target", "fontShadow", false)
 
 -- A castbar docked on top: the word goes above it (frame coordinates).
 C.Set("target", "castbarPosition", "ABOVE")
-local reach = ns.Castbar.Gap("target") + ns.Castbar.Height("target")
+local reach = ns.Castbar.Height("target")
 p = { text:GetPoint(1) }
 H.check("castbar above: on the frame", p[2], f)
 H.check("castbar above: above the castbar", p[5], reach + ns.Border.Extent("target") + ns.Pixel.One())

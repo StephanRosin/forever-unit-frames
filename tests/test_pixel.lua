@@ -52,8 +52,8 @@ checkGrid("health height", f.health:GetHeight())
 checkGrid("power height", f.power:GetHeight())
 checkGrid("health left inset", pointOf(f.health, "TOPLEFT")[4])
 checkGrid("title height", f.titleHeight)
-H.check("title + health + gap + power fill the frame",
-    math.abs(f.titleHeight + f.health:GetHeight() + f.gap + f.power:GetHeight() - f:GetHeight()) < 1e-6, true)
+H.check("title + health + power fill the frame",
+    math.abs(f.titleHeight + f.health:GetHeight() + f.power:GetHeight() - f:GetHeight()) < 1e-6, true)
 checkGrid("health below the title", pointOf(f.health, "TOPLEFT")[5])
 checkGrid("border", f.frameRing.border[1]:GetHeight())
 H.check("one-unit border is at least a pixel", f.frameRing.border[1]:GetHeight() >= px, true)
