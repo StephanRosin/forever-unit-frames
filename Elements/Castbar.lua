@@ -92,6 +92,7 @@ end
 local function paint(bar)
     local bg = Config.Get(bar.scope, "backgroundColor")
     bar.bg:SetVertexColor(bg[1], bg[2], bg[3], bg[4])
+    bar.iconBg:SetColorTexture(bg[1], bg[2], bg[3], bg[4])
     if bar.cast and bar.cast.channel then
         local c = Castbar.CHANNEL_COLOR
         bar:SetStatusBarColor(c[1], c[2], c[3], 0)
@@ -108,9 +109,22 @@ local function paint(bar)
     end
 end
 
+-- Idle: hidden, or with "Always show" an empty bar that holds its place.
 function Castbar.Stop(bar)
     bar.cast = nil
-    bar:Hide()
+    local scope = bar.scope
+    if not (Config.Get(scope, "castbarEnabled") and Config.Get(scope, "castbarAlwaysShow")) then
+        bar:Hide()
+        return
+    end
+    bar:SetMinMaxValues(0, 1)
+    bar:SetValue(0)
+    bar:SetReverseFill(false)
+    paint(bar)
+    bar.text:SetText("")
+    bar.time:SetText("")
+    bar.icon:SetTexture(nil)
+    bar:Show()
 end
 
 -- Puts the unit's current cast (or channel) on the bar. Returns false
@@ -170,6 +184,8 @@ function Castbar.Build(frame)
     bar.bg:SetAllPoints(bar)
     bar.remain = bar:CreateTexture(nil, "BORDER")
     bar.remain:Hide()
+    -- Fills the icon slot while no spell icon is shown.
+    bar.iconBg = bar:CreateTexture(nil, "BACKGROUND")
     bar.icon = bar:CreateTexture(nil, "ARTWORK")
     bar.text = bar:CreateFontString(nil, "OVERLAY")
     bar.time = bar:CreateFontString(nil, "OVERLAY")
@@ -268,6 +284,9 @@ function Castbar.Style(frame)
     bar.icon:SetPoint("TOPRIGHT", bar, "TOPLEFT", 0, 0)
     bar.icon:SetSize(height, height)
     bar.icon:SetShown(showIcon)
+    bar.iconBg:ClearAllPoints()
+    bar.iconBg:SetAllPoints(bar.icon)
+    bar.iconBg:SetShown(showIcon)
     local font = ns.Media.Font(Config.Get(scope, "fontFace"))
     local outline = Config.Get(scope, "fontOutline")
     local fontSize = math.min(Config.Get(scope, "fontSize"), Config.Get(scope, "castbarHeight"))
@@ -288,7 +307,7 @@ function Castbar.Style(frame)
     if not bar.time:IsShown() then bar.time:SetText("") end
     if bar.preview then
         Castbar.Preview(frame, true)
-    elseif not Config.Get(scope, "castbarEnabled") then
+    elseif not bar.cast or not Config.Get(scope, "castbarEnabled") then
         Castbar.Stop(bar)
     end
 end

@@ -179,6 +179,9 @@ Settings.Define({ key = "castbarHeight", code = "CH", scope = "frame", only = CA
 Settings.Define({ key = "castbarIcon", code = "CI", scope = "frame", only = CASTBAR, type = "bool", default = true })
 Settings.Define({ key = "castbarName", code = "CN", scope = "frame", only = CASTBAR, type = "bool", default = true })
 Settings.Define({ key = "castbarTime", code = "CT", scope = "frame", only = CASTBAR, type = "bool", default = true })
+-- Keeps an empty bar in place while nothing is cast, so what is anchored
+-- below it does not jump.
+Settings.Define({ key = "castbarAlwaysShow", code = "CA", scope = "frame", only = CASTBAR, type = "bool", default = false })
 
 -- Texts. With a title row the name moves up there and the health bar
 -- shows values.

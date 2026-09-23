@@ -49,7 +49,7 @@ Schema.FRAME = {
             "debuffsOwnSize" } },
     } },
     { id = "castbar", sections = {
-        { id = "castbar", keys = { "castbarEnabled", "hideBlizzardCastbar", "castbarPosition", "castbarDock",
+        { id = "castbar", keys = { "castbarEnabled", "castbarAlwaysShow", "hideBlizzardCastbar", "castbarPosition", "castbarDock",
             "castbarHeight" } },
         { id = "castbarContent", keys = { "castbarIcon", "castbarName", "castbarTime" } },
         { id = "castbarDetached", keys = { "castbarX", "castbarY" } },
