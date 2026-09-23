@@ -13,6 +13,9 @@ for _, mm in ipairs({ "__add", "__sub", "__mul", "__div", "__mod", "__pow",
     secretMeta[mm] = refuse
 end
 secretMeta.__tostring = refuse
+-- Comparing two secrets throws in the client too (a secret and a plain
+-- value compare without metamethod in Lua 5.1 and are simply unequal).
+secretMeta.__eq = refuse
 secretMeta.__index = function() refuse() end
 
 function M.Secret(v)
@@ -51,6 +54,13 @@ local function newWidget(kind, name, parent)
         self._scripts[s] = function(...) if old then old(...) end fn(...) end
     end
     function w:RegisterEvent(e) self._events[e] = true; M.eventFrames[self] = true end
+    -- Unit events: delivered only when the event's first argument is one of
+    -- the registered units, like the client's RegisterUnitEvent.
+    function w:RegisterUnitEvent(e, ...)
+        self._events[e] = { ... }
+        M.eventFrames[self] = true
+        return true
+    end
     function w:UnregisterEvent(e) self._events[e] = nil end
     function w:UnregisterAllEvents() self._events = {} end
     function w:SetAttribute(k, v) self._attr[k] = v end
@@ -189,6 +199,7 @@ function M.Reset()
     M.macroFrameShown = false
     M.errors = {}          -- whatever reached the global error handler
     M.timers = {}          -- queued C_Timer.After callbacks
+    M.now = 1000           -- GetTime(), advanced by M.Tick
 
     _G.UIParent = newWidget("Frame", "UIParent")
     _G.UIParent._w, _G.UIParent._h = 1920, 1080
@@ -206,6 +217,7 @@ function M.Reset()
         return w
     end
     _G.InCombatLockdown = function() return M.combat end
+    _G.GetTime = function() return M.now end
     _G.geterrorhandler = function()
         return function(err) table.insert(M.errors, err) end
     end
@@ -396,9 +408,30 @@ function M.RunTimers(maxSeconds)
     end
 end
 
+local function wants(registration, unit)
+    if registration == true then return true end
+    for _, u in ipairs(registration) do
+        if u == unit then return true end
+    end
+    return false
+end
+
 function M.FireEvent(event, ...)
+    local unit = ...
     for f in pairs(M.eventFrames) do
-        if f._events[event] and f._scripts.OnEvent then f._scripts.OnEvent(f, event, ...) end
+        local registration = f._events[event]
+        if registration and f._scripts.OnEvent and wants(registration, unit) then
+            f._scripts.OnEvent(f, event, ...)
+        end
+    end
+end
+
+-- Advances the clock and runs OnUpdate of every shown created frame once.
+function M.Tick(seconds)
+    M.now = M.now + seconds
+    for _, f in ipairs(M.frames) do
+        local script = f._scripts.OnUpdate
+        if script and f:IsShown() then script(f, seconds) end
     end
 end
 

@@ -91,30 +91,19 @@ function Single.Create(def)
     frame:SetAttribute("*type2", "togglemenu")
     frame:RegisterForClicks("AnyUp")
     for _, el in ipairs(ns.Elements) do el.Build(frame) end
+    ns.UnitEvents.Bind(frame)
     ns.Frames[def.key] = frame
     Single.StyleAll(frame)
     return frame
 end
 
--- Event routing ----------------------------------------------------------------
-
-local unitEventsRegistered = false
-local function registerUnitEvents()
-    if unitEventsRegistered then return end
-    unitEventsRegistered = true
-    -- One handler per (element, event) pair: several elements may share an
-    -- event (e.g. Health and Texts both watch UNIT_HEALTH) and each must
-    -- still run its own Update. registerUnitEvents only runs once, so this
-    -- does not create duplicate handlers on repeated calls.
-    for _, el in ipairs(ns.Elements) do
-        for _, event in ipairs(el.unitEvents or {}) do
-            ns.On(event, function(_, unit)
-                for _, frame in pairs(ns.Frames) do
-                    if frame.unit == unit and UnitExists(unit) then el.Update(frame, event) end
-                end
-            end)
-        end
-    end
+-- Points a frame at another unit: the secure attribute for clicks, the
+-- Lua field for updates, and its event registrations. Out of combat only
+-- (the attribute is protected).
+function Single.SetUnit(frame, unit)
+    frame.unit = unit
+    frame:SetAttribute("unit", unit)
+    ns.UnitEvents.Bind(frame)
 end
 
 -- onBuilt (optional) runs right after the frames exist, inside the same
@@ -129,7 +118,6 @@ function Single.CreateAll(onBuilt)
                 end
             end
         end
-        registerUnitEvents()
         if onBuilt then onBuilt() end
     end)
 end

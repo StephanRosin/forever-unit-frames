@@ -18,8 +18,7 @@ local saved = {}
 -- unit watch is unregistered for as long as test mode owns the frame.
 local function applyOn(frame)
     saved[frame] = frame.unit
-    frame.unit = "player"
-    frame:SetAttribute("unit", "player")
+    ns.Single.SetUnit(frame, "player")
     UnregisterUnitWatch(frame)
     frame:Show()
     ns.Single.UpdateAll(frame)
@@ -31,8 +30,7 @@ end
 local function applyOff(frame)
     local unit = saved[frame]
     saved[frame] = nil
-    frame.unit = unit
-    frame:SetAttribute("unit", unit)
+    ns.Single.SetUnit(frame, unit)
     if ns.Config.Get(frame.key, "enabled") then
         RegisterUnitWatch(frame)
     else
