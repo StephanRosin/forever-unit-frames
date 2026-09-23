@@ -173,8 +173,84 @@ ns.Config.Set("player", "height", 44)
 M.RunTimers()
 H.check("first install: saved after change", ForeverUnitFramesDB.profile.player.height, 44)
 H.check("first install: macro after change", ns.MacroBackup.Read(), "1;pH44")
+H.checkTrue("first install: the macro was actually written", writes.macro > 0)
 M.FireEvent("UPDATE_MACROS")
 H.check("first install: later UPDATE_MACROS ignored", ns.Storage.Source(), "Defaults")
+
+-- A fresh copy of a backup holding width 310 (writes must not leak between cases).
+local backup310
+do
+    ns = H.LoadAddon()
+    ns.MacroBackup.Write("1;pW310")
+    local saved = M.macros
+    backup310 = function()
+        local t = {}
+        for i, m in ipairs(saved) do
+            t[i] = { name = m.name, icon = m.icon, body = m.body, perChar = m.perChar }
+        end
+        return t
+    end
+end
+
+-- Macros that arrive only after the timeout: a backup this session has not
+-- loaded is never overwritten, not even by the save at logout.
+ns = H.LoadAddon()
+_G.ForeverUnitFramesDB = nil
+writes = countWrites()
+M.FireEvent("PLAYER_LOGIN")
+M.RunTimers()
+H.check("very late macros: timed out", ns.Storage.Source(), "Defaults")
+M.macros = backup310()
+M.FireEvent("PLAYER_LOGOUT")
+H.check("very late macros, logout: backup intact", ns.MacroBackup.Read(), "1;pW310")
+H.check("very late macros, logout: no macro write", writes.macro, 0)
+H.check("very late macros, logout: restored instead", ns.Storage.Source(), "MacroBackup")
+H.check("very late macros, logout: restored value", ns.Config.Get("player", "width"), 310)
+H.check("very late macros, logout: SV gets the backup, not defaults",
+    ForeverUnitFramesDB.profile and ForeverUnitFramesDB.profile.player.width, 310)
+
+-- The same with a change made after the timeout: the backup still wins.
+ns = H.LoadAddon()
+_G.ForeverUnitFramesDB = nil
+writes = countWrites()
+M.FireEvent("PLAYER_LOGIN")
+M.RunTimers()
+M.macros = backup310()
+ns.Config.Set("player", "height", 45)
+M.RunTimers()
+H.check("very late macros, change: backup intact", ns.MacroBackup.Read(), "1;pW310")
+H.check("very late macros, change: no macro write", writes.macro, 0)
+H.check("very late macros, change: restored", ns.Storage.Source(), "MacroBackup")
+
+-- Macros after the timeout, announced by UPDATE_MACROS: restored.
+ns = H.LoadAddon()
+_G.ForeverUnitFramesDB = nil
+writes = countWrites()
+M.FireEvent("PLAYER_LOGIN")
+M.RunTimers()
+M.macros = backup310()
+M.chat = {}
+M.FireEvent("UPDATE_MACROS")
+H.check("UPDATE_MACROS after timeout: restored", ns.Storage.Source(), "MacroBackup")
+H.check("UPDATE_MACROS after timeout: value", ns.Config.Get("player", "width"), 310)
+H.checkTrue("UPDATE_MACROS after timeout: announced", chatHas(ns.L.RESTORED_FROM_MACRO))
+M.RunTimers()
+H.check("UPDATE_MACROS after timeout: backup intact", ns.MacroBackup.Read(), "1;pW310")
+H.check("UPDATE_MACROS after timeout: no macro write", writes.macro, 0)
+
+-- Macros arriving while a save waits for combat to end: still not overwritten.
+ns = H.LoadAddon()
+_G.ForeverUnitFramesDB = nil
+writes = countWrites()
+M.FireEvent("PLAYER_LOGIN")
+M.RunTimers()
+M.combat = true
+ns.Storage.Save()
+M.macros = backup310()
+M.SetCombat(false)
+H.check("macros during combat-held save: backup intact", ns.MacroBackup.Read(), "1;pW310")
+H.check("macros during combat-held save: no macro write", writes.macro, 0)
+H.check("macros during combat-held save: restored", ns.Storage.Source(), "MacroBackup")
 
 -- Macros readable at PLAYER_LOGIN: restored at once, no waiting.
 ns = H.LoadAddon()

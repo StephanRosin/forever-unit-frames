@@ -88,8 +88,20 @@ function Storage.MacroError()
     return macroError
 end
 
+-- A readable backup this session has neither loaded nor written must never
+-- be overwritten: it may have arrived after the wait for macros timed out.
+-- True while such a backup could still turn up (we run on defaults and have
+-- not touched the macros yet).
+local function backupUnclaimed()
+    return source == "Defaults" and lastMacro == nil
+end
+
+local tryRestore  -- defined with the wait below
+
 local function writeMacro(encoded)
     if encoded == lastMacro then return end
+    -- Checked again here: this may run after combat, long after Save().
+    if backupUnclaimed() and tryRestore() then return end
     local ok, written = pcall(ns.MacroBackup.Write, encoded)
     if ok and written then
         lastMacro, macroError = encoded, nil
@@ -105,8 +117,12 @@ end
 -- may refuse a write (macro window open, no free slot, ...).
 -- While waiting for macros nothing is written at all: the profile in
 -- memory may be defaults standing in for a backup not yet loaded.
+-- Running on defaults without having touched the macros, a backup that
+-- has turned up since is restored first and wins over the defaults (and
+-- over changes made on top of them).
 function Storage.Save()
     if waiting then saveHeld = true; return end
+    if backupUnclaimed() then tryRestore() end
     local profile = ns.Config.Profile()
     if not profile then return end
     local encoded = ns.Codec.Encode(profile)
@@ -166,12 +182,12 @@ local function endWait(newSource)
 end
 
 -- Returns true once a complete backup has been read and imported.
-local function tryRestore()
+function tryRestore()
     local str = ns.MacroBackup.Read()
     local profile = fromString(str)
     if not profile then return false end
     lastMacro = str             -- already in the macros, no need to rewrite it
-    ns.Config.Import(profile)   -- still waiting: its CONFIG_CHANGED save is held
+    ns.Config.Import(profile)   -- its CONFIG_CHANGED save is held or queued
     endWait("MacroBackup")
     ns.Print(ns.L.RESTORED_FROM_MACRO)
     return true
@@ -189,8 +205,10 @@ function Storage.WaitForMacros()
     end)
 end
 
+-- Macros may also arrive after the timeout: keep listening until the
+-- macros are ours (restored or written).
 ns.On("UPDATE_MACROS", function()
-    if waiting then tryRestore() end
+    if waiting or backupUnclaimed() then tryRestore() end
 end)
 
 -- Closing the macro window is the moment a refused write can succeed.
