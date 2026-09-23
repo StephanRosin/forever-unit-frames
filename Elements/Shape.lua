@@ -42,8 +42,16 @@ function Shape.Radius(frame)
     return ns.Corners.Clamp(ns.Corners.Radius(frame.key), w, h)
 end
 
+-- The docked castbar's side ("BELOW", "ABOVE" or nil) and how far its
+-- slot reaches out from the frame (gap + height; 0 without one).
+function Shape.DockReach(frame)
+    local side = dockSide(frame)
+    if not side then return nil, 0 end
+    return side, ns.Castbar.Gap(frame.key) + ns.Castbar.Height(frame.key)
+end
+
 local function placeUnitBox(frame, side)
-    local reach = side and ns.Castbar.Gap(frame.key) + ns.Castbar.Height(frame.key) or 0
+    local _, reach = Shape.DockReach(frame)
     local box = frame.unitBox
     box:ClearAllPoints()
     box:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, side == "ABOVE" and reach or 0)

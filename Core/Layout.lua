@@ -36,6 +36,12 @@ function Layout.Bars(height, healthPercent, powerPercent, powerEnabled)
     return healthH, gap, powerH
 end
 
+-- Width of the overheal lane at the end of a health bar of barWidth: 8 %,
+-- at least 4.
+function Layout.OverhealLane(barWidth)
+    return math.max(4, round(barWidth * 0.08))
+end
+
 -- Space the portrait takes from the bars: a square as tall as the frame,
 -- on the left or the right. Returns left inset, right inset.
 function Layout.PortraitInsets(mode, height)

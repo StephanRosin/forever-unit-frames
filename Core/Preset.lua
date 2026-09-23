@@ -82,6 +82,12 @@ local PRESET = {
         x = 640,
         y = -256,
     },
+    -- Left of the player frame, top edges aligned: the plain default sits
+    -- inside the wider shipped player frame.
+    pet = {
+        x = -622,
+        y = -199,
+    },
     focus = {
         powerPercent = 21,
         x = 575,

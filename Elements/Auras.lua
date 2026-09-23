@@ -11,8 +11,9 @@ ns.Auras = Auras
 local Config, Layout, Pixel, AuraButton, Secrets = ns.Config, ns.Layout, ns.Pixel, ns.AuraButton, ns.Secrets
 local AuraContainers = ns.AuraContainers
 
--- Holders sit this many levels above the unit frame: over its bars.
-Auras.LEVELS = 5
+-- Holders sit this many levels above the unit frame: over its bars, the
+-- shield and the text overlay (+10), below the class badge (+20).
+Auras.LEVELS = 12
 -- Frames refreshed by a timer (target of target) read auras at most this
 -- often.
 Auras.POLL_SECONDS = 0.5

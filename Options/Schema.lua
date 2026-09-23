@@ -21,6 +21,8 @@ Schema.GENERAL = {
     } },
     { id = "colors", sections = {
         { id = "health", keys = { "healthColorMode", "healthColor" } },
+        { id = "absorbs", keys = { "absorbColor" } },
+        { id = "healPrediction", keys = { "healMyColor", "healOtherColor" } },
     } },
     { id = "profile", custom = "profile" },
 }
@@ -31,6 +33,7 @@ Schema.FRAME = {
         { id = "size", keys = { "width", "height" } },
         { id = "barHeights", keys = { "titlePercent", "healthPercent", "powerPercent", "powerEnabled" } },
         { id = "portrait", keys = { "portraitMode", "portraitStyle" } },
+        { id = "indicators", keys = { "eliteMarker", "combatFeedback" } },
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },
         { id = "group", keys = { "partyOrientation", "partySpacing", "partyShowPlayer", "partyShowSolo" } },
@@ -39,6 +42,8 @@ Schema.FRAME = {
     { id = "bars", sections = {
         { id = "health", keys = { "healthColorMode", "healthColor" } },
         { id = "textures", keys = { "barTexture", "backgroundColor" } },
+        { id = "absorbs", keys = { "absorbEnabled", "absorbColor" } },
+        { id = "healPrediction", keys = { "healPrediction", "healOverflow", "healMyColor", "healOtherColor" } },
         { id = "shape", keys = { "cornerRadius" } },
     } },
     { id = "text", sections = {

@@ -73,6 +73,11 @@ function Health.Build(frame)
     -- is Elements/Texts.lua's.
     frame.title = frame:CreateTexture(nil, "BACKGROUND")
     frame.health = CreateFrame("StatusBar", nil, frame)
+    -- Above the bars, their overlays (shields, heals) and a 3D portrait:
+    -- title and health texts live here. Below the class badge.
+    frame.overlay = CreateFrame("Frame", nil, frame)
+    frame.overlay:SetAllPoints(frame)
+    frame.overlay:SetFrameLevel(frame:GetFrameLevel() + 10)
     frame.healthBg = frame.health:CreateTexture(nil, "BACKGROUND")
     frame.healthBg:SetAllPoints(frame.health)
     ns.Corners.Add(frame, frame.title)
@@ -91,11 +96,26 @@ function Health.Style(frame)
     frame.title:SetVertexColor(bg[1], bg[2], bg[3], bg[4])
 end
 
+-- Test mode: 60 % health, so sample heals and shield show inside the bar
+-- even when the player is at full health.
+Health.SAMPLE = 0.6
+
 function Health.Update(frame)
     local unit = frame.unit
-    frame.health:SetMinMaxValues(0, UnitHealthMax(unit))
-    frame.health:SetValue(UnitHealth(unit))
+    if not frame.health.preview then
+        frame.health:SetMinMaxValues(0, UnitHealthMax(unit))
+        frame.health:SetValue(UnitHealth(unit))
+    end
     frame.health:SetStatusBarColor(Health.ColorFor(frame))
+end
+
+-- Live values come back with the next Update (test mode runs one).
+function Health.Preview(frame, on)
+    local bar = frame.health
+    bar.preview = on or nil
+    if not on then return end
+    bar:SetMinMaxValues(0, 1)
+    bar:SetValue(Health.SAMPLE)
 end
 
 ns.RegisterElement(Health)

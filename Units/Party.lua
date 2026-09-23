@@ -129,12 +129,12 @@ local function fakeButton(i)
     return button
 end
 
--- Hidden and quiet: no sample cast, no events. The secure "unit"
+-- Hidden and quiet: no samples, no events. The secure "unit"
 -- attribute stays "player" (a hidden button cannot be clicked); showFakes
 -- binds the button again.
 local function releaseFake(button)
     button:Hide()
-    ns.Castbar.Preview(button, false)
+    Single.Preview(button, false)
     button.unit = nil
     ns.UnitEvents.Bind(button)
 end
@@ -174,7 +174,7 @@ local function showFakes()
         button:ClearAllPoints()
         button:SetPoint("TOPLEFT", block, "TOPLEFT", Party.SlotOffset(i))
         Party.StyleButton(button)
-        ns.Castbar.Preview(button, true)
+        Single.Preview(button, true)
         button:Show()
     end
     for i = slots + 1, #Party.fakes do releaseFake(Party.fakes[i]) end

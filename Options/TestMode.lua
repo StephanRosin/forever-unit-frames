@@ -1,7 +1,8 @@
 local _, ns = ...
 
 -- Shows every enabled frame with the player's data, so frames can be
--- configured without a target, and a sample cast on every castbar. The
+-- configured without a target, and sample data (a cast, a shield, ...)
+-- from every element that has a Preview. The
 -- party block is replaced by a pretend party (Units/Party.lua). Only
 -- touches secure attributes and unit watch out of combat (existing
 -- ns.AfterCombat paths).
@@ -23,7 +24,7 @@ local function applyOn(frame)
     ns.Single.SetUnit(frame, "player")
     UnregisterUnitWatch(frame)
     frame:Show()
-    ns.Castbar.Preview(frame, true)
+    ns.Single.Preview(frame, true)
     ns.Single.UpdateAll(frame)
 end
 
@@ -34,7 +35,7 @@ local function applyOff(frame)
     local unit = saved[frame]
     saved[frame] = nil
     ns.Single.SetUnit(frame, unit)
-    ns.Castbar.Preview(frame, false)
+    ns.Single.Preview(frame, false)
     if ns.Config.Get(frame.key, "enabled") then
         RegisterUnitWatch(frame)
     else

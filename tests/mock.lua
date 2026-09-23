@@ -518,6 +518,7 @@ local function newWidget(kind, name, parent)
     function w:IsProtected() return self._protected or false end
     function w:SetFrameStrata(v) self._strata = v end
     function w:GetFrameStrata() return self._strata end
+    function w:SetClipsChildren(v) self._clips = v end
     function w:GetEffectiveScale() return M.scale end
     -- StatusBar
     function w:SetMinMaxValues(a, b) self._min, self._max = a, b end
@@ -663,6 +664,27 @@ local function newWidget(kind, name, parent)
         fs._layer, fs._sublevel = layer or "ARTWORK", 0
         return fs
     end
+    -- Animation groups: Play marks the group playing; M.FinishAnimations
+    -- ends every playing group like the client would when it is done.
+    function w:CreateAnimationGroup()
+        local group = newWidget("AnimationGroup", nil, self)
+        group._anims = {}
+        function group:CreateAnimation(kind)
+            local anim = newWidget(kind, nil, self)
+            function anim:SetFromAlpha(v) self._from = v end
+            function anim:SetToAlpha(v) self._to = v end
+            function anim:SetDuration(v) self._duration = v end
+            function anim:SetStartDelay(v) self._delay = v end
+            function anim:SetOrder(v) self._order = v end
+            table.insert(self._anims, anim)
+            return anim
+        end
+        function group:SetToFinalAlpha(v) self._toFinal = v end
+        function group:Play() self._playing = true; M.playing[self] = true end
+        function group:Stop() self._playing = false; M.playing[self] = nil end
+        function group:IsPlaying() return self._playing or false end
+        return group
+    end
     -- Cooldown. _cooldown holds { start, duration } or { object = duration
     -- object }; nil when cleared.
     function w:SetCooldown(start, duration) self._cooldown = { start, duration } end
@@ -708,6 +730,7 @@ function M.Reset()
     M.now = 1000           -- GetTime(), advanced by M.Tick
     M.group = {}           -- party unit tokens ("party1", ...) while grouped
     M.headerUpdates = 0    -- how often a group header laid out its buttons
+    M.playing = {}         -- animation groups that are playing
     -- Aura containers: every one made, in order; M.auraContainerMissing
     -- makes CreateFrame refuse the type (a client without it).
     M.auraContainers = {}
@@ -792,7 +815,12 @@ function M.Reset()
         WARRIOR = { 0, 0.25, 0, 0.25 },
         WARLOCK = { 0.7421875, 0.98828125, 0.25, 0.5 },
     }
-    M.atlases = { ["classicon-warrior"] = true, ["classicon-warlock"] = true }
+    M.atlases = { ["classicon-warrior"] = true, ["classicon-warlock"] = true,
+        -- Classification badges (Blizzard_NamePlateClassificationFrame.lua).
+        ["nameplates-icon-elite-gold"] = true, ["nameplates-icon-elite-silver"] = true,
+        ["UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Star"] = true,
+        -- The target frame's high-level (boss) icon (Blizzard_UnitFrame/Mainline/TargetFrame.xml).
+        ["UI-HUD-UnitFrame-Target-HighLevelTarget_Icon"] = true }
     _G.C_Texture = {
         GetAtlasInfo = function(atlas)
             if M.atlases[atlas] then return { file = atlas, width = 64, height = 64 } end
@@ -849,6 +877,20 @@ function M.Reset()
     _G.UnitChannelDuration = function(unit) local d = u(unit); return d and d.castDuration end
     _G.C_StringUtil = { TruncateWhenZero = function(n) return n end }
     _G.UnitPowerMissing = function(unit) local d = u(unit); return d and d.powerMissing or 0 end
+    -- Shields and heals (UnitDocumentation.lua): the total absorb is never
+    -- nil; incoming heals are nil when nothing is known. d.absorbs;
+    -- d.healsAll / d.healsMine.
+    -- What a unit is (UnitDocumentation.lua): d.classification (default
+    -- "normal", never nil) and d.bossMob.
+    _G.UnitClassification = function(unit) local d = u(unit); return d and d.classification or "normal" end
+    _G.UnitIsBossMob = function(unit) local d = u(unit); return d and d.bossMob or false end
+    _G.UnitGetTotalAbsorbs = function(unit) local d = u(unit); return d and d.absorbs or 0 end
+    _G.UnitGetIncomingHeals = function(unit, healer)
+        local d = u(unit)
+        if not d then return nil end
+        if healer == "player" then return d.healsMine end
+        return d.healsAll
+    end
 
     _G.C_Timer = { After = function(sec, fn) table.insert(M.timers, { sec = sec, fn = fn }) end }
 
@@ -1121,6 +1163,20 @@ end
 function M.SetGroup(units)
     M.group = units
     M.FireEvent("GROUP_ROSTER_UPDATE")
+end
+
+-- Every playing animation group runs to its end: the animated frame takes
+-- the last alpha (SetToFinalAlpha), then OnFinished runs.
+function M.FinishAnimations()
+    local groups = M.playing
+    M.playing = {}
+    for group in pairs(groups) do
+        group._playing = false
+        local last = group._anims[#group._anims]
+        if group._toFinal and last then group:GetParent():SetAlpha(last._to) end
+        local done = group:GetScript("OnFinished")
+        if done then done(group) end
+    end
 end
 
 function M.SetCombat(v)

@@ -67,9 +67,17 @@ local function layoutBars(frame)
     title:SetShown(titleH > 0)
     frame.titleHeight = titleH
     frame.titleLeft, frame.titleRight = left, right
+    local width = Single.Size(scope) - left - right
+    -- The overheal lane (Elements/HealPrediction.lua) takes the end of
+    -- the health bar's row; title and power bar keep the full width.
+    local lane = 0
+    if Config.Get(scope, "healPrediction") and Config.Get(scope, "healOverflow") then
+        lane = Pixel.Snap(Layout.OverhealLane(width))
+    end
+    frame.healthWidth, frame.overhealLane = width - lane, lane
     frame.health:ClearAllPoints()
     frame.health:SetPoint("TOPLEFT", frame, "TOPLEFT", left, -titleH)
-    frame.health:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -right, -titleH)
+    frame.health:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -(right + lane), -titleH)
     frame.health:SetHeight(healthH)
     if frame.power then
         frame.power:ClearAllPoints()
@@ -87,6 +95,13 @@ local function applyEnabled(frame)
     else
         UnregisterUnitWatch(frame)
         frame:Hide()
+    end
+end
+
+-- Test mode: every element with sample data shows (or drops) it.
+function Single.Preview(frame, on)
+    for _, el in ipairs(ns.Elements) do
+        if el.Preview then el.Preview(frame, on) end
     end
 end
 

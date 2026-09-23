@@ -37,3 +37,15 @@ H.check("plain target width", plain.Config.Get("target", "width"), 220)
 
 -- Every media name in the preset is built in (no other addon needed).
 H.checkTrue("preset texture built in", ns.Media.StatusBar(C.Get("general", "barTexture")) == "Interface\\RaidFrame\\Raid-Bar-Hp-Fill")
+
+-- The pet frame sits left of the player frame, not on it.
+local function box(scope)
+    local w, h = C.Get(scope, "width"), C.Get(scope, "height")
+    local x, y = C.Get(scope, "x"), C.Get(scope, "y")
+    return x - w / 2, x + w / 2, y - h / 2, y + h / 2
+end
+local pl, pr = box("player")
+local el, er, eb, et = box("pet")
+local _, _, plb, plt = box("player")
+H.checkTrue("pet left of the player", er < pl)
+H.check("pet top on the player's top", et, plt)
