@@ -14,17 +14,19 @@ run("set player width 300")
 H.check("slash before login does not throw", M.chat[#M.chat]:find(ns.L.NOT_READY, 1, true) ~= nil, true)
 
 M.FireEvent("PLAYER_LOGIN")
-H.check("defaults without data", ns.Storage.Source(), "Defaults")
+H.check("no data: waiting for macros", ns.Storage.Source(), "Waiting")
 H.checkTrue("player frame built", ns.Frames.player)
 H.checkTrue("mover attached", ns.Frames.player.mover)
 H.check("blizzard hidden", PlayerFrame:IsShown(), false)
 run("status")
 H.checkTrue("status shows localised source",
-    table.concat(M.chat, "\n"):find("Settings loaded from: " .. ns.L.SOURCE_Defaults, 1, true))
+    table.concat(M.chat, "\n"):find("Settings loaded from: " .. ns.L.SOURCE_Waiting, 1, true))
+H.check("waiting source is localised", ns.L.SOURCE_Waiting, "waiting for macros")
 
--- A change is saved everywhere.
+-- A change is saved everywhere (once the wait for macros has timed out).
 ns.Config.Set("player", "width", 290)
 M.RunTimers()
+H.check("timeout without backup: defaults", ns.Storage.Source(), "Defaults")
 H.check("SV table created", ForeverUnitFramesDB.profile.player.width, 290)
 H.check("macro backup written", ns.MacroBackup.Read(), "1;pW290")
 
@@ -72,3 +74,123 @@ H.check("invalid SV width falls back", ns.Config.Get("player", "width"), 220)
 H.checkTrue("set after invalid SV", ns.Config.Set("player", "height", 50))
 M.RunTimers()
 H.check("saved after invalid SV", ForeverUnitFramesDB.profile.player.height, 50)
+
+-- Character macros arrive after PLAYER_LOGIN (UPDATE_MACROS). While waiting
+-- for them nothing is written anywhere: not SavedVariables, not providers,
+-- not the macro backup.
+local function countWrites()
+    local writes = { macro = 0 }
+    local create, edit = CreateMacro, EditMacro
+    _G.CreateMacro = function(...) writes.macro = writes.macro + 1; return create(...) end
+    _G.EditMacro = function(...) writes.macro = writes.macro + 1; return edit(...) end
+    return writes
+end
+local function chatHas(text)
+    return table.concat(M.chat, "\n"):find(text, 1, true) ~= nil
+end
+
+-- A backup made in an earlier session (setup only, before counting writes).
+ns = H.LoadAddon()
+H.checkTrue("setup: backup written", ns.MacroBackup.Write("1;pW310"))
+local lateMacros = M.macros
+
+ns = H.LoadAddon()
+_G.ForeverUnitFramesDB = nil
+local providerSaves = {}
+ForeverUnitFrames.RegisterStorageProvider("Rec", {
+    load = function() end, save = function(s) providerSaves[#providerSaves + 1] = s end,
+})
+local writes = countWrites()
+M.FireEvent("ADDON_LOADED", "ForeverUnitFrames")
+M.FireEvent("PLAYER_LOGIN")
+H.check("late macros: waiting", ns.Storage.Source(), "Waiting")
+H.check("late macros: defaults shown meanwhile", ns.Config.Get("player", "width"), 220)
+H.checkTrue("late macros: frames built meanwhile", ns.Frames.player)
+ns.Config.Set("player", "width", 290)
+M.RunTimers(1)
+ns.Storage.RequestSave(); M.RunTimers(1)
+ns.Storage.Save()
+ns.Storage.Flush()
+MacroFrame:GetScript("OnHide")(MacroFrame)
+M.combat = true; ns.Storage.Save(); M.SetCombat(false)
+M.FireEvent("PLAYER_LOGOUT")
+H.check("waiting: no macro write", writes.macro, 0)
+H.check("waiting: no provider save", #providerSaves, 0)
+H.check("waiting: no SavedVariables profile", ForeverUnitFramesDB.profile, nil)
+H.check("waiting: change kept in memory", ns.Config.Get("player", "width"), 290)
+M.FireEvent("UPDATE_MACROS")
+H.check("no backup yet: still waiting", ns.Storage.Source(), "Waiting")
+H.check("no backup yet: still no macro write", writes.macro, 0)
+M.macros = lateMacros
+M.FireEvent("UPDATE_MACROS")
+H.check("late macros: restored", ns.Storage.Source(), "MacroBackup")
+H.check("late macros: backup wins over change made while waiting", ns.Config.Get("player", "width"), 310)
+H.checkTrue("late macros: restore announced", chatHas(ns.L.RESTORED_FROM_MACRO))
+H.check("restore message text", ns.L.RESTORED_FROM_MACRO, "Settings restored from the macro backup.")
+H.check("late macros: no write before the restore", writes.macro, 0)
+H.check("late macros: no provider save before the restore", #providerSaves, 0)
+M.RunTimers()
+H.check("after restore: timeout changes nothing", ns.Storage.Source(), "MacroBackup")
+H.check("after restore: SavedVariables get the restored profile", ForeverUnitFramesDB.profile.player.width, 310)
+H.check("after restore: backup still intact", ns.MacroBackup.Read(), "1;pW310")
+H.check("after restore: unchanged backup not rewritten", writes.macro, 0)
+ns.Config.Set("player", "width", 320)
+M.RunTimers()
+H.check("after restore: saving works", ns.MacroBackup.Read(), "1;pW320")
+H.check("after restore: provider saved", providerSaves[#providerSaves], "1;pW320")
+
+-- Timeout: a change made while waiting is saved once the wait ends.
+ns = H.LoadAddon()
+_G.ForeverUnitFramesDB = nil
+writes = countWrites()
+M.FireEvent("PLAYER_LOGIN")
+ns.Config.Set("player", "width", 295)
+M.RunTimers(1)
+H.check("timeout pending: nothing written", writes.macro, 0)
+H.check("timeout pending: no SV profile", ForeverUnitFramesDB.profile, nil)
+M.RunTimers()
+H.check("timeout: defaults", ns.Storage.Source(), "Defaults")
+H.check("timeout: change saved to SV", ForeverUnitFramesDB.profile.player.width, 295)
+H.check("timeout: change saved to macro", ns.MacroBackup.Read(), "1;pW295")
+local timeoutTimer
+ns = H.LoadAddon()
+_G.ForeverUnitFramesDB = nil
+M.FireEvent("PLAYER_LOGIN")
+for _, t in ipairs(M.timers) do if t.sec == 15 then timeoutTimer = t end end
+H.checkTrue("timeout is 15 s after login", timeoutTimer)
+
+-- Timeout with no change: a genuine first install writes nothing until a
+-- setting changes, then saves normally.
+ns = H.LoadAddon()
+_G.ForeverUnitFramesDB = nil
+writes = countWrites()
+M.FireEvent("PLAYER_LOGIN")
+M.RunTimers()
+H.check("first install: defaults", ns.Storage.Source(), "Defaults")
+H.check("first install: nothing written on timeout", writes.macro, 0)
+H.check("first install: no chat restore message", chatHas(ns.L.RESTORED_FROM_MACRO), false)
+ns.Config.Set("player", "height", 44)
+M.RunTimers()
+H.check("first install: saved after change", ForeverUnitFramesDB.profile.player.height, 44)
+H.check("first install: macro after change", ns.MacroBackup.Read(), "1;pH44")
+M.FireEvent("UPDATE_MACROS")
+H.check("first install: later UPDATE_MACROS ignored", ns.Storage.Source(), "Defaults")
+
+-- Macros readable at PLAYER_LOGIN: restored at once, no waiting.
+ns = H.LoadAddon()
+M.macros = lateMacros
+_G.ForeverUnitFramesDB = nil
+M.FireEvent("PLAYER_LOGIN")
+H.check("macros at login: restored at once", ns.Storage.Source(), "MacroBackup")
+ns.Config.Set("player", "width", 330)
+M.RunTimers(1)
+H.check("macros at login: saving not held back", ns.MacroBackup.Read(), "1;pW330")
+
+-- SavedVariables present: no waiting either.
+ns = H.LoadAddon()
+_G.ForeverUnitFramesDB = { profile = { player = { width = 250 } } }
+M.FireEvent("PLAYER_LOGIN")
+H.check("SV at login: no waiting", ns.Storage.Source(), "SavedVariables")
+ns.Config.Set("player", "width", 251)
+M.RunTimers(1)
+H.check("SV at login: saving not held back", ForeverUnitFramesDB.profile.player.width, 251)

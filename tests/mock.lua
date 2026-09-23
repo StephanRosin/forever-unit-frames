@@ -370,11 +370,21 @@ end
 
 -- Runs and clears every queued C_Timer.After callback. Timers a callback
 -- itself queues are appended and run too, so this drains to empty.
-function M.RunTimers()
-    while #M.timers > 0 do
-        local timers = M.timers
-        M.timers = {}
-        for _, t in ipairs(timers) do t.fn() end
+-- With maxSeconds, only timers of at most that delay run; longer ones stay
+-- queued (e.g. run a 0.5 s save but not a 15 s timeout).
+function M.RunTimers(maxSeconds)
+    while true do
+        local due, later = {}, {}
+        for _, t in ipairs(M.timers) do
+            if maxSeconds == nil or t.sec <= maxSeconds then
+                due[#due + 1] = t
+            else
+                later[#later + 1] = t
+            end
+        end
+        if #due == 0 then return end
+        M.timers = later
+        for _, t in ipairs(due) do t.fn() end
     end
 end
 

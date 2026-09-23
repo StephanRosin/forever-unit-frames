@@ -12,6 +12,8 @@ local sourceIsProvider = false
 local lastSaved           -- last string handed to SavedVariables and providers
 local lastMacro           -- last string the macro backup actually accepted
 local macroError          -- LastError of the most recent refused macro write
+local waiting = false     -- true while character macros may still arrive
+local saveHeld = false    -- a save was requested while waiting
 
 function ns.api.RegisterStorageProvider(name, provider)
     assert(type(name) == "string" and name ~= "", "provider name required")
@@ -101,7 +103,10 @@ end
 -- SavedVariables and providers get each new string once; the macro backup
 -- is retried until it has accepted the current string, since the client
 -- may refuse a write (macro window open, no free slot, ...).
+-- While waiting for macros nothing is written at all: the profile in
+-- memory may be defaults standing in for a backup not yet loaded.
 function Storage.Save()
+    if waiting then saveHeld = true; return end
     local profile = ns.Config.Profile()
     if not profile then return end
     local encoded = ns.Codec.Encode(profile)
@@ -122,6 +127,7 @@ end
 local saveQueued = false
 
 function Storage.RequestSave()
+    if waiting then saveHeld = true; return end
     if saveQueued then return end
     saveQueued = true
     C_Timer.After(0.5, function()
@@ -133,6 +139,59 @@ end
 function Storage.Flush()
     Storage.Save()
 end
+
+-- Waiting for macros ----------------------------------------------------------
+-- Character macros reach the client from the server after PLAYER_LOGIN
+-- (UPDATE_MACROS). With no SavedVariables and no provider data, defaults
+-- at login may just mean the backup has not arrived yet. Saving then would
+-- overwrite a good backup with defaults, so every save is held back until
+-- the backup is read or the wait times out.
+--
+-- Changes made while waiting stay in memory. If the wait ends with a
+-- restored backup, the backup wins (Import replaces them). If it times out
+-- (a genuine first install), they are saved as usual.
+local WAIT_SECONDS = 15
+
+function Storage.IsWaiting()
+    return waiting
+end
+
+local function endWait(newSource)
+    waiting = false
+    source, sourceIsProvider = newSource, false
+    if saveHeld then
+        saveHeld = false
+        Storage.RequestSave()
+    end
+end
+
+-- Returns true once a complete backup has been read and imported.
+local function tryRestore()
+    local str = ns.MacroBackup.Read()
+    local profile = fromString(str)
+    if not profile then return false end
+    lastMacro = str             -- already in the macros, no need to rewrite it
+    ns.Config.Import(profile)   -- still waiting: its CONFIG_CHANGED save is held
+    endWait("MacroBackup")
+    ns.Print(ns.L.RESTORED_FROM_MACRO)
+    return true
+end
+
+-- Called at PLAYER_LOGIN after Load: only when Load fell back to defaults.
+function Storage.WaitForMacros()
+    if source ~= "Defaults" or waiting then return end
+    waiting, saveHeld = true, false
+    source, sourceIsProvider = "Waiting", false
+    C_Timer.After(WAIT_SECONDS, function()
+        if not waiting then return end
+        -- One last look in case the event was missed; otherwise defaults.
+        if not tryRestore() then endWait("Defaults") end
+    end)
+end
+
+ns.On("UPDATE_MACROS", function()
+    if waiting then tryRestore() end
+end)
 
 -- Closing the macro window is the moment a refused write can succeed.
 -- The window is load-on-demand: hook it now if it exists, else once
