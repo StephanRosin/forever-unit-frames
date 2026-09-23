@@ -133,3 +133,152 @@ function AuraContainers.InitButton(entry, own, button)
     -- Tooltips on hover, clicks through to the unit button below.
     pcall(button.SetMouseClickEnabled, button, false)
 end
+
+-- Containers per frame ------------------------------------------------------------
+-- frame.auraContainers = { buffs = entry, debuffs = entry }, entry =
+-- { container, frame, key, isDebuff, buttons, stale }. Made the first time
+-- a frame shows live auras, so the pretend party (test mode only) never
+-- gets any. Made and configured out of combat only: the container itself
+-- would take settings in combat, but its buttons refuse us while auras
+-- are secret, and their size must change together with the layout.
+
+-- Every frame with containers.
+local all = setmetatable({}, { __mode = "k" })
+-- Frames waiting for the end of combat (to be made or configured).
+local waiting = setmetatable({}, { __mode = "k" })
+-- Frames whose buttons could not be restyled (auras were secret); tried
+-- again after combat.
+local stale = setmetatable({}, { __mode = "k" })
+
+local function testing()
+    return ns.TestMode ~= nil and ns.TestMode.IsOn()
+end
+
+-- Adds the container of one group to made (before anything can fail).
+local function create(frame, key, made)
+    local group = frame.auras[key]
+    local container = CreateFrame("AuraContainer", nil, frame, AuraContainers.TEMPLATE)
+    local entry = { container = container, frame = frame, key = key, isDebuff = group.isDebuff, buttons = {} }
+    made[key] = entry
+    for _, part in ipairs(AuraContainers.PARTS) do
+        local p, own = AuraContainers.Part(group, part), part == "own"
+        container:AddAuraGroup(part, p.filter, { maxFrameCount = p.max, layout = p.layout,
+            initializeFrame = function(button) AuraContainers.InitButton(entry, own, button) end })
+    end
+    container:SetUnit(frame.unit or "none")
+end
+
+-- Sizes and fonts of every button made so far; buttons made later get
+-- them in InitButton. Refused while auras are secret: tried again later.
+local function restyle(entry, group)
+    local refused = false
+    for _, record in ipairs(entry.buttons) do
+        local size = record.own and group.ownSize or group.size
+        if not pcall(ns.AuraButton.StyleManaged, record.button, entry.frame.key, size, group.showTime) then
+            refused = true
+        end
+    end
+    entry.stale = refused
+    return refused
+end
+
+local function place(frame, key)
+    local Config, Pixel = ns.Config, ns.Pixel
+    local scope = frame.key
+    frame.auraContainers[key].container:SetPoint(Config.Get(scope, key .. "Point"),
+        ns.Auras.AnchorRegion(frame, key, true), Config.Get(scope, key .. "FramePoint"),
+        Pixel.Snap(Config.Get(scope, key .. "X")), Pixel.Snap(Config.Get(scope, key .. "Y")))
+end
+
+-- Settings (read by Auras.Style into frame.auras) onto the containers.
+local function apply(frame)
+    local live = not testing()
+    stale[frame] = nil
+    for _, key in ipairs(ns.Settings.AURA_GROUPS) do
+        local group, entry = frame.auras[key], frame.auraContainers[key]
+        local container, flow = entry.container, AuraContainers.Flow(group)
+        container:SetFlowLayoutAxis(flow.axis)
+        container:SetFlowLayoutAnchorPoint(flow.anchor)
+        container:SetFlowLayoutGrowthDirection(flow.horizontal, flow.vertical)
+        container:SetFlowLayoutMaximumLineSize(flow.lineSize)
+        for _, part in ipairs(AuraContainers.PARTS) do
+            local p = AuraContainers.Part(group, part)
+            container:SetAuraGroupFilterString(part, p.filter)
+            container:SetAuraGroupMaxFrameCount(part, p.max)
+            container:SetAuraGroupLayout(part, p.layout)
+            container:SetAuraGroupEnabled(part, p.enabled)
+        end
+        if restyle(entry, group) then stale[frame] = true end
+        container:SetFrameLevel(frame:GetFrameLevel() + ns.Auras.LEVELS)
+        container:SetShown(live and group.enabled)
+    end
+    -- Anchors last, all cleared first: a group may hang from the other.
+    for _, key in ipairs(ns.Settings.AURA_GROUPS) do frame.auraContainers[key].container:ClearAllPoints() end
+    for _, key in ipairs(ns.Settings.AURA_GROUPS) do place(frame, key) end
+end
+
+-- Makes both containers of a frame. On a refusal nothing made is kept
+-- and the frame reads its auras itself from then on.
+local function build(frame)
+    local made = {}
+    local ok, err = pcall(function()
+        for _, key in ipairs(ns.Settings.AURA_GROUPS) do create(frame, key, made) end
+    end)
+    if not ok then
+        for _, entry in pairs(made) do entry.container:Hide() end
+        frame.auraContainerFailed = true
+        geterrorhandler()(err)
+        return false
+    end
+    frame.auraContainers = made
+    all[frame] = true
+    apply(frame)
+    return true
+end
+
+local function flush()
+    local frames = {}
+    for frame in pairs(waiting) do frames[#frames + 1] = frame end
+    for _, frame in ipairs(frames) do
+        waiting[frame] = nil
+        if frame.auraContainers then
+            apply(frame)
+        elseif not frame.auraContainerFailed then
+            build(frame)
+        end
+    end
+end
+
+local function later(frame)
+    waiting[frame] = true
+    ns.AfterCombat("auraContainers", flush)
+end
+
+-- Whether frame's live auras come from containers: made now, or waiting
+-- for the end of combat. False: the addon reads them itself (no client
+-- support, or the client refused this frame's containers).
+function AuraContainers.Ensure(frame)
+    if frame.auraContainers then return true end
+    if frame.auraContainerFailed or not AuraContainers.Supported() then return false end
+    if InCombatLockdown() then
+        later(frame)
+        return true
+    end
+    return build(frame)
+end
+
+-- Settings changed (Auras.Style): applied now, or after combat.
+function AuraContainers.Style(frame)
+    if not frame.auraContainers then return end
+    if InCombatLockdown() then
+        later(frame)
+        return
+    end
+    apply(frame)
+end
+
+ns.On("PLAYER_REGEN_ENABLED", function()
+    for frame in pairs(stale) do
+        if not waiting[frame] then apply(frame) end
+    end
+end)

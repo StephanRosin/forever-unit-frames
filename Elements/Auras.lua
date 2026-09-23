@@ -9,6 +9,7 @@ local Auras = { name = "Auras", unitEvents = { "UNIT_AURA" } }
 ns.Auras = Auras
 
 local Config, Layout, Pixel, AuraButton, Secrets = ns.Config, ns.Layout, ns.Pixel, ns.AuraButton, ns.Secrets
+local AuraContainers = ns.AuraContainers
 
 -- Holders sit this many levels above the unit frame: over its bars.
 Auras.LEVELS = 5
@@ -63,8 +64,10 @@ function Auras.Build(frame)
     built[frame] = true
 end
 
--- The region a group hangs from.
-function Auras.AnchorRegion(frame, key)
+-- The region a group hangs from. live: the frame's aura containers
+-- (Elements/AuraContainers.lua) rather than its holders hang from each
+-- other.
+function Auras.AnchorRegion(frame, key, live)
     local scope, to = frame.key, Config.Get(frame.key, key .. "Anchor")
     if to == "HEALTH" then return frame.health end
     if to == "POWER" then
@@ -78,7 +81,9 @@ function Auras.AnchorRegion(frame, key)
     if to == "OTHER" then
         -- Two groups hanging from each other: the debuffs take the frame.
         if key == "debuffs" and Config.Get(scope, "buffsAnchor") == "OTHER" then return frame end
-        return frame.auras[GROUPS[key].other].holder
+        local other = GROUPS[key].other
+        if live then return frame.auraContainers[other].container end
+        return frame.auras[other].holder
     end
     return frame
 end
@@ -185,6 +190,7 @@ function Auras.Style(frame)
         group.holder:SetPoint(get(frame, group, "Point"), Auras.AnchorRegion(frame, key), get(frame, group, "FramePoint"),
             Pixel.Snap(get(frame, group, "X")), Pixel.Snap(get(frame, group, "Y")))
     end
+    AuraContainers.Style(frame)
 end
 
 local function showSamples(frame)
