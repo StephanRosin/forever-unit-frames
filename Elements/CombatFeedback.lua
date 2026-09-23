@@ -56,6 +56,16 @@ function CombatFeedback.Build(frame)
     fade:SetToFinalAlpha(true)
     fade:SetScript("OnFinished", function() holder:Hide() end)
     frame.feedback, frame.feedbackText, frame.feedbackFade = holder, text, fade
+    -- A hidden frame drops its number: a paused fade must not resume
+    -- later, perhaps on another unit.
+    frame:HookScript("OnHide", function() CombatFeedback.Clear(frame) end)
+end
+
+-- Stops and hides a live number (a test mode sample stays).
+function CombatFeedback.Clear(frame)
+    if frame.feedback.preview then return end
+    frame.feedbackFade:Stop()
+    frame.feedback:Hide()
 end
 
 -- Font size of the numbers: half again the frame's font size.
@@ -80,12 +90,13 @@ function CombatFeedback.Style(frame)
     -- Over the portrait when there is one, like Blizzard's; else mid bar.
     local anchor = Config.Get(scope, "portraitMode") == "OFF" and frame.health or frame.portraitBg
     text:SetPoint("CENTER", anchor, "CENTER", 0, 0)
+    local shadow = Config.Get(scope, "fontShadow")
+    text:SetShadowOffset(shadow and 1 or 0, shadow and -1 or 0)
     local on = Config.Get(scope, "combatFeedback")
     if frame.feedback.preview then
         frame.feedback:SetShown(on)
     elseif not on then
-        frame.feedbackFade:Stop()
-        frame.feedback:Hide()
+        CombatFeedback.Clear(frame)
     end
 end
 
@@ -97,10 +108,15 @@ local function play(frame)
     frame.feedbackFade:Play()
 end
 
--- UNIT_COMBAT: unit, action, flags, amount, school. Other events (whole
--- frame refreshes) are not feedback.
+-- UNIT_COMBAT: unit, action, flags, amount, school. Other events are
+-- whole frame refreshes: the unit may have changed (target, party slot),
+-- so an old number goes; a timer refresh (target of target) is none.
 function CombatFeedback.Update(frame, event, _, action, flags, amount)
-    if event ~= "UNIT_COMBAT" or frame.feedback.preview then return end
+    if event ~= "UNIT_COMBAT" then
+        if event ~= ns.Single.POLL then CombatFeedback.Clear(frame) end
+        return
+    end
+    if frame.feedback.preview then return end
     local scope = frame.key
     if not Config.Get(scope, "combatFeedback") then return end
     local kind, flag = plain(action), plain(flags)

@@ -34,6 +34,10 @@ H.check("fade out", fade._anims[3]._to, 0)
 H.check("fade out time", fade._anims[3]._duration, 0.3)
 H.check("in order", fade._anims[3]._order, 3)
 H.check("ends at its last alpha", fade._toFinal, true)
+H.check("no shadow by default", text._shadow[1], 0)
+C.Set("player", "fontShadow", true)
+H.check("font shadow", text._shadow[1] .. "," .. text._shadow[2], "1,-1")
+C.Set("player", "fontShadow", false)
 
 -- A secret hit: passed through untouched, red.
 local hit = M.Secret(532)
@@ -109,6 +113,29 @@ H.check("switched off: fade stopped", fade:IsPlaying(), false)
 M.FireEvent("UNIT_COMBAT", "player", "WOUND", "", 10, 1)
 H.check("switched off: nothing", holder:IsShown(), false)
 C.Set("player", "combatFeedback", true)
+M.FinishAnimations()
+
+-- A new unit: the old number goes at once.
+local tf = ns.Frames.target
+M.FireEvent("UNIT_COMBAT", "target", "WOUND", "", 10, 1)
+H.checkTrue("target: number", tf.feedback:IsShown())
+M.units.target = { name = "Other", health = 1, healthMax = 1 }
+M.FireEvent("PLAYER_TARGET_CHANGED")
+H.check("new target: number gone", tf.feedback:IsShown(), false)
+H.check("new target: fade stopped", tf.feedbackFade:IsPlaying(), false)
+-- A timer refresh is no unit change.
+C.Set("targettarget", "combatFeedback", true)
+local tot = ns.Frames.targettarget
+M.units.targettarget = { name = "Add", health = 1, healthMax = 1 }
+M.FireEvent("UNIT_COMBAT", "targettarget", "WOUND", "", 10, 1)
+M.Tick(0.25)
+H.checkTrue("poll: number kept", tot.feedback:IsShown())
+H.checkTrue("poll: still fading", tot.feedbackFade:IsPlaying())
+-- A hidden frame drops its number, so no paused fade resumes later.
+tot:Hide()
+H.check("hidden frame: number gone", tot.feedback:IsShown(), false)
+H.check("hidden frame: fade stopped", tot.feedbackFade:IsPlaying(), false)
+tot:Show()
 M.FinishAnimations()
 
 -- In combat: plain regions only, allowed.

@@ -818,7 +818,9 @@ function M.Reset()
     M.atlases = { ["classicon-warrior"] = true, ["classicon-warlock"] = true,
         -- Classification badges (Blizzard_NamePlateClassificationFrame.lua).
         ["nameplates-icon-elite-gold"] = true, ["nameplates-icon-elite-silver"] = true,
-        ["UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Star"] = true }
+        ["UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Star"] = true,
+        -- The target frame's high-level (boss) icon (Blizzard_UnitFrame/Mainline/TargetFrame.xml).
+        ["UI-HUD-UnitFrame-Target-HighLevelTarget_Icon"] = true }
     _G.C_Texture = {
         GetAtlasInfo = function(atlas)
             if M.atlases[atlas] then return { file = atlas, width = 64, height = 64 } end
