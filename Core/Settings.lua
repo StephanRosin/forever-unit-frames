@@ -189,3 +189,85 @@ Settings.Define({ key = "textHealthRight", code = "TR", scope = "frame", type = 
 Settings.Define({ key = "textPowerLeft", code = "UL", scope = "frame", type = "enum", values = TEXT_TAGS, default = "NONE" })
 Settings.Define({ key = "textPowerRight", code = "UR", scope = "frame", type = "enum", values = TEXT_TAGS,
     default = { player = "CURRENT", _ = "NONE" } })
+
+-- Auras. Buffs and debuffs are two groups with the same settings, each
+-- configured on its own. Codes: J + letter for buffs, D + letter for
+-- debuffs (the letter is the same for both groups). Anchor OTHER is the
+-- other group.
+Settings.AURA_GROUPS = { "buffs", "debuffs" }
+Settings.POINTS = { "TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT" }
+local AURA_ANCHORS = { "FRAME", "HEALTH", "POWER", "CASTBAR", "OTHER" }
+local DIRECTIONS = { "RIGHT", "LEFT", "UP", "DOWN" }
+local AURA_SIZE = { party = 18, targettarget = 16, pet = 16, _ = 20 }
+local AURA_PER_ROW = { party = 6, focus = 6, targettarget = 6, pet = 6, _ = 8 }
+
+-- suffix, code letter, definition without key, code and default.
+local AURA_SETTINGS = {
+    { "Enabled", "E", { type = "bool" } },
+    { "OnlyMine", "M", { type = "bool" } },
+    { "Dispellable", "V", { type = "bool" } },
+    { "ShowTime", "T", { type = "bool" } },
+    { "Anchor", "A", { type = "enum", values = AURA_ANCHORS } },
+    { "FramePoint", "F", { type = "enum", values = Settings.POINTS } },
+    { "Point", "O", { type = "enum", values = Settings.POINTS } },
+    { "X", "X", { type = "int", min = -200, max = 200 } },
+    { "Y", "Y", { type = "int", min = -200, max = 200 } },
+    { "Growth", "G", { type = "enum", values = DIRECTIONS } },
+    { "RowGrowth", "R", { type = "enum", values = DIRECTIONS } },
+    { "Size", "S", { type = "int", min = 8, max = 64 } },
+    { "Spacing", "D", { type = "int", min = 0, max = 20 } },
+    { "PerRow", "N", { type = "int", min = 1, max = 40 } },
+    { "Max", "C", { type = "int", min = 1, max = 40 } },
+}
+
+-- Debuffs sit above the frame, buffs above the debuffs; party auras to
+-- the right of each member. Player buffs are off: Blizzard's buff frame
+-- shows them.
+local AURA_DEFAULTS = {
+    buffs = {
+        letter = "J",
+        Enabled = { target = true, focus = true, party = true, _ = false },
+        OnlyMine = { party = true, _ = false },
+        ShowTime = true,
+        Anchor = "OTHER",
+        FramePoint = { party = "TOPRIGHT", _ = "TOPLEFT" },
+        Point = { party = "TOPLEFT", _ = "BOTTOMLEFT" },
+        X = { party = 2, _ = 0 },
+        Y = { party = 0, _ = 2 },
+        Growth = "RIGHT",
+        RowGrowth = { party = "DOWN", _ = "UP" },
+        Size = AURA_SIZE, Spacing = 2, PerRow = AURA_PER_ROW,
+        Max = { party = 4, targettarget = 6, pet = 6, _ = 16 },
+    },
+    debuffs = {
+        letter = "D",
+        Enabled = { targettarget = false, _ = true },
+        OnlyMine = false,
+        Dispellable = false,
+        ShowTime = true,
+        Anchor = "FRAME",
+        FramePoint = { party = "TOPRIGHT", _ = "TOPLEFT" },
+        Point = { party = "TOPLEFT", _ = "BOTTOMLEFT" },
+        X = { party = 8, _ = 0 },
+        Y = { party = 0, _ = 2 },
+        Growth = "RIGHT",
+        RowGrowth = { party = "DOWN", _ = "UP" },
+        Size = AURA_SIZE, Spacing = 2, PerRow = AURA_PER_ROW,
+        Max = { party = 6, targettarget = 6, pet = 6, _ = 16 },
+    },
+}
+
+for _, group in ipairs(Settings.AURA_GROUPS) do
+    local defaults = AURA_DEFAULTS[group]
+    for _, entry in ipairs(AURA_SETTINGS) do
+        local suffix, letter, template = entry[1], entry[2], entry[3]
+        -- A setting a group has no default for does not exist for it
+        -- (only debuffs can be limited to dispellable ones).
+        if defaults[suffix] ~= nil then
+            local def = { key = group .. suffix, code = defaults.letter .. letter, scope = "frame",
+                default = defaults[suffix] }
+            for k, v in pairs(template) do def[k] = v end
+            Settings.Define(def)
+        end
+    end
+end

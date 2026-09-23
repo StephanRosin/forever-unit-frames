@@ -23,9 +23,9 @@ for _, key in ipairs({ "player", "target", "targettarget", "pet", "focus", "part
 end
 
 -- Tabs per frame: no castbar for the pet.
-H.check("player tabs", tabIds("player"), "layout,bars,text,castbar")
-H.check("pet tabs", tabIds("pet"), "layout,bars,text")
-H.check("party tabs", tabIds("party"), "layout,bars,text,castbar")
+H.check("player tabs", tabIds("player"), "layout,bars,text,auras,castbar")
+H.check("pet tabs", tabIds("pet"), "layout,bars,text,auras")
+H.check("party tabs", tabIds("party"), "layout,bars,text,auras,castbar")
 
 -- Party layout only on the party page; portrait everywhere.
 O.Select("party")

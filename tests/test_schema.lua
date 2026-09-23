@@ -36,7 +36,7 @@ for _, def in ipairs(Settings.All()) do
 end
 
 H.check("general has profile tab", S.Tabs("general")[3].id, "profile")
-H.check("frame tab count", #S.Tabs("player"), 4)
-H.check("castbar tab on frames with a castbar", S.Tabs("player")[4].id, "castbar")
-H.check("no castbar tab for the pet", #S.Tabs("pet"), 3)
+H.check("frame tab count", #S.Tabs("player"), 5)
+H.check("castbar tab on frames with a castbar", S.Tabs("player")[5].id, "castbar")
+H.check("no castbar tab for the pet", #S.Tabs("pet"), 4)
 H.check("key-specific enum text wins", S.EnumText(Settings.Get("textHealthLeft"), "NONE"), "Empty")

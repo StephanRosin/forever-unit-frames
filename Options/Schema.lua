@@ -39,6 +39,14 @@ Schema.FRAME = {
         { id = "powerText", keys = { "textPowerLeft", "textPowerRight" } },
         { id = "font", keys = { "fontFace", "fontSize", "fontOutline", "fontShadow", "showSurname" } },
     } },
+    { id = "auras", sections = {
+        { id = "buffs", keys = { "buffsEnabled", "buffsOnlyMine", "buffsShowTime", "buffsAnchor", "buffsFramePoint",
+            "buffsPoint", "buffsX", "buffsY", "buffsGrowth", "buffsRowGrowth", "buffsSize", "buffsSpacing",
+            "buffsPerRow", "buffsMax" } },
+        { id = "debuffs", keys = { "debuffsEnabled", "debuffsOnlyMine", "debuffsDispellable", "debuffsShowTime",
+            "debuffsAnchor", "debuffsFramePoint", "debuffsPoint", "debuffsX", "debuffsY", "debuffsGrowth",
+            "debuffsRowGrowth", "debuffsSize", "debuffsSpacing", "debuffsPerRow", "debuffsMax" } },
+    } },
     { id = "castbar", sections = {
         { id = "castbar", keys = { "castbarEnabled", "castbarPosition", "castbarDock", "castbarHeight" } },
         { id = "castbarContent", keys = { "castbarIcon", "castbarName", "castbarTime" } },
