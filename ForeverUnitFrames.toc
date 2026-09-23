@@ -23,4 +23,5 @@ Units\Single.lua
 Core\Blizzard.lua
 Core\Movers.lua
 Core\Commands.lua
+Options\Schema.lua
 Core\Boot.lua
