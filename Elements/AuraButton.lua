@@ -48,8 +48,9 @@ local function onLeave(self)
     if GameTooltip:IsOwned(self) then GameTooltip:Hide() end
 end
 
-function AuraButton.Create(parent, isDebuff)
-    local button = CreateFrame("Frame", nil, parent)
+-- The regions of an icon, made on button: our own plain frame, or a
+-- Blizzard aura container's button (Elements/AuraContainers.lua).
+function AuraButton.Decorate(button, isDebuff)
     button.isDebuff = isDebuff
     button.border = button:CreateTexture(nil, "BACKGROUND")
     button.border:SetAllPoints(button)
@@ -65,6 +66,11 @@ function AuraButton.Create(parent, isDebuff)
     button.cover:SetAllPoints(button)
     button.cover:SetFrameLevel(button.cooldown:GetFrameLevel() + 1)
     button.count = button.cover:CreateFontString(nil, "OVERLAY")
+end
+
+function AuraButton.Create(parent, isDebuff)
+    local button = CreateFrame("Frame", nil, parent)
+    AuraButton.Decorate(button, isDebuff)
     button:EnableMouse(true)
     button:SetMouseClickEnabled(false)
     button:SetScript("OnEnter", onEnter)
@@ -88,10 +94,12 @@ local function getDispelCurve()
     end
     return dispelCurve
 end
+-- The dispel colour curve (dispel type number -> border colour), made once.
+AuraButton.DispelCurve = getDispelCurve
 
--- Size, fonts and countdown numbers; out of combat or on plain frames
--- only, like every Style.
-function AuraButton.Style(button, scope, size, showTime)
+-- Size, icon inset, countdown numbers and the buff border. Returns the
+-- count's font, size and outline setting.
+local function shape(button, scope, size, showTime)
     button:SetSize(size, size)
     local inset = Pixel.Snap(1, button, 1)
     button.icon:ClearAllPoints()
@@ -100,7 +108,6 @@ function AuraButton.Style(button, scope, size, showTime)
     local font = ns.Media.Font(Config.Get(scope, "fontFace"))
     local outline = Config.Get(scope, "fontOutline")
     local fontSize = math.max(6, math.floor(size * 0.5 + 0.5))
-    ns.Texts.SetFont(button.count, font, fontSize, outline)
     button.count:ClearAllPoints()
     button.count:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, 0)
     button.count:SetJustifyH("RIGHT")
@@ -114,6 +121,22 @@ function AuraButton.Style(button, scope, size, showTime)
     button.cooldown:SetHideCountdownNumbers(not showTime)
     button.plainBorder = Config.Get(scope, "borderColor")
     if not button.isDebuff then paintBorder(button, button.plainBorder) end
+    return font, fontSize, outline
+end
+
+-- Size, fonts and countdown numbers; out of combat or on plain frames
+-- only, like every Style.
+function AuraButton.Style(button, scope, size, showTime)
+    local font, fontSize, outline = shape(button, scope, size, showTime)
+    ns.Texts.SetFont(button.count, font, fontSize, outline)
+end
+
+-- The same for a container's button. The client writes its count, so a
+-- soft outline (copies of the text that we would have to write) cannot
+-- follow it: it gets the plain outline, like the countdown numbers.
+function AuraButton.StyleManaged(button, scope, size, showTime)
+    local font, fontSize, outline = shape(button, scope, size, showTime)
+    ns.Texts.SetFont(button.count, font, fontSize, outline == "SOFT" and "OUTLINE" or outline)
 end
 
 local function forget(button)

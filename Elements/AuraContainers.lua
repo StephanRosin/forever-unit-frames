@@ -96,3 +96,40 @@ function AuraContainers.Part(group, part)
             groupLineSpacing = spacing, forceNewLine = newLine },
     }
 end
+
+-- Buttons -----------------------------------------------------------------------
+-- The container makes its buttons (a batch at a time, possibly in combat)
+-- and hands each to initializeFrame before it locks them against us while
+-- auras are secret. There they get our regions and look, and the regions
+-- the client fills are registered: icon, swipe (its countdown numbers are
+-- the time left), stack count and, for debuffs, the border coloured by
+-- dispel type through our colour curve. Tooltips are the container's own.
+
+-- Debuff border: our white texture keeps its asset; the client colours it
+-- from the curve, for debuffs without a dispel type too (the NONE colour).
+local function dispelOptions()
+    return {
+        style = Enum.CustomAuraButtonDispelTypeTextureStyle.PreserveAsset,
+        showWithoutDispelType = true,
+        customDispelColorCurve = ns.AuraButton.DispelCurve(),
+    }
+end
+
+-- entry = { frame, key, isDebuff, buttons }; own: the button belongs to
+-- the "own" group (drawn at the own size).
+function AuraContainers.InitButton(entry, own, button)
+    local AuraButton = ns.AuraButton
+    local group = entry.frame.auras[entry.key]
+    local size = own and group.ownSize or group.size
+    AuraButton.Decorate(button, entry.isDebuff)
+    -- Fonts before the count is registered: the client writes it at once.
+    AuraButton.StyleManaged(button, entry.frame.key, size, group.showTime)
+    entry.buttons[#entry.buttons + 1] = { button = button, own = own }
+    button:SetIcon(button.icon)
+    button:SetDurationCooldown(button.cooldown)
+    button:SetApplicationCount(button.count)
+    if entry.isDebuff then button:AddDispelTypeTexture(button.border, dispelOptions()) end
+    button:SetTooltipAnchorPoint("ANCHOR_BOTTOMRIGHT")
+    -- Tooltips on hover, clicks through to the unit button below.
+    pcall(button.SetMouseClickEnabled, button, false)
+end
