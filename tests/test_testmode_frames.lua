@@ -45,7 +45,7 @@ for i, b in ipairs(P.fakes) do
 end
 -- Vertically the docked party castbar sits between members (Party.Spacing).
 H.check("fake 2 below fake 1", select(5, P.fakes[2]:GetPoint(1)),
-    -(36 + 12 + ns.Castbar.DockedDepth("party")))
+    -(46 + 12 + ns.Castbar.DockedDepth("party")))
 H.check("fake health", P.fakes[3].health:GetValue(), 5)
 H.checkTrue("fake sample cast", P.fakes[1].castbar:IsShown())
 H.check("fakes are not header buttons", #P.buttons, 1)

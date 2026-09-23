@@ -6,7 +6,7 @@ local xml = H.ReadFile("Units/Party.xml")
 H.checkTrue("xml: template name", xml:find('name="ForeverUnitFramesPartyButtonTemplate"', 1, true))
 H.checkTrue("xml: secure unit button", xml:find('inherits="SecureUnitButtonTemplate"', 1, true))
 H.checkTrue("xml: clicks", xml:find('registerForClicks="AnyUp"', 1, true))
-H.checkTrue("xml: size = party defaults", xml:find('<Size x="160" y="36"/>', 1, true))
+H.checkTrue("xml: size = party defaults", xml:find('<Size x="160" y="46"/>', 1, true))
 H.checkTrue("xml: left click targets", xml:find('<Attribute name="*type1" type="string" value="target"/>', 1, true))
 H.checkTrue("xml: right click menu", xml:find('<Attribute name="*type2" type="string" value="togglemenu"/>', 1, true))
 H.checkTrue("xml: OnLoad", xml:find("ForeverUnitFrames.PartyButtonOnLoad(self)", 1, true))
@@ -14,7 +14,7 @@ H.checkTrue("xml: OnAttributeChanged",
     xml:find("ForeverUnitFrames.PartyButtonOnAttributeChanged(self, name, value)", 1, true))
 H.checkTrue("xml: no snippet", not xml:find("initialConfigFunction", 1, true))
 H.check("default width = xml", ns.Settings.Default(ns.Settings.Get("width"), "party"), 160)
-H.check("default height = xml", ns.Settings.Default(ns.Settings.Get("height"), "party"), 36)
+H.check("default height = xml", ns.Settings.Default(ns.Settings.Get("height"), "party"), 46)
 local toc = H.ReadFile("ForeverUnitFrames.toc")
 H.checkTrue("toc lists the xml after the lua",
     toc:find("Units\\Party.lua\nUnits\\Party.xml", 1, true))
@@ -33,9 +33,10 @@ local point, rel, relPoint, x, y = header:GetPoint(1)
 H.check("block anchored top left", point, "TOPLEFT")
 H.check("block x from centre", x, -760 - 80)
 -- Between members: spacing 12 plus the docked castbar (12 + gap 4 + border 1).
--- The block is 231 high: centred at 120 its top would sit on a half
--- pixel (235.5); on the pixel grid (one unit here) it moves to 236.
-H.check("block y from centre", y, 236)
+-- The block is 271 high (4 * 46 + 3 * 29): centred at 120 its top would
+-- sit on a half pixel (-15.5 from centre); on the pixel grid (one unit
+-- here) it moves to 255.
+H.check("block y from centre", y, 255)
 
 -- Solo: no member buttons in use.
 H.check("solo: first button has no unit", header:GetAttribute("child1"):GetAttribute("unit"), nil)
@@ -52,7 +53,7 @@ H.check("button 2 unit", b2:GetAttribute("unit"), "party2")
 H.check("lua unit field", b2.unit, "party2")
 H.check("button key", b1.key, "party")
 H.check("button width from settings", b2:GetWidth(), 180)
-H.check("button height from settings", b2:GetHeight(), 36)
+H.check("button height from settings", b2:GetHeight(), 46)
 H.check("button health", b2.health:GetValue(), 7)
 H.check("button events for its unit", b2.eventListener._events.UNIT_HEALTH[1], "party2")
 M.units.party2.health = 3
@@ -123,4 +124,4 @@ H.check("combat join from solo: member assigned", header:GetAttribute("child1"):
 M.SetCombat(false)
 H.check("combat join from solo: button width", header:GetAttribute("child1"):GetWidth(), 200)
 H.check("combat join from solo: header width", header:GetWidth(), 200)
-H.check("combat join from solo: header height", header:GetHeight(), 36)
+H.check("combat join from solo: header height", header:GetHeight(), 46)

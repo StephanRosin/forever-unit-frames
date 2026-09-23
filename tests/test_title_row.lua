@@ -11,14 +11,16 @@ H.check("health colour modes unchanged", table.concat(S.Get("healthColorMode").v
     "CLASS,REACTION,STATIC,GRADIENT")
 H.check("health colour now static", S.Default(S.Get("healthColorMode"), "general"), "STATIC")
 H.check("static colour is green", S.Default(S.Get("healthColor"), "general")[2], 0.75)
-for scope, want in pairs({ player = 30, target = 30, focus = 30, party = 0, targettarget = 0, pet = 0 }) do
+for scope, want in pairs({ player = 30, target = 30, focus = 30, party = 30, targettarget = 0, pet = 0 }) do
     H.check(scope .. " title default", S.Default(S.Get("titlePercent"), scope), want)
 end
 H.check("player health default", S.Default(S.Get("healthPercent"), "player"), 45)
-H.check("party health default", S.Default(S.Get("healthPercent"), "party"), 75)
+H.check("party health default", S.Default(S.Get("healthPercent"), "party"), 45)
+H.check("targettarget health default unchanged", S.Default(S.Get("healthPercent"), "targettarget"), 75)
 H.check("player title text", S.Default(S.Get("titleText"), "player"), "NAME_LEVEL")
+H.check("party title text", S.Default(S.Get("titleText"), "party"), "NAME_LEVEL")
 H.check("player health left", S.Default(S.Get("textHealthLeft"), "player"), "CURRENT_MAX")
-H.check("party health left keeps the name", S.Default(S.Get("textHealthLeft"), "party"), "NAME")
+H.check("party health left shows a value, not the name", S.Default(S.Get("textHealthLeft"), "party"), "NONE")
 
 -- Layout maths: title, health, gap, power.
 local function rows(...) return table.concat({ Lay.Rows(...) }, ",") end
@@ -83,12 +85,22 @@ C.Set("player", "titlePercent", 0)
 H.check("title hidden", f.title:IsShown(), false)
 H.check("title text hidden", tt:IsShown(), false)
 H.check("health at the top", point(f.health, "TOPLEFT")[5], 0)
+-- Party defaults: title row on, class colour for a player member,
+-- reaction colour for an NPC member, health value (not the name) on the bar.
 local header = ns.Party.header
-M.units.party1 = { name = "Ann", health = 1, healthMax = 2 }
-M.SetGroup({ "party1" })
-local member = header:GetAttribute("child1")
-H.check("party: no title row", member.title:IsShown(), false)
-H.check("party: name on the health bar", member.texts.healthLeft:GetText(), "Ann")
+M.units.party1 = { name = "Ann", level = 20, class = "WARLOCK", className = "Warlock", isPlayer = true,
+    health = 1, healthMax = 2 }
+M.units.party2 = { name = "Wolf", level = 10, health = 1, healthMax = 1, reaction = 2 }
+M.SetGroup({ "party1", "party2" })
+local member, other = header:GetAttribute("child1"), header:GetAttribute("child2")
+H.checkTrue("party: title row shown", member.title:IsShown())
+H.check("party: title height matches the player/target split", member.title:GetHeight(), 14)
+H.check("party: name and level in the title", member.texts.title._args[2], "Ann")
+H.check("party: player title class colour", member.texts.title._color[1], RAID_CLASS_COLORS.WARLOCK.r)
+H.checkTrue("party: npc title row shown", other.title:IsShown())
+H.check("party: npc title reaction colour", other.texts.title._color[1], 0.85)
+H.check("party: health left empty (no name on the bar)", member.texts.healthLeft:GetText(), "")
+H.check("party: health right shows a value", member.texts.healthRight._fmt, "%.0f%%")
 
 -- Options: the row heights in Layout, the title text in Text.
 local O = ns.Options

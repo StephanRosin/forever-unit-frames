@@ -44,7 +44,7 @@ end
 -- test_party.lua checks that Units/Party.xml declares the same.
 M.templates = {
     ForeverUnitFramesPartyButtonTemplate = function(w)
-        w._w, w._h = 160, 36
+        w._w, w._h = 160, 46
         w._clicks = { "AnyUp" }
         w._attr["*type1"] = "target"
         w._attr["*type2"] = "togglemenu"

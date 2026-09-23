@@ -82,8 +82,8 @@ H.checkTrue("member 2's top is below member 1's castbar border", -offset >= cast
 C.Set("party", "castbarDock", "BELOW")
 H.check("docked below: same room", header:GetAttribute("yOffset"), -(castbarDepth + spacing))
 local _, bh = ns.Party.BlockSize()
-H.check("block height counts the castbars", bh, 4 * 36 + 3 * (castbarDepth + spacing))
-H.check("slot offset counts the castbars", select(2, ns.Party.SlotOffset(2)), -(36 + castbarDepth + spacing))
+H.check("block height counts the castbars", bh, 4 * 46 + 3 * (castbarDepth + spacing))
+H.check("slot offset counts the castbars", select(2, ns.Party.SlotOffset(2)), -(46 + castbarDepth + spacing))
 C.Set("party", "castbarHeight", 20)
 H.check("taller castbar: more room", header:GetAttribute("yOffset"),
     -(20 + ns.Castbar.Gap("party") + border + spacing))
