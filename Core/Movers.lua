@@ -14,11 +14,17 @@ function Movers.Snap(v)
     return sign * math.floor(math.abs(v) / GRID + 0.5) * GRID
 end
 
-local function position(frame)
+-- Sizes and positions the mover from config alone, never from the frame's
+-- own current size: inside a queued combat restyle the frame may not have
+-- been resized yet, and a value read off it would be stale. No-op if the
+-- frame has no mover.
+function Movers.Sync(frame)
     local mover = frame.mover
-    mover:SetSize(frame:GetWidth(), frame:GetHeight())
+    if not mover then return end
+    local scope = frame.key
+    mover:SetSize(ns.Config.Get(scope, "width"), ns.Config.Get(scope, "height"))
     mover:ClearAllPoints()
-    mover:SetPoint("CENTER", UIParent, "CENTER", ns.Config.Get(frame.key, "x"), ns.Config.Get(frame.key, "y"))
+    mover:SetPoint("CENTER", UIParent, "CENTER", ns.Config.Get(scope, "x"), ns.Config.Get(scope, "y"))
 end
 
 function Movers.OnDragStop(mover)
@@ -31,12 +37,19 @@ end
 
 function Movers.Attach(frame)
     if frame.mover then return end
+    if InCombatLockdown() then
+        ns.AfterCombat("attach:" .. frame.key, function() Movers.Attach(frame) end)
+        return
+    end
     local mover = CreateFrame("Frame", nil, UIParent)
     mover.frameKey = frame.key
     mover:SetMovable(true)
     mover:SetClampedToScreen(true)
     mover:RegisterForDrag("LeftButton")
-    mover:SetScript("OnDragStart", function(self) self:StartMoving() end)
+    mover:SetScript("OnDragStart", function(self)
+        if InCombatLockdown() then return end
+        self:StartMoving()
+    end)
     mover:SetScript("OnDragStop", Movers.OnDragStop)
     mover.overlay = mover:CreateTexture(nil, "OVERLAY")
     mover.overlay:SetAllPoints(mover)
@@ -46,7 +59,7 @@ function Movers.Attach(frame)
     mover.label:SetPoint("CENTER", mover, "CENTER", 0, 0)
     mover.label:SetText(L["FRAME_" .. frame.key])
     frame.mover = mover
-    position(frame)
+    Movers.Sync(frame)
     mover:EnableMouse(false)
     mover:Hide()
     frame:ClearAllPoints()
@@ -62,8 +75,10 @@ function Movers.Unlock()
     end
     unlocked = true
     for _, frame in pairs(ns.Frames) do
-        frame.mover:EnableMouse(true)
-        frame.mover:Show()
+        if frame.mover then
+            frame.mover:EnableMouse(true)
+            frame.mover:Show()
+        end
     end
     ns.Print(L.UNLOCKED)
     return true
@@ -72,17 +87,17 @@ end
 function Movers.Lock()
     unlocked = false
     for _, frame in pairs(ns.Frames) do
-        frame.mover:EnableMouse(false)
-        frame.mover:Hide()
+        if frame.mover then
+            frame.mover:EnableMouse(false)
+            frame.mover:Hide()
+        end
     end
     ns.Print(L.LOCKED)
 end
 
--- Keep movers in step with size/position changes.
-ns.Listen("CONFIG_CHANGED", function()
-    ns.AfterCombat("movers", function()
-        for _, frame in pairs(ns.Frames) do
-            if frame.mover then position(frame) end
-        end
-    end)
+-- Combat is about to start: lock down before secure lockdown begins.
+-- PLAYER_REGEN_DISABLED fires just before lockdown takes effect, so hiding
+-- and disabling the (unprotected) movers here is still allowed.
+ns.On("PLAYER_REGEN_DISABLED", function()
+    if unlocked then Movers.Lock() end
 end)

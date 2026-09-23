@@ -16,7 +16,12 @@ local function parseValue(def, raw)
         return nil
     end
     if def.type == "enum" then return raw:upper() end
-    if def.type == "media" then return raw end
+    if def.type == "media" then
+        for _, name in ipairs(ns.Media.List(def.mediaKind)) do
+            if name == raw then return raw end
+        end
+        return nil
+    end
     return nil   -- colors are set in the options window
 end
 
@@ -43,7 +48,7 @@ SlashCmdList.FOREVERUNITFRAMES = function(msg)
         elseif ns.Config.Profile()[rest] then
             ns.Config.ResetScope(rest)
         else
-            ns.Print(L.INVALID_VALUE)
+            ns.Print(L.UNKNOWN_FRAME)
             return
         end
         ns.Storage.Save()

@@ -74,6 +74,7 @@ function Single.UpdateAll(frame, event)
 end
 
 function Single.StyleAll(frame)
+    if frame.mover then ns.Movers.Sync(frame) end
     place(frame)
     layoutBars(frame)
     border(frame)
