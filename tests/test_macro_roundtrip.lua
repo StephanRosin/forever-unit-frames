@@ -91,6 +91,8 @@ local function bigProfile(n)
         n.Config.Set(scope, "healthColor", { 1, 0, 0.5, 1 })
     end
     n.Config.Set("party", "partySpacing", 7)
+    -- Long enough for two nearly full macros (at least 400 characters).
+    n.Config.Set("general", "barTexture", "Long Bar Texture " .. string.rep("x", 150))
 end
 
 -- Three sessions in a row with SavedVariables never loaded: nothing may be
@@ -104,6 +106,8 @@ local function threeSessions(label, trailer, crlf, late)
     H.check(label .. ": setup encodes the profile", expected, n.Codec.Encode(n.Config.Profile()))
     H.checkTrue(label .. ": setup ends with the last entry", expected:find(";yY1234$"))
     H.check(label .. ": setup needs two macros", #M.macros, 2)
+    H.check(label .. ": setup is at least 400 characters", #expected >= 400, true)
+    H.check(label .. ": first body leaves slack", #M.macros[1].body <= 252, true)
     for session = 1, 3 do
         M.RoundTripMacros(trailer, crlf)
         local macros = M.macros

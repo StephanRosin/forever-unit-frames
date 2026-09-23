@@ -2,13 +2,16 @@ local _, ns = ...
 
 -- Stores the encoded profile in character macros. Needed while the client
 -- does not load SavedVariables back. A macro body holds 255 characters; the
--- first line marks the macro so players know not to delete it.
+-- first line marks the macro so players know not to delete it. A body read
+-- back in a later session carries an extra line break, and the macro cache
+-- turns every line break into CRLF (header line + appended one: 3 extra
+-- characters), so chunks leave that much slack below the client's limit.
 local MacroBackup = {}
 ns.MacroBackup = MacroBackup
 
 local PREFIX = "FUF Save "
 local MAX_MACROS = 2
-local BODY_LIMIT = 255
+local BODY_LIMIT = 252
 local ICON = "INV_MISC_QUESTIONMARK"
 local MARK = "#Forever Unit Frames backup"
 

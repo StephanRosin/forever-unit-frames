@@ -433,13 +433,18 @@ function M.Reset()
     -- Within a session the client hands back exactly what was written. A
     -- body that went through the server comes back from a later session with
     -- a line break appended, and the macro cache uses CRLF line endings
-    -- (measured in the client). M.RoundTripMacros simulates that.
+    -- (measured in the client); the client may then cut the body to 255
+    -- characters. M.RoundTripMacros simulates that.
     _G.GetMacroBody = function(index)
         local m = M.macros[index - 120]
         if not m then return nil end
         local body = m.body
         if m.crlf then body = body:gsub("\n", "\r\n") end
-        return body .. (m.trailer or "")
+        body = body .. (m.trailer or "")
+        -- What comes back from the server may be cut to the body limit
+        -- after the line break was appended.
+        if m.trailer or m.crlf then body = body:sub(1, 255) end
+        return body
     end
     -- Like the client, creating or editing a macro re-sorts the list by
     -- name, so an index taken before the call may point elsewhere after it.
