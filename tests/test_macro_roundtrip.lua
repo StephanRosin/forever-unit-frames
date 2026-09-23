@@ -155,7 +155,92 @@ end
 garbled("garbled reload", false)
 garbled("garbled restart", true)
 H.check("unreadable message text", ns.L.MACRO_UNREADABLE,
-    "Macro backup kept: part of it could not be read. Please report this.")
+    "Macro backup kept: part of it could not be read. /fuf reset all or a profile import replaces it.")
+
+-- The way out: only an explicit "replace everything" lifts the block.
+local GARBLED = HEADER .. "1;pH40;pW2x0;tHM4\n"
+local function click(button) button:GetScript("OnClick")(button) end
+
+do
+    local n = login(macroWith(GARBLED))
+    n.Config.Set("player", "width", 300)
+    M.RunTimers()
+    H.check("way out: ordinary change still refused", M.macros[1].body, GARBLED)
+    SlashCmdList.FOREVERUNITFRAMES("reset all")
+    M.RunTimers()
+    H.check("way out: reset all rewrites the macro", n.MacroBackup.Read(), "1")
+    H.check("way out: no error after reset", n.Storage.MacroError(), nil)
+    n.Config.Set("player", "width", 310)
+    M.RunTimers()
+    H.check("way out: later changes saved", n.MacroBackup.Read(), "1;pW310")
+end
+
+do
+    local n = login(macroWith(GARBLED))
+    n.Options.Open("general", "profile")
+    click(n.Options.resetAllButton)
+    click(n.Options.resetAllButton)
+    M.RunTimers()
+    H.check("way out: reset button rewrites the macro", n.MacroBackup.Read(), "1")
+end
+
+do
+    local n = login(macroWith(GARBLED))
+    n.Options.Open("general", "profile")
+    n.Options.importArea:SetText("1;pW250;tHM4")
+    click(n.Options.importButton)
+    M.RunTimers()
+    H.check("way out: import rewrites the macro", n.MacroBackup.Read(), "1;pW250;tHM4")
+end
+
+do
+    -- A failed import is no permission: the next change is refused again.
+    local n = login(macroWith(GARBLED))
+    n.Options.Open("general", "profile")
+    n.Options.importArea:SetText("9;xx")
+    click(n.Options.importButton)
+    n.Config.Set("player", "width", 300)
+    M.RunTimers()
+    H.check("way out: failed import grants nothing", M.macros[1].body, GARBLED)
+end
+
+do
+    -- The permission never overrides a backup from a newer version.
+    local n = login(macroWith(HEADER .. "9;pW400"))
+    SlashCmdList.FOREVERUNITFRAMES("reset all")
+    M.RunTimers()
+    H.check("way out: newer backup still kept", n.MacroBackup.Read(), "9;pW400")
+    H.check("way out: Write with permission refuses newer",
+        n.MacroBackup.Write("1;pW1", true), false)
+    H.check("way out: newer error", n.MacroBackup.LastError(), "MACRO_NEWER")
+end
+
+-- Told once per session, even if another refusal comes in between.
+do
+    local n = login(macroWith(GARBLED))
+    M.macroFrameShown = true
+    n.Config.Set("player", "width", 300)
+    M.RunTimers()
+    H.check("once: frame-open refusal reported", n.Storage.MacroError(), "MACRO_FRAME_OPEN")
+    M.macroFrameShown = false
+    n.Storage.Save()
+    M.RunTimers()
+    M.FireEvent("PLAYER_LOGOUT")
+    H.check("once: unreadable again", n.Storage.MacroError(), "MACRO_UNREADABLE")
+    H.check("once: message printed once", chatCount(n.L.MACRO_UNREADABLE), 1)
+    H.check("once: macro untouched", M.macros[1].body, GARBLED)
+end
+
+-- A media name ending in a space survives the trimming on read.
+do
+    local n = login({})
+    n.Config.Set("general", "fontFace", "Spaced Font ")
+    M.RunTimers()
+    M.FireEvent("PLAYER_LOGOUT")
+    M.RoundTripMacros("\r\n", true)
+    n = login(M.macros)
+    H.check("trailing space: kept across a reload", n.Config.Get("general", "fontFace"), "Spaced Font ")
+end
 
 -- An unknown code (a newer version's setting) is not a read error: the
 -- rest loads and the backup is rewritten as usual.

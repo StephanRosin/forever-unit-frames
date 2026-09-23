@@ -12,11 +12,16 @@ local Settings = ns.Settings
 local scopeByPrefix = {}
 for scope, prefix in pairs(Settings.PREFIX) do scopeByPrefix[prefix] = scope end
 
+-- Trailing whitespace is escaped too: the macro backup comes back with a
+-- line break appended and is trimmed on read, which must never shorten a
+-- value.
+local function hexEscape(c) return ("%%%02X"):format(c:byte()) end
 local function escape(s)
-    return (s:gsub("%%", "%%25"):gsub(";", "%%3B"))
+    s = s:gsub("%%", "%%25"):gsub(";", "%%3B")
+    return (s:gsub("%s+$", function(ws) return (ws:gsub(".", hexEscape)) end))
 end
 local function unescape(s)
-    return (s:gsub("%%3B", ";"):gsub("%%25", "%%"))
+    return (s:gsub("%%(%x%x)", function(h) return string.char(tonumber(h, 16)) end))
 end
 
 local function hexByte(c) return ("%02x"):format(math.floor(c * 255 + 0.5)) end

@@ -96,7 +96,10 @@ end
 
 -- All checks happen before any Create/EditMacro call: either the whole
 -- backup lands, or nothing is touched.
-function MacroBackup.Write(str)
+-- overwriteUnreadable: the player asked to replace everything (reset all,
+-- profile import), so a backup we cannot read in full may go. A backup from
+-- a newer version is kept regardless.
+function MacroBackup.Write(str, overwriteUnreadable)
     lastError = nil
     if InCombatLockdown() then lastError = "MACRO_COMBAT"; return false end
     if MacroFrame and MacroFrame.IsShown and MacroFrame:IsShown() then
@@ -113,7 +116,7 @@ function MacroBackup.Write(str)
     if existing then
         local _, err, rejected = ns.Codec.Decode(existing)
         if err == "CODEC_VERSION" then lastError = "MACRO_NEWER"; return false end
-        if rejected and rejected > 0 then lastError = "MACRO_UNREADABLE"; return false end
+        if rejected and rejected > 0 and not overwriteUnreadable then lastError = "MACRO_UNREADABLE"; return false end
     end
 
     -- Pass 1: look, never touch. Reject a foreign macro anywhere we would

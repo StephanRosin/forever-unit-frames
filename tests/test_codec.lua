@@ -27,6 +27,15 @@ H.check("encoded form", s, "1;gFF'My%3BFont%25;gHC#ff8000ff;pE0;pW250;tTR6;tX-12
 local back = assert(Codec.Decode(s))
 H.checkTrue("round trip", deepEqual(back, C.Profile()))
 
+-- Trailing whitespace of a media value is escaped: a reader that trims
+-- line endings can never shorten it.
+C.Set("general", "fontFace", "Trail %;\t ")
+local trailing = Codec.Encode(C.Profile())
+H.checkTrue("trailing whitespace escaped", trailing:find("gFF'Trail %25%3B%09%20;", 1, true))
+H.check("trailing whitespace round trip", Codec.Decode(trailing).general.fontFace, "Trail %;\t ")
+H.check("inner space not escaped", Codec.Decode("1;gFF'A B").general.fontFace, "A B")
+C.Set("general", "fontFace", "My;Font%")
+
 -- Robustness
 H.check("unknown code skipped", Codec.Decode("1;pZZ5;pW250").player.width, 250)
 H.check("unknown scope skipped", Codec.Decode("1;qW250;pW260").player.width, 260)

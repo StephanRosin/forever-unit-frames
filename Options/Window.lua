@@ -291,6 +291,7 @@ local function runImport()
         showImportMessage(L["IMPORT_" .. err], "error")
         return
     end
+    ns.Storage.AllowMacroOverwrite()
     Config.Import(profile)
     Options.importArea:SetText("")
     showImportMessage(L.IMPORT_DONE, "accent")
@@ -311,7 +312,10 @@ end
 
 local function resetBlock(page)
     local block = newBlock(page)
-    local button = confirmButton(block, L.RESET_ALL, function() Config.ResetAll() end)
+    local button = confirmButton(block, L.RESET_ALL, function()
+        ns.Storage.AllowMacroOverwrite()
+        Config.ResetAll()
+    end)
     button:SetPoint("TOPLEFT", block, "TOPLEFT", INSET, -6)
     Options.resetAllButton = button
     function block:SetEnabled(on) button:SetEnabled(on) end

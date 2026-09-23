@@ -56,6 +56,7 @@ SlashCmdList.FOREVERUNITFRAMES = function(msg)
         status()
     elseif cmd == "reset" then
         if rest == "all" then
+            ns.Storage.AllowMacroOverwrite()
             ns.Config.ResetAll()
         elseif ns.Config.Profile()[rest] then
             ns.Config.ResetScope(rest)

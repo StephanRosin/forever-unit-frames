@@ -51,7 +51,7 @@ L.MACRO_COMBAT = "Macro backup skipped: cannot edit macros in combat."
 L.MACRO_FRAME_OPEN = "Macro backup skipped: close the macro window first."
 L.MACRO_TOO_LONG = "Macro backup skipped: profile too large to fit in macros."
 L.MACRO_NEWER = "Macro backup kept: it was written by a newer version of Forever Unit Frames."
-L.MACRO_UNREADABLE = "Macro backup kept: part of it could not be read. Please report this."
+L.MACRO_UNREADABLE = "Macro backup kept: part of it could not be read. /fuf reset all or a profile import replaces it."
 
 L.LOCKED_IN_COMBAT = "Frames cannot be moved in combat."
 L.UNLOCKED = "Frames unlocked. Drag them, then type /fuf lock."

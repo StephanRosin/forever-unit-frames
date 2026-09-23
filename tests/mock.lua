@@ -461,6 +461,7 @@ function M.Reset()
         return GetMacroIndexByName(name)
     end
     _G.DeleteMacro = function(index) table.remove(M.macros, index - 120) end
+
     _G.SlashCmdList = {}
     _G.UISpecialFrames = {}
     _G.C_AddOns = { GetAddOnMetadata = function() return "0.1.0" end }
@@ -512,8 +513,6 @@ function M.PressKey(frame, key)
     return frame._propagate or false
 end
 
--- Blizzard's macro window (load-on-demand in the client). Shown state is
--- driven by M.macroFrameShown; tests call its OnHide script to close it.
 -- The macros as a later session reads them: every body gets `trailer`
 -- appended (and CRLF line endings if `crlf`) until it is written again.
 function M.RoundTripMacros(trailer, crlf)
@@ -523,6 +522,8 @@ function M.RoundTripMacros(trailer, crlf)
     end
 end
 
+-- Blizzard's macro window (load-on-demand in the client). Shown state is
+-- driven by M.macroFrameShown; tests call its OnHide script to close it.
 function M.NewMacroFrame()
     local f = newWidget("Frame", "MacroFrame")
     function f:IsShown() return M.macroFrameShown end
