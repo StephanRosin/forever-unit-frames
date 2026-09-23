@@ -105,7 +105,7 @@ Settings.Define({ key = "titleClassIcon", code = "CL", scope = "inherit", type =
 -- inside horizontally and mostly above the top edge.
 Settings.Define({ key = "classIconSize", code = "KS", scope = "inherit", type = "int", min = 10, max = 48, default = 28 })
 Settings.Define({ key = "classIconX", code = "KX", scope = "inherit", type = "int", min = -64, max = 64, default = -6 })
-Settings.Define({ key = "classIconY", code = "KY", scope = "inherit", type = "int", min = -64, max = 64, default = 6 })
+Settings.Define({ key = "classIconY", code = "KY", scope = "inherit", type = "int", min = -64, max = 64, default = 2 })
 -- The badge's own round ring, independent of the frame border: thickness
 -- (0 turns it off, the icon then fills the badge) and colour.
 Settings.Define({ key = "classIconRing", code = "KR", scope = "inherit", type = "int", min = 0, max = 4, default = 2 })
