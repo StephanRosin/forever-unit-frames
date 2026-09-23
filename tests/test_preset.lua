@@ -34,3 +34,6 @@ H.checkTrue("defaults valid", S.Validate(S.Get("buffsMax"), C.Get("player", "buf
 local plain = H.LoadAddon()
 plain.Config.Use({})
 H.check("plain target width", plain.Config.Get("target", "width"), 220)
+
+-- Every media name in the preset is built in (no other addon needed).
+H.checkTrue("preset texture built in", ns.Media.StatusBar(C.Get("general", "barTexture")) == "Interface\\RaidFrame\\Raid-Bar-Hp-Fill")

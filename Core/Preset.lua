@@ -7,7 +7,8 @@ local _, ns = ...
 -- the default.
 local PRESET = {
     general = {
-        barTexture = "Blizzard Raid Bar",
+        -- Same file as LibSharedMedia's "Blizzard Raid Bar", built in.
+        barTexture = "Raid",
         borderStyle = "GOLD",
         classIconY = 0,
         fontOutline = "OUTLINE",
