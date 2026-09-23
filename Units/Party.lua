@@ -134,6 +134,11 @@ function Party.OnUnitChanged(button, unit)
     Single.UpdateAll(button)
 end
 
+-- What the options window outlines when Party is selected.
+function Party.HighlightTarget()
+    return Party.header
+end
+
 function Party.Create()
     if Party.header then return Party.header end
     local header = CreateFrame("Frame", Party.HEADER, UIParent, "SecureGroupHeaderTemplate")

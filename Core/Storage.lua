@@ -192,13 +192,20 @@ local function enabledFrames()
 end
 
 -- Blizzard's frames are already hidden for every frame that was on; one
--- the backup turns off only gets Blizzard's back after a /reload.
-local function hintReload(before)
+-- the backup turns off only gets Blizzard's back after a /reload. The
+-- player's castbar is a second such flag: Blizzard.Conceal hides it in
+-- response to a change (login, or castbarEnabled turning on) and never
+-- reveals it again on its own, so the same problem applies if the backup
+-- turns it back off.
+local function hintReload(before, beforeCastbar)
     for scope, was in pairs(before) do
         if was and not ns.Config.Get(scope, "enabled") then
             ns.Print(ns.L.RELOAD_FOR_BLIZZARD)
             return
         end
+    end
+    if beforeCastbar and not ns.Config.Get("player", "castbarEnabled") then
+        ns.Print(ns.L.RELOAD_FOR_BLIZZARD)
     end
 end
 
@@ -208,8 +215,9 @@ function tryRestore()
     local profile = fromString(str)
     if not profile then return false end
     local before = enabledFrames()
+    local beforeCastbar = ns.Config.Get("player", "castbarEnabled")
     ns.Config.Import(profile)   -- its CONFIG_CHANGED save is held or queued
-    hintReload(before)
+    hintReload(before, beforeCastbar)
     lastMacro = str             -- already in the macros, no need to rewrite it
     endWait("MacroBackup")
     ns.Print(ns.L.RESTORED_FROM_MACRO)

@@ -124,6 +124,7 @@ end
 -- Textures on a secure frame are created and anchored out of combat only.
 local function highlightFrame(scope)
     local unitFrame = ns.Frames[scope]
+    if scope == ns.Party.KEY then unitFrame = ns.Party.HighlightTarget() end
     if not unitFrame or InCombatLockdown() then return end
     local edges = unitFrame.optionsHighlight or createOutline(unitFrame)
     anchorOutline(unitFrame, edges)

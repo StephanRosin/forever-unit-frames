@@ -37,11 +37,15 @@ end
 local function fitLeftColumn(fontString, alwaysFull)
     fontString:SetWordWrap(false)
     fontString:SetJustifyH("LEFT")
-    -- A label keeps its natural width (the inherit marker follows it).
+    -- Width 0 is the natural width: a label whose text changes is measured
+    -- afresh instead of keeping an earlier limit. A label keeps its
+    -- natural width (the inherit marker follows it).
+    fontString:SetWidth(0)
     if alwaysFull or fontString:GetStringWidth() > LABEL_MAX_W then
         fontString:SetWidth(LABEL_MAX_W)
     end
 end
+Widgets.LABEL_MAX_W = LABEL_MAX_W
 
 local function newRow(parent, opts)
     local row = CreateFrame("Frame", nil, parent)
@@ -73,6 +77,10 @@ local function newRow(parent, opts)
         row.reset.text:SetText(L.RESET_OVERRIDE)
         row.reset:SetScript("OnClick", function() opts.inherit.clear() end)
         trackHover(row, row.reset)
+    end
+    function row:SetLabel(text)
+        row.label:SetText(text)
+        fitLeftColumn(row.label)
     end
     function row:RefreshInherit()
         if not opts.inherit then return end

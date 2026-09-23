@@ -99,3 +99,22 @@ M.chat = {}
 M.FireEvent("UPDATE_MACROS")
 H.check("restored width", ns.Config.Get("player", "width"), 300)
 H.check("no reload hint", table.concat(M.chat, "\n"):find(ns.L.RELOAD_FOR_BLIZZARD, 1, true), nil)
+
+-- A backup that turns the player castbar back off also asks for a
+-- /reload: Blizzard's own castbar was already hidden (in response to it
+-- being switched on before the backup arrived) and does not come back on
+-- its own. castbarEnabled defaults to false for the player, so a backup
+-- that leaves it unset is enough.
+ns = H.LoadAddon()
+H.checkTrue("setup: castbar-off backup", ns.MacroBackup.Write("1;pW300"))
+backup = M.macros
+ns = H.LoadAddon()
+_G.ForeverUnitFramesDB = nil
+M.FireEvent("PLAYER_LOGIN")
+ns.Config.Set("player", "castbarEnabled", true)
+M.macros = backup
+M.chat = {}
+M.FireEvent("UPDATE_MACROS")
+H.check("restored width (castbar case)", ns.Config.Get("player", "width"), 300)
+H.check("castbar turned back off", ns.Config.Get("player", "castbarEnabled"), false)
+H.checkTrue("reload hint for castbar", table.concat(M.chat, "\n"):find(ns.L.RELOAD_FOR_BLIZZARD, 1, true))
