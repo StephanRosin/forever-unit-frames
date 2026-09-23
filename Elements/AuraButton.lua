@@ -5,8 +5,11 @@ local _, ns = ...
 -- Buttons are made once per frame and reused; Elements/Auras.lua owns them.
 --
 -- Aura data may be secret. Fields are only handed to widgets (SetTexture,
--- SetText, SetCooldown...) or read through ns.Secrets; a field that is
--- secret and has no widget to take it is left out.
+-- SetText, SetCooldown...) or read through ns.Secrets. What cannot be
+-- shown from a secret field is asked of the client by aura instance ID,
+-- which returns display values: a count string, a duration object for the
+-- swipe, a dispel colour. Every such call is guarded; what the client
+-- refuses is left empty. A secret instance ID is never passed back.
 local AuraButton = {}
 ns.AuraButton = AuraButton
 
@@ -21,8 +24,29 @@ AuraButton.DISPEL_COLORS = {
     Poison = { 0.0, 0.6, 0.0 },
     NONE = { 0.8, 0.0, 0.0 },
 }
+-- The client's dispel type numbers, for the colour curve (x = number).
+-- Not documented in this build: the numbers of the spell data. Points
+-- are listed in rising order; the curve snaps, and 5 (the first number
+-- past these) and above get NONE again.
+local DISPEL_POINTS = { { 0, "NONE" }, { 1, "Magic" }, { 2, "Curse" }, { 3, "Disease" }, { 4, "Poison" },
+    { 5, "NONE" } }
+
 -- Icons are cropped a little: their own edge art would show inside ours.
 local CROP = 0.08
+
+-- The client's aura tooltip. Nothing when there is no aura behind the
+-- icon (a sample, a secret ID) or the client refuses.
+local function onEnter(self)
+    if not self.auraID then return end
+    GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT")
+    local method = self.isDebuff and GameTooltip.SetUnitDebuffByAuraInstanceID
+        or GameTooltip.SetUnitBuffByAuraInstanceID
+    if not pcall(method, GameTooltip, self.unit, self.auraID, self.filter) then GameTooltip:Hide() end
+end
+
+local function onLeave(self)
+    if GameTooltip:IsOwned(self) then GameTooltip:Hide() end
+end
 
 function AuraButton.Create(parent, isDebuff)
     local button = CreateFrame("Frame", nil, parent)
@@ -43,12 +67,26 @@ function AuraButton.Create(parent, isDebuff)
     button.count = button.cover:CreateFontString(nil, "OVERLAY")
     button:EnableMouse(true)
     button:SetMouseClickEnabled(false)
+    button:SetScript("OnEnter", onEnter)
+    button:SetScript("OnLeave", onLeave)
     button:Hide()
     return button
 end
 
 local function paintBorder(button, c)
     button.border:SetVertexColor(c[1], c[2], c[3], 1)
+end
+
+local dispelCurve
+local function getDispelCurve()
+    if dispelCurve then return dispelCurve end
+    dispelCurve = C_CurveUtil.CreateColorCurve()
+    if Enum and Enum.LuaCurveType then dispelCurve:SetType(Enum.LuaCurveType.Step) end
+    for _, point in ipairs(DISPEL_POINTS) do
+        local c = AuraButton.DISPEL_COLORS[point[2]]
+        dispelCurve:AddPoint(point[1], CreateColor(c[1], c[2], c[3], 1))
+    end
+    return dispelCurve
 end
 
 -- Size, fonts and countdown numbers; out of combat or on plain frames
@@ -82,33 +120,53 @@ local function forget(button)
     button.unit, button.auraID, button.filter = nil, nil, nil
 end
 
--- Stack count from a readable number; an unreadable one shows nothing.
+local function clientCount(button)
+    button.count:SetText(C_UnitAuras.GetAuraApplicationDisplayCount(button.unit, button.auraID, 2))
+end
+
+-- Stack count: a readable number, else the client's count string.
 local function showCount(button, aura)
     local n = Secrets.Number(aura.applications)
-    if n and n > 1 then
-        button.count:SetText(("%d"):format(n))
-    else
-        button.count:SetText("")
+    if n then
+        button.count:SetText(n > 1 and ("%d"):format(n) or "")
+        return
     end
+    if not (button.auraID and pcall(clientCount, button)) then button.count:SetText("") end
 end
 
--- Swipe and countdown from readable times; unreadable ones clear it.
+local function clientDuration(button)
+    button.cooldown:SetCooldownFromDurationObject(C_UnitAuras.GetAuraDuration(button.unit, button.auraID), true)
+end
+
+-- Swipe and countdown: readable times, else the client's duration object.
 local function showDuration(button, aura)
     local duration, expires = Secrets.Number(aura.duration), Secrets.Number(aura.expirationTime)
-    if duration and expires and duration > 0 then
-        button.cooldown:SetCooldown(expires - duration, duration)
-    else
-        button.cooldown:Clear()
+    if duration and expires then
+        if duration > 0 then
+            button.cooldown:SetCooldown(expires - duration, duration)
+        else
+            button.cooldown:Clear()
+        end
+        return
     end
+    if not (button.auraID and pcall(clientDuration, button)) then button.cooldown:Clear() end
 end
 
-local function dispelColor(name)
-    if Secrets.IsSecret(name) or type(name) ~= "string" then return AuraButton.DISPEL_COLORS.NONE end
-    return AuraButton.DISPEL_COLORS[name] or AuraButton.DISPEL_COLORS.NONE
+local function clientBorder(button)
+    local color = C_UnitAuras.GetAuraDispelTypeColor(button.unit, button.auraID, getDispelCurve())
+    button.border:SetVertexColor(color:GetRGBA())
 end
 
+-- Debuff border: the colour of a readable dispel type, else the client's
+-- colour from the curve, else NONE.
 local function showBorder(button, aura)
-    if button.isDebuff then paintBorder(button, dispelColor(aura.dispelName)) end
+    if not button.isDebuff then return end
+    local name = aura.dispelName
+    if not Secrets.IsSecret(name) then
+        paintBorder(button, type(name) == "string" and AuraButton.DISPEL_COLORS[name] or AuraButton.DISPEL_COLORS.NONE)
+        return
+    end
+    if not (button.auraID and pcall(clientBorder, button)) then paintBorder(button, AuraButton.DISPEL_COLORS.NONE) end
 end
 
 local function apply(button, unit, aura, filter)

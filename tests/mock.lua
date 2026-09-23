@@ -334,6 +334,7 @@ local function newWidget(kind, name, parent)
     -- Cooldown. _cooldown holds { start, duration } or { object = duration
     -- object }; nil when cleared.
     function w:SetCooldown(start, duration) self._cooldown = { start, duration } end
+    function w:SetCooldownFromDurationObject(duration) self._cooldown = { object = duration } end
     function w:Clear() self._cooldown = nil end
     function w:SetHideCountdownNumbers(v) self._hideNumbers = v end
     function w:GetCountdownFontString()
@@ -514,11 +515,88 @@ function M.Reset()
         end,
         CreateColorCurve = function()
             local c = { points = {} }
+            function c:SetType(t) self.type = t end
             function c:AddPoint(x, color) table.insert(self.points, { x, color }) end
             function c:Evaluate() return { GetRGB = function() return 1, 1, 1 end } end
             return c
         end,
     }
+
+    _G.Enum = {
+        LuaCurveType = { Linear = 0, Step = 1, Cosine = 2, Cubic = 3 },
+        UnitAuraSortRule = { Unsorted = 0, Default = 1, BigDefensive = 2, Expiration = 3, ExpirationOnly = 4,
+            Name = 5, NameOnly = 6 },
+    }
+
+    -- Auras: M.units[unit].auras lists { auraInstanceID, icon, applications,
+    -- dispelName, dispelType (the client's number), duration,
+    -- expirationTime, isHelpful, mine, dispellable }; any field may be a
+    -- secret. M.auraError makes every aura query raise, as the client does
+    -- when auras are locked for addons. A secret aura instance ID handed
+    -- back to the client raises too (tainted callers may not pass secrets).
+    M.auraError = false
+    local function refuseAuras()
+        if M.auraError then error("Auras cannot be accessed when secret while tainted", 3) end
+    end
+    local function auraByID(unit, id)
+        assert(not M.IsSecret(id), "secret aura instance ID passed back to the client")
+        local d = u(unit)
+        for _, a in ipairs(d and d.auras or {}) do
+            if M.Reveal(a.auraInstanceID) == id then return a end
+        end
+    end
+    -- The value comes back secret when the field it is made from is.
+    local function like(field, v)
+        if M.IsSecret(field) then return M.Secret(v) end
+        return v
+    end
+    _G.C_UnitAuras = {
+        GetAuraDuration = function(unit, id)
+            refuseAuras()
+            local a = auraByID(unit, id)
+            if a then return { _duration = a.duration, _expires = a.expirationTime } end
+        end,
+        GetAuraApplicationDisplayCount = function(unit, id, minCount)
+            refuseAuras()
+            local a = auraByID(unit, id)
+            if not a then return end
+            local n = M.Reveal(a.applications) or 0
+            return like(a.applications, n >= (minCount or 2) and tostring(n) or "")
+        end,
+        -- The colour of the curve point at the aura's dispel type (step
+        -- curves: the last point at or below it).
+        GetAuraDispelTypeColor = function(unit, id, curve)
+            refuseAuras()
+            local a = auraByID(unit, id)
+            local x = M.Reveal(a.dispelType) or 0
+            local color
+            for _, p in ipairs(curve.points) do
+                if p[1] <= x then color = p[2] end
+            end
+            local r, g, b, alpha = color.r, color.g, color.b, color.a or 1
+            return { GetRGBA = function()
+                return like(a.dispelType, r), like(a.dispelType, g), like(a.dispelType, b), like(a.dispelType, alpha)
+            end }
+        end,
+    }
+
+    -- Tooltip: M.tooltipAura records the last aura tooltip asked for.
+    M.tooltipAura = nil
+    _G.GameTooltip = newWidget("GameTooltip", "GameTooltip")
+    GameTooltip._shown = false
+    function GameTooltip:SetOwner(owner, anchor) self._owner, self._anchor = owner, anchor end
+    function GameTooltip:IsOwned(f) return self._owner == f end
+    function GameTooltip:Hide() self._shown = false; self._owner = nil end
+    local function auraTooltip(method)
+        GameTooltip[method] = function(self, unit, id, filter)
+            refuseAuras()
+            assert(not M.IsSecret(id), "secret aura instance ID passed to the tooltip")
+            M.tooltipAura = { method = method, unit = unit, id = id, filter = filter }
+            self._shown = true
+        end
+    end
+    auraTooltip("SetUnitBuffByAuraInstanceID")
+    auraTooltip("SetUnitDebuffByAuraInstanceID")
 
     -- CVars
     _G.C_CVar = {
