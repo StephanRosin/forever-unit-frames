@@ -38,7 +38,7 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 - Every position can be set by dragging (`/fuf unlock`) or as exact X/Y values.
 - Test mode shows sample auras, casts and a full party, so you can set everything up without a group.
 - Settings are stored compactly. They can be exported and imported as a string.
-- Settings survive client restarts: the addon keeps a small backup in character macros named "Forever Unit Frames backup – keep". Please don't delete these macros.
+- Settings survive client restarts: the addon keeps a small backup in character macros named "FUF Save 1", "FUF Save 2" and so on. Please don't delete them.
 
 ## Commands
 `/fuf` (options), `/fuf unlock`, `/fuf lock`, `/fuf status`, `/fuf reset <frame|all>`, `/fuf set <scope> <setting> <value>`
