@@ -21,6 +21,7 @@ Elements\Power.lua
 Elements\Texts.lua
 Elements\Portrait.lua
 Elements\Castbar.lua
+Elements\AuraButton.lua
 Units\Events.lua
 Units\Single.lua
 Units\Party.lua

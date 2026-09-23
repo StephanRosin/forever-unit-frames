@@ -331,6 +331,18 @@ local function newWidget(kind, name, parent)
         fs._layer, fs._sublevel = layer or "ARTWORK", 0
         return fs
     end
+    -- Cooldown. _cooldown holds { start, duration } or { object = duration
+    -- object }; nil when cleared.
+    function w:SetCooldown(start, duration) self._cooldown = { start, duration } end
+    function w:Clear() self._cooldown = nil end
+    function w:SetHideCountdownNumbers(v) self._hideNumbers = v end
+    function w:GetCountdownFontString()
+        self._countdown = self._countdown or newWidget("FontString", nil, self)
+        return self._countdown
+    end
+    -- Mouse: motion (tooltips) and clicks can be switched separately.
+    function w:SetMouseClickEnabled(v) self._clickEnabled = v end
+    function w:SetMouseMotionEnabled(v) self._motionEnabled = v end
     -- PlayerModel
     function w:SetUnit(unit) self._modelUnit = unit; return true end
     function w:ClearModel() self._modelUnit = nil; self._cleared = true end
