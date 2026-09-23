@@ -69,5 +69,5 @@ function Storage.Save()
         attached.profile = copy(profile)
     end
     for _, p in ipairs(providers) do pcall(p.save, encoded) end
-    ns.AfterCombat("macroBackup", function() ns.MacroBackup.Write(encoded) end)
+    ns.AfterCombat("macroBackup", function() pcall(ns.MacroBackup.Write, encoded) end)
 end

@@ -10,9 +10,22 @@ local PREFIX = "FUF Save "
 local MAX_MACROS = 2
 local BODY_LIMIT = 255
 local ICON = "INV_MISC_QUESTIONMARK"
+local MARK = "#Forever Unit Frames backup"
+
+local lastError
+
+function MacroBackup.LastError()
+    return lastError
+end
 
 local function header(i, n)
-    return ("#Forever Unit Frames backup %d/%d - keep\n"):format(i, n)
+    return ("%s %d/%d - keep\n"):format(MARK, i, n)
+end
+
+-- We only ever touch a macro that we made ourselves: empty, or already
+-- carrying our marker. Anything else belongs to the player.
+local function isOwned(body)
+    return body == "" or body:find(MARK, 1, true) == 1
 end
 
 local function indexOf(i)
@@ -21,18 +34,40 @@ local function indexOf(i)
     return nil
 end
 
-function MacroBackup.Read()
-    local chunks = {}
-    for i = 1, MAX_MACROS do
-        local idx = indexOf(i)
-        if not idx then break end
-        local body = GetMacroBody(idx) or ""
-        local chunk = body:match("^#[^\n]*\n(.*)$")
-        if not chunk or chunk == "" then break end
-        chunks[#chunks + 1] = chunk
+-- Forever's client value first, then whatever the global constant says,
+-- then a conservative guess.
+local function maxCharMacros()
+    if Constants and Constants.MacroConsts and Constants.MacroConsts.MAX_CHARACTER_MACROS then
+        return Constants.MacroConsts.MAX_CHARACTER_MACROS
     end
-    if #chunks == 0 then return nil end
-    return table.concat(chunks)
+    if MAX_CHARACTER_MACROS then return MAX_CHARACTER_MACROS end
+    return 18
+end
+
+local HEADER_PATTERN = "^#Forever Unit Frames backup (%d+)/(%d+) %- keep\n(.*)$"
+
+local function parseHeader(body)
+    local i, n, chunk = (body or ""):match(HEADER_PATTERN)
+    if not i then return nil end
+    return tonumber(i), tonumber(n), chunk
+end
+
+-- An incomplete backup (a missing chunk, a foreign macro in the middle) is
+-- worthless, so it counts as no backup at all rather than a corrupt one.
+function MacroBackup.Read()
+    local idx1 = indexOf(1)
+    if not idx1 then return nil end
+    local i1, n, chunk1 = parseHeader(GetMacroBody(idx1))
+    if not i1 or i1 ~= 1 or not n or n < 1 or n > MAX_MACROS then return nil end
+    local chunks = { chunk1 }
+    for i = 2, n do
+        local idx = indexOf(i)
+        if not idx then return nil end
+        local ii, nn, chunk = parseHeader(GetMacroBody(idx))
+        if ii ~= i or nn ~= n then return nil end
+        chunks[i] = chunk
+    end
+    return table.concat(chunks, "", 1, n)
 end
 
 local function split(str)
@@ -47,28 +82,52 @@ local function split(str)
     return chunks
 end
 
+-- All checks happen before any Create/EditMacro call: either the whole
+-- backup lands, or nothing is touched.
 function MacroBackup.Write(str)
-    if InCombatLockdown() then return false end
-    if MacroFrame and MacroFrame.IsShown and MacroFrame:IsShown() then return false end
+    lastError = nil
+    if InCombatLockdown() then lastError = "MACRO_COMBAT"; return false end
+    if MacroFrame and MacroFrame.IsShown and MacroFrame:IsShown() then
+        lastError = "MACRO_FRAME_OPEN"
+        return false
+    end
     local chunks = split(str)
-    if #chunks > MAX_MACROS then return false end
+    if #chunks > MAX_MACROS then lastError = "MACRO_TOO_LONG"; return false end
 
-    local maxChar = Constants and Constants.MacroConsts and Constants.MacroConsts.MAX_CHARACTER_MACROS or 18
+    -- Pass 1: look, never touch. Reject a foreign macro anywhere we would
+    -- write or blank, and count how many brand new macros we would need.
+    local idx, newNeeded = {}, 0
     for i = 1, MAX_MACROS do
-        local idx = indexOf(i)
+        idx[i] = indexOf(i)
+        if idx[i] then
+            if not isOwned(GetMacroBody(idx[i]) or "") then
+                lastError = "MACRO_FOREIGN"
+                return false
+            end
+        elseif chunks[i] then
+            newNeeded = newNeeded + 1
+        end
+    end
+
+    local _, numChar = GetNumMacros()
+    if numChar + newNeeded > maxCharMacros() then
+        lastError = "MACRO_FULL"
+        return false
+    end
+
+    -- Pass 2: everything checked out, now write.
+    for i = 1, MAX_MACROS do
         local chunk = chunks[i]
         if chunk then
             local body = header(i, #chunks) .. chunk
-            if idx then
-                EditMacro(idx, PREFIX .. i, ICON, body)
+            if idx[i] then
+                EditMacro(idx[i], PREFIX .. i, ICON, body)
             else
-                local _, numChar = GetNumMacros()
-                if numChar >= maxChar then return false end
                 CreateMacro(PREFIX .. i, ICON, body, true)
             end
-        elseif idx then
+        elseif idx[i] then
             -- Fewer chunks than before: blank the leftover macro so Read stops.
-            EditMacro(idx, PREFIX .. i, ICON, header(i, #chunks))
+            EditMacro(idx[i], PREFIX .. i, ICON, header(i, #chunks))
         end
     end
     return true
