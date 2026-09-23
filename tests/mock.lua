@@ -534,6 +534,10 @@ local function newWidget(kind, name, parent)
     -- other.
     function w:SetTexture(t, wrapH, wrapV) self._texture = t; self._atlas = nil; self._wrap = { wrapH, wrapV } end
     function w:SetHorizTile(v) self._horizTile = v end
+    function w:SetBlendMode(mode)
+        assert(({ DISABLE = 1, BLEND = 1, ALPHAKEY = 1, ADD = 1, MOD = 1 })[mode], "SetBlendMode: bad mode")
+        self._blend = mode
+    end
     function w:SetVertTile(v) self._vertTile = v end
     -- Masks (SimpleTextureAPI): only mask textures can be added.
     function w:AddMaskTexture(mask)
@@ -842,6 +846,16 @@ function M.Reset()
     _G.UnitName = function(unit) local d = u(unit); if d then return d.name, d.surname end end
     _G.UnitLevel = function(unit) local d = u(unit); return d and d.level or 0 end
     _G.UnitClass = function(unit) local d = u(unit); if d then return d.className, d.class end end
+    -- Takes secret class tokens (SecretArguments = AllowedWhenTainted); a
+    -- secret token gives a colour of secret components.
+    _G.C_ClassColor = {
+        GetClassColor = function(token)
+            local c = RAID_CLASS_COLORS[M.Reveal(token)]
+            assert(c, "GetClassColor: unknown class")
+            if not M.IsSecret(token) then return { r = c.r, g = c.g, b = c.b } end
+            return { r = M.Secret(c.r), g = M.Secret(c.g), b = M.Secret(c.b) }
+        end,
+    }
     _G.UnitIsPlayer = function(unit) local d = u(unit); return d and d.isPlayer or false end
     _G.UnitIsVisible = function(unit) local d = u(unit); return d ~= nil and d.visible ~= false end
     -- Records the last unit drawn into each texture.

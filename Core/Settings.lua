@@ -161,8 +161,8 @@ Settings.Define({ key = "width", code = "W", scope = "frame", type = "int", min 
 Settings.Define({ key = "height", code = "H", scope = "frame", type = "int", min = 8, max = 200,
     default = { player = 46, target = 46, focus = 36, party = 46, _ = 28 } })
 -- Rows, top to bottom: title, health, power; each a share of the frame
--- height, the rest is the gap between health and power. A title of 0 is
--- the two-row layout.
+-- height, and together they fill it (Layout.Rows). A title of 0 is the
+-- two-row layout.
 Settings.Define({ key = "titlePercent", code = "TP", scope = "frame", type = "int", min = 0, max = 60,
     default = { player = 30, target = 30, focus = 30, party = 30, _ = 0 } })
 Settings.Define({ key = "healthPercent", code = "HP", scope = "frame", type = "int", min = 10, max = 100,

@@ -19,17 +19,6 @@ function Single.BorderSize(scope)
     return ns.Border.Size(scope)
 end
 
--- The seam between health and power on the pixel grid: what the row
--- shares leave over, 0 without a power row. A docked castbar keeps the
--- same seam to the frame.
-function Single.RowGap(scope)
-    local powerOn = Config.Get(scope, "powerEnabled")
-    local _, _, gap, ph = Layout.Rows(Config.Get(scope, "height"), Config.Get(scope, "titlePercent"),
-        Config.Get(scope, "healthPercent"), Config.Get(scope, "powerPercent"), powerOn)
-    if not (powerOn and ph > 0) then return 0 end
-    return Pixel.Snap(gap)
-end
-
 local function place(frame)
     local scope = frame.key
     local w, h = Single.Size(scope)
@@ -44,20 +33,19 @@ local function place(frame)
 end
 
 -- The split is worked out in whole units, then put on the pixel grid:
--- title row, power bar and gap are snapped, health takes the rest of the
+-- title row and power bar are snapped, health takes the rest of the
 -- (snapped) frame height, so the rows always fill the frame exactly.
 local function layoutBars(frame)
     local scope = frame.key
     local _, height = Single.Size(scope)
     local powerOn = Config.Get(scope, "powerEnabled")
-    local th, _, _, ph = Layout.Rows(Config.Get(scope, "height"), Config.Get(scope, "titlePercent"),
+    local th, _, ph = Layout.Rows(Config.Get(scope, "height"), Config.Get(scope, "titlePercent"),
         Config.Get(scope, "healthPercent"), Config.Get(scope, "powerPercent"), powerOn)
     local powerShown = powerOn and ph > 0
     local pixel = Pixel.Snap(1, nil, 1)
     local titleH = th > 0 and Pixel.Snap(th, nil, 1) or 0
     local powerH = powerShown and Pixel.Snap(ph, nil, 1) or 0
-    local gap = Single.RowGap(scope)
-    local healthH = math.max(height - titleH - gap - powerH, pixel)
+    local healthH = math.max(height - titleH - powerH, pixel)
     local left, right = Layout.PortraitInsets(Config.Get(scope, "portraitMode"), height)
     local title = frame.title
     title:ClearAllPoints()
@@ -86,7 +74,6 @@ local function layoutBars(frame)
         frame.power:SetHeight(powerShown and powerH or pixel)
         frame.power:SetShown(powerShown)
     end
-    frame.gap = gap
 end
 
 local function applyEnabled(frame)

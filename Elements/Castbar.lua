@@ -43,13 +43,6 @@ local function barHeight(scope)
 end
 Castbar.Height = barHeight
 
--- Gap between frame and a docked castbar: one more row of the frame, so
--- the same seam as between its own health and power rows. Frame and
--- castbar sit in the unit's one border (Elements/Shape.lua).
-function Castbar.Gap(scope)
-    return ns.Single.RowGap(scope)
-end
-
 local function now() return GetTime() * 1000 end
 
 local function read(unit, channel)
@@ -220,14 +213,14 @@ function Castbar.Placement(scope)
     return Config.Get(scope, "castbarDock")
 end
 
--- Room a docked castbar takes next to its frame: gap, bar and the unit's
+-- Room a docked castbar takes next to its frame: the bar and the unit's
 -- outer border beyond it. Zero when the castbar is off or detached.
 function Castbar.DockedDepth(scope)
     if not Castbar.Applies(scope) or not Config.Get(scope, "castbarEnabled")
         or Castbar.Placement(scope) == "DETACHED" then
         return 0
     end
-    return Castbar.Gap(scope) + barHeight(scope) + ns.Border.Extent(scope)
+    return barHeight(scope) + ns.Border.Extent(scope)
 end
 
 -- Whole castbar size, icon included: the frame's width.
@@ -236,9 +229,10 @@ local function size(scope)
 end
 
 -- The icon sits left of the bar, inside the castbar's own rectangle.
+-- Docked, the bar is one more row of the frame: flush against it, inside
+-- the unit's one border (Elements/Shape.lua).
 local function anchor(bar, frame, scope, inset)
     local placement = Castbar.Placement(scope)
-    local gap = Castbar.Gap(scope)
     bar:ClearAllPoints()
     if placement == "DETACHED" then
         if bar.mover then
@@ -254,11 +248,11 @@ local function anchor(bar, frame, scope, inset)
             bar:SetWidth(w - inset)
         end
     elseif placement == "ABOVE" then
-        bar:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", inset, gap)
-        bar:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", 0, gap)
+        bar:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", inset, 0)
+        bar:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", 0, 0)
     else
-        bar:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", inset, -gap)
-        bar:SetPoint("TOPRIGHT", frame, "BOTTOMRIGHT", 0, -gap)
+        bar:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", inset, 0)
+        bar:SetPoint("TOPRIGHT", frame, "BOTTOMRIGHT", 0, 0)
     end
 end
 

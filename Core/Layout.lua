@@ -6,11 +6,12 @@ ns.Layout = Layout
 
 local function round(v) return math.floor(v + 0.5) end
 
--- Split a frame height into title row, health bar, gap and power bar.
--- Percentages are of the whole frame; whatever they leave over becomes the
--- gap between health and power. A title of 0 % means no title row; with
--- the power bar off, health takes everything below the title. Health keeps
--- at least 1: the title gives way first.
+-- Split a frame height into title row, health bar and power bar; the three
+-- always fill the frame. Percentages are shares of the whole frame. Room
+-- they leave over goes to health and power in proportion to their shares;
+-- shares that do not fit shrink health (power keeps its share). A title of
+-- 0 % means no title row; with the power bar off, health takes everything
+-- below the title. Health keeps at least 1: the title gives way first.
 function Layout.Rows(height, titlePercent, healthPercent, powerPercent, powerEnabled)
     local powered = powerEnabled and powerPercent > 0
     local powerH = powered and math.max(1, math.floor(height * powerPercent / 100)) or 0
@@ -19,21 +20,20 @@ function Layout.Rows(height, titlePercent, healthPercent, powerPercent, powerEna
         titleH = math.max(1, round(height * titlePercent / 100))
         titleH = math.max(0, math.min(titleH, height - powerH - 1))
     end
+    local rest = height - titleH
     if not powered then
-        return titleH, height - titleH, 0, 0
+        return titleH, rest, 0
     end
-    local healthH = round(height * healthPercent / 100)
-    if titleH + healthH + powerH > height then
-        healthH = height - titleH - powerH
+    if round(height * healthPercent / 100) + powerH < rest then
+        powerH = math.max(1, math.floor(rest * powerPercent / (healthPercent + powerPercent)))
     end
-    healthH = math.max(1, healthH)
-    return titleH, healthH, height - titleH - healthH - powerH, powerH
+    return titleH, math.max(1, rest - powerH), powerH
 end
 
--- The two-row split (no title row): health, gap, power.
+-- The two-row split (no title row): health, power.
 function Layout.Bars(height, healthPercent, powerPercent, powerEnabled)
-    local _, healthH, gap, powerH = Layout.Rows(height, 0, healthPercent, powerPercent, powerEnabled)
-    return healthH, gap, powerH
+    local _, healthH, powerH = Layout.Rows(height, 0, healthPercent, powerPercent, powerEnabled)
+    return healthH, powerH
 end
 
 -- Width of the overheal lane at the end of a health bar of barWidth: 8 %,

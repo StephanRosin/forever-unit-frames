@@ -111,7 +111,7 @@ H.check("no shadow by default", box.shadow[1]:IsShown(), false)
 
 -- The frame ring's holder covers the frame; the unit box takes in the
 -- docked castbar's slot for good (target: docked below).
-local reach = ns.Castbar.Gap("target") + ns.Castbar.Height("target")
+local reach = ns.Castbar.Height("target")
 H.check("frame holder on the frame", box._allPoints, f)
 H.check("block holder on the unit box", f.blockRing._allPoints, unit)
 H.check("unit box: the castbar's slot below", point(unit, "BOTTOMRIGHT")[5], -reach)
@@ -307,9 +307,8 @@ M.units.target = { name = "Foe", health = 1, healthMax = 1,
 M.FireEvent("UNIT_SPELLCAST_START", "target", "c1", 1)
 H.checkTrue("casting: one block", joined())
 H.check("docked castbar: no border of its own", bar.border == nil or not bar.border[1]:IsShown(), true)
--- One more row of the frame: the same seam as between its own rows.
-H.check("docked seam: the rows' gap", ns.Castbar.Gap("target"), f.gap)
-H.check("docked castbar right under the frame", point(bar, "TOPLEFT")[5], -f.gap)
+-- One more row of the frame, flush against it.
+H.check("docked castbar right under the frame", point(bar, "TOPLEFT")[5], 0)
 M.units.target.cast = nil
 M.FireEvent("UNIT_SPELLCAST_STOP", "target", "c1", 1)
 H.checkTrue("cast over: the frame alone again", apart())
@@ -365,7 +364,7 @@ C.Set("target", "castbarPosition", "BELOW")
 
 -- Room for the border in the docked depth (party spacing uses it).
 H.check("docked depth counts the whole ring", ns.Castbar.DockedDepth("target"),
-    ns.Castbar.Gap("target") + ns.Castbar.Height("target") + 6)
+    ns.Castbar.Height("target") + 6)
 
 -- The radius never exceeds half the box's shorter side.
 H.check("clamp helper", ns.Corners.Clamp(12, 220, 8), 4)

@@ -36,20 +36,34 @@ function Health.ReactionColor(unit)
 end
 
 -- r, g, b of a player's class, or nothing (not a player, class unknown).
+-- The class token is secret where the unit's identity is (target of
+-- target in combat): it cannot index RAID_CLASS_COLORS, but the client's
+-- C_ClassColor takes it as it is. Its colour may then be secret too and
+-- is only ever handed to widgets.
 function Health.ClassColor(unit)
     if not Secrets.Bool(UnitIsPlayer, unit) then return end
-    local ok, c = pcall(function()
+    local ok, r, g, b = pcall(function()
         local _, class = UnitClass(unit)
-        return RAID_CLASS_COLORS[class]
+        if type(class) == "nil" then return end
+        if not Secrets.IsSecret(class) then
+            local c = RAID_CLASS_COLORS[class]
+            if c then return c.r, c.g, c.b end
+            return
+        end
+        if C_ClassColor and C_ClassColor.GetClassColor then
+            local c = C_ClassColor.GetClassColor(class)
+            return c.r, c.g, c.b
+        end
     end)
-    if ok and c then return c.r, c.g, c.b end
+    if ok and type(r) ~= "nil" then return r, g, b end
 end
 
 -- Class colour for players, reaction colour for everyone else.
 function Health.UnitColor(unit, mode)
     if mode == "CLASS" then
         local r, g, b = Health.ClassColor(unit)
-        if r then return r, g, b end
+        -- Presence by type(): the colour may be secret.
+        if type(r) ~= "nil" then return r, g, b end
     end
     local c = Health.ReactionColor(unit)
     return c[1], c[2], c[3]

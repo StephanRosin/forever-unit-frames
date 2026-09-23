@@ -22,14 +22,13 @@ H.check("party title text", S.Default(S.Get("titleText"), "party"), "NAME_LEVEL"
 H.check("player health left", S.Default(S.Get("textHealthLeft"), "player"), "CURRENT_MAX")
 H.check("party health left shows a value, not the name", S.Default(S.Get("textHealthLeft"), "party"), "NONE")
 
--- Layout maths: title, health, gap, power.
+-- Layout maths: title, health, power (more in test_rows_fill.lua).
 local function rows(...) return table.concat({ Lay.Rows(...) }, ",") end
-H.check("three rows", rows(46, 30, 45, 25, true), "14,21,0,11")
-H.check("gap is the rest", rows(50, 20, 40, 20, true), "10,20,10,10")
-H.check("no title: two rows", rows(40, 0, 75, 25, true), "0,30,0,10")
-H.check("power off: health takes the rest", rows(46, 30, 45, 25, false), "14,32,0,0")
-H.check("too much: title gives way", rows(20, 60, 50, 50, true), "9,1,0,10")
-H.check("two-row helper unchanged", table.concat({ Lay.Bars(46, 75, 25, true) }, ","), "35,0,11")
+H.check("three rows", rows(46, 30, 45, 25, true), "14,21,11")
+H.check("no title: two rows", rows(40, 0, 75, 25, true), "0,30,10")
+H.check("power off: health takes the rest", rows(46, 30, 45, 25, false), "14,32,0")
+H.check("too much: title gives way", rows(20, 60, 50, 50, true), "9,1,10")
+H.check("two-row helper unchanged", table.concat({ Lay.Bars(46, 75, 25, true) }, ","), "35,11")
 
 _G.ForeverUnitFramesDB = nil
 M.FireEvent("PLAYER_LOGIN")
