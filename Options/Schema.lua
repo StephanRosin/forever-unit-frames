@@ -19,6 +19,7 @@ Schema.FRAME = {
         { id = "frame", keys = { "enabled" } },
         { id = "size", keys = { "width", "height" } },
         { id = "barHeights", keys = { "healthPercent", "powerPercent", "powerEnabled" } },
+        { id = "group", keys = { "partyOrientation", "partySpacing", "partyShowPlayer", "partyShowSolo" } },
         { id = "position", keys = { "x", "y" } },
     } },
     { id = "bars", sections = {

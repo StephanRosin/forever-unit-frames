@@ -60,7 +60,12 @@ M.templates = {
 -- child creation from the template attribute, unit assignment through
 -- SetAttribute("unit"), and updates on show, attribute change and roster
 -- change while shown.
+-- Like the client, shown buttons are only SetPoint'ed (never cleared): a
+-- button keeps an anchor from an earlier layout on another point. Only
+-- unused buttons lose their anchors. The header sizes itself from child1
+-- as it is at layout time.
 local OPPOSITE = { TOP = "BOTTOM", BOTTOM = "TOP", LEFT = "RIGHT", RIGHT = "LEFT" }
+local MULTIPLIER = { TOP = { 0, -1 }, BOTTOM = { 0, 1 }, LEFT = { 1, 0 }, RIGHT = { -1, 0 } }
 
 local function groupHeaderUpdate(header)
     local a = header._attr
@@ -82,7 +87,6 @@ local function groupHeaderUpdate(header)
     local previous
     for i, unit in ipairs(units) do
         local child = a["child" .. i]
-        child:ClearAllPoints()
         if previous then
             child:SetPoint(point, previous, OPPOSITE[point], a.xOffset or 0, a.yOffset or 0)
         else
@@ -99,6 +103,16 @@ local function groupHeaderUpdate(header)
         child:ClearAllPoints()
         child:SetAttribute("unit", nil)
         i = i + 1
+    end
+    local xm, ym = MULTIPLIER[point][1], MULTIPLIER[point][2]
+    local bw, bh = a.child1:GetWidth(), a.child1:GetHeight()
+    local n = #units
+    if n > 0 then
+        header:SetWidth(math.abs(xm) * (n - 1) * bw + (n - 1) * (a.xOffset or 0) * xm + bw)
+        header:SetHeight(math.abs(ym) * (n - 1) * bh + (n - 1) * (a.yOffset or 0) * ym + bh)
+    else
+        header:SetWidth(math.max(math.abs(ym) * bw, 0.1))
+        header:SetHeight(math.max(math.abs(xm) * bh, 0.1))
     end
     M.headerUpdates = M.headerUpdates + 1
 end
@@ -150,7 +164,16 @@ local function newWidget(kind, name, parent)
     function w:GetWidth() return self._w end
     function w:GetHeight() return self._h end
     function w:ClearAllPoints() self._points = {} end
-    function w:SetPoint(...) table.insert(self._points, { ... }) end
+    -- Setting a point that is already anchored replaces that anchor.
+    function w:SetPoint(point, ...)
+        for i, p in ipairs(self._points) do
+            if p[1] == point then
+                self._points[i] = { point, ... }
+                return
+            end
+        end
+        table.insert(self._points, { point, ... })
+    end
     function w:GetPoint(i) local p = self._points[i or 1]; if p then return unpack(p) end end
     function w:GetCenter() return self._cx or 0, self._cy or 0 end
     -- OnShow/OnHide fire on a real change of the frame's own state (the

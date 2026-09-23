@@ -79,6 +79,20 @@ H.check("disabled: header hidden", header:IsShown(), false)
 ns.Config.Set("party", "enabled", true)
 H.checkTrue("enabled again: header shown", header:IsShown())
 
+-- The header only SetPoints shown buttons; switching orientation must not
+-- leave a button anchored on both its old and its new point.
+ns.Config.Set("party", "partyOrientation", "HORIZONTAL")
+for i, b in ipairs({ b1, b2, b3 }) do
+    H.check("horizontal: button " .. i .. " has one anchor", #b._points, 1)
+    H.check("horizontal: button " .. i .. " anchored left", b:GetPoint(1), "LEFT")
+end
+ns.Config.Set("party", "partyOrientation", "VERTICAL")
+for i, b in ipairs({ b1, b2, b3 }) do
+    H.check("vertical again: button " .. i .. " has one anchor", #b._points, 1)
+    H.check("vertical again: button " .. i .. " anchored top", b:GetPoint(1), "TOP")
+end
+H.check("header width = button width", header:GetWidth(), 180)
+
 -- Leaving the group clears the buttons.
 M.SetGroup({})
 H.check("left group: unit cleared", b1:GetAttribute("unit"), nil)
@@ -90,3 +104,20 @@ _G.ForeverUnitFramesDB = nil
 M.FireEvent("PLAYER_LOGIN")
 H.checkTrue("login: header built", ns.Party.header)
 H.checkTrue("login: header shown", ns.Party.header:IsShown())
+
+-- Joining in combat from solo: the header sizes itself from child 1 while
+-- it still has its XML size. After combat the block is laid out again, so
+-- the header matches the configured size and the buttons stay centred.
+ns = H.LoadAddon()
+ns.Config.Use({})
+ns.Single.CreateAll()
+ns.Config.Set("party", "width", 200)
+header = ns.Party.Create()
+M.units.party1 = { name = "Ann", health = 5, healthMax = 10 }
+M.combat = true
+M.SetGroup({ "party1" })
+H.check("combat join from solo: member assigned", header:GetAttribute("child1"):GetAttribute("unit"), "party1")
+M.SetCombat(false)
+H.check("combat join from solo: button width", header:GetAttribute("child1"):GetWidth(), 200)
+H.check("combat join from solo: header width", header:GetWidth(), 200)
+H.check("combat join from solo: header height", header:GetHeight(), 36)
