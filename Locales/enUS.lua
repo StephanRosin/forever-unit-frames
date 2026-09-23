@@ -35,6 +35,7 @@ L.MACRO_FOREIGN = "Macro backup skipped: a macro slot is used by another macro."
 L.MACRO_COMBAT = "Macro backup skipped: cannot edit macros in combat."
 L.MACRO_FRAME_OPEN = "Macro backup skipped: close the macro window first."
 L.MACRO_TOO_LONG = "Macro backup skipped: profile too large to fit in macros."
+L.MACRO_NEWER = "Macro backup kept: it was written by a newer version of Forever Unit Frames."
 
 L.LOCKED_IN_COMBAT = "Frames cannot be moved in combat."
 L.UNLOCKED = "Frames unlocked. Drag them, then type /fuf lock."

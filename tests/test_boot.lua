@@ -270,3 +270,48 @@ H.check("SV at login: no waiting", ns.Storage.Source(), "SavedVariables")
 ns.Config.Set("player", "width", 251)
 M.RunTimers(1)
 H.check("SV at login: saving not held back", ForeverUnitFramesDB.profile.player.width, 251)
+
+-- UPDATE_MACROS before PLAYER_LOGIN: no profile is in use yet, so nothing
+-- is restored or written; login then loads the backup normally.
+ns = H.LoadAddon()
+_G.ForeverUnitFramesDB = nil
+writes = countWrites()
+M.macros = backup310()
+M.FireEvent("ADDON_LOADED", "ForeverUnitFrames")
+H.checkTrue("UPDATE_MACROS before login: no error", pcall(M.FireEvent, "UPDATE_MACROS"))
+H.check("UPDATE_MACROS before login: no profile yet", ns.Config.Profile(), nil)
+H.checkTrue("MacroFrame hide before login: no error",
+    pcall(MacroFrame:GetScript("OnHide"), MacroFrame))
+H.check("before login: nothing written", writes.macro, 0)
+M.FireEvent("PLAYER_LOGIN")
+H.check("before login, then login: from backup", ns.Storage.Source(), "MacroBackup")
+H.check("before login, then login: value", ns.Config.Get("player", "width"), 310)
+ns.Config.Set("player", "width", 311)
+M.RunTimers()
+H.check("before login, then login: saving works", ns.MacroBackup.Read(), "1;pW311")
+
+-- A backup written by a newer version is never overwritten.
+ns = H.LoadAddon()
+H.checkTrue("setup: newer backup", ns.MacroBackup.Write("9;pW400"))
+local newerMacros = M.macros
+ns = H.LoadAddon()
+_G.ForeverUnitFramesDB = nil
+M.macros = newerMacros
+writes = countWrites()
+M.chat = {}
+M.FireEvent("PLAYER_LOGIN")
+M.RunTimers()
+H.check("newer backup: defaults kept", ns.Config.Get("player", "width"), 220)
+H.check("newer backup: source defaults", ns.Storage.Source(), "Defaults")
+ns.Config.Set("player", "width", 290)
+M.RunTimers()
+M.FireEvent("PLAYER_LOGOUT")
+H.check("newer backup: macros untouched", ns.MacroBackup.Read(), "9;pW400")
+H.check("newer backup: no macro write", writes.macro, 0)
+H.check("newer backup: SV still saved", ForeverUnitFramesDB.profile.player.width, 290)
+H.check("newer backup: reported", ns.Storage.MacroError(), "MACRO_NEWER")
+H.checkTrue("newer backup: message shown", chatHas(ns.L.MACRO_NEWER))
+H.check("newer backup: message text", ns.L.MACRO_NEWER,
+    "Macro backup kept: it was written by a newer version of Forever Unit Frames.")
+H.check("newer backup: Write refuses", ns.MacroBackup.Write("1;pW1"), false)
+H.check("newer backup: Write error", ns.MacroBackup.LastError(), "MACRO_NEWER")

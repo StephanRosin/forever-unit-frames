@@ -93,6 +93,13 @@ function MacroBackup.Write(str)
     end
     local chunks = split(str)
     if #chunks > MAX_MACROS then lastError = "MACRO_TOO_LONG"; return false end
+    -- A backup in a format we cannot read was written by a newer version:
+    -- it is kept, never replaced by what this version knows.
+    local existing = MacroBackup.Read()
+    if existing then
+        local _, err = ns.Codec.Decode(existing)
+        if err == "CODEC_VERSION" then lastError = "MACRO_NEWER"; return false end
+    end
 
     -- Pass 1: look, never touch. Reject a foreign macro anywhere we would
     -- write or blank, and count how many brand new macros we would need.

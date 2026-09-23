@@ -91,9 +91,10 @@ end
 -- A readable backup this session has neither loaded nor written must never
 -- be overwritten: it may have arrived after the wait for macros timed out.
 -- True while such a backup could still turn up (we run on defaults and have
--- not touched the macros yet).
+-- not touched the macros yet). Before PLAYER_LOGIN no profile is in use and
+-- nothing may be restored into it.
 local function backupUnclaimed()
-    return source == "Defaults" and lastMacro == nil
+    return source == "Defaults" and lastMacro == nil and ns.Config.Profile() ~= nil
 end
 
 local tryRestore  -- defined with the wait below
@@ -186,8 +187,8 @@ function tryRestore()
     local str = ns.MacroBackup.Read()
     local profile = fromString(str)
     if not profile then return false end
-    lastMacro = str             -- already in the macros, no need to rewrite it
     ns.Config.Import(profile)   -- its CONFIG_CHANGED save is held or queued
+    lastMacro = str             -- already in the macros, no need to rewrite it
     endWait("MacroBackup")
     ns.Print(ns.L.RESTORED_FROM_MACRO)
     return true
