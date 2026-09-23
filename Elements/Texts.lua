@@ -36,13 +36,54 @@ local function maximum(unit, kind)
     return UnitPowerMax(unit)
 end
 
-function Texts.Apply(fs, tag, unit, kind)
+-- Unit names. UnitName returns the first name and, when the unit has one,
+-- the secondary name (surname); with regional unique names the first value
+-- may itself be "First<separator>Surname". Names can be secret: they are
+-- only passed to the font string, never joined, matched or compared.
+local function separator()
+    local consts = Constants and Constants.CharacterNameSeparatorConsts
+    local sep = consts and consts.CHARACTERNAME_SURNAME_SEPARATOR
+    if type(sep) == "string" and sep ~= "" then return sep end
+    return " "
+end
+
+-- The part before the separator of a readable name. A secret name is
+-- returned whole: it cannot be split, so it shows with its surname.
+local function firstName(name)
+    if Secrets.IsSecret(name) or type(name) ~= "string" then return name end
+    local at = string.find(name, separator(), 1, true)
+    if at and at > 1 then return string.sub(name, 1, at - 1) end
+    return name
+end
+
+-- Writes the unit's name into fs, after `prefix` (the level) if given.
+-- Every text that shows a name goes through here; soft-outline copies
+-- follow through the mirrored setters.
+function Texts.SetName(fs, unit, showSurname, prefix)
+    local name, surname = UnitName(unit)
+    if showSurname and type(surname) ~= "nil" then
+        if prefix then
+            fs:SetFormattedText("%s %s %s", prefix, name, surname)
+        else
+            fs:SetFormattedText("%s %s", name, surname)
+        end
+        return
+    end
+    if not showSurname then name = firstName(name) end
+    if prefix then
+        fs:SetFormattedText("%s %s", prefix, name)
+    else
+        fs:SetText(name)
+    end
+end
+
+function Texts.Apply(fs, tag, unit, kind, showSurname)
     if tag == "NONE" then
         fs:SetText("")
     elseif tag == "NAME" then
-        fs:SetText(UnitName(unit))
+        Texts.SetName(fs, unit, showSurname)
     elseif tag == "NAME_LEVEL" then
-        fs:SetFormattedText("%s %s", levelText(unit), UnitName(unit))
+        Texts.SetName(fs, unit, showSurname, levelText(unit))
     elseif tag == "LEVEL" then
         fs:SetText(levelText(unit))
     elseif tag == "CURRENT" then
@@ -185,8 +226,10 @@ local function paintTitle(frame)
 end
 
 function Texts.Update(frame)
+    local showSurname = Config.Get(frame.key, "showSurname")
     for _, slot in ipairs(SLOTS) do
-        Texts.Apply(frame.texts[slot.field], Config.Get(frame.key, slot.setting), frame.unit, slot.kind or slot.bar)
+        Texts.Apply(frame.texts[slot.field], Config.Get(frame.key, slot.setting), frame.unit, slot.kind or slot.bar,
+            showSurname)
     end
     paintTitle(frame)
 end

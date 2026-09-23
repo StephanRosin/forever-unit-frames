@@ -38,11 +38,12 @@ O.SelectTab("appearance")
 local button = O.actionButtons.applyFontToFrames
 H.checkTrue("button exists", button)
 H.check("button text", button.text:GetText(), L.ACTION_applyFontToFrames)
-local shadowRow
+-- The section ends with the name style (showSurname) after the font rows.
+local lastRow
 for i, row in ipairs(O.rows) do
-    if row.key == "fontShadow" then shadowRow = i end
+    if row.key == "showSurname" then lastRow = i end
 end
-H.check("block right after the last font row", O.rows[shadowRow + 1], button:GetParent())
+H.check("block right after the section's last row", O.rows[lastRow + 1], button:GetParent())
 local click = button:GetScript("OnClick")
 click(button)
 H.check("first click only arms", C.IsOverridden("player", "fontSize"), true)

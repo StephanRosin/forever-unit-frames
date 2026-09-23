@@ -398,7 +398,8 @@ function M.Reset()
     -- Unit API: data comes from M.units[unit]; fields may hold secret proxies.
     local function u(unit) return M.units[unit] end
     _G.UnitExists = function(unit) return u(unit) ~= nil end
-    _G.UnitName = function(unit) local d = u(unit); return d and d.name end
+    -- name, surname (nil when the unit has none).
+    _G.UnitName = function(unit) local d = u(unit); if d then return d.name, d.surname end end
     _G.UnitLevel = function(unit) local d = u(unit); return d and d.level or 0 end
     _G.UnitClass = function(unit) local d = u(unit); if d then return d.className, d.class end end
     _G.UnitIsPlayer = function(unit) local d = u(unit); return d and d.isPlayer or false end

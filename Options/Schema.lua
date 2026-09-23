@@ -5,7 +5,8 @@ ns.Schema = Schema
 Schema.GENERAL = {
     { id = "appearance", sections = {
         -- action: a two-click button under the rows (Options/Window.lua).
-        { id = "font", keys = { "fontFace", "fontSize", "fontOutline", "fontShadow" }, action = "applyFontToFrames" },
+        { id = "font", keys = { "fontFace", "fontSize", "fontOutline", "fontShadow", "showSurname" },
+            action = "applyFontToFrames" },
         { id = "bars", keys = { "barTexture", "backgroundColor" } },
         { id = "border", keys = { "borderSize", "borderColor" } },
     } },
@@ -33,7 +34,7 @@ Schema.FRAME = {
         { id = "titleText", keys = { "titleText", "titleColorMode" } },
         { id = "healthText", keys = { "textHealthLeft", "textHealthRight" } },
         { id = "powerText", keys = { "textPowerLeft", "textPowerRight" } },
-        { id = "font", keys = { "fontFace", "fontSize", "fontOutline", "fontShadow" } },
+        { id = "font", keys = { "fontFace", "fontSize", "fontOutline", "fontShadow", "showSurname" } },
     } },
     { id = "castbar", sections = {
         { id = "castbar", keys = { "castbarEnabled", "castbarPosition", "castbarDock", "castbarHeight" } },

@@ -284,7 +284,7 @@ end
 
 -- Section actions: what the button does. Two clicks, like Reset.
 local ACTIONS = {
-    applyFontToFrames = function() Config.ClearFrameOverrides(ns.Settings.FONT_KEYS) end,
+    applyFontToFrames = function() Config.ClearFrameOverrides(ns.Settings.TEXT_STYLE_KEYS) end,
 }
 -- The buttons by action id, for the tests and for disarming on close.
 Options.actionButtons = {}
