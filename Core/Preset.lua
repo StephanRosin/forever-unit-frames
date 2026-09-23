@@ -46,6 +46,7 @@ local PRESET = {
         x = -400,
     },
     target = {
+        combatFeedback = true,
         buffsAnchor = "FRAME",
         buffsHighlightOwn = true,
         buffsMax = 24,
@@ -89,6 +90,7 @@ local PRESET = {
         y = -199,
     },
     focus = {
+        combatFeedback = true,
         powerPercent = 21,
         x = 575,
         y = 124,

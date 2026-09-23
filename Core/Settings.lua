@@ -149,7 +149,8 @@ Settings.Define({ key = "cornerRadius", code = "CR", scope = "inherit", type = "
 Settings.Define({ key = "healthColorMode", code = "HM", scope = "inherit", type = "enum",
     values = { "CLASS", "REACTION", "STATIC", "GRADIENT" }, default = "STATIC" })
 Settings.Define({ key = "healthColor", code = "HC", scope = "inherit", type = "color", default = { 0.2, 0.75, 0.3, 1 } })
-Settings.Define({ key = "absorbColor", code = "AC", scope = "inherit", type = "color", default = { 0.8, 0.9, 1, 0.45 } })
+-- Colour of the shield's stripes; the shield darkens the bar under them.
+Settings.Define({ key = "absorbColor", code = "AC", scope = "inherit", type = "color", default = { 1, 1, 1, 0.65 } })
 Settings.Define({ key = "healMyColor", code = "MC", scope = "inherit", type = "color", default = { 0.3, 0.95, 0.45, 0.65 } })
 Settings.Define({ key = "healOtherColor", code = "OC", scope = "inherit", type = "color", default = { 0.15, 0.65, 0.3, 0.55 } })
 

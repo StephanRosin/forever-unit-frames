@@ -49,3 +49,8 @@ local el, er, eb, et = box("pet")
 local _, _, plb, plt = box("player")
 H.checkTrue("pet left of the player", er < pl)
 H.check("pet top on the player's top", et, plt)
+
+-- Damage and heal numbers on target and focus too.
+H.check("numbers on the target", C.Get("target", "combatFeedback"), true)
+H.check("numbers on the focus", C.Get("focus", "combatFeedback"), true)
+H.check("numbers on the player", C.Get("player", "combatFeedback"), true)
