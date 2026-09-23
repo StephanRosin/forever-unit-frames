@@ -90,15 +90,17 @@ local function createOutline(unitFrame)
     return edges
 end
 
--- Drawn just outside the frame's own border.
+-- Drawn just outside the unit's border (around a docked castbar too).
 local function anchorOutline(unitFrame, edges)
-    local o = Config.Get(unitFrame.key, "borderSize")
-    local w = o + HIGHLIGHT_W
+    local o = ns.Border.Extent(unitFrame.key)
+    local box = unitFrame.unitBox or unitFrame
+    local hw = ns.Pixel.Snap(HIGHLIGHT_W, nil, 1)
+    local w = o + hw
     for _, t in ipairs(edges) do t:ClearAllPoints() end
-    edges[1]:SetPoint("BOTTOMLEFT", unitFrame, "TOPLEFT", -w, o); edges[1]:SetPoint("BOTTOMRIGHT", unitFrame, "TOPRIGHT", w, o); edges[1]:SetHeight(HIGHLIGHT_W)
-    edges[2]:SetPoint("TOPLEFT", unitFrame, "BOTTOMLEFT", -w, -o); edges[2]:SetPoint("TOPRIGHT", unitFrame, "BOTTOMRIGHT", w, -o); edges[2]:SetHeight(HIGHLIGHT_W)
-    edges[3]:SetPoint("TOPRIGHT", unitFrame, "TOPLEFT", -o, o); edges[3]:SetPoint("BOTTOMRIGHT", unitFrame, "BOTTOMLEFT", -o, -o); edges[3]:SetWidth(HIGHLIGHT_W)
-    edges[4]:SetPoint("TOPLEFT", unitFrame, "TOPRIGHT", o, o); edges[4]:SetPoint("BOTTOMLEFT", unitFrame, "BOTTOMRIGHT", o, -o); edges[4]:SetWidth(HIGHLIGHT_W)
+    edges[1]:SetPoint("BOTTOMLEFT", box, "TOPLEFT", -w, o); edges[1]:SetPoint("BOTTOMRIGHT", box, "TOPRIGHT", w, o); edges[1]:SetHeight(hw)
+    edges[2]:SetPoint("TOPLEFT", box, "BOTTOMLEFT", -w, -o); edges[2]:SetPoint("TOPRIGHT", box, "BOTTOMRIGHT", w, -o); edges[2]:SetHeight(hw)
+    edges[3]:SetPoint("TOPRIGHT", box, "TOPLEFT", -o, o); edges[3]:SetPoint("BOTTOMRIGHT", box, "BOTTOMLEFT", -o, -o); edges[3]:SetWidth(hw)
+    edges[4]:SetPoint("TOPLEFT", box, "TOPRIGHT", o, o); edges[4]:SetPoint("BOTTOMLEFT", box, "BOTTOMRIGHT", o, -o); edges[4]:SetWidth(hw)
 end
 
 local function setOutlineAlpha(edges, alpha)
@@ -124,6 +126,7 @@ end
 -- Textures on a secure frame are created and anchored out of combat only.
 local function highlightFrame(scope)
     local unitFrame = ns.Frames[scope]
+    if scope == ns.Party.KEY then unitFrame = ns.Party.HighlightTarget() end
     if not unitFrame or InCombatLockdown() then return end
     local edges = unitFrame.optionsHighlight or createOutline(unitFrame)
     anchorOutline(unitFrame, edges)
@@ -155,6 +158,7 @@ end
 local ROW_BUILDERS = {
     int = function(parent, def, opts)
         opts.min, opts.max, opts.step = def.min, def.max, 1
+        opts.zeroText = def.zeroText and L[def.zeroText]
         return Widgets.Slider(parent, opts)
     end,
     bool = function(parent, _, opts) return Widgets.Checkbox(parent, opts) end,
@@ -176,10 +180,19 @@ local function inheritOpts(scope, key)
     }
 end
 
+-- Hints that only hold on some pages: only the player's own setting
+-- conceals a Blizzard castbar, which comes back after a /reload.
+local HINT_SCOPES = { hideBlizzardCastbar = { player = true } }
+
+local function hintFor(scope, key)
+    if HINT_SCOPES[key] and not HINT_SCOPES[key][scope] then return nil end
+    return localized("HINT_" .. key)
+end
+
 local function settingRow(parent, scope, key)
     local def = ns.Settings.Get(key)
     local opts = {
-        label = L["SETTING_" .. key], hint = localized("HINT_" .. key),
+        label = L["SETTING_" .. key], hint = hintFor(scope, key),
         get = function() return Config.Get(scope, key) end,
         set = function(v) return Config.Set(scope, key, v) end,
     }
@@ -214,6 +227,9 @@ local function sectionHeader(page, id)
     return header
 end
 
+-- Defined with the other blocks below; a section's action button.
+local actionBlock
+
 local function buildSettingsPage(page, scope, tab)
     local stack = newStack(page)
     for _, section in ipairs(tab.sections) do
@@ -224,6 +240,7 @@ local function buildSettingsPage(page, scope, tab)
         if #keys > 0 then
             stack.add(sectionHeader(page, section.id))
             for _, key in ipairs(keys) do stack.add(settingRow(page, scope, key)) end
+            if section.action then stack.add(actionBlock(page, section.action)) end
         end
     end
     stack.finish()
@@ -267,6 +284,26 @@ local function confirmButton(parent, text, action)
     return button
 end
 
+-- Section actions: what the button does. Two clicks, like Reset.
+local ACTIONS = {
+    applyFontToFrames = function() Config.ClearFrameOverrides(ns.Settings.TEXT_STYLE_KEYS) end,
+}
+-- The buttons by action id, for the tests and for disarming on close.
+Options.actionButtons = {}
+
+function actionBlock(page, id)
+    local block = newBlock(page)
+    local button = confirmButton(block, L["ACTION_" .. id], ACTIONS[id])
+    button:SetPoint("TOPLEFT", block, "TOPLEFT", INSET, -6)
+    local hint = Style.Text(block, 10, "muted")
+    hint:SetPoint("LEFT", button, "RIGHT", FOOTER_GAP, 0)
+    hint:SetText(L["ACTION_HINT_" .. id])
+    Options.actionButtons[id] = button
+    function block:SetEnabled(on) button:SetEnabled(on) end
+    block:SetHeight(BUTTON_H + 12)
+    return block
+end
+
 local function exportBlock(page)
     local block = newBlock(page)
     local hint = Style.Text(block, 11, "muted")
@@ -290,6 +327,7 @@ local function runImport()
         showImportMessage(L["IMPORT_" .. err], "error")
         return
     end
+    ns.Storage.AllowMacroOverwrite()
     Config.Import(profile)
     Options.importArea:SetText("")
     showImportMessage(L.IMPORT_DONE, "accent")
@@ -310,7 +348,10 @@ end
 
 local function resetBlock(page)
     local block = newBlock(page)
-    local button = confirmButton(block, L.RESET_ALL, function() Config.ResetAll() end)
+    local button = confirmButton(block, L.RESET_ALL, function()
+        ns.Storage.AllowMacroOverwrite()
+        Config.ResetAll()
+    end)
     button:SetPoint("TOPLEFT", block, "TOPLEFT", INSET, -6)
     Options.resetAllButton = button
     function block:SetEnabled(on) button:SetEnabled(on) end
@@ -687,6 +728,7 @@ local function createWindow()
         Widgets.CloseList()
         Options.resetFrameButton.Disarm()
         if Options.resetAllButton then Options.resetAllButton.Disarm() end
+        for _, button in pairs(Options.actionButtons) do button.Disarm() end
     end)
     frame:Hide()
     table.insert(UISpecialFrames, WINDOW_NAME)

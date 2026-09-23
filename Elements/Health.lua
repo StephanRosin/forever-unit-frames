@@ -22,7 +22,8 @@ local function gradient()
     return gradientCurve
 end
 
-local function reactionColor(unit)
+-- { r, g, b } of the unit's reaction to the player.
+function Health.ReactionColor(unit)
     local r = Secrets.Number(UnitReaction(unit, "player"))
     if r then
         if r <= 3 then return REACTION.hostile end
@@ -34,19 +35,31 @@ local function reactionColor(unit)
     return REACTION.hostile
 end
 
+-- r, g, b of a player's class, or nothing (not a player, class unknown).
+function Health.ClassColor(unit)
+    if not Secrets.Bool(UnitIsPlayer, unit) then return end
+    local ok, c = pcall(function()
+        local _, class = UnitClass(unit)
+        return RAID_CLASS_COLORS[class]
+    end)
+    if ok and c then return c.r, c.g, c.b end
+end
+
+-- Class colour for players, reaction colour for everyone else.
+function Health.UnitColor(unit, mode)
+    if mode == "CLASS" then
+        local r, g, b = Health.ClassColor(unit)
+        if r then return r, g, b end
+    end
+    local c = Health.ReactionColor(unit)
+    return c[1], c[2], c[3]
+end
+
 function Health.ColorFor(frame)
     local scope, unit = frame.key, frame.unit
     local mode = Config.Get(scope, "healthColorMode")
-    if mode == "CLASS" and Secrets.Bool(UnitIsPlayer, unit) then
-        local ok, c = pcall(function()
-            local _, class = UnitClass(unit)
-            return RAID_CLASS_COLORS[class]
-        end)
-        if ok and c then return c.r, c.g, c.b end
-    end
     if mode == "CLASS" or mode == "REACTION" then
-        local c = reactionColor(unit)
-        return c[1], c[2], c[3]
+        return Health.UnitColor(unit, mode)
     end
     if mode == "GRADIENT" then
         return UnitHealthPercent(unit, true, gradient()):GetRGB()
@@ -56,9 +69,15 @@ function Health.ColorFor(frame)
 end
 
 function Health.Build(frame)
+    -- The title row: its own background above the health bar; its text
+    -- is Elements/Texts.lua's.
+    frame.title = frame:CreateTexture(nil, "BACKGROUND")
     frame.health = CreateFrame("StatusBar", nil, frame)
     frame.healthBg = frame.health:CreateTexture(nil, "BACKGROUND")
     frame.healthBg:SetAllPoints(frame.health)
+    ns.Corners.Add(frame, frame.title)
+    ns.Corners.Add(frame, frame.healthBg)
+    ns.Corners.Add(frame, function() return frame.health:GetStatusBarTexture() end)
 end
 
 function Health.Style(frame)
@@ -68,6 +87,8 @@ function Health.Style(frame)
     frame.healthBg:SetTexture(tex)
     local bg = Config.Get(scope, "backgroundColor")
     frame.healthBg:SetVertexColor(bg[1], bg[2], bg[3], bg[4])
+    frame.title:SetTexture(tex)
+    frame.title:SetVertexColor(bg[1], bg[2], bg[3], bg[4])
 end
 
 function Health.Update(frame)

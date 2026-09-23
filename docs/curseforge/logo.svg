@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="42%" r="70%">
+      <stop offset="0" stop-color="#2a3346"/>
+      <stop offset="0.6" stop-color="#151a26"/>
+      <stop offset="1" stop-color="#0a0d14"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff2b0"/>
+      <stop offset="0.35" stop-color="#e8c25a"/>
+      <stop offset="0.7" stop-color="#a87a22"/>
+      <stop offset="1" stop-color="#6e4c12"/>
+    </linearGradient>
+    <linearGradient id="goldText" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff4c2"/>
+      <stop offset="0.55" stop-color="#e6bd52"/>
+      <stop offset="1" stop-color="#9c6f1c"/>
+    </linearGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b58cf0"/><stop offset="1" stop-color="#7a4fc4"/>
+    </linearGradient>
+    <linearGradient id="health" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5fe36a"/><stop offset="0.5" stop-color="#22b33a"/><stop offset="1" stop-color="#127a24"/>
+    </linearGradient>
+    <linearGradient id="mana" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5aa0ff"/><stop offset="1" stop-color="#1f4fc2"/>
+    </linearGradient>
+    <linearGradient id="cast" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffd35a"/><stop offset="1" stop-color="#e08a00"/>
+    </linearGradient>
+    <linearGradient id="gloss" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.28"/><stop offset="0.5" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="badge" cx="40%" cy="35%" r="70%">
+      <stop offset="0" stop-color="#d9c4ff"/><stop offset="0.6" stop-color="#8a5ad6"/><stop offset="1" stop-color="#3d1f75"/>
+    </radialGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="10"/>
+      <feOffset dy="6"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.7"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <clipPath id="inner"><rect x="70" y="118" width="372" height="196" rx="14"/></clipPath>
+  </defs>
+
+  <rect width="512" height="512" fill="url(#bg)"/>
+
+  <!-- unit frame -->
+  <g filter="url(#shadow)">
+    <rect x="60" y="108" width="392" height="216" rx="22" fill="url(#gold)"/>
+    <rect x="66" y="114" width="380" height="204" rx="17" fill="#3a2a0c"/>
+    <g clip-path="url(#inner)">
+      <rect x="70" y="118" width="372" height="196" fill="#101318"/>
+      <!-- title row -->
+      <rect x="70" y="118" width="372" height="44" fill="url(#title)"/>
+      <!-- health row -->
+      <rect x="70" y="164" width="290" height="78" fill="url(#health)"/>
+      <!-- mana row -->
+      <rect x="70" y="244" width="240" height="34" fill="url(#mana)"/>
+      <!-- castbar row -->
+      <rect x="70" y="280" width="372" height="34" fill="#1a1d24"/>
+      <rect x="70" y="280" width="220" height="34" fill="url(#cast)"/>
+      <rect x="70" y="118" width="372" height="196" fill="url(#gloss)"/>
+      <!-- seams -->
+      <rect x="70" y="162" width="372" height="2" fill="#000" opacity="0.55"/>
+      <rect x="70" y="242" width="372" height="2" fill="#000" opacity="0.55"/>
+      <rect x="70" y="278" width="372" height="2" fill="#000" opacity="0.55"/>
+    </g>
+  </g>
+
+  <!-- class badge -->
+  <g filter="url(#shadow)">
+    <circle cx="428" cy="112" r="44" fill="url(#gold)"/>
+    <circle cx="428" cy="112" r="36" fill="#2a1a05"/>
+    <circle cx="428" cy="112" r="33" fill="url(#badge)"/>
+    <path d="M428 88 L436 106 L455 108 L441 121 L445 140 L428 130 L411 140 L415 121 L401 108 L420 106 Z" fill="#fff6d6" opacity="0.92"/>
+  </g>
+
+  <!-- wordmark -->
+  <g font-family="C059, 'DejaVu Serif', serif" font-weight="bold" text-anchor="middle" fill="url(#goldText)" stroke="#2b1c04" stroke-width="2" paint-order="stroke">
+    <text x="256" y="408" font-size="64" letter-spacing="6">FOREVER</text>
+    <text x="256" y="462" font-size="38" letter-spacing="7">UNIT FRAMES</text>
+  </g>
+</svg>

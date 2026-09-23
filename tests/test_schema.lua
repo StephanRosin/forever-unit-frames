@@ -17,12 +17,15 @@ local function keysOf(tabs)
 end
 
 local general, frame = keysOf(S.GENERAL), keysOf(S.FRAME)
+local FRAMES = { "player", "target", "targettarget", "pet", "focus", "party" }
 for _, def in ipairs(Settings.All()) do
     if Settings.AppliesTo(def, "general") then
         H.check("general shows " .. def.key .. " once", general[def.key], 1)
     end
-    if Settings.AppliesTo(def, "player") then
-        H.check("frame shows " .. def.key .. " once", frame[def.key], 1)
+    for _, scope in ipairs(FRAMES) do
+        if Settings.AppliesTo(def, scope) then
+            H.check(scope .. " page shows " .. def.key .. " once", frame[def.key], 1)
+        end
     end
     if def.type == "enum" then
         for _, v in ipairs(def.values) do
@@ -33,5 +36,7 @@ for _, def in ipairs(Settings.All()) do
 end
 
 H.check("general has profile tab", S.Tabs("general")[3].id, "profile")
-H.check("frame tab count", #S.Tabs("player"), 3)
+H.check("frame tab count", #S.Tabs("player"), 5)
+H.check("castbar tab on frames with a castbar", S.Tabs("player")[5].id, "castbar")
+H.check("no castbar tab for the pet", #S.Tabs("pet"), 4)
 H.check("key-specific enum text wins", S.EnumText(Settings.Get("textHealthLeft"), "NONE"), "Empty")

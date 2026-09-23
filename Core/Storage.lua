@@ -12,6 +12,8 @@ local sourceIsProvider = false
 local lastSaved           -- last string handed to SavedVariables and providers
 local lastMacro           -- last string the macro backup actually accepted
 local macroError          -- LastError of the most recent refused macro write
+local unreadableShown     -- MACRO_UNREADABLE was printed this session
+local overwriteAllowed    -- the player asked to replace everything
 local waiting = false     -- true while character macros may still arrive
 local saveHeld = false    -- a save was requested while waiting
 
@@ -32,6 +34,32 @@ end
 local function fromString(str)
     if type(str) ~= "string" then return nil end
     return (ns.Codec.Decode(str))
+end
+
+-- The macro backup as a profile, plus the string it came from (already
+-- normalised by Read). A backup with entries that could not be parsed is
+-- still loaded, as far as it goes, but must never be overwritten: saving
+-- the rest back would make the loss permanent. MacroBackup.Write refuses
+-- it; here the player is told once, at the moment it is loaded.
+-- Every refusal is printed when it first occurs; MACRO_UNREADABLE only once
+-- per session, even if another refusal came in between.
+local function report(err)
+    if not err or err == macroError then return end
+    macroError = err
+    if err == "MACRO_UNREADABLE" then
+        if unreadableShown then return end
+        unreadableShown = true
+    end
+    ns.Print(ns.L[err])
+end
+
+local function fromMacro()
+    local str = ns.MacroBackup.Read()
+    if type(str) ~= "string" then return nil end
+    local profile, _, rejected = ns.Codec.Decode(str)
+    if not profile then return nil end
+    if rejected > 0 then report("MACRO_UNREADABLE") end
+    return profile, str
 end
 
 function Storage.Attach(db)
@@ -73,8 +101,11 @@ function Storage.Load(db)
         local profile = ok and fromString(str)
         if profile then return from(p.name, true, profile) end
     end
-    local profile = fromString(ns.MacroBackup.Read())
-    if profile then return from("MacroBackup", false, profile) end
+    local profile, str = fromMacro()
+    if profile then
+        lastMacro = str     -- already in the macros, no need to rewrite it
+        return from("MacroBackup", false, profile)
+    end
     return from("Defaults", false, fromString("1"))
 end
 
@@ -86,6 +117,15 @@ end
 
 function Storage.MacroError()
     return macroError
+end
+
+-- Called by the explicit "replace everything" actions (/fuf reset all, the
+-- options window's reset and profile import): the next macro write may
+-- replace a backup that could not be read in full. Without it such a
+-- backup would win every session, since SavedVariables are not loaded.
+-- Holds until a write succeeds.
+function Storage.AllowMacroOverwrite()
+    overwriteAllowed = true
 end
 
 -- A readable backup this session has neither loaded nor written must never
@@ -100,17 +140,16 @@ end
 local tryRestore  -- defined with the wait below
 
 local function writeMacro(encoded)
-    if encoded == lastMacro then return end
+    -- Nothing to write: the one-shot permission is spent all the same.
+    if encoded == lastMacro then overwriteAllowed = nil; return end
     -- Checked again here: this may run after combat, long after Save().
     if backupUnclaimed() and tryRestore() then return end
-    local ok, written = pcall(ns.MacroBackup.Write, encoded)
+    local ok, written = pcall(ns.MacroBackup.Write, encoded, overwriteAllowed)
     if ok and written then
-        lastMacro, macroError = encoded, nil
+        lastMacro, macroError, overwriteAllowed = encoded, nil, nil
         return
     end
-    local err = ns.MacroBackup.LastError()
-    if err and err ~= macroError then ns.Print(ns.L[err]) end
-    macroError = err
+    report(ns.MacroBackup.LastError())
 end
 
 -- SavedVariables and providers get each new string once; the macro backup
@@ -135,9 +174,7 @@ function Storage.Save()
         end
         for _, p in ipairs(providers) do pcall(p.save, encoded) end
     end
-    if encoded ~= lastMacro then
-        ns.AfterCombat("macroBackup", function() writeMacro(encoded) end)
-    end
+    ns.AfterCombat("macroBackup", function() writeMacro(encoded) end)
 end
 
 -- Sliders fire many changes per second; one save per half second is plenty.
@@ -182,12 +219,41 @@ local function endWait(newSource)
     end
 end
 
+-- Frames switched on at the moment, by scope.
+local function enabledFrames()
+    local states = {}
+    for _, scope in ipairs(ns.Settings.SCOPES) do
+        if scope ~= "general" then states[scope] = ns.Config.Get(scope, "enabled") end
+    end
+    return states
+end
+
+-- Blizzard's frames are already hidden for every frame that was on; one
+-- the backup turns off only gets Blizzard's back after a /reload. The
+-- player's hideBlizzardCastbar is a second such flag: Blizzard.Conceal
+-- hides Blizzard's cast bar in response to a change (login, or
+-- hideBlizzardCastbar turning on) and never reveals it again on its own,
+-- so the same problem applies if the backup turns it back off.
+local function hintReload(before, beforeHideCastbar)
+    for scope, was in pairs(before) do
+        if was and not ns.Config.Get(scope, "enabled") then
+            ns.Print(ns.L.RELOAD_FOR_BLIZZARD)
+            return
+        end
+    end
+    if beforeHideCastbar and not ns.Config.Get("player", "hideBlizzardCastbar") then
+        ns.Print(ns.L.RELOAD_FOR_BLIZZARD)
+    end
+end
+
 -- Returns true once a complete backup has been read and imported.
 function tryRestore()
-    local str = ns.MacroBackup.Read()
-    local profile = fromString(str)
+    local profile, str = fromMacro()
     if not profile then return false end
+    local before = enabledFrames()
+    local beforeHideCastbar = ns.Config.Get("player", "hideBlizzardCastbar")
     ns.Config.Import(profile)   -- its CONFIG_CHANGED save is held or queued
+    hintReload(before, beforeHideCastbar)
     lastMacro = str             -- already in the macros, no need to rewrite it
     endWait("MacroBackup")
     ns.Print(ns.L.RESTORED_FROM_MACRO)

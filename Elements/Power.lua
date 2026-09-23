@@ -19,6 +19,8 @@ function Power.Build(frame)
     frame.power = CreateFrame("StatusBar", nil, frame)
     frame.powerBg = frame.power:CreateTexture(nil, "BACKGROUND")
     frame.powerBg:SetAllPoints(frame.power)
+    ns.Corners.Add(frame, frame.powerBg)
+    ns.Corners.Add(frame, function() return frame.power:GetStatusBarTexture() end)
 end
 
 function Power.Style(frame)

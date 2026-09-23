@@ -31,12 +31,22 @@ function Config.Profile()
     return profile
 end
 
+local function hasFrameDefaults(def)
+    local d = def.default
+    if type(d) ~= "table" or d._ == nil then return false end
+    for k in pairs(d) do
+        if k ~= "_" then return true end
+    end
+    return false
+end
+
 -- What a scope gets when it has no override of its own.
 local function fallback(scope, def)
     if scope ~= "general" and def.scope == "inherit" then
         local g = profile.general[def.key]
         if g ~= nil then return g end
-        return Settings.Default(def, "general")
+        -- The frame's own default, if it has one (preset), else the base.
+        return Settings.Default(def, scope)
     end
     return Settings.Default(def, scope)
 end
@@ -57,7 +67,9 @@ function Config.Set(scope, key, value)
     if not def or not profile[scope] or not Settings.AppliesTo(def, scope) then return false end
     local v = Settings.Validate(def, value)
     if v == nil then return false end
-    if sameValue(v, fallback(scope, def)) then
+    -- A general value equal to the base default is still kept when some
+    -- frame has a default of its own: it is what those frames follow.
+    if sameValue(v, fallback(scope, def)) and not (scope == "general" and hasFrameDefaults(def)) then
         profile[scope][key] = nil
     else
         profile[scope][key] = v
@@ -80,6 +92,18 @@ function Config.ClearOverride(scope, key)
     if not profile[scope] then return end
     profile[scope][key] = nil
     ns.Fire("CONFIG_CHANGED", scope, key)
+end
+
+-- Removes the given keys from every frame scope, so each frame falls back
+-- to General again. General itself keeps its values. One CONFIG_CHANGED
+-- for everything.
+function Config.ClearFrameOverrides(keys)
+    for _, scope in ipairs(Settings.SCOPES) do
+        if scope ~= "general" then
+            for _, key in ipairs(keys) do profile[scope][key] = nil end
+        end
+    end
+    ns.Fire("CONFIG_CHANGED", nil, nil)
 end
 
 -- Copying reproduces the source frame's look as it is shown, including the

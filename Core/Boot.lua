@@ -5,8 +5,12 @@ local _, ns = ...
 -- Character macros may arrive later (see Storage.WaitForMacros). Every
 -- settings change is persisted.
 
-local function attachMovers()
+-- Runs in the same out-of-combat run that built the single frames.
+local function afterBuild()
+    ns.Party.Create()
     for _, frame in pairs(ns.Frames) do ns.Movers.Attach(frame) end
+    ns.Movers.Attach(ns.Party.header, ns.Party.MoverSpec())
+    for _, frame in pairs(ns.Frames) do ns.Castbar.AttachMover(frame) end
 end
 
 ns.On("PLAYER_LOGIN", function()
@@ -17,8 +21,9 @@ ns.On("PLAYER_LOGIN", function()
     ns.Storage.Attach(ForeverUnitFramesDB)
     -- Nothing found: the macro backup may still be on its way.
     ns.Storage.WaitForMacros()
-    -- Movers go on in the same (possibly deferred) run that builds frames.
-    ns.Single.CreateAll(attachMovers)
+    -- Party and movers follow in the same (possibly deferred) run that
+    -- builds the single frames.
+    ns.Single.CreateAll(afterBuild)
     ns.Blizzard.HideDefaults()
 end)
 

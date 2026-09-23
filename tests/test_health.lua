@@ -11,9 +11,12 @@ H.check("right click menu", f:GetAttribute("*type2"), "togglemenu")
 H.checkTrue("unit watch", f._unitWatch)
 H.check("width from config", f:GetWidth(), 220)
 
--- Health bar height follows the layout maths (power bar arrives in Task 9).
-local hh = ns.Layout.Bars(46, 75, 25, true)
+-- Health bar height follows the layout maths: title, health, gap, power.
+local _, hh = ns.Layout.Rows(46, 30, 45, 25, true)
 H.check("health height", f.health:GetHeight(), hh)
+
+-- Class colours are a choice (the default is a static green).
+ns.Config.Set("player", "healthColorMode", "CLASS")
 
 -- Secret health values pass straight through to the bar.
 local hp, hpMax = M.Secret(900), M.Secret(1000)
