@@ -31,6 +31,7 @@ local function status()
     ns.Print(L.STATUS_PROJECT:format(WOW_PROJECT_ID or 0))
     local src, isProvider = ns.Storage.Source()
     ns.Print(L.STATUS_SOURCE:format(isProvider and src or L["SOURCE_" .. src]))
+    ns.Print(L.STATUS_FOCUS:format(ns.Units.FocusAvailable() and L.FOCUS_AVAILABLE or L.FOCUS_MISSING))
     local macroError = ns.Storage.MacroError()
     if macroError then ns.Print(L[macroError]) end
 end

@@ -137,7 +137,8 @@ end
 function Single.CreateAll(onBuilt)
     ns.AfterCombat("createSingle", function()
         for _, def in ipairs(ns.Units.List) do
-            if def.unit and not ns.Frames[def.key] then
+            local usable = def.available == nil or def.available()
+            if def.unit and usable and not ns.Frames[def.key] then
                 local frame = Single.Create(def)
                 listen(frame, def)
                 if def.poll then Single.Poll(frame, def.poll) end
