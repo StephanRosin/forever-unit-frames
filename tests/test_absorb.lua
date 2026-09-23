@@ -22,9 +22,16 @@ H.checkTrue("above the health bar", bar:GetFrameLevel() > f.health:GetFrameLevel
 H.checkTrue("shown by default", bar:IsShown())
 -- The shield darkens what lies under it (any class colour) and carries
 -- Blizzard's shield stripes, which also show on the empty background.
+-- Over the health fill it multiplies (darker on any class colour); a lift
+-- added on top lights the black background where health is missing.
 H.check("fill is a flat shade", bar._texture, ns.Absorb.SHADE_TEXTURE)
-H.check("shade is black", bar._color[1] + bar._color[2] + bar._color[3], 0)
-H.check("shade strength", bar._color[4], ns.Absorb.SHADE)
+H.check("shade multiplies", bar:GetStatusBarTexture()._blend, "MOD")
+H.check("shade grey", bar._color[1], ns.Absorb.SHADE)
+H.checkTrue("shade darkens", ns.Absorb.SHADE < 1)
+local lift = bar.lift
+H.check("lift adds", lift._blend, "ADD")
+H.check("lift on the filled part", lift._allPoints, bar:GetStatusBarTexture())
+H.checkTrue("lift is dim", lift._color[1] + lift._color[2] + lift._color[3] < 1)
 local stripes = bar.stripes
 H.check("stripes texture", stripes._texture, ns.Absorb.STRIPES)
 H.checkTrue("stripes tile across", stripes._horizTile and stripes._vertTile)
@@ -64,7 +71,7 @@ C.Set("general", "absorbColor", { 1, 1, 1, 0.5 })
 H.check("general colour", stripes._color[4], 0.5)
 C.Set("player", "absorbColor", { 0, 0, 1, 0.8 })
 H.check("own colour", stripes._color[3], 1)
-H.check("the shade stays black", bar._color[3], 0)
+H.check("the shade stays grey", bar._color[3], ns.Absorb.SHADE)
 
 -- Off: hidden and left alone.
 C.Set("player", "absorbEnabled", false)
@@ -78,6 +85,7 @@ C.Set("player", "absorbEnabled", true)
 C.Set("general", "cornerRadius", 4)
 H.check("shield rounded", bar:GetStatusBarTexture():GetNumMaskTextures(), 4)
 H.check("stripes rounded", stripes:GetNumMaskTextures(), 4)
+H.check("lift rounded", lift:GetNumMaskTextures(), 4)
 C.Set("general", "cornerRadius", 0)
 H.check("square again", bar:GetStatusBarTexture():GetNumMaskTextures(), 0)
 
