@@ -1,5 +1,7 @@
 local M = H.M
 local ns = H.LoadAddon()
+-- The addon's own reads: the fallback for clients without aura containers.
+M.auraContainerMissing = true
 M.FireEvent("PLAYER_LOGIN")
 M.RunTimers()
 local C = ns.Config

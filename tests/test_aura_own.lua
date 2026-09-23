@@ -1,6 +1,8 @@
 -- Own auras first and bigger; "per row" Auto (wrap by frame size).
 local M = H.M
 local ns = H.LoadAddon()
+-- The addon's own reads: the fallback for clients without aura containers.
+M.auraContainerMissing = true
 M.FireEvent("PLAYER_LOGIN")
 M.RunTimers()
 local S, C, Codec, L, Layout, Schema, Auras = ns.Settings, ns.Config, ns.Codec, ns.L, ns.Layout, ns.Schema, ns.Auras

@@ -368,25 +368,41 @@ local function applyEvent(frame, info)
     return true
 end
 
+-- A timer refresh (target of target) runs at most every POLL_SECONDS.
+local function tooSoon(frame, event)
+    local now = GetTime()
+    if event == ns.Single.POLL and frame.auraPolled and now - frame.auraPolled < Auras.POLL_SECONDS then
+        return true
+    end
+    frame.auraPolled = now
+    return false
+end
+
+-- Live auras come from the frame's containers where the client makes
+-- them (Elements/AuraContainers.lua); the reads below are the fallback.
 function Auras.Update(frame, event, _, info)
     if testing() then
+        AuraContainers.Hide(frame)
         showSamples(frame)
         return
     end
-    if event == "UNIT_AURA" and not frame.auraSamples and applyEvent(frame, info) then return end
-    local now = GetTime()
-    if event == ns.Single.POLL then
-        if frame.auraPolled and now - frame.auraPolled < Auras.POLL_SECONDS then return end
+    if AuraContainers.Ensure(frame) then
+        if frame.auraSamples then clear(frame) end
+        if not tooSoon(frame, event) then AuraContainers.Refresh(frame, event) end
+        return
     end
-    frame.auraPolled = now
+    if event == "UNIT_AURA" and not frame.auraSamples and applyEvent(frame, info) then return end
+    if tooSoon(frame, event) then return end
     readAll(frame, event == "UNIT_AURA")
 end
 
--- After combat every shown frame reads again: reads refused in combat left
--- icons out of date.
+-- After combat every shown frame that reads its auras itself reads again:
+-- reads refused in combat left icons out of date.
 ns.On("PLAYER_REGEN_ENABLED", function()
     for frame in pairs(built) do
-        if frame.unit and frame:IsShown() and UnitExists(frame.unit) then Auras.Update(frame) end
+        if not frame.auraContainers and frame.unit and frame:IsShown() and UnitExists(frame.unit) then
+            Auras.Update(frame)
+        end
     end
 end)
 

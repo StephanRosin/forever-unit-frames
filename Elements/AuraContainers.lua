@@ -282,3 +282,36 @@ ns.On("PLAYER_REGEN_ENABLED", function()
         if not waiting[frame] then apply(frame) end
     end
 end)
+
+-- Live updates ----------------------------------------------------------------------
+-- The containers take UNIT_AURA for their unit themselves. What they cannot
+-- know: the frame's unit changed (party slots, test mode), or the same
+-- token now means someone else (a new target or focus) or has no aura
+-- events at all (target of target, on the frame's timer).
+function AuraContainers.Refresh(frame, event)
+    if not frame.auraContainers then return end
+    local unit = frame.unit or "none"
+    for _, key in ipairs(ns.Settings.AURA_GROUPS) do
+        local container = frame.auraContainers[key].container
+        if container:GetUnit() ~= unit then
+            container:SetUnit(unit)
+        elseif event ~= "UNIT_AURA" then
+            container:UpdateAllAuras()
+        end
+    end
+end
+
+-- Test mode shows our samples instead (a container shows only real auras).
+function AuraContainers.Hide(frame)
+    if not frame.auraContainers then return end
+    for _, key in ipairs(ns.Settings.AURA_GROUPS) do frame.auraContainers[key].container:Hide() end
+end
+
+ns.Listen("TEST_MODE", function(on)
+    if on then return end
+    for frame in pairs(all) do
+        for _, key in ipairs(ns.Settings.AURA_GROUPS) do
+            frame.auraContainers[key].container:SetShown(frame.auras[key].enabled)
+        end
+    end
+end)
