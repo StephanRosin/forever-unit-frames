@@ -11,6 +11,12 @@ local Config = ns.Config
 
 -- Test mode: a shield of 30 % of maximum health.
 Absorb.SAMPLE = 0.3
+-- The shield darkens what lies under it, so it shows on any class colour,
+-- and carries Blizzard's shield stripes (tinted by absorbColor), which also
+-- show where it lies on the empty background.
+Absorb.SHADE_TEXTURE = "Interface\\Buttons\\WHITE8X8"
+Absorb.SHADE = 0.45
+Absorb.STRIPES = "Interface\\RaidFrame\\Shield-Overlay"
 
 function Absorb.Build(frame)
     local bar = CreateFrame("StatusBar", nil, frame.health)
@@ -20,15 +26,26 @@ function Absorb.Build(frame)
     bar:SetReverseFill(true)
     bar:SetMinMaxValues(0, 1)
     bar:SetValue(0)
+    -- The client tiles the stripes itself: no size is measured here, the
+    -- fill's width may come from secret values.
+    local stripes = bar:CreateTexture(nil, "OVERLAY")
+    stripes:SetTexture(Absorb.STRIPES, "REPEAT", "REPEAT")
+    stripes:SetHorizTile(true)
+    stripes:SetVertTile(true)
+    bar.stripes = stripes
     frame.absorb = bar
     ns.Corners.Add(frame, function() return bar:GetStatusBarTexture() end)
+    ns.Corners.Add(frame, stripes)
 end
 
 function Absorb.Style(frame)
     local bar, scope = frame.absorb, frame.key
-    bar:SetStatusBarTexture(ns.Media.StatusBar(Config.Get(scope, "barTexture")))
+    bar:SetStatusBarTexture(Absorb.SHADE_TEXTURE)
+    bar:SetStatusBarColor(0, 0, 0, Absorb.SHADE)
+    -- A new fill texture may have replaced the one the stripes hung on.
+    bar.stripes:SetAllPoints(bar:GetStatusBarTexture())
     local c = Config.Get(scope, "absorbColor")
-    bar:SetStatusBarColor(c[1], c[2], c[3], c[4])
+    bar.stripes:SetVertexColor(c[1], c[2], c[3], c[4])
     bar:SetShown(Config.Get(scope, "absorbEnabled"))
 end
 

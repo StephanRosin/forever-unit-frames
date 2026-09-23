@@ -533,6 +533,8 @@ local function newWidget(kind, name, parent)
     -- A texture shows either a file or an atlas; setting one replaces the
     -- other.
     function w:SetTexture(t, wrapH, wrapV) self._texture = t; self._atlas = nil; self._wrap = { wrapH, wrapV } end
+    function w:SetHorizTile(v) self._horizTile = v end
+    function w:SetVertTile(v) self._vertTile = v end
     -- Masks (SimpleTextureAPI): only mask textures can be added.
     function w:AddMaskTexture(mask)
         assert(type(mask) == "table" and mask._kind == "MaskTexture", "AddMaskTexture: not a mask texture")

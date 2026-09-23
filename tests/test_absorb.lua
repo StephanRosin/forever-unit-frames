@@ -20,7 +20,16 @@ H.check("covers it", bar._allPoints, f.health)
 H.checkTrue("fills from the right end", bar._reverse)
 H.checkTrue("above the health bar", bar:GetFrameLevel() > f.health:GetFrameLevel())
 H.checkTrue("shown by default", bar:IsShown())
-H.check("colour", bar._color[4], 0.45)
+-- The shield darkens what lies under it (any class colour) and carries
+-- Blizzard's shield stripes, which also show on the empty background.
+H.check("fill is a flat shade", bar._texture, ns.Absorb.SHADE_TEXTURE)
+H.check("shade is black", bar._color[1] + bar._color[2] + bar._color[3], 0)
+H.check("shade strength", bar._color[4], ns.Absorb.SHADE)
+local stripes = bar.stripes
+H.check("stripes texture", stripes._texture, ns.Absorb.STRIPES)
+H.checkTrue("stripes tile across", stripes._horizTile and stripes._vertTile)
+H.check("stripes cover the filled part", stripes._allPoints, bar:GetStatusBarTexture())
+H.check("stripes colour", stripes._color[4], 0.65)
 
 -- Title and health texts stay on top of it; power texts stay on their bar.
 H.check("health text on the overlay", f.texts.healthLeft:GetParent(), f.overlay)
@@ -52,9 +61,10 @@ H.check("max health change rescales", select(2, bar:GetMinMaxValues()), 200)
 
 -- Colour from General, overridable per frame.
 C.Set("general", "absorbColor", { 1, 1, 1, 0.5 })
-H.check("general colour", bar._color[4], 0.5)
+H.check("general colour", stripes._color[4], 0.5)
 C.Set("player", "absorbColor", { 0, 0, 1, 0.8 })
-H.check("own colour", bar._color[3], 1)
+H.check("own colour", stripes._color[3], 1)
+H.check("the shade stays black", bar._color[3], 0)
 
 -- Off: hidden and left alone.
 C.Set("player", "absorbEnabled", false)
@@ -67,6 +77,7 @@ C.Set("player", "absorbEnabled", true)
 -- Rounded with the frame.
 C.Set("general", "cornerRadius", 4)
 H.check("shield rounded", bar:GetStatusBarTexture():GetNumMaskTextures(), 4)
+H.check("stripes rounded", stripes:GetNumMaskTextures(), 4)
 C.Set("general", "cornerRadius", 0)
 H.check("square again", bar:GetStatusBarTexture():GetNumMaskTextures(), 0)
 
