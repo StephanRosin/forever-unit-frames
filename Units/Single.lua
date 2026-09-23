@@ -69,16 +69,22 @@ local function applyEnabled(frame)
 end
 
 function Single.UpdateAll(frame, event)
-    if not UnitExists(frame.unit) then return end
+    if not frame.unit or not UnitExists(frame.unit) then return end
     for _, el in ipairs(ns.Elements) do el.Update(frame, event) end
+end
+
+-- Everything inside a unit button that is not itself protected: bars,
+-- border, element regions. Party buttons use this in combat too.
+function Single.StyleContent(frame)
+    layoutBars(frame)
+    border(frame)
+    for _, el in ipairs(ns.Elements) do el.Style(frame) end
 end
 
 function Single.StyleAll(frame)
     if frame.mover then ns.Movers.Sync(frame) end
     place(frame)
-    layoutBars(frame)
-    border(frame)
-    for _, el in ipairs(ns.Elements) do el.Style(frame) end
+    Single.StyleContent(frame)
     applyEnabled(frame)
     Single.UpdateAll(frame)
 end

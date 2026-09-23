@@ -40,6 +40,80 @@ widget.__index = function(t, k)
     return f
 end
 
+-- XML templates of the addon, mirrored in Lua (the tests cannot load XML).
+-- test_party.lua checks that Units/Party.xml declares the same.
+M.templates = {
+    ForeverUnitFramesPartyButtonTemplate = function(w)
+        w._w, w._h = 160, 36
+        w._clicks = { "AnyUp" }
+        w._attr["*type1"] = "target"
+        w._attr["*type2"] = "togglemenu"
+        w._scripts.OnAttributeChanged = function(self, name, value)
+            ForeverUnitFrames.PartyButtonOnAttributeChanged(self, name, value)
+        end
+        ForeverUnitFrames.PartyButtonOnLoad(w)
+    end,
+}
+
+-- SecureGroupHeaderTemplate, reduced to what the addon relies on: party
+-- or solo detection, showPlayer/showSolo/showParty, point and offsets,
+-- child creation from the template attribute, unit assignment through
+-- SetAttribute("unit"), and updates on show, attribute change and roster
+-- change while shown.
+local OPPOSITE = { TOP = "BOTTOM", BOTTOM = "TOP", LEFT = "RIGHT", RIGHT = "LEFT" }
+
+local function groupHeaderUpdate(header)
+    local a = header._attr
+    local kind
+    if #M.group > 0 and a.showParty then kind = "PARTY" elseif a.showSolo then kind = "SOLO" end
+    local units = {}
+    if kind == "SOLO" or (kind == "PARTY" and a.showPlayer) then units[1] = "player" end
+    if kind == "PARTY" then
+        for _, u in ipairs(M.group) do units[#units + 1] = u end
+    end
+    for i = 1, math.max(1, #units) do
+        if not a["child" .. i] then
+            local child = CreateFrame(a.templateType or "Button", header:GetName() .. "UnitButton" .. i, header, a.template)
+            header[i] = child
+            a["child" .. i] = child
+        end
+    end
+    local point = a.point or "TOP"
+    local previous
+    for i, unit in ipairs(units) do
+        local child = a["child" .. i]
+        child:ClearAllPoints()
+        if previous then
+            child:SetPoint(point, previous, OPPOSITE[point], a.xOffset or 0, a.yOffset or 0)
+        else
+            child:SetPoint(point, header, point, 0, 0)
+        end
+        child:SetAttribute("unit", unit)
+        child:Show()
+        previous = child
+    end
+    local i = #units + 1
+    while a["child" .. i] do
+        local child = a["child" .. i]
+        child:Hide()
+        child:ClearAllPoints()
+        child:SetAttribute("unit", nil)
+        i = i + 1
+    end
+    M.headerUpdates = M.headerUpdates + 1
+end
+
+local function makeGroupHeader(w)
+    w._shown = false   -- the template is hidden="true"
+    w:RegisterEvent("GROUP_ROSTER_UPDATE")
+    w._scripts.OnEvent = function(self) if self:IsShown() then groupHeaderUpdate(self) end end
+    w._scripts.OnShow = groupHeaderUpdate
+    w._scripts.OnAttributeChanged = function(self, name)
+        if name == "_ignore" or self._attr._ignore then return end
+        if self:IsShown() then groupHeaderUpdate(self) end
+    end
+end
+
 local function newWidget(kind, name, parent)
     local w = setmetatable({
         _kind = kind, _name = name, _parent = parent, _scripts = {},
@@ -63,7 +137,11 @@ local function newWidget(kind, name, parent)
     end
     function w:UnregisterEvent(e) self._events[e] = nil end
     function w:UnregisterAllEvents() self._events = {} end
-    function w:SetAttribute(k, v) self._attr[k] = v end
+    function w:SetAttribute(k, v)
+        self._attr[k] = v
+        local script = self._scripts.OnAttributeChanged
+        if script then script(self, k, v) end
+    end
     function w:GetAttribute(k) return self._attr[k] end
     function w:RegisterForClicks(...) self._clicks = { ... } end
     function w:SetSize(a, b) self._w, self._h = a, b end
@@ -200,6 +278,8 @@ function M.Reset()
     M.errors = {}          -- whatever reached the global error handler
     M.timers = {}          -- queued C_Timer.After callbacks
     M.now = 1000           -- GetTime(), advanced by M.Tick
+    M.group = {}           -- party unit tokens ("party1", ...) while grouped
+    M.headerUpdates = 0    -- how often a group header laid out its buttons
 
     _G.UIParent = newWidget("Frame", "UIParent")
     _G.UIParent._w, _G.UIParent._h = 1920, 1080
@@ -214,10 +294,13 @@ function M.Reset()
         if kind == "StatusBar" then w._barTex = newWidget("Texture", nil, w) end
         if name then _G[name] = w end
         table.insert(M.frames, w)
+        if template == "SecureGroupHeaderTemplate" then makeGroupHeader(w) end
+        if M.templates[template] then M.templates[template](w) end
         return w
     end
     _G.InCombatLockdown = function() return M.combat end
     _G.GetTime = function() return M.now end
+    _G.IsInGroup = function() return #M.group > 0 end
     _G.geterrorhandler = function()
         return function(err) table.insert(M.errors, err) end
     end
@@ -381,6 +464,12 @@ function M.NewMacroFrame()
     local f = newWidget("Frame", "MacroFrame")
     function f:IsShown() return M.macroFrameShown end
     return f
+end
+
+-- Joins or leaves a party: M.SetGroup({ "party1", "party2" }) or M.SetGroup({}).
+function M.SetGroup(units)
+    M.group = units
+    M.FireEvent("GROUP_ROSTER_UPDATE")
 end
 
 function M.SetCombat(v)

@@ -1,0 +1,20 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<!--
+		One party member. The SecureGroupHeaderTemplate in Units/Party.lua creates
+		these, possibly in combat when someone joins; Lua may not size a secure
+		frame then, so the size and click handling live here. Keep the size equal
+		to the party width/height defaults in Core/Settings.lua; tests/test_party.lua
+		checks that this file and the test mock agree.
+	-->
+	<Button name="ForeverUnitFramesPartyButtonTemplate" virtual="true" inherits="SecureUnitButtonTemplate" registerForClicks="AnyUp">
+		<Size x="160" y="36"/>
+		<Attributes>
+			<Attribute name="*type1" type="string" value="target"/>
+			<Attribute name="*type2" type="string" value="togglemenu"/>
+		</Attributes>
+		<Scripts>
+			<OnLoad>ForeverUnitFrames.PartyButtonOnLoad(self)</OnLoad>
+			<OnAttributeChanged>ForeverUnitFrames.PartyButtonOnAttributeChanged(self, name, value)</OnAttributeChanged>
+		</Scripts>
+	</Button>
+</Ui>

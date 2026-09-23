@@ -34,15 +34,26 @@ function H.TocFiles()
 end
 
 -- Fresh mock + fresh namespace, every file loaded like the client does:
--- chunk(addonName, ns). `files` defaults to the whole TOC.
+-- chunk(addonName, ns). `files` defaults to the whole TOC. XML files are
+-- not loaded; the mock mirrors their templates (see M.templates).
 function H.LoadAddon(files)
     M.Reset()
     local ns = {}
     for _, f in ipairs(files or H.TocFiles()) do
-        local chunk = assert(loadfile(ADDONDIR .. "/" .. f))
-        chunk("ForeverUnitFrames", ns)
+        if not f:match("%.xml$") then
+            local chunk = assert(loadfile(ADDONDIR .. "/" .. f))
+            chunk("ForeverUnitFrames", ns)
+        end
     end
     return ns
+end
+
+-- Whole file as a string (for checks on XML the tests cannot load).
+function H.ReadFile(path)
+    local fh = assert(io.open(ADDONDIR .. "/" .. path))
+    local text = fh:read("*a")
+    fh:close()
+    return text
 end
 
 return H

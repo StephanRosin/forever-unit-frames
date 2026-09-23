@@ -21,6 +21,8 @@ Elements\Power.lua
 Elements\Texts.lua
 Units\Events.lua
 Units\Single.lua
+Units\Party.lua
+Units\Party.xml
 Core\Blizzard.lua
 Core\Movers.lua
 Core\Commands.lua

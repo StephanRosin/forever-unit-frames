@@ -21,6 +21,8 @@ ns.Units.List = {
     { key = "pet", unit = "pet", events = { "PLAYER_ENTERING_WORLD", "UNIT_PET" },
       eventUnit = { UNIT_PET = "player" } },
     { key = "focus", unit = "focus", events = { "PLAYER_FOCUS_CHANGED" }, available = ns.Units.FocusAvailable },
+    -- Built by Units/Party.lua from a group header, not as a single frame.
+    { key = "party", group = true },
 }
 
 ns.Elements = {}
