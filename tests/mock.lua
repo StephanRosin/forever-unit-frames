@@ -550,7 +550,30 @@ function M.Reset()
         if M.IsSecret(field) then return M.Secret(v) end
         return v
     end
+    -- Filter strings as the client reads them: "HELPFUL|PLAYER" and so on.
+    local function auraMatches(a, filter)
+        local want = {}
+        for token in filter:gmatch("[^|]+") do want[token] = true end
+        local helpful = M.Reveal(a.isHelpful) == true
+        if want.HELPFUL and not helpful then return false end
+        if want.HARMFUL and helpful then return false end
+        if want.PLAYER and not a.mine then return false end
+        if want.RAID and not a.dispellable then return false end
+        return true
+    end
+    M.auraQueries = 0      -- GetUnitAuras calls
+    M.lastAuraQuery = nil  -- { unit, filter, maxCount, sortRule } of the last one
     _G.C_UnitAuras = {
+        GetUnitAuras = function(unit, filter, maxCount, sortRule)
+            refuseAuras()
+            M.auraQueries = M.auraQueries + 1
+            M.lastAuraQuery = { unit = unit, filter = filter, maxCount = maxCount, sortRule = sortRule }
+            local d, list = u(unit), {}
+            for _, a in ipairs(d and d.auras or {}) do
+                if auraMatches(a, filter) and (not maxCount or #list < maxCount) then list[#list + 1] = a end
+            end
+            return list
+        end,
         GetAuraDuration = function(unit, id)
             refuseAuras()
             local a = auraByID(unit, id)

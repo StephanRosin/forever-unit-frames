@@ -8,10 +8,15 @@ local _, ns = ...
 local Auras = { name = "Auras", unitEvents = { "UNIT_AURA" } }
 ns.Auras = Auras
 
-local Config, Layout, Pixel, AuraButton = ns.Config, ns.Layout, ns.Pixel, ns.AuraButton
+local Config, Layout, Pixel, AuraButton, Secrets = ns.Config, ns.Layout, ns.Pixel, ns.AuraButton, ns.Secrets
 
 -- Holders sit this many levels above the unit frame: over its bars.
 Auras.LEVELS = 5
+-- Frames refreshed by a timer (target of target) read auras at most this
+-- often.
+Auras.POLL_SECONDS = 0.5
+-- The client sorts: auras you cast first (UnitAuraSortRule.Default).
+local SORT_RULE = Enum and Enum.UnitAuraSortRule and Enum.UnitAuraSortRule.Default
 
 local GROUPS = {
     buffs = { filter = "HELPFUL", isDebuff = false, other = "debuffs" },
@@ -167,13 +172,59 @@ local function testing()
     return ns.TestMode ~= nil and ns.TestMode.IsOn()
 end
 
-function Auras.Update(frame)
+-- Reads one group in full. Returns false when the client refused; the
+-- group is then left as it was.
+local function readGroup(frame, group)
+    local ok, list = pcall(C_UnitAuras.GetUnitAuras, frame.unit, group.filter, group.max, SORT_RULE)
+    if not ok or type(list) ~= "table" then return false end
+    local count = 0
+    for i = 1, #list do
+        if count >= group.max then break end
+        local aura = list[i]
+        if not Secrets.IsSecret(aura) and type(aura) == "table"
+            and AuraButton.Show(acquire(frame, group, count + 1), frame.unit, aura, group.filter) then
+            count = count + 1
+        end
+    end
+    settle(group, count)
+    return true
+end
+
+-- keep: the unit is the same as before (an aura event), so a refused
+-- read may leave the last known icons up; otherwise they belong to
+-- another unit and go.
+local function readAll(frame, keep)
+    frame.auraSamples = nil
+    for _, key in ipairs(ORDER) do
+        local group = frame.auras[key]
+        if not group.enabled then
+            settle(group, 0)
+        elseif not readGroup(frame, group) and not keep then
+            settle(group, 0)
+        end
+    end
+end
+
+function Auras.Update(frame, event)
     if testing() then
         showSamples(frame)
         return
     end
-    clear(frame)
+    local now = GetTime()
+    if event == ns.Single.POLL then
+        if frame.auraPolled and now - frame.auraPolled < Auras.POLL_SECONDS then return end
+    end
+    frame.auraPolled = now
+    readAll(frame, event == "UNIT_AURA")
 end
+
+-- After combat every shown frame reads again: reads refused in combat left
+-- icons out of date.
+ns.On("PLAYER_REGEN_ENABLED", function()
+    for frame in pairs(built) do
+        if frame.unit and frame:IsShown() and UnitExists(frame.unit) then Auras.Update(frame) end
+    end
+end)
 
 -- Test mode off: samples go everywhere, also on frames that are hidden or
 -- have no unit now (the pretend party).
