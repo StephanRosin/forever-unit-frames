@@ -1,0 +1,26 @@
+## Interface: 16001
+## Title: Forever Unit Frames
+## Notes: Clean, flat and fully configurable unit frames for WoW: Forever.
+## Author: StephanRosin
+## Version: 0.1.0
+## SavedVariables: ForeverUnitFramesDB
+
+Locales\enUS.lua
+Core\Init.lua
+Core\Secrets.lua
+Core\Settings.lua
+Core\Config.lua
+Core\Codec.lua
+Core\MacroBackup.lua
+Core\Storage.lua
+Core\Media.lua
+Core\Layout.lua
+Units\Units.lua
+Elements\Health.lua
+Elements\Power.lua
+Elements\Texts.lua
+Units\Single.lua
+Core\Blizzard.lua
+Core\Movers.lua
+Core\Commands.lua
+Core\Boot.lua
