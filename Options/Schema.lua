@@ -33,6 +33,10 @@ Schema.FRAME = {
         { id = "powerText", keys = { "textPowerLeft", "textPowerRight" } },
         { id = "font", keys = { "fontFace", "fontSize", "fontOutline", "fontShadow" } },
     } },
+    { id = "castbar", sections = {
+        { id = "castbar", keys = { "castbarEnabled", "castbarHeight" } },
+        { id = "castbarContent", keys = { "castbarIcon", "castbarName", "castbarTime" } },
+    } },
 }
 
 local function applicable(tab, scope)

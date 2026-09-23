@@ -129,6 +129,16 @@ Settings.Define({ key = "partySpacing", code = "GS", scope = "frame", only = PAR
 Settings.Define({ key = "partyShowPlayer", code = "SP", scope = "frame", only = PARTY, type = "bool", default = false })
 Settings.Define({ key = "partyShowSolo", code = "SO", scope = "frame", only = PARTY, type = "bool", default = false })
 
+-- Castbar (not on the pet frame; off by default on the player frame)
+local CASTBAR = { player = true, target = true, targettarget = true, focus = true, party = true }
+Settings.Define({ key = "castbarEnabled", code = "CE", scope = "frame", only = CASTBAR, type = "bool",
+    default = { player = false, _ = true } })
+Settings.Define({ key = "castbarHeight", code = "CH", scope = "frame", only = CASTBAR, type = "int", min = 4, max = 60,
+    default = { player = 18, target = 16, focus = 16, _ = 12 } })
+Settings.Define({ key = "castbarIcon", code = "CI", scope = "frame", only = CASTBAR, type = "bool", default = true })
+Settings.Define({ key = "castbarName", code = "CN", scope = "frame", only = CASTBAR, type = "bool", default = true })
+Settings.Define({ key = "castbarTime", code = "CT", scope = "frame", only = CASTBAR, type = "bool", default = true })
+
 -- Texts
 Settings.Define({ key = "textHealthLeft", code = "TL", scope = "frame", type = "enum", values = TEXT_TAGS,
     default = { player = "NAME_LEVEL", target = "NAME_LEVEL", _ = "NAME" } })

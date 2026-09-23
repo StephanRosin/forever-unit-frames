@@ -41,19 +41,21 @@ local function layoutBars(frame)
     frame.gap = gap
 end
 
-local function border(frame)
-    local size = Config.Get(frame.key, "borderSize")
-    local c = Config.Get(frame.key, "borderColor")
-    if not frame.border then
-        frame.border = {}
-        for i = 1, 4 do frame.border[i] = frame:CreateTexture(nil, "OVERLAY") end
+-- A 1-2 px border just outside owner (a unit frame or its castbar), in the
+-- border size and colour of scope.
+function Single.DrawBorder(owner, scope)
+    local size = Config.Get(scope, "borderSize")
+    local c = Config.Get(scope, "borderColor")
+    if not owner.border then
+        owner.border = {}
+        for i = 1, 4 do owner.border[i] = owner:CreateTexture(nil, "OVERLAY") end
     end
-    local b = frame.border
-    -- top, bottom, left, right; drawn just outside the frame
-    b[1]:ClearAllPoints(); b[1]:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", -size, 0); b[1]:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", size, 0); b[1]:SetHeight(size)
-    b[2]:ClearAllPoints(); b[2]:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", -size, 0); b[2]:SetPoint("TOPRIGHT", frame, "BOTTOMRIGHT", size, 0); b[2]:SetHeight(size)
-    b[3]:ClearAllPoints(); b[3]:SetPoint("TOPRIGHT", frame, "TOPLEFT", 0, 0); b[3]:SetPoint("BOTTOMRIGHT", frame, "BOTTOMLEFT", 0, 0); b[3]:SetWidth(size)
-    b[4]:ClearAllPoints(); b[4]:SetPoint("TOPLEFT", frame, "TOPRIGHT", 0, 0); b[4]:SetPoint("BOTTOMLEFT", frame, "BOTTOMRIGHT", 0, 0); b[4]:SetWidth(size)
+    local b = owner.border
+    -- top, bottom, left, right; drawn just outside the owner
+    b[1]:ClearAllPoints(); b[1]:SetPoint("BOTTOMLEFT", owner, "TOPLEFT", -size, 0); b[1]:SetPoint("BOTTOMRIGHT", owner, "TOPRIGHT", size, 0); b[1]:SetHeight(size)
+    b[2]:ClearAllPoints(); b[2]:SetPoint("TOPLEFT", owner, "BOTTOMLEFT", -size, 0); b[2]:SetPoint("TOPRIGHT", owner, "BOTTOMRIGHT", size, 0); b[2]:SetHeight(size)
+    b[3]:ClearAllPoints(); b[3]:SetPoint("TOPRIGHT", owner, "TOPLEFT", 0, 0); b[3]:SetPoint("BOTTOMRIGHT", owner, "BOTTOMLEFT", 0, 0); b[3]:SetWidth(size)
+    b[4]:ClearAllPoints(); b[4]:SetPoint("TOPLEFT", owner, "TOPRIGHT", 0, 0); b[4]:SetPoint("BOTTOMLEFT", owner, "BOTTOMRIGHT", 0, 0); b[4]:SetWidth(size)
     for i = 1, 4 do
         b[i]:SetColorTexture(c[1], c[2], c[3], c[4])
         b[i]:SetShown(size > 0)
@@ -78,7 +80,7 @@ end
 -- border, element regions. Party buttons use this in combat too.
 function Single.StyleContent(frame)
     layoutBars(frame)
-    border(frame)
+    Single.DrawBorder(frame, frame.key)
     for _, el in ipairs(ns.Elements) do el.Style(frame) end
 end
 

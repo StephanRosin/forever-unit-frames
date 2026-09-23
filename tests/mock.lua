@@ -205,6 +205,7 @@ local function newWidget(kind, name, parent)
     function w:SetStatusBarTexture(t) self._texture = t end
     function w:SetStatusBarColor(r, g, b, a) self._color = { r, g, b, a } end
     function w:GetStatusBarTexture() return self._barTex end
+    function w:SetReverseFill(v) self._reverse = v end
     -- Texture
     function w:SetTexture(t) self._texture = t end
     function w:SetColorTexture(r, g, b, a) self._color = { r, g, b, a } end
@@ -375,6 +376,19 @@ function M.Reset()
         if curve then return curve:Evaluate(p) end
         return p
     end
+    -- Casts: d.cast / d.channel hold the values UnitCastingInfo /
+    -- UnitChannelInfo return, in the client's order; d.castDuration the
+    -- object UnitCastingDuration / UnitChannelDuration return.
+    _G.UnitCastingInfo = function(unit)
+        local d = u(unit); local c = d and d.cast
+        if c then return c.name, c.name, c.texture, c.startMs, c.endMs, false, c.castID, c.notInterruptible, 1 end
+    end
+    _G.UnitChannelInfo = function(unit)
+        local d = u(unit); local c = d and d.channel
+        if c then return c.name, c.name, c.texture, c.startMs, c.endMs, false, c.notInterruptible, 1 end
+    end
+    _G.UnitCastingDuration = function(unit) local d = u(unit); return d and d.castDuration end
+    _G.UnitChannelDuration = function(unit) local d = u(unit); return d and d.castDuration end
     _G.C_StringUtil = { TruncateWhenZero = function(n) return n end }
     _G.UnitPowerMissing = function(unit) local d = u(unit); return d and d.powerMissing or 0 end
 
