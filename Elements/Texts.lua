@@ -102,6 +102,8 @@ local function makeCopies(fs)
     for i = 1, #SOFT_OFFSETS do
         local copy = parent:CreateFontString(nil, layer)
         copy:SetDrawLayer(layer, math.max(sublevel - 1, -8))
+        local path, size = fs:GetFont()
+        copy:SetFont(path, size, "")
         copy:SetTextColor(0, 0, 0, 1)
         copy:SetShadowOffset(0, 0)
         copy:SetText(fs:GetText())

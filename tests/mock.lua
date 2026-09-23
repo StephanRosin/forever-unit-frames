@@ -221,16 +221,25 @@ local function newWidget(kind, name, parent)
     -- FontString / EditBox. An EditBox without a font cannot take text in
     -- the client, so the mock refuses it too.
     function w:SetFont(path, size, flags) self._font = { path, size, flags }; return true end
+    function w:GetFont()
+        if not self._font then return nil end
+        return self._font[1], self._font[2], self._font[3]
+    end
     function w:SetFontObject(o) self._fontObject = o end
     function w:SetText(t)
-        if self._kind == "EditBox" then
-            assert(self._font or self._fontObject, "EditBox:SetText(): Font not set")
+        if self._kind == "EditBox" or self._kind == "FontString" then
+            assert(self._font or self._fontObject, self._kind .. ":SetText(): Font not set")
         end
         self._text = t
     end
     function w:SetTextColor(r, g, b, a) self._color = { r, g, b, a } end
     function w:GetText() return self._text end
-    function w:SetFormattedText(fmt, ...) self._fmt = fmt; self._args = { ... } end
+    function w:SetFormattedText(fmt, ...)
+        if self._kind == "EditBox" or self._kind == "FontString" then
+            assert(self._font or self._fontObject, self._kind .. ":SetFormattedText(): Font not set")
+        end
+        self._fmt = fmt; self._args = { ... }
+    end
     function w:SetShadowOffset(x, y) self._shadow = { x, y } end
     function w:SetJustifyH(v) self._justifyH = v end
     function w:SetWordWrap(v) self._wordWrap = not not v end
