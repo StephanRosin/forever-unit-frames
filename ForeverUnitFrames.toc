@@ -19,6 +19,7 @@ Units\Units.lua
 Elements\Health.lua
 Elements\Power.lua
 Elements\Texts.lua
+Elements\Portrait.lua
 Units\Events.lua
 Units\Single.lua
 Units\Party.lua

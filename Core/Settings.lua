@@ -115,6 +115,12 @@ Settings.Define({ key = "x", code = "X", scope = "frame", type = "int", min = -4
 Settings.Define({ key = "y", code = "Y", scope = "frame", type = "int", min = -4000, max = 4000,
     default = { player = -220, target = -220, targettarget = -220, pet = -272, focus = -120, party = 120, _ = 0 } })
 
+-- Portrait
+Settings.Define({ key = "portraitMode", code = "PM", scope = "frame", type = "enum",
+    values = { "OFF", "LEFT", "RIGHT" }, default = "OFF" })
+Settings.Define({ key = "portraitStyle", code = "PS", scope = "frame", type = "enum",
+    values = { "2D", "3D" }, default = "2D" })
+
 -- Party block (party only)
 local PARTY = { party = true }
 Settings.Define({ key = "partyOrientation", code = "OR", scope = "frame", only = PARTY, type = "enum",

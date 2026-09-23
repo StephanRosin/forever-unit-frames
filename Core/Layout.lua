@@ -21,3 +21,11 @@ function Layout.Bars(height, healthPercent, powerPercent, powerEnabled)
     healthH = math.max(1, healthH)
     return healthH, height - healthH - powerH, powerH
 end
+
+-- Space the portrait takes from the bars: a square as tall as the frame,
+-- on the left or the right. Returns left inset, right inset.
+function Layout.PortraitInsets(mode, height)
+    if mode == "LEFT" then return height, 0 end
+    if mode == "RIGHT" then return 0, height end
+    return 0, 0
+end

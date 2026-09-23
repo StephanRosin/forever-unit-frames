@@ -279,6 +279,10 @@ local function newWidget(kind, name, parent)
     -- Creation
     function w:CreateTexture(n) return newWidget("Texture", n, self) end
     function w:CreateFontString(n) return newWidget("FontString", n, self) end
+    -- PlayerModel
+    function w:SetUnit(unit) self._modelUnit = unit; return true end
+    function w:ClearModel() self._modelUnit = nil; self._cleared = true end
+    function w:SetPortraitZoom(z) self._zoom = z end
     -- Movable
     function w:SetMovable(v) self._movable = v end
     function w:RegisterForDrag(...) self._drag = { ... } end
@@ -350,6 +354,9 @@ function M.Reset()
     _G.UnitLevel = function(unit) local d = u(unit); return d and d.level or 0 end
     _G.UnitClass = function(unit) local d = u(unit); if d then return d.className, d.class end end
     _G.UnitIsPlayer = function(unit) local d = u(unit); return d and d.isPlayer or false end
+    _G.UnitIsVisible = function(unit) local d = u(unit); return d ~= nil and d.visible ~= false end
+    -- Records the last unit drawn into each texture.
+    _G.SetPortraitTexture = function(texture, unit) texture._portraitUnit = unit end
     _G.UnitIsFriend = function(_, unit) local d = u(unit); return d and d.friend or false end
     _G.UnitReaction = function(unit) local d = u(unit); return d and d.reaction end
     _G.UnitHealth = function(unit) local d = u(unit); return d and d.health or 0 end
