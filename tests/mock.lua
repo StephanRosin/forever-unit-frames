@@ -91,13 +91,60 @@ local function newWidget(kind, name, parent)
     function w:SetColorTexture(r, g, b, a) self._color = { r, g, b, a } end
     function w:SetVertexColor(r, g, b, a) self._color = { r, g, b, a } end
     function w:SetAllPoints(p) self._allPoints = p or true end
-    -- FontString
+    -- FontString / EditBox. An EditBox without a font cannot take text in
+    -- the client, so the mock refuses it too.
     function w:SetFont(path, size, flags) self._font = { path, size, flags }; return true end
-    function w:SetText(t) self._text = t end
+    function w:SetFontObject(o) self._fontObject = o end
+    function w:SetText(t)
+        if self._kind == "EditBox" then
+            assert(self._font or self._fontObject, "EditBox:SetText(): Font not set")
+        end
+        self._text = t
+    end
+    function w:SetTextColor(r, g, b, a) self._color = { r, g, b, a } end
     function w:GetText() return self._text end
     function w:SetFormattedText(fmt, ...) self._fmt = fmt; self._args = { ... } end
     function w:SetShadowOffset(x, y) self._shadow = { x, y } end
     function w:SetJustifyH(v) self._justifyH = v end
+    -- Enable state (Button, CheckButton, EditBox, Slider)
+    function w:SetEnabled(v) self._enabled = not not v end
+    function w:IsEnabled() return self._enabled ~= false end
+    function w:Enable() self._enabled = true end
+    function w:Disable() self._enabled = false end
+    function w:EnableMouseWheel(v) self._mouseWheel = v end
+    function w:IsMouseOver() return self._mouseOver or false end
+    -- Slider
+    function w:SetOrientation(v) self._orientation = v end
+    function w:SetValueStep(v) self._step = v end
+    function w:SetObeyStepOnDrag(v) self._obeyStep = v end
+    function w:SetThumbTexture(asset)
+        self._thumb = self._thumb or newWidget("Texture", nil, self)
+        self._thumb._texture = asset
+    end
+    function w:GetThumbTexture() return self._thumb end
+    -- CheckButton
+    function w:SetChecked(v) self._checked = not not v end
+    function w:GetChecked() return self._checked or false end
+    function w:SetCheckedTexture(asset)
+        self._checkedTex = self._checkedTex or newWidget("Texture", nil, self)
+        self._checkedTex._texture = asset
+    end
+    function w:GetCheckedTexture() return self._checkedTex end
+    -- EditBox
+    function w:SetAutoFocus(v) self._autoFocus = v end
+    function w:SetFocus() self._focus = true end
+    function w:ClearFocus() self._focus = false end
+    function w:HasFocus() return self._focus or false end
+    function w:SetCursorPosition(p) self._cursor = p end
+    function w:HighlightText(a, b) self._highlighted = { a, b } end
+    function w:SetMaxLetters(n) self._maxLetters = n end
+    function w:SetMultiLine(v) self._multiLine = v end
+    -- ScrollFrame
+    function w:SetScrollChild(c) self._scrollChild = c end
+    function w:GetScrollChild() return self._scrollChild end
+    function w:SetVerticalScroll(v) self._vscroll = v end
+    function w:GetVerticalScroll() return self._vscroll or 0 end
+    function w:GetVerticalScrollRange() return self._vrange or 0 end
     -- Creation
     function w:CreateTexture(n) return newWidget("Texture", n, self) end
     function w:CreateFontString(n) return newWidget("FontString", n, self) end
@@ -246,6 +293,49 @@ function M.Reset()
     _G.DeleteMacro = function(index) table.remove(M.macros, index - 120) end
 
     _G.SlashCmdList = {}
+
+    -- ESC handlers of Blizzard_GameMenuEsc: lowest priority first, the first
+    -- handler returning true consumes the key.
+    M.escHandlers = {}
+    _G.GameMenuEscPriority = { Dialog = 1, Menu = 2, Casting = 4, FrameworkPre = 5,
+        Framework = 6, FrameworkPost = 7, AddOn = 8, AddOnPost = 9, AddOnPost2 = 10, World = 11 }
+    _G.RegisterGameMenuEscHandler = function(priority, handler)
+        assert(priority and handler, "RegisterGameMenuEscHandler requires a priority and a handler")
+        table.insert(M.escHandlers, { priority = priority, handler = handler, order = #M.escHandlers })
+        table.sort(M.escHandlers, function(a, b)
+            if a.priority == b.priority then return a.order < b.order end
+            return a.priority < b.priority
+        end)
+    end
+
+    -- Colour picker. Like the client, opening it sets the wheel colour, which
+    -- fires OnColorSelect -> swatchFunc/opacityFunc before the alpha is set.
+    M.colorPicker = nil
+    M.pickRGB, M.pickA = { 1, 1, 1 }, 1
+    _G.ColorPickerFrame = newWidget("Frame", "ColorPickerFrame")
+    _G.ColorPickerFrame._shown = false
+    function ColorPickerFrame:SetupColorPickerAndShow(info)
+        M.colorPicker = info
+        info.previousValues = { r = info.r, g = info.g, b = info.b, a = info.opacity }
+        M.pickRGB = { info.r, info.g, info.b }
+        if info.swatchFunc then info.swatchFunc() end
+        if info.opacityFunc then info.opacityFunc() end
+        self:Show()
+    end
+    function ColorPickerFrame:GetColorRGB() return M.pickRGB[1], M.pickRGB[2], M.pickRGB[3] end
+    function ColorPickerFrame:GetColorAlpha() return M.pickA end
+    function ColorPickerFrame:GetPreviousValues()
+        local p = M.colorPicker.previousValues
+        return p.r, p.g, p.b, p.a
+    end
+end
+
+-- Presses ESC: runs the registered ESC handlers; true if one consumed it.
+function M.PressEscape()
+    for _, entry in ipairs(M.escHandlers) do
+        if entry.handler() then return true end
+    end
+    return false
 end
 
 -- Blizzard's macro window (load-on-demand in the client). Shown state is

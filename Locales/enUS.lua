@@ -74,3 +74,6 @@ L.ENUM_CURRENT = "Current"; L.ENUM_CURRENT_MAX = "Current / max"; L.ENUM_PERCENT
 L.ENUM_DEFICIT = "Deficit"
 L.ENUM_fontOutline_NONE = "None"
 L.ENUM_textHealthLeft_NONE = "Empty"
+
+L.INHERITED = "(inherited)"
+L.RESET_OVERRIDE = "Reset"
