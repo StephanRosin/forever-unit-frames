@@ -115,19 +115,22 @@ function MacroBackup.Write(str)
         return false
     end
 
-    -- Pass 2: everything checked out, now write.
+    -- Pass 2: everything checked out, now write. CreateMacro and EditMacro
+    -- re-sort the macro list, so every index is looked up by name right
+    -- before it is used; the pass-1 indices are never reused here.
     for i = 1, MAX_MACROS do
         local chunk = chunks[i]
+        local index = indexOf(i)
         if chunk then
             local body = header(i, #chunks) .. chunk
-            if idx[i] then
-                EditMacro(idx[i], PREFIX .. i, ICON, body)
+            if index then
+                EditMacro(index, PREFIX .. i, ICON, body)
             else
                 CreateMacro(PREFIX .. i, ICON, body, true)
             end
-        elseif idx[i] then
+        elseif index then
             -- Fewer chunks than before: blank the leftover macro so Read stops.
-            EditMacro(idx[i], PREFIX .. i, ICON, header(i, #chunks))
+            EditMacro(index, PREFIX .. i, ICON, header(i, #chunks))
         end
     end
     return true

@@ -111,3 +111,14 @@ H.check("incomplete backup unread", ns.MacroBackup.Read(), nil)
 ns = H.LoadAddon()
 table.insert(M.macros, { name = "FUF Save 1", icon = "", body = "/cast Fireball", perChar = true })
 H.check("foreign body unread", ns.MacroBackup.Read(), nil)
+
+-- Stale indices: only "FUF Save 2" exists. Creating "FUF Save 1" re-sorts
+-- the list, so the index of macro 2 must be looked up again before editing.
+ns = H.LoadAddon()
+table.insert(M.macros, { name = "FUF Save 2", icon = "", body = "", perChar = true })
+H.checkTrue("re-sort: write two chunks", ns.MacroBackup.Write(long))
+H.check("re-sort: two macros", #M.macros, 2)
+local names = {}
+for _, m in ipairs(M.macros) do names[m.name] = true end
+H.checkTrue("re-sort: both names present", names["FUF Save 1"] and names["FUF Save 2"])
+H.check("re-sort: read back", ns.MacroBackup.Read(), long)

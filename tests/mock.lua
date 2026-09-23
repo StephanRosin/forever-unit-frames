@@ -219,16 +219,23 @@ function M.Reset()
         return 0
     end
     _G.GetMacroBody = function(index) local m = M.macros[index - 120]; return m and m.body end
+    -- Like the client, creating or editing a macro re-sorts the list by
+    -- name, so an index taken before the call may point elsewhere after it.
+    local function sortMacros()
+        table.sort(M.macros, function(a, b) return a.name < b.name end)
+    end
     _G.CreateMacro = function(name, icon, body, perChar)
         assert(#body <= 255, "macro body over 255 characters")
         table.insert(M.macros, { name = name, icon = icon, body = body, perChar = perChar })
-        return 120 + #M.macros
+        sortMacros()
+        return GetMacroIndexByName(name)
     end
     _G.EditMacro = function(index, name, icon, body)
         assert(#body <= 255, "macro body over 255 characters")
         local m = M.macros[index - 120]
         m.name, m.icon, m.body = name, icon, body
-        return index
+        sortMacros()
+        return GetMacroIndexByName(name)
     end
     _G.DeleteMacro = function(index) table.remove(M.macros, index - 120) end
 
