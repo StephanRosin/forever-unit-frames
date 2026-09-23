@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Upload the packaged addon to CurseForge.
+#   tools/release <release|beta|alpha> "<changelog text>"
+# Version comes from the TOC (bump it first). The API token is read from
+# $CURSEFORGE_TOKEN or ~/.config/curseforge-token; it is never stored here.
+set -eu
+TYPE="${1:?usage: tools/release <release|beta|alpha> \"<changelog>\"}"
+CHANGELOG="${2:?changelog text required}"
+case "$TYPE" in release|beta|alpha) ;; *) echo "bad release type: $TYPE" >&2; exit 1 ;; esac
+PROJECT_ID=1708698
+# CurseForge game version "WoW Forever 1.60.1" (Interface 16001).
+GAME_VERSION_ID=17053
+HERE="$(cd "$(dirname "$0")/.." && pwd)"
+AUTH="${CURSEFORGE_TOKEN:-}"
+[ -n "$AUTH" ] || AUTH="$(cat "$HOME/.config/curseforge-token")"
+VERSION="$(sed -n 's/^## Version: *//p' "$HERE/ForeverUnitFrames.toc" | tr -d '\r')"
+if git -C "$HERE" rev-parse -q --verify "refs/tags/v$VERSION" >/dev/null; then
+    echo "v$VERSION is already released: bump ## Version in the TOC" >&2; exit 1
+fi
+ZIP="$("$HERE/tools/package")"
+METADATA="$(python3 -c 'import json,sys; print(json.dumps({"changelog": sys.argv[1], "changelogType": "markdown", "displayName": "Forever Unit Frames " + sys.argv[2], "gameVersions": [int(sys.argv[3])], "releaseType": sys.argv[4]}))' \
+    "$CHANGELOG" "$VERSION" "$GAME_VERSION_ID" "$TYPE")"
+curl -sS --fail-with-body -H "X-Api-Token: $AUTH" \
+    -F "metadata=$METADATA" -F "file=@$ZIP" \
+    "https://wow.curseforge.com/api/projects/$PROJECT_ID/upload-file"
+echo
+git -C "$HERE" tag -a "v$VERSION" -m "Forever Unit Frames $VERSION"
+echo "Uploaded $ZIP as $TYPE, tagged v$VERSION (push the tag with: git push origin v$VERSION)"
