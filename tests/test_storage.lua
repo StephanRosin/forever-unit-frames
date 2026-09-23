@@ -46,7 +46,8 @@ H.checkTrue("per character", M.macros[1].perChar)
 H.check("read back", ns.MacroBackup.Read(), long)
 H.checkTrue("shorter write", ns.MacroBackup.Write("1;pW250"))
 H.check("second macro emptied", ns.MacroBackup.Read(), "1;pW250")
-H.check("too long refused", ns.MacroBackup.Write(string.rep("x", 600)), false)
+H.check("too long refused", ns.MacroBackup.Write(string.rep("x", 900)), false)
+H.check("too long error", ns.MacroBackup.LastError(), "MACRO_TOO_LONG")
 M.macroFrameShown = true
 H.check("refused while macro frame open", ns.MacroBackup.Write("1;pW251"), false)
 M.macroFrameShown = false
@@ -184,3 +185,103 @@ M.macroFrameShown = false
 H.checkTrue("lod: OnHide hooked", MacroFrame:GetScript("OnHide"))
 if MacroFrame:GetScript("OnHide") then MacroFrame:GetScript("OnHide")(MacroFrame) end
 H.check("lod: written when window closes", ns.MacroBackup.Read(), "1;pW293")
+
+-- Up to four macros, 213 characters of profile each (252 minus the header).
+local MARK = "#Forever Unit Frames backup"
+local function bodies()
+    local list = {}
+    for i, m in ipairs(M.macros) do list[i] = m.name .. "=" .. m.body end
+    return table.concat(list, "|")
+end
+local function fillOthers(count)
+    for i = 1, count do
+        table.insert(M.macros, { name = "Other Macro " .. i, icon = "", body = "", perChar = true })
+    end
+end
+local four = string.rep("x", 852)
+
+ns = H.LoadAddon()
+H.checkTrue("four: 852 characters written", ns.MacroBackup.Write(four))
+H.check("four: four macros", #M.macros, 4)
+for i = 1, 4 do
+    H.check("four: name " .. i, M.macros[i].name, "FUF Save " .. i)
+    H.check("four: header " .. i, M.macros[i].body:sub(1, 39), MARK .. " " .. i .. "/4 - keep\n")
+    H.check("four: body " .. i .. " leaves slack", #M.macros[i].body, 252)
+end
+H.check("four: read back", ns.MacroBackup.Read(), four)
+M.RoundTripMacros("\r\n", true)
+H.check("four: read back after a reload", ns.MacroBackup.Read(), four)
+
+-- Five chunks are too many: refused, nothing touched.
+local before = bodies()
+H.check("five: refused", ns.MacroBackup.Write(four .. "y"), false)
+H.check("five: error", ns.MacroBackup.LastError(), "MACRO_TOO_LONG")
+H.check("five: macros untouched", bodies(), before)
+
+-- Shrinking blanks the surplus macros; they stay ours and are reused.
+H.checkTrue("shrink: written", ns.MacroBackup.Write("1;pW250"))
+H.check("shrink: macros kept", #M.macros, 4)
+for i = 2, 4 do
+    H.check("shrink: macro " .. i .. " blanked", M.macros[i].body, MARK .. " " .. i .. "/1 - keep\n")
+end
+H.check("shrink: read back", ns.MacroBackup.Read(), "1;pW250")
+M.RoundTripMacros("\r\n", true)
+H.check("shrink: read back after a reload", ns.MacroBackup.Read(), "1;pW250")
+local three = string.rep("z", 500)
+H.checkTrue("regrow: three chunks written", ns.MacroBackup.Write(three))
+H.check("regrow: no new macros", #M.macros, 4)
+H.check("regrow: read back", ns.MacroBackup.Read(), three)
+H.check("regrow: macro 4 blanked", M.macros[4].body, MARK .. " 4/3 - keep\n")
+
+-- Capacity: all new macros are counted before anything is written.
+ns = H.LoadAddon()
+fillOthers(27)
+before = bodies()
+H.check("capacity: three free, four needed", ns.MacroBackup.Write(four), false)
+H.check("capacity: error", ns.MacroBackup.LastError(), "MACRO_FULL")
+H.check("capacity: macros untouched", bodies(), before)
+H.checkTrue("capacity: three needed fit", ns.MacroBackup.Write(three))
+H.check("capacity: read back", ns.MacroBackup.Read(), three)
+
+ns = H.LoadAddon()
+fillOthers(26)
+H.checkTrue("capacity: two chunks written", ns.MacroBackup.Write(string.rep("x", 400)))
+table.insert(M.macros, { name = "Zz Other", icon = "", body = "", perChar = true })
+before = bodies()
+H.check("capacity: one free, two new needed", ns.MacroBackup.Write(four), false)
+H.check("capacity: full error", ns.MacroBackup.LastError(), "MACRO_FULL")
+H.check("capacity: existing backup untouched", bodies(), before)
+H.check("capacity: old backup still reads", ns.MacroBackup.Read(), string.rep("x", 400))
+
+ns = H.LoadAddon()
+fillOthers(26)
+H.checkTrue("capacity: exactly four free", ns.MacroBackup.Write(four))
+H.check("capacity: all thirty used", #M.macros, 30)
+
+-- A foreign macro under a backup name is never touched, also in slots 3 and 4.
+ns = H.LoadAddon()
+table.insert(M.macros, { name = "FUF Save 3", icon = "", body = "/cast Fireball", perChar = true })
+before = bodies()
+H.check("foreign 3: refused", ns.MacroBackup.Write(four), false)
+H.check("foreign 3: error", ns.MacroBackup.LastError(), "MACRO_FOREIGN")
+H.check("foreign 3: untouched", bodies(), before)
+
+-- Reading: every chunk 1..n must be there and agree on n.
+local function macro(i, n, chunk, crlf)
+    local body = MARK .. " " .. i .. "/" .. n .. " - keep\n" .. chunk
+    if crlf then body = body:gsub("\n", "\r\n") .. "\r\n" end
+    return { name = "FUF Save " .. i, icon = "", body = body, perChar = true }
+end
+ns = H.LoadAddon()
+M.macros = { macro(1, 2, "1;pW2", true), macro(2, 2, "60", true) }
+H.check("compat: two-chunk backup reads", ns.MacroBackup.Read(), "1;pW260")
+M.macros = { macro(1, 4, "a"), macro(2, 4, "b"), macro(3, 4, "c"), macro(4, 4, "d") }
+H.check("read: four chunks", ns.MacroBackup.Read(), "abcd")
+M.macros = { macro(1, 4, "a"), macro(2, 4, "b"), macro(4, 4, "d") }
+H.check("read: chunk 3 missing", ns.MacroBackup.Read(), nil)
+M.macros = { macro(1, 4, "a"), macro(2, 4, "b"), macro(3, 3, "c"), macro(4, 4, "d") }
+H.check("read: chunk 3 disagrees on n", ns.MacroBackup.Read(), nil)
+M.macros = { macro(1, 3, "a"), macro(2, 3, "b"), macro(3, 3, "c"), macro(4, 1, "") }
+H.check("read: blanked macro 4 ignored", ns.MacroBackup.Read(), "abc")
+M.macros = { macro(1, 5, "a"), macro(2, 5, "b"), macro(3, 5, "c"), macro(4, 5, "d"), macro(5, 5, "e") }
+H.check("read: five chunks are not ours", ns.MacroBackup.Read(), nil)

@@ -95,19 +95,54 @@ local function bigProfile(n)
     n.Config.Set("general", "barTexture", "Long Bar Texture " .. string.rep("x", 150))
 end
 
+-- Every aura setting of the given frames away from its default, with the
+-- longest values (sliders at their minimum): the largest aura profile.
+local AURA_SUFFIXES = { "Enabled", "OnlyMine", "Dispellable", "ShowTime", "Anchor", "FramePoint",
+    "Point", "X", "Y", "Growth", "RowGrowth", "Size", "Spacing", "PerRow", "Max" }
+local function auraProfile(n, scopes)
+    for _, scope in ipairs(scopes) do
+        for _, group in ipairs(n.Settings.AURA_GROUPS) do
+            for _, suffix in ipairs(AURA_SUFFIXES) do
+                local def = n.Settings.Get(group .. suffix)
+                if def and n.Settings.AppliesTo(def, scope) then
+                    local cur, value = n.Config.Get(scope, def.key)
+                    if def.type == "bool" then
+                        value = not cur
+                    elseif def.type == "enum" then
+                        value = def.values[#def.values] ~= cur and def.values[#def.values] or def.values[1]
+                    else
+                        value = cur ~= def.min and def.min or def.max
+                    end
+                    n.Config.Set(scope, def.key, value)
+                end
+            end
+        end
+    end
+end
+
+local BIG = { macros = 2, minLength = 400, last = ";yY1234$", apply = bigProfile,
+    check = function(n) return n.Config.Get("party", "y") == 1234 end }
+-- All aura settings on five frames: four macros.
+local AURAS = { macros = 4, minLength = 640, last = ";fJY%-200$",
+    apply = function(n) auraProfile(n, { "player", "target", "targettarget", "pet", "focus" }) end,
+    check = function(n) return n.Config.Get("focus", "buffsY") == -200 end }
+
 -- Three sessions in a row with SavedVariables never loaded: nothing may be
 -- lost, and an unchanged backup is not rewritten because of line endings.
-local function threeSessions(label, trailer, crlf, late)
+local function threeSessions(label, trailer, crlf, late, case)
+    case = case or BIG
     local n = login({})
-    bigProfile(n)
+    case.apply(n)
     M.RunTimers()
     M.FireEvent("PLAYER_LOGOUT")
     local expected = n.MacroBackup.Read()
     H.check(label .. ": setup encodes the profile", expected, n.Codec.Encode(n.Config.Profile()))
-    H.checkTrue(label .. ": setup ends with the last entry", expected:find(";yY1234$"))
-    H.check(label .. ": setup needs two macros", #M.macros, 2)
-    H.check(label .. ": setup is at least 400 characters", #expected >= 400, true)
-    H.check(label .. ": first body leaves slack", #M.macros[1].body <= 252, true)
+    H.checkTrue(label .. ": setup ends with the last entry", (expected or ""):find(case.last))
+    H.check(label .. ": setup macro count", #M.macros, case.macros)
+    H.check(label .. ": setup length", #(expected or "") >= case.minLength, true)
+    for i = 1, #M.macros do
+        H.check(label .. ": body " .. i .. " leaves slack", #M.macros[i].body <= 252, true)
+    end
     for session = 1, 3 do
         M.RoundTripMacros(trailer, crlf)
         local macros = M.macros
@@ -117,19 +152,61 @@ local function threeSessions(label, trailer, crlf, late)
         local tag = ("%s: session %d"):format(label, session)
         H.check(tag .. " source", n.Storage.Source(), "MacroBackup")
         H.check(tag .. " profile complete", n.Codec.Encode(n.Config.Profile()), expected)
-        H.check(tag .. " last entry", n.Config.Get("party", "y"), 1234)
+        H.check(tag .. " last entry", case.check(n), true)
         M.FireEvent("PLAYER_LOGOUT")
         H.check(tag .. " SV complete", n.Codec.Encode(ForeverUnitFramesDB.profile), expected)
         H.check(tag .. " backup complete", n.MacroBackup.Read(), expected)
         H.check(tag .. " no macro rewrite", writes.macro, 0)
         H.check(tag .. " no unreadable warning", chatCount(n.L.MACRO_UNREADABLE), 0)
     end
+    return n
 end
 
 threeSessions("LF reload", "\n", false, false)
 threeSessions("CRLF reload", "\r\n", true, false)
 threeSessions("LF restart", "\n", false, true)
 threeSessions("CRLF restart", "\r\n", true, true)
+threeSessions("auras LF reload", "\n", false, false, AURAS)
+threeSessions("auras CRLF restart", "\r\n", true, true, AURAS)
+
+-- Back to a small profile after the aura sessions: macros 2 to 4 are
+-- blanked, and the next sessions read the small profile.
+do
+    local n = threeSessions("auras CRLF reload", "\r\n", true, false, AURAS)
+    SlashCmdList.FOREVERUNITFRAMES("reset all")
+    n.Config.Set("player", "width", 260)
+    M.RunTimers()
+    M.FireEvent("PLAYER_LOGOUT")
+    H.check("auras shrink: four macros kept", #M.macros, 4)
+    for i = 2, 4 do
+        H.check("auras shrink: macro " .. i .. " blanked", M.macros[i].body,
+            ("#Forever Unit Frames backup %d/1 - keep\n"):format(i))
+    end
+    for session = 1, 3 do
+        M.RoundTripMacros("\r\n", true)
+        n = login(M.macros)
+        H.check("auras shrink: session " .. session, n.MacroBackup.Read(), "1;pW260")
+        H.check("auras shrink: session " .. session .. " width", n.Config.Get("player", "width"), 260)
+        H.check("auras shrink: session " .. session .. " auras at default",
+            n.Config.Get("target", "buffsY"), 2)
+        M.FireEvent("PLAYER_LOGOUT")
+    end
+end
+
+-- All aura settings on all six frames are more than four macros hold: the
+-- write is refused and the backup already there stays as it is.
+do
+    local n = login({})
+    auraProfile(n, { "player", "target", "targettarget", "pet", "focus" })
+    M.RunTimers()
+    local before = n.MacroBackup.Read()
+    auraProfile(n, { "party" })
+    local encoded = n.Codec.Encode(n.Config.Profile())
+    H.check("auras six frames: longer than four macros", #encoded > 4 * 213, true)
+    H.check("auras six frames: refused", n.MacroBackup.Write(encoded), false)
+    H.check("auras six frames: error", n.MacroBackup.LastError(), "MACRO_TOO_LONG")
+    H.check("auras six frames: backup kept", n.MacroBackup.Read(), before)
+end
 
 -- A known code whose value cannot be parsed: what can be read is loaded,
 -- the macro is never overwritten this session, and the player is told once.

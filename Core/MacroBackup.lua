@@ -6,11 +6,14 @@ local _, ns = ...
 -- back in a later session carries an extra line break, and the macro cache
 -- turns every line break into CRLF (header line + appended one: 3 extra
 -- characters), so chunks leave that much slack below the client's limit.
+-- Up to four macros ("FUF Save 1" to "FUF Save 4"), only as many as the
+-- profile needs; the header "i/n" keeps one digit each, so its length and
+-- the slack stay the same for every macro.
 local MacroBackup = {}
 ns.MacroBackup = MacroBackup
 
 local PREFIX = "FUF Save "
-local MAX_MACROS = 2
+local MAX_MACROS = 4
 local BODY_LIMIT = 252
 local ICON = "INV_MISC_QUESTIONMARK"
 local MARK = "#Forever Unit Frames backup"
@@ -52,8 +55,9 @@ local HEADER_PATTERN = "^#Forever Unit Frames backup (%d+)/(%d+) %- keep\r?\n(.*
 -- A body that went through the server comes back with a line break
 -- appended, and the client's macro cache uses CRLF line endings. The codec
 -- never writes whitespace, and Write never ends a chunk on whitespace, so
--- trailing whitespace is stripped from every chunk: with two macros the
--- extra line break of the first would otherwise sit in the middle.
+-- trailing whitespace is stripped from every chunk: with several macros
+-- the extra line break of each but the last would otherwise sit inside
+-- the profile.
 local function parseHeader(body)
     body = (body or ""):gsub("\r\n?", "\n")
     local i, n, chunk = body:match(HEADER_PATTERN)
