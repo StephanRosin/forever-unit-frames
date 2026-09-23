@@ -88,8 +88,39 @@ function Texts.SetName(fs, unit, showSurname, prefix)
     end
 end
 
-function Texts.Apply(fs, tag, unit, kind, showSurname)
-    if tag == "NONE" then
+-- Test mode: health values that match the sample health bar
+-- (Health.SAMPLE) on the scale of the unit's readable maximum, else on
+-- SAMPLE_MAX. Plain numbers only; nil when the frame shows live health.
+Texts.SAMPLE_MAX = 10000
+
+local function sampleHealth(frame)
+    if not frame.health.preview then return nil end
+    local max = Secrets.Number(UnitHealthMax(frame.unit))
+    if not max or max <= 0 then max = Texts.SAMPLE_MAX end
+    local current = math.floor(max * ns.Health.SAMPLE + 0.5)
+    return { current = current, max = max, missing = max - current, percent = ns.Health.SAMPLE * 100 }
+end
+
+-- The value tags drawn from sample numbers.
+local function applySample(fs, tag, sample)
+    if tag == "CURRENT" then
+        fs:SetText(Secrets.Abbreviate(sample.current))
+    elseif tag == "CURRENT_MAX" then
+        fs:SetFormattedText("%s / %s", Secrets.Abbreviate(sample.current), Secrets.Abbreviate(sample.max))
+    elseif tag == "PERCENT" then
+        fs:SetFormattedText("%.0f%%", sample.percent)
+    else
+        fs:SetText(C_StringUtil.TruncateWhenZero(sample.missing))
+    end
+end
+local SAMPLE_TAGS = { CURRENT = true, CURRENT_MAX = true, PERCENT = true, DEFICIT = true }
+
+-- sample (optional): plain health numbers that replace the unit's for
+-- the value tags of health texts (test mode).
+function Texts.Apply(fs, tag, unit, kind, showSurname, sample)
+    if sample and kind == "health" and SAMPLE_TAGS[tag] then
+        applySample(fs, tag, sample)
+    elseif tag == "NONE" then
         fs:SetText("")
     elseif tag == "NAME" then
         Texts.SetName(fs, unit, showSurname)
@@ -367,12 +398,19 @@ end
 
 function Texts.Update(frame)
     local showSurname = Config.Get(frame.key, "showSurname")
+    local sample = sampleHealth(frame)
     for _, slot in ipairs(SLOTS) do
         Texts.Apply(frame.texts[slot.field], Config.Get(frame.key, slot.setting), frame.unit, slot.kind or slot.bar,
-            showSurname)
+            showSurname, sample)
     end
     paintTitle(frame)
     updateClassIcon(frame)
+end
+
+-- Test mode: Health.Preview (an earlier element) has switched the health
+-- bar to or from its sample; the texts follow at once.
+function Texts.Preview(frame)
+    if frame.unit and UnitExists(frame.unit) then Texts.Update(frame) end
 end
 
 ns.RegisterElement(Texts)
