@@ -25,6 +25,7 @@ local Config, Secrets, Settings = ns.Config, ns.Secrets, ns.Settings
 
 Castbar.CAST_COLOR = { 1.0, 0.7, 0.0 }
 Castbar.CHANNEL_COLOR = { 0.3, 0.8, 0.3 }
+Castbar.PREVIEW_ICON = "Interface\\Icons\\INV_Misc_QuestionMark"
 
 local STOP_EVENTS = {
     UNIT_SPELLCAST_STOP = true, UNIT_SPELLCAST_FAILED = true,
@@ -136,7 +137,7 @@ end
 
 function Castbar.OnUpdate(bar)
     local cast = bar.cast
-    if not cast then return end
+    if not cast or bar.preview then return end
     local nowMs = now()
     bar:SetValue(nowMs)
     local endMs = Secrets.Number(cast.endMs)
@@ -262,12 +263,37 @@ function Castbar.Style(frame)
     bar.time:SetPoint("RIGHT", bar, "RIGHT", -4, 0)
     bar.time:SetJustifyH("RIGHT")
     bar.time:SetShown(Config.Get(scope, "castbarTime"))
-    if not Config.Get(scope, "castbarEnabled") then Castbar.Stop(bar) end
+    if bar.preview then
+        Castbar.Preview(frame, true)
+    elseif not Config.Get(scope, "castbarEnabled") then
+        Castbar.Stop(bar)
+    end
+end
+
+-- Test mode: a still sample cast on every enabled castbar. Real casts are
+-- ignored until the preview ends.
+function Castbar.Preview(frame, on)
+    local bar = frame.castbar
+    if not bar then return end
+    bar.preview = on or nil
+    if not (on and Config.Get(frame.key, "castbarEnabled")) then
+        Castbar.Stop(bar)
+        return
+    end
+    bar.cast = nil
+    bar:SetMinMaxValues(0, 1)
+    bar:SetValue(0.6)
+    bar:SetReverseFill(false)
+    paint(bar)
+    bar.text:SetText(ns.L.TEST_CAST)
+    bar.icon:SetTexture(Castbar.PREVIEW_ICON)
+    bar.time:SetText("1.5")
+    bar:Show()
 end
 
 function Castbar.Update(frame, event, _, castGUID)
     local bar = frame.castbar
-    if not bar then return end
+    if not bar or bar.preview then return end
     if not Config.Get(frame.key, "castbarEnabled") then
         Castbar.Stop(bar)
         return
@@ -280,7 +306,7 @@ function Castbar.Update(frame, event, _, castGUID)
     elseif STOP_EVENTS[event] then
         if not Castbar.IsOtherCast(bar, castGUID) then Castbar.Refresh(bar, unit) end
     else
-        -- The unit itself changed (new target, timer): start over.
+        -- The unit itself changed (new target, test mode, timer): start over.
         Castbar.Refresh(bar, unit)
     end
 end

@@ -120,6 +120,7 @@ L.RESET_OVERRIDE = "Reset"
 
 L.TEST_MODE_COMBAT = "Test mode is not available in combat."
 L.TEST_MODE_ON = "Test mode"
+L.TEST_CAST = "Test cast"
 
 L.GENERAL = "General"
 L.UNLOCK_FRAMES = "Unlock frames"; L.LOCK_FRAMES = "Lock frames"

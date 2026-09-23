@@ -17,6 +17,10 @@ Party.TEMPLATE = "ForeverUnitFramesPartyButtonTemplate"
 Party.MEMBERS = 4
 -- Every button the header made, in creation order.
 Party.buttons = {}
+-- Test mode: pretend members (secure buttons on the player) in a plain
+-- block where the header would be.
+Party.fakes = {}
+local testing = false
 
 local function get(key) return Config.Get(Party.KEY, key) end
 
@@ -95,6 +99,66 @@ function Party.StyleButton(button)
     Single.UpdateAll(button)
 end
 
+-- A pretend member: a real secure button on the player, so clicks target
+-- you, drawn like the others. Never touched by the group header. Made once
+-- per slot, out of combat, and reused every time test mode comes on.
+local function fakeButton(i)
+    local button = Party.fakes[i]
+    if button then return button end
+    button = CreateFrame("Button", "ForeverUnitFramesPartyTest" .. i, Party.testBlock, "SecureUnitButtonTemplate")
+    button.key = Party.KEY
+    button:SetAttribute("*type1", "target")
+    button:SetAttribute("*type2", "togglemenu")
+    button:RegisterForClicks("AnyUp")
+    for _, el in ipairs(ns.Elements) do el.Build(button) end
+    Party.fakes[i] = button
+    return button
+end
+
+-- Hidden and quiet: no sample cast, no events. The secure "unit"
+-- attribute stays "player" (a hidden button cannot be clicked); showFakes
+-- binds the button again.
+local function releaseFake(button)
+    button:Hide()
+    ns.Castbar.Preview(button, false)
+    button.unit = nil
+    ns.UnitEvents.Bind(button)
+end
+
+local function showFakes()
+    local block = Party.testBlock
+    if not block then
+        block = CreateFrame("Frame", nil, UIParent)
+        block.key = Party.KEY
+        Party.testBlock = block
+    end
+    local w, h = Party.BlockSize()
+    block:SetSize(w, h)
+    block:ClearAllPoints()
+    if Party.header.mover then
+        block:SetPoint("TOPLEFT", Party.header.mover, "TOPLEFT", 0, 0)
+    else
+        block:SetPoint("TOPLEFT", UIParent, "CENTER", get("x") - w / 2, get("y") + h / 2)
+    end
+    block:SetShown(get("enabled"))
+    local slots = Party.Slots()
+    for i = 1, slots do
+        local button = fakeButton(i)
+        Single.SetUnit(button, "player")
+        button:ClearAllPoints()
+        button:SetPoint("TOPLEFT", block, "TOPLEFT", Party.SlotOffset(i))
+        Party.StyleButton(button)
+        ns.Castbar.Preview(button, true)
+        button:Show()
+    end
+    for i = slots + 1, #Party.fakes do releaseFake(Party.fakes[i]) end
+end
+
+local function hideFakes()
+    if Party.testBlock then Party.testBlock:Hide() end
+    for _, button in ipairs(Party.fakes) do releaseFake(button) end
+end
+
 -- Out of combat only: attributes, position, size and visibility are
 -- protected on the header and its buttons.
 function Party.StyleAll()
@@ -110,7 +174,18 @@ function Party.StyleAll()
     end
     -- Hide + Show makes the header lay its buttons out again (OnShow).
     header:Hide()
-    if get("enabled") then header:Show() end
+    if testing then
+        showFakes()
+    else
+        hideFakes()
+        if get("enabled") then header:Show() end
+    end
+end
+
+-- Test mode on or off (out of combat, from Options/TestMode.lua).
+function Party.SetTest(on)
+    testing = on and true or false
+    Party.StyleAll()
 end
 
 -- XML OnLoad: the button exists, its unit is not known yet.
@@ -136,6 +211,7 @@ end
 
 -- What the options window outlines when Party is selected.
 function Party.HighlightTarget()
+    if testing and Party.testBlock then return Party.testBlock end
     return Party.header
 end
 

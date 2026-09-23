@@ -1,8 +1,10 @@
 local _, ns = ...
 
 -- Shows every enabled frame with the player's data, so frames can be
--- configured without a target. Only touches secure attributes and unit
--- watch out of combat (existing ns.AfterCombat paths).
+-- configured without a target, and a sample cast on every castbar. The
+-- party block is replaced by a pretend party (Units/Party.lua). Only
+-- touches secure attributes and unit watch out of combat (existing
+-- ns.AfterCombat paths).
 local TestMode = {}
 ns.TestMode = TestMode
 
@@ -21,6 +23,7 @@ local function applyOn(frame)
     ns.Single.SetUnit(frame, "player")
     UnregisterUnitWatch(frame)
     frame:Show()
+    ns.Castbar.Preview(frame, true)
     ns.Single.UpdateAll(frame)
 end
 
@@ -31,6 +34,7 @@ local function applyOff(frame)
     local unit = saved[frame]
     saved[frame] = nil
     ns.Single.SetUnit(frame, unit)
+    ns.Castbar.Preview(frame, false)
     if ns.Config.Get(frame.key, "enabled") then
         RegisterUnitWatch(frame)
     else
@@ -59,6 +63,7 @@ function TestMode.Set(state)
     else
         for frame in pairs(saved) do applyOff(frame) end
     end
+    ns.Party.SetTest(on)
     ns.Fire("TEST_MODE", on)
     return true
 end
@@ -106,6 +111,7 @@ ns.On("PLAYER_REGEN_DISABLED", function()
     on = false
     ns.AfterCombat("testmode", function()
         for frame in pairs(saved) do applyOff(frame) end
+        ns.Party.SetTest(false)
     end, "last")
     ns.Fire("TEST_MODE", false)
 end)
