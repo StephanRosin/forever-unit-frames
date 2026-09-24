@@ -5,6 +5,7 @@
 -- its own backup macros once the profile is safe in SavedVariables.
 local M = H.M
 
+-- The clean-up is silent: nothing about macros reaches the chat.
 local function chatCount(text)
     local n = 0
     for _, line in ipairs(M.chat) do
@@ -126,12 +127,10 @@ ns = login(sv(250), withOthers(M.BackupMacros({ "1;pW2", "60" })))
 H.check("SV: source", ns.Storage.Source(), "SavedVariables")
 H.check("SV: SV value wins over the backup", ns.Config.Get("player", "width"), 250)
 H.check("SV: backup removed at login", names(), "Another Macro,Zz Other")
-H.check("SV: told once", chatCount(ns.L.MACROS_REMOVED), 1)
-H.check("SV: message text", ns.L.MACROS_REMOVED,
-    "Old settings backup macros removed; settings are kept in SavedVariables.")
+H.check("SV: silent", chatCount("macros removed") + chatCount("migrated"), 0)
 M.FireEvent("UPDATE_MACROS")
 M.RunTimers()
-H.check("SV: not told again", chatCount(ns.L.MACROS_REMOVED), 1)
+H.check("SV: still silent", chatCount("macros removed") + chatCount("migrated"), 0)
 ns.Config.Set("player", "width", 251)
 M.RunTimers()
 M.FireEvent("PLAYER_LOGOUT")
@@ -142,7 +141,7 @@ H.check("SV: no macro created", #M.macros, 2)
 -- Macros that reach the client after PLAYER_LOGIN are removed when they come.
 ns = login(sv(250), M.BackupMacros("1;pW260"), true)
 H.check("SV late: removed on UPDATE_MACROS", #M.macros, 0)
-H.check("SV late: told", chatCount(ns.L.MACROS_REMOVED), 1)
+H.check("SV late: silent", chatCount("macros removed") + chatCount("migrated"), 0)
 H.check("SV late: SV value kept", ns.Config.Get("player", "width"), 250)
 
 -- SavedVariables loaded: saving is never held back for macros.
@@ -151,7 +150,7 @@ ns.Config.Set("player", "width", 252)
 M.RunTimers(1)
 H.check("SV: no waiting", ns.Storage.IsWaiting(), false)
 H.check("SV: saved at once", ForeverUnitFramesDB.profile.player.width, 252)
-H.check("SV without backup: nothing said", chatCount(ns.L.MACROS_REMOVED), 0)
+H.check("SV without backup: nothing said", chatCount("macros removed") + chatCount("migrated"), 0)
 H.check("SV without backup: nothing deleted", M.macroDeletes, 0)
 
 -- In combat: removed only once combat has ended.
@@ -162,7 +161,7 @@ M.FireEvent("UPDATE_MACROS")
 H.check("combat: kept in combat", #M.macros, 1)
 M.SetCombat(false)
 H.check("combat: removed after combat", #M.macros, 0)
-H.check("combat: told", chatCount(ns.L.MACROS_REMOVED), 1)
+H.check("combat: silent", chatCount("macros removed") + chatCount("migrated"), 0)
 
 -- Macro window open: removed once it closes.
 ns = login(sv(250))
@@ -170,16 +169,16 @@ M.macroFrameShown = true
 M.macros = M.BackupMacros("1;pW260")
 M.FireEvent("UPDATE_MACROS")
 H.check("window open: kept", #M.macros, 1)
-H.check("window open: nothing said", chatCount(ns.L.MACROS_REMOVED), 0)
+H.check("window open: nothing said", chatCount("macros removed") + chatCount("migrated"), 0)
 M.macroFrameShown = false
 MacroFrame:GetScript("OnHide")(MacroFrame)
 H.check("window closed: removed", #M.macros, 0)
-H.check("window closed: told", chatCount(ns.L.MACROS_REMOVED), 1)
+H.check("window closed: silent", chatCount("macros removed") + chatCount("migrated"), 0)
 
 -- A player's macro under our name survives the clean-up.
 ns = login(sv(250), { { name = "FUF Save 1", icon = "", body = "/cast Fireball", perChar = true } })
 H.check("foreign at cleanup: kept", M.macros[1] and M.macros[1].body, "/cast Fireball")
-H.check("foreign at cleanup: nothing said", chatCount(ns.L.MACROS_REMOVED), 0)
+H.check("foreign at cleanup: nothing said", chatCount("macros removed") + chatCount("migrated"), 0)
 
 -- A storage provider: no waiting and no clean-up (SavedVariables are empty).
 ns = H.LoadAddon()
@@ -201,8 +200,8 @@ H.check("migrate: last entry", ns.Config.Get("target", "healthColorMode"), "GRAD
 H.check("migrate: handed to SV at once", ForeverUnitFramesDB.profile and ForeverUnitFramesDB.profile.player.width, 260)
 H.check("migrate: SV format version", ForeverUnitFramesDB.version, ns.Codec.VERSION)
 H.check("migrate: backup removed", names(), "Another Macro,Zz Other")
-H.check("migrate: told about the migration", chatCount(ns.L.MIGRATED_FROM_MACRO), 1)
-H.check("migrate: told about the removal", chatCount(ns.L.MACROS_REMOVED), 1)
+H.check("migrate: silent", chatCount("macros removed") + chatCount("migrated"), 0)
+H.check("migrate: told about the removal", chatCount("macros removed") + chatCount("migrated"), 0)
 H.checkTrue("migrate: status", status():find("Settings loaded from: macro backup (migrated)", 1, true))
 H.check("migrate: no macro write", M.macroWrites, 0)
 
@@ -211,7 +210,7 @@ local after = ForeverUnitFramesDB
 ns = login(after, {})
 H.check("after migration: SV", ns.Storage.Source(), "SavedVariables")
 H.check("after migration: value", ns.Config.Get("player", "width"), 260)
-H.check("after migration: quiet", chatCount(ns.L.MACROS_REMOVED), 0)
+H.check("after migration: quiet", chatCount("macros removed") + chatCount("migrated"), 0)
 
 -- Migration with the backup arriving after PLAYER_LOGIN (full restart): the
 -- defaults in use meanwhile are never saved over it.
@@ -235,7 +234,7 @@ H.check("late: backup wins over the change made while waiting", ns.Config.Get("p
 H.check("late: last entry survives the line break", ns.Config.Get("target", "healthColorMode"), "GRADIENT")
 H.check("late: handed to SV", ForeverUnitFramesDB.profile.player.width, 310)
 H.check("late: removed", #M.macros, 0)
-H.check("late: told once", chatCount(ns.L.MIGRATED_FROM_MACRO), 1)
+H.check("late: silent", chatCount("macros removed") + chatCount("migrated"), 0)
 M.RunTimers()
 H.check("late: timeout changes nothing", ns.Storage.Source(), "MacroBackup")
 ns.Config.Set("player", "width", 320)
@@ -261,7 +260,7 @@ ns.Config.Set("player", "height", 44)
 M.RunTimers()
 H.check("first install: saved after a change", ForeverUnitFramesDB.profile.player.height, 44)
 H.check("first install: nothing deleted", M.macroDeletes, 0)
-H.check("first install: no migration message", chatCount(ns.L.MIGRATED_FROM_MACRO), 0)
+H.check("first install: no migration message", chatCount("macros removed") + chatCount("migrated"), 0)
 
 -- A backup that turns up after the timeout is still migrated while nothing
 -- has been saved yet (UPDATE_MACROS, or the save at logout)...
