@@ -115,6 +115,7 @@ end
 
 function Single.Create(def)
     local frame = CreateFrame("Button", "ForeverUnitFrames_" .. def.key, UIParent, "SecureUnitButtonTemplate")
+    ns.Units.EnableTooltip(frame)
     frame.key, frame.unit = def.key, def.unit
     frame:SetAttribute("unit", def.unit)
     frame:SetAttribute("*type1", "target")

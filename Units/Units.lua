@@ -25,6 +25,31 @@ ns.Units.List = {
     { key = "party", group = true },
 }
 
+-- Hovering a unit frame shows its unit's tooltip. Blizzard's own
+-- UnitFrame_OnEnter / OnLeave where the client has them (they read
+-- frame.unit, as ours does); otherwise the same in short. Hooked, so the
+-- secure template's own scripts stay as they are.
+local function onEnter(frame)
+    if UnitFrame_OnEnter then return UnitFrame_OnEnter(frame) end
+    if not frame.unit then return end
+    if GameTooltip_SetDefaultAnchor then
+        GameTooltip_SetDefaultAnchor(GameTooltip, frame)
+    else
+        GameTooltip:SetOwner(frame, "ANCHOR_BOTTOMRIGHT")
+    end
+    if GameTooltip:SetUnit(frame.unit) then GameTooltip:Show() end
+end
+
+local function onLeave(frame)
+    if UnitFrame_OnLeave then return UnitFrame_OnLeave(frame) end
+    GameTooltip:Hide()
+end
+
+function ns.Units.EnableTooltip(frame)
+    frame:HookScript("OnEnter", onEnter)
+    frame:HookScript("OnLeave", onLeave)
+end
+
 ns.Elements = {}
 function ns.RegisterElement(element)
     ns.Elements[#ns.Elements + 1] = element

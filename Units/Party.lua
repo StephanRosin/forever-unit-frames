@@ -146,6 +146,7 @@ local function fakeButton(i)
     local button = Party.fakes[i]
     if button then return button end
     button = CreateFrame("Button", "ForeverUnitFramesPartyTest" .. i, Party.testBlock, "SecureUnitButtonTemplate")
+    ns.Units.EnableTooltip(button)
     button.key = Party.KEY
     -- Shows samples only; never gets live aura containers.
     button.pretend = true
@@ -251,6 +252,7 @@ function Party.InitButton(button)
     button.key = Party.KEY
     for _, el in ipairs(ns.Elements) do el.Build(button) end
     Party.buttons[#Party.buttons + 1] = button
+    ns.Units.EnableTooltip(button)
     -- Made in combat it keeps the XML size until the relayout after combat.
     if not InCombatLockdown() then
         button:SetSize(Single.Size(Party.KEY))
