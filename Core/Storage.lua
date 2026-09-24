@@ -104,8 +104,8 @@ local function cleanup()
     if cleanupDone or not cleanupDue then return end
     local deleted = ns.MacroBackup.Delete()
     if deleted and deleted > 0 then
+        -- Silent: the macros were ours, nothing for the player to do.
         cleanupDone = true
-        ns.Print(ns.L.MACROS_REMOVED)
     end
 end
 
@@ -161,7 +161,6 @@ end
 -- A migrated profile goes to SavedVariables at once; from then on the
 -- macros hold nothing that SavedVariables do not.
 local function handOver()
-    ns.Print(ns.L.MIGRATED_FROM_MACRO)
     Storage.Save()
     if attached and attached.profile then startCleanup() end
 end
