@@ -39,14 +39,28 @@ local function resolve(key)
 end
 Config.Derive(Pets.KEY, Party.KEY, resolve)
 
--- The pet token of slot i: the party header puts the player first when
--- shown, then party1..party4 in index order.
+-- The pet token of slot i in a group: the party header puts the player
+-- first when shown, then party1..party4 in index order.
 function Pets.Unit(i)
     if get("partyShowPlayer") then
         if i == 1 then return "pet" end
         return "partypet" .. (i - 1)
     end
     return "partypet" .. i
+end
+
+-- The pet tokens of the slots the party header shows now, by its own rule
+-- (SecureGroupHeaders.lua, GetGroupHeaderType): in a group (a raid too,
+-- as the header has no showRaid) every slot; solo only with "show when
+-- solo", and then slot 1 is you whatever "show player" says; else none.
+function Pets.Units()
+    local units = {}
+    if IsInGroup() then
+        for i = 1, Party.Slots() do units[i] = Pets.Unit(i) end
+    elseif get("partyShowSolo") then
+        units[1] = "pet"
+    end
+    return units
 end
 
 local function newButton(name, parent)
@@ -96,11 +110,13 @@ local function release(button)
     button:Hide()
 end
 
-local function showReal(slots)
+local function showReal()
+    local units = Pets.Units()
+    local slots = #units
     local relative, relPoint, x, y = Party.BlockAnchor()
     for i = 1, slots do
         local button = realButton(i)
-        Single.SetUnit(button, Pets.Unit(i))
+        Single.SetUnit(button, units[i])
         place(button, i, relative, relPoint, x, y)
         style(button)
         RegisterUnitWatch(button)
@@ -125,10 +141,11 @@ end
 -- Out of combat only (Party.StyleAll): units, anchors, size and unit
 -- watch are protected.
 function Pets.StyleAll(testing)
+    Pets.testing = testing
     local on = get("enabled") and get("partyShowPets")
     local slots = Party.Slots()
     if on and not testing then
-        showReal(slots)
+        showReal()
     else
         for _, button in ipairs(Pets.buttons) do release(button) end
     end
@@ -145,4 +162,9 @@ local function refresh(event)
     for _, button in ipairs(Pets.buttons) do Single.UpdateAll(button, event) end
 end
 ns.On("UNIT_PET", refresh)
-ns.On("GROUP_ROSTER_UPDATE", refresh)
+-- Joining or leaving a group changes which slots the header shows: the
+-- pet slots follow, out of combat.
+ns.On("GROUP_ROSTER_UPDATE", function(event)
+    refresh(event)
+    ns.AfterCombat("partyPets", function() Pets.StyleAll(Pets.testing) end)
+end)

@@ -70,7 +70,9 @@ H.check("off: no pet buttons", #Pets.buttons, 0)
 H.check("off: spacing without pets", header:GetAttribute("yOffset"), -(12 + 13))
 H.check("off: no pet row", P.PetRow(), 0)
 
--- On: one pet frame per slot, under its owner's slot.
+-- On, in a party: one pet frame per slot, under its owner's slot.
+M.units.party1 = { name = "Ann", health = 5, healthMax = 10 }
+M.SetGroup({ "party1" })
 C.Set("party", "partyShowPets", true)
 H.check("on: one per slot", #Pets.buttons, 4)
 for i, b in ipairs(Pets.buttons) do
@@ -255,3 +257,79 @@ H.check("blizzard pet frame: invisible", member.PetFrame:GetAlpha(), 0)
 H.check("blizzard pet frame: mouse off", member.PetFrame._mouse, false)
 H.check("blizzard pet frame: hidden", member.PetFrame:IsShown(), false)
 _G.PartyFrame = nil
+
+-- Fix round 1 -------------------------------------------------------------------
+
+-- Pets follow the party header's own rule: shown in a group, or solo only
+-- with "show when solo" (then slot 1 is you, so your pet).
+ns = H.LoadAddon()
+_G.ForeverUnitFramesDB = nil
+M.FireEvent("PLAYER_LOGIN")
+M.RunTimers()
+C, P, Pets = ns.Config, ns.Party, ns.PartyPets
+C.Set("party", "partyShowPets", true)
+C.Set("party", "partyShowPlayer", true)
+local function watched()
+    local n = 0
+    for _, b in ipairs(Pets.buttons) do if b._unitWatch then n = n + 1 end end
+    return n
+end
+H.check("solo, not shown solo: header empty", P.header:GetAttribute("child1"):GetAttribute("unit"), nil)
+H.check("solo, not shown solo: no pet watched", watched(), 0)
+H.checkTrue("solo, not shown solo: no pet shown", not (Pets.buttons[1] and Pets.buttons[1]:IsShown()))
+C.Set("party", "partyShowSolo", true)
+H.check("solo shown: one pet watched", watched(), 1)
+H.check("solo shown: your pet", Pets.buttons[1]:GetAttribute("unit"), "pet")
+C.Set("party", "partyShowPlayer", false)
+H.check("solo shown without show player: still your pet", Pets.buttons[1]:GetAttribute("unit"), "pet")
+H.check("solo shown without show player: one watched", watched(), 1)
+C.Set("party", "partyShowSolo", false)
+C.Set("party", "partyShowPlayer", true)
+H.check("solo hidden again", watched(), 0)
+-- Joining a group re-evaluates the slots.
+M.units.party1 = { name = "Ann", health = 5, healthMax = 10 }
+M.units.party2 = { name = "Bob", health = 5, healthMax = 10 }
+M.SetGroup({ "party1", "party2" })
+H.check("grouped: every slot watched", watched(), 5)
+H.check("grouped: slot 1 your pet", Pets.buttons[1]:GetAttribute("unit"), "pet")
+H.check("grouped: slot 2 party1's pet", Pets.buttons[2]:GetAttribute("unit"), "partypet1")
+-- Leaving in combat: released once combat ends.
+M.combat = true
+M.SetGroup({})
+H.check("left in combat: unchanged until combat ends", watched(), 5)
+M.SetCombat(false)
+H.check("left: released after combat", watched(), 0)
+-- Joining in combat: watched once combat ends.
+M.combat = true
+M.SetGroup({ "party1" })
+H.check("joined in combat: waits", watched(), 0)
+M.SetCombat(false)
+H.check("joined: watched after combat", watched(), 5)
+
+-- The drop shadow sits between member and pet: the gap makes room for it.
+C.Set("party", "castbarEnabled", false)
+local plainOffset, plainRow = P.PetOffset(), P.PetRow()
+C.Set("party", "shadowEnabled", true)
+C.Set("party", "shadowSize", 4)
+H.check("shadow: pet further down", P.PetOffset(), plainOffset + 4)
+H.check("shadow: pet row larger", P.PetRow(), plainRow + 4)
+C.Set("party", "shadowEnabled", false)
+H.check("shadow off: plain gap", P.PetOffset(), plainOffset)
+
+-- Logged in while grouped: pets hang from the block's mover, so they
+-- follow it while it is dragged.
+ns = H.LoadShipped()
+_G.ForeverUnitFramesDB = nil
+M.units.party1 = { name = "Ann", health = 5, healthMax = 10 }
+M.group = { "party1" }
+M.FireEvent("PLAYER_LOGIN")
+M.RunTimers()
+local mover = ns.Party.header.mover
+H.checkTrue("login: block mover", mover)
+local petButton = ns.PartyPets.buttons[1]
+H.checkTrue("login: pet made", petButton)
+if petButton then
+    H.check("login: pet hangs from the mover", select(2, petButton:GetPoint(1)), mover)
+    H.check("login: pet one anchor", #petButton._points, 1)
+end
+M.group = {}

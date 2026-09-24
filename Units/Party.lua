@@ -17,7 +17,7 @@ Party.TEMPLATE = "ForeverUnitFramesPartyButtonTemplate"
 Party.MEMBERS = 4
 -- Pet frames under the members (Units/PartyPets.lua) read their settings
 -- through this derived scope; PET_GAP is the room between a member's
--- border and its pet's.
+-- border and its pet's, plus the drop shadow when it is on (Party.PetGap).
 Party.PET_KEY = "partypet"
 Party.PET_GAP = 2
 -- Every button the header made, in creation order.
@@ -34,15 +34,22 @@ function Party.Slots()
     return Party.MEMBERS + (get("partyShowPlayer") and 1 or 0)
 end
 
+-- Room between a member's border and its pet's: PET_GAP, and the drop
+-- shadow (member's below, pet's above) so neither lies on the other ring.
+function Party.PetGap()
+    local shadow = math.max(ns.Border.ShadowSize(Party.KEY), ns.Border.ShadowSize(Party.PET_KEY))
+    return Pixel.Snap(Party.PET_GAP) + shadow
+end
+
 -- Pets: each member's pet sits directly under the member, past the
--- member's docked castbar (when it docks below) and border, PET_GAP, and
+-- member's docked castbar (when it docks below) and border, the gap, and
 -- the pet's own border. Distance from a member's top to its pet's top.
 function Party.PetOffset()
     local _, h = Single.Size(Party.KEY)
     local depth = ns.Castbar.DockedDepth(Party.KEY)
     local below = ns.Border.Extent(Party.KEY)
     if depth > 0 and ns.Castbar.Placement(Party.KEY) == "BELOW" then below = depth end
-    return h + below + Pixel.Snap(Party.PET_GAP) + ns.Border.Extent(Party.PET_KEY)
+    return h + below + Party.PetGap() + ns.Border.Extent(Party.PET_KEY)
 end
 
 -- Room the pet row adds between two stacked members: the gap, the pet
@@ -50,7 +57,7 @@ end
 function Party.PetRow()
     if not get("partyShowPets") then return 0 end
     local _, petH = Single.Size(Party.PET_KEY)
-    return Pixel.Snap(Party.PET_GAP) + 2 * ns.Border.Extent(Party.PET_KEY) + petH
+    return Party.PetGap() + 2 * ns.Border.Extent(Party.PET_KEY) + petH
 end
 
 -- Distance between two members. Stacked vertically, a docked castbar

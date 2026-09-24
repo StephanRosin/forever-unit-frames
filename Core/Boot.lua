@@ -10,6 +10,9 @@ local function afterBuild()
     ns.Party.Create()
     for _, frame in pairs(ns.Frames) do ns.Movers.Attach(frame) end
     ns.Movers.Attach(ns.Party.header, ns.Party.MoverSpec())
+    -- Party.Create laid the block out before its mover existed: again,
+    -- so the pets hang from the mover and follow it while it is dragged.
+    ns.Party.StyleAll()
     for _, frame in pairs(ns.Frames) do ns.Castbar.AttachMover(frame) end
 end
 
