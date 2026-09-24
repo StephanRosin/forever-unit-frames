@@ -32,13 +32,19 @@ function Blizzard.Conceal(frame)
 end
 
 -- Blizzard's party: the member buttons live in a pool on PartyFrame; the
--- raid-style CompactPartyFrame is created on demand as its child.
+-- raid-style CompactPartyFrame is created on demand as its child. Each
+-- member carries a secure pet button (PetFrame, PartyMemberPetFrameTemplate)
+-- that PartyMemberFrame shows on its own when the pet exists.
 local function concealParty()
     local party = _G.PartyFrame
     if party then
         local pool = party.PartyMemberFramePool
         if pool then
-            for member in pool:EnumerateActive() do Blizzard.Conceal(member) end
+            for member in pool:EnumerateActive() do
+                Blizzard.Conceal(member)
+                -- A parentKey child: a plain field of the member.
+                Blizzard.Conceal(rawget(member, "PetFrame"))
+            end
         end
         Blizzard.Conceal(party)
     end

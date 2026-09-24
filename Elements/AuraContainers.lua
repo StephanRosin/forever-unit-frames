@@ -305,11 +305,13 @@ function AuraContainers.Refresh(frame, event)
     end
 end
 
--- Party slots reshuffled: party2 may now be someone else under the same
--- token, which the container does not notice by itself.
+-- Party slots reshuffled: party2 (and partypet2) may now be someone else
+-- under the same token, which the container does not notice by itself.
 ns.On("GROUP_ROSTER_UPDATE", function()
     for frame in pairs(all) do
-        if frame.key == ns.Party.KEY then AuraContainers.Refresh(frame, "GROUP_ROSTER_UPDATE") end
+        if frame.key == ns.Party.KEY or frame.key == ns.Party.PET_KEY then
+            AuraContainers.Refresh(frame, "GROUP_ROSTER_UPDATE")
+        end
     end
 end)
 

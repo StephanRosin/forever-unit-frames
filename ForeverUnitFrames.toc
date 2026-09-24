@@ -36,6 +36,7 @@ Units\Events.lua
 Units\Single.lua
 Units\Party.lua
 Units\Party.xml
+Units\PartyPets.lua
 Core\Blizzard.lua
 Core\Movers.lua
 Core\Commands.lua

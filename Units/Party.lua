@@ -15,6 +15,11 @@ Party.KEY = "party"
 Party.HEADER = "ForeverUnitFramesParty"
 Party.TEMPLATE = "ForeverUnitFramesPartyButtonTemplate"
 Party.MEMBERS = 4
+-- Pet frames under the members (Units/PartyPets.lua) read their settings
+-- through this derived scope; PET_GAP is the room between a member's
+-- border and its pet's.
+Party.PET_KEY = "partypet"
+Party.PET_GAP = 2
 -- Every button the header made, in creation order.
 Party.buttons = {}
 -- Test mode: pretend members (secure buttons on the player) in a plain
@@ -29,24 +34,50 @@ function Party.Slots()
     return Party.MEMBERS + (get("partyShowPlayer") and 1 or 0)
 end
 
+-- Pets: each member's pet sits directly under the member, past the
+-- member's docked castbar (when it docks below) and border, PET_GAP, and
+-- the pet's own border. Distance from a member's top to its pet's top.
+function Party.PetOffset()
+    local _, h = Single.Size(Party.KEY)
+    local depth = ns.Castbar.DockedDepth(Party.KEY)
+    local below = ns.Border.Extent(Party.KEY)
+    if depth > 0 and ns.Castbar.Placement(Party.KEY) == "BELOW" then below = depth end
+    return h + below + Pixel.Snap(Party.PET_GAP) + ns.Border.Extent(Party.PET_KEY)
+end
+
+-- Room the pet row adds between two stacked members: the gap, the pet
+-- and its border on both sides. 0 while pets are off.
+function Party.PetRow()
+    if not get("partyShowPets") then return 0 end
+    local _, petH = Single.Size(Party.PET_KEY)
+    return Pixel.Snap(Party.PET_GAP) + 2 * ns.Border.Extent(Party.PET_KEY) + petH
+end
+
 -- Distance between two members. Stacked vertically, a docked castbar
 -- (above or below each member) sits in between, so its room is added:
--- the next member starts past the castbar's border.
+-- the next member starts past the castbar's border. The pet row, too.
+-- Side by side, pets hang below their members and take no room between.
 function Party.Spacing()
     local spacing = Pixel.Snap(get("partySpacing"))
     if get("partyOrientation") == "HORIZONTAL" then return spacing end
-    return spacing + ns.Castbar.DockedDepth(Party.KEY)
+    return spacing + ns.Castbar.DockedDepth(Party.KEY) + Party.PetRow()
 end
 
--- Width and height of the whole block with every slot filled.
--- Everything below is on the pixel grid: button size, spacing, block.
+-- Width and height of the whole block with every slot filled, the last
+-- member's pet included. Everything below is on the pixel grid: button
+-- size, spacing, block.
 function Party.BlockSize()
     local w, h = Single.Size(Party.KEY)
     local s, n = Party.Spacing(), Party.Slots()
-    if get("partyOrientation") == "HORIZONTAL" then
-        return n * w + (n - 1) * s, h
+    local petEnd = h
+    if get("partyShowPets") then
+        local _, petH = Single.Size(Party.PET_KEY)
+        petEnd = Party.PetOffset() + petH
     end
-    return w, n * h + (n - 1) * s
+    if get("partyOrientation") == "HORIZONTAL" then
+        return n * w + (n - 1) * s, petEnd
+    end
+    return w, (n - 1) * (h + s) + petEnd
 end
 
 -- Offset of slot i (1-based) from the block's top-left corner.
@@ -90,6 +121,15 @@ local function blockCorner()
     local w, h = Party.BlockSize()
     w, h = Pixel.Snap(w), Pixel.Snap(h)
     return Pixel.Centre(get("x"), w) - w / 2, Pixel.Centre(get("y"), h) + h / 2
+end
+
+-- Where the block's top-left corner hangs: the mover's corner, or a
+-- point from the screen centre. Pets hang from the same place.
+function Party.BlockAnchor()
+    if Party.header and Party.header.mover then
+        return Party.header.mover, "TOPLEFT", 0, 0
+    end
+    return UIParent, "CENTER", blockCorner()
 end
 
 -- The block hangs from its top-left corner. With a mover the header
@@ -180,6 +220,9 @@ local function showFakes()
     for i = slots + 1, #Party.fakes do releaseFake(Party.fakes[i]) end
 end
 
+-- Test mode helpers for the pretend pets (Units/PartyPets.lua).
+Party.ReleaseFake = releaseFake
+
 local function hideFakes()
     if Party.testBlock then Party.testBlock:Hide() end
     for _, button in ipairs(Party.fakes) do releaseFake(button) end
@@ -206,6 +249,7 @@ function Party.StyleAll()
         hideFakes()
         if get("enabled") then header:Show() end
     end
+    ns.PartyPets.StyleAll(testing)
 end
 
 -- Test mode on or off (out of combat, from Options/TestMode.lua).

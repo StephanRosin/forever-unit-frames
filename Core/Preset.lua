@@ -113,6 +113,7 @@ local PRESET = {
         healthColorMode = "CLASS",
         healthPercent = 39,
         height = 65,
+        partyShowPets = true,
         powerPercent = 16,
         shadowAlpha = 7,
         showSurname = false,

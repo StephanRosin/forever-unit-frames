@@ -51,8 +51,24 @@ local function fallback(scope, def)
     return Settings.Default(def, scope)
 end
 
+-- Derived scopes have no profile and no options page of their own: a
+-- resolver fixes some settings, everything else is the base scope's
+-- (party pets follow the party frame, Units/PartyPets.lua). Setting a
+-- value on a derived scope is refused.
+local derived = {}
+
+function Config.Derive(scope, base, resolve)
+    derived[scope] = { base = base, resolve = resolve }
+end
+
 function Config.Get(scope, key)
     local def = assert(Settings.Get(key), "unknown setting " .. tostring(key))
+    local d = derived[scope]
+    if d then
+        local v = d.resolve(key)
+        if v ~= nil then return v end
+        return Config.Get(d.base, key)
+    end
     local own = profile[scope] and profile[scope][key]
     if own ~= nil then return own end
     return fallback(scope, def)
