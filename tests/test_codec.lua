@@ -71,15 +71,3 @@ local _, err2 = Codec.Decode("")
 H.check("empty rejected", err2, "CODEC_EMPTY")
 local _, err3 = Codec.Decode("hello")
 H.check("garbage rejected", err3, "CODEC_FORMAT")
-
--- Budget: a heavily customised profile stays small.
-C.ResetAll()
-for _, scope in ipairs({ "player", "target" }) do
-    C.Set(scope, "width", 333); C.Set(scope, "height", 55); C.Set(scope, "x", -1234); C.Set(scope, "y", 456)
-    C.Set(scope, "healthPercent", 70); C.Set(scope, "powerPercent", 20)
-    C.Set(scope, "textHealthLeft", "NAME"); C.Set(scope, "textHealthRight", "PERCENT")
-    C.Set(scope, "fontSize", 11); C.Set(scope, "barTexture", "Smooth")
-end
-C.Set("general", "fontFace", "Arial Narrow"); C.Set("general", "backgroundColor", { 0.1, 0.1, 0.1, 0.8 })
-local size = #Codec.Encode(C.Profile())
-H.checkTrue("two heavily customised frames under 250 chars (" .. size .. ")", size < 250)

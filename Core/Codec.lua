@@ -2,7 +2,8 @@ local _, ns = ...
 
 -- Compact text form of a profile: only overrides, each as
 -- <scope letter><CODE><value>, joined by ";" behind a format version.
--- Used for export/import, the macro backup and storage providers.
+-- Used for export/import, storage providers and reading the old macro
+-- backup.
 local Codec = {}
 ns.Codec = Codec
 Codec.VERSION = 1
@@ -12,9 +13,9 @@ local Settings = ns.Settings
 local scopeByPrefix = {}
 for scope, prefix in pairs(Settings.PREFIX) do scopeByPrefix[prefix] = scope end
 
--- Trailing whitespace is escaped too: the macro backup comes back with a
--- line break appended and is trimmed on read, which must never shorten a
--- value.
+-- Trailing whitespace is escaped too: the import field trims the string it
+-- is given (and the old macro backup is trimmed on read), which must never
+-- shorten a value.
 local function hexEscape(c) return ("%%%02X"):format(c:byte()) end
 local function escape(s)
     s = s:gsub("%%", "%%25"):gsub(";", "%%3B")

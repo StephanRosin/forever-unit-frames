@@ -85,22 +85,18 @@ for _, name in ipairs({ "PlayerFrame", "TargetFrame", "TargetFrameToT", "PetFram
     "PlayerCastingBarFrame", "PartyFrame", "CompactPartyFrame", "ComboFrame" }) do _G[name] = nil end
 H.checkTrue("no error without Blizzard frames", pcall(ns.Blizzard.HideDefaults))
 
--- A macro backup that switches frames off asks for a /reload.
-ns = H.LoadAddon()
-H.checkTrue("setup: backup", ns.MacroBackup.Write("1;eE0"))
-local backup = M.macros
+-- A migrated macro backup that switches frames off asks for a /reload.
+local backup = M.BackupMacros("1;eE0")
 ns = H.LoadAddon()
 _G.ForeverUnitFramesDB = nil
 M.FireEvent("PLAYER_LOGIN")
 M.macros = backup
 M.chat = {}
 M.FireEvent("UPDATE_MACROS")
-H.check("restored", ns.Storage.Source(), "MacroBackup")
+H.check("migrated", ns.Storage.Source(), "MacroBackup")
 H.checkTrue("reload hint", table.concat(M.chat, "\n"):find(ns.L.RELOAD_FOR_BLIZZARD, 1, true))
 
-ns = H.LoadAddon()
-H.checkTrue("setup: harmless backup", ns.MacroBackup.Write("1;pW300"))
-backup = M.macros
+backup = M.BackupMacros("1;pW300")
 ns = H.LoadAddon()
 _G.ForeverUnitFramesDB = nil
 M.FireEvent("PLAYER_LOGIN")
@@ -115,9 +111,7 @@ H.check("no reload hint", table.concat(M.chat, "\n"):find(ns.L.RELOAD_FOR_BLIZZA
 -- being switched on before the backup arrived) and does not come back on
 -- its own. hideBlizzardCastbar defaults to false for the player, so a
 -- backup that leaves it unset is enough.
-ns = H.LoadAddon()
-H.checkTrue("setup: castbar-off backup", ns.MacroBackup.Write("1;pW300"))
-backup = M.macros
+backup = M.BackupMacros("1;pW300")
 ns = H.LoadAddon()
 _G.ForeverUnitFramesDB = nil
 M.FireEvent("PLAYER_LOGIN")

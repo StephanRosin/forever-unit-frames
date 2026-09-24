@@ -1,7 +1,12 @@
 local _, ns = ...
 
 -- Where the profile comes from and where it goes. Load order:
--- SavedVariables -> registered providers -> macro backup -> defaults.
+-- SavedVariables -> registered providers -> old macro backup -> defaults.
+-- Saving goes to SavedVariables and the providers.
+--
+-- The macro backup (see MacroBackup) is only read to migrate a profile
+-- that exists nowhere else: when SavedVariables arrive empty. Once the
+-- profile is in SavedVariables, the backup macros are deleted.
 local Storage = {}
 ns.Storage = Storage
 
@@ -10,12 +15,11 @@ local attached            -- the SavedVariables table
 local source = "Defaults"
 local sourceIsProvider = false
 local lastSaved           -- last string handed to SavedVariables and providers
-local lastMacro           -- last string the macro backup actually accepted
-local macroError          -- LastError of the most recent refused macro write
-local unreadableShown     -- MACRO_UNREADABLE was printed this session
-local overwriteAllowed    -- the player asked to replace everything
-local waiting = false     -- true while character macros may still arrive
+local waiting = false     -- true while an old backup may still arrive
 local saveHeld = false    -- a save was requested while waiting
+local lateMigration = false  -- the wait timed out, nothing saved yet
+local cleanupDue = false  -- the profile is in SavedVariables: the macros may go
+local cleanupDone = false -- deleted (and announced) this session
 
 function ns.api.RegisterStorageProvider(name, provider)
     assert(type(name) == "string" and name ~= "", "provider name required")
@@ -36,30 +40,10 @@ local function fromString(str)
     return (ns.Codec.Decode(str))
 end
 
--- The macro backup as a profile, plus the string it came from (already
--- normalised by Read). A backup with entries that could not be parsed is
--- still loaded, as far as it goes, but must never be overwritten: saving
--- the rest back would make the loss permanent. MacroBackup.Write refuses
--- it; here the player is told once, at the moment it is loaded.
--- Every refusal is printed when it first occurs; MACRO_UNREADABLE only once
--- per session, even if another refusal came in between.
-local function report(err)
-    if not err or err == macroError then return end
-    macroError = err
-    if err == "MACRO_UNREADABLE" then
-        if unreadableShown then return end
-        unreadableShown = true
-    end
-    ns.Print(ns.L[err])
-end
-
+-- The old macro backup as a profile. Entries that cannot be parsed are
+-- dropped: no version of the addon could read them.
 local function fromMacro()
-    local str = ns.MacroBackup.Read()
-    if type(str) ~= "string" then return nil end
-    local profile, _, rejected = ns.Codec.Decode(str)
-    if not profile then return nil end
-    if rejected > 0 then report("MACRO_UNREADABLE") end
-    return profile, str
+    return fromString(ns.MacroBackup.Read())
 end
 
 function Storage.Attach(db)
@@ -101,11 +85,8 @@ function Storage.Load(db)
         local profile = ok and fromString(str)
         if profile then return from(p.name, true, profile) end
     end
-    local profile, str = fromMacro()
-    if profile then
-        lastMacro = str     -- already in the macros, no need to rewrite it
-        return from("MacroBackup", false, profile)
-    end
+    local profile = fromMacro()
+    if profile then return from("MacroBackup", false, profile) end
     return from("Defaults", false, fromString("1"))
 end
 
@@ -115,66 +96,49 @@ function Storage.Source()
     return source, sourceIsProvider
 end
 
-function Storage.MacroError()
-    return macroError
-end
-
--- Called by the explicit "replace everything" actions (/fuf reset all, the
--- options window's reset and profile import): the next macro write may
--- replace a backup that could not be read in full. Without it such a
--- backup would win every session, since SavedVariables are not loaded.
--- Holds until a write succeeds.
-function Storage.AllowMacroOverwrite()
-    overwriteAllowed = true
-end
-
--- A readable backup this session has neither loaded nor written must never
--- be overwritten: it may have arrived after the wait for macros timed out.
--- True while such a backup could still turn up (we run on defaults and have
--- not touched the macros yet). Before PLAYER_LOGIN no profile is in use and
--- nothing may be restored into it.
-local function backupUnclaimed()
-    return source == "Defaults" and lastMacro == nil and ns.Config.Profile() ~= nil
-end
-
-local tryRestore  -- defined with the wait below
-
-local function writeMacro(encoded)
-    -- Nothing to write: the one-shot permission is spent all the same.
-    if encoded == lastMacro then overwriteAllowed = nil; return end
-    -- Checked again here: this may run after combat, long after Save().
-    if backupUnclaimed() and tryRestore() then return end
-    local ok, written = pcall(ns.MacroBackup.Write, encoded, overwriteAllowed)
-    if ok and written then
-        lastMacro, macroError, overwriteAllowed = encoded, nil, nil
-        return
+-- Deleting the old macros ---------------------------------------------------
+-- Tried when the profile is safe in SavedVariables, and again whenever the
+-- macros change (they reach the client after PLAYER_LOGIN) or the macro
+-- window closes, until something was deleted.
+local function cleanup()
+    if cleanupDone or not cleanupDue then return end
+    local deleted = ns.MacroBackup.Delete()
+    if deleted and deleted > 0 then
+        cleanupDone = true
+        ns.Print(ns.L.MACROS_REMOVED)
     end
-    report(ns.MacroBackup.LastError())
 end
 
--- SavedVariables and providers get each new string once; the macro backup
--- is retried until it has accepted the current string, since the client
--- may refuse a write (macro window open, no free slot, ...).
--- While waiting for macros nothing is written at all: the profile in
--- memory may be defaults standing in for a backup not yet loaded.
--- Running on defaults without having touched the macros, a backup that
--- has turned up since is restored first and wins over the defaults (and
--- over changes made on top of them).
+local function tryCleanup()
+    if cleanupDue and not cleanupDone then ns.AfterCombat("macroCleanup", cleanup) end
+end
+
+local function startCleanup()
+    cleanupDue = true
+    tryCleanup()
+end
+
+local tryMigrate  -- defined with the wait below
+
+-- SavedVariables and providers get each new string once. While waiting
+-- for an old backup nothing is written at all: the profile in memory may
+-- be defaults standing in for a backup not yet loaded. After the wait, a
+-- backup that has turned up before the first save still wins over the
+-- defaults (and over changes made on top of them).
 function Storage.Save()
     if waiting then saveHeld = true; return end
-    if backupUnclaimed() then tryRestore() end
+    if lateMigration and tryMigrate() then return end
     local profile = ns.Config.Profile()
     if not profile then return end
+    lateMigration = false
     local encoded = ns.Codec.Encode(profile)
-    if encoded ~= lastSaved then
-        lastSaved = encoded
-        if attached then
-            attached.version = ns.Codec.VERSION
-            attached.profile = copy(profile)
-        end
-        for _, p in ipairs(providers) do pcall(p.save, encoded) end
+    if encoded == lastSaved then return end
+    lastSaved = encoded
+    if attached then
+        attached.version = ns.Codec.VERSION
+        attached.profile = copy(profile)
     end
-    ns.AfterCombat("macroBackup", function() writeMacro(encoded) end)
+    for _, p in ipairs(providers) do pcall(p.save, encoded) end
 end
 
 -- Sliders fire many changes per second; one save per half second is plenty.
@@ -194,15 +158,24 @@ function Storage.Flush()
     Storage.Save()
 end
 
--- Waiting for macros ----------------------------------------------------------
+-- A migrated profile goes to SavedVariables at once; from then on the
+-- macros hold nothing that SavedVariables do not.
+local function handOver()
+    ns.Print(ns.L.MIGRATED_FROM_MACRO)
+    Storage.Save()
+    if attached and attached.profile then startCleanup() end
+end
+
+-- Waiting for an old backup ----------------------------------------------------
 -- Character macros reach the client from the server after PLAYER_LOGIN
--- (UPDATE_MACROS). With no SavedVariables and no provider data, defaults
--- at login may just mean the backup has not arrived yet. Saving then would
--- overwrite a good backup with defaults, so every save is held back until
--- the backup is read or the wait times out.
+-- (UPDATE_MACROS). With empty SavedVariables and no provider data,
+-- defaults at login may just mean an old backup has not arrived yet.
+-- Saving then would put defaults into SavedVariables and lose the backup's
+-- settings, so every save is held back until the backup is read or the
+-- wait times out.
 --
 -- Changes made while waiting stay in memory. If the wait ends with a
--- restored backup, the backup wins (Import replaces them). If it times out
+-- migrated backup, the backup wins (Import replaces them). If it times out
 -- (a genuine first install), they are saved as usual.
 local WAIT_SECONDS = 15
 
@@ -246,39 +219,54 @@ local function hintReload(before, beforeHideCastbar)
     end
 end
 
--- Returns true once a complete backup has been read and imported.
-function tryRestore()
-    local profile, str = fromMacro()
+-- Returns true once a complete backup has been read, imported and handed
+-- to SavedVariables.
+function tryMigrate()
+    local profile = fromMacro()
     if not profile then return false end
     local before = enabledFrames()
     local beforeHideCastbar = ns.Config.Get("player", "hideBlizzardCastbar")
+    lateMigration = false
     ns.Config.Import(profile)   -- its CONFIG_CHANGED save is held or queued
     hintReload(before, beforeHideCastbar)
-    lastMacro = str             -- already in the macros, no need to rewrite it
     endWait("MacroBackup")
-    ns.Print(ns.L.RESTORED_FROM_MACRO)
+    handOver()
     return true
 end
 
--- Called at PLAYER_LOGIN after Load: only when Load fell back to defaults.
-function Storage.WaitForMacros()
-    if source ~= "Defaults" or waiting then return end
-    waiting, saveHeld = true, false
-    source, sourceIsProvider = "Waiting", false
-    C_Timer.After(WAIT_SECONDS, function()
-        if not waiting then return end
-        -- One last look in case the event was missed; otherwise defaults.
-        if not tryRestore() then endWait("Defaults") end
-    end)
+-- Called at PLAYER_LOGIN after Load and Attach.
+-- * SavedVariables loaded: the old macros can go.
+-- * Migrated at load: hand the profile to SavedVariables, then the same.
+-- * Defaults (SavedVariables empty, no provider): wait for an old backup.
+-- * A provider: nothing to do; SavedVariables take over from the next save.
+function Storage.Start()
+    if waiting then return end
+    if source == "SavedVariables" then
+        startCleanup()
+    elseif source == "MacroBackup" then
+        handOver()
+    elseif source == "Defaults" then
+        waiting, saveHeld = true, false
+        source, sourceIsProvider = "Waiting", false
+        C_Timer.After(WAIT_SECONDS, function()
+            if not waiting then return end
+            -- One last look in case the event was missed; otherwise defaults.
+            if not tryMigrate() then
+                endWait("Defaults")
+                lateMigration = true
+            end
+        end)
+    end
 end
 
--- Macros may also arrive after the timeout: keep listening until the
--- macros are ours (restored or written).
 ns.On("UPDATE_MACROS", function()
-    if waiting or backupUnclaimed() then tryRestore() end
+    if waiting or lateMigration then
+        if tryMigrate() then return end
+    end
+    tryCleanup()
 end)
 
--- Closing the macro window is the moment a refused write can succeed.
+-- Closing the macro window is the moment a refused deletion can succeed.
 -- The window is load-on-demand: hook it now if it exists, else once
 -- Blizzard_MacroUI has loaded.
 local hookedMacroFrame
@@ -286,7 +274,7 @@ local function hookMacroFrame()
     local frame = _G.MacroFrame
     if not frame or frame == hookedMacroFrame or not frame.HookScript then return end
     hookedMacroFrame = frame
-    frame:HookScript("OnHide", function() Storage.Save() end)
+    frame:HookScript("OnHide", tryCleanup)
 end
 
 hookMacroFrame()

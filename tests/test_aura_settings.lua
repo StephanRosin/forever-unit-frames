@@ -68,26 +68,6 @@ local back = Codec.Decode(s)
 H.check("decoded point", back.target.buffsPoint, "TOPRIGHT")
 H.check("decoded dispellable", back.party.debuffsDispellable, true)
 
--- Budget: every aura setting of two frames changed.
-C.ResetAll()
-for _, scope in ipairs({ "target", "party" }) do
-    for _, g in ipairs({ "buffs", "debuffs" }) do
-        C.Set(scope, g .. "Enabled", not C.Get(scope, g .. "Enabled"))
-        C.Set(scope, g .. "OnlyMine", not C.Get(scope, g .. "OnlyMine"))
-        C.Set(scope, g .. "ShowTime", false)
-        C.Set(scope, g .. "Anchor", "HEALTH")
-        C.Set(scope, g .. "FramePoint", "BOTTOMRIGHT")
-        C.Set(scope, g .. "Point", "CENTER")
-        C.Set(scope, g .. "X", -123); C.Set(scope, g .. "Y", 45)
-        C.Set(scope, g .. "Growth", "LEFT"); C.Set(scope, g .. "RowGrowth", "RIGHT")
-        C.Set(scope, g .. "Size", 33); C.Set(scope, g .. "Spacing", 5)
-        C.Set(scope, g .. "PerRow", 12); C.Set(scope, g .. "Max", 24)
-    end
-    C.Set(scope, "debuffsDispellable", true)
-end
-local size = #Codec.Encode(C.Profile())
-H.checkTrue("all aura settings of two frames under 400 chars (" .. size .. ")", size < 400)
-
 -- Options: an Auras tab between Text and Castbar, Buffs and Debuffs sections.
 local tabs = Schema.Tabs("target")
 H.check("auras tab", tabs[4].id, "auras")

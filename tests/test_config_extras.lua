@@ -45,18 +45,20 @@ H.check("import cleared player width", C.Get("player", "width"), 220)
 
 -- Debounced save
 ns = H.LoadAddon()
+_G.ForeverUnitFramesDB = { profile = {} }
+local saves = {}
+ForeverUnitFrames.RegisterStorageProvider("Count", {
+    load = function() end, save = function(s) saves[#saves + 1] = s end })
 M.FireEvent("PLAYER_LOGIN")
-local writes = 0
-local realWrite = ns.MacroBackup.Write
-ns.MacroBackup.Write = function(s) writes = writes + 1; return realWrite(s) end
 for w = 230, 240 do ns.Config.Set("player", "width", w) end
-H.check("nothing saved before the timer", writes, 0)
+H.check("nothing saved before the timer", #saves, 0)
 M.RunTimers()
-H.check("one save after the timer", writes, 1)
-H.check("last value saved", ns.MacroBackup.Read(), "1;pW240")
+H.check("one save after the timer", #saves, 1)
+H.check("last value saved", saves[#saves], "1;pW240")
+H.check("last value in SavedVariables", ForeverUnitFramesDB.profile.player.width, 240)
 ns.Config.Set("player", "width", 250)
 M.FireEvent("PLAYER_LOGOUT")
-H.check("flush on logout", ns.MacroBackup.Read(), "1;pW250")
+H.check("flush on logout", ForeverUnitFramesDB.profile.player.width, 250)
 
 -- Texts: unknown tag clears, power deficit uses UnitPowerMissing
 ns = H.LoadAddon()
