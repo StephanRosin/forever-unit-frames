@@ -2,7 +2,7 @@
 ## Title: Forever Unit Frames
 ## Notes: Clean, flat and fully configurable unit frames for WoW: Forever.
 ## Author: StephanRosin
-## Version: 0.2.2
+## Version: 0.2.3
 ## SavedVariables: ForeverUnitFramesDB
 
 Locales\enUS.lua
@@ -36,6 +36,8 @@ Units\Events.lua
 Units\Single.lua
 Units\Party.lua
 Units\Party.xml
+Units\PartyPets.lua
+Units\PartyPets.xml
 Core\Blizzard.lua
 Core\Movers.lua
 Core\Commands.lua

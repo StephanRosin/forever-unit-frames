@@ -200,6 +200,13 @@ Settings.Define({ key = "partyOrientation", code = "OR", scope = "frame", only =
 Settings.Define({ key = "partySpacing", code = "GS", scope = "frame", only = PARTY, type = "int", min = 0, max = 60, default = 12 })
 Settings.Define({ key = "partyShowPlayer", code = "SP", scope = "frame", only = PARTY, type = "bool", default = false })
 Settings.Define({ key = "partyShowSolo", code = "SO", scope = "frame", only = PARTY, type = "bool", default = false })
+-- Party pets (Units/PartyPets.lua): one small frame under each member
+-- whose pet exists. Height in pixels; the width is the member's.
+Settings.Define({ key = "partyShowPets", code = "PT", scope = "frame", only = PARTY, type = "bool", default = false })
+Settings.Define({ key = "partyPetHeight", code = "PH", scope = "frame", only = PARTY, type = "int", min = 10, max = 60,
+    default = 20 })
+-- Buffs and debuffs on the pet frames, laid out like the members'.
+Settings.Define({ key = "partyPetAuras", code = "PA", scope = "frame", only = PARTY, type = "bool", default = false })
 
 -- Castbar (not on the pet frame; off by default on the player frame)
 local CASTBAR = { player = true, target = true, targettarget = true, focus = true, party = true }

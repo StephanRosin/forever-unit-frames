@@ -37,6 +37,7 @@ Schema.FRAME = {
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },
         { id = "group", keys = { "partyOrientation", "partySpacing", "partyShowPlayer", "partyShowSolo" } },
+        { id = "pets", keys = { "partyShowPets", "partyPetHeight", "partyPetAuras" } },
         { id = "position", keys = { "x", "y" } },
     } },
     { id = "bars", sections = {

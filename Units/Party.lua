@@ -15,6 +15,11 @@ Party.KEY = "party"
 Party.HEADER = "ForeverUnitFramesParty"
 Party.TEMPLATE = "ForeverUnitFramesPartyButtonTemplate"
 Party.MEMBERS = 4
+-- Pet frames under the block (Units/PartyPets.lua) read their settings
+-- through this derived scope; PET_GAP is the room between two rings, plus
+-- the drop shadow when it is on (Party.PetGap).
+Party.PET_KEY = "partypet"
+Party.PET_GAP = 2
 -- Every button the header made, in creation order.
 Party.buttons = {}
 -- Test mode: pretend members (secure buttons on the player) in a plain
@@ -47,6 +52,29 @@ function Party.BlockSize()
         return n * w + (n - 1) * s, h
     end
     return w, n * h + (n - 1) * s
+end
+
+-- Pets (Units/PartyPets.lua) form their own list under the members.
+-- Between two rings: PET_GAP, and the drop shadow when it is on (one
+-- frame's below, the other's above), so no shadow lies on a ring.
+function Party.PetGap()
+    local shadow = math.max(ns.Border.ShadowSize(Party.KEY), ns.Border.ShadowSize(Party.PET_KEY))
+    return Pixel.Snap(Party.PET_GAP) + shadow
+end
+
+-- From the members' bottom edge to the pet list's top edge: the last
+-- member's docked castbar (when it docks below) and border, the gap, the
+-- first pet's border.
+function Party.PetListOffset()
+    local depth = ns.Castbar.DockedDepth(Party.KEY)
+    local below = ns.Border.Extent(Party.KEY)
+    if depth > 0 and ns.Castbar.Placement(Party.KEY) == "BELOW" then below = depth end
+    return below + Party.PetGap() + ns.Border.Extent(Party.PET_KEY)
+end
+
+-- Between two pets: the gap and both pets' borders.
+function Party.PetStep()
+    return Party.PetGap() + 2 * ns.Border.Extent(Party.PET_KEY)
 end
 
 -- Offset of slot i (1-based) from the block's top-left corner.
@@ -180,6 +208,9 @@ local function showFakes()
     for i = slots + 1, #Party.fakes do releaseFake(Party.fakes[i]) end
 end
 
+-- Test mode helpers for the pretend pets (Units/PartyPets.lua).
+Party.ReleaseFake = releaseFake
+
 local function hideFakes()
     if Party.testBlock then Party.testBlock:Hide() end
     for _, button in ipairs(Party.fakes) do releaseFake(button) end
@@ -206,6 +237,7 @@ function Party.StyleAll()
         hideFakes()
         if get("enabled") then header:Show() end
     end
+    ns.PartyPets.StyleAll(testing)
 end
 
 -- Test mode on or off (out of combat, from Options/TestMode.lua).
@@ -251,6 +283,7 @@ function Party.Create()
     local header = CreateFrame("Frame", Party.HEADER, UIParent, "SecureGroupHeaderTemplate")
     header.key = Party.KEY
     Party.header = header
+    ns.PartyPets.Create()
     Party.StyleAll()
     return header
 end

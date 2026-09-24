@@ -59,6 +59,17 @@ M.templates = {
         end
         ForeverUnitFrames.PartyButtonOnLoad(w)
     end,
+    -- Units/PartyPets.xml
+    ForeverUnitFramesPartyPetButtonTemplate = function(w)
+        w._w, w._h = 160, 20
+        w._clicks = { "AnyUp" }
+        w._attr["*type1"] = "target"
+        w._attr["*type2"] = "togglemenu"
+        w._scripts.OnAttributeChanged = function(self, name, value)
+            ForeverUnitFrames.PartyPetButtonOnAttributeChanged(self, name, value)
+        end
+        ForeverUnitFrames.PartyPetButtonOnLoad(w)
+    end,
 }
 
 -- SecureGroupHeaderTemplate, reduced to what the addon relies on: party
@@ -81,6 +92,15 @@ local function groupHeaderUpdate(header)
     if kind == "SOLO" or (kind == "PARTY" and a.showPlayer) then units[1] = "player" end
     if kind == "PARTY" then
         for _, u in ipairs(M.group) do units[#units + 1] = u end
+    end
+    -- SecureGroupPetHeaderTemplate: the owners' pets that exist, packed.
+    if header._pets then
+        local pets = {}
+        for _, u in ipairs(units) do
+            local pet = u == "player" and "pet" or u:gsub("^party", "partypet")
+            if M.units[pet] then pets[#pets + 1] = pet end
+        end
+        units = pets
     end
     for i = 1, math.max(1, #units) do
         if not a["child" .. i] then
@@ -123,9 +143,11 @@ local function groupHeaderUpdate(header)
     M.headerUpdates = M.headerUpdates + 1
 end
 
-local function makeGroupHeader(w)
+local function makeGroupHeader(w, pets)
     w._shown = false   -- the template is hidden="true"
+    w._pets = pets
     w:RegisterEvent("GROUP_ROSTER_UPDATE")
+    if pets then w:RegisterEvent("UNIT_PET") end
     w._scripts.OnEvent = function(self) if self:IsShown() then groupHeaderUpdate(self) end end
     w._scripts.OnShow = groupHeaderUpdate
     w._scripts.OnAttributeChanged = function(self, name)
@@ -795,6 +817,7 @@ function M.Reset()
         if name then _G[name] = w end
         table.insert(M.frames, w)
         if template == "SecureGroupHeaderTemplate" then makeGroupHeader(w) end
+        if template == "SecureGroupPetHeaderTemplate" then makeGroupHeader(w, true) end
         if M.templates[template] then M.templates[template](w) end
         return w
     end

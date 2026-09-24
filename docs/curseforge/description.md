@@ -10,6 +10,7 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 
 ## Frames
 - Player, Target, Target of Target, Focus, Pet and Party.
+- Party pets: a slim frame under each party member who has a pet (can be turned off).
 - A three-row layout: a title row with name and level in class colour, health, and power. Each row's height is set in percent of the frame.
 - Round class badge, and a secondary name (surname) that can be turned on or off.
 - Elite, rare and boss marker on the portrait or as a word.

@@ -1,0 +1,21 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+	<!--
+		One party pet. The SecureGroupPetHeaderTemplate in Units/PartyPets.lua
+		creates these, possibly in combat when a pet is summoned; Lua may not size
+		a secure frame then, so the size and click handling live here. Keep the
+		size equal to the party width and partyPetHeight defaults in
+		Core/Settings.lua; tests/test_party_pets.lua checks that this file and the
+		test mock agree.
+	-->
+	<Button name="ForeverUnitFramesPartyPetButtonTemplate" virtual="true" inherits="SecureUnitButtonTemplate" registerForClicks="AnyUp">
+		<Size x="160" y="20"/>
+		<Attributes>
+			<Attribute name="*type1" type="string" value="target"/>
+			<Attribute name="*type2" type="string" value="togglemenu"/>
+		</Attributes>
+		<Scripts>
+			<OnLoad>ForeverUnitFrames.PartyPetButtonOnLoad(self)</OnLoad>
+			<OnAttributeChanged>ForeverUnitFrames.PartyPetButtonOnAttributeChanged(self, name, value)</OnAttributeChanged>
+		</Scripts>
+	</Button>
+</Ui>

@@ -11,7 +11,7 @@ H.check("shadow on", C.Get("target", "shadowEnabled"), true)
 H.check("target width", C.Get("target", "width"), 300)
 H.check("player castbar on", C.Get("player", "castbarEnabled"), true)
 H.check("castbar kept in the frame", C.Get("target", "castbarAlwaysShow"), true)
-H.check("party width", C.Get("party", "width"), 195)
+H.check("party width", C.Get("party", "width"), 192)
 -- An inherited setting with a frame default: the frame's, until the
 -- general page sets a value for all.
 H.check("party: first name only", C.Get("party", "showSurname"), false)
