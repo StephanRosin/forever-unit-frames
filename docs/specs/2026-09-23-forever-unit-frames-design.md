@@ -184,17 +184,22 @@ The test stub (§8) enforces this rule.
    `load()` returns an encoded string or nil; `save(str)` receives the encoded
    string after every change. The addon ships no provider of its own; the API
    exists so that local workarounds stay outside this repository.
-3. **Macro backup** — for users in the beta: one or two character macros
-   named `FUF Save 1..n`, 255 characters each minus a header line
-   `#Forever Unit Frames backup i/n - keep`. Written only when the encoded string
-   changed, never in combat, never while the macro frame is open, respecting
-   `MAX_CHARACTER_MACROS`.
+3. **Old macro backup (read only, since 0.3.0)** — versions up to 0.2.x kept a
+   copy in character macros `FUF Save 1..n` (header line
+   `#Forever Unit Frames backup i/n - keep`), because the beta did not load
+   SavedVariables on a full restart. The client update of 25.09.2026 fixed
+   that. The addon no longer writes macros; if SavedVariables arrive empty
+   and such a backup exists (possibly only after `UPDATE_MACROS`, so saving is
+   held for up to 15 s), it is migrated once and handed to SavedVariables.
+   Once the profile is in SavedVariables, the addon deletes its own backup
+   macros (identified by the header), never in combat and never while the
+   macro frame is open.
 
 On load the first path that yields data wins, in the order above; the source is
-reported in `/fuf status` (SavedVariables / provider name / macro backup /
-defaults).
+reported in `/fuf status` (SavedVariables / provider name / macro backup
+(migrated) / defaults).
 
-### Codec (shared by providers, macro backup and export/import)
+### Codec (shared by providers, export/import and the old macro backup)
 
 - Stores only values that differ from the defaults.
 - Every setting has a fixed short code that is never reused.

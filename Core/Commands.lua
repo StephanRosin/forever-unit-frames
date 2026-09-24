@@ -33,8 +33,6 @@ local function status()
     ns.Print(L.STATUS_SOURCE:format(isProvider and src or L["SOURCE_" .. src]))
     ns.Print(L.STATUS_FOCUS:format(ns.Units.FocusAvailable() and L.FOCUS_AVAILABLE or L.FOCUS_MISSING))
     ns.Print(L.STATUS_AURAS:format(ns.AuraContainers.Supported() and L.AURAS_CONTAINERS or L.AURAS_READ))
-    local macroError = ns.Storage.MacroError()
-    if macroError then ns.Print(L[macroError]) end
 end
 
 SLASH_FOREVERUNITFRAMES1 = "/fuf"
@@ -57,7 +55,6 @@ SlashCmdList.FOREVERUNITFRAMES = function(msg)
         status()
     elseif cmd == "reset" then
         if rest == "all" then
-            ns.Storage.AllowMacroOverwrite()
             ns.Config.ResetAll()
         elseif ns.Config.Profile()[rest] then
             ns.Config.ResetScope(rest)

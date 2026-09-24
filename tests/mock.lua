@@ -753,6 +753,8 @@ function M.Reset()
     M.cvars = {}
     M.macros = {}          -- list of { name=, icon=, body=, perChar= }
     M.macroFrameShown = false
+    M.macroWrites = 0      -- CreateMacro/EditMacro calls (must stay 0)
+    M.macroDeletes = 0     -- DeleteMacro calls
     M.errors = {}          -- whatever reached the global error handler
     M.timers = {}          -- queued C_Timer.After callbacks
     M.now = 1000           -- GetTime(), advanced by M.Tick
@@ -855,7 +857,7 @@ function M.Reset()
             if M.atlases[atlas] then return { file = atlas, width = 64, height = 64 } end
         end,
     }
-    _G.Constants = { MacroConsts = { MAX_ACCOUNT_MACROS = 120, MAX_CHARACTER_MACROS = 30 } }
+    _G.Constants = {}
     _G.MacroFrame = M.NewMacroFrame()
     _G.CreateColor = function(r, g, b, a) return { r = r, g = g, b = b, a = a, GetRGB = function(c) return c.r, c.g, c.b end } end
     _G.ForeverUnitFrames = nil
@@ -1093,18 +1095,12 @@ function M.Reset()
     }
 
     -- Macros (character macros live at indices MAX_ACCOUNT_MACROS + 1 ...)
-    _G.GetNumMacros = function()
-        local n = 0
-        for _, m in ipairs(M.macros) do if m.perChar then n = n + 1 end end
-        return 0, n
-    end
     _G.GetMacroIndexByName = function(name)
         for i, m in ipairs(M.macros) do if m.name == name then return 120 + i end end
         return 0
     end
-    -- Within a session the client hands back exactly what was written. A
-    -- body that went through the server comes back from a later session with
-    -- a line break appended, and the macro cache uses CRLF line endings
+    -- A body that went through the server comes back from a later session
+    -- with a line break appended, and the macro cache uses CRLF line endings
     -- (measured in the client); the client may then cut the body to 255
     -- characters. M.RoundTripMacros simulates that.
     _G.GetMacroBody = function(index)
@@ -1118,26 +1114,22 @@ function M.Reset()
         if m.trailer or m.crlf then body = body:sub(1, 255) end
         return body
     end
-    -- Like the client, creating or editing a macro re-sorts the list by
-    -- name, so an index taken before the call may point elsewhere after it.
-    local function sortMacros()
-        table.sort(M.macros, function(a, b) return a.name < b.name end)
+    -- The addon never writes macros: any attempt is counted and fails.
+    _G.CreateMacro = function()
+        M.macroWrites = M.macroWrites + 1
+        error("the addon must not create macros")
     end
-    _G.CreateMacro = function(name, icon, body, perChar)
-        assert(#body <= 255, "macro body over 255 characters")
-        table.insert(M.macros, { name = name, icon = icon, body = body, perChar = perChar })
-        sortMacros()
-        return GetMacroIndexByName(name)
+    _G.EditMacro = function()
+        M.macroWrites = M.macroWrites + 1
+        error("the addon must not edit macros")
     end
-    _G.EditMacro = function(index, name, icon, body)
-        assert(#body <= 255, "macro body over 255 characters")
-        local m = M.macros[index - 120]
-        m.name, m.icon, m.body = name, icon, body
-        m.trailer, m.crlf = nil, nil
-        sortMacros()
-        return GetMacroIndexByName(name)
+    -- Deleting shifts the indices of every macro after it, as in the client.
+    _G.DeleteMacro = function(index)
+        assert(not M.combat, "DeleteMacro in combat")
+        assert(M.macros[index - 120], "DeleteMacro: no macro at " .. tostring(index))
+        M.macroDeletes = M.macroDeletes + 1
+        table.remove(M.macros, index - 120)
     end
-    _G.DeleteMacro = function(index) table.remove(M.macros, index - 120) end
 
     _G.SlashCmdList = {}
     _G.UISpecialFrames = {}
@@ -1191,12 +1183,26 @@ function M.PressKey(frame, key)
 end
 
 -- The macros as a later session reads them: every body gets `trailer`
--- appended (and CRLF line endings if `crlf`) until it is written again.
+-- appended (and CRLF line endings if `crlf`).
 function M.RoundTripMacros(trailer, crlf)
     for _, m in ipairs(M.macros) do
         m.trailer = (m.trailer or "") .. (trailer or "")
         m.crlf = m.crlf or crlf or nil
     end
+end
+
+-- An old settings backup as versions up to 0.2.x left it: character macros
+-- "FUF Save 1".."FUF Save n", each "#Forever Unit Frames backup i/n - keep"
+-- plus one chunk of the encoded profile. `chunks` is a string (one macro)
+-- or a list of strings. Returns a new macro list.
+function M.BackupMacros(chunks)
+    if type(chunks) == "string" then chunks = { chunks } end
+    local list = {}
+    for i, chunk in ipairs(chunks) do
+        list[i] = { name = "FUF Save " .. i, icon = "INV_MISC_QUESTIONMARK", perChar = true,
+            body = ("#Forever Unit Frames backup %d/%d - keep\n"):format(i, #chunks) .. chunk }
+    end
+    return list
 end
 
 -- Blizzard's macro window (load-on-demand in the client). Shown state is

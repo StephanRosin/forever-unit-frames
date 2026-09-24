@@ -2,8 +2,8 @@ local _, ns = ...
 
 -- Startup happens at PLAYER_LOGIN: SavedVariables are available, dependent
 -- addons have had their ADDON_LOADED to register storage providers.
--- Character macros may arrive later (see Storage.WaitForMacros). Every
--- settings change is persisted.
+-- With empty SavedVariables an old macro backup may still arrive (see
+-- Storage.Start). Every settings change is persisted.
 
 -- Runs in the same out-of-combat run that built the single frames.
 local function afterBuild()
@@ -19,8 +19,8 @@ ns.On("PLAYER_LOGIN", function()
     ForeverUnitFramesDB = ForeverUnitFramesDB or {}
     ns.Config.Use(ns.Storage.Load(ForeverUnitFramesDB))
     ns.Storage.Attach(ForeverUnitFramesDB)
-    -- Nothing found: the macro backup may still be on its way.
-    ns.Storage.WaitForMacros()
+    -- Migrates or waits for an old macro backup, or deletes it.
+    ns.Storage.Start()
     -- Party and movers follow in the same (possibly deferred) run that
     -- builds the single frames.
     ns.Single.CreateAll(afterBuild)
