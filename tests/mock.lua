@@ -1065,6 +1065,15 @@ function M.Reset()
     function GameTooltip:SetOwner(owner, anchor) self._owner, self._anchor = owner, anchor end
     function GameTooltip:IsOwned(f) return self._owner == f end
     function GameTooltip:Hide() self._shown = false; self._owner = nil end
+    -- Unit tooltips (M.tooltipUnit: the last unit asked for).
+    M.tooltipUnit = nil
+    function GameTooltip:SetUnit(unit)
+        M.tooltipUnit = unit
+        self._shown = true
+        return true
+    end
+    function GameTooltip:Show() self._shown = true end
+    function GameTooltip:FadeOut() self._shown = false end
     local function auraTooltip(method)
         GameTooltip[method] = function(self, unit, id, filter)
             refuseAuras()
