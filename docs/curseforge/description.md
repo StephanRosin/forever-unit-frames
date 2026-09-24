@@ -10,7 +10,7 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 
 ## Frames
 - Player, Target, Target of Target, Focus, Pet and Party.
-- Party pets: a slim frame under each party member who has a pet (can be turned off).
+- Party pets: a list directly below the party block, showing only the pets that exist, without gaps (can be turned off).
 - A three-row layout: a title row with name and level in class colour, health, and power. Each row's height is set in percent of the frame.
 - Round class badge, and a secondary name (surname) that can be turned on or off.
 - Elite, rare and boss marker on the portrait or as a word.
@@ -42,7 +42,6 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 - Every position can be set by dragging (`/fuf unlock`) or as exact X/Y values.
 - Test mode shows sample auras, casts and a full party, so you can set everything up without a group.
 - Settings are stored compactly. They can be exported and imported as a string.
-- Settings survive client restarts: the addon keeps a small backup in character macros named "FUF Save 1", "FUF Save 2" and so on. Please don't delete them.
 
 ## Commands
 `/fuf` (options), `/fuf unlock`, `/fuf lock`, `/fuf status`, `/fuf reset <frame|all>`, `/fuf set <scope> <setting> <value>`
@@ -50,4 +49,5 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 ## Notes
 - Made for WoW: Forever only. It relies on Forever's API and will not load on other clients.
 - English only for now.
+- Updating from 0.2.x: the settings backup in the "FUF Save" character macros is no longer needed. Settings found only there are moved to the normal saved settings once, then the addon deletes its own backup macros.
 - Bug reports and ideas are welcome on the project's issue tracker.
