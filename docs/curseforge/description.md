@@ -31,6 +31,10 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 - "Always show" keeps an empty bar in the frame so nothing below it jumps.
 - The player castbar can run alongside Blizzard's, or hide it.
 
+## Totems
+- Totem icons on the player frame, one per totem slot, with the remaining time. Right-click one to destroy it.
+- Placed next to the player frame by default; size, spacing, anchor point and X/Y offset are configurable.
+
 ## Look
 - Bar textures, including Blizzard's own; LibSharedMedia textures and fonts appear too if another addon provides them. Fonts with size and outline (including a soft outline) and colours.
 - Rounded corners, and an outer border (Flat or Gold with shading) that encloses the frame and its docked castbar.
@@ -40,7 +44,7 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 ## Options
 - `/fuf` opens a movable options window: frames on the left, tabs on top.
 - Every position can be set by dragging (`/fuf unlock`) or as exact X/Y values.
-- Test mode shows sample auras, casts and a full party, so you can set everything up without a group.
+- Test mode shows sample auras, casts, totems and a full party, so you can set everything up without a group.
 - Settings are stored compactly. They can be exported and imported as a string.
 
 ## Commands

@@ -62,6 +62,8 @@ Schema.FRAME = {
             "debuffsAnchor", "debuffsFramePoint", "debuffsPoint", "debuffsX", "debuffsY", "debuffsGrowth",
             "debuffsRowGrowth", "debuffsSize", "debuffsSpacing", "debuffsPerRow", "debuffsMax", "debuffsHighlightOwn",
             "debuffsOwnSize" } },
+        { id = "totems", keys = { "totemsEnabled", "totemsSize", "totemsSpacing", "totemsFramePoint", "totemsPoint",
+            "totemsX", "totemsY" } },
     } },
     { id = "castbar", sections = {
         { id = "castbar", keys = { "castbarEnabled", "castbarAlwaysShow", "hideBlizzardCastbar", "castbarPosition", "castbarDock",
