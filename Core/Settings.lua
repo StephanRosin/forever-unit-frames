@@ -344,3 +344,22 @@ for _, group in ipairs(Settings.AURA_GROUPS) do
         end
     end
 end
+
+-- Totems (player only, Elements/Totems.lua): one icon per totem slot in a
+-- row that hangs from the player's block (the frame and a docked castbar)
+-- like an aura group. Right of the block by default: the shipped buffs
+-- sit above the frame and the debuffs below the castbar.
+local TOTEMS = { player = true }
+Settings.Define({ key = "totemsEnabled", code = "QE", scope = "frame", only = TOTEMS, type = "bool", default = true })
+Settings.Define({ key = "totemsSize", code = "QS", scope = "frame", only = TOTEMS, type = "int", min = 12, max = 64,
+    default = 24 })
+Settings.Define({ key = "totemsSpacing", code = "QD", scope = "frame", only = TOTEMS, type = "int", min = 0, max = 20,
+    default = 3 })
+Settings.Define({ key = "totemsFramePoint", code = "QF", scope = "frame", only = TOTEMS, type = "enum",
+    values = Settings.POINTS, default = "RIGHT" })
+Settings.Define({ key = "totemsPoint", code = "QO", scope = "frame", only = TOTEMS, type = "enum",
+    values = Settings.POINTS, default = "LEFT" })
+Settings.Define({ key = "totemsX", code = "QX", scope = "frame", only = TOTEMS, type = "int", min = -400, max = 400,
+    default = 6 })
+Settings.Define({ key = "totemsY", code = "QY", scope = "frame", only = TOTEMS, type = "int", min = -400, max = 400,
+    default = 0 })

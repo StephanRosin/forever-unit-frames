@@ -32,6 +32,7 @@ Elements\Auras.lua
 Elements\Classification.lua
 Elements\CombatFeedback.lua
 Elements\Shape.lua
+Elements\Totems.lua
 Units\Events.lua
 Units\Single.lua
 Units\Party.lua
