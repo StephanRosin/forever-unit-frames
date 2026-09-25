@@ -347,3 +347,111 @@ do
     local badgeReach = C.Get("player", "classIconSize") / 2 - C.Get("player", "classIconY")
     H.checkTrue("shipped: badge above the row", blockHalf - 24 / 2 > badgeReach)
 end
+
+-- Fix round 1 ---------------------------------------------------------------------
+
+-- Click areas let every button but the right one through to the world.
+do
+    local ns = boot("SHAMAN")
+    for i, s in ipairs(ns.Frames.player.totems.slots) do
+        local through = table.concat(s.click._passThrough or {}, ",")
+        H.check("pass-through buttons " .. i, through, "LeftButton,MiddleButton,Button4,Button5")
+    end
+end
+
+-- A client that refuses SetPassThroughButtons still builds the row.
+do
+    local ns = H.LoadAddon()
+    M.units.player = { name = "Me", class = "SHAMAN", className = "SHAMAN", isPlayer = true, health = 1, healthMax = 1 }
+    local create = CreateFrame
+    _G.CreateFrame = function(...)
+        local f = create(...)
+        if select(4, ...) == "SecureActionButtonTemplate" then
+            f.SetPassThroughButtons = function() error("not allowed") end
+        end
+        return f
+    end
+    _G.ForeverUnitFramesDB = nil
+    M.FireEvent("PLAYER_LOGIN")
+    M.RunTimers()
+    H.checkTrue("row built without pass-through", ns.Frames.player.totems and #ns.Frames.player.totems.slots == 4)
+end
+
+-- Secret data through the end of combat: the totems are read again when
+-- combat ends and once more a frame later.
+do
+    local ns = boot("SHAMAN")
+    local t = ns.Frames.player.totems
+    local earth, fire = t.slots[1], t.slots[2]
+    M.FireEvent("PLAYER_REGEN_DISABLED")
+    M.combat = true
+    M.totemsSecret = true
+    M.totems[1] = { name = "Searing Totem", start = 1000, duration = 60, icon = 135825 }
+    M.FireEvent("PLAYER_TOTEM_UPDATE", 1)
+    -- Still secret as combat ends: unknown, a shaman's slots stay armed.
+    M.SetCombat(false)
+    H.check("secret at combat end: earth still armed", earth.click:IsShown(), true)
+    -- A frame later the data is readable: only the fire slot stays.
+    M.totemsSecret = false
+    M.RunTimers(0)
+    H.check("next frame: earth released", earth.click:IsShown(), false)
+    H.check("next frame: fire kept", fire.click:IsShown(), true)
+    H.check("next frame: earth icon hidden", earth.art:IsShown(), false)
+    H.check("nothing blocked", #M.blocked, 0)
+end
+
+-- Readable again when combat ends, without any totem event: released at once.
+do
+    local ns = boot("SHAMAN")
+    local t = ns.Frames.player.totems
+    M.FireEvent("PLAYER_REGEN_DISABLED")
+    M.combat = true
+    M.totemsSecret = true
+    M.FireEvent("PLAYER_TOTEM_UPDATE", 1)
+    M.totemsSecret = false
+    M.SetCombat(false)
+    for i, s in ipairs(t.slots) do H.check("re-read at combat end " .. i, s.click:IsShown(), false) end
+end
+
+-- Unknown data out of combat (restricted content) arms only classes that
+-- use totems.
+do
+    local ns = boot("WARRIOR")
+    M.totemsSecret = true
+    M.FireEvent("PLAYER_TOTEM_UPDATE", 1)
+    for i, s in ipairs(ns.Frames.player.totems.slots) do
+        H.check("warrior, unknown: not armed " .. i, s.click:IsShown(), false)
+    end
+end
+
+-- Test mode disarms real totems' click areas: a right-click on a sample
+-- must not destroy a real totem.
+do
+    local ns = boot("SHAMAN")
+    local t = ns.Frames.player.totems
+    local fire = t.slots[2]
+    M.totems[1] = { name = "Searing Totem", start = 990, duration = 60, icon = 135825 }
+    M.FireEvent("PLAYER_TOTEM_UPDATE", 1)
+    H.check("real totem clickable", fire.click:IsShown(), true)
+    ns.TestMode.Set(true)
+    H.check("test mode: disarmed", fire.click:IsShown(), false)
+    H.check("test mode: right-click does nothing", M.SecureClick(fire.click, "RightButton"), nil)
+    H.check("test mode: nothing destroyed", #M.destroyedTotems, 0)
+    ns.TestMode.Set(false)
+    H.check("after test mode: armed again", fire.click:IsShown(), true)
+end
+
+-- Tooltips: none for a slot known to be empty, the client's for an
+-- unknown one.
+do
+    local ns = boot("SHAMAN")
+    local t = ns.Frames.player.totems
+    local earth = t.slots[1]
+    M.tooltipTotem = nil
+    earth.art._scripts.OnEnter(earth.art)
+    H.check("empty slot: no totem tooltip", M.tooltipTotem, nil)
+    M.totemsSecret = true
+    M.FireEvent("PLAYER_TOTEM_UPDATE", 2)
+    earth.click._scripts.OnEnter(earth.click)
+    H.check("unknown slot: totem tooltip", M.tooltipTotem, 2)
+end

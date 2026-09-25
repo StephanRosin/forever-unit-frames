@@ -752,6 +752,9 @@ local function newWidget(kind, name, parent)
     -- Mouse: motion (tooltips) and clicks can be switched separately.
     function w:SetMouseClickEnabled(v) self._clickEnabled = v end
     function w:SetMouseMotionEnabled(v) self._motionEnabled = v end
+    -- Mouse buttons that go through the frame to what lies below it
+    -- (SimpleScriptRegionAPI; protected on protected frames in combat).
+    function w:SetPassThroughButtons(...) self._passThrough = { ... } end
     -- PlayerModel
     function w:SetUnit(unit) self._modelUnit = unit; return true end
     function w:ClearModel() self._modelUnit = nil; self._cleared = true end
@@ -767,7 +770,8 @@ local function newWidget(kind, name, parent)
     -- not show, hide, move, size, reparent or re-attribute them
     -- (ADDON_ACTION_BLOCKED in the client).
     for _, method in ipairs({ "SetShown", "SetPoint", "ClearAllPoints", "SetSize", "SetWidth", "SetHeight",
-                              "SetAttribute", "SetParent", "EnableMouse", "SetAllPoints" }) do
+                              "SetAttribute", "SetParent", "EnableMouse", "SetAllPoints",
+                              "SetPassThroughButtons" }) do
         local original = w[method]
         if original then
             w[method] = function(self, ...)

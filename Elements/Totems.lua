@@ -62,8 +62,10 @@ function Totems.Order(class)
     return order
 end
 
+-- A slot known to be empty (active == false) gets no tooltip; an unknown
+-- (secret) one gets the client's.
 local function showTooltip(self)
-    if self.sample then return end
+    if self.sample or self.totemInfo.active == false then return end
     GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT")
     if not pcall(GameTooltip.SetTotem, GameTooltip, self.totemSlot) then GameTooltip:Hide() end
 end
@@ -72,13 +74,21 @@ local function hideTooltip(self)
     if GameTooltip:IsOwned(self) then GameTooltip:Hide() end
 end
 
+-- Every mouse button but the right one goes through a click area to the
+-- world below. Allowed for addons out of combat (IsProtectedFunction and
+-- HasRestrictions in SimpleScriptRegionAPIDocumentation.lua, like Show);
+-- a client that refuses leaves the area catching every button.
+Totems.PASS_THROUGH = { "LeftButton", "MiddleButton", "Button4", "Button5" }
+
 local function newSlot(holder, slot)
+    local info = { slot = slot }
     local art = AuraButton.Create(holder, false)
-    art.totemSlot = slot
+    art.totemSlot, art.totemInfo = slot, info
     art:SetScript("OnEnter", showTooltip)
     art:SetScript("OnLeave", hideTooltip)
     local click = CreateFrame("Button", nil, holder, "SecureActionButtonTemplate")
-    click.totemSlot = slot
+    click.totemSlot, click.totemInfo = slot, info
+    pcall(click.SetPassThroughButtons, click, unpack(Totems.PASS_THROUGH))
     -- Secure mouse presses act on the up stroke (SecureActionButton_OnClick).
     click:RegisterForClicks("RightButtonUp")
     click:SetAttribute("*type2", "destroytotem")
@@ -86,7 +96,8 @@ local function newSlot(holder, slot)
     click:HookScript("OnEnter", showTooltip)
     click:HookScript("OnLeave", hideTooltip)
     click:Hide()
-    return { slot = slot, art = art, click = click }
+    info.art, info.click = art, click
+    return info
 end
 
 -- Built with the frame, out of combat. Other frames get nothing.
@@ -94,6 +105,8 @@ function Totems.Build(frame)
     if frame.key ~= Totems.SCOPE then return end
     local class = playerClass()
     local holder = CreateFrame("Frame", nil, frame)
+    -- Only a shaman's class uses totems: unknown (secret) slots are armed
+    -- for it alone.
     local t = { holder = holder, slots = {}, shaman = class == "SHAMAN" }
     for i, slot in ipairs(Totems.Order(class)) do t.slots[i] = newSlot(holder, slot) end
     frame.totems = t
@@ -102,10 +115,11 @@ end
 local function enabled() return Config.Get(Totems.SCOPE, "totemsEnabled") end
 
 -- Out of combat only: the click areas follow the slots. A slot whose state
--- is unknown (secret) stays clickable for a shaman.
+-- is unknown (secret) stays clickable for a shaman. In test mode none is:
+-- a real totem's area would sit over a sample icon.
 local function syncClicks(t)
     if fighting or InCombatLockdown() then return end
-    local on = enabled()
+    local on = enabled() and not t.preview
     for _, s in ipairs(t.slots) do
         s.click:SetShown(on and (s.active == true or (s.active == nil and t.shaman)))
     end
@@ -201,7 +215,7 @@ function Totems.Refresh(frame)
             s.active = showSlot(s)
         end
     end
-    if not t.preview then syncClicks(t) end
+    syncClicks(t)
 end
 
 function Totems.Style(frame)
@@ -214,7 +228,8 @@ function Totems.Update(frame)
     Totems.Refresh(frame)
 end
 
--- Test mode: sample totems for any class, released when it ends.
+-- Test mode: sample totems for every class (so anyone can set the row
+-- up; turning totems off hides them), released when it ends.
 function Totems.Preview(frame, on)
     local t = frame.totems
     if not t then return end
@@ -243,10 +258,18 @@ ns.On("PLAYER_REGEN_DISABLED", function()
     for _, s in ipairs(t.slots) do s.click:Show() end
 end)
 
+-- Combat is over: the totems are read again (data that was secret may be
+-- readable now, without a totem event), and once more a frame later in
+-- case the client still hands out secrets at this moment.
+local function afterCombat()
+    local frame = playerTotems()
+    if frame then Totems.Refresh(frame) end
+end
+
 ns.On("PLAYER_REGEN_ENABLED", function()
     fighting = false
-    local _, t = playerTotems()
-    if t then syncClicks(t) end
+    afterCombat()
+    C_Timer.After(0, afterCombat)
 end)
 
 ns.RegisterElement(Totems)
