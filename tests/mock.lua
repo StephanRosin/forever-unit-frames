@@ -84,7 +84,7 @@ M.templates = {
 local OPPOSITE = { TOP = "BOTTOM", BOTTOM = "TOP", LEFT = "RIGHT", RIGHT = "LEFT" }
 local MULTIPLIER = { TOP = { 0, -1 }, BOTTOM = { 0, 1 }, LEFT = { 1, 0 }, RIGHT = { -1, 0 } }
 
-local function groupHeaderUpdate(header)
+local function groupHeaderLayout(header)
     local a = header._attr
     local kind
     if #M.group > 0 and a.showParty then kind = "PARTY" elseif a.showSolo then kind = "SOLO" end
@@ -141,6 +141,15 @@ local function groupHeaderUpdate(header)
         header:SetHeight(math.max(math.abs(xm) * bh, 0.1))
     end
     M.headerUpdates = M.headerUpdates + 1
+end
+
+-- The header's own (secure) code may move its protected children in
+-- combat.
+local function groupHeaderUpdate(header)
+    M.secureDepth = M.secureDepth + 1
+    local ok, err = pcall(groupHeaderLayout, header)
+    M.secureDepth = M.secureDepth - 1
+    if not ok then error(err, 0) end
 end
 
 local function makeGroupHeader(w, pets)
@@ -440,6 +449,16 @@ function M.NewAuraContainer(w, template)
     M.auraContainers[#M.auraContainers + 1] = w
 end
 
+-- A frame counts as protected when it or any descendant is (the client
+-- protects the parents of protected frames too).
+function M.IsProtectedTree(obj)
+    if rawget(obj, "_protected") then return true end
+    for _, child in ipairs(rawget(obj, "_children") or {}) do
+        if M.IsProtectedTree(child) then return true end
+    end
+    return false
+end
+
 local function newWidget(kind, name, parent)
     local w = setmetatable({
         _kind = kind, _name = name, _parent = parent, _scripts = {},
@@ -536,6 +555,13 @@ local function newWidget(kind, name, parent)
     function w:GetParent() return self._parent end
     function w:SetAlpha(a) self._alpha = a end
     function w:GetAlpha() return self._alpha or 1 end
+    -- SimpleFrameAPI / SimpleRegionAPI: takes a secret boolean
+    -- (AllowedWhenTainted); the alpha then carries the secret aspect.
+    function w:SetAlphaFromBoolean(value, alphaIfTrue, alphaIfFalse)
+        assert(type(M.Reveal(value)) == "boolean", "SetAlphaFromBoolean: value must be a boolean")
+        self._alpha = M.Reveal(value) and alphaIfTrue or alphaIfFalse
+        self._alphaSecret = M.IsSecret(value)
+    end
     function w:EnableMouse(v) self._mouse = v end
     function w:IsProtected() return self._protected or false end
     function w:SetFrameStrata(v) self._strata = v end
@@ -736,6 +762,23 @@ local function newWidget(kind, name, parent)
     function w:StartMoving() end
     function w:StopMovingOrSizing() end
     function w:SetClampedToScreen() end
+    -- Protected frames: explicitly protected ones (secure templates) and
+    -- every frame with a protected descendant. In combat, tainted code may
+    -- not show, hide, move, size, reparent or re-attribute them
+    -- (ADDON_ACTION_BLOCKED in the client).
+    for _, method in ipairs({ "SetShown", "SetPoint", "ClearAllPoints", "SetSize", "SetWidth", "SetHeight",
+                              "SetAttribute", "SetParent", "EnableMouse", "SetAllPoints" }) do
+        local original = w[method]
+        if original then
+            w[method] = function(self, ...)
+                if M.combat and M.secureDepth == 0 and M.IsProtectedTree(self) then
+                    M.blocked[#M.blocked + 1] = method
+                    error("mock: " .. method .. " on a protected frame in combat", 2)
+                end
+                return original(self, ...)
+            end
+        end
+    end
     -- Made under an aura button after it was restricted: restricted too.
     if restricted(w) then guardTree(w) end
     return w
@@ -747,6 +790,8 @@ function M.Reset()
     M.frames = {}
     M.chat = {}
     M.combat = false
+    M.blocked = {}         -- protected-frame calls refused in combat
+    M.secureDepth = 0      -- > 0 while mock secure code runs
     M.units = {}
     -- RegionalUniqueNamesEnabled() answer; the client's default is unknown.
     M.regionalUniqueNames = false
@@ -1075,6 +1120,13 @@ function M.Reset()
         return true
     end
     function GameTooltip:Show() self._shown = true end
+    -- Totem tooltips (M.tooltipTotem: the last slot asked for).
+    M.tooltipTotem = nil
+    function GameTooltip:SetTotem(slot)
+        assert(not M.IsSecret(slot), "secret totem slot passed to the tooltip")
+        M.tooltipTotem = slot
+        self._shown = true
+    end
     function GameTooltip:FadeOut() self._shown = false end
     local function auraTooltip(method)
         GameTooltip[method] = function(self, unit, id, filter)
@@ -1086,6 +1138,52 @@ function M.Reset()
     end
     auraTooltip("SetUnitBuffByAuraInstanceID")
     auraTooltip("SetUnitDebuffByAuraInstanceID")
+
+    -- Totems (Blizzard_FrameXMLBase/Constants.lua, TotemDocumentation.lua).
+    -- M.totems[slot] = { name, start, duration, icon, spellID } for a slot
+    -- that holds a totem. M.totemsSecret: every GetTotemInfo value comes
+    -- back secret (SecretWhenTotemSlotSecret: combat, encounter, challenge
+    -- mode or PvP match restrictions). GetTotemDuration's duration object
+    -- is never secret itself. DestroyTotem is only reached through secure
+    -- code (M.SecureClick); M.destroyedTotems lists the slots.
+    M.totems = {}
+    M.totemsSecret = false
+    M.destroyedTotems = {}
+    _G.MAX_TOTEMS = 4
+    _G.FIRE_TOTEM_SLOT, _G.EARTH_TOTEM_SLOT, _G.WATER_TOTEM_SLOT, _G.AIR_TOTEM_SLOT = 1, 2, 3, 4
+    _G.STANDARD_TOTEM_PRIORITIES = { 1, 2, 3, 4 }
+    _G.SHAMAN_TOTEM_PRIORITIES = { EARTH_TOTEM_SLOT, FIRE_TOTEM_SLOT, WATER_TOTEM_SLOT, AIR_TOTEM_SLOT }
+    local function validSlot(slot)
+        assert(not M.IsSecret(slot), "secret totem slot passed back to the client")
+        return type(slot) == "number" and slot >= 1 and slot <= MAX_TOTEMS
+    end
+    -- haveTotem, totemName, startTime, duration, icon, modRate, spellID;
+    -- nothing for a slot that does not exist (MayReturnNothing).
+    _G.GetTotemInfo = function(slot)
+        if not validSlot(slot) then return end
+        local t = M.totems[slot]
+        local r
+        if t then
+            r = { true, t.name or "Totem", t.start or 0, t.duration or 0, t.icon or 0, 1, t.spellID or 0 }
+        else
+            r = { false, "", 0, 0, 0, 1, 0 }
+        end
+        if M.totemsSecret then
+            for i = 1, #r do r[i] = M.Secret(r[i]) end
+        end
+        return unpack(r)
+    end
+    _G.GetTotemDuration = function(slot)
+        assert(validSlot(slot), "GetTotemDuration: bad slot")
+        local t = M.totems[slot]
+        return { _start = t and t.start or 0, _duration = t and t.duration or 0 }
+    end
+    _G.DestroyTotem = function(slot)
+        assert(M.secureDepth > 0, "DestroyTotem is protected: only secure code may call it")
+        assert(validSlot(slot), "DestroyTotem: bad slot")
+        M.destroyedTotems[#M.destroyedTotems + 1] = slot
+        M.totems[slot] = nil
+    end
 
     -- CVars
     _G.C_CVar = {
@@ -1231,6 +1329,40 @@ function M.FinishAnimations()
         local done = group:GetScript("OnFinished")
         if done then done(group) end
     end
+end
+
+-- A mouse click on a SecureActionButtonTemplate button, reduced to what
+-- the addon uses (Blizzard_FrameXML/SecureTemplates.lua): a mouse press
+-- acts on the up stroke, and only when the button registered it; the
+-- action is the modified attribute "type" for the mouse button (looked up
+-- as name..suffix, *name..suffix, name*, *name*, name; no modifier held),
+-- run as secure code. Returns the action type, or nil.
+local BUTTON_SUFFIX = { LeftButton = "1", RightButton = "2", MiddleButton = "3" }
+local SECURE_ACTIONS = {
+    destroytotem = function(button, attr) DestroyTotem(attr("totem-slot")) end,
+}
+function M.SecureClick(button, mouseButton)
+    local registered = false
+    for _, c in ipairs(button._clicks or {}) do
+        if c == "AnyUp" or c == mouseButton .. "Up" then registered = true end
+    end
+    if not registered or not button:IsVisible() or button._mouse == false then return nil end
+    local suffix = BUTTON_SUFFIX[mouseButton] or ""
+    local function attr(name)
+        for _, k in ipairs({ name .. suffix, "*" .. name .. suffix, name .. "*", "*" .. name .. "*", name }) do
+            local v = button._attr[k]
+            if v ~= nil then return v end
+        end
+    end
+    local kind = attr("type")
+    local action = kind and SECURE_ACTIONS[kind]
+    if action then
+        M.secureDepth = M.secureDepth + 1
+        local ok, err = pcall(action, button, attr)
+        M.secureDepth = M.secureDepth - 1
+        if not ok then error(err, 0) end
+    end
+    return kind
 end
 
 function M.SetCombat(v)
