@@ -275,6 +275,19 @@ L.SETTING_raidMarkerX = "Offset X"
 L.SETTING_raidMarkerY = "Offset Y"
 L.HINT_raidMarker = "Skull, cross, star and the other raid target icons"
 
+-- Status tab: group icons (player and party).
+L.SECTION_groupIcons = "Group icons"
+L.SETTING_groupLeader = "Leader and assistant"
+L.SETTING_groupReadyCheck = "Ready check"
+L.SETTING_groupResurrect = "Incoming resurrection"
+L.SETTING_groupIconSize = "Icon size"
+L.SETTING_groupIconFramePoint = "Point on the frame"
+L.SETTING_groupIconPoint = "Point of the icons"
+L.SETTING_groupIconX = "Offset X"
+L.SETTING_groupIconY = "Offset Y"
+L.HINT_groupLeader = "The group's leader (or guide) and assistants"
+L.HINT_groupReadyCheck = "Waiting, ready or not ready; stays a few seconds after the check"
+
 -- Minimap button.
 L.SECTION_minimap = "Minimap"
 L.SETTING_minimapShow = "Show minimap button"

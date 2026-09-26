@@ -398,6 +398,24 @@ Settings.Define({ key = "raidMarkerX", code = "RX", scope = "frame", type = "int
 Settings.Define({ key = "raidMarkerY", code = "RY", scope = "frame", type = "int", min = -200, max = 200,
     default = 0 })
 
+-- Group icons (player and party, Elements/GroupIcons.lua): leader or
+-- assistant, ready check and incoming resurrection, each group on its own
+-- switch, in one row at the frame's top left corner by default.
+local GROUP = { player = true, party = true }
+Settings.Define({ key = "groupLeader", code = "LL", scope = "frame", only = GROUP, type = "bool", default = true })
+Settings.Define({ key = "groupReadyCheck", code = "LR", scope = "frame", only = GROUP, type = "bool", default = true })
+Settings.Define({ key = "groupResurrect", code = "LZ", scope = "frame", only = GROUP, type = "bool", default = true })
+Settings.Define({ key = "groupIconSize", code = "LS", scope = "frame", only = GROUP, type = "int", min = 8, max = 48,
+    default = 16 })
+Settings.Define({ key = "groupIconFramePoint", code = "LF", scope = "frame", only = GROUP, type = "enum",
+    values = Settings.POINTS, default = "TOPLEFT" })
+Settings.Define({ key = "groupIconPoint", code = "LO", scope = "frame", only = GROUP, type = "enum",
+    values = Settings.POINTS, default = "LEFT" })
+Settings.Define({ key = "groupIconX", code = "LX", scope = "frame", only = GROUP, type = "int", min = -200, max = 200,
+    default = 2 })
+Settings.Define({ key = "groupIconY", code = "LY", scope = "frame", only = GROUP, type = "int", min = -200, max = 200,
+    default = 0 })
+
 -- Minimap button (Options/MinimapButton.lua): General only. The angle
 -- around the minimap in degrees, counter-clockwise from the right (225:
 -- bottom left, LibDBIcon's default); set by dragging the button.

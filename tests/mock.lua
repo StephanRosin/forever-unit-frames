@@ -968,7 +968,11 @@ function M.Reset()
         ["nameplates-icon-elite-gold"] = true, ["nameplates-icon-elite-silver"] = true,
         ["UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Star"] = true,
         -- The target frame's high-level (boss) icon (Blizzard_UnitFrame/Mainline/TargetFrame.xml).
-        ["UI-HUD-UnitFrame-Target-HighLevelTarget_Icon"] = true }
+        ["UI-HUD-UnitFrame-Target-HighLevelTarget_Icon"] = true,
+        -- Group icons (PartyFrameTemplates.xml, ReadyCheck.lua, CompactUnitFrame.lua).
+        ["UI-HUD-UnitFrame-Player-Group-LeaderIcon"] = true, ["UI-HUD-UnitFrame-Player-Group-GuideIcon"] = true,
+        ["UI-LFG-ReadyMark-Raid"] = true, ["UI-LFG-DeclineMark-Raid"] = true, ["UI-LFG-PendingMark-Raid"] = true,
+        ["RaidFrame-Icon-Rez"] = true }
     _G.C_Texture = {
         GetAtlasInfo = function(atlas)
             if M.atlases[atlas] then return { file = atlas, width = 64, height = 64 } end
@@ -1042,6 +1046,26 @@ function M.Reset()
     -- "normal", never nil) and d.bossMob.
     _G.UnitClassification = function(unit) local d = u(unit); return d and d.classification or "normal" end
     _G.UnitIsBossMob = function(unit) local d = u(unit); return d and d.bossMob or false end
+    -- The group (UnitDocumentation.lua: leader and assistant are
+    -- SecretWhenUnitIdentityRestricted). d.leader, d.assistant;
+    -- M.groupSecret hands both back secret. Ready checks and incoming
+    -- resurrections are undocumented globals Blizzard's Mainline frames
+    -- call: d.readyCheck ("ready", "notready", "waiting" or nil),
+    -- d.incomingRez. M.lfgRestricted: HasLFGRestrictions (a guide leads).
+    M.groupSecret = false
+    M.lfgRestricted = false
+    local function groupFlag(v)
+        v = v or false
+        if M.groupSecret then return M.Secret(v) end
+        return v
+    end
+    _G.UnitIsGroupLeader = function(unit) local d = u(unit); return groupFlag(d and d.leader) end
+    _G.UnitIsGroupAssistant = function(unit) local d = u(unit); return groupFlag(d and d.assistant) end
+    -- d.offline: the unit's player is disconnected.
+    _G.UnitIsConnected = function(unit) local d = u(unit); return d ~= nil and not d.offline end
+    _G.GetReadyCheckStatus = function(unit) local d = u(unit); return d and d.readyCheck end
+    _G.UnitHasIncomingResurrection = function(unit) local d = u(unit); return d and d.incomingRez or false end
+    _G.HasLFGRestrictions = function() return M.lfgRestricted end
     -- Raid target markers (RaidMarkersDocumentation.lua: SecretReturns):
     -- d.raidTarget (1..8 or nil); M.raidTargetsSecret hands a set index
     -- back secret.

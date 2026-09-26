@@ -144,6 +144,24 @@ function Layout.AuraBlock(shape, own, count)
     return across, along
 end
 
+-- Icon rows (status icons, group icons) ----------------------------------------
+-- A row has a slot for each icon switched on; the icons that show are
+-- packed towards the side of the row's anchor point.
+
+-- Length of count icons of size with gaps between them (0 for none).
+function Layout.IconRowWidth(count, size, gap)
+    if count <= 0 then return 0 end
+    return count * size + (count - 1) * gap
+end
+
+-- Share of the row's free room left of the icons: 0 packs them to the
+-- left (a LEFT point), 1 to the right, 0.5 centres them.
+function Layout.IconRowJustify(point)
+    if point:find("LEFT") then return 0 end
+    if point:find("RIGHT") then return 1 end
+    return 0.5
+end
+
 -- Pixel grid ------------------------------------------------------------------
 -- Sizes and offsets are rounded to whole physical pixels with Blizzard's
 -- PixelUtil (Blizzard_SharedXML, loaded for every game type): one pixel is
