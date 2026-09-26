@@ -26,14 +26,11 @@ function Settings.Get(key) return byKey[key] end
 function Settings.ByCode(code) return byCode[code] end
 function Settings.All() return list end
 
--- A frame's default may be a function: worked out when asked (range
--- fading on the target follows the player's class).
 function Settings.Default(def, scope)
     local d = def.default
     if type(d) == "table" and d._ ~= nil then
         local v = d[scope]
         if v == nil then v = d._ end
-        if type(v) == "function" then v = v(scope) end
         return v
     end
     return d
@@ -431,20 +428,26 @@ Settings.Define({ key = "groupIconY", code = "LY", scope = "frame", only = GROUP
 -- Range fading (Elements/Range.lua): party members and their pets, the
 -- target, the focus and the pet at a lower opacity while out of range.
 local RANGE = { party = true, target = true, focus = true, pet = true }
--- The target and focus fade by default when the player's class has a
--- hostile range spell (Elements/Range.lua); otherwise enemies are only
--- measured by the follow distance (about 28 yards) and they stay unfaded.
-local function classRangeDefault()
-    return ns.Range ~= nil and ns.Range.HasClassSpell("hostile")
-end
-Settings.Define({ key = "rangeFade", code = "VE", scope = "frame", only = RANGE, type = "bool",
-    default = { party = true, pet = true, target = classRangeDefault, focus = classRangeDefault, _ = false } })
+-- On everywhere: every class measures enemies, by a spell or in yards.
+Settings.Define({ key = "rangeFade", code = "VE", scope = "frame", only = RANGE, type = "bool", default = true })
 Settings.Define({ key = "rangeAlpha", code = "VA", scope = "frame", only = RANGE, type = "int", min = 0, max = 100,
     default = 50 })
--- The spells whose range decides, for friends and for enemies: a name or a
--- spell ID. Empty is the class's own (Range.CLASS_SPELLS).
+-- How range is measured, for friends and for enemies (General only):
+-- AUTO is the spell, or yards when there is none; SPELL the spell only;
+-- YARDS the distance in yards. Stored by index: append only.
+-- The spell fields take a name or a spell ID; empty is the class's own
+-- (Range.CLASS_SPELLS).
+local RANGE_MODES = { "AUTO", "SPELL", "YARDS" }
+Settings.Define({ key = "rangeFriendlyMode", code = "VG", scope = "general", type = "enum", values = RANGE_MODES,
+    default = "AUTO" })
 Settings.Define({ key = "rangeFriendlySpell", code = "VF", scope = "general", type = "text", default = "" })
+Settings.Define({ key = "rangeFriendlyYards", code = "VY", scope = "general", type = "int", min = 5, max = 40,
+    default = 40 })
+Settings.Define({ key = "rangeHostileMode", code = "VK", scope = "general", type = "enum", values = RANGE_MODES,
+    default = "AUTO" })
 Settings.Define({ key = "rangeHostileSpell", code = "VH", scope = "general", type = "text", default = "" })
+Settings.Define({ key = "rangeHostileYards", code = "VZ", scope = "general", type = "int", min = 5, max = 40,
+    default = 30 })
 
 -- Threat glow (Elements/Threat.lua): the unit's own threat on the player,
 -- party and pet frames, your threat on it on the others.

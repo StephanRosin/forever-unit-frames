@@ -32,9 +32,9 @@ do
     end
     H.check("on by default: party", S.Default(S.Get("rangeFade"), "party"), true)
     H.check("on by default: pet", S.Default(S.Get("rangeFade"), "pet"), true)
-    -- No class known (no player unit yet): no hostile spell, opt-in.
-    H.check("off by default: target", S.Default(S.Get("rangeFade"), "target"), false)
-    H.check("off by default: focus", S.Default(S.Get("rangeFade"), "focus"), false)
+    -- Every class measures enemies (a spell, else yards): on everywhere.
+    H.check("on by default: target", S.Default(S.Get("rangeFade"), "target"), true)
+    H.check("on by default: focus", S.Default(S.Get("rangeFade"), "focus"), true)
     H.check("half opacity by default", S.Default(S.Get("rangeAlpha"), "party"), 50)
     H.check("opacity from 0", S.Get("rangeAlpha").min, 0)
     H.check("opacity to 100", S.Get("rangeAlpha").max, 100)
@@ -53,7 +53,7 @@ do
     local ns = boot()
     local C = ns.Config
     C.Set("party", "rangeFade", true)
-    C.Set("target", "rangeFade", false)
+    C.Set("target", "rangeFade", true)
     C.Set("target", "rangeAlpha", 50)
     for scope, values in pairs(C.Profile()) do
         for key in pairs(values) do
@@ -138,9 +138,6 @@ do
     local ns = boot()
     local f = ns.Frames.target
     M.units.target = { name = "Boar", health = 5, healthMax = 10, near = false }
-    M.FireEvent("PLAYER_TARGET_CHANGED")
-    H.check("off by default: far enemy full", f:GetAlpha(), 1)
-    ns.Config.Set("target", "rangeFade", true)
     M.FireEvent("PLAYER_TARGET_CHANGED")
     H.check("far enemy: faded", f:GetAlpha(), 0.5)
     M.units.target.near = true
@@ -236,8 +233,7 @@ do
     M.units.party1 = { name = "Ann", isPlayer = true, health = 5, healthMax = 10 }
     M.SetGroup({ "party1" })
     H.checkTrue("timer runs", ns.Range.driver:IsShown())
-    C.Set("party", "rangeFade", false)
-    C.Set("pet", "rangeFade", false)
+    for _, scope in ipairs({ "party", "pet", "target", "focus" }) do C.Set(scope, "rangeFade", false) end
     H.check("all off: timer stopped", ns.Range.driver:IsShown(), false)
     local asked = M.rangeQueries
     M.Tick(0.25)

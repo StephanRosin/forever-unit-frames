@@ -86,20 +86,14 @@ do
     H.check("hunter Mend Pet is for the pet only", T.HUNTER.friendly[1].petOnly, true)
 end
 
--- Defaults: fading on the target and focus when the class has a hostile
--- spell, off otherwise.
+-- Defaults: the target and focus fade for every class (a spell, else yards).
 do
-    for class, want in pairs({ PRIEST = true, MAGE = true, HUNTER = true, WARRIOR = false, ROGUE = false,
-        PALADIN = false }) do
+    for _, class in ipairs({ "PRIEST", "MAGE", "HUNTER", "WARRIOR", "ROGUE", "PALADIN" }) do
         local ns = boot(class)
-        H.check(class .. ": target default", ns.Config.Get("target", "rangeFade"), want)
-        H.check(class .. ": focus default", ns.Config.Get("focus", "rangeFade"), want)
+        H.check(class .. ": target default", ns.Config.Get("target", "rangeFade"), true)
+        H.check(class .. ": focus default", ns.Config.Get("focus", "rangeFade"), true)
         H.check(class .. ": party still on", ns.Config.Get("party", "rangeFade"), true)
-        -- The default is not written into the profile.
-        ns.Config.Set("target", "rangeFade", want)
-        H.check(class .. ": nothing stored", ns.Config.Profile().target.rangeFade, nil)
     end
-    -- An explicit choice wins.
     local ns = boot("PRIEST")
     ns.Config.Set("target", "rangeFade", false)
     H.check("switched off stays off", ns.Config.Get("target", "rangeFade"), false)
@@ -143,9 +137,11 @@ do
     H.check("unlisted rank found by name", first and first.id, 99585)
 end
 
--- Not known: the previous method. Learning it later switches over.
+-- Not known (spell mode): the previous method. Learning it later switches
+-- over.
 do
     local ns = boot("PRIEST")
+    ns.Config.Set("general", "rangeHostileMode", "SPELL")
     H.check("unknown spell: none", #ns.Range.Spells("hostile"), 0)
     H.check("unknown: follow distance", target(ns, { hostile = true, distance = 29 }), 0.5)
     M.known[585] = true
@@ -240,6 +236,7 @@ do
     H.check("empty: automatic again", ns.Range.SpellHint("hostile"),
         ns.L.RANGE_SPELL_AUTO:format("Fireball, Frostbolt"))
     -- A friendly override for a class with its own friendly spell.
+    M.known[5019] = true
     ns.Config.Set("general", "rangeFriendlySpell", "Shoot")
     H.check("harmful spell as friendly: no answer", target(ns, { friend = true, distance = 45, near = true }), 1)
 end

@@ -1140,15 +1140,77 @@ function M.Reset()
     -- d.near: true, false, or "nil" for no answer. M.interactQueries
     -- counts the calls.
     M.interactQueries = 0
+    M.INTERACT_YARDS = { 28, 11, 10, 28, 28 }
     _G.CheckInteractDistance = function(unit, index)
         assert(type(index) == "number" and index >= 1 and index <= 5, "CheckInteractDistance: bad index")
         M.interactQueries = M.interactQueries + 1
         if M.interactError then error("CheckInteractDistance refused") end
         local d = u(unit)
         if d and d.near == "nil" then return nil end
-        if d and d.near == nil and d.distance then return d.distance <= 28 end
+        -- With d.distance: the index's yards (3: 10, 2: 11, 1 and 4: 28).
+        if d and d.near == nil and d.distance then return d.distance <= M.INTERACT_YARDS[index] end
         return d ~= nil and d.near ~= false
     end
+    -- UnitDistanceSquared (UnitDocumentation.lua, no SecretReturns):
+    -- distance squared and whether it was checked. Checked for group
+    -- members with a d.distance unless d.distanceChecked says otherwise;
+    -- M.distanceSecret hands both back secret; M.distanceQueries counts.
+    M.distanceSecret = false
+    M.distanceQueries = 0
+    _G.UnitDistanceSquared = function(unit)
+        M.distanceQueries = M.distanceQueries + 1
+        local d = u(unit)
+        local dist, checked = 0, false
+        if d and type(d.distance) == "number" then
+            dist = d.distance * d.distance
+            checked = d.distanceChecked
+            if checked == nil then checked = groupToken(unit) ~= nil or d.inParty == true end
+        end
+        if M.distanceSecret then return M.Secret(dist), M.Secret(checked) end
+        return dist, checked
+    end
+    -- Items (ItemDocumentation.lua): C_Item.IsItemInRange gives true,
+    -- false or nil, no SecretReturns. M.items[id] = { range=, friendly=,
+    -- hostile= } (which units the item is used on); only items whose data
+    -- is cached answer (M.itemCached, filled by RequestLoadItemDataByID
+    -- unless M.itemLoadStalls). M.itemCombatRestricted: a unit you cannot
+    -- attack raises in combat, as on retail. M.itemQueries counts.
+    M.items = {
+        [8149] = { range = 5, friendly = true, hostile = true },
+        [1970] = { range = 5, friendly = true },
+        [17626] = { range = 10, friendly = true, hostile = true },
+        [21267] = { range = 10, friendly = true },
+        [1251] = { range = 15, friendly = true },
+        [10645] = { range = 20, hostile = true }, [1191] = { range = 20, hostile = true },
+        [21519] = { range = 20, friendly = true },
+        [13289] = { range = 25, hostile = true },
+        [835] = { range = 30, hostile = true }, [7734] = { range = 30, hostile = true },
+        [4941] = { range = 30, hostile = true },
+        [1180] = { range = 30, friendly = true }, [954] = { range = 30, friendly = true },
+        [18904] = { range = 35, friendly = true, hostile = true },
+        [4945] = { range = 40, hostile = true },
+        [18662] = { range = 40, friendly = true }, [11562] = { range = 40, friendly = true },
+    }
+    M.itemCached = {}
+    M.itemLoadStalls = false
+    M.itemCombatRestricted = true
+    M.itemQueries = 0
+    M.itemLoads = 0
+    _G.C_Item = {
+        IsItemDataCachedByID = function(id) return M.itemCached[id] == true end,
+        RequestLoadItemDataByID = function(id)
+            M.itemLoads = M.itemLoads + 1
+            if not M.itemLoadStalls and M.items[id] then M.itemCached[id] = true end
+        end,
+        IsItemInRange = function(id, unit)
+            M.itemQueries = M.itemQueries + 1
+            local item, d = M.items[id], u(unit)
+            if not item or not M.itemCached[id] or not d or type(d.distance) ~= "number" then return nil end
+            if M.combat and M.itemCombatRestricted and d.hostile ~= true then error("IsItemInRange: restricted") end
+            if not (d.hostile == true and item.hostile or d.hostile ~= true and item.friendly) then return nil end
+            return d.distance <= item.range
+        end,
+    }
     -- Hostility (UnitDocumentation.lua: plain bool): d.hostile.
     _G.UnitCanAttack = function(_, unit) local d = u(unit); return d and d.hostile or false end
     -- Spells (SpellDocumentation.lua, SpellBookDocumentation.lua). The

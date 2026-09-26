@@ -5,17 +5,23 @@ local _, ns = ...
 --
 -- Where the range comes from, first answer wins:
 -- 1. Yourself: always in range.
--- 2. A spell's own range (C_Spell.IsSpellInRange with the unit): a hostile
---    spell for units you can attack (UnitCanAttack), a friendly one for
---    friends (UnitIsFriend). Each class has its picks (CLASS_SPELLS below);
---    the General settings rangeFriendlySpell / rangeHostileSpell replace
---    them with any spell, by name or ID. Documented without SecretReturns
---    (SpellDocumentation.lua): true, false, or nil when the check is invalid
---    (unknown spell, invalid target). Only a plain true or false counts;
---    nil, a secret, an error or a spell the player does not know goes on to
---    the next source. Should the client refuse or block the call (an error
---    is only skipped; ADDON_ACTION_BLOCKED / _FORBIDDEN naming it), it is
---    not asked again this session.
+-- 2. The General settings, per reaction (UnitCanAttack: hostile,
+--    UnitIsFriend: friendly; neither goes straight to 3 and 4). Mode AUTO
+--    is the spell, or yards when there is none; SPELL; YARDS.
+--    * Spell: C_Spell.IsSpellInRange with the unit. Each class has its
+--      picks (CLASS_SPELLS below); rangeFriendlySpell / rangeHostileSpell
+--      replace them by name or ID. Documented without SecretReturns
+--      (SpellDocumentation.lua): true, false, or nil when the check is
+--      invalid. A spell the player does not know gives no answer.
+--    * Yards: UnitDistanceSquared when the client checked it (group
+--      members), compared as a plain number; else an item probe
+--      (C_Item.IsItemInRange, ITEMS below, the largest range at or below
+--      the setting, friendly ones out of combat only); else, outside the
+--      group, CheckInteractDistance at the threshold nearest the setting.
+--    Only a plain true or false counts; nil, a secret or an error goes on
+--    to the next source. A spell blocked by the client (ADDON_ACTION_
+--    BLOCKED / _FORBIDDEN naming IsSpellInRange) is not asked again this
+--    session.
 -- 3. Group members (party tokens, or a target or focus in the group):
 --    UnitInRange, as Blizzard's raid frames (CompactUnitFrame_UpdateInRange:
 --    out of range = checked and not in range). Both answers are documented
@@ -25,8 +31,9 @@ local _, ns = ...
 --    compared. "Not checked", or a secret "checked", means unknown.
 -- 4. Everyone else (an enemy target, your pet): CheckInteractDistance(unit,
 --    4), the follow distance (about 28 yards). Not documented as secret or
---    restricted; only a plain true or false counts. Refused or blocked
---    calls are not repeated, as for the spell.
+--    restricted; only a plain true or false counts. Units you cannot
+--    attack are not measured with it in combat (restricted on retail). A
+--    refused or blocked call is not repeated this session.
 -- Nothing known: full opacity.
 --
 -- The opacity is the unit frame's own alpha. SetAlpha and
@@ -77,10 +84,18 @@ end
 -- Set once CheckInteractDistance was refused or blocked.
 local interactBroken = false
 
--- A plain boolean, or nil when unknown.
-local function interactRange(unit)
+local function attackable(unit)
+    return Secrets.Bool(UnitCanAttack, "player", unit) == true
+end
+
+-- A plain boolean, or nil when unknown. index: CheckInteractDistance's
+-- (INTERACT_YARDS). Units you cannot attack are not measured in combat:
+-- the retail client restricts it there (LibRangeCheck does the same), and
+-- one refusal would stop it for the session.
+local function interactRange(unit, index)
     if interactBroken then return nil end
-    local ok, near = pcall(CheckInteractDistance, unit, Range.INTERACT_INDEX)
+    if InCombatLockdown() and not attackable(unit) then return nil end
+    local ok, near = pcall(CheckInteractDistance, unit, index or Range.INTERACT_INDEX)
     if not ok then
         interactBroken = true
         return nil
@@ -153,12 +168,6 @@ end
 local function classFamilies(reaction)
     local entry = Range.CLASS_SPELLS[playerClass() or ""]
     return entry and entry[reaction] or {}
-end
-
--- Whether the player's class has a spell for this reaction (the target's
--- and focus's range fading default).
-function Range.HasClassSpell(reaction)
-    return #classFamilies(reaction) > 0
 end
 
 -- C_SpellBook.IsSpellKnown (the player's spell bank); the old globals only
@@ -270,16 +279,14 @@ local function isPet(unit)
 end
 
 local function reactionOf(unit)
-    if Secrets.Bool(UnitCanAttack, "player", unit) then return "hostile" end
+    if attackable(unit) then return "hostile" end
     if Secrets.Bool(UnitIsFriend, "player", unit) then return "friendly" end
     return nil
 end
 
 -- A plain boolean, or nil when no spell answers.
-local function spellRange(unit)
+local function spellRange(unit, reaction)
     if spellBroken or not (C_Spell and C_Spell.IsSpellInRange) then return nil end
-    local reaction = reactionOf(unit)
-    if not reaction then return nil end
     for _, spell in ipairs(Range.Spells(reaction)) do
         if not spell.petOnly or isPet(unit) then
             local ok, inRange = pcall(C_Spell.IsSpellInRange, spell.id, unit)
@@ -297,12 +304,155 @@ local function spellRange(unit)
     return nil
 end
 
+-- Yards ---------------------------------------------------------------------------
+-- Items whose use range is known, as probes for a range in yards
+-- (C_Item.IsItemInRange works with an item ID once the item's data is
+-- cached, without the item in the bags). Classic items, by the units they
+-- are used on; ranges ascending. The probe used is the largest range at
+-- or below the setting whose data is cached.
+Range.ITEMS = {
+    friendly = {
+        { range = 5, 1970, 8149 },      -- Restoring Balm, Voodoo Charm
+        { range = 10, 21267, 17626 },   -- Toasting Goblet, Frostwolf Muzzle
+        { range = 15, 1251 },           -- Linen Bandage
+        { range = 20, 21519 },          -- Mistletoe
+        { range = 30, 1180, 954 },      -- Scroll of Stamina, Scroll of Strength
+        { range = 35, 18904 },          -- Zorbin's Ultra-Shrinker
+        { range = 40, 18662, 11562 },   -- Heavy Leather Ball, Crystal Restore
+    },
+    hostile = {
+        { range = 5, 8149 },            -- Voodoo Charm
+        { range = 10, 17626 },          -- Frostwolf Muzzle
+        { range = 20, 10645, 1191 },    -- Gnomish Death Ray, Bag of Marbles
+        { range = 25, 13289 },          -- Egan's Blaster
+        { range = 30, 835, 7734, 4941 }, -- Large Rope Net, Six Demon Bag, Really Sticky Glue
+        { range = 35, 18904 },          -- Zorbin's Ultra-Shrinker
+        { range = 40, 4945 },           -- Faintly Glowing Skull
+    },
+}
+-- CheckInteractDistance's indexes by their yards, the last resort.
+Range.INTERACT_YARDS = { { yards = 10, index = 3 }, { yards = 11, index = 2 }, { yards = 28, index = 4 } }
+
+local MODE = { friendly = "rangeFriendlyMode", hostile = "rangeHostileMode" }
+local YARDS = { friendly = "rangeFriendlyYards", hostile = "rangeHostileYards" }
+
+local function setting(key, fallback)
+    if not Config.Profile() then return fallback end
+    return Config.Get("general", key)
+end
+
+-- "spell" or "yards": how a reaction is measured.
+local function method(reaction)
+    local mode = setting(MODE[reaction], "AUTO")
+    if mode == "AUTO" then return #Range.Spells(reaction) > 0 and "spell" or "yards" end
+    return mode == "SPELL" and "spell" or "yards"
+end
+
+local function isCached(id)
+    local fn = C_Item and C_Item.IsItemDataCachedByID
+    if not fn then return true end
+    local ok, cached = pcall(fn, id)
+    return ok and cached == true
+end
+
+-- The probe for a range: its range and cached item IDs, or nil.
+local function probeFor(reaction, yards)
+    local list = Range.ITEMS[reaction]
+    for i = #list, 1, -1 do
+        local probe = list[i]
+        if probe.range <= yards then
+            local items = {}
+            for _, id in ipairs(probe) do
+                if isCached(id) then items[#items + 1] = id end
+            end
+            if #items > 0 then return probe.range, items end
+        end
+    end
+    return nil
+end
+
+local function interactFor(yards)
+    local best
+    for _, t in ipairs(Range.INTERACT_YARDS) do
+        if not best or math.abs(t.yards - yards) < math.abs(best.yards - yards) then best = t end
+    end
+    return best
+end
+
+-- The exact distance: plain numbers only, as checked by the client.
+local function distanceRange(unit, yards)
+    if not UnitDistanceSquared then return nil end
+    local ok, squared, checked = pcall(UnitDistanceSquared, unit)
+    if not ok or Secrets.IsSecret(checked) or checked ~= true then return nil end
+    squared = Secrets.Number(squared)
+    if not squared then return nil end
+    return squared <= yards * yards
+end
+
+local function itemInRange()
+    return (C_Item and C_Item.IsItemInRange) or IsItemInRange
+end
+
+-- Friendly probes only out of combat (restricted there on retail).
+local function itemRange(unit, reaction, yards)
+    local fn = itemInRange()
+    if not fn or (reaction == "friendly" and InCombatLockdown()) then return nil end
+    local _, items = probeFor(reaction, yards)
+    for _, id in ipairs(items or {}) do
+        local ok, inRange = pcall(fn, id, unit)
+        if ok and not Secrets.IsSecret(inRange) and type(inRange) == "boolean" then return inRange end
+    end
+    return nil
+end
+
+-- Group members without a distance or item answer go on to UnitInRange.
+local function yardsRange(unit, reaction, group)
+    local yards = setting(YARDS[reaction], 30)
+    local r = distanceRange(unit, yards)
+    if r ~= nil then return r end
+    r = itemRange(unit, reaction, yards)
+    if r ~= nil or group then return r end
+    return interactRange(unit, interactFor(yards).index)
+end
+
+-- The options hint under a mode: what measures, for units outside the
+-- group (group members use their exact distance when the client has it).
+function Range.MethodHint(reaction)
+    if method(reaction) == "spell" then
+        local spell = Range.Spells(reaction)[1]
+        if not spell then return L.RANGE_USING_STANDARD end
+        return L.RANGE_USING_SPELL:format(spell.name)
+    end
+    local yards = setting(YARDS[reaction], 30)
+    if reaction == "friendly" then return L.RANGE_USING_DISTANCE:format(yards) end
+    local range = probeFor(reaction, yards)
+    if range then return L.RANGE_USING_ITEM:format(range) end
+    return L.RANGE_USING_INTERACT:format(interactFor(yards).yards)
+end
+
+-- Item data is loaded once, out of combat.
+local function loadItems()
+    local request = C_Item and C_Item.RequestLoadItemDataByID
+    if not request then return end
+    for _, list in pairs(Range.ITEMS) do
+        for _, probe in ipairs(list) do
+            for _, id in ipairs(probe) do pcall(request, id) end
+        end
+    end
+end
+ns.On("PLAYER_LOGIN", function() ns.AfterCombat("rangeItems", loadItems) end)
+
 -- A plain or secret boolean, or nil when unknown.
 function Range.InRange(unit)
     if unit == "player" or Secrets.Bool(UnitIsUnit, unit, "player") then return true end
-    local bySpell = spellRange(unit)
-    if bySpell ~= nil then return bySpell end
-    if groupToken(unit) or Secrets.Bool(UnitInParty, unit) then return groupRange(unit) end
+    local group = groupToken(unit) or Secrets.Bool(UnitInParty, unit) == true
+    local reaction = reactionOf(unit)
+    if reaction then
+        local r
+        if method(reaction) == "spell" then r = spellRange(unit, reaction) else r = yardsRange(unit, reaction, group) end
+        if r ~= nil then return r end
+    end
+    if group then return groupRange(unit) end
     return interactRange(unit)
 end
 

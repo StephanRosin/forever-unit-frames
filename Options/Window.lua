@@ -188,8 +188,10 @@ end
 -- conceals a Blizzard castbar, which comes back after a /reload.
 local HINT_SCOPES = { hideBlizzardCastbar = { player = true } }
 
--- Hints that follow the settings: the spell range fading uses.
+-- Hints that follow the settings: how range fading measures.
 local DYNAMIC_HINTS = {
+    rangeFriendlyMode = function() return ns.Range.MethodHint("friendly") end,
+    rangeHostileMode = function() return ns.Range.MethodHint("hostile") end,
     rangeFriendlySpell = function() return ns.Range.SpellHint("friendly") end,
     rangeHostileSpell = function() return ns.Range.SpellHint("hostile") end,
 }
