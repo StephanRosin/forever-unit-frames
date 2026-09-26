@@ -708,6 +708,11 @@ local function newWidget(kind, name, parent)
         local size = self._font and self._font[2] or 12
         return #(self._text or "") * size / 2
     end
+    -- Cut off when the natural width exceeds a set width (0 = natural).
+    function w:IsTruncated()
+        local width = self._w or 0
+        return width > 0 and self:GetStringWidth() > width
+    end
     -- Enable state (Button, CheckButton, EditBox, Slider)
     function w:SetEnabled(v) self._enabled = not not v end
     function w:IsEnabled() return self._enabled ~= false end
@@ -1305,6 +1310,9 @@ function M.Reset()
         return true
     end
     function GameTooltip:Show() self._shown = true end
+    M.tooltipLines = {}
+    function GameTooltip:SetText(text) M.tooltipLines = { text }; self._shown = true end
+    function GameTooltip:AddLine(text) M.tooltipLines[#M.tooltipLines + 1] = text end
     -- Totem tooltips (M.tooltipTotem: the last slot asked for).
     M.tooltipTotem = nil
     function GameTooltip:SetTotem(slot)
