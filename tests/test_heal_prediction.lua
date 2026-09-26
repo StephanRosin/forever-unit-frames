@@ -108,9 +108,9 @@ C.Set("player", "healPrediction", true)
 
 -- Rounded with the frame.
 C.Set("general", "cornerRadius", 4)
-H.check("heals rounded", mine:GetStatusBarTexture():GetNumMaskTextures(), 4)
-H.check("others' heals rounded", all:GetStatusBarTexture():GetNumMaskTextures(), 4)
-H.check("lane rounded", f.overhealBg:GetNumMaskTextures(), 4)
+H.check("heals rounded", mine:GetStatusBarTexture():GetNumMaskTextures(), 1)
+H.check("others' heals rounded", all:GetStatusBarTexture():GetNumMaskTextures(), 1)
+H.check("lane rounded", f.overhealBg:GetNumMaskTextures(), 1)
 C.Set("general", "cornerRadius", 0)
 
 -- Test mode: sample heals on a sample health, so both heal colours and

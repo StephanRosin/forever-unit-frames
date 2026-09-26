@@ -1,20 +1,40 @@
 local _, ns = ...
 
--- Rounded corners. Four mask textures, one per corner, each as big as the
--- radius and sitting in its corner of a box. The mask file is the top-left
--- corner of a rounded rectangle (tools/make_corners.py); the other corners
--- mirror it with texture coordinates. CLAMP wrapping repeats the mask's
--- opaque right column and bottom row outwards, so each mask only cuts its
--- own corner and lets the rest of the box through. A texture under all
--- four masks is rounded at every corner of the box it lies in.
+-- Rounded corners. One mask texture per rounded box: a rounded rectangle
+-- (Media/Rounded*.tga, tools/make_corners.py) drawn as a shader nine-slice
+-- (SetTextureSliceMargins, SimpleTextureBaseAPI, which mask textures share
+-- with textures). The corner cells keep their shape at any box size; only
+-- edges and middle stretch. The mask's scale sets the radius on screen: a
+-- corner cell is SLICE units of the mask, SLICE * scale units of the box.
+--
+-- The client allows three masks per texture and raises beyond that, so a
+-- texture here carries one mask at most and leaves room for Blizzard's.
+-- A frame whose docked castbar joins it swaps its mask's file (all round,
+-- top round, bottom round) instead of stacking a second set of masks;
+-- swapping a file is safe in combat, re-anchoring is not needed.
 local Corners = {}
 ns.Corners = Corners
 
 local Config, Pixel = ns.Config, ns.Pixel
 
 local MEDIA = "Interface\\AddOns\\ForeverUnitFrames\\Media\\"
+-- Border ring corner piece (a texture, mirrored per corner with texture
+-- coordinates) and its inner cut, a mask file per corner in
+-- Corners.POINTS order: masks ignore texture coordinates in the client.
 Corners.TEXTURE = MEDIA .. "Corner.tga"
-Corners.INVERSE = MEDIA .. "CornerInverse.tga"
+Corners.INVERSE = {
+    MEDIA .. "CornerInverseTopLeft.tga", MEDIA .. "CornerInverseTopRight.tga",
+    MEDIA .. "CornerInverseBottomLeft.tga", MEDIA .. "CornerInverseBottomRight.tga",
+}
+-- Rounded-rectangle masks by which corners are round.
+Corners.MASKS = {
+    ALL = MEDIA .. "Rounded.tga",
+    TOP = MEDIA .. "RoundedTop.tga",
+    BOTTOM = MEDIA .. "RoundedBottom.tga",
+}
+-- Corner radius of the Rounded masks in texels = their nine-slice margin
+-- (tools/make_corners.py SLICE).
+Corners.SLICE = 28
 Corners.POINTS = { "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT" }
 -- left, right, top, bottom: mirrored copies of the top-left shape.
 Corners.COORDS = { { 0, 1, 0, 1 }, { 1, 0, 0, 1 }, { 0, 1, 1, 0 }, { 1, 0, 1, 0 } }
@@ -35,12 +55,11 @@ function Corners.Clamp(radius, w, h)
     return math.min(radius, limit)
 end
 
--- Mask i (1..4, Corners.POINTS order) of file on owner.
-function Corners.NewMask(owner, file, i)
+-- The inner-arc mask of corner i (1..4, Corners.POINTS order) on owner,
+-- clamped so it lets everything beyond its square through.
+function Corners.NewInnerMask(owner, i)
     local mask = owner:CreateMaskTexture()
-    mask:SetTexture(file, "CLAMP", "CLAMP")
-    local c = Corners.COORDS[i]
-    mask:SetTexCoord(c[1], c[2], c[3], c[4])
+    mask:SetTexture(Corners.INVERSE[i], "CLAMP", "CLAMP")
     return mask
 end
 
@@ -52,13 +71,10 @@ function Corners.Add(owner, target)
     table.insert(owner.cornerTargets, target)
 end
 
--- The masks of owner (four, or count), made once, for the textures
--- Corners.Add listed. clip.corners (optional) names the corner each mask
--- takes (Corners.POINTS index); by default mask i takes corner i.
-function Corners.Clipper(owner, count)
-    local clip = { masks = {}, targets = owner.cornerTargets or {} }
-    for i = 1, count or 4 do clip.masks[i] = Corners.NewMask(owner, Corners.TEXTURE, i) end
-    return clip
+-- The rounding of owner's box: one mask, made once, for the textures
+-- Corners.Add listed.
+function Corners.Clipper(owner)
+    return { mask = owner:CreateMaskTexture(), targets = owner.cornerTargets or {} }
 end
 
 local function resolve(target)
@@ -66,35 +82,41 @@ local function resolve(target)
     return target
 end
 
--- Puts a set of masks on texture (on) or takes it off again. A set goes
--- on once; the texture remembers each set by its first mask, so several
--- sets (a frame's corners, a docked castbar's) can share one texture.
-function Corners.SetMasked(texture, masks, on)
-    texture.fufMasked = texture.fufMasked or {}
-    local key = masks[1]
-    if on and not texture.fufMasked[key] then
-        for _, mask in ipairs(masks) do texture:AddMaskTexture(mask) end
-        texture.fufMasked[key] = true
-    elseif not on and texture.fufMasked[key] then
-        for _, mask in ipairs(masks) do texture:RemoveMaskTexture(mask) end
-        texture.fufMasked[key] = nil
+-- Puts mask on texture (on) or takes it off again; never twice.
+function Corners.SetMasked(texture, mask, on)
+    if on and texture.fufMask ~= mask then
+        texture:AddMaskTexture(mask)
+        texture.fufMask = mask
+    elseif not on and texture.fufMask == mask then
+        texture:RemoveMaskTexture(mask)
+        texture.fufMask = nil
     end
 end
 
--- Rounds the corners of box by radius (0: square, masks removed).
-function Corners.Fit(clip, box, radius)
+-- Which corners of clip's box are round: "ALL", "TOP" or "BOTTOM". Only
+-- changes the mask's file, so it is safe in combat.
+function Corners.SetShape(clip, shape)
+    if clip.shape == shape then return end
+    clip.shape = shape
+    local mask, slice = clip.mask, Corners.SLICE
+    mask:SetTexture(Corners.MASKS[shape], "CLAMP", "CLAMP")
+    mask:SetTextureSliceMargins(slice, slice, slice, slice)
+    mask:SetTextureSliceMode(Enum.UITextureSliceMode.Stretched)
+end
+
+-- Rounds the corners of box by radius (0: square, mask off); shape as
+-- Corners.SetShape (default all four).
+function Corners.Fit(clip, box, radius, shape)
     local on = radius > 0
-    for i, mask in ipairs(clip.masks) do
-        local corner = clip.corners and clip.corners[i] or i
-        local c = Corners.COORDS[corner]
-        mask:SetTexCoord(c[1], c[2], c[3], c[4])
-        mask:ClearAllPoints()
-        mask:SetPoint(Corners.POINTS[corner], box, Corners.POINTS[corner], 0, 0)
-        mask:SetSize(radius, radius)
-        mask:SetShown(on)
-    end
+    local mask = clip.mask
+    mask:ClearAllPoints()
+    mask:SetAllPoints(box)
+    if on then mask:SetScale(radius / Corners.SLICE) end
+    clip.shape = nil
+    Corners.SetShape(clip, shape or "ALL")
+    mask:SetShown(on)
     for _, target in ipairs(clip.targets) do
         local texture = resolve(target)
-        if texture then Corners.SetMasked(texture, clip.masks, on) end
+        if texture then Corners.SetMasked(texture, mask, on) end
     end
 end

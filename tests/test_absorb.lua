@@ -95,9 +95,9 @@ C.Set("player", "absorbEnabled", true)
 
 -- Rounded with the frame.
 C.Set("general", "cornerRadius", 4)
-H.check("shield rounded", bar:GetStatusBarTexture():GetNumMaskTextures(), 4)
-H.check("stripes rounded", stripes:GetNumMaskTextures(), 4)
-H.check("lift rounded", lift:GetNumMaskTextures(), 4)
+H.check("shield rounded", bar:GetStatusBarTexture():GetNumMaskTextures(), 1)
+H.check("stripes rounded", stripes:GetNumMaskTextures(), 1)
+H.check("lift rounded", lift:GetNumMaskTextures(), 1)
 C.Set("general", "cornerRadius", 0)
 H.check("square again", bar:GetStatusBarTexture():GetNumMaskTextures(), 0)
 

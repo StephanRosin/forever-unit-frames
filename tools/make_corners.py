@@ -1,21 +1,32 @@
 #!/usr/bin/env python3
-"""Writes the two corner masks the addon ships (Media/Corner.tga and
-Media/CornerInverse.tga). No dependencies beyond the standard library.
+"""Writes the corner art and masks the addon ships (Media/Corner.tga,
+the four Media/CornerInverse*.tga and the three Media/Rounded*.tga). No
+dependencies beyond the standard library.
 
-Both are 64 x 64, uncompressed 32-bit TGA, white, the shape in the alpha
+All are 64 x 64, uncompressed 32-bit TGA, white, the shape in the alpha
 channel, rows stored bottom to top (the TGA default).
 
 Corner.tga: the top-left corner of a rounded rectangle. A quarter disc
 of radius 64 centred on the texture's bottom-right corner is opaque,
-the rest transparent. Every texel of the right column and the bottom row
-is (nearly) opaque, so a mask of this texture with CLAMP wrapping lets
-everything right of and below it through.
+the rest transparent. The outer corner piece of a rounded border ring
+shows it (mirrored for the other corners).
 
-CornerInverse.tga: transparent inside a quarter disc of radius 63 around
-the same corner, opaque outside. One texel smaller than the texture, so
-the whole left column and top row stay opaque: a CLAMP mask of it lets
-everything left of and above it through. Used for the inner edge of a
-rounded border.
+CornerInverseTopLeft.tga: transparent inside a quarter disc of radius 63
+around the texture's bottom-right corner, opaque outside. One texel
+smaller than the texture, so the whole left column and top row stay
+opaque: a CLAMP mask of it lets everything left of and above it through.
+The inner edge of a rounded border's top-left corner.
+CornerInverseTopRight/BottomLeft/BottomRight.tga: the same shape for the
+other corners, mirrored in the file. Masks ignore texture coordinates in
+the client (a mirrored mask drew unmirrored), so each corner has its own.
+
+Rounded.tga: a rounded rectangle, SLICE texels radius at every corner, for
+a nine-slice mask (SetTextureSliceMargins with SLICE on each side): the
+corners keep their shape at any box size, the edges and the middle
+stretch. Every texel between the corner cells is opaque.
+RoundedTop.tga / RoundedBottom.tga: the same with only the top or only
+the bottom corners round, the other two square (a frame whose other side
+continues into a docked castbar).
 
 Run from the repository root:  python3 tools/make_corners.py
 The output is deterministic; re-running it must not change the files.
@@ -25,6 +36,7 @@ import struct
 
 SIZE = 64
 SUB = 4  # sub-samples per axis for the anti-aliased edge
+SLICE = 28  # corner radius of the Rounded masks; their nine-slice margin
 
 
 def coverage(x, y, radius=SIZE):
@@ -39,6 +51,43 @@ def coverage(x, y, radius=SIZE):
             if dx * dx + dy * dy <= radius * radius:
                 inside += 1
     return inside / (SUB * SUB)
+
+
+def rounded(round_top, round_bottom):
+    """Alpha of a rounded-rectangle mask whose top and/or bottom corners
+    are round (radius SLICE), the others square."""
+    def alpha_of(x, y):
+        top, bottom = y < SLICE, y >= SIZE - SLICE
+        left, right = x < SLICE, x >= SIZE - SLICE
+        if not ((top and round_top) or (bottom and round_bottom)) or not (left or right):
+            return 1
+        # Mirror into the top-left cell: the arc's centre is (SLICE, SLICE).
+        mx = x if left else SIZE - 1 - x
+        my = y if top else SIZE - 1 - y
+        inside = 0
+        for i in range(SUB):
+            for j in range(SUB):
+                dx = SLICE - (mx + (i + 0.5) / SUB)
+                dy = SLICE - (my + (j + 0.5) / SUB)
+                if dx * dx + dy * dy <= SLICE * SLICE:
+                    inside += 1
+        return inside / (SUB * SUB)
+    return alpha_of
+
+
+# Corner name, mirrored left-right, mirrored top-bottom.
+INVERSE_CORNERS = (("TopLeft", False, False), ("TopRight", True, False),
+                   ("BottomLeft", False, True), ("BottomRight", True, True))
+
+
+def inverse(flip_x, flip_y):
+    """Alpha of the inverse arc for one corner: the top-left shape,
+    mirrored as asked."""
+    def alpha_of(x, y):
+        mx = SIZE - 1 - x if flip_x else x
+        my = SIZE - 1 - y if flip_y else y
+        return 1 - coverage(mx, my, SIZE - 1)
+    return alpha_of
 
 
 def write_tga(path, alpha_of):
@@ -59,7 +108,11 @@ def main():
     root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "Media")
     os.makedirs(root, exist_ok=True)
     write_tga(os.path.join(root, "Corner.tga"), coverage)
-    write_tga(os.path.join(root, "CornerInverse.tga"), lambda x, y: 1 - coverage(x, y, SIZE - 1))
+    for name, flip_x, flip_y in INVERSE_CORNERS:
+        write_tga(os.path.join(root, "CornerInverse" + name + ".tga"), inverse(flip_x, flip_y))
+    write_tga(os.path.join(root, "Rounded.tga"), rounded(True, True))
+    write_tga(os.path.join(root, "RoundedTop.tga"), rounded(True, False))
+    write_tga(os.path.join(root, "RoundedBottom.tga"), rounded(False, True))
 
 
 if __name__ == "__main__":
