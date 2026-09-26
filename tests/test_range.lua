@@ -13,6 +13,23 @@ local function boot()
     return ns
 end
 
+-- The opacity is set once in General for every frame, overridable per
+-- frame; the switch stays per frame.
+do
+    local ns = H.LoadAddon()
+    local S, C = ns.Settings, ns.Config
+    C.Use({})
+    H.check("opacity inherited", S.Get("rangeAlpha").scope, "inherit")
+    H.check("switch per frame", S.Get("rangeFade").scope, "frame")
+    H.check("switch not in General", S.AppliesTo(S.Get("rangeFade"), "general"), false)
+    C.Set("general", "rangeAlpha", 25)
+    H.check("general opacity reaches party", C.Get("party", "rangeAlpha"), 25)
+    H.check("and the target", C.Get("target", "rangeAlpha"), 25)
+    C.Set("party", "rangeAlpha", 70)
+    H.check("frame override wins", C.Get("party", "rangeAlpha"), 70)
+    H.check("others keep general", C.Get("focus", "rangeAlpha"), 25)
+end
+
 -- Settings -----------------------------------------------------------------------
 do
     local ns = H.LoadAddon()
@@ -22,10 +39,10 @@ do
         local def = S.Get(key)
         H.checkTrue("setting " .. key, def)
         H.check("code of " .. key, def and def.code, code)
-        for _, scope in ipairs({ "party", "target", "focus", "pet" }) do
+        for _, scope in ipairs({ "party", "target", "focus", "pet", "targettarget" }) do
             H.checkTrue(key .. " on " .. scope, S.AppliesTo(def, scope))
         end
-        for _, scope in ipairs({ "general", "player", "targettarget" }) do
+        for _, scope in ipairs({ "player" }) do
             H.check(key .. " not on " .. scope, S.AppliesTo(def, scope), false)
         end
         H.checkTrue(key .. " label", ns.L["SETTING_" .. key] ~= "SETTING_" .. key)
@@ -233,11 +250,25 @@ do
     M.units.party1 = { name = "Ann", isPlayer = true, health = 5, healthMax = 10 }
     M.SetGroup({ "party1" })
     H.checkTrue("timer runs", ns.Range.driver:IsShown())
-    for _, scope in ipairs({ "party", "pet", "target", "focus" }) do C.Set(scope, "rangeFade", false) end
+    for _, scope in ipairs({ "party", "pet", "target", "targettarget", "focus" }) do C.Set(scope, "rangeFade", false) end
     H.check("all off: timer stopped", ns.Range.driver:IsShown(), false)
     local asked = M.rangeQueries
     M.Tick(0.25)
     H.check("all off: nothing asked", M.rangeQueries, asked)
     C.Set("focus", "rangeFade", true)
     H.check("one on: timer runs", ns.Range.driver:IsShown(), true)
+end
+
+-- Target of target fades like the target (it is polled, not evented).
+do
+    local M = H.M
+    local ns = boot()
+    M.units.target = { name = "Foe", health = 1, healthMax = 1, near = true }
+    M.units.targettarget = { name = "Far", health = 1, healthMax = 1, near = false }
+    M.FireEvent("PLAYER_TARGET_CHANGED")
+    M.Tick(0.25)
+    H.check("target of target fades out of range", ns.Frames.targettarget:GetAlpha(), 0.5)
+    M.units.targettarget.near = true
+    M.Tick(0.25)
+    H.check("target of target back in range", ns.Frames.targettarget:GetAlpha(), 1)
 end
