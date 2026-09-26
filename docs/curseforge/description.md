@@ -16,6 +16,7 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 - Elite, rare and boss marker on the portrait or as a word.
 - Absorb shields and incoming heals drawn in the health bar, with an optional overheal lane.
 - Damage and heal numbers on the frame (combat feedback).
+- Combat and resting icons on the player frame, with Blizzard's own art: crossed swords while you are in combat, the animated "Zzz" while you rest in an inn or a city. Each can be turned off; size, anchor point and X/Y offset are configurable.
 - 2D or 3D portraits.
 
 ## Auras
@@ -44,7 +45,7 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 ## Options
 - `/fuf` opens a movable options window: frames on the left, tabs on top.
 - Every position can be set by dragging (`/fuf unlock`) or as exact X/Y values.
-- Test mode shows sample auras, casts, totems and a full party, so you can set everything up without a group.
+- Test mode shows sample auras, casts, totems, the combat and resting icons and a full party, so you can set everything up without a group.
 - Settings are stored compactly. They can be exported and imported as a string.
 
 ## Commands

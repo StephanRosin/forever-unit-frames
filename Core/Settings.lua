@@ -365,3 +365,21 @@ Settings.Define({ key = "totemsX", code = "QX", scope = "frame", only = TOTEMS, 
     default = 6 })
 Settings.Define({ key = "totemsY", code = "QY", scope = "frame", only = TOTEMS, type = "int", min = -400, max = 400,
     default = 0 })
+
+-- Status icons (player only, Elements/StatusIcons.lua): Blizzard's combat
+-- and resting icons in a row that hangs from the player's block. Above
+-- its top right corner by default, left of the class badge and right of
+-- the shipped buffs.
+local STATUS = { player = true }
+Settings.Define({ key = "statusCombat", code = "ZC", scope = "frame", only = STATUS, type = "bool", default = true })
+Settings.Define({ key = "statusResting", code = "ZR", scope = "frame", only = STATUS, type = "bool", default = true })
+Settings.Define({ key = "statusSize", code = "ZS", scope = "frame", only = STATUS, type = "int", min = 10, max = 48,
+    default = 18 })
+Settings.Define({ key = "statusFramePoint", code = "ZF", scope = "frame", only = STATUS, type = "enum",
+    values = Settings.POINTS, default = "TOPRIGHT" })
+Settings.Define({ key = "statusPoint", code = "ZO", scope = "frame", only = STATUS, type = "enum",
+    values = Settings.POINTS, default = "BOTTOMRIGHT" })
+Settings.Define({ key = "statusX", code = "ZX", scope = "frame", only = STATUS, type = "int", min = -400, max = 400,
+    default = -24 })
+Settings.Define({ key = "statusY", code = "ZY", scope = "frame", only = STATUS, type = "int", min = -400, max = 400,
+    default = 2 })

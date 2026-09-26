@@ -763,10 +763,20 @@ local function newWidget(kind, name, parent)
             function anim:SetDuration(v) self._duration = v end
             function anim:SetStartDelay(v) self._delay = v end
             function anim:SetOrder(v) self._order = v end
+            -- FlipBook (SimpleAnimFlipBookAPI)
+            function anim:SetFlipBookRows(v) self._rows = v end
+            function anim:SetFlipBookColumns(v) self._columns = v end
+            function anim:SetFlipBookFrames(v) self._frames = v end
+            function anim:SetFlipBookFrameWidth(v) self._frameWidth = v end
+            function anim:SetFlipBookFrameHeight(v) self._frameHeight = v end
             table.insert(self._anims, anim)
             return anim
         end
         function group:SetToFinalAlpha(v) self._toFinal = v end
+        function group:SetLooping(v)
+            assert(v == "NONE" or v == "REPEAT" or v == "BOUNCE", "SetLooping: bad loop type")
+            self._looping = v
+        end
         function group:Play() self._playing = true; M.playing[self] = true end
         function group:Stop() self._playing = false; M.playing[self] = nil end
         function group:IsPlaying() return self._playing or false end
@@ -907,6 +917,9 @@ function M.Reset()
         return w
     end
     _G.InCombatLockdown = function() return M.combat end
+    -- In an inn or a city (PLAYER_UPDATE_RESTING when it changes).
+    M.resting = false
+    _G.IsResting = function() return M.resting end
     _G.GetTime = function() return M.now end
     _G.IsInGroup = function() return #M.group > 0 end
     _G.geterrorhandler = function()
