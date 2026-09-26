@@ -621,6 +621,11 @@ local function newWidget(kind, name, parent)
         self._atlas = atlas; self._texture = nil
     end
     function w:SetTexCoord(...) self._texCoord = { ... } end
+    -- Takes a secret boolean (AllowedWhenTainted).
+    function w:SetDesaturated(v)
+        assert(type(M.Reveal(v)) == "boolean", "SetDesaturated: value must be a boolean")
+        self._desaturated = M.Reveal(v)
+    end
     -- SimpleTextureBaseAPI: the cell may be secret (AllowedWhenTainted),
     -- rows and columns never are.
     function w:SetSpriteSheetCell(cell, rows, columns)
@@ -683,6 +688,7 @@ local function newWidget(kind, name, parent)
             assert(self._font or self._fontObject, self._kind .. ":SetText(): Font not set")
         end
         self._text = t
+        self._fmt, self._args = nil, nil
     end
     function w:SetTextColor(r, g, b, a) self._color = { r, g, b, a } end
     function w:GetText() return self._text end
@@ -691,6 +697,7 @@ local function newWidget(kind, name, parent)
             assert(self._font or self._fontObject, self._kind .. ":SetFormattedText(): Font not set")
         end
         self._fmt = fmt; self._args = { ... }
+        self._text = nil
     end
     function w:SetShadowOffset(x, y) self._shadow = { x, y } end
     function w:SetJustifyH(v) self._justifyH = v end
@@ -1061,8 +1068,21 @@ function M.Reset()
     end
     _G.UnitIsGroupLeader = function(unit) local d = u(unit); return groupFlag(d and d.leader) end
     _G.UnitIsGroupAssistant = function(unit) local d = u(unit); return groupFlag(d and d.assistant) end
-    -- d.offline: the unit's player is disconnected.
-    _G.UnitIsConnected = function(unit) local d = u(unit); return d ~= nil and not d.offline end
+    -- d.offline: the unit's player is disconnected. d.dead / d.ghost:
+    -- dead, or a ghost (UnitIsDeadOrGhost is true for both). Any of them
+    -- may be a secret proxy.
+    _G.UnitIsConnected = function(unit)
+        local d = u(unit)
+        if d and M.IsSecret(d.offline) then return d.offline end
+        return d ~= nil and not d.offline
+    end
+    _G.UnitIsGhost = function(unit) local d = u(unit); return d and d.ghost or false end
+    _G.UnitIsDeadOrGhost = function(unit)
+        local d = u(unit)
+        if not d then return false end
+        if M.IsSecret(d.dead) then return d.dead end
+        return (d.dead or d.ghost) and true or false
+    end
     _G.GetReadyCheckStatus = function(unit) local d = u(unit); return d and d.readyCheck end
     _G.UnitHasIncomingResurrection = function(unit) local d = u(unit); return d and d.incomingRez or false end
     _G.HasLFGRestrictions = function() return M.lfgRestricted end

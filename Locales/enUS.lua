@@ -288,6 +288,11 @@ L.SETTING_groupIconY = "Offset Y"
 L.HINT_groupLeader = "The group's leader (or guide) and assistants"
 L.HINT_groupReadyCheck = "Waiting, ready or not ready; stays a few seconds after the check"
 
+-- Dead, ghost and offline units: shown instead of the health values.
+L.STATUS_DEAD = "Dead"
+L.STATUS_GHOST = "Ghost"
+L.STATUS_OFFLINE = "Offline"
+
 -- Minimap button.
 L.SECTION_minimap = "Minimap"
 L.SETTING_minimapShow = "Show minimap button"

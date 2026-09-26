@@ -396,12 +396,41 @@ local function paintTitle(frame)
     frame.texts.title:SetTextColor(r, g, b, 1)
 end
 
+-- Dead, ghost and offline units (Elements/UnitStatus.lua): the health
+-- bar's value texts give way to one word, in the first of them; a bar
+-- without a value text shows it on the right when that side is empty.
+-- Returns the slot field that shows the word, or nil.
+local function statusSlot(frame)
+    local empty
+    for _, slot in ipairs(SLOTS) do
+        if slot.bar == "health" then
+            local tag = Config.Get(frame.key, slot.setting)
+            if SAMPLE_TAGS[tag] then return slot.field end
+            if tag == "NONE" then empty = slot.field end
+        end
+    end
+    return empty
+end
+
+local function isHealthValue(frame, slot)
+    return slot.bar == "health" and SAMPLE_TAGS[Config.Get(frame.key, slot.setting)] ~= nil
+end
+
 function Texts.Update(frame)
     local showSurname = Config.Get(frame.key, "showSurname")
     local sample = sampleHealth(frame)
+    local word = ns.UnitStatus.Word(ns.UnitStatus.Of(frame))
+    local wordSlot = word and statusSlot(frame)
     for _, slot in ipairs(SLOTS) do
-        Texts.Apply(frame.texts[slot.field], Config.Get(frame.key, slot.setting), frame.unit, slot.kind or slot.bar,
-            showSurname, sample)
+        local fs = frame.texts[slot.field]
+        if slot.field == wordSlot then
+            fs:SetText(word)
+        elseif word and isHealthValue(frame, slot) then
+            fs:SetText("")
+        else
+            Texts.Apply(fs, Config.Get(frame.key, slot.setting), frame.unit, slot.kind or slot.bar, showSurname,
+                sample)
+        end
     end
     paintTitle(frame)
     updateClassIcon(frame)
