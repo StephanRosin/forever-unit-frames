@@ -77,6 +77,17 @@ H.checkTrue("lane background", f.overhealBg:IsShown())
 H.check("lane right of the bar", point(f.overhealBg, "TOPLEFT")[3], "TOPRIGHT")
 H.check("lane in the background colour", f.overhealBg._color[4], C.Get("player", "backgroundColor")[4])
 
+-- Sub-option: the power bar ends where the health bar ends.
+H.check("power match: off by default", C.Get("player", "powerMatchesHealth"), false)
+C.Set("player", "powerMatchesHealth", true)
+H.check("power match: power bar as short as health", point(f.power, "BOTTOMRIGHT")[4], -18)
+H.check("power match: title row keeps the width", point(f.title, "TOPRIGHT")[4], 0)
+C.Set("player", "healOverflow", false)
+H.check("power match without a lane: full width", point(f.power, "BOTTOMRIGHT")[4], 0)
+C.Set("player", "healOverflow", true)
+C.Set("player", "powerMatchesHealth", false)
+H.check("power match off: full width again", point(f.power, "BOTTOMRIGHT")[4], 0)
+
 -- A portrait on the right: the lane sits left of it.
 C.Set("player", "portraitMode", "RIGHT")
 H.check("portrait: lane from the bars' width", f.overhealLane, ns.Layout.OverhealLane(220 - 46))

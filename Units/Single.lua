@@ -57,7 +57,8 @@ local function layoutBars(frame)
     frame.titleLeft, frame.titleRight = left, right
     local width = Single.Size(scope) - left - right
     -- The overheal lane (Elements/HealPrediction.lua) takes the end of
-    -- the health bar's row; title and power bar keep the full width.
+    -- the health bar's row; the title row keeps the full width, the power
+    -- bar too unless it is set to match the health bar.
     local lane = 0
     if Config.Get(scope, "healPrediction") and Config.Get(scope, "healOverflow") then
         lane = Pixel.Snap(Layout.OverhealLane(width))
@@ -70,7 +71,8 @@ local function layoutBars(frame)
     if frame.power then
         frame.power:ClearAllPoints()
         frame.power:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", left, 0)
-        frame.power:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -right, 0)
+        local powerLane = Config.Get(scope, "powerMatchesHealth") and lane or 0
+        frame.power:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -(right + powerLane), 0)
         frame.power:SetHeight(powerShown and powerH or pixel)
         frame.power:SetShown(powerShown)
     end

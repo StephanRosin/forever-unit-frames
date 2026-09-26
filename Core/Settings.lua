@@ -174,6 +174,8 @@ Settings.Define({ key = "absorbEnabled", code = "AB", scope = "frame", type = "b
 -- heals past full health.
 Settings.Define({ key = "healPrediction", code = "IH", scope = "frame", type = "bool", default = true })
 Settings.Define({ key = "healOverflow", code = "OV", scope = "frame", type = "bool", default = false })
+-- With the overheal lane: the power bar ends where the health bar ends.
+Settings.Define({ key = "powerMatchesHealth", code = "OM", scope = "frame", type = "bool", default = false })
 Settings.Define({ key = "x", code = "X", scope = "frame", type = "int", min = -4000, max = 4000,
     default = { player = -300, target = 300, targettarget = 480, pet = -352, focus = -300, party = -760, _ = 0 } })
 Settings.Define({ key = "y", code = "Y", scope = "frame", type = "int", min = -4000, max = 4000,
