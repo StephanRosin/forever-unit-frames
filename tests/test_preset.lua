@@ -55,7 +55,7 @@ H.check("numbers on the target", C.Get("target", "combatFeedback"), true)
 H.check("numbers on the focus", C.Get("focus", "combatFeedback"), true)
 H.check("numbers on the player", C.Get("player", "combatFeedback"), true)
 
--- The overheal lane is on, so a shield on a unit at full health shows.
+-- The overheal lane is off by default (a choice per frame).
 for _, scope in ipairs({ "player", "target", "targettarget", "focus", "party", "pet" }) do
-    H.check("overheal lane on: " .. scope, C.Get(scope, "healOverflow"), true)
+    H.check("overheal lane off: " .. scope, C.Get(scope, "healOverflow"), false)
 end

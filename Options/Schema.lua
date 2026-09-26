@@ -44,7 +44,7 @@ Schema.FRAME = {
         { id = "health", keys = { "healthColorMode", "healthColor" } },
         { id = "textures", keys = { "barTexture", "backgroundColor" } },
         { id = "absorbs", keys = { "absorbEnabled", "absorbColor" } },
-        { id = "healPrediction", keys = { "healPrediction", "healOverflow", "healMyColor", "healOtherColor" } },
+        { id = "healPrediction", keys = { "healPrediction", "healOverflow", "powerMatchesHealth", "healMyColor", "healOtherColor" } },
         { id = "shape", keys = { "cornerRadius" } },
     } },
     { id = "text", sections = {
