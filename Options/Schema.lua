@@ -25,10 +25,10 @@ Schema.GENERAL = {
         { id = "absorbs", keys = { "absorbColor" } },
         { id = "healPrediction", keys = { "healMyColor", "healOtherColor" } },
     } },
-    -- How range fading measures; the switches and opacity are per frame
-    -- (Status > Range on each frame's page).
+    -- How range fading measures and how strongly it fades; the switches
+    -- (and opacity overrides) are per frame (Status > Range on each page).
     { id = "status", sections = {
-        { id = "range", keys = { "rangeFriendlyMode", "rangeFriendlySpell", "rangeFriendlyYards",
+        { id = "range", keys = { "rangeAlpha", "rangeFriendlyMode", "rangeFriendlySpell", "rangeFriendlyYards",
             "rangeHostileMode", "rangeHostileSpell", "rangeHostileYards" } },
     } },
     { id = "profile", custom = "profile" },

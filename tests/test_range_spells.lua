@@ -290,7 +290,7 @@ end
 -- The poll stays off while nothing fades.
 do
     local ns = boot("PRIEST", { 585, 2050 })
-    for _, scope in ipairs({ "party", "pet", "target", "focus" }) do ns.Config.Set(scope, "rangeFade", false) end
+    for _, scope in ipairs({ "party", "pet", "target", "targettarget", "focus" }) do ns.Config.Set(scope, "rangeFade", false) end
     H.check("all off: timer stopped", ns.Range.driver:IsShown(), false)
     target(ns, { hostile = true, distance = 29 })
     local asked = M.spellQueries

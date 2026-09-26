@@ -49,7 +49,7 @@ do
             if sec.id == "range" then keys = table.concat(sec.keys, ",") end
         end
     end
-    H.check("General > Status > Range", keys, "rangeFriendlyMode,rangeFriendlySpell,rangeFriendlyYards,"
+    H.check("General > Status > Range", keys, "rangeAlpha,rangeFriendlyMode,rangeFriendlySpell,rangeFriendlyYards,"
         .. "rangeHostileMode,rangeHostileSpell,rangeHostileYards")
 end
 

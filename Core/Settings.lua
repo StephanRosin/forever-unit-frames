@@ -426,11 +426,13 @@ Settings.Define({ key = "groupIconY", code = "LY", scope = "frame", only = GROUP
     default = 0 })
 
 -- Range fading (Elements/Range.lua): party members and their pets, the
--- target, the focus and the pet at a lower opacity while out of range.
-local RANGE = { party = true, target = true, focus = true, pet = true }
+-- target, its target, the focus and the pet at a lower opacity while out
+-- of range.
+local RANGE = { party = true, target = true, focus = true, pet = true, targettarget = true }
 -- On everywhere: every class measures enemies, by a spell or in yards.
 Settings.Define({ key = "rangeFade", code = "VE", scope = "frame", only = RANGE, type = "bool", default = true })
-Settings.Define({ key = "rangeAlpha", code = "VA", scope = "frame", only = RANGE, type = "int", min = 0, max = 100,
+-- The opacity: once in General for every frame, overridable per frame.
+Settings.Define({ key = "rangeAlpha", code = "VA", scope = "inherit", only = RANGE, type = "int", min = 0, max = 100,
     default = 50 })
 -- How range is measured, for friends and for enemies (General only):
 -- AUTO is the spell, or yards when there is none; SPELL the spell only;
