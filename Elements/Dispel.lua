@@ -21,6 +21,12 @@ local _, ns = ...
 -- of combat and cannot follow the castbar showing and hiding. Containers
 -- are made and configured out of combat only, like the aura containers.
 --
+-- The client makes a container's buttons in batches of ten
+-- (CustomAuraContainerConstants.FrameCreationBatchSize, not an option of
+-- AddAuraGroup; maxFrameCount only limits how many show), and dispel type
+-- textures must belong to the button: every button carries its own four
+-- edges. They stay hidden with their button.
+--
 -- Where the client cannot make containers, the same ring is a plain one,
 -- drawn from our own read (out of combat; in combat the client refuses
 -- and the last state stays until combat ends). Test mode uses the plain
@@ -128,7 +134,7 @@ local function readPlain(frame)
     local id = aura.auraInstanceID
     if Secrets.IsSecret(id) or type(id) ~= "number" then return end
     local asked, color = pcall(C_UnitAuras.GetAuraDispelTypeColor, unit, id, ns.AuraButton.DispelCurve())
-    if not asked then return end
+    if not asked or type(color) == "nil" then return end
     paint(ring.edges, color:GetRGBA())
     ring:Show()
 end
@@ -255,6 +261,15 @@ function Dispel.Preview(frame, on)
         if frame.unit and UnitExists(frame.unit) then Dispel.Update(frame) end
     end
 end
+
+-- Party slots reshuffled: party2 may now be someone else under the same
+-- token, which the container does not notice by itself (as the aura
+-- containers, Elements/AuraContainers.lua).
+ns.On("GROUP_ROSTER_UPDATE", function(event)
+    for frame in pairs(all) do
+        if frame.key == ns.Party.KEY and frame.unit and UnitExists(frame.unit) then Dispel.Update(frame, event) end
+    end
+end)
 
 -- Test mode hides the live rings (they show real debuffs only); out of
 -- combat, as test mode itself.

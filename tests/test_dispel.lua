@@ -96,6 +96,10 @@ do
     M.units.party2 = { name = "Bob", health = 5, healthMax = 10 }
     M.SetGroup({ "party2" })
     H.check("slot handed to someone else", dispelContainer(b):GetUnit(), "party2")
+    -- Same token, maybe someone else: the container looks again.
+    local updates = dispelContainer(b)._updates
+    M.FireEvent("GROUP_ROSTER_UPDATE")
+    H.checkTrue("roster change: container refreshed", dispelContainer(b)._updates > updates)
 
     -- Off: hidden.
     ns.Config.Set("party", "dispelHighlight", false)
@@ -161,6 +165,13 @@ do
     M.FireEvent("UNIT_AURA", "player", { isFullUpdate = true })
     H.check("secret type: ring", ring:IsShown(), true)
     H.check("secret type: client colour", M.Reveal(ring.edges[1]._color[1]), ns.AuraButton.DISPEL_COLORS.Magic[1])
+    -- No colour from the client: no error, the ring stays as it was.
+    local real = C_UnitAuras.GetAuraDispelTypeColor
+    C_UnitAuras.GetAuraDispelTypeColor = function() return nil end
+    local ok, err = pcall(M.FireEvent, "UNIT_AURA", "player", { isFullUpdate = true })
+    H.check("no colour: no error", ok and "ok" or tostring(err), "ok")
+    H.check("no colour: ring kept", ring:IsShown(), true)
+    C_UnitAuras.GetAuraDispelTypeColor = real
 end
 
 -- Test mode: one pretend member carries a magic debuff.
