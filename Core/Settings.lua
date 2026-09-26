@@ -382,3 +382,10 @@ Settings.Define({ key = "statusX", code = "ZX", scope = "frame", only = STATUS, 
     default = 0 })
 Settings.Define({ key = "statusY", code = "ZY", scope = "frame", only = STATUS, type = "int", min = -400, max = 400,
     default = 0 })
+
+-- Minimap button (Options/MinimapButton.lua): General only. The angle
+-- around the minimap in degrees, counter-clockwise from the right (225:
+-- bottom left, LibDBIcon's default); set by dragging the button.
+Settings.Define({ key = "minimapShow", code = "MS", scope = "general", type = "bool", default = true })
+Settings.Define({ key = "minimapAngle", code = "MA", scope = "general", type = "int", min = 0, max = 359,
+    default = 225 })

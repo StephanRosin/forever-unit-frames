@@ -48,5 +48,6 @@ Options\Widgets.lua
 Options\Schema.lua
 Options\TestMode.lua
 Options\Window.lua
+Options\MinimapButton.lua
 Core\Debug.lua
 Core\Boot.lua

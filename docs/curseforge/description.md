@@ -44,6 +44,7 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 
 ## Options
 - `/fuf` opens a movable options window: frames on the left, tabs on top.
+- A minimap button: left-click opens the options, right-click unlocks or locks the frames, drag it around the minimap (round or square). It can be hidden; with a LibDataBroker display it also appears there.
 - Every position can be set by dragging (`/fuf unlock`) or as exact X/Y values.
 - Test mode shows sample auras, casts, totems, the combat and resting icons and a full party, so you can set everything up without a group.
 - Settings are stored compactly. They can be exported and imported as a string.

@@ -35,12 +35,31 @@ local function status()
     ns.Print(L.STATUS_AURAS:format(ns.AuraContainers.Supported() and L.AURAS_CONTAINERS or L.AURAS_READ))
 end
 
+-- What the slash command, the minimap button and a LibDataBroker
+-- launcher share.
+local Commands = {}
+ns.Commands = Commands
+
+-- Settings are loaded; says so in chat when not.
+function Commands.IsReady()
+    if ns.Config.Profile() ~= nil then return true end
+    ns.Print(L.NOT_READY)
+    return false
+end
+
+function Commands.ToggleOptions()
+    if Commands.IsReady() then ns.Options.Toggle() end
+end
+
+-- Unlocking is refused in combat (Movers.Unlock says so).
+function Commands.ToggleLock()
+    if not Commands.IsReady() then return end
+    if ns.Movers.IsUnlocked() then ns.Movers.Lock() else ns.Movers.Unlock() end
+end
+
 SLASH_FOREVERUNITFRAMES1 = "/fuf"
 SlashCmdList.FOREVERUNITFRAMES = function(msg)
-    if ns.Config.Profile() == nil then
-        ns.Print(L.NOT_READY)
-        return
-    end
+    if not Commands.IsReady() then return end
     local cmd, rest = (msg or ""):match("^%s*(%S*)%s*(.-)%s*$")
     cmd = cmd:lower()
     if cmd == "" then

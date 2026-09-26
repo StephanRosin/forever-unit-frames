@@ -25,6 +25,7 @@ ns.On("PLAYER_LOGIN", function()
     -- builds the single frames.
     ns.Single.CreateAll(afterBuild)
     ns.Blizzard.HideDefaults()
+    ns.MinimapButton.Create()
 end)
 
 ns.Listen("CONFIG_CHANGED", function()

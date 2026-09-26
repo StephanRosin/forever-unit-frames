@@ -569,6 +569,8 @@ local function newWidget(kind, name, parent)
     function w:EnableMouse(v) self._mouse = v end
     function w:IsProtected() return self._protected or false end
     function w:SetFrameStrata(v) self._strata = v end
+    function w:SetFixedFrameStrata(v) self._fixedStrata = v end
+    function w:SetHighlightTexture(t, blend) self._highlight = { t, blend } end
     function w:GetFrameStrata() return self._strata end
     function w:SetClipsChildren(v) self._clips = v end
     function w:GetEffectiveScale() return M.scale end
@@ -1191,6 +1193,26 @@ function M.Reset()
         self._shown = true
     end
     function GameTooltip:FadeOut() self._shown = false end
+    -- Text lines of the tooltip since the last SetOwner.
+    M.tooltipLines = {}
+    local setOwner = GameTooltip.SetOwner
+    function GameTooltip:SetOwner(owner, anchor)
+        M.tooltipLines = {}
+        setOwner(self, owner, anchor)
+    end
+    function GameTooltip:SetText(text) M.tooltipLines = { text } end
+    function GameTooltip:AddLine(text) M.tooltipLines[#M.tooltipLines + 1] = text end
+
+    -- The minimap: 140 x 140 around (1700, 900) at scale 1. GetMinimapShape
+    -- exists only when a minimap addon defines it (M.minimapShape).
+    _G.Minimap = newWidget("Frame", "Minimap")
+    Minimap._w, Minimap._h, Minimap._cx, Minimap._cy = 140, 140, 1700, 900
+    M.minimapShape = nil
+    _G.GetMinimapShape = nil
+    -- The cursor in physical coordinates (GetCursorPosition).
+    M.cursor = { 0, 0 }
+    _G.GetCursorPosition = function() return M.cursor[1], M.cursor[2] end
+    _G.LibStub = nil
     local function auraTooltip(method)
         GameTooltip[method] = function(self, unit, id, filter)
             refuseAuras()

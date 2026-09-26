@@ -263,3 +263,12 @@ L.SETTING_statusY = "Offset Y"
 L.HINT_statusCombat = "Crossed swords while you are in combat"
 L.HINT_statusResting = "While you rest in an inn or a city"
 L.HINT_statusFramePoint = "The icons follow the health bar"
+
+-- Minimap button.
+L.SECTION_minimap = "Minimap"
+L.SETTING_minimapShow = "Show minimap button"
+L.SETTING_minimapAngle = "Button position"
+L.HINT_minimapAngle = "Degrees around the minimap; drag the button to set it"
+L.MINIMAP_LEFT_CLICK = "Left-click: options"
+L.MINIMAP_RIGHT_CLICK = "Right-click: unlock/lock frames"
+L.MINIMAP_DRAG = "Drag: move button"

@@ -18,6 +18,7 @@ Schema.GENERAL = {
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },
         { id = "shape", keys = { "cornerRadius" } },
+        { id = "minimap", keys = { "minimapShow", "minimapAngle" } },
     } },
     { id = "colors", sections = {
         { id = "health", keys = { "healthColorMode", "healthColor" } },
