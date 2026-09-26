@@ -38,11 +38,11 @@ do
     end
     H.check("combat icon on by default", S.Default(S.Get("statusCombat"), "player"), true)
     H.check("resting icon on by default", S.Default(S.Get("statusResting"), "player"), true)
-    H.check("default size", S.Default(S.Get("statusSize"), "player"), 18)
-    H.check("default: top right of the block", S.Default(S.Get("statusFramePoint"), "player"), "TOPRIGHT")
-    H.check("default: icons' bottom right", S.Default(S.Get("statusPoint"), "player"), "BOTTOMRIGHT")
-    H.check("default x: left of the class badge", S.Default(S.Get("statusX"), "player"), -24)
-    H.check("default y", S.Default(S.Get("statusY"), "player"), 2)
+    H.check("default size", S.Default(S.Get("statusSize"), "player"), 22)
+    H.check("default: centre of the health bar", S.Default(S.Get("statusFramePoint"), "player"), "CENTER")
+    H.check("default: icons' centre", S.Default(S.Get("statusPoint"), "player"), "CENTER")
+    H.check("default x", S.Default(S.Get("statusX"), "player"), 0)
+    H.check("default y", S.Default(S.Get("statusY"), "player"), 0)
 
     -- Options: a "Status icons" section on the player's Layout tab only.
     local function section(scope)
@@ -98,34 +98,49 @@ do
     H.check("idle: no resting icon", s.resting:IsShown(), false)
     H.check("idle: not animating", s.restAnim:IsPlaying(), false)
 
-    -- Layout: two slots, combat on the left, from the block's top right.
-    local C = ns.Config
-    H.check("holder width", s.holder:GetWidth(), 18 + 2 + 18)
-    H.check("holder height", s.holder:GetHeight(), 18)
-    local p = point(s.holder, "BOTTOMRIGHT")
-    H.check("holder on the unit box", p[2], ns.Frames.player.unitBox)
-    H.check("from its top right", p[3], "TOPRIGHT")
-    H.check("x", p[4], -24)
-    H.check("y: outside the ring", p[5], 2 + ns.Border.Extent("player"))
-    H.check("combat slot", point(s.combat, "TOPLEFT")[4], 0)
-    H.check("combat size", s.combat:GetWidth(), 18)
-    H.check("resting slot centred on the second slot", point(s.resting, "CENTER")[4], 20 + 9)
-    H.check("resting art like Blizzard's (30 in 20)", s.resting:GetWidth(), 27)
+    -- Layout: room for both, centred on the health bar, above its texts.
+    local C, f = ns.Config, ns.Frames.player
+    H.check("holder width", s.holder:GetWidth(), 22 + 2 + 22)
+    H.check("holder height", s.holder:GetHeight(), 22)
+    local p = point(s.holder, "CENTER")
+    H.check("holder on the health bar", p[2], f.health)
+    H.check("on its centre", p[3], "CENTER")
+    H.check("x", p[4], 0)
+    H.check("y", p[5], 0)
+    H.checkTrue("above the bar's texts", s.holder:GetFrameLevel() > f.overlay:GetFrameLevel())
+
+    -- Both show: side by side, combat on the left.
+    ns.StatusIcons.Preview(f, true)
+    H.check("both: combat in the first slot", point(s.combat, "TOPLEFT")[4], 0)
+    H.check("combat size", s.combat:GetWidth(), 22)
+    H.check("both: resting centred on the second slot", point(s.resting, "CENTER")[4], 24 + 11)
+    H.check("resting art like Blizzard's (30 in 20)", s.resting:GetWidth(), 33)
+    ns.StatusIcons.Preview(f, false)
+    -- One shows: centred in the row.
+    M.resting = true
+    M.FireEvent("PLAYER_UPDATE_RESTING")
+    H.check("alone: resting centred", point(s.resting, "CENTER")[4], 12 + 11)
+    M.resting = false
+    M.FireEvent("PLAYER_UPDATE_RESTING")
 
     C.Set("player", "statusSize", 24)
     C.Set("player", "statusFramePoint", "LEFT")
-    C.Set("player", "statusPoint", "RIGHT")
-    C.Set("player", "statusX", -3)
-    C.Set("player", "statusY", 4)
+    C.Set("player", "statusPoint", "LEFT")
+    C.Set("player", "statusX", 3)
+    C.Set("player", "statusY", -4)
     H.check("size", s.holder:GetHeight(), 24)
-    p = point(s.holder, "RIGHT")
+    p = point(s.holder, "LEFT")
     H.check("point", p[3], "LEFT")
-    H.check("x counts from the ring", p[4], -3 - ns.Border.Extent("player"))
-    H.check("y", p[5], 4)
-    -- One icon off: the other takes the first slot, the row shrinks.
+    H.check("x", p[4], 3)
+    H.check("y", p[5], -4)
+    -- Packed towards a side anchor: a lone icon in the first slot.
+    M.combat = true
+    M.FireEvent("PLAYER_REGEN_DISABLED")
+    H.check("left anchor: combat at the left", point(s.combat, "TOPLEFT")[4], 0)
+    M.SetCombat(false)
+    -- One icon off: the row shrinks to one slot.
     C.Set("player", "statusCombat", false)
     H.check("one slot", s.holder:GetWidth(), 24)
-    H.check("resting in the first slot", point(s.resting, "CENTER")[4], 12)
     C.Set("player", "statusResting", false)
     H.check("both off: holder hidden", s.holder:IsShown(), false)
 end
@@ -167,8 +182,9 @@ do
     C.Set("player", "statusCombat", true)
     C.Set("player", "statusResting", true)
 
-    -- In combat nothing is anchored or sized: icons only show and hide.
-    for _, region in ipairs({ s.holder, s.combat, s.resting }) do
+    -- In combat the holder is not anchored or sized (the icons, textures
+    -- of the plain holder, may move within it).
+    for _, region in ipairs({ s.holder }) do
         for _, method in ipairs({ "SetPoint", "ClearAllPoints", "SetAllPoints", "SetSize" }) do
             local original = region[method]
             region[method] = function(self, ...)
@@ -183,7 +199,7 @@ do
         M.resting = false
         M.FireEvent("PLAYER_UPDATE_RESTING")
     end)
-    H.check("combat: only shows and hides", ok and "ok" or tostring(err), "ok")
+    H.check("combat: holder stays put", ok and "ok" or tostring(err), "ok")
     H.check("combat: shown", s.combat:IsShown(), true)
     M.SetCombat(false)
 end
@@ -205,8 +221,7 @@ do
     H.check("test mode off: resting icon follows the game", s.resting:IsShown(), false)
 end
 
--- The shipped look: clear of the class badge, the buffs above the frame,
--- the portrait and the totems.
+-- The shipped look: centred on the health bar, clear of its texts.
 do
     local ns = H.LoadShipped()
     M.units.player = { name = "Me", class = "SHAMAN", className = "SHAMAN", isPlayer = true, health = 1,
@@ -216,24 +231,12 @@ do
     M.RunTimers()
     local C, f = ns.Config, ns.Frames.player
     local s = f.statusIcons
-    local width = C.Get("player", "width")
-    local p = point(s.holder, "BOTTOMRIGHT")
-    H.check("shipped: from the block's top right", p[3], "TOPRIGHT")
-    -- The row from the frame's top right corner.
-    local right, bottom = p[4], p[5]
-    local left, top = right - s.holder:GetWidth(), bottom + s.holder:GetHeight()
-    local badge = f.classBadgeBox
-    H.checkTrue("shipped: left of the class badge", right <= badge.left)
-    H.checkTrue("shipped: above the ring", bottom >= ns.Border.Extent("player"))
-    -- Buffs grow right from the frame's top left: their widest row (own
-    -- buffs, larger) ends here.
-    local perRow, own, spacing = C.Get("player", "buffsPerRow"), C.Get("player", "buffsOwnSize"),
-        C.Get("player", "buffsSpacing")
-    local buffsRight = C.Get("player", "buffsX") + perRow * own + (perRow - 1) * spacing
-    H.checkTrue("shipped: right of the buffs", width + left >= buffsRight)
-    H.check("shipped: portrait on the left", C.Get("player", "portraitMode"), "LEFT")
-    H.checkTrue("shipped: clear of the portrait (right half)", width + left > C.Get("player", "height"))
-    H.check("shipped: totems right of the block", C.Get("player", "totemsFramePoint"), "RIGHT")
-    H.checkTrue("shipped: left of the totems", right < C.Get("player", "totemsX"))
-    H.checkTrue("shipped: not above the badge's top", top > badge.bottom or right <= badge.left)
+    local p = point(s.holder, "CENTER")
+    H.check("shipped: on the health bar", p[2], f.health)
+    H.check("shipped: centred", p[3] .. p[4] .. p[5], "CENTER00")
+    -- The health texts sit at the bar's ends; the row stays in its middle
+    -- third on the shipped 300 px frame.
+    H.checkTrue("shipped: row narrower than a third of the bar", s.holder:GetWidth() < f.healthWidth / 3)
+    H.check("shipped: left and right health texts", C.Get("player", "textHealthLeft") .. "," ..
+        C.Get("player", "textHealthRight"), "CURRENT_MAX,PERCENT")
 end
