@@ -423,6 +423,11 @@ Settings.Define({ key = "rangeFade", code = "VE", scope = "frame", only = RANGE,
 Settings.Define({ key = "rangeAlpha", code = "VA", scope = "frame", only = RANGE, type = "int", min = 0, max = 100,
     default = 50 })
 
+-- Threat glow (Elements/Threat.lua): the unit's own threat on the player,
+-- party and pet frames, your threat on it on the others.
+Settings.Define({ key = "threatGlow", code = "TH", scope = "frame", type = "bool",
+    default = { player = true, party = true, _ = false } })
+
 -- Minimap button (Options/MinimapButton.lua): General only. The angle
 -- around the minimap in degrees, counter-clockwise from the right (225:
 -- bottom left, LibDBIcon's default); set by dragging the button.

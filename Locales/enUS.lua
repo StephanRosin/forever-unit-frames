@@ -299,6 +299,11 @@ L.SETTING_rangeFade = "Fade when out of range"
 L.SETTING_rangeAlpha = "Opacity out of range (%)"
 L.HINT_rangeFade = "Group members by their range, others by the follow distance"
 
+-- Status tab: threat.
+L.SECTION_threat = "Threat"
+L.SETTING_threatGlow = "Threat glow"
+L.HINT_threatGlow = "Player, party, pet: the unit's own threat. Target, focus: your threat on it"
+
 -- Minimap button.
 L.SECTION_minimap = "Minimap"
 L.SETTING_minimapShow = "Show minimap button"

@@ -1092,6 +1092,23 @@ function M.Reset()
     M.interactError = false
     M.rangeQueries = 0
     local function groupToken(unit) return unit:match("^party%d$") or unit:match("^partypet%d$") end
+    -- Threat (UnitDocumentation.lua, ThreatDocumentation.lua): one unit,
+    -- d.threat (its highest status, 0..3 or nil); unit and mob,
+    -- M.units[mob].threatOf[unit]. Either may be a secret proxy.
+    _G.UnitThreatSituation = function(unit, mob)
+        if mob then
+            local m = u(mob)
+            return m and m.threatOf and m.threatOf[unit]
+        end
+        local d = u(unit)
+        return d and d.threat
+    end
+    M.threatColors = { [0] = { 0.69, 0.69, 0.69 }, { 1, 1, 0.47 }, { 1, 0.6, 0 }, { 1, 0, 0 } }
+    _G.GetThreatStatusColor = function(status)
+        assert(not M.IsSecret(status), "GetThreatStatusColor: secret status from tainted code")
+        local c = assert(M.threatColors[status], "GetThreatStatusColor: bad status")
+        return c[1], c[2], c[3]
+    end
     -- Two tokens name the same unit when they share its data table.
     _G.UnitIsUnit = function(a, b) return M.units[a] ~= nil and M.units[a] == M.units[b] end
     _G.UnitInParty = function(unit)

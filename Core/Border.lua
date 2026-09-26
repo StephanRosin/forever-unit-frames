@@ -268,6 +268,17 @@ local function hideShadow(shadow)
     for i = 1, 4 do shadow.inner[i]:Hide() end
 end
 
+-- A soft band `size` wide just outside scope's ring around box, rounded
+-- with it. Shared by the drop shadow and the glow.
+local function placeBand(band, scope, box, radius, size)
+    for _, piece in ipairs(ringPieces(band)) do piece:Show() end
+    local reach = Border.Extent(scope)
+    -- The ring's outer radius; square stays square, as the ring does.
+    local outer = radius > 0 and radius + reach or 0
+    placeShadowEdges(band, box, reach, outer, size)
+    placeShadowCorners(band, box, reach, outer, size)
+end
+
 local function drawShadow(owner, scope, box, radius)
     local shadow = owner.shadow
     local size = Border.ShadowSize(scope)
@@ -275,14 +286,28 @@ local function drawShadow(owner, scope, box, radius)
         hideShadow(shadow)
         return
     end
-    for _, piece in ipairs(ringPieces(shadow)) do piece:Show() end
-    local reach = Border.Extent(scope)
-    -- The ring's outer radius; square stays square, as the ring does.
-    local outer = radius > 0 and radius + reach or 0
-    placeShadowEdges(shadow, box, reach, outer, size)
-    placeShadowCorners(shadow, box, reach, outer, size)
+    placeBand(shadow, scope, box, radius, size)
     local alpha = Config.Get(scope, "shadowAlpha") / 100
     for _, piece in ipairs(ringPieces(shadow)) do piece:SetVertexColor(0, 0, 0, alpha) end
+end
+
+-- Glow ------------------------------------------------------------------------
+-- The shadow's band in a colour (the threat glow, Elements/Threat.lua):
+-- its own pieces on owner, placed around box outside scope's ring and
+-- rounded with it. Plain textures: the colour may change in combat.
+
+function Border.DrawGlow(owner, scope, box, radius, size)
+    owner.glow = owner.glow or newShadow(owner)
+    placeBand(owner.glow, scope, box, radius or ns.Corners.Radius(scope), size)
+end
+
+function Border.PaintGlow(owner, r, g, b, a)
+    for _, piece in ipairs(ringPieces(owner.glow)) do piece:SetVertexColor(r, g, b, a) end
+end
+
+-- The glow's eight pieces (edges, then corners), for the tests.
+function Border.GlowPieces(owner)
+    return owner.glow and ringPieces(owner.glow) or {}
 end
 
 -- Drawing ---------------------------------------------------------------------
