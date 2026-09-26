@@ -151,9 +151,19 @@ function Config.CopyScope(from, to)
     ns.Fire("CONFIG_CHANGED", to, nil)
 end
 
+-- Personal settings (the language) stay the reader's own: a shared
+-- profile must not switch the UI to its author's language.
 function Config.Import(p)
+    local personal, kept = {}, {}
+    for _, def in ipairs(Settings.All()) do
+        if def.personal then
+            personal[#personal + 1] = def.key
+            kept[def.key] = profile.general[def.key]
+        end
+    end
     for _, scope in ipairs(Settings.SCOPES) do
         profile[scope] = type(p[scope]) == "table" and p[scope] or {}
     end
+    for _, key in ipairs(personal) do profile.general[key] = kept[key] end
     ns.Fire("CONFIG_CHANGED", nil, nil)
 end

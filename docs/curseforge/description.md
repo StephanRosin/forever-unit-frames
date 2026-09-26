@@ -56,13 +56,14 @@ In a "Status" tab per frame.
 - A minimap button: left-click opens the options, right-click unlocks or locks the frames, drag it around the minimap (round or square). It can be hidden; with a LibDataBroker display it also appears there.
 - Every position can be set by dragging (`/fuf unlock`) or as exact X/Y values.
 - Test mode shows sample auras, casts, totems, the combat and resting icons, raid markers, the group and ready check icons, a threat glow on the player, and a full party with one member dead, one offline, one out of range, a threat glow and a dispel highlight, so you can set everything up without a group.
-- Settings are stored compactly. They can be exported and imported as a string.
+- Settings are stored compactly. They can be exported and imported as a string. Importing a profile keeps your own language.
 
 ## Commands
 `/fuf` (options), `/fuf unlock`, `/fuf lock`, `/fuf status`, `/fuf reset <frame|all>`, `/fuf set <scope> <setting> <value>`
 
 ## Notes
 - Made for WoW: Forever only. It relies on Forever's API and will not load on other clients.
-- English only for now.
+- Languages: English, German (Deutsch), Spanish (Español, also for Latin American clients) and French (Français). The addon follows the game's language; a dropdown at the bottom of the options window's frame list picks another one, and the change applies at once. Other game languages use English.
+- The translations were not written by native speakers: corrections are very welcome on the issue tracker.
 - Updating from 0.2.x: the settings backup in the "FUF Save" character macros is no longer needed. Settings found only there are moved to the normal saved settings once, then the addon deletes its own backup macros.
 - Bug reports and ideas are welcome on the project's issue tracker.

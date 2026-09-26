@@ -15,7 +15,8 @@ local _, ns = ...
 --   anchor         false: Attach does not anchor the target (its own
 --                  Style decides, e.g. a castbar that may also be docked)
 --   active()       optional: false keeps the handle hidden when unlocked
---   label          text on the handle
+--   label          text on the handle, or a function returning it (asked
+--                  again when the language changes)
 --   id             combat-queue key suffix (default scope)
 local Movers = {}
 ns.Movers = Movers
@@ -35,9 +36,14 @@ end
 function Movers.FrameSpec(frame)
     local key = frame.key
     return {
-        scope = key, label = L["FRAME_" .. key],
+        scope = key, label = function() return L["FRAME_" .. key] end,
         size = function() return ns.Config.Get(key, "width"), ns.Config.Get(key, "height") end,
     }
+end
+
+local function labelOf(spec)
+    if type(spec.label) == "function" then return spec.label() end
+    return spec.label
 end
 
 local function complete(spec)
@@ -109,7 +115,7 @@ function Movers.Attach(target, spec)
     mover.label = mover:CreateFontString(nil, "OVERLAY")
     mover.label:SetFont(ns.Media.Font("Friz Quadrata"), 11, "OUTLINE")
     mover.label:SetPoint("CENTER", mover, "CENTER", 0, 0)
-    mover.label:SetText(spec.label)
+    mover.label:SetText(labelOf(spec))
     target.mover = mover
     targets[#targets + 1] = target
     Movers.Sync(target)
@@ -178,4 +184,11 @@ end)
 -- its handle at once. Unlocked implies out of combat.
 ns.Listen("CONFIG_CHANGED", function()
     if unlocked then showActive() end
+end)
+
+-- Handles only hold a plain text: set it again in the new language.
+ns.Listen("LANGUAGE_CHANGED", function()
+    for _, target in ipairs(targets) do
+        target.mover.label:SetText(labelOf(target.mover.spec))
+    end
 end)

@@ -19,7 +19,7 @@ end
 local general, frame = keysOf(S.GENERAL), keysOf(S.FRAME)
 local FRAMES = { "player", "target", "targettarget", "pet", "focus", "party" }
 for _, def in ipairs(Settings.All()) do
-    if Settings.AppliesTo(def, "general") then
+    if Settings.AppliesTo(def, "general") and not def.inNav then
         H.check("general shows " .. def.key .. " once", general[def.key], 1)
     end
     for _, scope in ipairs(FRAMES) do

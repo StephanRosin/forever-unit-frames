@@ -878,6 +878,7 @@ function M.Reset()
     M.macroDeletes = 0     -- DeleteMacro calls
     M.errors = {}          -- whatever reached the global error handler
     M.timers = {}          -- queued C_Timer.After callbacks
+    M.locale = "enUS"      -- GetLocale(): the game's language
     M.now = 1000           -- GetTime(), advanced by M.Tick
     M.group = {}           -- party unit tokens ("party1", ...) while grouped
     M.headerUpdates = 0    -- how often a group header laid out its buttons
@@ -955,6 +956,7 @@ function M.Reset()
     end
     _G.WOW_PROJECT_MAINLINE = 1
     _G.WOW_PROJECT_ID = 1
+    _G.GetLocale = function() return M.locale end
     _G.GetBuildInfo = function() return "1.60.1", "69977", "Sep 22 2026", 16001 end
     _G.issecretvalue = M.IsSecret
     _G.RegisterUnitWatch = function(f) f._unitWatch = true end

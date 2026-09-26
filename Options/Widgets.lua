@@ -408,7 +408,12 @@ local function openList(owner)
     local index = indexOf(list.items, owner.opts.get()) or 1
     list.offset = math.max(0, math.min(maxOffset(), index - LIST_ROWS / 2))
     list:ClearAllPoints()
-    list:SetPoint("TOPLEFT", owner.button, "BOTTOMLEFT", 0, -2)
+    -- opts.listAbove: a dropdown at the bottom of the window opens upwards.
+    if owner.opts.listAbove then
+        list:SetPoint("BOTTOMLEFT", owner.button, "TOPLEFT", 0, 2)
+    else
+        list:SetPoint("TOPLEFT", owner.button, "BOTTOMLEFT", 0, -2)
+    end
     list:SetWidth(owner.button:GetWidth())
     renderList()
     list:Show()

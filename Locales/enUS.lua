@@ -1,9 +1,30 @@
 local _, ns = ...
 
--- Missing keys fall back to the key itself, so an untranslated string is
--- visible in-game instead of raising an error.
-ns.L = setmetatable({}, { __index = function(_, key) return key end })
-local L = ns.L
+-- English is the base language and always loads first. Every other
+-- language (Locales/<code>.lua) fills a table of its own; Core/Locale.lua
+-- picks one once the settings are known. ns.L itself holds no strings: it
+-- looks a key up in the chosen language, then in English, and a key missing
+-- from both is returned as it is, so an unknown string is visible in-game
+-- instead of raising an error. Files keep `local L = ns.L` at load time;
+-- switching the language never replaces that table.
+local L = {}
+ns.Locales = { enUS = L }
+
+local active = L
+ns.L = setmetatable({}, {
+    __index = function(_, key)
+        local v = active[key]
+        if v == nil then v = L[key] end
+        if v == nil then return key end
+        return v
+    end,
+    __newindex = function() error("ns.L is read-only; add strings to Locales/*.lua") end,
+})
+
+-- Core/Locale.lua only: shows the given language's table through ns.L.
+function ns.SetActiveLocale(code)
+    active = ns.Locales[code] or L
+end
 
 L.ADDON_NAME = "Forever Unit Frames"
 
@@ -317,3 +338,12 @@ L.HINT_minimapAngle = "Degrees around the minimap; drag the button to set it"
 L.MINIMAP_LEFT_CLICK = "Left-click: options"
 L.MINIMAP_RIGHT_CLICK = "Right-click: unlock/lock frames"
 L.MINIMAP_DRAG = "Drag: move button"
+
+-- Language (bottom of the options window's navigation). Each language is
+-- named in itself; the names are the same in every locale file.
+L.SETTING_language = "Language"
+L.ENUM_language_AUTO = "Game language"
+L.ENUM_language_enUS = "English"
+L.ENUM_language_deDE = "Deutsch"
+L.ENUM_language_esES = "Español"
+L.ENUM_language_frFR = "Français"

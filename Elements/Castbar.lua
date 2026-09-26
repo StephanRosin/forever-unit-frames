@@ -261,7 +261,7 @@ function Castbar.MoverSpec(frame)
     local scope = frame.key
     return {
         id = "castbar:" .. scope, scope = scope, xKey = "castbarX", yKey = "castbarY", anchor = false,
-        label = ns.L.MOVER_CASTBAR:format(ns.L["FRAME_" .. scope]),
+        label = function() return ns.L.MOVER_CASTBAR:format(ns.L["FRAME_" .. scope]) end,
         size = function() return size(scope) end,
         active = function()
             return Config.Get(scope, "enabled") and Config.Get(scope, "castbarEnabled")

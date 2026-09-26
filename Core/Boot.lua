@@ -19,6 +19,8 @@ ns.On("PLAYER_LOGIN", function()
     ForeverUnitFramesDB = ForeverUnitFramesDB or {}
     ns.Config.Use(ns.Storage.Load(ForeverUnitFramesDB))
     ns.Storage.Attach(ForeverUnitFramesDB)
+    -- Before anything writes a text: frames, movers, the options window.
+    ns.Locale.Apply()
     -- Migrates or waits for an old macro backup, or deletes it.
     ns.Storage.Start()
     -- Party and movers follow in the same (possibly deferred) run that

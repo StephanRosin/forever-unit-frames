@@ -89,7 +89,7 @@ end
 
 -- No handle while the party frame is switched off.
 function Party.MoverSpec()
-    return { scope = Party.KEY, point = "TOPLEFT", size = Party.BlockSize, label = ns.L.FRAME_party,
+    return { scope = Party.KEY, point = "TOPLEFT", size = Party.BlockSize, label = function() return ns.L.FRAME_party end,
         active = function() return get("enabled") end }
 end
 

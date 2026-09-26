@@ -442,3 +442,10 @@ Settings.Define({ key = "dispelHighlight", code = "HD", scope = "frame", only = 
 Settings.Define({ key = "minimapShow", code = "MS", scope = "general", type = "bool", default = true })
 Settings.Define({ key = "minimapAngle", code = "MA", scope = "general", type = "int", min = 0, max = 359,
     default = 225 })
+
+-- Language of every text (Core/Locale.lua): AUTO follows the game. Stored
+-- by index: append only. Personal: an imported profile keeps the reader's
+-- own language (Config.Import). inNav: its control sits at the bottom of
+-- the options window's navigation, on no page.
+Settings.Define({ key = "language", code = "LN", scope = "general", type = "enum", personal = true, inNav = true,
+    values = { "AUTO", "enUS", "deDE", "esES", "frFR" }, default = "AUTO" })

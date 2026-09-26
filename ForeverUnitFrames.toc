@@ -6,11 +6,15 @@
 ## SavedVariables: ForeverUnitFramesDB
 
 Locales\enUS.lua
+Locales\deDE.lua
+Locales\esES.lua
+Locales\frFR.lua
 Core\Init.lua
 Core\Secrets.lua
 Core\Settings.lua
 Core\Preset.lua
 Core\Config.lua
+Core\Locale.lua
 Core\Codec.lua
 Core\MacroBackup.lua
 Core\Storage.lua
