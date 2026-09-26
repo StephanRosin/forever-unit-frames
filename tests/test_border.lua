@@ -150,7 +150,7 @@ H.check("outer arc: the corner's texture", corner._texture, ns.Corners.TEXTURE)
 H.check("outer arc clamps", corner._wrap[1], "CLAMP")
 H.check("outer arc mirrored for the bottom right", table.concat(b.corners[4]._texCoord, ","),
     table.concat(ns.Corners.COORDS[4], ","))
-H.check("inner arc file", b.inner[1]._texture, ns.Corners.INVERSE)
+H.check("inner arc file", b.inner[1]._texture, ns.Corners.INVERSE[1])
 H.check("the mask is the inner arc", corner._masks[1], b.inner[1])
 H.check("inner arc inset by the thickness", point(b.inner[1], "TOPLEFT")[4], 4)
 H.check("inner arc inset by the thickness (y)", point(b.inner[1], "TOPLEFT")[5], -4)
@@ -269,7 +269,8 @@ H.check("round shadow corner size", sh.corners[1]:GetWidth(), round + 5)
 local cell = math.floor(round / (round + 5) * 16 + 0.5)
 H.check("round shadow cell", sh.corners[1]._texCoord[1], (cell * 32 + 0.5) / 512)
 H.check("round shadow corner masked", sh.corners[1]:GetNumMaskTextures(), 1)
-H.check("mask: the inverse arc", sh.inner[1]._texture, ns.Corners.INVERSE)
+H.check("mask: the inverse arc", sh.inner[1]._texture, ns.Corners.INVERSE[1])
+H.check("mask: bottom right has its own file", sh.inner[4]._texture, ns.Corners.INVERSE[4])
 H.check("mask: the ring's radius", sh.inner[1]:GetWidth(), round)
 H.check("mask: at the rounded centre", point(sh.inner[1], "BOTTOMRIGHT")[2], sh.corners[1])
 H.check("round: top shadow starts after the corner", point(sh[1], "BOTTOMLEFT")[4], 5)
@@ -303,6 +304,39 @@ local function apart()
         and frameMask._texture == ns.Corners.MASKS.ALL
 end
 H.checkTrue("idle: the frame alone", apart())
+
+-- One consistent ring: every piece of the shown ring hangs from its own
+-- holder (which covers the right box), edges end where the corner pieces
+-- begin, and each corner piece is a convex arc for its own corner (the
+-- outer arc mirrored by texture coordinates, the inner cut a mask file
+-- drawn for that corner: masks ignore texture coordinates in the client).
+local function ringConsistent(label, holder, boxWanted)
+    H.check(label .. ": holder over the right box", holder._allPoints, boxWanted)
+    local ring = holder.border
+    local reach = B.Extent("target")
+    local corner = ring.corners[1]:GetWidth()
+    for i = 1, 4 do
+        for j = 1, #ring[i]._points do
+            local p = { ring[i]:GetPoint(j) }
+            H.check(label .. ": edge " .. i .. " on its holder", p[2], holder)
+            local along = (i <= 2) and math.abs(p[4]) or math.abs(p[5])
+            H.check(label .. ": edge " .. i .. " meets the corner", along, corner - reach)
+        end
+        local c = ring.corners[i]
+        local p = { c:GetPoint(1) }
+        H.check(label .. ": corner " .. i .. " on its holder", p[2], holder)
+        H.check(label .. ": corner " .. i .. " in its corner", p[1] .. p[3],
+            ns.Corners.POINTS[i] .. ns.Corners.POINTS[i])
+        H.check(label .. ": corner " .. i .. " outer arc", c._texture, ns.Corners.TEXTURE)
+        H.check(label .. ": corner " .. i .. " mirrored", table.concat(c._texCoord, ","),
+            table.concat(ns.Corners.COORDS[i], ","))
+        H.check(label .. ": corner " .. i .. " inner cut for its corner", c._masks and c._masks[1]._texture,
+            ns.Corners.INVERSE[i])
+        H.check(label .. ": corner " .. i .. " inner cut unmirrored", c._masks and c._masks[1]._texCoord, nil)
+    end
+end
+ringConsistent("frame ring", box, f)
+ringConsistent("block ring", blockRing, unit)
 M.units.target = { name = "Foe", health = 1, healthMax = 1,
     cast = { name = "Bolt", texture = 1, startMs = 1000000, endMs = 1002000 } }
 M.FireEvent("UNIT_SPELLCAST_START", "target", "c1", 1)

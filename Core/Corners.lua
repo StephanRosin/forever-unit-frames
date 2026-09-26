@@ -18,9 +18,14 @@ ns.Corners = Corners
 local Config, Pixel = ns.Config, ns.Pixel
 
 local MEDIA = "Interface\\AddOns\\ForeverUnitFrames\\Media\\"
--- Border ring corner piece and its inner cut (Core/Border.lua).
+-- Border ring corner piece (a texture, mirrored per corner with texture
+-- coordinates) and its inner cut, a mask file per corner in
+-- Corners.POINTS order: masks ignore texture coordinates in the client.
 Corners.TEXTURE = MEDIA .. "Corner.tga"
-Corners.INVERSE = MEDIA .. "CornerInverse.tga"
+Corners.INVERSE = {
+    MEDIA .. "CornerInverseTopLeft.tga", MEDIA .. "CornerInverseTopRight.tga",
+    MEDIA .. "CornerInverseBottomLeft.tga", MEDIA .. "CornerInverseBottomRight.tga",
+}
 -- Rounded-rectangle masks by which corners are round.
 Corners.MASKS = {
     ALL = MEDIA .. "Rounded.tga",
@@ -50,13 +55,11 @@ function Corners.Clamp(radius, w, h)
     return math.min(radius, limit)
 end
 
--- Mask i (1..4, Corners.POINTS order) of file on owner: one corner's
--- shape, clamped so it lets everything beyond its square through.
-function Corners.NewMask(owner, file, i)
+-- The inner-arc mask of corner i (1..4, Corners.POINTS order) on owner,
+-- clamped so it lets everything beyond its square through.
+function Corners.NewInnerMask(owner, i)
     local mask = owner:CreateMaskTexture()
-    mask:SetTexture(file, "CLAMP", "CLAMP")
-    local c = Corners.COORDS[i]
-    mask:SetTexCoord(c[1], c[2], c[3], c[4])
+    mask:SetTexture(Corners.INVERSE[i], "CLAMP", "CLAMP")
     return mask
 end
 

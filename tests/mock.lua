@@ -744,6 +744,12 @@ local function newWidget(kind, name, parent)
     function w:CreateMaskTexture(n, layer, _, sublevel)
         local t = newWidget("MaskTexture", n, self)
         t._layer, t._sublevel = layer, sublevel
+        -- In the client a mask ignores texture coordinates: a mirrored mask
+        -- drew unmirrored in game (ring corners came out concave). No
+        -- Blizzard mask uses them either. Mask files carry their own shape.
+        function t:SetTexCoord()
+            error("MaskTexture:SetTexCoord: masks ignore texture coordinates in the client", 2)
+        end
         return t
     end
     function w:CreateFontString(n, layer)

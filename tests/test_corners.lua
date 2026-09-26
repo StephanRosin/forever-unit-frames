@@ -13,8 +13,10 @@ local function alphaAt(data, x, y) -- x right, y down from the top-left
     local row = 63 - y
     return data:byte(18 + (row * 64 + x) * 4 + 4)
 end
-local FILES = { "Media/Corner.tga", "Media/CornerInverse.tga", "Media/Rounded.tga", "Media/RoundedTop.tga",
-    "Media/RoundedBottom.tga" }
+local INVERSE = { "Media/CornerInverseTopLeft.tga", "Media/CornerInverseTopRight.tga",
+    "Media/CornerInverseBottomLeft.tga", "Media/CornerInverseBottomRight.tga" }
+local FILES = { "Media/Corner.tga", "Media/Rounded.tga", "Media/RoundedTop.tga", "Media/RoundedBottom.tga" }
+for _, file in ipairs(INVERSE) do FILES[#FILES + 1] = file end
 for _, file in ipairs(FILES) do
     local d = tga(file)
     H.check(file .. " size", #d, 18 + 64 * 64 * 4)
@@ -25,7 +27,7 @@ for _, file in ipairs(FILES) do
     H.check(file .. " 8 alpha bits, bottom-up rows", d:byte(18), 8)
     H.check(file .. " white", d:byte(19) + d:byte(20) + d:byte(21), 3 * 255)
 end
-local corner, inverse = tga("Media/Corner.tga"), tga("Media/CornerInverse.tga")
+local corner, inverse = tga("Media/Corner.tga"), tga(INVERSE[1])
 H.check("corner: outer texel cut", alphaAt(corner, 0, 0), 0)
 H.check("corner: inner texel kept", alphaAt(corner, 63, 63), 255)
 H.check("corner: whole right column kept", alphaAt(corner, 63, 0), 255)
@@ -34,6 +36,16 @@ H.check("inverse: outer texel cut", alphaAt(inverse, 0, 0), 255)
 H.check("inverse: inner texel cut", alphaAt(inverse, 63, 63), 0)
 H.check("inverse: whole left column kept", alphaAt(inverse, 0, 63), 255)
 H.check("inverse: whole top row kept", alphaAt(inverse, 63, 0), 255)
+-- Masks ignore texture coordinates in the client: each corner's inverse
+-- arc is mirrored in its own file, cut towards the box's inside.
+local INSIDE = { { 63, 63 }, { 0, 63 }, { 63, 0 }, { 0, 0 } }
+local OUTSIDE = { { 0, 0 }, { 63, 0 }, { 0, 63 }, { 63, 63 } }
+for i, file in ipairs(INVERSE) do
+    local d = tga(file)
+    H.check(file .. ": cut towards the inside", alphaAt(d, INSIDE[i][1], INSIDE[i][2]), 0)
+    H.check(file .. ": outer corner kept", alphaAt(d, OUTSIDE[i][1], OUTSIDE[i][2]), 255)
+    H.check("path of " .. file, ns.Corners.INVERSE[i], "Interface\\AddOns\\ForeverUnitFrames\\" .. file:gsub("/", "\\"))
+end
 
 -- The nine-slice masks: arcs of radius SLICE in the corner cells, all
 -- opaque between them, so the stretched edges and middle cut nothing.
@@ -72,8 +84,8 @@ os.execute("'" .. ADDONDIR .. "/install' '" .. dir .. "' > /dev/null")
 local shipped = io.open(dir .. "/ForeverUnitFrames/Media/Corner.tga", "rb")
 H.checkTrue("installed corner mask", shipped)
 if shipped then shipped:close() end
-H.checkTrue("installed inverse mask", io.open(dir .. "/ForeverUnitFrames/Media/CornerInverse.tga", "rb"))
-for _, file in ipairs({ "Rounded", "RoundedTop", "RoundedBottom" }) do
+for _, file in ipairs({ "Rounded", "RoundedTop", "RoundedBottom", "CornerInverseTopLeft", "CornerInverseTopRight",
+    "CornerInverseBottomLeft", "CornerInverseBottomRight" }) do
     H.checkTrue("installed mask " .. file, io.open(dir .. "/ForeverUnitFrames/Media/" .. file .. ".tga", "rb"))
 end
 os.execute("rm -rf '" .. dir .. "'")

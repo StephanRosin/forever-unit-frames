@@ -5,7 +5,7 @@ local _, ns = ...
 -- it shows (Elements/Shape.lua), so frame, portrait and castbar sit in one
 -- border. Eight pieces: four edges and four corner squares. With rounded
 -- corners each corner square shows the outer arc as its texture
--- (Corner.tga) and is masked once, by the inner arc (CornerInverse.tga);
+-- (Corner.tga) and is masked once, by the inner arc (CornerInverse*.tga);
 -- both are centred where the box's own rounded corner is centred, so ring
 -- and box stay concentric. One mask per texture: the client allows three.
 -- The pieces are white; paint colours them with vertex colours.
@@ -84,7 +84,7 @@ local function newRing(owner, sublevel)
     end
     for i = 1, 4 do
         ring.corners[i] = owner:CreateTexture(nil, "OVERLAY", nil, sublevel)
-        ring.inner[i] = ns.Corners.NewMask(owner, ns.Corners.INVERSE, i)
+        ring.inner[i] = ns.Corners.NewInnerMask(owner, i)
     end
     return ring
 end
@@ -208,7 +208,7 @@ local function newShadow(owner)
     for i = 1, 4 do shadow[i] = piece() end
     for i = 1, 4 do
         shadow.corners[i] = piece()
-        shadow.inner[i] = ns.Corners.NewMask(owner, ns.Corners.INVERSE, i)
+        shadow.inner[i] = ns.Corners.NewInnerMask(owner, i)
     end
     return shadow
 end
