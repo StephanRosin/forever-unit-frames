@@ -74,8 +74,10 @@ end
 function RaidMarker.Update(frame)
     local r = frame.raidMarker
     if not r or r.preview then return end
+    -- The index may be secret: never truth-tested, only checked by type().
     local ok, index = pcall(GetRaidTargetIndex, frame.unit)
-    show(frame, ok and index or nil)
+    if not ok then index = nil end
+    show(frame, index)
 end
 
 function RaidMarker.Preview(frame, on)
