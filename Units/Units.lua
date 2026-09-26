@@ -54,3 +54,22 @@ ns.Elements = {}
 function ns.RegisterElement(element)
     ns.Elements[#ns.Elements + 1] = element
 end
+
+-- Every unit frame that exists: the single frames, the party members and
+-- pets the headers made, and the pretend ones of test mode. For events
+-- that concern all of them at once (raid markers, the group's leader, a
+-- ready check). fn(frame) runs for each, shown or not.
+function ns.Units.ForEachFrame(fn)
+    for _, frame in pairs(ns.Frames or {}) do fn(frame) end
+    for _, list in ipairs({ ns.Party and ns.Party.buttons, ns.Party and ns.Party.fakes,
+        ns.PartyPets and ns.PartyPets.buttons, ns.PartyPets and ns.PartyPets.fakes }) do
+        for _, frame in ipairs(list or {}) do fn(frame) end
+    end
+end
+
+-- Runs one element's Update on every frame that shows a unit.
+function ns.Units.UpdateElement(element, event)
+    ns.Units.ForEachFrame(function(frame)
+        if frame.unit and UnitExists(frame.unit) then element.Update(frame, event) end
+    end)
+end

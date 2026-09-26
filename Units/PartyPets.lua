@@ -41,6 +41,8 @@ local function resolve(key)
     local fixed = FIXED[key]
     if fixed ~= nil then return fixed end
     if key == "height" then return get("partyPetHeight") end
+    -- A marker no taller than the pet frame.
+    if key == "raidMarkerSize" then return math.min(get("raidMarkerSize"), get("partyPetHeight")) end
     if (key == "buffsEnabled" or key == "debuffsEnabled") and not get("partyPetAuras") then return false end
     return nil
 end

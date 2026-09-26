@@ -34,6 +34,7 @@ Elements\CombatFeedback.lua
 Elements\Shape.lua
 Elements\Totems.lua
 Elements\StatusIcons.lua
+Elements\RaidMarker.lua
 Units\Events.lua
 Units\Single.lua
 Units\Party.lua

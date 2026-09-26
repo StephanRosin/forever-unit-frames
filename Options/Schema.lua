@@ -35,8 +35,6 @@ Schema.FRAME = {
         { id = "barHeights", keys = { "titlePercent", "healthPercent", "powerPercent", "powerEnabled" } },
         { id = "portrait", keys = { "portraitMode", "portraitStyle" } },
         { id = "indicators", keys = { "eliteMarker", "combatFeedback" } },
-        { id = "statusIcons", keys = { "statusCombat", "statusResting", "statusSize", "statusFramePoint",
-            "statusPoint", "statusX", "statusY" } },
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },
         { id = "group", keys = { "partyOrientation", "partySpacing", "partyShowPlayer", "partyShowSolo" } },
@@ -67,6 +65,13 @@ Schema.FRAME = {
             "debuffsOwnSize" } },
         { id = "totems", keys = { "totemsEnabled", "totemsSize", "totemsSpacing", "totemsFramePoint", "totemsPoint",
             "totemsX", "totemsY" } },
+    } },
+    -- What the unit is doing or what state it is in, drawn on the frame.
+    { id = "status", sections = {
+        { id = "raidMarker", keys = { "raidMarker", "raidMarkerSize", "raidMarkerFramePoint", "raidMarkerPoint",
+            "raidMarkerX", "raidMarkerY" } },
+        { id = "statusIcons", keys = { "statusCombat", "statusResting", "statusSize", "statusFramePoint",
+            "statusPoint", "statusX", "statusY" } },
     } },
     { id = "castbar", sections = {
         { id = "castbar", keys = { "castbarEnabled", "castbarAlwaysShow", "hideBlizzardCastbar", "castbarPosition", "castbarDock",

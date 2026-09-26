@@ -150,6 +150,8 @@ local function fakeButton(i)
     button.key = Party.KEY
     -- Shows samples only; never gets live aura containers.
     button.pretend = true
+    -- Which pretend member it is: some samples show on one member only.
+    button.sampleIndex = i
     button:SetAttribute("*type1", "target")
     button:SetAttribute("*type2", "togglemenu")
     button:RegisterForClicks("AnyUp")

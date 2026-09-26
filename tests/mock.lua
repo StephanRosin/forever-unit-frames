@@ -621,6 +621,14 @@ local function newWidget(kind, name, parent)
         self._atlas = atlas; self._texture = nil
     end
     function w:SetTexCoord(...) self._texCoord = { ... } end
+    -- SimpleTextureBaseAPI: the cell may be secret (AllowedWhenTainted),
+    -- rows and columns never are.
+    function w:SetSpriteSheetCell(cell, rows, columns)
+        assert(type(M.Reveal(cell)) == "number", "SetSpriteSheetCell: cell must be a number")
+        assert(not M.IsSecret(rows) and not M.IsSecret(columns), "SetSpriteSheetCell: rows/columns never secret")
+        self._spriteCell = { M.Reveal(cell), rows, columns }
+        self._spriteSecret = M.IsSecret(cell)
+    end
     -- Shader nine-slice (SimpleTextureBaseAPI, masks included).
     function w:SetTextureSliceMargins(left, top, right, bottom)
         for _, v in ipairs({ left, top, right, bottom }) do
@@ -1034,6 +1042,16 @@ function M.Reset()
     -- "normal", never nil) and d.bossMob.
     _G.UnitClassification = function(unit) local d = u(unit); return d and d.classification or "normal" end
     _G.UnitIsBossMob = function(unit) local d = u(unit); return d and d.bossMob or false end
+    -- Raid target markers (RaidMarkersDocumentation.lua: SecretReturns):
+    -- d.raidTarget (1..8 or nil); M.raidTargetsSecret hands a set index
+    -- back secret.
+    M.raidTargetsSecret = false
+    _G.GetRaidTargetIndex = function(unit)
+        local d = u(unit)
+        local index = d and d.raidTarget
+        if index ~= nil and M.raidTargetsSecret then return M.Secret(index) end
+        return index
+    end
     _G.UnitGetTotalAbsorbs = function(unit) local d = u(unit); return d and d.absorbs or 0 end
     _G.UnitGetIncomingHeals = function(unit, healer)
         local d = u(unit)

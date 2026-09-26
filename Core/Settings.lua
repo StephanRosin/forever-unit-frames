@@ -383,6 +383,21 @@ Settings.Define({ key = "statusX", code = "ZX", scope = "frame", only = STATUS, 
 Settings.Define({ key = "statusY", code = "ZY", scope = "frame", only = STATUS, type = "int", min = -400, max = 400,
     default = 0 })
 
+-- Raid target markers (Elements/RaidMarker.lua): on every frame, centred
+-- on the frame's top edge by default, clear of the class badge on the top
+-- right corner.
+Settings.Define({ key = "raidMarker", code = "RE", scope = "frame", type = "bool", default = true })
+Settings.Define({ key = "raidMarkerSize", code = "RS", scope = "frame", type = "int", min = 8, max = 64,
+    default = { targettarget = 16, pet = 16, _ = 20 } })
+Settings.Define({ key = "raidMarkerFramePoint", code = "RF", scope = "frame", type = "enum",
+    values = Settings.POINTS, default = "TOP" })
+Settings.Define({ key = "raidMarkerPoint", code = "RO", scope = "frame", type = "enum",
+    values = Settings.POINTS, default = "CENTER" })
+Settings.Define({ key = "raidMarkerX", code = "RX", scope = "frame", type = "int", min = -200, max = 200,
+    default = 0 })
+Settings.Define({ key = "raidMarkerY", code = "RY", scope = "frame", type = "int", min = -200, max = 200,
+    default = 0 })
+
 -- Minimap button (Options/MinimapButton.lua): General only. The angle
 -- around the minimap in degrees, counter-clockwise from the right (225:
 -- bottom left, LibDBIcon's default); set by dragging the button.

@@ -264,6 +264,17 @@ L.HINT_statusCombat = "Crossed swords while you are in combat"
 L.HINT_statusResting = "While you rest in an inn or a city"
 L.HINT_statusFramePoint = "The icons follow the health bar"
 
+-- Status tab: raid target marker.
+L.TAB_status = "Status"
+L.SECTION_raidMarker = "Raid target marker"
+L.SETTING_raidMarker = "Show raid target marker"
+L.SETTING_raidMarkerSize = "Icon size"
+L.SETTING_raidMarkerFramePoint = "Point on the frame"
+L.SETTING_raidMarkerPoint = "Point of the icon"
+L.SETTING_raidMarkerX = "Offset X"
+L.SETTING_raidMarkerY = "Offset Y"
+L.HINT_raidMarker = "Skull, cross, star and the other raid target icons"
+
 -- Minimap button.
 L.SECTION_minimap = "Minimap"
 L.SETTING_minimapShow = "Show minimap button"
