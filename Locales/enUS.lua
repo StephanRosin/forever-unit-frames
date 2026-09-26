@@ -318,7 +318,15 @@ L.STATUS_OFFLINE = "Offline"
 L.SECTION_range = "Range"
 L.SETTING_rangeFade = "Fade when out of range"
 L.SETTING_rangeAlpha = "Opacity out of range (%)"
-L.HINT_rangeFade = "Group members by their range, others by the follow distance"
+L.HINT_rangeFade = "By your class's spell range, else group or follow range"
+-- General > Status > Range: the spells whose range decides. %s is a spell
+-- name (or several, comma separated).
+L.SETTING_rangeFriendlySpell = "Spell for friends"
+L.SETTING_rangeHostileSpell = "Spell for enemies"
+L.RANGE_SPELL_AUTO = "Empty: automatic, %s"
+L.RANGE_SPELL_NO_AUTO = "Empty: no class spell, standard range"
+L.RANGE_SPELL_IN_USE = "In use: %s"
+L.RANGE_SPELL_UNKNOWN = "Not a spell you know: standard range"
 
 -- Status tab: threat.
 L.SECTION_threat = "Threat"

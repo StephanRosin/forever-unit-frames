@@ -171,6 +171,10 @@ local ROW_BUILDERS = {
         return Widgets.Dropdown(parent, opts)
     end,
     color = function(parent, _, opts) return Widgets.Color(parent, opts) end,
+    text = function(parent, def, opts)
+        opts.maxLetters = def.maxLetters or ns.Settings.TEXT_MAX
+        return Widgets.TextInput(parent, opts)
+    end,
 }
 
 local function inheritOpts(scope, key)
@@ -184,7 +188,14 @@ end
 -- conceals a Blizzard castbar, which comes back after a /reload.
 local HINT_SCOPES = { hideBlizzardCastbar = { player = true } }
 
+-- Hints that follow the settings: the spell range fading uses.
+local DYNAMIC_HINTS = {
+    rangeFriendlySpell = function() return ns.Range.SpellHint("friendly") end,
+    rangeHostileSpell = function() return ns.Range.SpellHint("hostile") end,
+}
+
 local function hintFor(scope, key)
+    if DYNAMIC_HINTS[key] then return DYNAMIC_HINTS[key] end
     if HINT_SCOPES[key] and not HINT_SCOPES[key][scope] then return nil end
     return localized("HINT_" .. key)
 end

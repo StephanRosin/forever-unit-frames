@@ -32,7 +32,7 @@ do
     end
     H.check("on by default: party", S.Default(S.Get("rangeFade"), "party"), true)
     H.check("on by default: pet", S.Default(S.Get("rangeFade"), "pet"), true)
-    -- Enemies only have the follow distance: opt-in.
+    -- No class known (no player unit yet): no hostile spell, opt-in.
     H.check("off by default: target", S.Default(S.Get("rangeFade"), "target"), false)
     H.check("off by default: focus", S.Default(S.Get("rangeFade"), "focus"), false)
     H.check("half opacity by default", S.Default(S.Get("rangeAlpha"), "party"), 50)

@@ -751,6 +751,7 @@ local function newWidget(kind, name, parent)
     function w:HighlightText(a, b) self._highlighted = { a, b } end
     function w:SetMaxLetters(n) self._maxLetters = n end
     function w:SetMultiLine(v) self._multiLine = v end
+    function w:SetTextInsets(l, r, t, b) self._insets = { l, r, t, b } end
     -- ScrollFrame
     function w:SetScrollChild(c) self._scrollChild = c end
     function w:GetScrollChild() return self._scrollChild end
@@ -1128,6 +1129,7 @@ function M.Reset()
         local inRange, checked = false, false
         if d then
             inRange = d.inRange ~= false
+            if d.inRange == nil and d.distance then inRange = d.distance <= 40 end
             checked = d.rangeChecked
             if checked == nil then checked = groupToken(unit) ~= nil or d.inParty == true end
         end
@@ -1144,8 +1146,91 @@ function M.Reset()
         if M.interactError then error("CheckInteractDistance refused") end
         local d = u(unit)
         if d and d.near == "nil" then return nil end
+        if d and d.near == nil and d.distance then return d.distance <= 28 end
         return d ~= nil and d.near ~= false
     end
+    -- Hostility (UnitDocumentation.lua: plain bool): d.hostile.
+    _G.UnitCanAttack = function(_, unit) local d = u(unit); return d and d.hostile or false end
+    -- Spells (SpellDocumentation.lua, SpellBookDocumentation.lua). The
+    -- spell book: M.spells[id] = { name=, minRange=, maxRange=, harmful=,
+    -- petOnly= } (the client's spell data), M.known[id] = true (what the
+    -- player has learned). A name resolves to the highest known rank of
+    -- that name, else to its lowest ID, as the client resolves names.
+    M.spells = {
+        -- Priest
+        [2050] = { name = "Lesser Heal", maxRange = 40 }, [2052] = { name = "Lesser Heal", maxRange = 40 },
+        [2053] = { name = "Lesser Heal", maxRange = 40 },
+        [2054] = { name = "Heal", maxRange = 40 }, [2055] = { name = "Heal", maxRange = 40 },
+        [585] = { name = "Smite", maxRange = 30, harmful = true }, [591] = { name = "Smite", maxRange = 30, harmful = true },
+        [598] = { name = "Smite", maxRange = 30, harmful = true },
+        -- Mage
+        [133] = { name = "Fireball", maxRange = 35, harmful = true }, [143] = { name = "Fireball", maxRange = 35, harmful = true },
+        [116] = { name = "Frostbolt", maxRange = 30, harmful = true },
+        [1459] = { name = "Arcane Intellect", maxRange = 30 },
+        -- Hunter
+        [75] = { name = "Auto Shot", minRange = 8, maxRange = 35, harmful = true },
+        [136] = { name = "Mend Pet", maxRange = 20, petOnly = true }, [3111] = { name = "Mend Pet", maxRange = 20, petOnly = true },
+        -- Paladin
+        [635] = { name = "Holy Light", maxRange = 40 },
+        -- Warrior (melee reach)
+        [78] = { name = "Heroic Strike", maxRange = 5, harmful = true },
+        -- Not in any class list: a user's own pick.
+        [5019] = { name = "Shoot", maxRange = 30, harmful = true },
+        [2061] = { name = "Flash Heal", maxRange = 40 },
+    }
+    M.known = {}
+    -- M.spellRangeError makes IsSpellInRange raise; M.spellRangeSecret
+    -- hands its answer back secret (not documented, guarded anyway).
+    -- M.spellQueries counts the calls.
+    M.spellRangeError = false
+    M.spellRangeSecret = false
+    M.spellQueries = 0
+    local function spellID(identifier)
+        if type(identifier) == "number" then return M.spells[identifier] and identifier or nil end
+        if type(identifier) ~= "string" then return nil end
+        local best, lowest
+        for id, s in pairs(M.spells) do
+            if s.name == identifier then
+                if M.known[id] and (not best or id > best) then best = id end
+                if not lowest or id < lowest then lowest = id end
+            end
+        end
+        return best or lowest
+    end
+    M.newSpellInfo = function(id)
+        local s = M.spells[id]
+        return { name = s.name, spellID = id, iconID = 1, originalIconID = 1, castTime = 0,
+            minRange = s.minRange or 0, maxRange = s.maxRange or 0 }
+    end
+    _G.C_Spell = {
+        -- MayReturnNothing: nil when the spell is not found.
+        GetSpellInfo = function(identifier)
+            local id = spellID(identifier)
+            if id then return M.newSpellInfo(id) end
+        end,
+        -- true, false, or nil when the check is invalid: unknown spell,
+        -- missing target, a target the spell cannot be cast on, a unit
+        -- without a known distance (d.distance, yards).
+        IsSpellInRange = function(identifier, unit)
+            M.spellQueries = M.spellQueries + 1
+            if M.spellRangeError then error("IsSpellInRange refused") end
+            local id = spellID(identifier)
+            if not id or not M.known[id] then return nil end
+            local s, d = M.spells[id], unit and u(unit)
+            if not d or type(d.distance) ~= "number" then return nil end
+            if s.petOnly and unit ~= "pet" then return nil end
+            local hostile = d.hostile == true
+            if (s.harmful == true) ~= hostile then return nil end
+            local inRange = d.distance >= (s.minRange or 0) and d.distance <= s.maxRange
+            if M.spellRangeSecret then return M.Secret(inRange) end
+            return inRange
+        end,
+    }
+    -- The old globals come from Blizzard_DeprecatedSpellBook (only with
+    -- the loadDeprecationFallbacks CVar); a test may remove either side.
+    _G.C_SpellBook = { IsSpellKnown = function(id) return M.known[id] == true end }
+    _G.IsPlayerSpell = function(id) return M.known[id] == true end
+    _G.IsSpellKnown = function(id) return M.known[id] == true end
     _G.GetReadyCheckStatus = function(unit) local d = u(unit); return d and d.readyCheck end
     _G.UnitHasIncomingResurrection = function(unit) local d = u(unit); return d and d.incomingRez or false end
     _G.HasLFGRestrictions = function() return M.lfgRestricted end

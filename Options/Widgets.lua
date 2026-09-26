@@ -85,10 +85,16 @@ local function newRow(parent, opts)
     row.label:SetPoint("LEFT", row, "LEFT", LABEL_X, opts.hint and 5 or 0)
     row.label:SetText(opts.label or "")
     fitLeftColumn(row.label)
+    -- opts.hint: a string, or a function for a hint that follows the
+    -- settings (read again on every refresh).
+    local function hintValue()
+        if type(opts.hint) == "function" then return opts.hint() or "" end
+        return opts.hint
+    end
     if opts.hint then
         row.hintText = Style.Text(row, 10, "muted")
         row.hintText:SetPoint("TOPLEFT", row.label, "BOTTOMLEFT", 0, -1)
-        row.hintText:SetText(opts.hint)
+        row.hintText:SetText(hintValue())
         fitLeftColumn(row.hintText, true)
     end
     if opts.inherit then
@@ -109,6 +115,7 @@ local function newRow(parent, opts)
         fitLeftColumn(row.label)
     end
     function row:RefreshInherit()
+        if type(opts.hint) == "function" then row.hintText:SetText(hintValue()) end
         if not opts.inherit then return end
         local over = opts.inherit.isOverridden()
         row.inherited:SetShown(not over)
@@ -243,6 +250,61 @@ function Widgets.Slider(parent, opts)
 
     function row:Refresh() show(opts.get(), true); row:RefreshInherit() end
     function row:SetEnabled(on) s:SetEnabled(on); e:SetEnabled(on); dimRow(row, on) end
+    return row
+end
+
+-- Text input ------------------------------------------------------------------
+-- One line of free text across the control column. Enter or leaving the
+-- box commits; ESC puts the stored value back. opts.set returning false
+-- (the value was refused) flashes the border and shows the stored value.
+
+local TEXT_INPUT_H = 20
+
+local function newTextBox(row, maxLetters)
+    local e = CreateFrame("EditBox", nil, row)
+    e:SetSize(Widgets.CONTROL_W, TEXT_INPUT_H)
+    e:SetPoint("LEFT", row, "LEFT", Widgets.CONTROL_X, 0)
+    e:SetAutoFocus(false)
+    e:SetFont(fontPath(), 12, "")
+    Style.Paint(e, "text")
+    e:SetJustifyH("LEFT")
+    e:SetTextInsets(6, 6, 0, 0)
+    e:SetMaxLetters(maxLetters or 0)
+    controlBox(e)
+    e:SetScript("OnEditFocusGained", function(self) self:HighlightText() end)
+    trackHover(row, e)
+    return e
+end
+
+function Widgets.TextInput(parent, opts)
+    local row = newRow(parent, opts)
+    local e = newTextBox(row, opts.maxLetters)
+    row.edit = e
+
+    local function show() e:SetText(opts.get() or "") end
+    local function commit(self)
+        local text = self:GetText() or ""
+        if text ~= opts.get() and opts.set(text) == false then flashError(self) end
+        show()
+        self:ClearFocus()
+    end
+    e:SetScript("OnEnterPressed", commit)
+    e:SetScript("OnEditFocusLost", function(self)
+        if (self:GetText() or "") ~= opts.get() then commit(self) end
+        self:HighlightText(0, 0)
+    end)
+    e:SetScript("OnEscapePressed", function(self) show(); self:ClearFocus() end)
+
+    -- A refresh must not wipe what is being typed.
+    function row:Refresh()
+        if not e:HasFocus() then show() end
+        row:RefreshInherit()
+    end
+    function row:SetEnabled(on)
+        if not on then e:ClearFocus() end
+        e:SetEnabled(on)
+        dimRow(row, on)
+    end
     return row
 end
 
