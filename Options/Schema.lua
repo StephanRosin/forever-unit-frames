@@ -74,6 +74,7 @@ Schema.FRAME = {
             "groupIconFramePoint", "groupIconPoint", "groupIconX", "groupIconY" } },
         { id = "statusIcons", keys = { "statusCombat", "statusResting", "statusSize", "statusFramePoint",
             "statusPoint", "statusX", "statusY" } },
+        { id = "range", keys = { "rangeFade", "rangeAlpha" } },
     } },
     { id = "castbar", sections = {
         { id = "castbar", keys = { "castbarEnabled", "castbarAlwaysShow", "hideBlizzardCastbar", "castbarPosition", "castbarDock",

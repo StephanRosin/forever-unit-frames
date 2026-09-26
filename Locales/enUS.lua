@@ -293,6 +293,12 @@ L.STATUS_DEAD = "Dead"
 L.STATUS_GHOST = "Ghost"
 L.STATUS_OFFLINE = "Offline"
 
+-- Status tab: range fading.
+L.SECTION_range = "Range"
+L.SETTING_rangeFade = "Fade when out of range"
+L.SETTING_rangeAlpha = "Opacity out of range (%)"
+L.HINT_rangeFade = "Group members by their range, others by the follow distance"
+
 -- Minimap button.
 L.SECTION_minimap = "Minimap"
 L.SETTING_minimapShow = "Show minimap button"

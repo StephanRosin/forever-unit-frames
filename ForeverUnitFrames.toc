@@ -37,6 +37,7 @@ Elements\StatusIcons.lua
 Elements\RaidMarker.lua
 Elements\GroupIcons.lua
 Elements\UnitStatus.lua
+Elements\Range.lua
 Units\Events.lua
 Units\Single.lua
 Units\Party.lua

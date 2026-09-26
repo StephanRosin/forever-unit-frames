@@ -416,6 +416,13 @@ Settings.Define({ key = "groupIconX", code = "LX", scope = "frame", only = GROUP
 Settings.Define({ key = "groupIconY", code = "LY", scope = "frame", only = GROUP, type = "int", min = -200, max = 200,
     default = 0 })
 
+-- Range fading (Elements/Range.lua): party members and their pets, the
+-- target, the focus and the pet at a lower opacity while out of range.
+local RANGE = { party = true, target = true, focus = true, pet = true }
+Settings.Define({ key = "rangeFade", code = "VE", scope = "frame", only = RANGE, type = "bool", default = true })
+Settings.Define({ key = "rangeAlpha", code = "VA", scope = "frame", only = RANGE, type = "int", min = 0, max = 100,
+    default = 50 })
+
 -- Minimap button (Options/MinimapButton.lua): General only. The angle
 -- around the minimap in degrees, counter-clockwise from the right (225:
 -- bottom left, LibDBIcon's default); set by dragging the button.

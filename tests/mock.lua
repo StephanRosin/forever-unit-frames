@@ -1083,6 +1083,39 @@ function M.Reset()
         if M.IsSecret(d.dead) then return d.dead end
         return (d.dead or d.ghost) and true or false
     end
+    -- Range (UnitDocumentation.lua: UnitInRange has SecretReturns).
+    -- d.inRange (default true); d.rangeChecked (default: only group
+    -- members are checked); M.rangeSecret hands both answers back secret.
+    -- CheckInteractDistance: d.near (default true); M.interactError makes
+    -- it raise. M.rangeQueries counts UnitInRange calls.
+    M.rangeSecret = false
+    M.interactError = false
+    M.rangeQueries = 0
+    local function groupToken(unit) return unit:match("^party%d$") or unit:match("^partypet%d$") end
+    -- Two tokens name the same unit when they share its data table.
+    _G.UnitIsUnit = function(a, b) return M.units[a] ~= nil and M.units[a] == M.units[b] end
+    _G.UnitInParty = function(unit)
+        local d = u(unit)
+        return d ~= nil and (d.inParty or groupToken(unit) ~= nil) or false
+    end
+    _G.UnitInRange = function(unit)
+        M.rangeQueries = M.rangeQueries + 1
+        local d = u(unit)
+        local inRange, checked = false, false
+        if d then
+            inRange = d.inRange ~= false
+            checked = d.rangeChecked
+            if checked == nil then checked = groupToken(unit) ~= nil or d.inParty == true end
+        end
+        if M.rangeSecret then return M.Secret(inRange), M.Secret(checked) end
+        return inRange, checked
+    end
+    _G.CheckInteractDistance = function(unit, index)
+        assert(type(index) == "number" and index >= 1 and index <= 5, "CheckInteractDistance: bad index")
+        if M.interactError then error("CheckInteractDistance refused") end
+        local d = u(unit)
+        return d ~= nil and d.near ~= false
+    end
     _G.GetReadyCheckStatus = function(unit) local d = u(unit); return d and d.readyCheck end
     _G.UnitHasIncomingResurrection = function(unit) local d = u(unit); return d and d.incomingRez or false end
     _G.HasLFGRestrictions = function() return M.lfgRestricted end
