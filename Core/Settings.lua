@@ -434,10 +434,11 @@ Settings.Define({ key = "rangeAlpha", code = "VA", scope = "frame", only = RANGE
     default = 50 })
 -- How range is measured, for friends and for enemies (General only):
 -- AUTO is the spell, or yards when there is none; SPELL the spell only;
--- YARDS the distance in yards. Stored by index: append only.
+-- YARDS the distance in yards; OFF: units of that reaction never fade.
+-- Stored by index: append only.
 -- The spell fields take a name or a spell ID; empty is the class's own
 -- (Range.CLASS_SPELLS).
-local RANGE_MODES = { "AUTO", "SPELL", "YARDS" }
+local RANGE_MODES = { "AUTO", "SPELL", "YARDS", "OFF" }
 Settings.Define({ key = "rangeFriendlyMode", code = "VG", scope = "general", type = "enum", values = RANGE_MODES,
     default = "AUTO" })
 Settings.Define({ key = "rangeFriendlySpell", code = "VF", scope = "general", type = "text", default = "" })

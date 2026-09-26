@@ -36,7 +36,7 @@ do
     end
     for _, key in ipairs({ "rangeFriendlyMode", "rangeHostileMode" }) do
         local def = S.Get(key)
-        H.check(key .. " values", table.concat(def.values, ","), "AUTO,SPELL,YARDS")
+        H.check(key .. " values", table.concat(def.values, ","), "AUTO,SPELL,YARDS,OFF")
         H.check(key .. " automatic by default", S.Default(def, "general"), "AUTO")
     end
     H.check("friendly yards default", S.Default(S.Get("rangeFriendlyYards"), "general"), 40)
@@ -234,4 +234,56 @@ do
         ns.Config.Set("general", "rangeHostileYards", 22)
         H.check("mode hint follows", rows.rangeHostileMode.hintText:GetText(), ns.L.RANGE_USING_ITEM:format(20))
     end
+end
+
+-- Off per reaction: those units never fade, on any frame.
+do
+    local ns = boot("PRIEST", { 585, 2050 })
+    local C = ns.Config
+    H.check("hostile far: faded", target(ns, { hostile = true, distance = 45 }), 0.5)
+    C.Set("general", "rangeHostileMode", "OFF")
+    M.Tick(0.25)
+    H.check("hostile off: full", ns.Frames.target:GetAlpha(), 1)
+    H.check("hint: off", ns.Range.MethodHint("hostile"), ns.L.RANGE_USING_OFF)
+    local asked = M.spellQueries + M.itemQueries + M.interactQueries
+    M.Tick(0.25)
+    H.check("hostile off: nothing asked", M.spellQueries + M.itemQueries + M.interactQueries, asked)
+    -- Friends still fade.
+    H.check("friend far: faded", target(ns, { friend = true, distance = 45 }), 0.5)
+    M.units.party1 = { name = "Ann", isPlayer = true, health = 5, healthMax = 10, friend = true, distance = 45,
+        inRange = false }
+    M.SetGroup({ "party1" })
+    H.check("party far: faded", ns.Party.buttons[1]:GetAlpha(), 0.5)
+    C.Set("general", "rangeFriendlyMode", "OFF")
+    M.Tick(0.25)
+    H.check("friendly off: party full", ns.Party.buttons[1]:GetAlpha(), 1)
+    H.check("friendly off: target full", ns.Frames.target:GetAlpha(), 1)
+    H.check("both off: timer stopped", ns.Range.driver:IsShown(), false)
+    C.Set("general", "rangeHostileMode", "AUTO")
+    H.check("one back: timer runs", ns.Range.driver:IsShown(), true)
+    -- Stored as an index past the others: the encoding only grows.
+    H.checkTrue("export keeps off", ns.Codec.Encode(C.Profile()):find("gVG4", 1, true))
+end
+
+-- Options: the spell field and yards slider grey out while their mode is Off.
+do
+    local ns = boot("WARRIOR")
+    ns.Options.Open("general", "status")
+    local rows = {}
+    for _, row in ipairs(ns.Options.rows or {}) do rows[row.key or ""] = row end
+    H.check("spell field enabled", rows.rangeHostileSpell.edit:IsEnabled(), true)
+    ns.Config.Set("general", "rangeHostileMode", "OFF")
+    H.check("spell field disabled", rows.rangeHostileSpell.edit:IsEnabled(), false)
+    H.check("yards slider disabled", rows.rangeHostileYards.slider:IsEnabled(), false)
+    H.check("friendly slider still enabled", rows.rangeFriendlyYards.slider:IsEnabled(), true)
+    H.check("mode itself enabled", rows.rangeHostileMode.button:IsEnabled(), true)
+    H.check("mode hint off", rows.rangeHostileMode.hintText:GetText(), ns.L.RANGE_USING_OFF)
+    ns.Config.Set("general", "rangeHostileMode", "YARDS")
+    H.check("enabled again", rows.rangeHostileYards.slider:IsEnabled(), true)
+    -- Combat still locks every row.
+    M.combat = true
+    M.FireEvent("PLAYER_REGEN_DISABLED")
+    H.check("combat: locked", rows.rangeHostileYards.slider:IsEnabled(), false)
+    M.SetCombat(false)
+    H.check("after combat: enabled", rows.rangeHostileYards.slider:IsEnabled(), true)
 end

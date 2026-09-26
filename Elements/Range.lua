@@ -7,7 +7,8 @@ local _, ns = ...
 -- 1. Yourself: always in range.
 -- 2. The General settings, per reaction (UnitCanAttack: hostile,
 --    UnitIsFriend: friendly; neither goes straight to 3 and 4). Mode AUTO
---    is the spell, or yards when there is none; SPELL; YARDS.
+--    is the spell, or yards when there is none; SPELL; YARDS; OFF: that
+--    reaction never fades (in range, nothing is asked).
 --    * Spell: C_Spell.IsSpellInRange with the unit. Each class has its
 --      picks (CLASS_SPELLS below); rangeFriendlySpell / rangeHostileSpell
 --      replace them by name or ID. Documented without SecretReturns
@@ -341,11 +342,17 @@ local function setting(key, fallback)
     return Config.Get("general", key)
 end
 
--- "spell" or "yards": how a reaction is measured.
+-- "spell", "yards" or "off": how a reaction is measured.
 local function method(reaction)
     local mode = setting(MODE[reaction], "AUTO")
     if mode == "AUTO" then return #Range.Spells(reaction) > 0 and "spell" or "yards" end
+    if mode == "OFF" then return "off" end
     return mode == "SPELL" and "spell" or "yards"
+end
+
+-- Whether a reaction may fade at all.
+function Range.ReactionOn(reaction)
+    return setting(MODE[reaction], "AUTO") ~= "OFF"
 end
 
 local function isCached(id)
@@ -418,7 +425,9 @@ end
 -- The options hint under a mode: what measures, for units outside the
 -- group (group members use their exact distance when the client has it).
 function Range.MethodHint(reaction)
-    if method(reaction) == "spell" then
+    local how = method(reaction)
+    if how == "off" then return L.RANGE_USING_OFF end
+    if how == "spell" then
         local spell = Range.Spells(reaction)[1]
         if not spell then return L.RANGE_USING_STANDARD end
         return L.RANGE_USING_SPELL:format(spell.name)
@@ -448,8 +457,9 @@ function Range.InRange(unit)
     local group = groupToken(unit) or Secrets.Bool(UnitInParty, unit) == true
     local reaction = reactionOf(unit)
     if reaction then
-        local r
-        if method(reaction) == "spell" then r = spellRange(unit, reaction) else r = yardsRange(unit, reaction, group) end
+        local how, r = method(reaction), nil
+        if how == "off" then return true end
+        if how == "spell" then r = spellRange(unit, reaction) else r = yardsRange(unit, reaction, group) end
         if r ~= nil then return r end
     end
     if group then return groupRange(unit) end
@@ -500,6 +510,7 @@ function Range.Build() end
 -- Whether any frame has fading on (the party's setting covers its pets).
 local SCOPES = { "party", "target", "focus", "pet" }
 local function anyEnabled()
+    if not (Range.ReactionOn("friendly") or Range.ReactionOn("hostile")) then return false end
     for _, scope in ipairs(SCOPES) do
         if Config.Get(scope, "rangeFade") then return true end
     end
@@ -510,6 +521,15 @@ end
 local function syncDriver()
     Range.driver:SetShown(anyEnabled())
 end
+
+-- A mode switched off or on starts or stops the timer; the next check
+-- (the poll, or the restyle) redraws the frames.
+ns.Listen("CONFIG_CHANGED", function(_, key)
+    if key == nil or key == MODE.friendly or key == MODE.hostile then
+        syncDriver()
+        ns.Units.ForEachFrame(function(frame) if applies(frame) then check(frame) end end)
+    end
+end)
 
 function Range.Style(frame)
     syncDriver()

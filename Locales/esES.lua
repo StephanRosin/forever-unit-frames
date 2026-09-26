@@ -317,6 +317,8 @@ L.RANGE_USING_STANDARD = "En uso: alcance normal"
 L.RANGE_USING_DISTANCE = "En uso: %d m (distancia)"
 L.RANGE_USING_ITEM = "En uso: %d m (prueba con objeto)"
 L.RANGE_USING_INTERACT = "En uso: %d m (distancia de seguimiento)"
+L.RANGE_USING_OFF = "Desactivado: nunca se atenúa"
+L.ENUM_rangeFriendlyMode_OFF = "Desactivado"; L.ENUM_rangeHostileMode_OFF = "Desactivado"
 
 -- Status tab: threat.
 L.SECTION_threat = "Amenaza"

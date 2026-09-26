@@ -449,9 +449,25 @@ local function refreshFooter()
     Style.Paint(Options.testButton.text, testOn and "accent" or idle)
 end
 
+-- Rows that only mean something while another setting allows it: the
+-- range spell and yards of a reaction whose fading is off.
+local ROW_ACTIVE = {
+    rangeFriendlySpell = function() return ns.Range.ReactionOn("friendly") end,
+    rangeFriendlyYards = function() return ns.Range.ReactionOn("friendly") end,
+    rangeHostileSpell = function() return ns.Range.ReactionOn("hostile") end,
+    rangeHostileYards = function() return ns.Range.ReactionOn("hostile") end,
+}
+
+local function setRowStates()
+    forEachRow(function(row)
+        local active = ROW_ACTIVE[row.key]
+        row:SetEnabled(not inCombat and (not active or active()))
+    end)
+end
+
 local function applyLock()
     local on = not inCombat
-    forEachRow(function(row) row:SetEnabled(on) end)
+    setRowStates()
     for _, control in ipairs(frame.footerControls) do control:SetEnabled(on) end
     Options.combatNotice:SetShown(inCombat)
     anchorScroll()
@@ -854,6 +870,7 @@ end
 ns.Listen("CONFIG_CHANGED", function()
     if not Options.IsOpen() then return end
     forEachRow(function(row) row:Refresh() end)
+    setRowStates()
     Options.languageRow:Refresh()
 end)
 

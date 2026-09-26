@@ -340,6 +340,8 @@ L.RANGE_USING_STANDARD = "Using: standard range"
 L.RANGE_USING_DISTANCE = "Using: %d yd (distance)"
 L.RANGE_USING_ITEM = "Using: %d yd (item check)"
 L.RANGE_USING_INTERACT = "Using: %d yd (follow distance)"
+L.RANGE_USING_OFF = "Off: never fades"
+L.ENUM_rangeFriendlyMode_OFF = "Off"; L.ENUM_rangeHostileMode_OFF = "Off"
 
 -- Status tab: threat.
 L.SECTION_threat = "Threat"
