@@ -162,6 +162,11 @@ do
     local c = color(fakes[4], ns)
     H.check("member 4: aggro colour", c[1] .. "," .. c[2] .. "," .. c[3], "1,0,0")
     H.check("member 1 does not", glowing(fakes[1]), false)
+    local player = ns.Frames.player
+    H.check("player sample glows", glowing(player), true)
+    c = color(player, ns)
+    H.check("player sample: gaining threat (orange)", c[2], 0.6)
+    H.check("target: no sample", glowing(ns.Frames.target), false)
     M.units.player.threat = 3
     M.FireEvent("UNIT_THREAT_SITUATION_UPDATE", "player")
     H.check("real threat does not reach the samples", glowing(fakes[1]), false)

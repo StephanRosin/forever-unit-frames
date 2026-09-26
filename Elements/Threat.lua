@@ -29,7 +29,9 @@ Threat.ON_UNIT = { target = true, focus = true, targettarget = true }
 -- Blizzard's default threat colours, for a client without
 -- GetThreatStatusColor.
 Threat.COLORS = { { 1, 1, 0.47 }, { 1, 0.6, 0 }, { 1, 0, 0 } }
--- Test mode: pretend party member 4 has aggro.
+-- Test mode: the player is gaining threat, pretend party member 4 has
+-- aggro.
+Threat.SAMPLES = { player = 2 }
 Threat.PARTY_SAMPLES = { [4] = 3 }
 
 function Threat.Build(frame)
@@ -101,7 +103,9 @@ function Threat.Preview(frame, on)
     local t = frame.threat
     if not t then return end
     if on then
-        t.sample = frame.sampleIndex and Threat.PARTY_SAMPLES[frame.sampleIndex] or false
+        local sample = Threat.SAMPLES[frame.key]
+        if frame.sampleIndex then sample = Threat.PARTY_SAMPLES[frame.sampleIndex] end
+        t.sample = sample or false
     else
         t.sample = nil
         t.status = frame.unit and UnitExists(frame.unit) and read(frame) or nil
