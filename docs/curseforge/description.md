@@ -1,6 +1,6 @@
 **Summary**
 
-Clean, fully configurable unit frames for WoW: Forever. Player, target, target of target, focus, pet and party, with auras that update in combat.
+Clean, fully configurable unit frames for WoW: Forever. Player, target, target of target, focus, pet and party, with auras that update in combat, threat, range and dispel indicators. English, Deutsch, Español, Français.
 
 ---
 
@@ -53,6 +53,7 @@ In a "Status" tab per frame.
 
 ## Options
 - `/fuf` opens a movable options window: frames on the left, tabs on top.
+- Long option descriptions show in full in a tooltip when you hover the row.
 - A minimap button: left-click opens the options, right-click unlocks or locks the frames, drag it around the minimap (round or square). It can be hidden; with a LibDataBroker display it also appears there.
 - Every position can be set by dragging (`/fuf unlock`) or as exact X/Y values.
 - Test mode shows sample auras, casts, totems, the combat and resting icons, raid markers, the group and ready check icons, a threat glow on the player, and a full party with one member dead, one offline, one out of range, a threat glow and a dispel highlight, so you can set everything up without a group.
