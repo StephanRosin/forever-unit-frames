@@ -19,6 +19,15 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 - Combat and resting icons on the player frame, with Blizzard's own art: crossed swords while you are in combat, the animated "Zzz" while you rest in an inn or a city. Centred on the health bar by default, side by side when both show. Each can be turned off; size, anchor point on the health bar and X/Y offset are configurable.
 - 2D or 3D portraits.
 
+## Status
+In a "Status" tab per frame.
+- Raid target markers (skull, cross, star, ...) on every frame, in Blizzard's art, centred on the frame's top edge by default; size, anchor point and X/Y offset are configurable.
+- Group icons on the player and party frames: leader (or guide) and assistant, the ready check (waiting, ready, not ready; the result stays a few seconds after the check) and an incoming resurrection. Blizzard's own art, in a row at the frame's top left corner by default.
+- Dead, ghost and offline units always grey out and show "Dead", "Ghost" or "Offline" instead of their health values.
+- Range fading: party members, their pets and your pet fade while out of range (the opacity is configurable). Can be turned on for the target and focus too; for enemies it uses the ~28-yard follow distance.
+- Threat glow: the player and party frames glow in the threat colour while the unit has threat; on the target, focus and target of target it shows your threat on the unit (off by default there).
+- Dispel highlight: the border of the player and party frames takes the debuff's colour while the unit carries a debuff your class can dispel.
+
 ## Auras
 - Buffs and debuffs on every frame, drawn by the game's own aura containers, so they **keep updating in combat**.
 - Your own debuffs come first and bigger.
@@ -46,14 +55,15 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 - `/fuf` opens a movable options window: frames on the left, tabs on top.
 - A minimap button: left-click opens the options, right-click unlocks or locks the frames, drag it around the minimap (round or square). It can be hidden; with a LibDataBroker display it also appears there.
 - Every position can be set by dragging (`/fuf unlock`) or as exact X/Y values.
-- Test mode shows sample auras, casts, totems, the combat and resting icons and a full party, so you can set everything up without a group.
-- Settings are stored compactly. They can be exported and imported as a string.
+- Test mode shows sample auras, casts, totems, the combat and resting icons, raid markers, the group and ready check icons, a threat glow on the player, and a full party with one member dead, one offline, one out of range, a threat glow and a dispel highlight, so you can set everything up without a group.
+- Settings are stored compactly. They can be exported and imported as a string. Importing a profile keeps your own language.
 
 ## Commands
 `/fuf` (options), `/fuf unlock`, `/fuf lock`, `/fuf status`, `/fuf reset <frame|all>`, `/fuf set <scope> <setting> <value>`
 
 ## Notes
 - Made for WoW: Forever only. It relies on Forever's API and will not load on other clients.
-- English only for now.
+- Languages: English, German (Deutsch), Spanish (Español, also for Latin American clients) and French (Français). The addon follows the game's language; a dropdown at the bottom of the options window's frame list picks another one, and the change applies at once. Other game languages use English.
+- The translations were not written by native speakers: corrections are very welcome on the issue tracker.
 - Updating from 0.2.x: the settings backup in the "FUF Save" character macros is no longer needed. Settings found only there are moved to the normal saved settings once, then the addon deletes its own backup macros.
 - Bug reports and ideas are welcome on the project's issue tracker.

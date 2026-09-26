@@ -22,9 +22,35 @@ local function fontPath() return ns.Media.Font(FONT) end
 -- Moving the mouse from a row onto one of its controls fires the row's
 -- OnLeave, so the hover is only dropped once the pointer left the row area.
 
-local function showHover(row) row.hover:Show() end
+-- A label or hint cut off at the column's end is shown in full in a
+-- tooltip while the row is hovered.
+local function cutOff(fontString)
+    return fontString ~= nil and fontString.IsTruncated ~= nil and fontString:IsTruncated()
+end
+
+local function showFullText(row)
+    if not (cutOff(row.label) or cutOff(row.hintText)) then return end
+    GameTooltip:SetOwner(row, "ANCHOR_RIGHT")
+    GameTooltip:SetText(row.label:GetText() or "", 1, 1, 1)
+    if row.hintText then GameTooltip:AddLine(row.hintText:GetText() or "", nil, nil, nil, true) end
+    GameTooltip:Show()
+    row.fullTextShown = true
+end
+
+local function hideFullText(row)
+    if row.fullTextShown and GameTooltip:IsOwned(row) then GameTooltip:Hide() end
+    row.fullTextShown = nil
+end
+
+local function showHover(row)
+    row.hover:Show()
+    showFullText(row)
+end
 local function hideHoverIfOutside(row)
-    if not row:IsMouseOver() then row.hover:Hide() end
+    if not row:IsMouseOver() then
+        row.hover:Hide()
+        hideFullText(row)
+    end
 end
 
 local function trackHover(row, control)
@@ -408,7 +434,12 @@ local function openList(owner)
     local index = indexOf(list.items, owner.opts.get()) or 1
     list.offset = math.max(0, math.min(maxOffset(), index - LIST_ROWS / 2))
     list:ClearAllPoints()
-    list:SetPoint("TOPLEFT", owner.button, "BOTTOMLEFT", 0, -2)
+    -- opts.listAbove: a dropdown at the bottom of the window opens upwards.
+    if owner.opts.listAbove then
+        list:SetPoint("BOTTOMLEFT", owner.button, "TOPLEFT", 0, 2)
+    else
+        list:SetPoint("TOPLEFT", owner.button, "BOTTOMLEFT", 0, -2)
+    end
     list:SetWidth(owner.button:GetWidth())
     renderList()
     list:Show()

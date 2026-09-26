@@ -35,6 +35,8 @@ function Power.Update(frame)
     local unit = frame.unit
     local powerType = UnitPowerType(unit)
     local c = Power.COLORS[ns.Secrets.Number(powerType) or -1] or DEFAULT
+    -- Dead, ghost and offline units (Elements/UnitStatus.lua) are grey.
+    if ns.UnitStatus.Of(frame) then c = ns.UnitStatus.GREY end
     frame.power:SetStatusBarColor(c[1], c[2], c[3])
     frame.power:SetMinMaxValues(0, UnitPowerMax(unit))
     frame.power:SetValue(UnitPower(unit))

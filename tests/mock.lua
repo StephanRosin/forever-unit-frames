@@ -621,6 +621,19 @@ local function newWidget(kind, name, parent)
         self._atlas = atlas; self._texture = nil
     end
     function w:SetTexCoord(...) self._texCoord = { ... } end
+    -- Takes a secret boolean (AllowedWhenTainted).
+    function w:SetDesaturated(v)
+        assert(type(M.Reveal(v)) == "boolean", "SetDesaturated: value must be a boolean")
+        self._desaturated = M.Reveal(v)
+    end
+    -- SimpleTextureBaseAPI: the cell may be secret (AllowedWhenTainted),
+    -- rows and columns never are.
+    function w:SetSpriteSheetCell(cell, rows, columns)
+        assert(type(M.Reveal(cell)) == "number", "SetSpriteSheetCell: cell must be a number")
+        assert(not M.IsSecret(rows) and not M.IsSecret(columns), "SetSpriteSheetCell: rows/columns never secret")
+        self._spriteCell = { M.Reveal(cell), rows, columns }
+        self._spriteSecret = M.IsSecret(cell)
+    end
     -- Shader nine-slice (SimpleTextureBaseAPI, masks included).
     function w:SetTextureSliceMargins(left, top, right, bottom)
         for _, v in ipairs({ left, top, right, bottom }) do
@@ -675,6 +688,7 @@ local function newWidget(kind, name, parent)
             assert(self._font or self._fontObject, self._kind .. ":SetText(): Font not set")
         end
         self._text = t
+        self._fmt, self._args = nil, nil
     end
     function w:SetTextColor(r, g, b, a) self._color = { r, g, b, a } end
     function w:GetText() return self._text end
@@ -683,6 +697,7 @@ local function newWidget(kind, name, parent)
             assert(self._font or self._fontObject, self._kind .. ":SetFormattedText(): Font not set")
         end
         self._fmt = fmt; self._args = { ... }
+        self._text = nil
     end
     function w:SetShadowOffset(x, y) self._shadow = { x, y } end
     function w:SetJustifyH(v) self._justifyH = v end
@@ -692,6 +707,11 @@ local function newWidget(kind, name, parent)
     function w:GetStringWidth()
         local size = self._font and self._font[2] or 12
         return #(self._text or "") * size / 2
+    end
+    -- Cut off when the natural width exceeds a set width (0 = natural).
+    function w:IsTruncated()
+        local width = self._w or 0
+        return width > 0 and self:GetStringWidth() > width
     end
     -- Enable state (Button, CheckButton, EditBox, Slider)
     function w:SetEnabled(v) self._enabled = not not v end
@@ -863,6 +883,7 @@ function M.Reset()
     M.macroDeletes = 0     -- DeleteMacro calls
     M.errors = {}          -- whatever reached the global error handler
     M.timers = {}          -- queued C_Timer.After callbacks
+    M.locale = "enUS"      -- GetLocale(): the game's language
     M.now = 1000           -- GetTime(), advanced by M.Tick
     M.group = {}           -- party unit tokens ("party1", ...) while grouped
     M.headerUpdates = 0    -- how often a group header laid out its buttons
@@ -940,6 +961,7 @@ function M.Reset()
     end
     _G.WOW_PROJECT_MAINLINE = 1
     _G.WOW_PROJECT_ID = 1
+    _G.GetLocale = function() return M.locale end
     _G.GetBuildInfo = function() return "1.60.1", "69977", "Sep 22 2026", 16001 end
     _G.issecretvalue = M.IsSecret
     _G.RegisterUnitWatch = function(f) f._unitWatch = true end
@@ -960,7 +982,11 @@ function M.Reset()
         ["nameplates-icon-elite-gold"] = true, ["nameplates-icon-elite-silver"] = true,
         ["UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Star"] = true,
         -- The target frame's high-level (boss) icon (Blizzard_UnitFrame/Mainline/TargetFrame.xml).
-        ["UI-HUD-UnitFrame-Target-HighLevelTarget_Icon"] = true }
+        ["UI-HUD-UnitFrame-Target-HighLevelTarget_Icon"] = true,
+        -- Group icons (PartyFrameTemplates.xml, ReadyCheck.lua, CompactUnitFrame.lua).
+        ["UI-HUD-UnitFrame-Player-Group-LeaderIcon"] = true, ["UI-HUD-UnitFrame-Player-Group-GuideIcon"] = true,
+        ["UI-LFG-ReadyMark-Raid"] = true, ["UI-LFG-DeclineMark-Raid"] = true, ["UI-LFG-PendingMark-Raid"] = true,
+        ["RaidFrame-Icon-Rez"] = true }
     _G.C_Texture = {
         GetAtlasInfo = function(atlas)
             if M.atlases[atlas] then return { file = atlas, width = 64, height = 64 } end
@@ -1034,6 +1060,105 @@ function M.Reset()
     -- "normal", never nil) and d.bossMob.
     _G.UnitClassification = function(unit) local d = u(unit); return d and d.classification or "normal" end
     _G.UnitIsBossMob = function(unit) local d = u(unit); return d and d.bossMob or false end
+    -- The group (UnitDocumentation.lua: leader and assistant are
+    -- SecretWhenUnitIdentityRestricted). d.leader, d.assistant;
+    -- M.groupSecret hands both back secret. Ready checks and incoming
+    -- resurrections are undocumented globals Blizzard's Mainline frames
+    -- call: d.readyCheck ("ready", "notready", "waiting" or nil),
+    -- d.incomingRez. M.lfgRestricted: HasLFGRestrictions (a guide leads).
+    M.groupSecret = false
+    M.lfgRestricted = false
+    local function groupFlag(v)
+        v = v or false
+        if M.groupSecret then return M.Secret(v) end
+        return v
+    end
+    _G.UnitIsGroupLeader = function(unit) local d = u(unit); return groupFlag(d and d.leader) end
+    _G.UnitIsGroupAssistant = function(unit) local d = u(unit); return groupFlag(d and d.assistant) end
+    -- d.offline: the unit's player is disconnected. d.dead / d.ghost:
+    -- dead, or a ghost (UnitIsDeadOrGhost is true for both). Any of them
+    -- may be a secret proxy.
+    _G.UnitIsConnected = function(unit)
+        local d = u(unit)
+        if d and M.IsSecret(d.offline) then return d.offline end
+        return d ~= nil and not d.offline
+    end
+    _G.UnitIsGhost = function(unit) local d = u(unit); return d and d.ghost or false end
+    _G.UnitIsDeadOrGhost = function(unit)
+        local d = u(unit)
+        if not d then return false end
+        if M.IsSecret(d.dead) then return d.dead end
+        return (d.dead or d.ghost) and true or false
+    end
+    -- Range (UnitDocumentation.lua: UnitInRange has SecretReturns).
+    -- d.inRange (default true); d.rangeChecked (default: only group
+    -- members are checked); M.rangeSecret hands both answers back secret.
+    -- CheckInteractDistance: d.near (default true); M.interactError makes
+    -- it raise. M.rangeQueries counts UnitInRange calls.
+    M.rangeSecret = false
+    M.interactError = false
+    M.rangeQueries = 0
+    local function groupToken(unit) return unit:match("^party%d$") or unit:match("^partypet%d$") end
+    -- Threat (UnitDocumentation.lua, ThreatDocumentation.lua): one unit,
+    -- d.threat (its highest status, 0..3 or nil); unit and mob,
+    -- M.units[mob].threatOf[unit]. Either may be a secret proxy.
+    _G.UnitThreatSituation = function(unit, mob)
+        if mob then
+            local m = u(mob)
+            return m and m.threatOf and m.threatOf[unit]
+        end
+        local d = u(unit)
+        return d and d.threat
+    end
+    M.threatColors = { [0] = { 0.69, 0.69, 0.69 }, { 1, 1, 0.47 }, { 1, 0.6, 0 }, { 1, 0, 0 } }
+    _G.GetThreatStatusColor = function(status)
+        assert(not M.IsSecret(status), "GetThreatStatusColor: secret status from tainted code")
+        local c = assert(M.threatColors[status], "GetThreatStatusColor: bad status")
+        return c[1], c[2], c[3]
+    end
+    -- Two tokens name the same unit when they share its data table.
+    _G.UnitIsUnit = function(a, b) return M.units[a] ~= nil and M.units[a] == M.units[b] end
+    _G.UnitInParty = function(unit)
+        local d = u(unit)
+        return d ~= nil and (d.inParty or groupToken(unit) ~= nil) or false
+    end
+    _G.UnitInRange = function(unit)
+        M.rangeQueries = M.rangeQueries + 1
+        local d = u(unit)
+        local inRange, checked = false, false
+        if d then
+            inRange = d.inRange ~= false
+            checked = d.rangeChecked
+            if checked == nil then checked = groupToken(unit) ~= nil or d.inParty == true end
+        end
+        if M.rangeSecret == "inRange" then return M.Secret(inRange), checked end
+        if M.rangeSecret then return M.Secret(inRange), M.Secret(checked) end
+        return inRange, checked
+    end
+    -- d.near: true, false, or "nil" for no answer. M.interactQueries
+    -- counts the calls.
+    M.interactQueries = 0
+    _G.CheckInteractDistance = function(unit, index)
+        assert(type(index) == "number" and index >= 1 and index <= 5, "CheckInteractDistance: bad index")
+        M.interactQueries = M.interactQueries + 1
+        if M.interactError then error("CheckInteractDistance refused") end
+        local d = u(unit)
+        if d and d.near == "nil" then return nil end
+        return d ~= nil and d.near ~= false
+    end
+    _G.GetReadyCheckStatus = function(unit) local d = u(unit); return d and d.readyCheck end
+    _G.UnitHasIncomingResurrection = function(unit) local d = u(unit); return d and d.incomingRez or false end
+    _G.HasLFGRestrictions = function() return M.lfgRestricted end
+    -- Raid target markers (RaidMarkersDocumentation.lua: SecretReturns):
+    -- d.raidTarget (1..8 or nil); M.raidTargetsSecret hands a set index
+    -- back secret.
+    M.raidTargetsSecret = false
+    _G.GetRaidTargetIndex = function(unit)
+        local d = u(unit)
+        local index = d and d.raidTarget
+        if index ~= nil and M.raidTargetsSecret then return M.Secret(index) end
+        return index
+    end
     _G.UnitGetTotalAbsorbs = function(unit) local d = u(unit); return d and d.absorbs or 0 end
     _G.UnitGetIncomingHeals = function(unit, healer)
         local d = u(unit)
@@ -1185,6 +1310,9 @@ function M.Reset()
         return true
     end
     function GameTooltip:Show() self._shown = true end
+    M.tooltipLines = {}
+    function GameTooltip:SetText(text) M.tooltipLines = { text }; self._shown = true end
+    function GameTooltip:AddLine(text) M.tooltipLines[#M.tooltipLines + 1] = text end
     -- Totem tooltips (M.tooltipTotem: the last slot asked for).
     M.tooltipTotem = nil
     function GameTooltip:SetTotem(slot)

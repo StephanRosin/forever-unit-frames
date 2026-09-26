@@ -1,9 +1,30 @@
 local _, ns = ...
 
--- Missing keys fall back to the key itself, so an untranslated string is
--- visible in-game instead of raising an error.
-ns.L = setmetatable({}, { __index = function(_, key) return key end })
-local L = ns.L
+-- English is the base language and always loads first. Every other
+-- language (Locales/<code>.lua) fills a table of its own; Core/Locale.lua
+-- picks one once the settings are known. ns.L itself holds no strings: it
+-- looks a key up in the chosen language, then in English, and a key missing
+-- from both is returned as it is, so an unknown string is visible in-game
+-- instead of raising an error. Files keep `local L = ns.L` at load time;
+-- switching the language never replaces that table.
+local L = {}
+ns.Locales = { enUS = L }
+
+local active = L
+ns.L = setmetatable({}, {
+    __index = function(_, key)
+        local v = active[key]
+        if v == nil then v = L[key] end
+        if v == nil then return key end
+        return v
+    end,
+    __newindex = function() error("ns.L is read-only; add strings to Locales/*.lua") end,
+})
+
+-- Core/Locale.lua only: shows the given language's table through ns.L.
+function ns.SetActiveLocale(code)
+    active = ns.Locales[code] or L
+end
 
 L.ADDON_NAME = "Forever Unit Frames"
 
@@ -264,6 +285,51 @@ L.HINT_statusCombat = "Crossed swords while you are in combat"
 L.HINT_statusResting = "While you rest in an inn or a city"
 L.HINT_statusFramePoint = "The icons follow the health bar"
 
+-- Status tab: raid target marker.
+L.TAB_status = "Status"
+L.SECTION_raidMarker = "Raid target marker"
+L.SETTING_raidMarker = "Show raid target marker"
+L.SETTING_raidMarkerSize = "Icon size"
+L.SETTING_raidMarkerFramePoint = "Point on the frame"
+L.SETTING_raidMarkerPoint = "Point of the icon"
+L.SETTING_raidMarkerX = "Offset X"
+L.SETTING_raidMarkerY = "Offset Y"
+L.HINT_raidMarker = "Skull, cross, star and the other raid target icons"
+
+-- Status tab: group icons (player and party).
+L.SECTION_groupIcons = "Group icons"
+L.SETTING_groupLeader = "Leader and assistant"
+L.SETTING_groupReadyCheck = "Ready check"
+L.SETTING_groupResurrect = "Incoming resurrection"
+L.SETTING_groupIconSize = "Icon size"
+L.SETTING_groupIconFramePoint = "Point on the frame"
+L.SETTING_groupIconPoint = "Point of the icons"
+L.SETTING_groupIconX = "Offset X"
+L.SETTING_groupIconY = "Offset Y"
+L.HINT_groupLeader = "The group's leader (or guide) and assistants"
+L.HINT_groupReadyCheck = "Waiting, ready or not ready; stays a few seconds after the check"
+
+-- Dead, ghost and offline units: shown instead of the health values.
+L.STATUS_DEAD = "Dead"
+L.STATUS_GHOST = "Ghost"
+L.STATUS_OFFLINE = "Offline"
+
+-- Status tab: range fading.
+L.SECTION_range = "Range"
+L.SETTING_rangeFade = "Fade when out of range"
+L.SETTING_rangeAlpha = "Opacity out of range (%)"
+L.HINT_rangeFade = "Group members by their range, others by the follow distance"
+
+-- Status tab: threat.
+L.SECTION_threat = "Threat"
+L.SETTING_threatGlow = "Threat glow"
+L.HINT_threatGlow = "Player, party, pet: the unit's own threat. Target, focus: your threat on it"
+
+-- Status tab: dispel highlight.
+L.SECTION_dispel = "Dispellable debuffs"
+L.SETTING_dispelHighlight = "Tint the border"
+L.HINT_dispelHighlight = "In the debuff's colour while it carries one you can dispel"
+
 -- Minimap button.
 L.SECTION_minimap = "Minimap"
 L.SETTING_minimapShow = "Show minimap button"
@@ -272,3 +338,12 @@ L.HINT_minimapAngle = "Degrees around the minimap; drag the button to set it"
 L.MINIMAP_LEFT_CLICK = "Left-click: options"
 L.MINIMAP_RIGHT_CLICK = "Right-click: unlock/lock frames"
 L.MINIMAP_DRAG = "Drag: move button"
+
+-- Language (bottom of the options window's navigation). Each language is
+-- named in itself; the names are the same in every locale file.
+L.SETTING_language = "Language"
+L.ENUM_language_AUTO = "Game language"
+L.ENUM_language_enUS = "English"
+L.ENUM_language_deDE = "Deutsch"
+L.ENUM_language_esES = "Español"
+L.ENUM_language_frFR = "Français"

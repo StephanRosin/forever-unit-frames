@@ -383,9 +383,69 @@ Settings.Define({ key = "statusX", code = "ZX", scope = "frame", only = STATUS, 
 Settings.Define({ key = "statusY", code = "ZY", scope = "frame", only = STATUS, type = "int", min = -400, max = 400,
     default = 0 })
 
+-- Raid target markers (Elements/RaidMarker.lua): on every frame, centred
+-- on the frame's top edge by default, clear of the class badge on the top
+-- right corner.
+Settings.Define({ key = "raidMarker", code = "RE", scope = "frame", type = "bool", default = true })
+Settings.Define({ key = "raidMarkerSize", code = "RS", scope = "frame", type = "int", min = 8, max = 64,
+    default = { targettarget = 16, pet = 16, _ = 20 } })
+Settings.Define({ key = "raidMarkerFramePoint", code = "RF", scope = "frame", type = "enum",
+    values = Settings.POINTS, default = "TOP" })
+Settings.Define({ key = "raidMarkerPoint", code = "RO", scope = "frame", type = "enum",
+    values = Settings.POINTS, default = "CENTER" })
+Settings.Define({ key = "raidMarkerX", code = "RX", scope = "frame", type = "int", min = -200, max = 200,
+    default = 0 })
+Settings.Define({ key = "raidMarkerY", code = "RY", scope = "frame", type = "int", min = -200, max = 200,
+    default = 0 })
+
+-- Group icons (player and party, Elements/GroupIcons.lua): leader or
+-- assistant, ready check and incoming resurrection, each group on its own
+-- switch, in one row at the frame's top left corner by default.
+local GROUP = { player = true, party = true }
+Settings.Define({ key = "groupLeader", code = "LL", scope = "frame", only = GROUP, type = "bool", default = true })
+Settings.Define({ key = "groupReadyCheck", code = "LR", scope = "frame", only = GROUP, type = "bool", default = true })
+Settings.Define({ key = "groupResurrect", code = "LZ", scope = "frame", only = GROUP, type = "bool", default = true })
+Settings.Define({ key = "groupIconSize", code = "LS", scope = "frame", only = GROUP, type = "int", min = 8, max = 48,
+    default = 16 })
+Settings.Define({ key = "groupIconFramePoint", code = "LF", scope = "frame", only = GROUP, type = "enum",
+    values = Settings.POINTS, default = "TOPLEFT" })
+Settings.Define({ key = "groupIconPoint", code = "LO", scope = "frame", only = GROUP, type = "enum",
+    values = Settings.POINTS, default = "LEFT" })
+Settings.Define({ key = "groupIconX", code = "LX", scope = "frame", only = GROUP, type = "int", min = -200, max = 200,
+    default = 2 })
+Settings.Define({ key = "groupIconY", code = "LY", scope = "frame", only = GROUP, type = "int", min = -200, max = 200,
+    default = 0 })
+
+-- Range fading (Elements/Range.lua): party members and their pets, the
+-- target, the focus and the pet at a lower opacity while out of range.
+local RANGE = { party = true, target = true, focus = true, pet = true }
+-- Enemies are only measured by the follow distance (about 28 yards): off
+-- on the target and focus by default.
+Settings.Define({ key = "rangeFade", code = "VE", scope = "frame", only = RANGE, type = "bool",
+    default = { party = true, pet = true, _ = false } })
+Settings.Define({ key = "rangeAlpha", code = "VA", scope = "frame", only = RANGE, type = "int", min = 0, max = 100,
+    default = 50 })
+
+-- Threat glow (Elements/Threat.lua): the unit's own threat on the player,
+-- party and pet frames, your threat on it on the others.
+Settings.Define({ key = "threatGlow", code = "TH", scope = "frame", type = "bool",
+    default = { player = true, party = true, _ = false } })
+
+-- Dispel highlight (Elements/Dispel.lua): the border of the player and
+-- party frames tints while the unit has a debuff you can dispel.
+Settings.Define({ key = "dispelHighlight", code = "HD", scope = "frame", only = { player = true, party = true },
+    type = "bool", default = true })
+
 -- Minimap button (Options/MinimapButton.lua): General only. The angle
 -- around the minimap in degrees, counter-clockwise from the right (225:
 -- bottom left, LibDBIcon's default); set by dragging the button.
 Settings.Define({ key = "minimapShow", code = "MS", scope = "general", type = "bool", default = true })
 Settings.Define({ key = "minimapAngle", code = "MA", scope = "general", type = "int", min = 0, max = 359,
     default = 225 })
+
+-- Language of every text (Core/Locale.lua): AUTO follows the game. Stored
+-- by index: append only. Personal: an imported profile keeps the reader's
+-- own language (Config.Import). inNav: its control sits at the bottom of
+-- the options window's navigation, on no page.
+Settings.Define({ key = "language", code = "LN", scope = "general", type = "enum", personal = true, inNav = true,
+    values = { "AUTO", "enUS", "deDE", "esES", "frFR" }, default = "AUTO" })

@@ -114,11 +114,24 @@ end
 -- even when the player is at full health.
 Health.SAMPLE = 0.6
 
+-- Dead, ghost and offline units (Elements/UnitStatus.lua) are grey; an
+-- offline member's bar is full, as on Blizzard's party frames.
 function Health.Update(frame)
     local unit = frame.unit
-    if not frame.health.preview then
+    local status = ns.UnitStatus.Of(frame)
+    if frame.health.preview then
+        -- The sample value stays.
+    elseif status == "OFFLINE" then
+        frame.health:SetMinMaxValues(0, 1)
+        frame.health:SetValue(1)
+    else
         frame.health:SetMinMaxValues(0, UnitHealthMax(unit))
         frame.health:SetValue(UnitHealth(unit))
+    end
+    if status then
+        local grey = ns.UnitStatus.GREY
+        frame.health:SetStatusBarColor(grey[1], grey[2], grey[3])
+        return
     end
     frame.health:SetStatusBarColor(Health.ColorFor(frame))
 end

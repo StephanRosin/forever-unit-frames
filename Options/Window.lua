@@ -481,6 +481,35 @@ local function navButton(nav, key, text, y)
     return b
 end
 
+-- The language, at the bottom of the navigation: visible on every page.
+-- A label above a dropdown as wide as the column; the list opens upwards.
+local LANGUAGE_BUTTON_H, LANGUAGE_LABEL_H, LANGUAGE_BOTTOM = 22, 18, 10
+
+local function languageRow(nav)
+    local row = Widgets.Dropdown(nav, {
+        label = L.SETTING_language,
+        items = enumItems(ns.Settings.Get("language")),
+        get = function() return Config.Get("general", "language") end,
+        set = function(v) Config.Set("general", "language", v) end,
+        listAbove = true,
+    })
+    row:SetHeight(LANGUAGE_LABEL_H + LANGUAGE_BUTTON_H)
+    row:SetPoint("BOTTOMLEFT", nav, "BOTTOMLEFT", INSET, LANGUAGE_BOTTOM)
+    row:SetPoint("BOTTOMRIGHT", nav, "BOTTOMRIGHT", -INSET, LANGUAGE_BOTTOM)
+    row:EnableMouse(false)
+    row.hover:SetAlpha(0)
+    row.label:ClearAllPoints()
+    row.label:SetPoint("TOPLEFT", row, "TOPLEFT", 0, 0)
+    Style.Paint(row.label, "muted")
+    row.button:ClearAllPoints()
+    row.button:SetPoint("BOTTOMLEFT", row, "BOTTOMLEFT", 0, 0)
+    row.button:SetPoint("BOTTOMRIGHT", row, "BOTTOMRIGHT", 0, 0)
+    row.button:SetHeight(LANGUAGE_BUTTON_H)
+    row:Refresh()
+    Options.languageRow = row
+    return row
+end
+
 local function createNav(parent)
     local nav = CreateFrame("Frame", nil, parent)
     nav:SetWidth(NAV_W)
@@ -500,6 +529,7 @@ local function createNav(parent)
         navButton(nav, def.key, L["FRAME_" .. def.key], y)
         y = y + NAV_ROW_H
     end
+    languageRow(nav)
     return nav
 end
 
@@ -715,6 +745,8 @@ local function createWindow()
     frame.titleBar = createTitleBar(frame)
     local footer = createFooter(frame)
     local nav = createNav(frame)
+    -- Locked in combat like the footer.
+    table.insert(frame.footerControls, Options.languageRow)
     nav:SetPoint("TOPLEFT", frame.titleBar, "BOTTOMLEFT", 0, 0)
     nav:SetPoint("BOTTOMLEFT", footer, "TOPLEFT", 0, 0)
     createBody(frame, frame.titleBar, footer)
@@ -727,6 +759,9 @@ local function createWindow()
         for _, button in pairs(Options.actionButtons) do button.Disarm() end
     end)
     frame:Hide()
+    for _, name in ipairs(UISpecialFrames) do
+        if name == WINDOW_NAME then return end
+    end
     table.insert(UISpecialFrames, WINDOW_NAME)
 end
 
@@ -806,7 +841,25 @@ end
 ns.Listen("CONFIG_CHANGED", function()
     if not Options.IsOpen() then return end
     forEachRow(function(row) row:Refresh() end)
+    Options.languageRow:Refresh()
 end)
+
+-- Every label is set once, when its widget is built: a new language gets a
+-- new window. Frames cannot be destroyed, so the old one stays hidden and
+-- unreferenced; the new one takes over its global name, position, page and
+-- tab.
+function Options.Rebuild()
+    if not frame then return end
+    local wasOpen = frame:IsShown()
+    frame:Hide()
+    frame, Options.frame = nil, nil
+    pages = {}
+    Options.actionButtons = {}
+    Options.page, Options.rows, Options.resetAllButton = nil, nil, nil
+    if wasOpen then Options.Open(Options.currentScope, Options.currentTab) end
+end
+
+ns.Listen("LANGUAGE_CHANGED", function() Options.Rebuild() end)
 
 ns.Listen("TEST_MODE", function()
     if frame then refreshFooter() end

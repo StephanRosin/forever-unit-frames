@@ -70,18 +70,7 @@ local function enabledIcons(s)
     return list
 end
 
-local function rowWidth(count, size, gap)
-    if count == 0 then return 0 end
-    return count * size + (count - 1) * gap
-end
-
--- Share of the holder's free room left of the icons: packed towards the
--- anchor point's side, centred for the middle points.
-local function justify(point)
-    if point:find("LEFT") then return 0 end
-    if point:find("RIGHT") then return 1 end
-    return 0.5
-end
+local rowWidth, justify = ns.Layout.IconRowWidth, ns.Layout.IconRowJustify
 
 local function placeIcon(s, icon, offset)
     local size = s.size

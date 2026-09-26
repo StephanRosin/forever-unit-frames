@@ -44,7 +44,7 @@ do
     H.check("default x", S.Default(S.Get("statusX"), "player"), 0)
     H.check("default y", S.Default(S.Get("statusY"), "player"), 0)
 
-    -- Options: a "Status icons" section on the player's Layout tab only.
+    -- Options: a "Status icons" section on the player's Status tab only.
     local function section(scope)
         for _, tab in ipairs(ns.Schema.Tabs(scope)) do
             for _, sec in ipairs(tab.sections or {}) do
@@ -54,7 +54,7 @@ do
     end
     local sec, tab = section("player")
     H.checkTrue("status icons section", sec)
-    H.check("on the layout tab", tab, "layout")
+    H.check("on the status tab", tab, "status")
     H.check("section keys", sec and table.concat(sec.keys, ","),
         "statusCombat,statusResting,statusSize,statusFramePoint,statusPoint,statusX,statusY")
     H.check("section title", ns.L.SECTION_statusIcons, "Status icons")
