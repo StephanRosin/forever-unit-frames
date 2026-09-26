@@ -428,6 +428,11 @@ Settings.Define({ key = "rangeAlpha", code = "VA", scope = "frame", only = RANGE
 Settings.Define({ key = "threatGlow", code = "TH", scope = "frame", type = "bool",
     default = { player = true, party = true, _ = false } })
 
+-- Dispel highlight (Elements/Dispel.lua): the border of the player and
+-- party frames tints while the unit has a debuff you can dispel.
+Settings.Define({ key = "dispelHighlight", code = "HD", scope = "frame", only = { player = true, party = true },
+    type = "bool", default = true })
+
 -- Minimap button (Options/MinimapButton.lua): General only. The angle
 -- around the minimap in degrees, counter-clockwise from the right (225:
 -- bottom left, LibDBIcon's default); set by dragging the button.

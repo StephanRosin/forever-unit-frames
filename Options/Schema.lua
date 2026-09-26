@@ -76,6 +76,7 @@ Schema.FRAME = {
             "statusPoint", "statusX", "statusY" } },
         { id = "range", keys = { "rangeFade", "rangeAlpha" } },
         { id = "threat", keys = { "threatGlow" } },
+        { id = "dispel", keys = { "dispelHighlight" } },
     } },
     { id = "castbar", sections = {
         { id = "castbar", keys = { "castbarEnabled", "castbarAlwaysShow", "hideBlizzardCastbar", "castbarPosition", "castbarDock",

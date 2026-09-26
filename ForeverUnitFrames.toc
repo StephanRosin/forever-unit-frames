@@ -39,6 +39,7 @@ Elements\GroupIcons.lua
 Elements\UnitStatus.lua
 Elements\Range.lua
 Elements\Threat.lua
+Elements\Dispel.lua
 Units\Events.lua
 Units\Single.lua
 Units\Party.lua

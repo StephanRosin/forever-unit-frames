@@ -304,6 +304,11 @@ L.SECTION_threat = "Threat"
 L.SETTING_threatGlow = "Threat glow"
 L.HINT_threatGlow = "Player, party, pet: the unit's own threat. Target, focus: your threat on it"
 
+-- Status tab: dispel highlight.
+L.SECTION_dispel = "Dispellable debuffs"
+L.SETTING_dispelHighlight = "Tint the border"
+L.HINT_dispelHighlight = "In the debuff's colour while it carries one you can dispel"
+
 -- Minimap button.
 L.SECTION_minimap = "Minimap"
 L.SETTING_minimapShow = "Show minimap button"
