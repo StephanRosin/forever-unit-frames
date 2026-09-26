@@ -4,9 +4,11 @@ local _, ns = ...
 -- `borderSize` thick. A unit frame's box takes in a docked castbar while
 -- it shows (Elements/Shape.lua), so frame, portrait and castbar sit in one
 -- border. Eight pieces: four edges and four corner squares. With rounded
--- corners each corner square is masked twice: the outer arc (Corner.tga)
--- and the inner arc (CornerInverse.tga), both centred where the box's own
--- rounded corner is centred, so ring and box stay concentric.
+-- corners each corner square shows the outer arc as its texture
+-- (Corner.tga) and is masked once, by the inner arc (CornerInverse.tga);
+-- both are centred where the box's own rounded corner is centred, so ring
+-- and box stay concentric. One mask per texture: the client allows three.
+-- The pieces are white; paint colours them with vertex colours.
 --
 -- Styles: FLAT is one colour (`borderColor`). GOLD is shaded like a bevel,
 -- lighter at the top and left, darker at the bottom and right, with a dark
@@ -75,11 +77,13 @@ end
 -- Ring ------------------------------------------------------------------------
 
 local function newRing(owner, sublevel)
-    local ring = { corners = {}, outer = {}, inner = {} }
-    for i = 1, 4 do ring[i] = owner:CreateTexture(nil, "OVERLAY", nil, sublevel) end
+    local ring = { corners = {}, inner = {} }
+    for i = 1, 4 do
+        ring[i] = owner:CreateTexture(nil, "OVERLAY", nil, sublevel)
+        ring[i]:SetColorTexture(1, 1, 1, 1)
+    end
     for i = 1, 4 do
         ring.corners[i] = owner:CreateTexture(nil, "OVERLAY", nil, sublevel)
-        ring.outer[i] = ns.Corners.NewMask(owner, ns.Corners.TEXTURE, i)
         ring.inner[i] = ns.Corners.NewMask(owner, ns.Corners.INVERSE, i)
     end
     return ring
@@ -111,22 +115,31 @@ local function placeEdges(ring, box, size, padding, reach, corner)
     ring[4]:SetWidth(size)
 end
 
+-- A corner square: the outer arc (mirrored for corner i) when round,
+-- else a plain white square.
+local function cornerArt(piece, i, round)
+    if not round then
+        piece:SetColorTexture(1, 1, 1, 1)
+        return
+    end
+    piece:SetTexture(ns.Corners.TEXTURE, "CLAMP", "CLAMP")
+    local c = ns.Corners.COORDS[i]
+    piece:SetTexCoord(c[1], c[2], c[3], c[4])
+end
+
 local function placeCorners(ring, box, size, reach, corner, round)
     for i, point in ipairs(ns.Corners.POINTS) do
         local piece, sx, sy = ring.corners[i], OUT[i][1], OUT[i][2]
         piece:ClearAllPoints()
         piece:SetPoint(point, box, point, sx * reach, sy * reach)
         piece:SetSize(corner, corner)
-        local outer, inner = ring.outer[i], ring.inner[i]
-        outer:ClearAllPoints()
-        outer:SetPoint(point, piece, point, 0, 0)
-        outer:SetSize(corner, corner)
+        cornerArt(piece, i, round)
+        local inner = ring.inner[i]
         inner:ClearAllPoints()
         inner:SetPoint(point, piece, point, -sx * size, -sy * size)
         inner:SetSize(corner - size, corner - size)
-        outer:SetShown(round)
         inner:SetShown(round)
-        ns.Corners.SetMasked(piece, { outer, inner }, round)
+        ns.Corners.SetMasked(piece, inner, round)
     end
 end
 
@@ -146,18 +159,12 @@ end
 local function showRing(ring, shown)
     for _, piece in ipairs(ringPieces(ring)) do piece:SetShown(shown) end
     if shown then return end
-    for i = 1, 4 do
-        ring.outer[i]:Hide()
-        ring.inner[i]:Hide()
-    end
+    for i = 1, 4 do ring.inner[i]:Hide() end
 end
 
--- One colour; the vertex colour is reset first (it would tint it).
+-- One colour on the white pieces.
 local function paintFlat(ring, c)
-    for _, piece in ipairs(ringPieces(ring)) do
-        piece:SetVertexColor(1, 1, 1, 1)
-        piece:SetColorTexture(c[1], c[2], c[3], c[4])
-    end
+    for _, piece in ipairs(ringPieces(ring)) do piece:SetVertexColor(c[1], c[2], c[3], c[4]) end
 end
 
 local function color(c) return CreateColor(c[1], c[2], c[3], c[4]) end
@@ -186,10 +193,7 @@ end
 
 local function paintGold(ring, share)
     local shades = goldShades(share)
-    for i, piece in ipairs(ringPieces(ring)) do
-        piece:SetColorTexture(1, 1, 1, 1)
-        piece:SetGradient("VERTICAL", shades[i][1], shades[i][2])
-    end
+    for i, piece in ipairs(ringPieces(ring)) do piece:SetGradient("VERTICAL", shades[i][1], shades[i][2]) end
 end
 
 -- Shadow ----------------------------------------------------------------------
@@ -255,7 +259,7 @@ local function placeShadowCorners(shadow, box, reach, radius, size)
         mask:SetPoint(INNER[i], piece, INNER[i], 0, 0)
         mask:SetSize(radius, radius)
         mask:SetShown(round)
-        ns.Corners.SetMasked(piece, { mask }, round)
+        ns.Corners.SetMasked(piece, mask, round)
     end
 end
 

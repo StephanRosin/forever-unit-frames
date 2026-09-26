@@ -1,5 +1,8 @@
 -- Minimal WoW API mock for offline tests. Lua 5.1 like the client.
 local M = {}
+-- Mask textures one texture can carry in the client.
+M.MAX_MASKS = 3
+M.widgets = {}
 
 -- Secret values ------------------------------------------------------------
 -- Real secret values refuse arithmetic, comparison, concatenation and
@@ -464,6 +467,7 @@ local function newWidget(kind, name, parent)
         _kind = kind, _name = name, _parent = parent, _scripts = {},
         _events = {}, _attr = {}, _points = {}, _w = 0, _h = 0, _shown = true,
     }, widget)
+    M.widgets[#M.widgets + 1] = w
     -- Children in creation order (an aura button's are guarded with it).
     if type(parent) == "table" then
         local kids = rawget(parent, "_children") or {}
@@ -568,6 +572,11 @@ local function newWidget(kind, name, parent)
     function w:GetFrameStrata() return self._strata end
     function w:SetClipsChildren(v) self._clips = v end
     function w:GetEffectiveScale() return M.scale end
+    function w:SetScale(v)
+        assert(type(v) == "number" and v > 0, "SetScale: scale must be a positive number")
+        self._scale = v
+    end
+    function w:GetScale() return self._scale or 1 end
     -- StatusBar
     function w:SetMinMaxValues(a, b) self._min, self._max = a, b end
     function w:GetMinMaxValues() return self._min, self._max end
@@ -587,10 +596,15 @@ local function newWidget(kind, name, parent)
         self._blend = mode
     end
     function w:SetVertTile(v) self._vertTile = v end
-    -- Masks (SimpleTextureAPI): only mask textures can be added.
+    -- Masks (SimpleTextureAPI): only mask textures can be added, and at
+    -- most M.MAX_MASKS per texture (the client raises beyond that).
     function w:AddMaskTexture(mask)
         assert(type(mask) == "table" and mask._kind == "MaskTexture", "AddMaskTexture: not a mask texture")
         self._masks = self._masks or {}
+        if #self._masks >= M.MAX_MASKS then
+            error(("Texture:AddMaskTexture(): Texture already has the maximum number of mask textures (%d)")
+                :format(M.MAX_MASKS), 2)
+        end
         table.insert(self._masks, mask)
     end
     function w:RemoveMaskTexture(mask)
@@ -605,9 +619,28 @@ local function newWidget(kind, name, parent)
         self._atlas = atlas; self._texture = nil
     end
     function w:SetTexCoord(...) self._texCoord = { ... } end
+    -- Shader nine-slice (SimpleTextureBaseAPI, masks included).
+    function w:SetTextureSliceMargins(left, top, right, bottom)
+        for _, v in ipairs({ left, top, right, bottom }) do
+            assert(type(v) == "number", "SetTextureSliceMargins: margins must be numbers")
+        end
+        self._slice = { left, top, right, bottom }
+    end
+    function w:GetTextureSliceMargins()
+        local s = self._slice or { 0, 0, 0, 0 }
+        return s[1], s[2], s[3], s[4]
+    end
+    function w:SetTextureSliceMode(mode)
+        assert(mode == 0 or mode == 1, "SetTextureSliceMode: bad mode")
+        self._sliceMode = mode
+    end
+    function w:ClearTextureSlice() self._slice, self._sliceMode = nil, nil end
     -- _color is the last colour given either way; _texColor keeps the
     -- colour texture's own.
-    function w:SetColorTexture(r, g, b, a) self._color = { r, g, b, a }; self._texColor = self._color end
+    function w:SetColorTexture(r, g, b, a)
+        self._color = { r, g, b, a }; self._texColor = self._color
+        self._texture, self._atlas = nil, nil
+    end
     -- One vertex colour replaces a gradient's per-vertex colours.
     function w:SetVertexColor(r, g, b, a) self._color = { r, g, b, a }; self._gradient = nil end
     -- SetGradient(orientation, minColor, maxColor): colours are ColorMixin
@@ -792,6 +825,7 @@ M.newWidget = newWidget
 function M.Reset()
     M.eventFrames = {}
     M.frames = {}
+    M.widgets = {}         -- every widget created, in creation order
     M.chat = {}
     M.combat = false
     M.blocked = {}         -- protected-frame calls refused in combat
@@ -1005,6 +1039,7 @@ function M.Reset()
     }
 
     _G.Enum = {
+        UITextureSliceMode = { Stretched = 0, Tiled = 1 },
         LuaCurveType = { Linear = 0, Step = 1, Cosine = 2, Cubic = 3 },
         UnitAuraSortRule = { Unsorted = 0, Default = 1, BigDefensive = 2, Expiration = 3, ExpirationOnly = 4,
             Name = 5, NameOnly = 6 },

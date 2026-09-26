@@ -139,24 +139,28 @@ H.check("corner square size", b.corners[1]:GetWidth(), 4)
 H.check("corner at the ring's corner", point(b.corners[4], "BOTTOMRIGHT")[4], 6)
 H.check("corner at the ring's corner (y)", point(b.corners[4], "BOTTOMRIGHT")[5], -6)
 
--- Rounded: corner squares as big as the outer radius, masked twice.
+-- Rounded: corner squares as big as the outer radius. The outer arc is
+-- their texture, the inner arc their one mask.
 C.Set("general", "cornerRadius", 5)
 local corner = b.corners[1]
 H.check("round corner size", corner:GetWidth(), 5 + 6)
 H.check("round: edge starts after the corner", point(b[1], "BOTTOMLEFT")[4], 5)
-H.check("round: two masks", corner:GetNumMaskTextures(), 2)
-H.check("outer arc file", b.outer[1]._texture, ns.Corners.TEXTURE)
+H.check("round: one mask", corner:GetNumMaskTextures(), 1)
+H.check("outer arc: the corner's texture", corner._texture, ns.Corners.TEXTURE)
+H.check("outer arc clamps", corner._wrap[1], "CLAMP")
+H.check("outer arc mirrored for the bottom right", table.concat(b.corners[4]._texCoord, ","),
+    table.concat(ns.Corners.COORDS[4], ","))
 H.check("inner arc file", b.inner[1]._texture, ns.Corners.INVERSE)
-H.check("outer arc on the corner", point(b.outer[1], "TOPLEFT")[2], corner)
-H.check("outer arc size", b.outer[1]:GetWidth(), 11)
+H.check("the mask is the inner arc", corner._masks[1], b.inner[1])
 H.check("inner arc inset by the thickness", point(b.inner[1], "TOPLEFT")[4], 4)
 H.check("inner arc inset by the thickness (y)", point(b.inner[1], "TOPLEFT")[5], -4)
 H.check("inner arc size", b.inner[1]:GetWidth(), 7)
 H.check("mirrored for the bottom right", point(b.inner[4], "BOTTOMRIGHT")[4], -4)
 C.Set("general", "cornerRadius", 6)
-H.check("restyle keeps two masks", corner:GetNumMaskTextures(), 2)
+H.check("restyle keeps one mask", corner:GetNumMaskTextures(), 1)
 C.Set("general", "cornerRadius", 0)
-H.check("square again: masks off", corner:GetNumMaskTextures(), 0)
+H.check("square again: mask off", corner:GetNumMaskTextures(), 0)
+H.check("square again: a plain square", corner._texture, nil)
 
 -- Per frame override, and off.
 C.Set("target", "borderSize", 0)
@@ -224,8 +228,8 @@ H.check("inner line dark", line[1]._color[1], B.GOLD.LINE[1])
 H.check("inner line over the ring", select(2, line[1]:GetDrawLayer()) > select(2, b[1]:GetDrawLayer()), true)
 C.Set("target", "cornerRadius", 5)
 checkGold("round: ", 5 + 6)
-H.check("gold, round: ring corner masked", b.corners[1]:GetNumMaskTextures(), 2)
-H.check("gold, round: inner line corner masked", line.corners[1]:GetNumMaskTextures(), 2)
+H.check("gold, round: ring corner masked", b.corners[1]:GetNumMaskTextures(), 1)
+H.check("gold, round: inner line corner masked", line.corners[1]:GetNumMaskTextures(), 1)
 H.check("inner line concentric: its corner", line.corners[1]:GetWidth(), 5 + 2 + 1)
 H.check("inner line concentric: its inner arc", line.inner[1]:GetWidth(), 5 + 2)
 C.Set("target", "cornerRadius", 0)
@@ -280,26 +284,23 @@ H.check("shadow corners off", sh.corners[2]:IsShown(), false)
 
 -- A docked castbar joins the block while it shows: the block ring shows
 -- instead of the frame ring, the frame's corners next to the castbar go
--- square (their masks hidden), the block's corners below are round.
+-- square (the frame's mask swaps to a file with only the top corners
+-- round), the castbar's mask rounds the block's corners below.
 local bar = f.castbar
 local blockRing = f.blockRing
+local frameMask = f.clip.mask
 C.Set("general", "cornerRadius", 6)
-H.check("frame masks in the frame's corners", select(2, f.clip.masks[3]:GetPoint(1)), f)
-H.check("docked-side masks in the unit box's corners", select(2, f.dockClip.masks[1]:GetPoint(1)), unit)
-H.check("docked-side masks: bottom left", f.dockClip.masks[1]:GetPoint(1), "BOTTOMLEFT")
-H.check("docked-side masks: bottom right", f.dockClip.masks[2]:GetPoint(1), "BOTTOMRIGHT")
-H.check("frame textures carry both sets", f.healthBg:GetNumMaskTextures(), 6)
-H.check("docked castbar masks on the unit box", select(2, bar.clip.masks[4]:GetPoint(1)), unit)
-H.check("docked castbar rounded", bar.bg:GetNumMaskTextures(), 4)
+H.check("frame mask over the frame", frameMask._allPoints, f)
+H.check("frame textures: one mask", f.healthBg:GetNumMaskTextures(), 1)
+H.check("docked castbar mask over the unit box", bar.clip.mask._allPoints, unit)
+H.check("docked castbar: one mask", bar.bg:GetNumMaskTextures(), 1)
 local function joined()
-    return blockRing:IsShown() and not box:IsShown()
-        and not f.clip.masks[3]:IsShown() and not f.clip.masks[4]:IsShown()
-        and f.clip.masks[1]:IsShown() and f.dockClip.masks[1]:IsShown() and f.dockClip.masks[2]:IsShown()
+    return blockRing:IsShown() and not box:IsShown() and frameMask:IsShown()
+        and frameMask._texture == ns.Corners.MASKS.TOP
 end
 local function apart()
-    return box:IsShown() and not blockRing:IsShown()
-        and f.clip.masks[3]:IsShown() and f.clip.masks[4]:IsShown()
-        and not f.dockClip.masks[1]:IsShown() and not f.dockClip.masks[2]:IsShown()
+    return box:IsShown() and not blockRing:IsShown() and frameMask:IsShown()
+        and frameMask._texture == ns.Corners.MASKS.ALL
 end
 H.checkTrue("idle: the frame alone", apart())
 M.units.target = { name = "Foe", health = 1, healthMax = 1,
@@ -330,7 +331,7 @@ H.checkTrue("frame shown again: follows the castbar", joined())
 ns.Castbar.Stop(bar)
 
 -- In combat nothing is anchored: switching only shows and hides plain
--- holders and masks.
+-- holders and swaps the frame mask's file.
 local function guard(region)
     for _, method in ipairs({ "SetPoint", "ClearAllPoints", "SetAllPoints", "SetSize" }) do
         local original = region[method]
@@ -340,7 +341,7 @@ local function guard(region)
         end
     end
 end
-for _, region in ipairs({ unit, box, blockRing, f.clip.masks[3], f.dockClip.masks[1], bar.clip.masks[1] }) do
+for _, region in ipairs({ unit, box, blockRing, frameMask, bar.clip.mask }) do
     guard(region)
 end
 M.combat = true
@@ -352,14 +353,14 @@ M.FireEvent("UNIT_SPELLCAST_STOP", "target", "c1", 1)
 H.checkTrue("combat stop: the frame alone", apart())
 M.SetCombat(false)
 
--- Above: the slot and the docked-side masks move to the top.
+-- Above: the slot moves to the top, the frame's top corners go square.
 C.Set("target", "castbarPosition", "ABOVE")
 H.check("above: unit box grows upwards", point(unit, "TOPLEFT")[5], reach)
 H.check("above: bottom on the frame", point(unit, "BOTTOMRIGHT")[5], 0)
-H.check("above: docked-side masks top left", f.dockClip.masks[1]:GetPoint(1), "TOPLEFT")
 ns.Castbar.Preview(f, true)
-H.checkTrue("above: frame's top masks hidden", not f.clip.masks[1]:IsShown() and f.clip.masks[3]:IsShown())
+H.check("above: only the frame's bottom corners round", frameMask._texture, ns.Corners.MASKS.BOTTOM)
 ns.Castbar.Preview(f, false)
+H.check("above, idle: all four round", frameMask._texture, ns.Corners.MASKS.ALL)
 C.Set("target", "castbarPosition", "BELOW")
 
 -- Room for the border in the docked depth (party spacing uses it).
@@ -371,12 +372,23 @@ H.check("clamp helper", ns.Corners.Clamp(12, 220, 8), 4)
 H.check("clamp helper: fits", ns.Corners.Clamp(3, 220, 8), 3)
 C.Set("target", "height", 8)
 C.Set("target", "cornerRadius", 12)
-H.check("low frame: masks clamped", f.clip.masks[1]:GetWidth(), 4)
+H.check("low frame: mask clamped", f.clip.mask:GetScale(), 4 / ns.Corners.SLICE)
 H.check("low frame: ring corner clamped", b.corners[1]:GetWidth(), 4 + 6)
 local sideInset = -point(b[3], "TOPRIGHT")[5]
 H.check("low frame: left edge from corner to corner", sideInset, 4)
 H.checkTrue("ring edge never negative", f:GetHeight() - 2 * sideInset >= 0)
 C.ClearOverride("target", "height")
+-- A docked castbar's row holds its whole arc: the frame's corners next to
+-- it are square while it shows, so the radius never exceeds its height.
+C.Set("target", "castbarHeight", 5)
+H.check("low castbar: radius clamped to its row", ns.Shape.Radius(f), 5)
+H.check("low castbar: frame mask", f.clip.mask:GetScale(), 5 / ns.Corners.SLICE)
+H.check("low castbar: castbar mask", bar.clip.mask:GetScale(), 5 / ns.Corners.SLICE)
+H.check("low castbar: ring corner", b.corners[1]:GetWidth(), 5 + 6)
+C.Set("target", "castbarEnabled", false)
+H.check("castbar off: the frame's radius again", ns.Shape.Radius(f), 12)
+C.ClearOverride("target", "castbarEnabled")
+C.ClearOverride("target", "castbarHeight")
 
 -- Detached: the castbar has its own ring around bar and icon.
 C.Set("target", "castbarPosition", "DETACHED")
@@ -386,8 +398,8 @@ H.check("detached: around the castbar box", point(bar.border[1], "BOTTOMLEFT")[2
 H.check("detached: unit box without castbar", point(unit, "TOPLEFT")[5], 0)
 H.check("detached: unit box bottom without castbar", point(unit, "BOTTOMRIGHT")[5], 0)
 H.checkTrue("detached: the frame ring", box:IsShown() and not blockRing:IsShown())
-H.check("detached: masks on its own box", select(2, bar.clip.masks[1]:GetPoint(1)), bar.box)
-H.check("detached: radius clamped to the castbar (16 high)", bar.clip.masks[1]:GetWidth(), 8)
+H.check("detached: mask on its own box", bar.clip.mask._allPoints, bar.box)
+H.check("detached: radius clamped to the castbar (16 high)", bar.clip.mask:GetScale(), 8 / ns.Corners.SLICE)
 H.check("detached: ring clamped too", bar.border.corners[1]:GetWidth(), 8 + 6)
 H.check("detached: no docked depth", ns.Castbar.DockedDepth("target"), 0)
 C.Set("target", "castbarPosition", "BELOW")
