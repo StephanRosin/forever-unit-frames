@@ -30,7 +30,11 @@ do
         end
         H.checkTrue(key .. " label", ns.L["SETTING_" .. key] ~= "SETTING_" .. key)
     end
-    H.check("on by default", S.Default(S.Get("rangeFade"), "party"), true)
+    H.check("on by default: party", S.Default(S.Get("rangeFade"), "party"), true)
+    H.check("on by default: pet", S.Default(S.Get("rangeFade"), "pet"), true)
+    -- Enemies only have the follow distance: opt-in.
+    H.check("off by default: target", S.Default(S.Get("rangeFade"), "target"), false)
+    H.check("off by default: focus", S.Default(S.Get("rangeFade"), "focus"), false)
     H.check("half opacity by default", S.Default(S.Get("rangeAlpha"), "party"), 50)
     H.check("opacity from 0", S.Get("rangeAlpha").min, 0)
     H.check("opacity to 100", S.Get("rangeAlpha").max, 100)
@@ -49,6 +53,7 @@ do
     local ns = boot()
     local C = ns.Config
     C.Set("party", "rangeFade", true)
+    C.Set("target", "rangeFade", false)
     C.Set("target", "rangeAlpha", 50)
     for scope, values in pairs(C.Profile()) do
         for key in pairs(values) do
@@ -79,8 +84,9 @@ do
     M.FireEvent("GROUP_ROSTER_UPDATE")
     H.check("roster change checks at once", b:GetAlpha(), 0.5)
 
-    -- Secret answers go to SetAlphaFromBoolean untouched.
-    M.rangeSecret = true
+    -- A secret "in range" (checked plainly) goes to SetAlphaFromBoolean
+    -- untouched.
+    M.rangeSecret = "inRange"
     M.combat = true
     local ok, err = pcall(M.Tick, 0.25)
     H.check("secret: no error", ok and "ok" or tostring(err), "ok")
@@ -90,6 +96,12 @@ do
     M.units.party1.inRange = true
     M.Tick(0.25)
     H.check("secret: back", b:GetAlpha(), 1)
+    -- A secret "checked": the range is unknown, full opacity.
+    M.rangeSecret = true
+    M.units.party1.inRange = false
+    ok = pcall(M.Tick, 0.25)
+    H.check("secret checked: no error", ok, true)
+    H.check("secret checked: full", b:GetAlpha(), 1)
     M.rangeSecret = false
     M.SetCombat(false)
 
@@ -127,17 +139,23 @@ do
     local f = ns.Frames.target
     M.units.target = { name = "Boar", health = 5, healthMax = 10, near = false }
     M.FireEvent("PLAYER_TARGET_CHANGED")
+    H.check("off by default: far enemy full", f:GetAlpha(), 1)
+    ns.Config.Set("target", "rangeFade", true)
+    M.FireEvent("PLAYER_TARGET_CHANGED")
     H.check("far enemy: faded", f:GetAlpha(), 0.5)
     M.units.target.near = true
     M.Tick(0.25)
     H.check("near enemy: full", f:GetAlpha(), 1)
-    -- Refused: full opacity, no error.
-    M.interactError = true
+    -- No answer: full opacity (only a plain true or false counts).
+    M.units.target.near = "nil"
+    M.Tick(0.25)
+    H.check("no answer: full", f:GetAlpha(), 1)
+    M.units.target.near = M.Secret(false)
+    M.Tick(0.25)
+    H.check("secret answer: full", f:GetAlpha(), 1)
     M.units.target.near = false
-    local ok = pcall(M.Tick, 0.25)
-    H.check("refused: no error", ok, true)
-    H.check("refused: full", f:GetAlpha(), 1)
-    M.interactError = false
+    M.Tick(0.25)
+    H.check("far again", f:GetAlpha(), 0.5)
     -- A party member as target: the group range.
     M.units.target = { name = "Ann", isPlayer = true, health = 5, healthMax = 10, inParty = true, inRange = false,
         near = true }
@@ -150,8 +168,22 @@ do
     H.check("targeting yourself", f:GetAlpha(), 1)
     M.units.player.near = nil
 
+    -- Refused once: full opacity, and never asked again this session.
+    M.units.target = { name = "Boar", health = 5, healthMax = 10, near = false }
+    M.FireEvent("PLAYER_TARGET_CHANGED")
+    M.interactError = true
+    local ok = pcall(M.Tick, 0.25)
+    H.check("refused: no error", ok, true)
+    H.check("refused: full", f:GetAlpha(), 1)
+    M.interactError = false
+    local asked = M.interactQueries
+    M.Tick(0.25)
+    M.Tick(0.25)
+    H.check("refused: not asked again", M.interactQueries, asked)
+    H.check("refused: stays full", f:GetAlpha(), 1)
+
     -- Pet and focus.
-    M.units.pet = { name = "Wolf", health = 5, healthMax = 10, near = false }
+    M.units.pet = { name = "Wolf", health = 5, healthMax = 10, inParty = true, inRange = false }
     M.FireEvent("UNIT_PET", "player")
     H.check("far pet: faded", ns.Frames.pet:GetAlpha(), 0.5)
     -- The player frame and the target of target never fade.
@@ -176,4 +208,40 @@ do
     H.check("sample follows the setting", fakes[4]:GetAlpha(), 0.2)
     ns.TestMode.Set(false)
     H.check("off: back to full", fakes[4]:GetAlpha(), 1)
+end
+
+-- Blocked by the client (ADDON_ACTION_BLOCKED naming the call): never
+-- asked again.
+do
+    local ns = boot()
+    ns.Config.Set("target", "rangeFade", true)
+    M.units.target = { name = "Boar", health = 5, healthMax = 10, near = false }
+    M.FireEvent("PLAYER_TARGET_CHANGED")
+    H.check("far enemy faded", ns.Frames.target:GetAlpha(), 0.5)
+    M.FireEvent("ADDON_ACTION_BLOCKED", "SomeOtherAddon", "CheckInteractDistance()")
+    local asked = M.interactQueries
+    M.Tick(0.25)
+    H.check("another addon blocked: still asked", M.interactQueries > asked, true)
+    M.FireEvent("ADDON_ACTION_BLOCKED", "ForeverUnitFrames", "CheckInteractDistance()")
+    asked = M.interactQueries
+    M.Tick(0.25)
+    H.check("blocked: not asked again", M.interactQueries, asked)
+    H.check("blocked: full", ns.Frames.target:GetAlpha(), 1)
+end
+
+-- No timer while fading is off on every frame.
+do
+    local ns = boot()
+    local C = ns.Config
+    M.units.party1 = { name = "Ann", isPlayer = true, health = 5, healthMax = 10 }
+    M.SetGroup({ "party1" })
+    H.checkTrue("timer runs", ns.Range.driver:IsShown())
+    C.Set("party", "rangeFade", false)
+    C.Set("pet", "rangeFade", false)
+    H.check("all off: timer stopped", ns.Range.driver:IsShown(), false)
+    local asked = M.rangeQueries
+    M.Tick(0.25)
+    H.check("all off: nothing asked", M.rangeQueries, asked)
+    C.Set("focus", "rangeFade", true)
+    H.check("one on: timer runs", ns.Range.driver:IsShown(), true)
 end

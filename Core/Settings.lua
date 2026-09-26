@@ -419,7 +419,10 @@ Settings.Define({ key = "groupIconY", code = "LY", scope = "frame", only = GROUP
 -- Range fading (Elements/Range.lua): party members and their pets, the
 -- target, the focus and the pet at a lower opacity while out of range.
 local RANGE = { party = true, target = true, focus = true, pet = true }
-Settings.Define({ key = "rangeFade", code = "VE", scope = "frame", only = RANGE, type = "bool", default = true })
+-- Enemies are only measured by the follow distance (about 28 yards): off
+-- on the target and focus by default.
+Settings.Define({ key = "rangeFade", code = "VE", scope = "frame", only = RANGE, type = "bool",
+    default = { party = true, pet = true, _ = false } })
 Settings.Define({ key = "rangeAlpha", code = "VA", scope = "frame", only = RANGE, type = "int", min = 0, max = 100,
     default = 50 })
 

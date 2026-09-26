@@ -10,10 +10,15 @@ local _, ns = ...
 --   with SecretReturns. A secret "in range" goes untouched to
 --   SetAlphaFromBoolean, which takes secret booleans from tainted code
 --   (SimpleFrameAPIDocumentation.lua: AllowedWhenTainted); nothing is
---   compared. A plain "not checked" means unknown: full opacity.
+--   compared. "Not checked", or a secret "checked", means unknown: full
+--   opacity.
 -- * Everyone else (an enemy target, your pet): CheckInteractDistance(unit,
---   4), the follow distance (about 28 yards). Not documented as secret or
---   restricted; read through Secrets.Bool, anything else is full opacity.
+--   4), the follow distance (about 28 yards), which is why fading is off by
+--   default on the target and focus. Not documented as secret or
+--   restricted; only a plain true or false counts, anything else is full
+--   opacity. Should the client ever refuse or block the call (an error, or
+--   ADDON_ACTION_BLOCKED / _FORBIDDEN naming it), it is not asked again
+--   this session.
 -- * Yourself: always in range.
 --
 -- The opacity is the unit frame's own alpha. SetAlpha and
@@ -24,6 +29,7 @@ local _, ns = ...
 -- The client sends UNIT_IN_RANGE_UPDATE, but only for group members; one
 -- light timer (POLL seconds) checks every shown frame that fades instead,
 -- and a whole-frame update (a new target, a party slot) checks at once.
+-- The timer only runs while some frame has fading switched on.
 local Range = { name = "Range" }
 ns.Range = Range
 
@@ -56,17 +62,39 @@ end
 -- A plain or secret boolean ("in range"), or nil when unknown.
 local function groupRange(unit)
     local ok, inRange, checked = pcall(UnitInRange, unit)
-    if not ok then return nil end
-    if not Secrets.IsSecret(checked) and not checked then return nil end
+    if not ok or Secrets.IsSecret(checked) or checked ~= true then return nil end
     return inRange
+end
+
+-- Set once CheckInteractDistance was refused or blocked.
+local interactBroken = false
+
+-- A plain boolean, or nil when unknown.
+local function interactRange(unit)
+    if interactBroken then return nil end
+    local ok, near = pcall(CheckInteractDistance, unit, Range.INTERACT_INDEX)
+    if not ok then
+        interactBroken = true
+        return nil
+    end
+    if Secrets.IsSecret(near) or type(near) ~= "boolean" then return nil end
+    return near
 end
 
 -- A plain or secret boolean, or nil when unknown.
 function Range.InRange(unit)
     if unit == "player" or Secrets.Bool(UnitIsUnit, unit, "player") then return true end
     if groupToken(unit) or Secrets.Bool(UnitInParty, unit) then return groupRange(unit) end
-    return Secrets.Bool(CheckInteractDistance, unit, Range.INTERACT_INDEX)
+    return interactRange(unit)
 end
+
+local function blocked(_, addon, fn)
+    if addon == ns.name and type(fn) == "string" and fn:find("CheckInteractDistance", 1, true) then
+        interactBroken = true
+    end
+end
+ns.On("ADDON_ACTION_BLOCKED", blocked)
+ns.On("ADDON_ACTION_FORBIDDEN", blocked)
 
 -- Opacity from a plain or secret boolean; nil is full opacity.
 local function apply(frame, inRange)
@@ -93,7 +121,22 @@ end
 
 function Range.Build() end
 
+-- Whether any frame has fading on (the party's setting covers its pets).
+local SCOPES = { "party", "target", "focus", "pet" }
+local function anyEnabled()
+    for _, scope in ipairs(SCOPES) do
+        if Config.Get(scope, "rangeFade") then return true end
+    end
+    return false
+end
+
+-- The timer runs only while it has something to do.
+local function syncDriver()
+    Range.driver:SetShown(anyEnabled())
+end
+
 function Range.Style(frame)
+    syncDriver()
     if applies(frame) then check(frame) end
 end
 
@@ -125,6 +168,8 @@ local function poll()
 end
 
 local driver, elapsed = CreateFrame("Frame"), 0
+Range.driver = driver
+driver:Hide()
 driver:SetScript("OnUpdate", function(_, seconds)
     elapsed = elapsed + seconds
     if elapsed < Range.POLL then return end

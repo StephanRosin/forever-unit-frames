@@ -1124,13 +1124,19 @@ function M.Reset()
             checked = d.rangeChecked
             if checked == nil then checked = groupToken(unit) ~= nil or d.inParty == true end
         end
+        if M.rangeSecret == "inRange" then return M.Secret(inRange), checked end
         if M.rangeSecret then return M.Secret(inRange), M.Secret(checked) end
         return inRange, checked
     end
+    -- d.near: true, false, or "nil" for no answer. M.interactQueries
+    -- counts the calls.
+    M.interactQueries = 0
     _G.CheckInteractDistance = function(unit, index)
         assert(type(index) == "number" and index >= 1 and index <= 5, "CheckInteractDistance: bad index")
+        M.interactQueries = M.interactQueries + 1
         if M.interactError then error("CheckInteractDistance refused") end
         local d = u(unit)
+        if d and d.near == "nil" then return nil end
         return d ~= nil and d.near ~= false
     end
     _G.GetReadyCheckStatus = function(unit) local d = u(unit); return d and d.readyCheck end
