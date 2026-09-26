@@ -1,11 +1,18 @@
 local _, ns = ...
 
 -- Rounded corners. One mask texture per rounded box: a rounded rectangle
--- (Media/Rounded*.tga, tools/make_corners.py) drawn as a shader nine-slice
--- (SetTextureSliceMargins, SimpleTextureBaseAPI, which mask textures share
--- with textures). The corner cells keep their shape at any box size; only
--- edges and middle stretch. The mask's scale sets the radius on screen: a
--- corner cell is SLICE units of the mask, SLICE * scale units of the box.
+-- (Media/RoundedNN*.tga, tools/make_corners.py) drawn as a shader
+-- nine-slice (SetTextureSliceMargins, SimpleTextureBaseAPI, which mask
+-- textures share with textures). The corner cells keep their shape at any
+-- box size; only edges and middle stretch.
+--
+-- The client's rule for a sliced mask, measured in game: a corner cell is
+-- drawn `margin` UI units of the box wide and high, whatever the file's
+-- size, the box's size or the mask's own scale (SetScale on a mask is
+-- ignored). So the radius picks the file: RoundedNN has arcs of NN texels
+-- and is sliced with margins of NN, giving arcs of NN UI units, the same
+-- units the border ring's corner pieces use, at every UI scale. Radii are
+-- whole UI units (the setting is an integer) so a file exists for each.
 --
 -- The client allows three masks per texture and raises beyond that, so a
 -- texture here carries one mask at most and leaves room for Blizzard's.
@@ -15,7 +22,7 @@ local _, ns = ...
 local Corners = {}
 ns.Corners = Corners
 
-local Config, Pixel = ns.Config, ns.Pixel
+local Config = ns.Config
 
 local MEDIA = "Interface\\AddOns\\ForeverUnitFrames\\Media\\"
 -- Border ring corner piece (a texture, mirrored per corner with texture
@@ -26,33 +33,32 @@ Corners.INVERSE = {
     MEDIA .. "CornerInverseTopLeft.tga", MEDIA .. "CornerInverseTopRight.tga",
     MEDIA .. "CornerInverseBottomLeft.tga", MEDIA .. "CornerInverseBottomRight.tga",
 }
--- Rounded-rectangle masks by which corners are round.
-Corners.MASKS = {
-    ALL = MEDIA .. "Rounded.tga",
-    TOP = MEDIA .. "RoundedTop.tga",
-    BOTTOM = MEDIA .. "RoundedBottom.tga",
-}
--- Corner radius of the Rounded masks in texels = their nine-slice margin
--- (tools/make_corners.py SLICE).
-Corners.SLICE = 28
+-- The largest radius with mask files (the cornerRadius setting's max,
+-- tools/make_corners.py MAX_RADIUS).
+Corners.MAX_RADIUS = 12
+-- File name suffix by which corners are round.
+local SHAPE_SUFFIX = { ALL = "", TOP = "Top", BOTTOM = "Bottom" }
 Corners.POINTS = { "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT" }
 -- left, right, top, bottom: mirrored copies of the top-left shape.
 Corners.COORDS = { { 0, 1, 0, 1 }, { 1, 0, 0, 1 }, { 0, 1, 1, 0 }, { 1, 0, 1, 0 } }
 
--- Corner radius of scope on the pixel grid; 0 means square.
+-- The mask file for a whole radius (1..MAX_RADIUS) and a shape ("ALL",
+-- "TOP" or "BOTTOM").
+function Corners.MaskFile(radius, shape)
+    return ("%sRounded%02d%s.tga"):format(MEDIA, radius, SHAPE_SUFFIX[shape])
+end
+
+-- Corner radius of scope in whole UI units; 0 means square.
 function Corners.Radius(scope)
-    local r = Config.Get(scope, "cornerRadius")
-    if r <= 0 then return 0 end
-    return Pixel.Snap(r, nil, 1)
+    local r = math.floor(Config.Get(scope, "cornerRadius"))
+    return math.max(0, math.min(r, Corners.MAX_RADIUS))
 end
 
 -- radius, but never more than half the shorter side of a w x h box (whole
--- pixels): a larger one would overlap the corners and turn the ring's
+-- UI units): a larger one would overlap the corners and turn the ring's
 -- edges inside out.
 function Corners.Clamp(radius, w, h)
-    local one = Pixel.One()
-    local limit = math.floor(math.min(w, h) / 2 / one + 1e-6) * one
-    return math.min(radius, limit)
+    return math.min(radius, math.floor(math.min(w, h) / 2 + 1e-6))
 end
 
 -- The inner-arc mask of corner i (1..4, Corners.POINTS order) on owner,
@@ -74,7 +80,7 @@ end
 -- The rounding of owner's box: one mask, made once, for the textures
 -- Corners.Add listed.
 function Corners.Clipper(owner)
-    return { mask = owner:CreateMaskTexture(), targets = owner.cornerTargets or {} }
+    return { mask = owner:CreateMaskTexture(), targets = owner.cornerTargets or {}, radius = 0 }
 end
 
 local function resolve(target)
@@ -96,23 +102,22 @@ end
 -- Which corners of clip's box are round: "ALL", "TOP" or "BOTTOM". Only
 -- changes the mask's file, so it is safe in combat.
 function Corners.SetShape(clip, shape)
-    if clip.shape == shape then return end
+    if clip.shape == shape or clip.radius <= 0 then return end
     clip.shape = shape
-    local mask, slice = clip.mask, Corners.SLICE
-    mask:SetTexture(Corners.MASKS[shape], "CLAMP", "CLAMP")
-    mask:SetTextureSliceMargins(slice, slice, slice, slice)
+    local mask, radius = clip.mask, clip.radius
+    mask:SetTexture(Corners.MaskFile(radius, shape), "CLAMP", "CLAMP")
+    mask:SetTextureSliceMargins(radius, radius, radius, radius)
     mask:SetTextureSliceMode(Enum.UITextureSliceMode.Stretched)
 end
 
--- Rounds the corners of box by radius (0: square, mask off); shape as
--- Corners.SetShape (default all four).
+-- Rounds the corners of box by radius (whole UI units; 0: square, mask
+-- off); shape as Corners.SetShape (default all four).
 function Corners.Fit(clip, box, radius, shape)
     local on = radius > 0
     local mask = clip.mask
     mask:ClearAllPoints()
     mask:SetAllPoints(box)
-    if on then mask:SetScale(radius / Corners.SLICE) end
-    clip.shape = nil
+    clip.radius, clip.shape = radius, nil
     Corners.SetShape(clip, shape or "ALL")
     mask:SetShown(on)
     for _, target in ipairs(clip.targets) do

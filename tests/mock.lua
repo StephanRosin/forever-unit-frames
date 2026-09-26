@@ -750,6 +750,11 @@ local function newWidget(kind, name, parent)
         function t:SetTexCoord()
             error("MaskTexture:SetTexCoord: masks ignore texture coordinates in the client", 2)
         end
+        -- Nor does a mask's own scale change a sliced mask's corners (in
+        -- game a scaled mask kept its full margin as corner size).
+        function t:SetScale()
+            error("MaskTexture:SetScale: the client ignores a mask's scale for its slices", 2)
+        end
         return t
     end
     function w:CreateFontString(n, layer)

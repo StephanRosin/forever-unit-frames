@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Writes the corner art and masks the addon ships (Media/Corner.tga,
-the four Media/CornerInverse*.tga and the three Media/Rounded*.tga). No
+the four Media/CornerInverse*.tga and the Media/RoundedNN*.tga masks). No
 dependencies beyond the standard library.
 
-All are 64 x 64, uncompressed 32-bit TGA, white, the shape in the alpha
+All are uncompressed 32-bit TGA, white, the shape in the alpha
 channel, rows stored bottom to top (the TGA default).
 
 Corner.tga: the top-left corner of a rounded rectangle. A quarter disc
@@ -20,11 +20,16 @@ CornerInverseTopRight/BottomLeft/BottomRight.tga: the same shape for the
 other corners, mirrored in the file. Masks ignore texture coordinates in
 the client (a mirrored mask drew unmirrored), so each corner has its own.
 
-Rounded.tga: a rounded rectangle, SLICE texels radius at every corner, for
-a nine-slice mask (SetTextureSliceMargins with SLICE on each side): the
-corners keep their shape at any box size, the edges and the middle
-stretch. Every texel between the corner cells is opaque.
-RoundedTop.tga / RoundedBottom.tga: the same with only the top or only
+Corner.tga and CornerInverse*.tga are 64 x 64.
+
+RoundedNN.tga (NN = 01..12, the corner radius in UI units): a 32 x 32
+rounded rectangle whose corner arcs have a radius of NN texels, for a
+nine-slice mask with margins of NN on each side. In the client a sliced
+mask draws each corner cell as margin texels = that many UI units of the
+box (measured in game; SetScale on a mask is ignored), so the arc's
+radius in texels is the radius on screen in UI units, at any UI scale.
+Every texel between the corner cells is opaque.
+RoundedNNTop.tga / RoundedNNBottom.tga: the same with only the top or only
 the bottom corners round, the other two square (a frame whose other side
 continues into a docked castbar).
 
@@ -36,7 +41,8 @@ import struct
 
 SIZE = 64
 SUB = 4  # sub-samples per axis for the anti-aliased edge
-SLICE = 28  # corner radius of the Rounded masks; their nine-slice margin
+MASK_SIZE = 32  # the Rounded masks: room for two corner cells of MAX_RADIUS
+MAX_RADIUS = 12  # the cornerRadius setting's maximum (Core/Settings.lua)
 
 
 def coverage(x, y, radius=SIZE):
@@ -53,23 +59,23 @@ def coverage(x, y, radius=SIZE):
     return inside / (SUB * SUB)
 
 
-def rounded(round_top, round_bottom):
-    """Alpha of a rounded-rectangle mask whose top and/or bottom corners
-    are round (radius SLICE), the others square."""
+def rounded(radius, round_top, round_bottom):
+    """Alpha of a MASK_SIZE rounded-rectangle mask whose top and/or bottom
+    corners are round with the given radius in texels, the others square."""
     def alpha_of(x, y):
-        top, bottom = y < SLICE, y >= SIZE - SLICE
-        left, right = x < SLICE, x >= SIZE - SLICE
+        top, bottom = y < radius, y >= MASK_SIZE - radius
+        left, right = x < radius, x >= MASK_SIZE - radius
         if not ((top and round_top) or (bottom and round_bottom)) or not (left or right):
             return 1
-        # Mirror into the top-left cell: the arc's centre is (SLICE, SLICE).
-        mx = x if left else SIZE - 1 - x
-        my = y if top else SIZE - 1 - y
+        # Mirror into the top-left cell: the arc's centre is (radius, radius).
+        mx = x if left else MASK_SIZE - 1 - x
+        my = y if top else MASK_SIZE - 1 - y
         inside = 0
         for i in range(SUB):
             for j in range(SUB):
-                dx = SLICE - (mx + (i + 0.5) / SUB)
-                dy = SLICE - (my + (j + 0.5) / SUB)
-                if dx * dx + dy * dy <= SLICE * SLICE:
+                dx = radius - (mx + (i + 0.5) / SUB)
+                dy = radius - (my + (j + 0.5) / SUB)
+                if dx * dx + dy * dy <= radius * radius:
                     inside += 1
         return inside / (SUB * SUB)
     return alpha_of
@@ -90,12 +96,12 @@ def inverse(flip_x, flip_y):
     return alpha_of
 
 
-def write_tga(path, alpha_of):
-    header = struct.pack("<BBBHHBHHHHBB", 0, 0, 2, 0, 0, 0, 0, 0, SIZE, SIZE, 32, 8)
+def write_tga(path, alpha_of, size=SIZE):
+    header = struct.pack("<BBBHHBHHHHBB", 0, 0, 2, 0, 0, 0, 0, 0, size, size, 32, 8)
     rows = []
-    for y in range(SIZE - 1, -1, -1):  # bottom row first
+    for y in range(size - 1, -1, -1):  # bottom row first
         row = bytearray()
-        for x in range(SIZE):
+        for x in range(size):
             a = int(round(alpha_of(x, y) * 255))
             row += bytes((255, 255, 255, a))  # B, G, R, A
         rows.append(bytes(row))
@@ -110,9 +116,10 @@ def main():
     write_tga(os.path.join(root, "Corner.tga"), coverage)
     for name, flip_x, flip_y in INVERSE_CORNERS:
         write_tga(os.path.join(root, "CornerInverse" + name + ".tga"), inverse(flip_x, flip_y))
-    write_tga(os.path.join(root, "Rounded.tga"), rounded(True, True))
-    write_tga(os.path.join(root, "RoundedTop.tga"), rounded(True, False))
-    write_tga(os.path.join(root, "RoundedBottom.tga"), rounded(False, True))
+    for radius in range(1, MAX_RADIUS + 1):
+        name = "Rounded%02d" % radius
+        for suffix, top, bottom in (("", True, True), ("Top", True, False), ("Bottom", False, True)):
+            write_tga(os.path.join(root, name + suffix + ".tga"), rounded(radius, top, bottom), MASK_SIZE)
 
 
 if __name__ == "__main__":

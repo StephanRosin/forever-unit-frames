@@ -15,7 +15,7 @@ local function alphaAt(data, x, y) -- x right, y down from the top-left
 end
 local INVERSE = { "Media/CornerInverseTopLeft.tga", "Media/CornerInverseTopRight.tga",
     "Media/CornerInverseBottomLeft.tga", "Media/CornerInverseBottomRight.tga" }
-local FILES = { "Media/Corner.tga", "Media/Rounded.tga", "Media/RoundedTop.tga", "Media/RoundedBottom.tga" }
+local FILES = { "Media/Corner.tga" }
 for _, file in ipairs(INVERSE) do FILES[#FILES + 1] = file end
 for _, file in ipairs(FILES) do
     local d = tga(file)
@@ -47,33 +47,45 @@ for i, file in ipairs(INVERSE) do
     H.check("path of " .. file, ns.Corners.INVERSE[i], "Interface\\AddOns\\ForeverUnitFrames\\" .. file:gsub("/", "\\"))
 end
 
--- The nine-slice masks: arcs of radius SLICE in the corner cells, all
--- opaque between them, so the stretched edges and middle cut nothing.
-local SLICE = ns.Corners.SLICE
-H.check("slice margin", SLICE, 28)
-local function roundAt(data, x, y) return alphaAt(data, x, y) == 0 end
-local function opaqueBetween(data)
-    for i = 0, 63 do
-        for _, xy in ipairs({ { SLICE, i }, { 63 - SLICE, i }, { i, SLICE }, { i, 63 - SLICE } }) do
-            if alphaAt(data, xy[1], xy[2]) ~= 255 then return false end
+-- The client's rule for a sliced mask (measured in game at radius 9: the
+-- fill's arc came out ~29 UI units with 28-texel margins and the mask
+-- scaled to 9/28): a corner cell is `margin` UI units of the box, and the
+-- mask's scale is ignored. So radius r uses a file whose arcs are r texels,
+-- sliced with margins r. Each file: 32 x 32, arcs of r texels in the
+-- corner cells, opaque between them.
+local MASK = 32
+local function maskAlpha(data, x, y) return data:byte(18 + ((MASK - 1 - y) * MASK + x) * 4 + 4) end
+local ROUND = { ALL = { true, true, true, true }, TOP = { true, true, false, false },
+    BOTTOM = { false, false, true, true } }
+local CORNER = { { 0, 0 }, { MASK - 1, 0 }, { 0, MASK - 1 }, { MASK - 1, MASK - 1 } }
+H.check("radii up to the setting's max", ns.Corners.MAX_RADIUS, ns.Settings.Get("cornerRadius").max)
+for r = 1, ns.Corners.MAX_RADIUS do
+    for shape, round in pairs(ROUND) do
+        local path = ns.Corners.MaskFile(r, shape)
+        local file = path:gsub("^Interface\\AddOns\\ForeverUnitFrames\\", ""):gsub("\\", "/")
+        local d = tga(file)
+        local label = file
+        H.check(label .. " size", #d, 18 + MASK * MASK * 4)
+        H.check(label .. " width", d:byte(13), MASK)
+        for i, xy in ipairs(CORNER) do
+            H.check(label .. " corner " .. i .. " round", maskAlpha(d, xy[1], xy[2]) < 255, round[i])
+        end
+        -- The arc spans exactly r texels: its end texels at r - 1 are
+        -- (nearly) opaque, the texel r in from the corner along the
+        -- diagonal is outside the arc's reach.
+        local opaqueBetween = true
+        for i = 0, MASK - 1 do
+            for _, xy in ipairs({ { r, i }, { MASK - 1 - r, i }, { i, r }, { i, MASK - 1 - r } }) do
+                if maskAlpha(d, xy[1], xy[2]) ~= 255 then opaqueBetween = false end
+            end
+        end
+        H.checkTrue(label .. " opaque beyond the corner cells", opaqueBetween)
+        if round[1] then
+            H.checkTrue(label .. " arc reaches the cell's edge", maskAlpha(d, r - 1, 0) > 128)
+            local d45 = math.floor(r * (1 - math.sqrt(0.5)) - 0.5)
+            H.checkTrue(label .. " arc radius r (diagonal)", d45 < 0 or maskAlpha(d, d45, d45) < 128)
         end
     end
-    return true
-end
-local ROUND = { -- file: top-left, top-right, bottom-left, bottom-right round
-    ["Media/Rounded.tga"] = { true, true, true, true },
-    ["Media/RoundedTop.tga"] = { true, true, false, false },
-    ["Media/RoundedBottom.tga"] = { false, false, true, true },
-}
-for file, round in pairs(ROUND) do
-    local d = tga(file)
-    local corners = { { 0, 0 }, { 63, 0 }, { 0, 63 }, { 63, 63 } }
-    for i, xy in ipairs(corners) do
-        H.check(file .. " corner " .. i .. " round", roundAt(d, xy[1], xy[2]), round[i])
-    end
-    H.checkTrue(file .. " opaque between the corner cells", opaqueBetween(d))
-    H.check(file .. " arc ends at the cell's edge", alphaAt(d, SLICE - 1, 0) > 200, true)
-    H.check(file .. " middle opaque", alphaAt(d, 32, 32), 255)
 end
 
 -- The installer ships them (it copies only what the TOC lists otherwise).
@@ -84,8 +96,8 @@ os.execute("'" .. ADDONDIR .. "/install' '" .. dir .. "' > /dev/null")
 local shipped = io.open(dir .. "/ForeverUnitFrames/Media/Corner.tga", "rb")
 H.checkTrue("installed corner mask", shipped)
 if shipped then shipped:close() end
-for _, file in ipairs({ "Rounded", "RoundedTop", "RoundedBottom", "CornerInverseTopLeft", "CornerInverseTopRight",
-    "CornerInverseBottomLeft", "CornerInverseBottomRight" }) do
+for _, file in ipairs({ "Rounded01", "Rounded12Top", "Rounded07Bottom", "CornerInverseTopLeft",
+    "CornerInverseTopRight", "CornerInverseBottomLeft", "CornerInverseBottomRight" }) do
     H.checkTrue("installed mask " .. file, io.open(dir .. "/ForeverUnitFrames/Media/" .. file .. ".tga", "rb"))
 end
 os.execute("rm -rf '" .. dir .. "'")
@@ -113,8 +125,8 @@ H.check("square: mask hidden", f.clip.mask:IsShown(), false)
 H.check("radius 0", Co.Radius("target"), 0)
 
 -- General radius 6 reaches every frame: one nine-slice mask over the
--- whole frame, scaled so its corner cells are the radius. One mask per
--- texture, however the castbar sits (Elements/Shape.lua).
+-- whole frame, the file for that radius sliced with margins of the radius.
+-- One mask per texture, however the castbar sits (Elements/Shape.lua).
 C.Set("general", "cornerRadius", 6)
 H.check("radius", Co.Radius("target"), 6)
 for _, name in ipairs({ "title", "healthBg", "powerBg", "portraitBg", "portrait2D" }) do
@@ -125,13 +137,14 @@ H.check("health fill rounded", masked(f.health:GetStatusBarTexture()), 1)
 H.check("power fill rounded", masked(f.power:GetStatusBarTexture()), 1)
 local mask = f.clip.mask
 H.check("mask over the frame", mask._allPoints, f)
-H.check("mask file", mask._texture, Co.MASKS.ALL)
+H.check("mask file", mask._texture, Co.MaskFile(6, "ALL"))
 H.check("mask clamps", mask._wrap[1] .. mask._wrap[2], "CLAMPCLAMP")
-H.check("mask sliced", table.concat(mask._slice, ","), "28,28,28,28")
+H.check("mask sliced by the radius", table.concat(mask._slice, ","), "6,6,6,6")
 H.check("mask stretched", mask._sliceMode, Enum.UITextureSliceMode.Stretched)
-H.check("mask scaled to the radius", mask:GetScale(), 6 / 28)
+H.check("mask not scaled", mask._scale, nil)
 H.checkTrue("mask shown", mask:IsShown())
-H.check("file path", Co.MASKS.ALL, "Interface\\AddOns\\ForeverUnitFrames\\Media\\Rounded.tga")
+H.check("file path", Co.MaskFile(6, "ALL"), "Interface\\AddOns\\ForeverUnitFrames\\Media\\Rounded06.tga")
+H.check("file path, top round", Co.MaskFile(12, "TOP"), "Interface\\AddOns\\ForeverUnitFrames\\Media\\Rounded12Top.tga")
 
 -- The class badge sticks out of the block: it keeps only its round mask.
 H.check("badge icon not clipped", masked(f.classIcon), badgeMasks)
@@ -140,7 +153,8 @@ H.check("badge ring not clipped", masked(f.classRing), badgeMasks)
 -- Restyling does not stack masks.
 C.Set("general", "cornerRadius", 8)
 H.check("no masks stacked", masked(f.healthBg), 1)
-H.check("new scale", f.clip.mask:GetScale(), 8 / 28)
+H.check("new radius: its file", f.clip.mask._texture, Co.MaskFile(8, "ALL"))
+H.check("new radius: its margins", f.clip.mask._slice[1], 8)
 
 -- Castbar: its own mask, icon (and the slot behind it) included.
 H.check("castbar background rounded", masked(bar.bg), 1)

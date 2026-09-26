@@ -44,7 +44,7 @@ function Shape.Radius(frame)
     local w, h = ns.Single.Size(frame.key)
     local radius = ns.Corners.Clamp(ns.Corners.Radius(frame.key), w, h)
     if not dockSide(frame) then return radius end
-    return math.min(radius, ns.Castbar.Height(frame.key))
+    return math.min(radius, math.floor(ns.Castbar.Height(frame.key) + 1e-6))
 end
 
 -- The docked castbar's side ("BELOW", "ABOVE" or nil) and how far its
