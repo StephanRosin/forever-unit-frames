@@ -14,6 +14,18 @@ function Single.Size(scope)
     return Pixel.Snap(Config.Get(scope, "width")), Pixel.Snap(Config.Get(scope, "height"))
 end
 
+-- The size a frame's contents are laid out for: its configured size, or
+-- in combat the size it actually has. A button the group header makes in
+-- combat keeps its XML size until the relayout after combat (Units/
+-- Party.lua), and its bars and texts must fit that size until then.
+function Single.LayoutSize(frame)
+    local w, h = Single.Size(frame.key)
+    if not InCombatLockdown() then return w, h end
+    local actualW, actualH = frame:GetWidth(), frame:GetHeight()
+    if actualW > 0 and actualH > 0 then return actualW, actualH end
+    return w, h
+end
+
 -- Border thickness of scope on the pixel grid (ns.Border.Size).
 function Single.BorderSize(scope)
     return ns.Border.Size(scope)
@@ -37,9 +49,14 @@ end
 -- (snapped) frame height, so the rows always fill the frame exactly.
 local function layoutBars(frame)
     local scope = frame.key
-    local _, height = Single.Size(scope)
+    local frameWidth, height = Single.LayoutSize(frame)
+    frame.layoutHeight = height
+    -- The rows are shares of the configured height, or of the actual one
+    -- while that differs (see Single.LayoutSize).
+    local _, configured = Single.Size(scope)
+    local rowsHeight = height == configured and Config.Get(scope, "height") or height
     local powerOn = Config.Get(scope, "powerEnabled")
-    local th, _, ph = Layout.Rows(Config.Get(scope, "height"), Config.Get(scope, "titlePercent"),
+    local th, _, ph = Layout.Rows(rowsHeight, Config.Get(scope, "titlePercent"),
         Config.Get(scope, "healthPercent"), Config.Get(scope, "powerPercent"), powerOn)
     local powerShown = powerOn and ph > 0
     local pixel = Pixel.Snap(1, nil, 1)
@@ -55,7 +72,7 @@ local function layoutBars(frame)
     title:SetShown(titleH > 0)
     frame.titleHeight = titleH
     frame.titleLeft, frame.titleRight = left, right
-    local width = Single.Size(scope) - left - right
+    local width = frameWidth - left - right
     -- The overheal lane (Elements/HealPrediction.lua) takes the end of
     -- the health bar's row; the title row keeps the full width, the power
     -- bar too unless it is set to match the health bar.

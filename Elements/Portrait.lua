@@ -28,7 +28,8 @@ function Portrait.Style(frame)
     bg:ClearAllPoints()
     if on then
         local point = mode == "LEFT" and "TOPLEFT" or "TOPRIGHT"
-        local size = ns.Pixel.Snap(Config.Get(scope, "height"))
+        -- As tall as the frame is laid out (Single.LayoutSize).
+        local size = frame.layoutHeight or ns.Pixel.Snap(Config.Get(scope, "height"))
         bg:SetPoint(point, frame, point, 0, 0)
         bg:SetSize(size, size)
         local c = Config.Get(scope, "backgroundColor")
