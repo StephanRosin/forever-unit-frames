@@ -171,6 +171,10 @@ local ROW_BUILDERS = {
         return Widgets.Dropdown(parent, opts)
     end,
     color = function(parent, _, opts) return Widgets.Color(parent, opts) end,
+    text = function(parent, def, opts)
+        opts.maxLetters = def.maxLetters or ns.Settings.TEXT_MAX
+        return Widgets.TextInput(parent, opts)
+    end,
 }
 
 local function inheritOpts(scope, key)
@@ -184,7 +188,16 @@ end
 -- conceals a Blizzard castbar, which comes back after a /reload.
 local HINT_SCOPES = { hideBlizzardCastbar = { player = true } }
 
+-- Hints that follow the settings: how range fading measures.
+local DYNAMIC_HINTS = {
+    rangeFriendlyMode = function() return ns.Range.MethodHint("friendly") end,
+    rangeHostileMode = function() return ns.Range.MethodHint("hostile") end,
+    rangeFriendlySpell = function() return ns.Range.SpellHint("friendly") end,
+    rangeHostileSpell = function() return ns.Range.SpellHint("hostile") end,
+}
+
 local function hintFor(scope, key)
+    if DYNAMIC_HINTS[key] then return DYNAMIC_HINTS[key] end
     if HINT_SCOPES[key] and not HINT_SCOPES[key][scope] then return nil end
     return localized("HINT_" .. key)
 end
@@ -436,9 +449,25 @@ local function refreshFooter()
     Style.Paint(Options.testButton.text, testOn and "accent" or idle)
 end
 
+-- Rows that only mean something while another setting allows it: the
+-- range spell and yards of a reaction whose fading is off.
+local ROW_ACTIVE = {
+    rangeFriendlySpell = function() return ns.Range.ReactionOn("friendly") end,
+    rangeFriendlyYards = function() return ns.Range.ReactionOn("friendly") end,
+    rangeHostileSpell = function() return ns.Range.ReactionOn("hostile") end,
+    rangeHostileYards = function() return ns.Range.ReactionOn("hostile") end,
+}
+
+local function setRowStates()
+    forEachRow(function(row)
+        local active = ROW_ACTIVE[row.key]
+        row:SetEnabled(not inCombat and (not active or active()))
+    end)
+end
+
 local function applyLock()
     local on = not inCombat
-    forEachRow(function(row) row:SetEnabled(on) end)
+    setRowStates()
     for _, control in ipairs(frame.footerControls) do control:SetEnabled(on) end
     Options.combatNotice:SetShown(inCombat)
     anchorScroll()
@@ -841,6 +870,7 @@ end
 ns.Listen("CONFIG_CHANGED", function()
     if not Options.IsOpen() then return end
     forEachRow(function(row) row:Refresh() end)
+    setRowStates()
     Options.languageRow:Refresh()
 end)
 

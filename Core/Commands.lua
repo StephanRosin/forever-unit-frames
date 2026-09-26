@@ -22,6 +22,7 @@ local function parseValue(def, raw)
         end
         return nil
     end
+    if def.type == "text" then return raw end
     return nil   -- colors are set in the options window
 end
 

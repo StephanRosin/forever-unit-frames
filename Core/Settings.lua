@@ -67,6 +67,9 @@ local function inList(values, v)
     return false
 end
 
+-- The longest free text a setting takes (a spell name, or its ID).
+Settings.TEXT_MAX = 64
+
 function Settings.Validate(def, v)
     local t = def.type
     if t == "int" then
@@ -91,6 +94,12 @@ function Settings.Validate(def, v)
         return { v[1], v[2], v[3], v[4] }
     elseif t == "media" then
         if type(v) ~= "string" or v == "" then return nil end
+        return v
+    elseif t == "text" then
+        -- Free text, trimmed; empty is allowed. def.maxLetters caps it.
+        if type(v) ~= "string" then return nil end
+        v = v:match("^%s*(.-)%s*$")
+        if #v > (def.maxLetters or Settings.TEXT_MAX) then return nil end
         return v
     end
     return nil
@@ -419,12 +428,27 @@ Settings.Define({ key = "groupIconY", code = "LY", scope = "frame", only = GROUP
 -- Range fading (Elements/Range.lua): party members and their pets, the
 -- target, the focus and the pet at a lower opacity while out of range.
 local RANGE = { party = true, target = true, focus = true, pet = true }
--- Enemies are only measured by the follow distance (about 28 yards): off
--- on the target and focus by default.
-Settings.Define({ key = "rangeFade", code = "VE", scope = "frame", only = RANGE, type = "bool",
-    default = { party = true, pet = true, _ = false } })
+-- On everywhere: every class measures enemies, by a spell or in yards.
+Settings.Define({ key = "rangeFade", code = "VE", scope = "frame", only = RANGE, type = "bool", default = true })
 Settings.Define({ key = "rangeAlpha", code = "VA", scope = "frame", only = RANGE, type = "int", min = 0, max = 100,
     default = 50 })
+-- How range is measured, for friends and for enemies (General only):
+-- AUTO is the spell, or yards when there is none; SPELL the spell only;
+-- YARDS the distance in yards; OFF: units of that reaction never fade.
+-- Stored by index: append only.
+-- The spell fields take a name or a spell ID; empty is the class's own
+-- (Range.CLASS_SPELLS).
+local RANGE_MODES = { "AUTO", "SPELL", "YARDS", "OFF" }
+Settings.Define({ key = "rangeFriendlyMode", code = "VG", scope = "general", type = "enum", values = RANGE_MODES,
+    default = "AUTO" })
+Settings.Define({ key = "rangeFriendlySpell", code = "VF", scope = "general", type = "text", default = "" })
+Settings.Define({ key = "rangeFriendlyYards", code = "VY", scope = "general", type = "int", min = 5, max = 40,
+    default = 40 })
+Settings.Define({ key = "rangeHostileMode", code = "VK", scope = "general", type = "enum", values = RANGE_MODES,
+    default = "AUTO" })
+Settings.Define({ key = "rangeHostileSpell", code = "VH", scope = "general", type = "text", default = "" })
+Settings.Define({ key = "rangeHostileYards", code = "VZ", scope = "general", type = "int", min = 5, max = 40,
+    default = 30 })
 
 -- Threat glow (Elements/Threat.lua): the unit's own threat on the player,
 -- party and pet frames, your threat on it on the others.

@@ -35,7 +35,7 @@ local function encodeValue(def, v)
         for i, name in ipairs(def.values) do if name == v then return tostring(i) end end
     end
     if t == "color" then return "#" .. hexByte(v[1]) .. hexByte(v[2]) .. hexByte(v[3]) .. hexByte(v[4]) end
-    if t == "media" then return "'" .. escape(v) end
+    if t == "media" or t == "text" then return "'" .. escape(v) end
     return nil
 end
 
@@ -61,6 +61,10 @@ local function decodeValue(def, raw)
     if t == "media" then
         local name = raw:match("^'(.+)$")
         return name and unescape(name)
+    end
+    if t == "text" then
+        local text = raw:match("^'(.*)$")
+        return text and Settings.Validate(def, unescape(text))
     end
     return nil
 end

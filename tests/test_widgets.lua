@@ -25,6 +25,42 @@ H.check("out of range keeps value", value, 333)
 sl:SetEnabled(false)
 H.check("disabled slider", sl.slider._enabled, false)
 
+-- Text input: commits trimmed text on Enter, refused text flashes and
+-- shows the stored value, ESC restores it, a refresh keeps typing.
+local text = ""
+local ti = W.TextInput(parent, { label = "Spell", maxLetters = 64, hint = function() return "now " .. text end,
+    get = function() return text end,
+    set = function(v)
+        if #v > 10 then return false end
+        text = v:match("^%s*(.-)%s*$"); return true
+    end })
+ti:Refresh()
+H.check("text input empty", ti.edit:GetText(), "")
+H.check("dynamic hint", ti.hintText:GetText(), "now ")
+H.check("text input letters capped", ti.edit._maxLetters, 64)
+ti.edit:SetText(" Smite ")
+ti.edit:GetScript("OnEnterPressed")(ti.edit)
+H.check("text input commits", text, "Smite")
+H.check("box shows stored value", ti.edit:GetText(), "Smite")
+ti:Refresh()
+H.check("hint follows the value", ti.hintText:GetText(), "now Smite")
+ti.edit:SetText("much too long a name")
+ti.edit:GetScript("OnEnterPressed")(ti.edit)
+H.check("refused keeps value", text, "Smite")
+H.check("refused reverts box", ti.edit:GetText(), "Smite")
+ti.edit:SetText("Heal")
+ti.edit:GetScript("OnEscapePressed")(ti.edit)
+H.check("escape restores", ti.edit:GetText(), "Smite")
+H.check("escape stores nothing", text, "Smite")
+ti.edit:SetFocus()
+ti.edit:SetText("Hea")
+ti:Refresh()
+H.check("refresh keeps typing", ti.edit:GetText(), "Hea")
+ti.edit:GetScript("OnEditFocusLost")(ti.edit)
+H.check("leaving the box commits", text, "Hea")
+ti:SetEnabled(false)
+H.check("disabled text input", ti.edit._enabled, false)
+
 -- Checkbox
 local on = true
 local cb = W.Checkbox(parent, { label = "Enabled", get = function() return on end, set = function(v) on = v; return true end })

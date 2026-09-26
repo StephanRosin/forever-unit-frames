@@ -25,6 +25,12 @@ Schema.GENERAL = {
         { id = "absorbs", keys = { "absorbColor" } },
         { id = "healPrediction", keys = { "healMyColor", "healOtherColor" } },
     } },
+    -- How range fading measures; the switches and opacity are per frame
+    -- (Status > Range on each frame's page).
+    { id = "status", sections = {
+        { id = "range", keys = { "rangeFriendlyMode", "rangeFriendlySpell", "rangeFriendlyYards",
+            "rangeHostileMode", "rangeHostileSpell", "rangeHostileYards" } },
+    } },
     { id = "profile", custom = "profile" },
 }
 
