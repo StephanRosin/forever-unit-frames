@@ -206,6 +206,11 @@ do
     H.checkTrue("decay timer", decay)
     M.FireEvent("PARTY_LEADER_CHANGED")
     H.check("other updates keep the result", a.ready._atlas, NOT_READY)
+    -- A slot handed to another unit during the decay drops the old result.
+    M.units.party2 = { name = "Bob", health = 5, healthMax = 10 }
+    M.SetGroup({ "party2" })
+    H.check("new unit: old result gone", a.ready:IsShown(), false)
+    M.SetGroup({ "party1" })
     M.RunTimers()
     H.check("decayed: player", g.ready:IsShown(), false)
     H.check("decayed: member", a.ready:IsShown(), false)

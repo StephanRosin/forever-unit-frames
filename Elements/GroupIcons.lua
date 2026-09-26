@@ -163,6 +163,10 @@ function GroupIcons.Update(frame)
     local g = frame.groupIcons
     if not g or g.preview then return end
     local unit = frame.unit
+    -- Another unit: its ready check result is not this one's.
+    if unit ~= g.unit then
+        g.unit, g.readyStatus = unit, nil
+    end
     g.leaderKind = leaderKind(unit)
     -- While a finished check decays its result stays as it was.
     if not decay then g.readyStatus = readyStatus(unit) end
