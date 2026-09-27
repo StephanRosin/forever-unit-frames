@@ -306,7 +306,10 @@ Settings.Define({ key = "auraBorder", code = "AZ", scope = "inherit", type = "bo
 -- configured on its own. Codes: J + letter for buffs, D + letter for
 -- debuffs (the letter is the same for both groups). Anchor OTHER is the
 -- other group.
-Settings.AURA_GROUPS = { "buffs", "debuffs" }
+-- A third group on the party frames, "dispels" (codes I + letter): the
+-- debuffs you can dispel, with their own size and place; while it is on,
+-- the debuffs group leaves them out. Its OTHER is the debuffs.
+Settings.AURA_GROUPS = { "buffs", "debuffs", "dispels" }
 -- Tracking and sensing spells (Classic IDs): profession finds, hunter,
 -- druid, paladin and warlock tracking. Left out by "Hide tracking".
 Settings.TRACKING_SPELLS = {
@@ -401,6 +404,22 @@ local AURA_DEFAULTS = {
         Max = { party = 6, targettarget = 6, pet = 6, _ = 16 },
         HighlightOwn = { target = true, focus = true, _ = false }, OwnSize = ownSizes(AURA_SIZE),
     },
+    -- Off by default; when on, centred on the member.
+    dispels = {
+        letter = "I",
+        only = { party = true },
+        Enabled = false,
+        ShowTime = true,
+        Anchor = "FRAME",
+        FramePoint = "CENTER",
+        Point = "CENTER",
+        X = 0,
+        Y = 0,
+        Growth = "RIGHT",
+        RowGrowth = "DOWN",
+        Size = 24, Spacing = 2, PerRow = 0,
+        Max = 3,
+    },
 }
 
 for _, group in ipairs(Settings.AURA_GROUPS) do
@@ -411,7 +430,7 @@ for _, group in ipairs(Settings.AURA_GROUPS) do
         -- (only debuffs can be limited to dispellable ones).
         if defaults[suffix] ~= nil then
             local def = { key = group .. suffix, code = defaults.letter .. letter, scope = "frame",
-                default = defaults[suffix] }
+                only = defaults.only, default = defaults[suffix] }
             for k, v in pairs(template) do def[k] = v end
             Settings.Define(def)
         end
@@ -541,6 +560,9 @@ Settings.Define({ key = "targetHighlight", code = "TG", scope = "frame", only = 
     default = true })
 Settings.Define({ key = "targetHighlightColor", code = "TK", scope = "inherit", only = { party = true }, type = "color",
     default = { 1, 1, 1, 0.9 } })
+-- The band's thickness in pixels.
+Settings.Define({ key = "targetHighlightSize", code = "TJ", scope = "frame", only = { party = true }, type = "int",
+    min = 1, max = 12, default = 3 })
 -- Player frame out of combat (Elements/CombatFade.lua): faded to this
 -- opacity while idle.
 Settings.Define({ key = "playerFadeOOC", code = "WF", scope = "frame", only = { player = true }, type = "bool",

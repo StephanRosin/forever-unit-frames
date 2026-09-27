@@ -168,6 +168,18 @@ end
 -- would take settings in combat, but its buttons refuse us while auras
 -- are secret, and their size must change together with the layout.
 
+-- The groups a frame has containers for: those whose settings apply to
+-- it (the dispels group only on the party).
+local function groupKeys(frame)
+    if frame.auraGroupKeys then return frame.auraGroupKeys end
+    local keys = {}
+    for _, key in ipairs(ns.Settings.AURA_GROUPS) do
+        if ns.Settings.AppliesTo(ns.Settings.Get(key .. "Enabled"), frame.key) then keys[#keys + 1] = key end
+    end
+    frame.auraGroupKeys = keys
+    return keys
+end
+
 -- Every frame with containers.
 local all = setmetatable({}, { __mode = "k" })
 -- Frames waiting for the end of combat (to be made or configured).
@@ -257,7 +269,7 @@ end
 local function apply(frame)
     local live = not testing()
     stale[frame] = nil
-    for _, key in ipairs(ns.Settings.AURA_GROUPS) do
+    for _, key in ipairs(groupKeys(frame)) do
         local group, entry = frame.auras[key], frame.auraContainers[key]
         local container, flow = entry.container, AuraContainers.Flow(group)
         container:SetFlowLayoutAxis(flow.axis)
@@ -277,8 +289,8 @@ local function apply(frame)
         container:SetShown(live and group.enabled)
     end
     -- Anchors last, all cleared first: a group may hang from the other.
-    for _, key in ipairs(ns.Settings.AURA_GROUPS) do frame.auraContainers[key].container:ClearAllPoints() end
-    for _, key in ipairs(ns.Settings.AURA_GROUPS) do place(frame, key) end
+    for _, key in ipairs(groupKeys(frame)) do frame.auraContainers[key].container:ClearAllPoints() end
+    for _, key in ipairs(groupKeys(frame)) do place(frame, key) end
     if ns.WeaponEnchants then ns.WeaponEnchants.Layout(frame) end
 end
 
@@ -287,7 +299,7 @@ end
 local function build(frame)
     local made = {}
     local ok, err = pcall(function()
-        for _, key in ipairs(ns.Settings.AURA_GROUPS) do create(frame, key, made) end
+        for _, key in ipairs(groupKeys(frame)) do create(frame, key, made) end
     end)
     if not ok then
         for _, entry in pairs(made) do entry.container:Hide() end
@@ -356,7 +368,7 @@ end)
 function AuraContainers.Refresh(frame, event)
     if not frame.auraContainers then return end
     local unit = frame.unit or "none"
-    for _, key in ipairs(ns.Settings.AURA_GROUPS) do
+    for _, key in ipairs(groupKeys(frame)) do
         local container = frame.auraContainers[key].container
         if container:GetUnit() ~= unit then
             container:SetUnit(unit)
@@ -379,13 +391,13 @@ end)
 -- Test mode shows our samples instead (a container shows only real auras).
 function AuraContainers.Hide(frame)
     if not frame.auraContainers then return end
-    for _, key in ipairs(ns.Settings.AURA_GROUPS) do frame.auraContainers[key].container:Hide() end
+    for _, key in ipairs(groupKeys(frame)) do frame.auraContainers[key].container:Hide() end
 end
 
 ns.Listen("TEST_MODE", function(on)
     if on then return end
     for frame in pairs(all) do
-        for _, key in ipairs(ns.Settings.AURA_GROUPS) do
+        for _, key in ipairs(groupKeys(frame)) do
             frame.auraContainers[key].container:SetShown(frame.auras[key].enabled)
         end
     end

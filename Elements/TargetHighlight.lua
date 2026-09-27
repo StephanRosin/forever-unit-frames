@@ -10,7 +10,6 @@ ns.TargetHighlight = TargetHighlight
 
 local Config, Secrets, Pixel, Border = ns.Config, ns.Secrets, ns.Pixel, ns.Border
 
-TargetHighlight.SIZE = 3
 -- Test mode: pretend party member 1 is your target.
 TargetHighlight.PARTY_SAMPLE = 1
 
@@ -37,7 +36,7 @@ end
 function TargetHighlight.Style(frame)
     local h = frame.targetHighlight
     if not h then return end
-    local size = Pixel.Snap(TargetHighlight.SIZE, nil, 1)
+    local size = Pixel.Snap(Config.Get(ns.Party.KEY, "targetHighlightSize"), nil, 1)
     local c = Config.Get(ns.Party.KEY, "targetHighlightColor")
     for _, holder in pairs({ h.frame, h.block }) do
         -- Above the threat glow in the same ring.

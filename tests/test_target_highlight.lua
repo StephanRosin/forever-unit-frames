@@ -65,3 +65,29 @@ H.check("band takes the colour", piece._color[3], 0)
 -- shadow file stayed black whatever colour was set (a report).
 H.check("band drawn from the white fade", piece._texture, ns.Border.GLOW)
 H.checkTrue("not the black shadow", piece._texture ~= ns.Border.SHADOW)
+
+-- Thickness: a party setting, 3 pixels by default.
+do
+    local sdef = S.Get("targetHighlightSize")
+    H.check("thickness code", sdef.code, "TJ")
+    H.checkTrue("thickness on party", S.AppliesTo(sdef, "party"))
+    H.check("thickness not on target", S.AppliesTo(sdef, "target"), false)
+    H.check("thickness default", C.Get("party", "targetHighlightSize"), 3)
+    local function thickness()
+        -- The top edge: as tall as the band is thick.
+        return ns.Border.GlowPieces(a.targetHighlight.frame)[1]:GetHeight()
+    end
+    local before = thickness()
+    C.Set("party", "targetHighlightSize", 8)
+    H.checkTrue("thicker band", thickness() > before)
+    C.Set("party", "targetHighlightSize", 3)
+    H.check("back", thickness(), before)
+    local found
+    for _, tab in ipairs(ns.Schema.Tabs("party")) do
+        for _, sec in ipairs(tab.sections or {}) do
+            if sec.id == "targetHighlight" then found = tab.id .. ":" .. table.concat(sec.keys, ",") end
+        end
+    end
+    H.check("own section on the status tab", found,
+        "status:targetHighlight,targetHighlightColor,targetHighlightSize")
+end

@@ -25,7 +25,11 @@ local SORT_RULE = Enum and Enum.UnitAuraSortRule and Enum.UnitAuraSortRule.Defau
 local GROUPS = {
     buffs = { filter = "HELPFUL", isDebuff = false, other = "debuffs" },
     debuffs = { filter = "HARMFUL", isDebuff = true, other = "buffs" },
+    -- RAID on harmful auras: those you can dispel (AuraUtil.AuraFilters).
+    dispels = { filter = "HARMFUL|RAID", isDebuff = true, other = "debuffs" },
 }
+-- What a group has no setting for (the dispels group has only some).
+local FIXED = { OnlyMine = false, Dispellable = false, HidePermanent = false, HighlightOwn = false }
 local ORDER = ns.Settings.AURA_GROUPS
 
 -- Test mode samples, repeated up to each group's maximum. Icons Blizzard's
@@ -44,6 +48,11 @@ Auras.SAMPLES = {
         { icon = "Interface\\Icons\\Spell_Magic_PolymorphChicken", duration = 90, dispel = "Disease" },
         { icon = "Interface\\Icons\\INV_Misc_QuestionMark", duration = 600 },
     },
+    dispels = {
+        { icon = "Interface\\Icons\\Spell_Shadow_Teleport", duration = 300, dispel = "Magic" },
+        { icon = "Interface\\Icons\\INV_Misc_Bone_Skull_02", duration = 240, dispel = "Curse" },
+        { icon = "Interface\\Icons\\INV_AzeriteDebuff", duration = 180, count = 5, dispel = "Poison" },
+    },
 }
 -- When the samples of this test mode session started (their swipes run
 -- from there).
@@ -53,7 +62,16 @@ local sampleStart
 local built = setmetatable({}, { __mode = "k" })
 
 local function get(frame, group, suffix)
-    return Config.Get(frame.key, group.key .. suffix)
+    local key = group.key .. suffix
+    if not ns.Settings.Get(key) then return FIXED[suffix] end
+    return Config.Get(frame.key, key)
+end
+
+-- Whether the frame shows the dispels group: its own switch, on the frames
+-- it applies to (not the party's pets and targets, which derive from it).
+function Auras.DispelsShown(frame)
+    return ns.Settings.AppliesTo(ns.Settings.Get("dispelsEnabled"), frame.key)
+        and Config.Get(frame.key, "dispelsEnabled") == true
 end
 
 function Auras.Build(frame)
@@ -185,7 +203,11 @@ local function readSettings(frame, group)
     local filter = GROUPS[group.key].filter
     local onlyMine = get(frame, group, "OnlyMine")
     if onlyMine then filter = filter .. "|PLAYER" end
-    if group.isDebuff and get(frame, group, "Dispellable") then filter = filter .. "|RAID" end
+    local dispellableOnly = group.isDebuff and get(frame, group, "Dispellable")
+    if dispellableOnly then filter = filter .. "|RAID" end
+    -- The dispellable ones have their own group: the debuffs leave them out.
+    local moved = group.key == "debuffs" and Auras.DispelsShown(frame)
+    if moved and not dispellableOnly then filter = filter .. "|!RAID" end
     group.filter = filter
     -- Yours first: the client tells them apart ("PLAYER": cast by you,
     -- your pet or vehicle; "!PLAYER": everything else), so no aura field
@@ -199,9 +221,12 @@ local function readSettings(frame, group)
     group.hideLonger = longer > 0 and longer * 60 or nil
     group.hideTracking = not group.isDebuff and get(frame, group, "HideTracking") or false
     group.enabled = get(frame, group, "Enabled")
+    -- Only dispellable debuffs, and those moved out: nothing is left.
+    if moved and dispellableOnly then group.enabled = false end
+    if group.key == "dispels" then group.enabled = Auras.DispelsShown(frame) end
     group.max = get(frame, group, "Max")
     group.size = Pixel.Snap(get(frame, group, "Size"), nil, 1)
-    group.ownSize = Pixel.Snap(get(frame, group, "OwnSize"), nil, 1)
+    group.ownSize = Pixel.Snap(get(frame, group, "OwnSize") or get(frame, group, "Size"), nil, 1)
     group.spacing = Pixel.Snap(get(frame, group, "Spacing"))
     group.primary = get(frame, group, "Growth")
     group.row = Layout.AuraRowDirection(group.primary, get(frame, group, "RowGrowth"))
