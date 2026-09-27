@@ -114,6 +114,28 @@ local function setShown(bar, shown)
     if frame.unitBox then ns.Shape.Refresh(frame) end
 end
 
+-- The client animates the bar itself from the cast's duration object
+-- (StatusBar:SetTimerDuration), smoothly and with secret times too. Setting
+-- the value from Lua every frame looked jagged on other units' casts (a
+-- report: party, target, focus). Without a duration object, or on a client
+-- without timer bars, OnUpdate sets the value as before.
+local function startTimer(bar, cast)
+    if type(cast.duration) == "nil" or not bar.SetTimerDuration then return false end
+    local interpolation = Enum.StatusBarInterpolation and Enum.StatusBarInterpolation.Immediate
+    local direction = Enum.StatusBarTimerDirection and Enum.StatusBarTimerDirection.ElapsedTime
+    return (pcall(bar.SetTimerDuration, bar, cast.duration, interpolation, direction))
+end
+
+-- Ends a running timer: an empty duration, then a plain range.
+local function stopTimer(bar)
+    if not bar.timing then return end
+    bar.timing = nil
+    if C_DurationUtil and C_DurationUtil.CreateDuration then
+        pcall(bar.SetTimerDuration, bar, C_DurationUtil.CreateDuration())
+    end
+end
+Castbar.StopTimer = stopTimer
+
 -- Idle: hidden, or with "Always show" an empty bar that holds its place.
 -- A docked castbar holds it too while a threat bar sits below or beside it
 -- (Elements/ThreatBar.lua): nothing may move in combat.
@@ -124,6 +146,7 @@ end
 
 function Castbar.Stop(bar)
     bar.cast = nil
+    stopTimer(bar)
     local scope = bar.scope
     if not (Config.Get(scope, "castbarEnabled") and holdsPlace(scope)) then
         setShown(bar, false)
@@ -141,9 +164,11 @@ end
 
 -- Puts the unit's current cast (or channel) on the bar. Returns false
 -- when the unit is not casting (channelling) at all.
+
 function Castbar.Begin(bar, unit, channel, castGUID)
     local info = read(unit, channel)
     if type(info[1]) == "nil" then return false end
+    stopTimer(bar)
     bar.cast = { startMs = info[4], endMs = info[5], channel = channel, guid = castGUID,
         duration = durationOf(unit, channel) }
     bar:SetMinMaxValues(info[4], info[5])
@@ -152,6 +177,7 @@ function Castbar.Begin(bar, unit, channel, castGUID)
     bar.text:SetText(info[1])
     bar.icon:SetTexture(info[3])
     bar:SetValue(now())
+    if startTimer(bar, bar.cast) then bar.timing = true end
     Castbar.UpdateTime(bar)
     setShown(bar, true)
     return true
@@ -178,7 +204,7 @@ function Castbar.OnUpdate(bar)
     local cast = bar.cast
     if not cast or bar.preview then return end
     local nowMs = now()
-    bar:SetValue(nowMs)
+    if not bar.timing then bar:SetValue(nowMs) end
     local endMs = Secrets.Number(cast.endMs)
     if endMs and nowMs >= endMs then
         -- The stop event went missing; a readable end time is proof enough.
@@ -356,6 +382,7 @@ function Castbar.Preview(frame, on)
         return
     end
     bar.cast = nil
+    stopTimer(bar)
     bar:SetMinMaxValues(0, 1)
     bar:SetValue(0.6)
     bar:SetReverseFill(false)

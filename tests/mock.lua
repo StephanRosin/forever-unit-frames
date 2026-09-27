@@ -993,7 +993,21 @@ function M.Reset()
         if template and template:find("DisableUntrustedLayoutScriptsTemplate") then w._layoutForbidden = true end
         if kind == "AuraContainer" then M.NewAuraContainer(w, template) end
         if template and template:find("Secure") then w._protected = true end
-        if kind == "StatusBar" then w._barTex = newWidget("Texture", nil, w) end
+        if kind == "StatusBar" then
+            w._barTex = newWidget("Texture", nil, w)
+            -- Timer bars (SimpleStatusBarAPIDocumentation.lua): the client
+            -- animates the value from a duration object. An empty duration
+            -- (C_DurationUtil.CreateDuration) ends the timer.
+            function w:SetTimerDuration(duration, interpolation, direction)
+                assert(type(duration) ~= "nil", "duration must be a LuaDurationObject")
+                if type(duration) == "table" and duration._empty then
+                    self._timer = nil
+                else
+                    self._timer = duration
+                end
+                self._timerDirection = direction
+            end
+        end
         if name then _G[name] = w end
         table.insert(M.frames, w)
         if template == "SecureGroupHeaderTemplate" then makeGroupHeader(w) end
@@ -1140,6 +1154,7 @@ function M.Reset()
         local d = u(unit); local c = d and d.channel
         if c then return c.name, c.name, c.texture, c.startMs, c.endMs, false, c.notInterruptible, 1 end
     end
+    _G.C_DurationUtil = { CreateDuration = function() return { _empty = true } end }
     _G.UnitCastingDuration = function(unit) local d = u(unit); return d and d.castDuration end
     _G.UnitChannelDuration = function(unit) local d = u(unit); return d and d.castDuration end
     _G.C_StringUtil = { TruncateWhenZero = function(n) return n end }
@@ -1475,6 +1490,8 @@ function M.Reset()
     }
 
     _G.Enum = {
+        StatusBarInterpolation = { Immediate = 0, ExponentialEaseOut = 1 },
+        StatusBarTimerDirection = { ElapsedTime = 0, RemainingTime = 1 },
         UITextureSliceMode = { Stretched = 0, Tiled = 1 },
         LuaCurveType = { Linear = 0, Step = 1, Cosine = 2, Cubic = 3 },
         UnitAuraSortRule = { Unsorted = 0, Default = 1, BigDefensive = 2, Expiration = 3, ExpirationOnly = 4,

@@ -87,6 +87,19 @@ M.units.target.cast = { name = name, startMs = startMs, endMs = endMs }
 M.units.target.castDuration = { GetRemainingDuration = function() return remaining end }
 M.FireEvent("UNIT_SPELLCAST_START", "target", "guid-b", 686)
 H.check("duration: secret seconds passed through", bar.time._args[1], remaining)
+-- With a duration object the client animates the bar (smooth, secret times
+-- too); OnUpdate no longer sets the value (that looked jagged).
+H.check("timer bar: the cast's duration", bar._timer, M.units.target.castDuration)
+H.check("timer bar: elapsed time", bar._timerDirection, Enum.StatusBarTimerDirection.ElapsedTime)
+H.checkTrue("timer bar: flagged", bar.timing)
+local valueBefore = bar:GetValue()
+M.Tick(0.1)
+H.check("timer bar: no value from Lua", bar:GetValue(), valueBefore)
+M.units.target.cast = nil
+M.FireEvent("UNIT_SPELLCAST_STOP", "target", "guid-b", 686)
+H.check("stop: timer ended", bar._timer, nil)
+H.check("stop: not flagged", bar.timing, nil)
+M.units.target.cast = { name = name, startMs = startMs, endMs = endMs }
 -- A secret duration object refuses to be asked: empty, no error.
 M.units.target.castDuration = M.Secret({})
 M.FireEvent("UNIT_SPELLCAST_START", "target", "guid-c", 686)
