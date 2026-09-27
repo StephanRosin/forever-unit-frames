@@ -466,6 +466,12 @@ Settings.Define({ key = "threatGlow", code = "TH", scope = "frame", type = "bool
 -- have targeted gets a bright band; its pets follow the party setting.
 Settings.Define({ key = "targetHighlight", code = "TG", scope = "frame", only = { party = true }, type = "bool",
     default = true })
+-- Player frame out of combat (Elements/CombatFade.lua): faded to this
+-- opacity while idle.
+Settings.Define({ key = "playerFadeOOC", code = "WF", scope = "frame", only = { player = true }, type = "bool",
+    default = false })
+Settings.Define({ key = "playerFadeAlpha", code = "WA", scope = "frame", only = { player = true }, type = "int",
+    min = 0, max = 100, default = 25 })
 
 -- Dispel highlight (Elements/Dispel.lua): the border of the player and
 -- party frames tints while the unit has a debuff you can dispel.

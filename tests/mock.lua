@@ -1076,6 +1076,7 @@ function M.Reset()
     end
     _G.UnitPower = function(unit) local d = u(unit); return d and d.power or 0 end
     _G.UnitPowerMax = function(unit) local d = u(unit); return d and d.powerMax or 0 end
+    _G.UnitAffectingCombat = function(unit) return unit == "player" and M.combat or false end
     _G.UnitPowerType = function(unit) local d = u(unit); return d and d.powerType or 0, d and d.powerToken or "MANA" end
     _G.UnitPowerPercent = function(unit, _, _, curve)
         local d = u(unit); local p = d and d.powerPercent or 0

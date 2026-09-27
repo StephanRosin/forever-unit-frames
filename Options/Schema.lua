@@ -78,6 +78,7 @@ Schema.FRAME = {
             "raidMarkerX", "raidMarkerY" } },
         { id = "groupIcons", keys = { "groupLeader", "groupReadyCheck", "groupResurrect", "groupIconSize",
             "groupIconFramePoint", "groupIconPoint", "groupIconX", "groupIconY" } },
+        { id = "outOfCombat", keys = { "playerFadeOOC", "playerFadeAlpha" } },
         { id = "statusIcons", keys = { "statusCombat", "statusResting", "statusSize", "statusFramePoint",
             "statusPoint", "statusX", "statusY" } },
         { id = "range", keys = { "rangeFade", "rangeAlpha" } },
