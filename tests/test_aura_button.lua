@@ -84,3 +84,17 @@ H.check("sample has no aura", debuff.auraID, nil)
 AuraButton.Clear(debuff)
 H.check("cleared", debuff:IsShown(), false)
 H.check("cleared id", debuff.auraID, nil)
+
+-- Borders off (General, overridable per frame): the icon fills the button,
+-- the border texture stays for the dispel colour but is not seen.
+H.check("aura border code", ns.Settings.Get("auraBorder").code, "AZ")
+H.check("aura border on by default", C.Get("target", "auraBorder"), true)
+C.Set("general", "auraBorder", false)
+AuraButton.Style(buff, "target", 20, true)
+H.check("no border: icon fills the button", select(4, buff.icon:GetPoint(1)), 0)
+H.check("no border: border not seen", buff.border._alpha, 0)
+C.Set("target", "auraBorder", true)
+AuraButton.Style(buff, "target", 20, true)
+H.check("frame override: border back", buff.border._alpha, 1)
+H.check("frame override: inset back", select(4, buff.icon:GetPoint(1)), 1)
+C.Set("general", "auraBorder", true)

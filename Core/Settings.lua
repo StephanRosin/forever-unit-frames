@@ -292,6 +292,10 @@ Settings.Define({ key = "textPowerLeft", code = "UL", scope = "frame", type = "e
 Settings.Define({ key = "textPowerRight", code = "UR", scope = "frame", type = "enum", values = TEXT_TAGS,
     default = { player = "CURRENT", _ = "NONE" } })
 
+-- The border around every aura icon (plain colour on buffs, the dispel
+-- colour on debuffs). General, overridable per frame.
+Settings.Define({ key = "auraBorder", code = "AZ", scope = "inherit", type = "bool", default = true })
+
 -- Auras. Buffs and debuffs are two groups with the same settings, each
 -- configured on its own. Codes: J + letter for buffs, D + letter for
 -- debuffs (the letter is the same for both groups). Anchor OTHER is the
