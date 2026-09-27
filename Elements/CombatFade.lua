@@ -1,14 +1,20 @@
 local _, ns = ...
 
 -- Player frame out of combat (optional): faded to a set opacity while
--- nothing is going on -- no combat, full health and power (rage
--- and runic-style power rest at 0), no cast. Anything else, or a value
--- that cannot be read (secret), shows it in full. Test mode and unlocked
--- frames always show it in full. Only the opacity changes: allowed on a
--- secure frame at any time.
+-- nothing is going on -- no combat, no cast, full health. Test mode and
+-- unlocked frames always show it in full. Only the opacity changes:
+-- allowed on a secure frame at any time.
+--
+-- The player's health reaches addon code as a secret, out of combat too,
+-- so "full" cannot be tested here. The client does it: a step curve maps
+-- the health fraction to the opacity (full: the faded opacity, anything
+-- less: 1), UnitHealthPercent evaluates it, and SetAlpha takes the
+-- (secret) result as it is. Power is not looked at: it has no such
+-- curve path to a single opacity together with health, and mana and
+-- energy refill quickly out of combat anyway.
 local CombatFade = {
     name = "CombatFade",
-    unitEvents = { "UNIT_HEALTH", "UNIT_MAXHEALTH", "UNIT_POWER_UPDATE", "UNIT_MAXPOWER",
+    unitEvents = { "UNIT_HEALTH", "UNIT_MAXHEALTH",
         "UNIT_SPELLCAST_START", "UNIT_SPELLCAST_STOP", "UNIT_SPELLCAST_CHANNEL_START",
         "UNIT_SPELLCAST_CHANNEL_STOP", "UNIT_SPELLCAST_INTERRUPTED", "UNIT_SPELLCAST_FAILED" },
 }
@@ -16,20 +22,16 @@ ns.CombatFade = CombatFade
 
 local Config, Secrets = ns.Config, ns.Secrets
 
--- Power types that rest at 0 (rage, runic power).
-local EMPTY_AT_REST = { [1] = true, [6] = true }
-
-local function full(value, maximum)
-    local v, m = Secrets.Number(value), Secrets.Number(maximum)
-    return v ~= nil and m ~= nil and v >= m
-end
-
-local function powerAtRest()
-    local kind = Secrets.Number((UnitPowerType("player")))
-    local power, maximum = UnitPower("player"), UnitPowerMax("player")
-    if Secrets.Number(maximum) == 0 then return true end
-    if kind and EMPTY_AT_REST[kind] then return Secrets.Number(power) == 0 end
-    return full(power, maximum)
+-- The step curve for a faded opacity (rebuilt when it changes).
+local curve, curveAlpha
+local function healthCurve(alpha)
+    if curve and curveAlpha == alpha then return curve end
+    curve = C_CurveUtil.CreateCurve()
+    curve:SetType(Enum.LuaCurveType.Step)
+    curve:AddPoint(0, 1)
+    curve:AddPoint(1, alpha)
+    curveAlpha = alpha
+    return curve
 end
 
 local function casting()
@@ -43,8 +45,6 @@ function CombatFade.Blocker()
     if ns.TestMode and ns.TestMode.IsOn() then return "TEST" end
     if ns.Movers and ns.Movers.IsUnlocked() then return "UNLOCKED" end
     if InCombatLockdown() or Secrets.Bool(UnitAffectingCombat, "player") ~= false then return "COMBAT" end
-    if not full(UnitHealth("player"), UnitHealthMax("player")) then return "HEALTH" end
-    if not powerAtRest() then return "POWER" end
     if casting() then return "CASTING" end
     return nil
 end
@@ -52,8 +52,13 @@ end
 function CombatFade.Apply(frame)
     frame = frame or ns.Frames.player
     if not frame then return end
-    local faded = CombatFade.Blocker() == nil
-    frame:SetAlpha(faded and Config.Get("player", "playerFadeAlpha") / 100 or 1)
+    if CombatFade.Blocker() ~= nil then
+        frame:SetAlpha(1)
+        return
+    end
+    local alpha = Config.Get("player", "playerFadeAlpha") / 100
+    local ok, value = pcall(UnitHealthPercent, "player", false, healthCurve(alpha))
+    if ok and type(value) ~= "nil" then frame:SetAlpha(value) else frame:SetAlpha(1) end
 end
 
 function CombatFade.Build() end

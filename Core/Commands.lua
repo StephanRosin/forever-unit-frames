@@ -36,8 +36,10 @@ local function status()
     ns.Print(L.STATUS_AURAS:format(ns.AuraContainers.Supported() and L.AURAS_CONTAINERS or L.AURAS_READ))
     local blocker = ns.CombatFade.Blocker()
     local frame = ns.Frames.player
+    -- The opacity may be secret (the client set it from the health curve).
+    local alpha = frame and ns.Secrets.Number(frame:GetAlpha())
     ns.Print(L.STATUS_FADE:format(blocker and L["FADE_" .. blocker] or L.FADE_FADED,
-        frame and math.floor(frame:GetAlpha() * 100 + 0.5) or 100))
+        alpha and tostring(math.floor(alpha * 100 + 0.5)) .. "%" or "?"))
 end
 
 -- What the slash command, the minimap button and a LibDataBroker

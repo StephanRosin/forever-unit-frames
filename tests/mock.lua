@@ -568,7 +568,11 @@ local function newWidget(kind, name, parent)
     function w:IsShown() return self._shown end
     function w:SetParent(p) self._parent = p end
     function w:GetParent() return self._parent end
-    function w:SetAlpha(a) self._alpha = a end
+    -- Takes a secret number (AllowedWhenTainted); the alpha carries it.
+    function w:SetAlpha(a)
+        self._alphaSecret = M.IsSecret(a) or nil
+        self._alpha = M.Reveal(a)
+    end
     function w:GetAlpha() return self._alpha or 1 end
     -- SimpleFrameAPI / SimpleRegionAPI: takes a secret boolean
     -- (AllowedWhenTainted); the alpha then carries the secret aspect.
@@ -1070,7 +1074,14 @@ function M.Reset()
     _G.UnitHealthMax = function(unit) local d = u(unit); return d and d.healthMax or 0 end
     _G.UnitHealthMissing = function(unit) local d = u(unit); return d and d.healthMissing or 0 end
     _G.UnitHealthPercent = function(unit, _, curve)
-        local d = u(unit); local p = d and d.healthPercent or 0
+        local d = u(unit); local p = d and d.healthPercent
+        if p == nil and d and d.health and d.healthMax then
+            -- Derived like the client, secret when either value is.
+            local h, m = M.Reveal(d.health), M.Reveal(d.healthMax)
+            p = m > 0 and h / m or 0
+            if M.IsSecret(d.health) or M.IsSecret(d.healthMax) then p = M.Secret(p) end
+        end
+        p = p or 0
         if curve then return curve:Evaluate(p) end
         return p
     end
@@ -1364,10 +1375,20 @@ function M.Reset()
     _G.C_CurveUtil = {
         CreateCurve = function()
             local c = { points = {} }
+            function c:SetType(t) self.type = t end
             function c:AddPoint(x, y) table.insert(self.points, { x, y }) end
             function c:Evaluate(x)
-                if M.IsSecret(x) then return M.Secret(M.Reveal(x) * 100) end
-                return x * 100
+                local v = M.Reveal(x)
+                local out
+                if self.type == Enum.LuaCurveType.Step then
+                    -- The last point at or left of x (points added in order).
+                    out = self.points[1] and self.points[1][2]
+                    for _, p in ipairs(self.points) do if v >= p[1] then out = p[2] end end
+                else
+                    out = v * 100
+                end
+                if M.IsSecret(x) then return M.Secret(out) end
+                return out
             end
             return c
         end,

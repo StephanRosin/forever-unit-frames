@@ -40,26 +40,22 @@ M.FireEvent("UNIT_HEALTH", "player")
 H.check("hurt: full", f:GetAlpha(), 1)
 M.units.player.health = 100
 M.FireEvent("UNIT_HEALTH", "player")
+-- Power is not looked at.
 M.units.player.power = 10
 M.FireEvent("UNIT_POWER_UPDATE", "player")
-H.check("mana missing: full", f:GetAlpha(), 1)
--- Rage rests at 0.
-M.units.player.powerType, M.units.player.power, M.units.player.powerMax = 1, 0, 100
-M.FireEvent("UNIT_POWER_UPDATE", "player")
-H.check("rage at 0: faded", f:GetAlpha(), 0.2)
-M.units.player.power = 30
-M.FireEvent("UNIT_POWER_UPDATE", "player")
-H.check("rage up: full", f:GetAlpha(), 1)
-M.units.player.power = 0
-M.FireEvent("UNIT_POWER_UPDATE", "player")
+H.check("mana missing: still faded", f:GetAlpha(), 0.2)
 
--- A secret value is not known to be full: shown.
+-- Secret health (as the client gives it to addons): the curve still
+-- decides, and the frame takes the secret opacity.
 M.units.player.health = M.Secret(100)
 M.FireEvent("UNIT_HEALTH", "player")
-H.check("secret health: full", f:GetAlpha(), 1)
+H.check("secret full health: faded", f:GetAlpha(), 0.2)
+H.checkTrue("opacity is the secret", f._alphaSecret)
+M.units.player.health = M.Secret(70)
+M.FireEvent("UNIT_HEALTH", "player")
+H.check("secret hurt: full", f:GetAlpha(), 1)
 M.units.player.health = 100
 M.FireEvent("UNIT_HEALTH", "player")
-H.check("readable again: faded", f:GetAlpha(), 0.2)
 
 -- Test mode and unlocked frames: always full, to set things up.
 ns.TestMode.Set(true)
@@ -74,9 +70,6 @@ H.check("off again: full", f:GetAlpha(), 1)
 H.check("reason: off", ns.CombatFade.Blocker(), "OFF")
 C.Set("player", "playerFadeOOC", true)
 H.check("reason: none", ns.CombatFade.Blocker(), nil)
-M.units.player.health = 50
-H.check("reason: health", ns.CombatFade.Blocker(), "HEALTH")
-M.units.player.health = 100
 M.SetCombat(true)
 H.check("reason: combat", ns.CombatFade.Blocker(), "COMBAT")
 M.SetCombat(false)
