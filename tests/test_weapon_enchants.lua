@@ -58,11 +58,19 @@ H.check("buffs moved on by two", cx - bx, 2 * step)
 local _, _, _, b2x = b2:GetPoint(1)
 H.check("second right of the first", b2x - bx, step)
 
--- The weapon's tooltip, which lists the enchant.
+-- The weapon's tooltip, which lists the enchant. Owned by the screen, at
+-- the cursor: the icon carries the untrusted-layout aspect (its holder's),
+-- and the client refuses it as a tooltip owner.
 local owned
 GameTooltip.SetInventoryItem = function(_, unit, slot) owned = unit .. slot end
-b:GetScript("OnEnter")(b)
+H.checkTrue("the icon has the aspect", M.HasLayoutAspect(b))
+local ok, err = pcall(b:GetScript("OnEnter"), b)
+H.checkTrue("tooltip opens without error", ok, err)
 H.check("tooltip: the weapon", owned, "player16")
+H.check("tooltip owner: the screen", GameTooltip._owner, UIParent)
+H.check("tooltip at the cursor", GameTooltip._anchor, "ANCHOR_CURSOR")
+b:GetScript("OnLeave")(b)
+H.check("leaving hides it", GameTooltip:IsShown(), false)
 
 -- Gone: the icons hide and the buffs move back.
 M.weaponEnchants = {}

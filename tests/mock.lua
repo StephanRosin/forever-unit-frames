@@ -1610,6 +1610,11 @@ function M.Reset()
     M.tooltipLines = {}
     local setOwner = GameTooltip.SetOwner
     function GameTooltip:SetOwner(owner, anchor)
+        -- The client refuses an owner with the untrusted-layout aspect: the
+        -- tooltip, anchored to it, would inherit it.
+        if M.HasLayoutAspect(owner) then
+            error("GameTooltip:SetOwner(): Anchoring disallowed as dependent object would inherit forbidden aspects: UntrustedLayoutScriptExecution", 2)
+        end
         M.tooltipLines = {}
         setOwner(self, owner, anchor)
     end

@@ -81,14 +81,23 @@ function WeaponEnchants.Wanted(frame)
         and frame.auraContainers ~= nil
 end
 
+-- The tooltip belongs to the screen and follows the cursor: the icons carry
+-- their holder's untrusted-layout aspect, and the client refuses them as
+-- owners (the tooltip, anchored to one, would inherit it).
+local tooltipFrom
+
 local function onEnter(self)
     if not self.invSlot then return end
-    GameTooltip:SetOwner(self, "ANCHOR_BOTTOMRIGHT")
+    GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR")
+    tooltipFrom = self
     if not pcall(GameTooltip.SetInventoryItem, GameTooltip, "player", self.invSlot) then GameTooltip:Hide() end
 end
 
 local function onLeave(self)
-    if GameTooltip:IsOwned(self) then GameTooltip:Hide() end
+    if tooltipFrom == self then
+        tooltipFrom = nil
+        if GameTooltip:IsOwned(UIParent) then GameTooltip:Hide() end
+    end
 end
 
 -- The icons may hang from an aura container (buffs anchored to the
