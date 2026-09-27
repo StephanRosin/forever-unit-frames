@@ -14,7 +14,7 @@ Schema.GENERAL = {
             action = "applyFontToFrames" },
         { id = "titleText", keys = { "titleClassIcon", "classIconSize", "classIconX", "classIconY",
             "classIconRing", "classIconRingColor" } },
-        { id = "bars", keys = { "barTexture", "backgroundColor" } },
+        { id = "bars", keys = { "barTexture", "backgroundColor", "titleBackground" } },
         { id = "auraIcons", keys = { "auraBorder" } },
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },
@@ -54,7 +54,7 @@ Schema.FRAME = {
     } },
     { id = "bars", sections = {
         { id = "health", keys = { "healthColorMode", "healthColor" } },
-        { id = "textures", keys = { "barTexture", "backgroundColor" } },
+        { id = "textures", keys = { "barTexture", "backgroundColor", "titleBackground" } },
         { id = "absorbs", keys = { "absorbEnabled", "absorbColor" } },
         { id = "healPrediction", keys = { "healPrediction", "healOverflow", "powerMatchesHealth", "healMyColor", "healOtherColor" } },
         { id = "shape", keys = { "cornerRadius" } },

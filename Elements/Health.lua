@@ -107,7 +107,8 @@ function Health.Style(frame)
     local bg = Config.Get(scope, "backgroundColor")
     frame.healthBg:SetVertexColor(bg[1], bg[2], bg[3], bg[4])
     frame.title:SetTexture(tex)
-    frame.title:SetVertexColor(bg[1], bg[2], bg[3], bg[4])
+    -- Clear when the title row has no background: the bars keep theirs.
+    frame.title:SetVertexColor(bg[1], bg[2], bg[3], Config.Get(scope, "titleBackground") and bg[4] or 0)
 end
 
 -- Test mode: 60 % health, so sample heals and shield show inside the bar

@@ -83,3 +83,20 @@ ns2.Config.Set("target", "width", 280)
 M.SetCombat(false)
 H.check("both restyles applied: player", ns2.Frames.player:GetWidth(), 270)
 H.check("both restyles applied: target", ns2.Frames.target:GetWidth(), 280)
+
+-- The title row's background can be switched off on its own: the bars
+-- keep theirs, so the missing health stays seen (a report).
+do
+    local ns = H.LoadAddon()
+    M.FireEvent("PLAYER_LOGIN")
+    M.RunTimers()
+    local C, t = ns.Config, ns.Frames.target
+    H.check("title background code", ns.Settings.Get("titleBackground").code, "NB")
+    H.check("on by default", C.Get("target", "titleBackground"), true)
+    local bg = C.Get("target", "backgroundColor")
+    H.check("title: the background's opacity", t.title._color[4], bg[4])
+    C.Set("general", "titleBackground", false)
+    H.check("off: title clear", t.title._color[4], 0)
+    H.check("off: health bar keeps its background", t.healthBg._color[4], bg[4])
+    C.Set("general", "titleBackground", true)
+end

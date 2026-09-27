@@ -38,7 +38,7 @@ In a "Status" tab per frame.
 - Your own debuffs come first and bigger.
 - Wraps to new rows when they don't fit, with a limit per row.
 - Anchor to the frame, the health bar, the power bar, the castbar or the other aura group, with any of the 9 points and an X/Y offset.
-- Size, spacing, growth direction, maximum count, "only mine", "dispellable only", "hide tracking" (herb, mineral and treasure finding, hunter tracking, sensing), "hide permanent" (every aura without a duration, e.g. auras and stances), remaining time and dispel-type colours.
+- Size, spacing, growth direction, maximum count, "only mine", "dispellable only", "hide tracking" (herb, mineral and treasure finding, hunter tracking, sensing), "hide permanent" (every aura without a duration, e.g. auras and stances), "hide longer than N minutes" (hour potions, food, hour-long buffs), remaining time, dispel-type colours and an icon border that can be switched off.
 
 ## Castbars
 - Castbars for player, target, target of target, focus and party.
@@ -60,6 +60,7 @@ In a "Status" tab per frame.
 - Bar textures, including Blizzard's own; LibSharedMedia textures and fonts appear too if another addon provides them. Fonts with size and outline (including a soft outline) and colours.
 - Rounded corners, and an outer border (Flat or Gold with shading) that encloses the frame and its docked castbar.
 - Soft drop shadow.
+- The title row's background can be switched off on its own, so the bars keep theirs and the missing health stays visible.
 - Global font settings with "Apply to all frames".
 
 ## Options

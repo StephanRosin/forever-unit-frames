@@ -139,6 +139,9 @@ Settings.Define({ key = "classIconRingColor", code = "KC", scope = "inherit", ty
     default = { 0.78, 0.78, 0.8, 1 } })
 Settings.Define({ key = "barTexture", code = "BT", scope = "inherit", type = "media", mediaKind = "statusbar", default = "Flat" })
 Settings.Define({ key = "backgroundColor", code = "BC", scope = "inherit", type = "color", default = { 0, 0, 0, 0.6 } })
+-- The title row (name, level) takes the background colour too; off, it is
+-- clear and only the bars keep a background (their empty part stays seen).
+Settings.Define({ key = "titleBackground", code = "NB", scope = "inherit", type = "bool", default = true })
 -- Outer border (Core/Border.lua): one ring around the unit, a docked
 -- castbar included. Hidden keeps size and padding for later. Styles are
 -- stored by index: append only.
