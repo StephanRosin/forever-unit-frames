@@ -460,6 +460,10 @@ Settings.Define({ key = "rangeHostileYards", code = "VZ", scope = "general", typ
 -- party and pet frames, your threat on it on the others.
 Settings.Define({ key = "threatGlow", code = "TH", scope = "frame", type = "bool",
     default = { player = true, party = true, _ = false } })
+-- Target highlight (Elements/TargetHighlight.lua): the party member you
+-- have targeted gets a bright band; its pets follow the party setting.
+Settings.Define({ key = "targetHighlight", code = "TG", scope = "frame", only = { party = true }, type = "bool",
+    default = true })
 
 -- Dispel highlight (Elements/Dispel.lua): the border of the player and
 -- party frames tints while the unit has a debuff you can dispel.

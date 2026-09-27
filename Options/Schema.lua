@@ -81,7 +81,7 @@ Schema.FRAME = {
         { id = "statusIcons", keys = { "statusCombat", "statusResting", "statusSize", "statusFramePoint",
             "statusPoint", "statusX", "statusY" } },
         { id = "range", keys = { "rangeFade", "rangeAlpha" } },
-        { id = "threat", keys = { "threatGlow" } },
+        { id = "threat", keys = { "threatGlow", "targetHighlight" } },
         { id = "dispel", keys = { "dispelHighlight" } },
     } },
     { id = "castbar", sections = {
