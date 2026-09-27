@@ -8,7 +8,7 @@ local T = ns.PartyTargets
 
 -- Settings: party only, permanent codes, off by default.
 local CODES = { partyTargets = "YA", partyTargetWidth = "YW", partyTargetHeight = "YH",
-    partyTargetSide = "YS", partyTargetGap = "YG", partyTargetX = "YX", partyTargetY = "YY" }
+    partyTargetSide = "YS", partyTargetX = "YX", partyTargetY = "YY" }
 for key, code in pairs(CODES) do
     local def = S.Get(key)
     H.checkTrue(key .. " defined", def)
@@ -20,6 +20,8 @@ end
 C.Use({})
 H.check("off by default", C.Get("party", "partyTargets"), false)
 H.check("right by default", C.Get("party", "partyTargetSide"), "RIGHT")
+H.check("a small gap by default", C.Get("party", "partyTargetX"), 4)
+H.check("no separate distance setting", S.Get("partyTargetGap"), nil)
 local found
 for _, tab in ipairs(ns.Schema.Tabs("party")) do
     for _, sec in ipairs(tab.sections or {}) do
@@ -59,11 +61,11 @@ local border = ns.Border.Extent("party") + ns.Border.Extent("partytarget")
 local point, rel, relPoint, x, y = t1:GetPoint(1)
 H.check("right: point", point .. relPoint, "TOPLEFTTOPRIGHT")
 H.check("right: beside its member", rel, b1)
-H.check("right: gap and both borders", x, 4 + border)
+H.check("right: both borders and the default offset", x, border + 4)
 C.Set("party", "partyTargetSide", "LEFT")
 point, rel, relPoint, x = t1:GetPoint(1)
 H.check("left", point .. relPoint, "TOPRIGHTTOPLEFT")
-H.check("left: gap", x, -(4 + border))
+H.check("left: both borders, then the offset (positive: right)", x, -border + 4)
 C.Set("party", "partyTargetSide", "BELOW")
 point, rel, relPoint, x, y = t1:GetPoint(1)
 H.check("below", point .. relPoint, "TOPLEFTBOTTOMLEFT")
@@ -74,12 +76,12 @@ H.check("above", point .. relPoint, "BOTTOMLEFTTOPLEFT")
 H.checkTrue("above: over the member", y > 0)
 C.Set("party", "partyTargetSide", "RIGHT")
 -- Offsets on top of side and gap (positive: right, up).
-C.Set("party", "partyTargetX", 7)
+C.Set("party", "partyTargetX", 11)
 C.Set("party", "partyTargetY", -9)
 point, rel, relPoint, x, y = t1:GetPoint(1)
-H.check("offset x", x, 4 + border + 7)
+H.check("offset x", x, border + 11)
 H.check("offset y", y, -9)
-C.Set("party", "partyTargetX", 0)
+C.Set("party", "partyTargetX", 4)
 C.Set("party", "partyTargetY", 0)
 C.Set("party", "partyTargetWidth", 120)
 H.check("width setting", t1:GetWidth(), 120)

@@ -15,7 +15,7 @@ local _, ns = ...
 --
 -- Settings: the party's look through a derived scope, without what a small
 -- frame cannot hold (auras, castbar, portrait, power, title row); size,
--- side and gap are party settings.
+-- side and offset are party settings.
 local Targets = {}
 ns.PartyTargets = Targets
 
@@ -51,12 +51,12 @@ function Targets.Enabled()
     return get("enabled") and get("partyTargets")
 end
 
--- Where the target sits next to its member: points and offset. The gap is
--- between the two borders, so both borders' room is added; above or below,
--- a castbar docked on that side is passed too.
+-- Where the target sits next to its member: points and offset, border to
+-- border (both borders' room); above or below, a castbar docked on that
+-- side is passed too. X / Y (place) move it from there.
 function Targets.Anchor()
     local side = get("partyTargetSide")
-    local gap = Pixel.Snap(get("partyTargetGap")) + ns.Border.Extent(Party.KEY) + ns.Border.Extent(Targets.KEY)
+    local gap = ns.Border.Extent(Party.KEY) + ns.Border.Extent(Targets.KEY)
     local depth = ns.Castbar.DockedDepth(Party.KEY)
     local dock = depth > 0 and ns.Castbar.Placement(Party.KEY) or nil
     if side == "LEFT" then return "TOPRIGHT", "TOPLEFT", -gap, 0 end

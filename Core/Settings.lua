@@ -223,7 +223,7 @@ Settings.Define({ key = "partyPetAuras", code = "PA", scope = "frame", only = PA
 
 -- Party targets (Units/PartyTargets.lua): what each member has targeted, a
 -- small frame beside the member. Off by default (it clutters). Side: where
--- it sits; gap: the room between the two borders.
+-- it sits, border to border; X / Y move it from there.
 Settings.Define({ key = "partyTargets", code = "YA", scope = "frame", only = PARTY, type = "bool", default = false })
 Settings.Define({ key = "partyTargetWidth", code = "YW", scope = "frame", only = PARTY, type = "int", min = 40, max = 300,
     default = 100 })
@@ -231,11 +231,10 @@ Settings.Define({ key = "partyTargetHeight", code = "YH", scope = "frame", only 
     default = 24 })
 Settings.Define({ key = "partyTargetSide", code = "YS", scope = "frame", only = PARTY, type = "enum",
     values = { "RIGHT", "LEFT", "ABOVE", "BELOW" }, default = "RIGHT" })
-Settings.Define({ key = "partyTargetGap", code = "YG", scope = "frame", only = PARTY, type = "int", min = 0, max = 60,
-    default = 4 })
--- Moves it further from where side and gap put it (positive: right, up).
+-- Offset from where the side puts it, border to border (positive: right,
+-- up); a small gap to the right by default.
 Settings.Define({ key = "partyTargetX", code = "YX", scope = "frame", only = PARTY, type = "int", min = -200, max = 200,
-    default = 0 })
+    default = 4 })
 Settings.Define({ key = "partyTargetY", code = "YY", scope = "frame", only = PARTY, type = "int", min = -200, max = 200,
     default = 0 })
 
