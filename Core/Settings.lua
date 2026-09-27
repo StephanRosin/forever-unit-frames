@@ -233,6 +233,11 @@ Settings.Define({ key = "partyTargetSide", code = "YS", scope = "frame", only = 
     values = { "RIGHT", "LEFT", "ABOVE", "BELOW" }, default = "RIGHT" })
 Settings.Define({ key = "partyTargetGap", code = "YG", scope = "frame", only = PARTY, type = "int", min = 0, max = 60,
     default = 4 })
+-- Moves it further from where side and gap put it (positive: right, up).
+Settings.Define({ key = "partyTargetX", code = "YX", scope = "frame", only = PARTY, type = "int", min = -200, max = 200,
+    default = 0 })
+Settings.Define({ key = "partyTargetY", code = "YY", scope = "frame", only = PARTY, type = "int", min = -200, max = 200,
+    default = 0 })
 
 -- Castbar (not on the pet frame; off by default on the player frame)
 local CASTBAR = { player = true, target = true, targettarget = true, focus = true, party = true }

@@ -72,6 +72,7 @@ end
 -- Out of combat: size and place (protected on a secure button).
 local function place(button, member)
     local point, relPoint, x, y = Targets.Anchor()
+    x, y = x + Pixel.Snap(get("partyTargetX")), y + Pixel.Snap(get("partyTargetY"))
     button:SetSize(Single.Size(Targets.KEY))
     button:ClearAllPoints()
     button:SetPoint(point, member, relPoint, x, y)

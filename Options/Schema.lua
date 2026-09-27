@@ -47,7 +47,7 @@ Schema.FRAME = {
         { id = "group", keys = { "partyOrientation", "partySpacing", "partyShowPlayer", "partyShowSolo", "partyHideInRaid" } },
         { id = "pets", keys = { "partyShowPets", "partyPetHeight", "partyPetAuras" } },
         { id = "partyTargets", keys = { "partyTargets", "partyTargetSide", "partyTargetWidth", "partyTargetHeight",
-            "partyTargetGap" } },
+            "partyTargetGap", "partyTargetX", "partyTargetY" } },
         { id = "position", keys = { "x", "y" } },
     } },
     { id = "bars", sections = {

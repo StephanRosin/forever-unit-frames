@@ -8,7 +8,7 @@ local T = ns.PartyTargets
 
 -- Settings: party only, permanent codes, off by default.
 local CODES = { partyTargets = "YA", partyTargetWidth = "YW", partyTargetHeight = "YH",
-    partyTargetSide = "YS", partyTargetGap = "YG" }
+    partyTargetSide = "YS", partyTargetGap = "YG", partyTargetX = "YX", partyTargetY = "YY" }
 for key, code in pairs(CODES) do
     local def = S.Get(key)
     H.checkTrue(key .. " defined", def)
@@ -73,6 +73,14 @@ point, rel, relPoint, x, y = t1:GetPoint(1)
 H.check("above", point .. relPoint, "BOTTOMLEFTTOPLEFT")
 H.checkTrue("above: over the member", y > 0)
 C.Set("party", "partyTargetSide", "RIGHT")
+-- Offsets on top of side and gap (positive: right, up).
+C.Set("party", "partyTargetX", 7)
+C.Set("party", "partyTargetY", -9)
+point, rel, relPoint, x, y = t1:GetPoint(1)
+H.check("offset x", x, 4 + border + 7)
+H.check("offset y", y, -9)
+C.Set("party", "partyTargetX", 0)
+C.Set("party", "partyTargetY", 0)
 C.Set("party", "partyTargetWidth", 120)
 H.check("width setting", t1:GetWidth(), 120)
 
@@ -118,6 +126,9 @@ ns.TestMode.Set(true)
 local fake = T.fakes[1]
 H.checkTrue("test mode: pretend target", fake and fake:IsShown())
 H.check("beside the pretend member", select(2, fake:GetPoint(1)), ns.Party.fakes[1])
+C.Set("party", "partyTargetY", 5)
+H.check("pretend target: offset too", select(5, fake:GetPoint(1)), 5)
+C.Set("party", "partyTargetY", 0)
 H.check("live buttons not watched in test mode", t1._unitWatch, nil)
 ns.TestMode.Set(false)
 H.check("test mode off: pretend hidden", fake:IsShown(), false)
