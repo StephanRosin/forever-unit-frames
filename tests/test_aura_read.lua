@@ -119,3 +119,18 @@ H.check("member: only my buffs", member.auras.buffs.count, 1)
 table.remove(M.units.party1.auras, 1)
 M.FireEvent("UNIT_AURA", "party1", { isFullUpdate = true })
 H.check("member debuff gone", member.auras.debuffs.count, 0)
+
+-- Hide longer (fallback reader): a readable full duration past the limit
+-- is left out, and one of 0 too, as the container's maxDuration does.
+M.units.target.auras = {
+    aura(11, { isHelpful = true, duration = 3600, expirationTime = 4000 }),
+    aura(12, { isHelpful = true, duration = 300, expirationTime = 1200 }),
+    aura(13, { isHelpful = true, duration = 0 }),
+}
+C.Set("target", "buffsHideLonger", 10)
+M.FireEvent("PLAYER_TARGET_CHANGED")
+H.check("hide longer: only the five-minute buff", buffs.count, 1)
+H.check("hide longer: that one", buffs.buttons[1].icon._texture, 112)
+C.Set("target", "buffsHideLonger", 0)
+M.FireEvent("PLAYER_TARGET_CHANGED")
+H.check("hide longer off: all three", buffs.count, 3)

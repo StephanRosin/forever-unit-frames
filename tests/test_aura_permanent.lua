@@ -64,3 +64,25 @@ H.checkTrue("both: ids and duration", tf.excludeSpellIDs ~= nil and tf.maxDurati
 C.Set("target", "buffsHidePermanent", false)
 C.Set("target", "buffsHideTracking", false)
 H.check("both off: no filter", bc._groups.other.candidateFilters, nil)
+
+-- "Hide longer than N minutes": hour potions, food, hour-long buffs. The
+-- container's maxDuration is exactly that (auras without a duration go too).
+H.check("hide longer code", S.Get("buffsHideLonger").code, "JL")
+H.check("buffs only", S.Get("debuffsHideLonger"), nil)
+H.check("off by default", C.Get("target", "buffsHideLonger"), 0)
+C.Set("target", "buffsHideLonger", 10)
+local lf = bc._groups.other.candidateFilters
+H.check("ten minutes as the maximum", lf and lf.maxDuration, 600)
+H.check("the own group too", bc._groups.own.candidateFilters.maxDuration, 600)
+C.Set("target", "buffsHidePermanent", true)
+H.check("with hide permanent: still ten minutes", bc._groups.other.candidateFilters.maxDuration, 600)
+C.Set("target", "buffsHidePermanent", false)
+C.Set("target", "buffsHideLonger", 0)
+H.check("off again: no filter", bc._groups.other.candidateFilters, nil)
+local sec
+for _, tab in ipairs(ns.Schema.Tabs("target")) do
+    for _, s2 in ipairs(tab.sections or {}) do
+        for _, key in ipairs(s2.keys or {}) do if key == "buffsHideLonger" then sec = s2.id end end
+    end
+end
+H.check("hide longer: in the buffs section", sec, "buffs")

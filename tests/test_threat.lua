@@ -73,7 +73,7 @@ do
     H.check("around the unit box: in the block's ring holder", t.block:GetParent(), f.blockRing)
     local pieces = ns.Border.GlowPieces(t.frame)
     H.check("eight pieces", #pieces, 8)
-    H.check("the shadow's soft band", pieces[1]._texture, ns.Border.SHADOW)
+    H.check("the soft band, from the white fade (a colour multiplies it)", pieces[1]._texture, ns.Border.GLOW)
     -- The top edge starts outside the border.
     local p = { pieces[1]:GetPoint(1) }
     H.check("outside the ring", p[5], ns.Border.Extent("player"))
@@ -173,4 +173,11 @@ do
     M.units.player.threat = nil
     ns.TestMode.Set(false)
     H.check("off: sample gone", glowing(fakes[4]), false)
+end
+
+-- The threat glow takes its colour from a white fade, not the black shadow.
+do
+    local ns = boot()
+    local piece = ns.Border.GlowPieces(ns.Frames.player.threat.frame)[1]
+    H.check("threat glow from the white fade", piece._texture, ns.Border.GLOW)
 end

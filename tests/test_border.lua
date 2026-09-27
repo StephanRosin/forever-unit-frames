@@ -486,3 +486,7 @@ local hl = f.optionsHighlight
 H.check("highlight outside the border", point(hl[1], "BOTTOMLEFT")[5], B.Extent("target"))
 H.check("highlight around the unit box", point(hl[1], "BOTTOMLEFT")[2], unit)
 M.RunTimers()
+
+-- Both fades ship: the black shadow and the white glow (tools/make_shadow.py).
+H.checkTrue("shadow file", H.ReadFile("Media/Shadow.tga") ~= nil)
+H.checkTrue("glow file", H.ReadFile("Media/Glow.tga") ~= nil)

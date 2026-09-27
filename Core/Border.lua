@@ -25,6 +25,7 @@ ns.Border = Border
 local Config, Pixel = ns.Config, ns.Pixel
 
 Border.SHADOW = "Interface\\AddOns\\ForeverUnitFrames\\Media\\Shadow.tga"
+Border.GLOW = "Interface\\AddOns\\ForeverUnitFrames\\Media\\Glow.tga"
 local SHADOW_WIDTH, CELL, CELLS = 512, 32, 16
 -- Texture coordinates: half a texel inside a cell, so no neighbour bleeds.
 local HALF_U, HALF_V = 0.5 / SHADOW_WIDTH, 0.5 / CELL
@@ -198,11 +199,11 @@ end
 
 -- Shadow ----------------------------------------------------------------------
 
-local function newShadow(owner)
+local function newShadow(owner, file)
     local shadow = { corners = {}, inner = {} }
     local function piece()
         local texture = owner:CreateTexture(nil, "BACKGROUND", nil, -8)
-        texture:SetTexture(Border.SHADOW, "CLAMP", "CLAMP")
+        texture:SetTexture(file or Border.SHADOW, "CLAMP", "CLAMP")
         return texture
     end
     for i = 1, 4 do shadow[i] = piece() end
@@ -296,8 +297,11 @@ end
 -- its own pieces on owner, placed around box outside scope's ring and
 -- rounded with it. Plain textures: the colour may change in combat.
 
+-- A glow takes a colour (PaintGlow), so it uses the white fade: vertex
+-- colours multiply, and the black shadow file stayed black whatever colour
+-- it was given (a report: the target highlight was always black).
 function Border.DrawGlow(owner, scope, box, radius, size)
-    owner.glow = owner.glow or newShadow(owner)
+    owner.glow = owner.glow or newShadow(owner, Border.GLOW)
     placeBand(owner.glow, scope, box, radius or ns.Corners.Radius(scope), size)
 end
 

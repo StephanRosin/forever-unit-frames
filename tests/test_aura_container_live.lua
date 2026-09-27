@@ -118,3 +118,4 @@ M.FireEvent("PLAYER_TARGET_CHANGED")
 H.checkTrue("fallback: reads", M.auraQueries > 0)
 H.check("fallback: icon", ns.Frames.target.auras.buffs.count, 1)
 H.check("fallback: no containers", ns.Frames.target.auraContainers, nil)
+

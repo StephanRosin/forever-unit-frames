@@ -58,10 +58,13 @@ for _, id in ipairs(ns.Settings.TRACKING_SPELLS) do AuraContainers.TRACKING_SET[
 
 -- The container's own filters for "hide permanent" and "hide tracking";
 -- nil when neither is on.
+-- "Hide longer" is maxDuration itself: the client leaves out auras whose
+-- full duration exceeds it, and auras without one.
 function AuraContainers.CandidateFilters(group)
-    if not (group.hidePermanent or group.hideTracking) then return nil end
+    if not (group.hidePermanent or group.hideTracking or group.hideLonger) then return nil end
     local filters = {}
     if group.hidePermanent then filters.maxDuration = AuraContainers.ANY_DURATION end
+    if group.hideLonger then filters.maxDuration = group.hideLonger end
     if group.hideTracking then filters.excludeSpellIDs = AuraContainers.TRACKING_SET end
     return filters
 end

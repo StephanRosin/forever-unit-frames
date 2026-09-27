@@ -66,7 +66,7 @@ Schema.FRAME = {
         { id = "font", keys = { "fontFace", "fontSize", "fontOutline", "fontShadow", "showSurname" } },
     } },
     { id = "auras", sections = {
-        { id = "buffs", keys = { "buffsEnabled", "weaponEnchants", "buffsOnlyMine", "buffsHideTracking", "buffsHidePermanent", "buffsShowTime", "buffsAnchor", "buffsFramePoint",
+        { id = "buffs", keys = { "buffsEnabled", "weaponEnchants", "buffsOnlyMine", "buffsHideTracking", "buffsHidePermanent", "buffsHideLonger", "buffsShowTime", "buffsAnchor", "buffsFramePoint",
             "buffsPoint", "buffsX", "buffsY", "buffsGrowth", "buffsRowGrowth", "buffsSize", "buffsSpacing",
             "buffsPerRow", "buffsMax", "buffsHighlightOwn", "buffsOwnSize" } },
         { id = "debuffs", keys = { "debuffsEnabled", "debuffsOnlyMine", "debuffsDispellable", "debuffsHidePermanent", "debuffsShowTime",

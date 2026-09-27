@@ -194,6 +194,9 @@ local function readSettings(frame, group)
     group.ownFilter = onlyMine and filter or filter .. "|PLAYER"
     group.otherFilter = not onlyMine and filter .. "|!PLAYER" or nil
     group.hidePermanent = get(frame, group, "HidePermanent")
+    -- Seconds; nil when off (debuffs have no such setting).
+    local longer = not group.isDebuff and get(frame, group, "HideLonger") or 0
+    group.hideLonger = longer > 0 and longer * 60 or nil
     group.hideTracking = not group.isDebuff and get(frame, group, "HideTracking") or false
     group.enabled = get(frame, group, "Enabled")
     group.max = get(frame, group, "Max")
@@ -278,6 +281,12 @@ local function fill(frame, group, list, count)
         if group.hidePermanent and not Secrets.IsSecret(aura) and type(aura) == "table"
             and Secrets.Number(aura.duration) == 0 then
             aura = nil
+        end
+        -- Hide longer: a readable full duration past the limit is skipped,
+        -- and one of 0 too (the container's maxDuration does the same).
+        if aura and group.hideLonger and not Secrets.IsSecret(aura) and type(aura) == "table" then
+            local duration = Secrets.Number(aura.duration)
+            if duration and (duration == 0 or duration > group.hideLonger) then aura = nil end
         end
         if aura and group.hideTracking and not Secrets.IsSecret(aura) and type(aura) == "table"
             and Auras.IS_TRACKING[Secrets.Number(aura.spellId) or false] then

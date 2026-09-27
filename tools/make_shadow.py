@@ -55,15 +55,19 @@ def main():
     root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "Media")
     os.makedirs(root, exist_ok=True)
     header = struct.pack("<BBBHHBHHHHBB", 0, 0, 2, 0, 0, 0, 0, 0, WIDTH, HEIGHT, 32, 8)
-    rows = []
-    for y in range(HEIGHT - 1, -1, -1):  # bottom row first
-        row = bytearray()
-        for x in range(WIDTH):
-            row += bytes((0, 0, 0, int(round(alpha(x, y) * 255))))  # B, G, R, A
-        rows.append(bytes(row))
-    with open(os.path.join(root, "Shadow.tga"), "wb") as fh:
-        fh.write(header)
-        fh.write(b"".join(rows))
+    # Shadow.tga is black; Glow.tga the same fade in white, for the glows
+    # (threat, target highlight) that take a colour: vertex colours multiply,
+    # so a black texture stays black whatever colour it is given.
+    for name, rgb in (("Shadow.tga", 0), ("Glow.tga", 255)):
+        rows = []
+        for y in range(HEIGHT - 1, -1, -1):  # bottom row first
+            row = bytearray()
+            for x in range(WIDTH):
+                row += bytes((rgb, rgb, rgb, int(round(alpha(x, y) * 255))))  # B, G, R, A
+            rows.append(bytes(row))
+        with open(os.path.join(root, name), "wb") as fh:
+            fh.write(header)
+            fh.write(b"".join(rows))
 
 
 if __name__ == "__main__":

@@ -327,6 +327,10 @@ local AURA_SETTINGS = {
     { "HidePermanent", "P", { type = "bool" } },
     -- Leave out tracking and sensing spells (Settings.TRACKING_SPELLS).
     { "HideTracking", "K", { type = "bool" } },
+    -- Leave out buffs lasting longer than this many minutes in all (hour
+    -- potions, food, hour-long class buffs); 0 = off. The client then
+    -- leaves out auras without a duration too.
+    { "HideLonger", "L", { type = "int", min = 0, max = 120, zeroText = "ENUM_OFF" } },
     { "ShowTime", "T", { type = "bool" } },
     { "Anchor", "A", { type = "enum", values = AURA_ANCHORS } },
     { "FramePoint", "F", { type = "enum", values = Settings.POINTS } },
@@ -356,6 +360,7 @@ local AURA_DEFAULTS = {
         OnlyMine = { party = true, _ = false },
         HidePermanent = false,
         HideTracking = false,
+        HideLonger = 0,
         ShowTime = true,
         Anchor = "OTHER",
         FramePoint = { party = "TOPRIGHT", _ = "TOPLEFT" },

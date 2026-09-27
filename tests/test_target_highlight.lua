@@ -61,3 +61,7 @@ M.units.target = M.units.party1
 M.FireEvent("PLAYER_TARGET_CHANGED")
 local piece = ns.Border.GlowPieces(a.targetHighlight.frame)[1]
 H.check("band takes the colour", piece._color[3], 0)
+-- The band's file is the white fade: a colour multiplies it, and the black
+-- shadow file stayed black whatever colour was set (a report).
+H.check("band drawn from the white fade", piece._texture, ns.Border.GLOW)
+H.checkTrue("not the black shadow", piece._texture ~= ns.Border.SHADOW)
