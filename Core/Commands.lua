@@ -34,6 +34,10 @@ local function status()
     ns.Print(L.STATUS_SOURCE:format(isProvider and src or L["SOURCE_" .. src]))
     ns.Print(L.STATUS_FOCUS:format(ns.Units.FocusAvailable() and L.FOCUS_AVAILABLE or L.FOCUS_MISSING))
     ns.Print(L.STATUS_AURAS:format(ns.AuraContainers.Supported() and L.AURAS_CONTAINERS or L.AURAS_READ))
+    local blocker = ns.CombatFade.Blocker()
+    local frame = ns.Frames.player
+    ns.Print(L.STATUS_FADE:format(blocker and L["FADE_" .. blocker] or L.FADE_FADED,
+        frame and math.floor(frame:GetAlpha() * 100 + 0.5) or 100))
 end
 
 -- What the slash command, the minimap button and a LibDataBroker

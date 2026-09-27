@@ -28,12 +28,12 @@ M.SetCombat(false)
 M.FireEvent("PLAYER_REGEN_ENABLED")
 H.check("after combat: faded", f:GetAlpha(), 0.2)
 
+-- A target does not matter.
 M.units.target = { name = "Foe", health = 1, healthMax = 1 }
 M.FireEvent("PLAYER_TARGET_CHANGED")
-H.check("target: full", f:GetAlpha(), 1)
+M.FireEvent("UNIT_HEALTH", "player")
+H.check("target: still faded", f:GetAlpha(), 0.2)
 M.units.target = nil
-M.FireEvent("PLAYER_TARGET_CHANGED")
-H.check("no target: faded", f:GetAlpha(), 0.2)
 
 M.units.player.health = 60
 M.FireEvent("UNIT_HEALTH", "player")
@@ -69,3 +69,14 @@ H.check("test mode off: faded", f:GetAlpha(), 0.2)
 
 C.Set("player", "playerFadeOOC", false)
 H.check("off again: full", f:GetAlpha(), 1)
+
+-- /fuf status says what keeps it from fading.
+H.check("reason: off", ns.CombatFade.Blocker(), "OFF")
+C.Set("player", "playerFadeOOC", true)
+H.check("reason: none", ns.CombatFade.Blocker(), nil)
+M.units.player.health = 50
+H.check("reason: health", ns.CombatFade.Blocker(), "HEALTH")
+M.units.player.health = 100
+M.SetCombat(true)
+H.check("reason: combat", ns.CombatFade.Blocker(), "COMBAT")
+M.SetCombat(false)

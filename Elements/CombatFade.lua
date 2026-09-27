@@ -1,7 +1,7 @@
 local _, ns = ...
 
 -- Player frame out of combat (optional): faded to a set opacity while
--- nothing is going on -- no combat, no target, full health and power (rage
+-- nothing is going on -- no combat, full health and power (rage
 -- and runic-style power rest at 0), no cast. Anything else, or a value
 -- that cannot be read (secret), shows it in full. Test mode and unlocked
 -- frames always show it in full. Only the opacity changes: allowed on a
@@ -36,22 +36,23 @@ local function casting()
     return type((UnitCastingInfo("player"))) ~= "nil" or type((UnitChannelInfo("player"))) ~= "nil"
 end
 
-local function idle()
-    if InCombatLockdown() or Secrets.Bool(UnitAffectingCombat, "player") ~= false then return false end
-    if Secrets.Bool(UnitExists, "target") ~= false then return false end
-    if not full(UnitHealth("player"), UnitHealthMax("player")) then return false end
-    if not powerAtRest() then return false end
-    return not casting()
-end
-
-local function setupMode()
-    return (ns.TestMode and ns.TestMode.IsOn()) or (ns.Movers and ns.Movers.IsUnlocked())
+-- Why the frame is not faded right now, or nil when it is (or may be).
+-- The keys are ns.L strings FADE_<reason>, shown by /fuf status.
+function CombatFade.Blocker()
+    if not Config.Get("player", "playerFadeOOC") then return "OFF" end
+    if ns.TestMode and ns.TestMode.IsOn() then return "TEST" end
+    if ns.Movers and ns.Movers.IsUnlocked() then return "UNLOCKED" end
+    if InCombatLockdown() or Secrets.Bool(UnitAffectingCombat, "player") ~= false then return "COMBAT" end
+    if not full(UnitHealth("player"), UnitHealthMax("player")) then return "HEALTH" end
+    if not powerAtRest() then return "POWER" end
+    if casting() then return "CASTING" end
+    return nil
 end
 
 function CombatFade.Apply(frame)
     frame = frame or ns.Frames.player
     if not frame then return end
-    local faded = Config.Get("player", "playerFadeOOC") and not setupMode() and idle()
+    local faded = CombatFade.Blocker() == nil
     frame:SetAlpha(faded and Config.Get("player", "playerFadeAlpha") / 100 or 1)
 end
 
@@ -60,8 +61,7 @@ function CombatFade.Style(frame) if frame.key == "player" then CombatFade.Apply(
 function CombatFade.Update(frame) if frame.key == "player" then CombatFade.Apply(frame) end end
 
 local function applyPlayer() CombatFade.Apply() end
-for _, event in ipairs({ "PLAYER_REGEN_DISABLED", "PLAYER_REGEN_ENABLED", "PLAYER_TARGET_CHANGED",
-    "PLAYER_ENTERING_WORLD" }) do
+for _, event in ipairs({ "PLAYER_REGEN_DISABLED", "PLAYER_REGEN_ENABLED", "PLAYER_ENTERING_WORLD" }) do
     ns.On(event, applyPlayer)
 end
 ns.Listen("TEST_MODE", applyPlayer)
