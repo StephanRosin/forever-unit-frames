@@ -233,7 +233,9 @@ do
     local s = f.statusIcons
     local p = point(s.holder, "CENTER")
     H.check("shipped: on the health bar", p[2], f.health)
-    H.check("shipped: centred", p[3] .. p[4] .. p[5], "CENTER00")
+    -- The shipped offset (the author's layout): right of the centre.
+    H.check("shipped: on its centre", p[3], "CENTER")
+    H.check("shipped: offset", p[4] .. "," .. p[5], "49,-1")
     -- The health texts sit at the bar's ends; the row stays in its middle
     -- third on the shipped 300 px frame.
     H.checkTrue("shipped: row narrower than a third of the bar", s.holder:GetWidth() < f.healthWidth / 3)

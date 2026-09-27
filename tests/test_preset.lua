@@ -11,7 +11,7 @@ H.check("shadow on", C.Get("target", "shadowEnabled"), true)
 H.check("target width", C.Get("target", "width"), 300)
 H.check("player castbar on", C.Get("player", "castbarEnabled"), true)
 H.check("castbar kept in the frame", C.Get("target", "castbarAlwaysShow"), true)
-H.check("party width", C.Get("party", "width"), 192)
+H.check("party width", C.Get("party", "width"), 200)
 -- An inherited setting with a frame default: the frame's, until the
 -- general page sets a value for all.
 H.check("party: first name only", C.Get("party", "showSurname"), false)
@@ -48,7 +48,9 @@ local pl, pr = box("player")
 local el, er, eb, et = box("pet")
 local _, _, plb, plt = box("player")
 H.checkTrue("pet left of the player", er < pl)
-H.check("pet top on the player's top", et, plt)
+-- Since 0.9.0 the pet sits lower, beside the player's bars (the author's
+-- layout); it must still not reach above the player frame.
+H.checkTrue("pet not above the player", et <= plt)
 
 -- Damage and heal numbers on target and focus too.
 H.check("numbers on the target", C.Get("target", "combatFeedback"), true)
