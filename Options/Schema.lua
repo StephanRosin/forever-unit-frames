@@ -91,6 +91,8 @@ Schema.FRAME = {
             "castbarHeight" } },
         { id = "castbarContent", keys = { "castbarIcon", "castbarName", "castbarTime" } },
         { id = "castbarDetached", keys = { "castbarX", "castbarY" } },
+        { id = "threatBar", keys = { "threatBar", "threatBarHeight", "threatBarWarn", "threatBarRole",
+            "threatBarSolo" } },
     } },
 }
 

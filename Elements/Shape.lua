@@ -24,9 +24,14 @@ ns.Shape = Shape
 
 local Config = ns.Config
 
--- The frame's mask shape while a castbar docked on that side shows: the
--- corners away from the castbar stay round.
-local JOINED_SHAPE = { BELOW = "TOP", ABOVE = "BOTTOM" }
+-- The frame's mask shape by which of its sides join another row: the
+-- corners away from it stay round; joined on both sides, none are.
+local function frameShape(top, bottom)
+    if top and bottom then return "NONE" end
+    if bottom then return "TOP" end
+    if top then return "BOTTOM" end
+    return "ALL"
+end
 
 -- "BELOW" or "ABOVE" while the frame has a docked castbar, else nil.
 local function dockSide(frame)
@@ -40,11 +45,24 @@ end
 -- boxes, so one radius serves both). A docked castbar's row must hold its
 -- whole arc too: the frame's own corners on that side are square while
 -- the castbar shows, so an arc reaching past the row would leave a notch.
+-- The threat bar's row (Elements/ThreatBar.lua) is held to the same rule.
 function Shape.Radius(frame)
     local w, h = ns.Single.Size(frame.key)
     local radius = ns.Corners.Clamp(ns.Corners.Radius(frame.key), w, h)
-    if not dockSide(frame) then return radius end
-    return math.min(radius, math.floor(ns.Castbar.Height(frame.key) + 1e-6))
+    if dockSide(frame) then
+        radius = math.min(radius, math.floor(ns.Castbar.Height(frame.key) + 1e-6))
+    end
+    local threat = ns.ThreatBar and ns.ThreatBar.Height(frame.key) or 0
+    if threat > 0 then radius = math.min(radius, math.floor(threat + 1e-6)) end
+    return radius
+end
+
+-- Whether a castbar is docked below the frame, and the room it takes
+-- there (0 without one): the threat bar goes below it.
+function Shape.CastbarBelow(frame)
+    local side, reach = Shape.DockReach(frame)
+    if side == "BELOW" then return true, reach end
+    return false, 0
 end
 
 -- The docked castbar's side ("BELOW", "ABOVE" or nil) and how far its
@@ -57,10 +75,11 @@ end
 
 local function placeUnitBox(frame, side)
     local _, reach = Shape.DockReach(frame)
+    local threat = ns.ThreatBar and ns.ThreatBar.Height(frame.key) or 0
     local box = frame.unitBox
     box:ClearAllPoints()
     box:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, side == "ABOVE" and reach or 0)
-    box:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, side == "BELOW" and -reach or 0)
+    box:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, -((side == "BELOW" and reach or 0) + threat))
 end
 
 local function ringHolder(frame, box)
@@ -92,12 +111,18 @@ end
 
 -- Any time, combat included: which layout shows. Only shows and hides,
 -- and swaps the frame mask's file.
+-- A threat bar row (Elements/ThreatBar.lua) is always shown while it is
+-- on, so it joins the frame's bottom for good.
 function Shape.Refresh(frame)
     local side = frame.dockSide
-    local joined = side ~= nil and frame.castbar:IsShown()
+    local castbar = side ~= nil and frame.castbar:IsShown()
+    local threat = ns.ThreatBar and ns.ThreatBar.Active(frame.key) or false
+    local top = castbar and side == "ABOVE"
+    local bottom = (castbar and side == "BELOW") or threat
+    local joined = top or bottom
     frame.frameRing:SetShown(not joined)
     frame.blockRing:SetShown(joined)
-    ns.Corners.SetShape(frame.clip, joined and JOINED_SHAPE[side] or "ALL")
+    ns.Corners.SetShape(frame.clip, frameShape(top, bottom))
 end
 
 function Shape.Update() end

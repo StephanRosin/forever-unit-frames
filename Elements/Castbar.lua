@@ -115,10 +115,17 @@ local function setShown(bar, shown)
 end
 
 -- Idle: hidden, or with "Always show" an empty bar that holds its place.
+-- A docked castbar holds it too while a threat bar sits below or beside it
+-- (Elements/ThreatBar.lua): nothing may move in combat.
+local function holdsPlace(scope)
+    if Config.Get(scope, "castbarAlwaysShow") then return true end
+    return ns.ThreatBar and ns.ThreatBar.Active(scope) and Castbar.Placement(scope) ~= "DETACHED" or false
+end
+
 function Castbar.Stop(bar)
     bar.cast = nil
     local scope = bar.scope
-    if not (Config.Get(scope, "castbarEnabled") and Config.Get(scope, "castbarAlwaysShow")) then
+    if not (Config.Get(scope, "castbarEnabled") and holdsPlace(scope)) then
         setShown(bar, false)
         return
     end

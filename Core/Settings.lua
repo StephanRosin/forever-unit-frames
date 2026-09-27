@@ -474,6 +474,18 @@ Settings.Define({ key = "rangeHostileYards", code = "VZ", scope = "general", typ
 -- party and pet frames, your threat on it on the others.
 Settings.Define({ key = "threatGlow", code = "TH", scope = "frame", type = "bool",
     default = { player = true, party = true, _ = false } })
+-- Threat bar (Elements/ThreatBar.lua): your threat on your target, as a
+-- row below the player frame (and its docked castbar). Warn: the share at
+-- which it turns yellow. Solo: shown without a group too.
+local PLAYER = { player = true }
+Settings.Define({ key = "threatBar", code = "TB", scope = "frame", only = PLAYER, type = "bool", default = false })
+Settings.Define({ key = "threatBarHeight", code = "TZ", scope = "frame", only = PLAYER, type = "int", min = 6, max = 30,
+    default = 12 })
+Settings.Define({ key = "threatBarWarn", code = "TW", scope = "frame", only = PLAYER, type = "int", min = 50, max = 99,
+    default = 80 })
+Settings.Define({ key = "threatBarSolo", code = "TS", scope = "frame", only = PLAYER, type = "bool", default = false })
+Settings.Define({ key = "threatBarRole", code = "TO", scope = "frame", only = PLAYER, type = "enum",
+    values = { "AUTO", "TANK", "DPS" }, default = "AUTO" })
 -- Target highlight (Elements/TargetHighlight.lua): the party member you
 -- have targeted gets a bright band; its pets follow the party setting.
 Settings.Define({ key = "targetHighlight", code = "TG", scope = "frame", only = { party = true }, type = "bool",

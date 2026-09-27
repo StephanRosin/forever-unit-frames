@@ -895,6 +895,7 @@ function M.Reset()
     M.widgets = {}         -- every widget created, in creation order
     M.chat = {}
     M.combat = false
+    M.form = nil
     M.blocked = {}         -- protected-frame calls refused in combat
     M.secureDepth = 0      -- > 0 while mock secure code runs
     M.units = {}
@@ -1174,6 +1175,18 @@ function M.Reset()
         local d = u(unit)
         return d and d.threat
     end
+    -- Detailed threat (the threat bar): M.units[mob].detailed[unit] =
+    -- { tanking, status, scaled, raw, value }; any of them may be secret.
+    _G.UnitDetailedThreatSituation = function(unit, mob)
+        local m = u(mob)
+        local d = m and m.detailed and m.detailed[unit]
+        if not d then return nil end
+        return d[1], d[2], d[3], d[4], d[5]
+    end
+    -- Roles: d.role ("TANK", "HEALER", "DAMAGER" or nil); the shapeshift
+    -- form: M.form.
+    _G.UnitGroupRolesAssigned = function(unit) local d = u(unit); return d and d.role or "NONE" end
+    _G.GetShapeshiftFormID = function() return M.form end
     M.threatColors = { [0] = { 0.69, 0.69, 0.69 }, { 1, 1, 0.47 }, { 1, 0.6, 0 }, { 1, 0, 0 } }
     _G.GetThreatStatusColor = function(status)
         assert(not M.IsSecret(status), "GetThreatStatusColor: secret status from tainted code")
@@ -1404,7 +1417,19 @@ function M.Reset()
             local c = { points = {} }
             function c:SetType(t) self.type = t end
             function c:AddPoint(x, color) table.insert(self.points, { x, color }) end
-            function c:Evaluate() return { GetRGB = function() return 1, 1, 1 end } end
+            -- A step curve: the colour of the last point at or below x.
+            -- Other types stay white (no interpolation in the mock).
+            function c:Evaluate(x)
+                if self.type ~= Enum.LuaCurveType.Step then
+                    return { GetRGB = function() return 1, 1, 1 end }
+                end
+                local v, found = M.Reveal(x), nil
+                for _, p in ipairs(self.points) do
+                    if p[1] <= v then found = p[2] end
+                end
+                local col = found or { r = 1, g = 1, b = 1 }
+                return { GetRGB = function() return col.r, col.g, col.b end }
+            end
             return c
         end,
     }

@@ -38,6 +38,9 @@ Corners.INVERSE = {
 Corners.MAX_RADIUS = 12
 -- File name suffix by which corners are round.
 local SHAPE_SUFFIX = { ALL = "", TOP = "Top", BOTTOM = "Bottom" }
+-- No round corners at all (a frame joined above and below): a plain
+-- rectangle, the same file for every radius.
+Corners.SQUARE = MEDIA .. "Square.tga"
 Corners.POINTS = { "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT" }
 -- left, right, top, bottom: mirrored copies of the top-left shape.
 Corners.COORDS = { { 0, 1, 0, 1 }, { 1, 0, 0, 1 }, { 0, 1, 1, 0 }, { 1, 0, 1, 0 } }
@@ -45,6 +48,7 @@ Corners.COORDS = { { 0, 1, 0, 1 }, { 1, 0, 0, 1 }, { 0, 1, 1, 0 }, { 1, 0, 1, 0 
 -- The mask file for a whole radius (1..MAX_RADIUS) and a shape ("ALL",
 -- "TOP" or "BOTTOM").
 function Corners.MaskFile(radius, shape)
+    if shape == "NONE" then return Corners.SQUARE end
     return ("%sRounded%02d%s.tga"):format(MEDIA, radius, SHAPE_SUFFIX[shape])
 end
 
@@ -99,7 +103,7 @@ function Corners.SetMasked(texture, mask, on)
     end
 end
 
--- Which corners of clip's box are round: "ALL", "TOP" or "BOTTOM". Only
+-- Which corners of clip's box are round: "ALL", "TOP", "BOTTOM" or "NONE". Only
 -- changes the mask's file, so it is safe in combat.
 function Corners.SetShape(clip, shape)
     if clip.shape == shape or clip.radius <= 0 then return end
