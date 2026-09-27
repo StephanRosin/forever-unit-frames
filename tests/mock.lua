@@ -57,6 +57,19 @@ M.templates = {
         w._clicks = { "AnyUp" }
         w._attr["*type1"] = "target"
         w._attr["*type2"] = "togglemenu"
+        -- The target child: loaded (OnLoad) before its parent, as in XML.
+        local t = M.newWidget("Button", nil, w)
+        t._template = "SecureUnitButtonTemplate"
+        t._protected = true
+        t._w, t._h = 100, 24
+        t._clicks = { "AnyUp" }
+        t._shown = false
+        t._attr["useparent-unit"] = true
+        t._attr["unitsuffix"] = "target"
+        t._attr["*type1"] = "target"
+        t._attr["*type2"] = "togglemenu"
+        w.targetButton = t
+        ForeverUnitFrames.PartyTargetOnLoad(t)
         w._scripts.OnAttributeChanged = function(self, name, value)
             ForeverUnitFrames.PartyButtonOnAttributeChanged(self, name, value)
         end

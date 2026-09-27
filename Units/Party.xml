@@ -12,6 +12,26 @@
 			<Attribute name="*type1" type="string" value="target"/>
 			<Attribute name="*type2" type="string" value="togglemenu"/>
 		</Attributes>
+		<Frames>
+			<!--
+				The member's target (Units/PartyTargets.lua). Its unit is the
+				parent's plus "target", resolved by the secure code itself
+				(useparent-unit, unitsuffix), so it follows the member in
+				combat too. Hidden until the unit watch shows it.
+			-->
+			<Button parentKey="targetButton" inherits="SecureUnitButtonTemplate" registerForClicks="AnyUp" hidden="true">
+				<Size x="100" y="24"/>
+				<Attributes>
+					<Attribute name="useparent-unit" type="boolean" value="true"/>
+					<Attribute name="unitsuffix" type="string" value="target"/>
+					<Attribute name="*type1" type="string" value="target"/>
+					<Attribute name="*type2" type="string" value="togglemenu"/>
+				</Attributes>
+				<Scripts>
+					<OnLoad>ForeverUnitFrames.PartyTargetOnLoad(self)</OnLoad>
+				</Scripts>
+			</Button>
+		</Frames>
 		<Scripts>
 			<OnLoad>ForeverUnitFrames.PartyButtonOnLoad(self)</OnLoad>
 			<OnAttributeChanged>ForeverUnitFrames.PartyButtonOnAttributeChanged(self, name, value)</OnAttributeChanged>

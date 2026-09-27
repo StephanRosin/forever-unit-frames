@@ -221,6 +221,19 @@ Settings.Define({ key = "partyPetHeight", code = "PH", scope = "frame", only = P
 -- Buffs and debuffs on the pet frames, laid out like the members'.
 Settings.Define({ key = "partyPetAuras", code = "PA", scope = "frame", only = PARTY, type = "bool", default = false })
 
+-- Party targets (Units/PartyTargets.lua): what each member has targeted, a
+-- small frame beside the member. Off by default (it clutters). Side: where
+-- it sits; gap: the room between the two borders.
+Settings.Define({ key = "partyTargets", code = "YA", scope = "frame", only = PARTY, type = "bool", default = false })
+Settings.Define({ key = "partyTargetWidth", code = "YW", scope = "frame", only = PARTY, type = "int", min = 40, max = 300,
+    default = 100 })
+Settings.Define({ key = "partyTargetHeight", code = "YH", scope = "frame", only = PARTY, type = "int", min = 10, max = 60,
+    default = 24 })
+Settings.Define({ key = "partyTargetSide", code = "YS", scope = "frame", only = PARTY, type = "enum",
+    values = { "RIGHT", "LEFT", "ABOVE", "BELOW" }, default = "RIGHT" })
+Settings.Define({ key = "partyTargetGap", code = "YG", scope = "frame", only = PARTY, type = "int", min = 0, max = 60,
+    default = 4 })
+
 -- Castbar (not on the pet frame; off by default on the player frame)
 local CASTBAR = { player = true, target = true, targettarget = true, focus = true, party = true }
 Settings.Define({ key = "castbarEnabled", code = "CE", scope = "frame", only = CASTBAR, type = "bool",

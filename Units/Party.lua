@@ -255,6 +255,7 @@ function Party.StyleAll()
         Party.ShowHeader(header, get("enabled"))
     end
     ns.PartyPets.StyleAll(testing)
+    ns.PartyTargets.StyleAll(testing)
 end
 
 -- Test mode on or off (out of combat, from Options/TestMode.lua).
@@ -280,6 +281,7 @@ end
 function Party.OnUnitChanged(button, unit)
     button.unit = unit
     ns.UnitEvents.Bind(button)
+    ns.PartyTargets.OnMemberUnit(button, unit)
     if not unit then return end
     if InCombatLockdown() then ns.AfterCombat("partyStyle", Party.StyleAll) end
     Single.UpdateAll(button)

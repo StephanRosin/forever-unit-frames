@@ -46,6 +46,8 @@ Schema.FRAME = {
         { id = "shadow", keys = SHADOW_KEYS },
         { id = "group", keys = { "partyOrientation", "partySpacing", "partyShowPlayer", "partyShowSolo", "partyHideInRaid" } },
         { id = "pets", keys = { "partyShowPets", "partyPetHeight", "partyPetAuras" } },
+        { id = "partyTargets", keys = { "partyTargets", "partyTargetSide", "partyTargetWidth", "partyTargetHeight",
+            "partyTargetGap" } },
         { id = "position", keys = { "x", "y" } },
     } },
     { id = "bars", sections = {
