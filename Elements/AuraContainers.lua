@@ -177,6 +177,47 @@ local function testing()
     return ns.TestMode ~= nil and ns.TestMode.IsOn()
 end
 
+-- Weapon enchants: the player's buff container shows the item enchantments
+-- of the three weapon slots too, before the buff groups and at the buffs'
+-- size, like Blizzard's own buff frame. Only where the client's container
+-- has item enchantments (older builds may not).
+AuraContainers.ENCHANT_METHODS = { "AddItemEnchantment", "SetItemEnchantmentEnabled", "SetItemEnchantmentLayout" }
+
+local function enchantSlots()
+    local slots = AuraContainerItemEnchantmentSlot
+    if type(slots) ~= "table" then return {} end
+    return { slots.MainHand, slots.OffHand, slots.Ranged }
+end
+
+function AuraContainers.HasEnchants(entry)
+    if entry.isDebuff or entry.frame.key ~= "player" then return false end
+    for _, method in ipairs(AuraContainers.ENCHANT_METHODS) do
+        if type(entry.container[method]) ~= "function" then return false end
+    end
+    return #enchantSlots() > 0
+end
+
+-- The enchant frames' layout: the buffs' size and spacing, before them.
+function AuraContainers.EnchantLayout(group)
+    local placement = CustomAuraContainerItemEnchantmentPlacement
+    local spacing = group.spacing
+    return {
+        placement = placement and placement.BeforeAuraGroups or nil,
+        elementWidth = group.size, elementHeight = group.size,
+        elementSpacing = spacing, lineSpacing = spacing, groupSpacing = spacing, groupLineSpacing = spacing,
+    }
+end
+
+local function addEnchants(entry)
+    if not AuraContainers.HasEnchants(entry) then return end
+    for _, slot in ipairs(enchantSlots()) do
+        entry.container:AddItemEnchantment(slot, {
+            initializeFrame = function(button) AuraContainers.InitButton(entry, false, button) end,
+        })
+    end
+    entry.enchants = true
+end
+
 -- Adds the container of one group to made (before anything can fail).
 local function create(frame, key, made)
     local group = frame.auras[key]
@@ -191,6 +232,7 @@ local function create(frame, key, made)
             candidateFilters = p.candidateFilters,
             initializeFrame = function(button) AuraContainers.InitButton(entry, own, button) end })
     end
+    addEnchants(entry)
     container:SetUnit(frame.unit or "none")
 end
 
@@ -234,6 +276,11 @@ local function apply(frame)
             container:SetAuraGroupLayout(part, p.layout)
             container:SetAuraGroupCandidateFilters(part, p.candidateFilters)
             container:SetAuraGroupEnabled(part, p.enabled)
+        end
+        if entry.enchants then
+            local on = group.enabled and ns.Config.Get(frame.key, "weaponEnchants") and true or false
+            container:SetItemEnchantmentLayout(AuraContainers.EnchantLayout(group))
+            for _, slot in ipairs(enchantSlots()) do container:SetItemEnchantmentEnabled(slot, on) end
         end
         if restyle(entry, group) then stale[frame] = true end
         container:SetFrameLevel(frame:GetFrameLevel() + ns.Auras.LEVELS)

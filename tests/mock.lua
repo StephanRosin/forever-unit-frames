@@ -403,6 +403,36 @@ function M.NewAuraContainer(w, template)
         self._layoutForbidden = true
         self._updates = self._updates + 1
     end
+    -- Item enchantments (Blizzard_CustomAuraContainer.lua): one frame per
+    -- weapon slot, made at once and handed to initializeFrame; enabled per
+    -- slot; one layout for all of them.
+    function w:AddItemEnchantment(slot, options)
+        self._enchants = self._enchants or {}
+        local valid = false
+        for _, v in pairs(AuraContainerItemEnchantmentSlot) do if v == slot then valid = true end end
+        assert(valid, "itemEnchantmentSlot must be a valid AuraContainerItemEnchantmentSlot.")
+        assert(not self._enchants[slot], "item enchantment already exists with this slot.")
+        options = options or {}
+        for k in pairs(options) do
+            assert(k == "templateNames" or k == "initializeFrame" or k == "hidePermanent",
+                "mock: unknown item enchantment option " .. tostring(k))
+        end
+        local frame = newAuraButton(self, { initializeFrame = options.initializeFrame, frames = {} })
+        self._enchants[slot] = { frame = frame, enabled = true }
+        return frame
+    end
+    function w:SetItemEnchantmentEnabled(slot, enabled)
+        assert(type(enabled) == "boolean", "enabled must be a boolean.")
+        local e = assert(self._enchants and self._enchants[slot], "item enchantment was not found with this slot.")
+        e.enabled = enabled
+    end
+    function w:SetItemEnchantmentLayout(layout)
+        local placement = layout and layout.placement
+        if placement ~= nil then
+            assert(placement == 0 or placement == 1, "placement must be a valid CustomAuraContainerItemEnchantmentPlacement.")
+        end
+        self._enchantLayout = layout
+    end
     function w:HasAuraGroup(key) return self._groups[key] ~= nil end
     function w:IsAuraGroupEnabled(key) return required(self, key).enabled end
     function w:SetAuraGroupEnabled(key, enabled)
@@ -934,6 +964,8 @@ function M.Reset()
     -- Blizzard_SharedXMLBase/AnchorUtil.lua and Blizzard_AuraContainerShared.lua.
     _G.AnchorUtil = { FlowLayoutAxis = { Horizontal = 0, Vertical = 1 },
         FlowDirection = { Left = -1, Right = 1, Up = 1, Down = -1 } }
+    _G.AuraContainerItemEnchantmentSlot = { MainHand = 0, OffHand = 1, Ranged = 2 }
+    _G.CustomAuraContainerItemEnchantmentPlacement = { BeforeAuraGroups = 0, AfterAuraGroups = 1 }
     _G.AuraContainerSortMethod = { Default = 0, BigDefensive = 1, UnitFrameDebuff = 2, ImportantOnly = 3,
         Expiration = 4, ExpirationOnly = 5, Name = 6, NameOnly = 7, AuraInstanceIDOnly = 8 }
     _G.AuraContainerSortDirection = { Normal = 0, Reverse = 1 }

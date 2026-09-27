@@ -474,6 +474,11 @@ Settings.Define({ key = "rangeHostileYards", code = "VZ", scope = "general", typ
 -- party and pet frames, your threat on it on the others.
 Settings.Define({ key = "threatGlow", code = "TH", scope = "frame", type = "bool",
     default = { player = true, party = true, _ = false } })
+-- Weapon enchants (poisons, sharpening stones, Rockbiter Weapon ...) with
+-- the player's buffs: not auras, the aura container shows them as item
+-- enchantments before the buffs (Elements/AuraContainers.lua).
+Settings.Define({ key = "weaponEnchants", code = "WE", scope = "frame", only = { player = true }, type = "bool",
+    default = true })
 -- Threat bar (Elements/ThreatBar.lua): your threat on your target, as a
 -- row below the player frame (and its docked castbar). Warn: the share at
 -- which it turns yellow. Solo: shown without a group too.
