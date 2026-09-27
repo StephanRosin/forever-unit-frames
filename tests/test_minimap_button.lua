@@ -79,6 +79,17 @@ do
     H.checkTrue("square, left: y", close(p[5], 0))
     _G.GetMinimapShape = nil
 
+    -- Another addon resizes the minimap after the button was placed (a
+    -- square minimap does it in its own PLAYER_LOGIN, after ours): the
+    -- button follows the new edge instead of staying on the old one.
+    ns.Config.Set("general", "minimapAngle", 180)
+    Minimap:SetSize(200, 200)
+    p = { button:GetPoint(1) }
+    H.checkTrue("resized minimap: x on the new edge", close(p[4], -(100 + 5)))
+    Minimap:SetSize(140, 140)
+    p = { button:GetPoint(1) }
+    H.checkTrue("resized back: x on the old edge", close(p[4], -r))
+
     -- Dragging: the angle follows the cursor around the centre and is
     -- saved; the cursor is in physical pixels (scale).
     M.scale = 0.8

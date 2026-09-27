@@ -518,9 +518,16 @@ local function newWidget(kind, name, parent)
     end
     function w:GetAttribute(k) return self._attr[k] end
     function w:RegisterForClicks(...) self._clicks = { ... } end
-    function w:SetSize(a, b) self._w, self._h = a, b end
-    function w:SetWidth(v) self._w = v end
-    function w:SetHeight(v) self._h = v end
+    -- OnSizeChanged runs when the size really changes, as in the client.
+    local function resize(self, width, height)
+        if width == self._w and height == self._h then return end
+        self._w, self._h = width, height
+        local script = self._scripts.OnSizeChanged
+        if script then script(self, width, height) end
+    end
+    function w:SetSize(a, b) resize(self, a, b) end
+    function w:SetWidth(v) resize(self, v, self._h) end
+    function w:SetHeight(v) resize(self, self._w, v) end
     function w:GetWidth() return self._w end
     function w:GetHeight() return self._h end
     function w:ClearAllPoints() self._points = {} end

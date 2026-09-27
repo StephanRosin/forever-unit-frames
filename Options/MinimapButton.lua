@@ -181,6 +181,11 @@ function MinimapButton.Create()
     if MinimapButton.button or not Minimap then return end
     MinimapButton.button = newButton()
     MinimapButton.Place()
+    -- The offset is fixed at placing: follow a minimap another addon resizes
+    -- later (a square minimap does so in its own PLAYER_LOGIN, after ours).
+    -- HookScript, not hooksecurefunc: Forever hides hooked frame methods
+    -- from Blizzard's code.
+    Minimap:HookScript("OnSizeChanged", MinimapButton.Place)
     registerLauncher()
 end
 
