@@ -108,7 +108,9 @@ end
 -- Definitions -----------------------------------------------------------------
 -- Order here is the order of the options pages; codes are permanent.
 
-local TEXT_TAGS = { "NONE", "NAME", "NAME_LEVEL", "LEVEL", "CURRENT", "CURRENT_MAX", "PERCENT", "DEFICIT" }
+-- Stored by index: new tags go at the end. INFO: level, class and race
+-- ("60 Mage Gnome"); creatures: level and type ("60 Humanoid").
+local TEXT_TAGS = { "NONE", "NAME", "NAME_LEVEL", "LEVEL", "CURRENT", "CURRENT_MAX", "PERCENT", "DEFICIT", "INFO" }
 Settings.TEXT_TAGS = TEXT_TAGS
 
 -- General appearance (inherited by every frame, overridable per frame)
@@ -167,6 +169,16 @@ Settings.Define({ key = "healthColor", code = "HC", scope = "inherit", type = "c
 Settings.Define({ key = "absorbColor", code = "AC", scope = "inherit", type = "color", default = { 1, 1, 1, 0.65 } })
 Settings.Define({ key = "healMyColor", code = "MC", scope = "inherit", type = "color", default = { 0.3, 0.95, 0.45, 0.65 } })
 Settings.Define({ key = "healOtherColor", code = "OC", scope = "inherit", type = "color", default = { 0.15, 0.65, 0.3, 0.55 } })
+-- Where the shield shows: after the health fill (only where health is
+-- missing, the client's own look), or from the bar's right end over the
+-- health, so it also shows at full health.
+Settings.Define({ key = "absorbMode", code = "AP", scope = "inherit", type = "enum", values = { "AFTER", "END" },
+    default = "AFTER" })
+-- Power bar colours per power type (Elements/Power.lua).
+Settings.Define({ key = "powerColorMana", code = "UM", scope = "inherit", type = "color", default = { 0.25, 0.5, 1, 1 } })
+Settings.Define({ key = "powerColorRage", code = "UG", scope = "inherit", type = "color", default = { 0.85, 0.2, 0.2, 1 } })
+Settings.Define({ key = "powerColorFocus", code = "UF", scope = "inherit", type = "color", default = { 1, 0.5, 0.25, 1 } })
+Settings.Define({ key = "powerColorEnergy", code = "UE", scope = "inherit", type = "color", default = { 1, 0.85, 0.2, 1 } })
 
 -- Frame layout
 Settings.Define({ key = "enabled", code = "E", scope = "frame", type = "bool", default = true })
@@ -290,6 +302,10 @@ Settings.Define({ key = "titleText", code = "NT", scope = "frame", type = "enum"
     default = { player = "NAME_LEVEL", target = "NAME_LEVEL", party = "NAME_LEVEL", _ = "NAME" } })
 Settings.Define({ key = "titleColorMode", code = "NC", scope = "frame", type = "enum",
     values = { "CLASS", "REACTION", "WHITE" }, default = "CLASS" })
+-- Colour of names on the health and power bars (the name tags and INFO);
+-- value texts stay white.
+Settings.Define({ key = "barNameColorMode", code = "NY", scope = "frame", type = "enum",
+    values = { "WHITE", "CLASS", "REACTION" }, default = "WHITE" })
 Settings.Define({ key = "textHealthLeft", code = "TL", scope = "frame", type = "enum", values = TEXT_TAGS,
     default = { player = "CURRENT_MAX", target = "CURRENT_MAX", focus = "NONE", party = "NONE", _ = "NAME" } })
 Settings.Define({ key = "textHealthRight", code = "TR", scope = "frame", type = "enum", values = TEXT_TAGS,

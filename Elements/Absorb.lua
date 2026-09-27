@@ -3,7 +3,8 @@ local _, ns = ...
 -- Absorb shields: a bar docked where the health fill ends, after the
 -- incoming heals (Elements/HealPrediction.lua), as wide as the health bar
 -- and on the same scale, so a point of shield is as wide as a point of
--- health. Both values may be secret; the status bar takes them as they
+-- health. absorbMode END instead fills it from the bar's right end over
+-- the health, so a shield shows at full health too. Both values may be secret; the status bar takes them as they
 -- are, the anchor places the bar and a clipping frame cuts it at the
 -- health bar's end (or the end of the overheal lane).
 local Absorb = { name = "Absorb", unitEvents = { "UNIT_ABSORB_AMOUNT_CHANGED", "UNIT_MAXHEALTH" } }
@@ -58,12 +59,21 @@ function Absorb.Style(frame)
     clip:ClearAllPoints()
     clip:SetPoint("TOPLEFT", health, "TOPLEFT", 0, 0)
     clip:SetPoint("BOTTOMRIGHT", health, "BOTTOMRIGHT", frame.overhealLane or 0, 0)
-    -- After all incoming heals when they show, else right at the health.
-    local after = Config.Get(scope, "healPrediction") and frame.healAll:GetStatusBarTexture()
-        or health:GetStatusBarTexture()
     bar:ClearAllPoints()
-    bar:SetPoint("TOPLEFT", after, "TOPRIGHT", 0, 0)
-    bar:SetPoint("BOTTOMLEFT", after, "BOTTOMRIGHT", 0, 0)
+    if Config.Get(scope, "absorbMode") == "END" then
+        -- From the bar's right end towards the left, over the health: seen
+        -- at full health too. No arithmetic with the (secret) values.
+        bar:SetReverseFill(true)
+        bar:SetPoint("TOPRIGHT", health, "TOPRIGHT", 0, 0)
+        bar:SetPoint("BOTTOMRIGHT", health, "BOTTOMRIGHT", 0, 0)
+    else
+        -- After all incoming heals when they show, else right at the health.
+        local after = Config.Get(scope, "healPrediction") and frame.healAll:GetStatusBarTexture()
+            or health:GetStatusBarTexture()
+        bar:SetReverseFill(false)
+        bar:SetPoint("TOPLEFT", after, "TOPRIGHT", 0, 0)
+        bar:SetPoint("BOTTOMLEFT", after, "BOTTOMRIGHT", 0, 0)
+    end
     bar:SetWidth(frame.healthWidth)
     bar:SetStatusBarTexture(Absorb.SHADE_TEXTURE)
     local shade = Absorb.SHADE

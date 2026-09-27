@@ -26,6 +26,31 @@ local function levelText(unit)
     return tostring(level)
 end
 
+-- INFO: "60 Mage Gnome" for players, "60 Humanoid" for creatures. Class,
+-- race and type may be secret: passed to the font string untouched,
+-- presence asked with type(). A unit of unknown kind counts as a creature.
+local function setInfo(fs, unit)
+    local level = levelText(unit)
+    if Secrets.Bool(UnitIsPlayer, unit) == true then
+        local class = UnitClass(unit)
+        local race = UnitRace(unit)
+        if type(class) ~= "nil" and type(race) ~= "nil" then
+            fs:SetFormattedText("%s %s %s", level, class, race)
+            return
+        elseif type(class) ~= "nil" then
+            fs:SetFormattedText("%s %s", level, class)
+            return
+        end
+    else
+        local kind = UnitCreatureType(unit)
+        if type(kind) ~= "nil" then
+            fs:SetFormattedText("%s %s", level, kind)
+            return
+        end
+    end
+    fs:SetText(level)
+end
+
 -- Values: health or power, depending on the bar the slot sits on.
 local function current(unit, kind)
     if kind == "health" then return UnitHealth(unit) end
@@ -128,6 +153,8 @@ function Texts.Apply(fs, tag, unit, kind, showSurname, sample)
         Texts.SetName(fs, unit, showSurname, levelText(unit))
     elseif tag == "LEVEL" then
         fs:SetText(levelText(unit))
+    elseif tag == "INFO" then
+        setInfo(fs, unit)
     elseif tag == "CURRENT" then
         fs:SetText(Secrets.Abbreviate(current(unit, kind)))
     elseif tag == "CURRENT_MAX" then
@@ -396,6 +423,26 @@ local function paintTitle(frame)
     frame.texts.title:SetTextColor(r, g, b, 1)
 end
 
+-- Texts on the bars that name the unit take barNameColorMode; value
+-- texts and the status word stay white.
+Texts.NAME_TAGS = { NAME = true, NAME_LEVEL = true, INFO = true }
+
+local function paintBars(frame, wordSlot)
+    local mode = Config.Get(frame.key, "barNameColorMode")
+    local r, g, b = 1, 1, 1
+    if mode ~= "WHITE" then r, g, b = ns.Health.UnitColor(frame.unit, mode) end
+    for _, slot in ipairs(SLOTS) do
+        if slot.bar ~= "title" then
+            local named = slot.field ~= wordSlot and Texts.NAME_TAGS[Config.Get(frame.key, slot.setting)]
+            if named then
+                frame.texts[slot.field]:SetTextColor(r, g, b, 1)
+            else
+                frame.texts[slot.field]:SetTextColor(1, 1, 1, 1)
+            end
+        end
+    end
+end
+
 -- Dead, ghost and offline units (Elements/UnitStatus.lua): the health
 -- bar's value texts give way to one word, in the first of them; a bar
 -- without a value text shows it on the right when that side is empty.
@@ -433,6 +480,7 @@ function Texts.Update(frame)
         end
     end
     paintTitle(frame)
+    paintBars(frame, wordSlot)
     updateClassIcon(frame)
 end
 

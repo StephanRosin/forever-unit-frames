@@ -78,7 +78,21 @@ do
         H.check("secure button " .. i, click._template, "SecureActionButtonTemplate")
         H.check("right-click destroys " .. i, click:GetAttribute("*type2"), "destroytotem")
         H.check("its slot " .. i, click:GetAttribute("*totem-slot*"), s.slot)
-        H.check("mouse up only " .. i, click._clicks[1], "RightButtonUp")
+        -- SecureActionButton_OnClick (Forever's SecureTemplates.lua): an
+        -- addon's button never gets isSecureAction, so it acts on the down
+        -- stroke with ActionButtonUseKeyDown on, else on the up stroke.
+        -- Exactly one registered stroke must act either way.
+        local registered = {}
+        for _, c in ipairs(click._clicks) do registered[c] = true end
+        for _, keyDown in ipairs({ false, true }) do
+            local acting = 0
+            for _, down in ipairs({ false, true }) do
+                local stroke = down and "RightButtonDown" or "RightButtonUp"
+                if registered[stroke] and down == keyDown then acting = acting + 1 end
+            end
+            H.check("one right click acts " .. i .. (keyDown and " (key down)" or " (key up)"), acting, 1)
+        end
+        H.check("no left click " .. i, registered.LeftButtonUp or registered.LeftButtonDown or registered.AnyUp, nil)
         H.check("nothing to click without a totem " .. i, click:IsShown(), false)
         H.check("no icon without a totem " .. i, s.art:IsShown(), false)
         H.checkTrue("click area above the icon " .. i, click:GetFrameLevel() > s.art.cooldown:GetFrameLevel())

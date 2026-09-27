@@ -14,7 +14,7 @@ Schema.GENERAL = {
             action = "applyFontToFrames" },
         { id = "titleText", keys = { "titleClassIcon", "classIconSize", "classIconX", "classIconY",
             "classIconRing", "classIconRingColor" } },
-        { id = "bars", keys = { "barTexture", "backgroundColor", "titleBackground" } },
+        { id = "bars", keys = { "barTexture", "backgroundColor", "titleBackground", "absorbMode" } },
         { id = "auraIcons", keys = { "auraBorder" } },
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },
@@ -26,6 +26,7 @@ Schema.GENERAL = {
         { id = "absorbs", keys = { "absorbColor" } },
         { id = "highlight", keys = { "targetHighlightColor" } },
         { id = "healPrediction", keys = { "healMyColor", "healOtherColor" } },
+        { id = "powerColors", keys = { "powerColorMana", "powerColorRage", "powerColorFocus", "powerColorEnergy" } },
     } },
     -- How range fading measures and how strongly it fades; the switches
     -- (and opacity overrides) are per frame (Status > Range on each page).
@@ -59,13 +60,14 @@ Schema.FRAME = {
     { id = "bars", sections = {
         { id = "health", keys = { "healthColorMode", "healthColor" } },
         { id = "textures", keys = { "barTexture", "backgroundColor", "titleBackground" } },
-        { id = "absorbs", keys = { "absorbEnabled", "absorbColor" } },
+        { id = "absorbs", keys = { "absorbEnabled", "absorbMode", "absorbColor" } },
         { id = "healPrediction", keys = { "healPrediction", "healOverflow", "powerMatchesHealth", "healMyColor", "healOtherColor" } },
+        { id = "powerColors", keys = { "powerColorMana", "powerColorRage", "powerColorFocus", "powerColorEnergy" } },
     } },
     { id = "text", sections = {
         { id = "titleText", keys = { "titleText", "titleColorMode", "titleClassIcon", "classIconSize", "classIconX",
             "classIconY", "classIconRing", "classIconRingColor" } },
-        { id = "healthText", keys = { "textHealthLeft", "textHealthRight" } },
+        { id = "healthText", keys = { "textHealthLeft", "textHealthRight", "barNameColorMode" } },
         { id = "powerText", keys = { "textPowerLeft", "textPowerRight" } },
         { id = "font", keys = { "fontFace", "fontSize", "fontOutline", "fontShadow", "showSurname" } },
     } },

@@ -10,7 +10,7 @@ local f = ns.Frames.player
 local _, _, ph = ns.Layout.Rows(46, 30, 45, 25, true)
 H.check("power height", f.power:GetHeight(), ph)
 H.check("power value secret passthrough", f.power:GetValue(), M.units.player.power)
-H.check("mana colour", f.power._color[3], ns.Power.COLORS[0][3])
+H.check("mana colour", f.power._color[3], ns.Config.Get("player", "powerColorMana")[3])
 
 -- Player defaults: title NAME_LEVEL, health left CURRENT_MAX, health right
 -- PERCENT, power right CURRENT.

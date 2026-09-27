@@ -1103,6 +1103,9 @@ function M.Reset()
     _G.UnitName = function(unit) local d = u(unit); if d then return d.name, d.surname end end
     _G.UnitLevel = function(unit) local d = u(unit); return d and d.level or 0 end
     _G.UnitClass = function(unit) local d = u(unit); if d then return d.className, d.class end end
+    -- Localised race and creature type (units: race, creatureType).
+    _G.UnitRace = function(unit) local d = u(unit); if d then return d.race, d.race end end
+    _G.UnitCreatureType = function(unit) local d = u(unit); if d then return d.creatureType end end
     -- Takes secret class tokens (SecretArguments = AllowedWhenTainted); a
     -- secret token gives a colour of secret components.
     _G.C_ClassColor = {

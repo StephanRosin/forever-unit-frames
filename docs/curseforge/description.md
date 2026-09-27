@@ -17,7 +17,9 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 - A three-row layout: a title row with name and level in class colour, health, and power. Each row's height is set in percent of the frame.
 - Round class badge, and a secondary name (surname) that can be turned on or off.
 - Elite, rare and boss marker on the portrait or as a word.
-- Absorb shields and incoming heals drawn in the health bar, with an optional overheal lane.
+- Absorb shields and incoming heals drawn in the health bar, with an optional overheal lane. Shields can also sit at the bar's end, so they show at full health too.
+- Texts on each bar: name, level, health or power values, or level, class and race ("60 Mage Gnome"; creatures show their type, "60 Humanoid"). Names on the bars can take the class or reaction color.
+- Power bar colors per type (mana, rage, focus, energy).
 - Damage and heal numbers on the frame (combat feedback).
 - Combat and resting icons on the player frame, with Blizzard's own art: crossed swords while you are in combat, the animated "Zzz" while you rest in an inn or a city. Centred on the health bar by default, side by side when both show. Each can be turned off; size, anchor point on the health bar and X/Y offset are configurable.
 - 2D or 3D portraits.

@@ -5,13 +5,13 @@ ns.Power = Power
 
 local Config = ns.Config
 
--- Own colours: Blizzard's PowerBarColor is only guaranteed on mainline
--- game types. Index = power type number.
-Power.COLORS = {
-    [0] = { 0.25, 0.5, 1.0 },   -- mana
-    [1] = { 0.85, 0.2, 0.2 },   -- rage
-    [2] = { 1.0, 0.5, 0.25 },   -- focus
-    [3] = { 1.0, 0.85, 0.2 },   -- energy
+-- Own colours, one setting per power type: Blizzard's PowerBarColor is
+-- only guaranteed on mainline game types. Index = power type number.
+Power.COLOR_KEYS = {
+    [0] = "powerColorMana",
+    [1] = "powerColorRage",
+    [2] = "powerColorFocus",
+    [3] = "powerColorEnergy",
 }
 local DEFAULT = { 0.6, 0.6, 0.6 }
 
@@ -34,7 +34,8 @@ end
 function Power.Update(frame)
     local unit = frame.unit
     local powerType = UnitPowerType(unit)
-    local c = Power.COLORS[ns.Secrets.Number(powerType) or -1] or DEFAULT
+    local key = Power.COLOR_KEYS[ns.Secrets.Number(powerType) or -1]
+    local c = key and Config.Get(frame.key, key) or DEFAULT
     -- Dead, ghost and offline units (Elements/UnitStatus.lua) are grey.
     if ns.UnitStatus.Of(frame) then c = ns.UnitStatus.GREY end
     frame.power:SetStatusBarColor(c[1], c[2], c[3])

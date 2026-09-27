@@ -89,8 +89,11 @@ local function newSlot(holder, slot)
     local click = CreateFrame("Button", nil, holder, "SecureActionButtonTemplate")
     click.totemSlot, click.totemInfo = slot, info
     pcall(click.SetPassThroughButtons, click, unpack(Totems.PASS_THROUGH))
-    -- Secure mouse presses act on the up stroke (SecureActionButton_OnClick).
-    click:RegisterForClicks("RightButtonUp")
+    -- Both strokes: an addon's button never gets isSecureAction, so
+    -- SecureActionButton_OnClick acts on the down stroke when the player
+    -- casts on key down (CVar ActionButtonUseKeyDown), else on the up
+    -- stroke, and ignores the other one. Up only did nothing on key down.
+    click:RegisterForClicks("RightButtonUp", "RightButtonDown")
     click:SetAttribute("*type2", "destroytotem")
     click:SetAttribute("*totem-slot*", slot)
     click:HookScript("OnEnter", showTooltip)
