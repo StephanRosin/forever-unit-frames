@@ -49,16 +49,23 @@ function CombatFade.Blocker()
     return nil
 end
 
+-- A 3D portrait (a model) does not take its parent's opacity: it gets the
+-- same value itself.
+local function setAlpha(frame, value)
+    frame:SetAlpha(value)
+    if frame.portrait3D then frame.portrait3D:SetAlpha(value) end
+end
+
 function CombatFade.Apply(frame)
     frame = frame or ns.Frames.player
     if not frame then return end
     if CombatFade.Blocker() ~= nil then
-        frame:SetAlpha(1)
+        setAlpha(frame, 1)
         return
     end
     local alpha = Config.Get("player", "playerFadeAlpha") / 100
     local ok, value = pcall(UnitHealthPercent, "player", false, healthCurve(alpha))
-    if ok and type(value) ~= "nil" then frame:SetAlpha(value) else frame:SetAlpha(1) end
+    if ok and type(value) ~= "nil" then setAlpha(frame, value) else setAlpha(frame, 1) end
 end
 
 function CombatFade.Build() end
