@@ -177,47 +177,6 @@ local function testing()
     return ns.TestMode ~= nil and ns.TestMode.IsOn()
 end
 
--- Weapon enchants: the player's buff container shows the item enchantments
--- of the three weapon slots too, before the buff groups and at the buffs'
--- size, like Blizzard's own buff frame. Only where the client's container
--- has item enchantments (older builds may not).
-AuraContainers.ENCHANT_METHODS = { "AddItemEnchantment", "SetItemEnchantmentEnabled", "SetItemEnchantmentLayout" }
-
-local function enchantSlots()
-    local slots = AuraContainerItemEnchantmentSlot
-    if type(slots) ~= "table" then return {} end
-    return { slots.MainHand, slots.OffHand, slots.Ranged }
-end
-
-function AuraContainers.HasEnchants(entry)
-    if entry.isDebuff or entry.frame.key ~= "player" then return false end
-    for _, method in ipairs(AuraContainers.ENCHANT_METHODS) do
-        if type(entry.container[method]) ~= "function" then return false end
-    end
-    return #enchantSlots() > 0
-end
-
--- The enchant frames' layout: the buffs' size and spacing, before them.
-function AuraContainers.EnchantLayout(group)
-    local placement = CustomAuraContainerItemEnchantmentPlacement
-    local spacing = group.spacing
-    return {
-        placement = placement and placement.BeforeAuraGroups or nil,
-        elementWidth = group.size, elementHeight = group.size,
-        elementSpacing = spacing, lineSpacing = spacing, groupSpacing = spacing, groupLineSpacing = spacing,
-    }
-end
-
-local function addEnchants(entry)
-    if not AuraContainers.HasEnchants(entry) then return end
-    for _, slot in ipairs(enchantSlots()) do
-        entry.container:AddItemEnchantment(slot, {
-            initializeFrame = function(button) AuraContainers.InitButton(entry, false, button) end,
-        })
-    end
-    entry.enchants = true
-end
-
 -- Adds the container of one group to made (before anything can fail).
 local function create(frame, key, made)
     local group = frame.auras[key]
@@ -232,7 +191,6 @@ local function create(frame, key, made)
             candidateFilters = p.candidateFilters,
             initializeFrame = function(button) AuraContainers.InitButton(entry, own, button) end })
     end
-    addEnchants(entry)
     container:SetUnit(frame.unit or "none")
 end
 
@@ -250,12 +208,46 @@ local function restyle(entry, group)
     return refused
 end
 
+-- Room the player's weapon enchants take before the buffs
+-- (Elements/WeaponEnchants.lua): that many icons along the growth
+-- direction. The container moves on by it and its rows get as much
+-- shorter, so the first row keeps its length.
+local STEP_DIRECTION = { RIGHT = { 1, 0 }, LEFT = { -1, 0 }, UP = { 0, 1 }, DOWN = { 0, -1 } }
+
+function AuraContainers.Lead(frame, key)
+    if key ~= "buffs" then return 0, 0, 0 end
+    local n = frame.enchantLead or 0
+    if n == 0 then return 0, 0, 0 end
+    local group = frame.auras[key]
+    local step = n * (group.size + group.spacing)
+    local d = STEP_DIRECTION[group.primary] or STEP_DIRECTION.RIGHT
+    return step, d[1] * step, d[2] * step
+end
+
 local function place(frame, key)
     local Config = ns.Config
     local scope = frame.key
     local region = ns.Auras.AnchorRegion(frame, key, true)
+    local x, y = ns.Auras.AnchorOffset(frame, key, region)
+    local _, dx, dy = AuraContainers.Lead(frame, key)
     frame.auraContainers[key].container:SetPoint(Config.Get(scope, key .. "Point"),
-        region, Config.Get(scope, key .. "FramePoint"), ns.Auras.AnchorOffset(frame, key, region))
+        region, Config.Get(scope, key .. "FramePoint"), x + dx, y + dy)
+end
+
+local function lineSize(frame, key, flow)
+    local lead = AuraContainers.Lead(frame, key)
+    return math.max(flow.lineSize - lead, frame.auras[key].size)
+end
+
+-- The weapon enchants changed in number: the buffs make room, combat
+-- included (the container is a plain frame).
+function AuraContainers.Relead(frame)
+    local entry = frame.auraContainers and frame.auraContainers.buffs
+    if not entry then return end
+    local flow = AuraContainers.Flow(frame.auras.buffs)
+    entry.container:SetFlowLayoutMaximumLineSize(lineSize(frame, "buffs", flow))
+    entry.container:ClearAllPoints()
+    place(frame, "buffs")
 end
 
 -- Settings (read by Auras.Style into frame.auras) onto the containers.
@@ -268,7 +260,7 @@ local function apply(frame)
         container:SetFlowLayoutAxis(flow.axis)
         container:SetFlowLayoutAnchorPoint(flow.anchor)
         container:SetFlowLayoutGrowthDirection(flow.horizontal, flow.vertical)
-        container:SetFlowLayoutMaximumLineSize(flow.lineSize)
+        container:SetFlowLayoutMaximumLineSize(lineSize(frame, key, flow))
         for _, part in ipairs(AuraContainers.PARTS) do
             local p = AuraContainers.Part(group, part)
             container:SetAuraGroupFilterString(part, p.filter)
@@ -277,11 +269,6 @@ local function apply(frame)
             container:SetAuraGroupCandidateFilters(part, p.candidateFilters)
             container:SetAuraGroupEnabled(part, p.enabled)
         end
-        if entry.enchants then
-            local on = group.enabled and ns.Config.Get(frame.key, "weaponEnchants") and true or false
-            container:SetItemEnchantmentLayout(AuraContainers.EnchantLayout(group))
-            for _, slot in ipairs(enchantSlots()) do container:SetItemEnchantmentEnabled(slot, on) end
-        end
         if restyle(entry, group) then stale[frame] = true end
         container:SetFrameLevel(frame:GetFrameLevel() + ns.Auras.LEVELS)
         container:SetShown(live and group.enabled)
@@ -289,6 +276,7 @@ local function apply(frame)
     -- Anchors last, all cleared first: a group may hang from the other.
     for _, key in ipairs(ns.Settings.AURA_GROUPS) do frame.auraContainers[key].container:ClearAllPoints() end
     for _, key in ipairs(ns.Settings.AURA_GROUPS) do place(frame, key) end
+    if ns.WeaponEnchants then ns.WeaponEnchants.Layout(frame) end
 end
 
 -- Makes both containers of a frame. On a refusal nothing made is kept

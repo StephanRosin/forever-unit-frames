@@ -33,6 +33,7 @@ Elements\Castbar.lua
 Elements\ThreatBar.lua
 Elements\AuraButton.lua
 Elements\AuraContainers.lua
+Elements\WeaponEnchants.lua
 Elements\Auras.lua
 Elements\Classification.lua
 Elements\CombatFeedback.lua
