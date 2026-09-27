@@ -193,6 +193,7 @@ local function readSettings(frame, group)
     group.highlightOwn = get(frame, group, "HighlightOwn")
     group.ownFilter = onlyMine and filter or filter .. "|PLAYER"
     group.otherFilter = not onlyMine and filter .. "|!PLAYER" or nil
+    group.hidePermanent = get(frame, group, "HidePermanent")
     group.enabled = get(frame, group, "Enabled")
     group.max = get(frame, group, "Max")
     group.size = Pixel.Snap(get(frame, group, "Size"), nil, 1)
@@ -268,7 +269,14 @@ local function fill(frame, group, list, count)
     for i = 1, #list do
         if count >= group.max then break end
         local aura = list[i]
-        local button = not Secrets.IsSecret(aura) and type(aura) == "table" and acquire(frame, group, count + 1)
+        -- Hide permanent: a readable duration of 0 is skipped (a secret one
+        -- cannot be told apart and stays).
+        if group.hidePermanent and not Secrets.IsSecret(aura) and type(aura) == "table"
+            and Secrets.Number(aura.duration) == 0 then
+            aura = nil
+        end
+        local button = aura ~= nil and not Secrets.IsSecret(aura) and type(aura) == "table"
+            and acquire(frame, group, count + 1)
         if button and AuraButton.Show(button, frame.unit, aura, group.filter) then
             count = count + 1
             -- Shown from a secret instance ID: later events cannot name it.

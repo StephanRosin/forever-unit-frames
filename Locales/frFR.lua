@@ -346,3 +346,8 @@ L.ENUM_language_enUS = "English"
 L.ENUM_language_deDE = "Deutsch"
 L.ENUM_language_esES = "Español"
 L.ENUM_language_frFR = "Français"
+
+L.SETTING_buffsHidePermanent = "Masquer les permanents"
+L.SETTING_debuffsHidePermanent = "Masquer les permanents"
+L.HINT_buffsHidePermanent = "Auras sans durée, p. ex. le pistage"
+L.HINT_debuffsHidePermanent = "Auras sans durée, p. ex. le pistage"

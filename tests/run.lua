@@ -3,7 +3,11 @@ local H = dofile("harness.lua")
 _G.H = H
 
 local names = {}
-for f in io.popen('ls test_*.lua'):lines() do names[#names + 1] = f end
+-- tests/run [pattern]: only the test files whose name contains pattern.
+local only = arg and arg[1]
+for f in io.popen('ls test_*.lua'):lines() do
+    if not only or f:find(only, 1, true) then names[#names + 1] = f end
+end
 table.sort(names)
 for _, f in ipairs(names) do
     print(f)

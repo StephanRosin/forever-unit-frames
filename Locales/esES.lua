@@ -347,3 +347,8 @@ L.ENUM_language_enUS = "English"
 L.ENUM_language_deDE = "Deutsch"
 L.ENUM_language_esES = "Español"
 L.ENUM_language_frFR = "Français"
+
+L.SETTING_buffsHidePermanent = "Ocultar permanentes"
+L.SETTING_debuffsHidePermanent = "Ocultar permanentes"
+L.HINT_buffsHidePermanent = "Auras sin duración, p. ej. rastreo"
+L.HINT_debuffsHidePermanent = "Auras sin duración, p. ej. rastreo"

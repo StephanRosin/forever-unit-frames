@@ -346,3 +346,8 @@ L.ENUM_language_enUS = "English"
 L.ENUM_language_deDE = "Deutsch"
 L.ENUM_language_esES = "Español"
 L.ENUM_language_frFR = "Français"
+
+L.SETTING_buffsHidePermanent = "Dauerhafte ausblenden"
+L.SETTING_debuffsHidePermanent = "Dauerhafte ausblenden"
+L.HINT_buffsHidePermanent = "Auren ohne Laufzeit, z. B. Aufspüren"
+L.HINT_debuffsHidePermanent = "Auren ohne Laufzeit, z. B. Aufspüren"

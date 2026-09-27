@@ -395,6 +395,7 @@ function M.NewAuraContainer(w, template)
         if max == nil then max = math.huge end
         assert(validMax(max), "maxFrameCount must be a non-negative integer or infinity.")
         local group = { key = key, filter = filter, max = max, enabled = true, layout = copyLayout(options.layout),
+            candidateFilters = options.candidateFilters,
             initializeFrame = options.initializeFrame, frames = {} }
         self._groups[key] = group
         table.insert(self._groupOrder, key)
@@ -420,6 +421,16 @@ function M.NewAuraContainer(w, template)
     end
     -- Replaces the whole layout (merged with the defaults), like the source.
     function w:SetAuraGroupLayout(key, layout) required(self, key).layout = copyLayout(layout) end
+    -- candidateFilters (Blizzard_CustomAuraContainer.lua ValidateCandidateFilters):
+    -- a table or nil; maxDuration a non-negative number (hides permanent auras).
+    function w:SetAuraGroupCandidateFilters(key, filters)
+        assert(filters == nil or type(filters) == "table", "candidateFilters must be a table or nil.")
+        if filters and filters.maxDuration ~= nil then
+            assert(type(filters.maxDuration) == "number" and filters.maxDuration >= 0,
+                "maxDuration must be a non-negative number or nil.")
+        end
+        required(self, key).candidateFilters = filters
+    end
     function w:GetAuraGroupFrameCount(key)
         local group = self._groups[key]
         return group and #group.frames or 0

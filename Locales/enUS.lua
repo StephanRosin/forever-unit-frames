@@ -370,3 +370,8 @@ L.ENUM_language_enUS = "English"
 L.ENUM_language_deDE = "Deutsch"
 L.ENUM_language_esES = "Español"
 L.ENUM_language_frFR = "Français"
+
+L.SETTING_buffsHidePermanent = "Hide permanent"
+L.SETTING_debuffsHidePermanent = "Hide permanent"
+L.HINT_buffsHidePermanent = "Auras without a duration, e.g. tracking"
+L.HINT_debuffsHidePermanent = "Auras without a duration, e.g. tracking"
