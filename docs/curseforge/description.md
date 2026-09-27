@@ -44,6 +44,12 @@ In a "Status" tab per frame.
 - "Always show" keeps an empty bar in the frame so nothing below it jumps.
 - The player castbar can run alongside Blizzard's, or hide it.
 
+## Threat bar
+- An optional row below the player frame and its docked castbar, inside the same border: your threat on your target (a healer with a friendly target: on the target's target).
+- **Tank:** your threat and your lead over the next player. Green while they are far off, yellow when they close in, red when you are overtaken, purple when another tank took it.
+- **Damage and healers:** your share of the threat needed to pull (the 110 % / 130 % rule included) and the gap to the tank. Green, yellow from the warning share, red with aggro.
+- Works in dungeons: only your target is read, whose threat numbers the client keeps readable there. Role detected automatically (assigned role, Defensive Stance, Bear Form, Righteous Fury) or set by hand; height and warning share adjustable.
+
 ## Totems
 - Totem icons on the player frame, one per totem slot, with the remaining time. Right-click one to destroy it.
 - Placed next to the player frame by default; size, spacing, anchor point and X/Y offset are configurable.
