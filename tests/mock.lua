@@ -968,6 +968,38 @@ function M.Reset()
     _G.IsResting = function() return M.resting end
     _G.GetTime = function() return M.now end
     _G.IsInGroup = function() return #M.group > 0 end
+    -- Raid: M.inRaid (M.SetRaid). Visibility drivers (SecureStateDriver.lua:
+    -- RegisterStateDriver(frame, "visibility", values) sets state-visibility);
+    -- the mock knows the conditions the addon uses.
+    M.inRaid = false
+    M.drivers = setmetatable({}, { __mode = "k" })
+    _G.IsInRaid = function() return M.inRaid end
+    local function evaluate(frame, values)
+        for clause in (values .. ";"):gmatch("%s*([^;]+);") do
+            local cond, action = clause:match("^%[(.-)%]%s*(%a+)$")
+            if not cond then action = clause:match("^(%a+)$") end
+            local match = cond == nil or (cond == "group:raid" and M.inRaid) or (cond == "nogroup:raid" and not M.inRaid)
+            assert(cond == nil or cond == "group:raid" or cond == "nogroup:raid", "mock: unknown condition " .. tostring(cond))
+            if match then
+                if action == "show" then frame:Show() else frame:Hide() end
+                return
+            end
+        end
+    end
+    _G.RegisterStateDriver = function(frame, state, values)
+        assert(not M.combat, "RegisterStateDriver: in combat")
+        assert(state == "visibility", "mock: only the visibility state")
+        M.drivers[frame] = values
+        evaluate(frame, values)
+    end
+    _G.UnregisterStateDriver = function(frame, state)
+        assert(not M.combat, "UnregisterStateDriver: in combat")
+        M.drivers[frame] = nil
+    end
+    function M.SetRaid(on)
+        M.inRaid = on
+        for frame, values in pairs(M.drivers) do evaluate(frame, values) end
+    end
     _G.geterrorhandler = function()
         return function(err) table.insert(M.errors, err) end
     end

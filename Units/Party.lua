@@ -93,6 +93,21 @@ function Party.MoverSpec()
         active = function() return get("enabled") end }
 end
 
+-- Shows a header (Hide + Show lays its buttons out again, OnShow). In a
+-- raid group it hides by a visibility driver when the party is set to;
+-- out of combat only, like everything done to the header.
+Party.RAID_DRIVER = "[group:raid] hide; show"
+function Party.ShowHeader(header, want)
+    UnregisterStateDriver(header, "visibility")
+    header:Hide()
+    if not want then return end
+    if get("partyHideInRaid") then
+        RegisterStateDriver(header, "visibility", Party.RAID_DRIVER)
+    else
+        header:Show()
+    end
+end
+
 -- Header attributes are set in one go; a single relayout follows.
 local function setAttributes(header, attributes)
     header:SetAttribute("_ignore", "attributeChanges")
@@ -232,13 +247,12 @@ function Party.StyleAll()
         Party.StyleButton(button)
         button:ClearAllPoints()
     end
-    -- Hide + Show makes the header lay its buttons out again (OnShow).
-    header:Hide()
     if testing then
+        Party.ShowHeader(header, false)
         showFakes()
     else
         hideFakes()
-        if get("enabled") then header:Show() end
+        Party.ShowHeader(header, get("enabled"))
     end
     ns.PartyPets.StyleAll(testing)
 end

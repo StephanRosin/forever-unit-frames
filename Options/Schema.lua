@@ -43,7 +43,7 @@ Schema.FRAME = {
         { id = "indicators", keys = { "eliteMarker", "combatFeedback" } },
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },
-        { id = "group", keys = { "partyOrientation", "partySpacing", "partyShowPlayer", "partyShowSolo" } },
+        { id = "group", keys = { "partyOrientation", "partySpacing", "partyShowPlayer", "partyShowSolo", "partyHideInRaid" } },
         { id = "pets", keys = { "partyShowPets", "partyPetHeight", "partyPetAuras" } },
         { id = "position", keys = { "x", "y" } },
     } },

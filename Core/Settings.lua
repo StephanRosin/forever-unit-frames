@@ -211,6 +211,8 @@ Settings.Define({ key = "partyOrientation", code = "OR", scope = "frame", only =
 Settings.Define({ key = "partySpacing", code = "GS", scope = "frame", only = PARTY, type = "int", min = 0, max = 60, default = 12 })
 Settings.Define({ key = "partyShowPlayer", code = "SP", scope = "frame", only = PARTY, type = "bool", default = false })
 Settings.Define({ key = "partyShowSolo", code = "SO", scope = "frame", only = PARTY, type = "bool", default = false })
+-- Hidden while in a raid group (a visibility driver on the headers).
+Settings.Define({ key = "partyHideInRaid", code = "HR", scope = "frame", only = PARTY, type = "bool", default = true })
 -- Party pets (Units/PartyPets.lua): one small frame under each member
 -- whose pet exists. Height in pixels; the width is the member's.
 Settings.Define({ key = "partyShowPets", code = "PT", scope = "frame", only = PARTY, type = "bool", default = false })
