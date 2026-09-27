@@ -46,11 +46,17 @@ H.check("tracking off by default", C.Get("target", "buffsHideTracking"), false)
 C.Set("target", "buffsHideTracking", true)
 local tf = bc._groups.other.candidateFilters
 H.checkTrue("tracking: excluded ids", tf and type(tf.excludeSpellIDs) == "table")
-local ids = {}
-for _, id in ipairs(tf.excludeSpellIDs) do ids[id] = true end
-H.checkTrue("Find Herbs", ids[2383])
-H.checkTrue("Find Minerals", ids[2580])
-H.checkTrue("Track Beasts", ids[1494])
+-- A map, spell ID -> true: the container looks up excludeSpellIDs[spellId]
+-- (a list excluded nothing, and Find Treasure stayed on a shaman).
+local ids = tf.excludeSpellIDs
+H.check("Find Herbs", ids[2383], true)
+H.check("Find Minerals", ids[2580], true)
+H.check("Find Treasure", ids[2481], true)
+H.check("Track Beasts", ids[1494], true)
+H.check("not a list", ids[1], nil)
+for _, id in ipairs(ns.Settings.TRACKING_SPELLS) do
+    H.check("every tracking spell excluded: " .. id, ids[id], true)
+end
 H.check("no duration limit from tracking alone", tf.maxDuration, nil)
 C.Set("target", "buffsHidePermanent", true)
 tf = bc._groups.other.candidateFilters

@@ -425,6 +425,19 @@ function M.NewAuraContainer(w, template)
     -- a table or nil; maxDuration a non-negative number (hides permanent auras).
     function w:SetAuraGroupCandidateFilters(key, filters)
         assert(filters == nil or type(filters) == "table", "candidateFilters must be a table or nil.")
+        -- includeSpellIDs / excludeSpellIDs are maps, spell ID -> true: the
+        -- container looks up excludeSpellIDs[aura.spellId]. A list would
+        -- hold the IDs as values and match nothing.
+        for _, field in ipairs({ "includeSpellIDs", "excludeSpellIDs" }) do
+            local ids = filters and filters[field]
+            if ids ~= nil then
+                assert(type(ids) == "table", field .. " must be a table or nil")
+                for k, v in pairs(ids) do
+                    assert(type(k) == "number" and k > 1000 and v == true,
+                        field .. " must map spell IDs to true, not list them")
+                end
+            end
+        end
         if filters and filters.maxDuration ~= nil then
             assert(type(filters.maxDuration) == "number" and filters.maxDuration >= 0,
                 "maxDuration must be a non-negative number or nil.")

@@ -50,13 +50,19 @@ AuraContainers.PARTS = { "own", "other" }
 -- Ten years in seconds: longer than any timed aura.
 AuraContainers.ANY_DURATION = 10 * 365 * 86400
 
+-- The tracking spells as the container wants them: a map, spell ID ->
+-- true (Blizzard_AuraContainerUtil.lua looks up excludeSpellIDs[spellId]).
+-- A plain list would hold the IDs as values and exclude nothing.
+AuraContainers.TRACKING_SET = {}
+for _, id in ipairs(ns.Settings.TRACKING_SPELLS) do AuraContainers.TRACKING_SET[id] = true end
+
 -- The container's own filters for "hide permanent" and "hide tracking";
 -- nil when neither is on.
 function AuraContainers.CandidateFilters(group)
     if not (group.hidePermanent or group.hideTracking) then return nil end
     local filters = {}
     if group.hidePermanent then filters.maxDuration = AuraContainers.ANY_DURATION end
-    if group.hideTracking then filters.excludeSpellIDs = ns.Settings.TRACKING_SPELLS end
+    if group.hideTracking then filters.excludeSpellIDs = AuraContainers.TRACKING_SET end
     return filters
 end
 
