@@ -202,7 +202,10 @@ C.Set("party", "castbarEnabled", true)
 -- Horizontal: a row of pets under the row of members.
 C.Set("party", "partyOrientation", "HORIZONTAL")
 H.check("horizontal: pets in a row", pets:GetAttribute("point"), "LEFT")
-H.check("horizontal: step", pets:GetAttribute("xOffset"), 4)
+-- In a row the pets keep the members' spacing, so each stands under its
+-- owner (a report: any spacing but 6 shifted them off).
+H.check("horizontal: the members' spacing", pets:GetAttribute("xOffset"), P.Spacing())
+H.check("horizontal: same step as the members", pets:GetAttribute("xOffset"), P.header:GetAttribute("xOffset"))
 H.check("horizontal: y offset", pets:GetAttribute("yOffset"), 0)
 H.check("horizontal: still under the members", select(3, pets:GetPoint(1)), "BOTTOMLEFT")
 b2 = pets:GetAttribute("child2")
@@ -257,8 +260,19 @@ for i, b in ipairs(Pets.fakes) do
 end
 local first = Pets.fakes[1]
 C.Set("party", "partyOrientation", "HORIZONTAL")
-H.check("horizontal fake 2 x", select(4, Pets.fakes[2]:GetPoint(1)), 160 + 4)
+H.check("horizontal fake 2 x", select(4, Pets.fakes[2]:GetPoint(1)), 160 + P.Spacing())
 H.check("horizontal fake 2 y", select(5, Pets.fakes[2]:GetPoint(1)), -(46 + 16))
+-- Every pet under its member, whatever the spacing (the report used 6 and
+-- others; test mode fills every slot).
+for _, spacing in ipairs({ 0, 6, 12, 25, 60 }) do
+    C.Set("party", "partySpacing", spacing)
+    for i = 2, P.Slots() do
+        local memberX = select(4, P.fakes[i]:GetPoint(1))
+        local petX = select(4, Pets.fakes[i]:GetPoint(1))
+        H.check(("spacing %d: pet %d under member %d"):format(spacing, i, i), petX, memberX)
+    end
+end
+C.Set("party", "partySpacing", 12)
 C.Set("party", "partyOrientation", "VERTICAL")
 C.Set("party", "partyShowPets", false)
 H.check("pets off in test mode: fake hidden", first:IsShown(), false)

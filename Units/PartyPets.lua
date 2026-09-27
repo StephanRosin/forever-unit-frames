@@ -48,10 +48,20 @@ local function resolve(key)
 end
 Config.Derive(Pets.KEY, Party.KEY, resolve)
 
+-- The gap between two pets. In a row it is the members' spacing: pets are
+-- as wide as members, so a full group's pets stand right under their
+-- owners (with PetStep they drifted off, unless the spacing happened to
+-- equal it). In a column the pets are a list of their own below the
+-- block, with PetStep between them.
+function Pets.Gap()
+    if get("partyOrientation") == "HORIZONTAL" then return Party.Spacing() end
+    return Party.PetStep()
+end
+
 -- Offset of pet i (1-based) from the pet list's top-left corner.
 function Pets.SlotOffset(i)
     local w, h = Single.Size(Pets.KEY)
-    local step = (i - 1) * Party.PetStep()
+    local step = (i - 1) * Pets.Gap()
     if get("partyOrientation") == "HORIZONTAL" then
         return (i - 1) * w + step, 0
     end
@@ -68,7 +78,7 @@ end
 -- their owners' block does.
 local function headerAttributes()
     local horizontal = get("partyOrientation") == "HORIZONTAL"
-    local step = Party.PetStep()
+    local step = Pets.Gap()
     return {
         template = Pets.TEMPLATE, templateType = "Button", sortMethod = "INDEX",
         showParty = true, showPlayer = get("partyShowPlayer"), showSolo = get("partyShowSolo"),
