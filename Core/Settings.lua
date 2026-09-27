@@ -218,8 +218,20 @@ Settings.Define({ key = "partyHideInRaid", code = "HR", scope = "frame", only = 
 Settings.Define({ key = "partyShowPets", code = "PT", scope = "frame", only = PARTY, type = "bool", default = false })
 Settings.Define({ key = "partyPetHeight", code = "PH", scope = "frame", only = PARTY, type = "int", min = 10, max = 60,
     default = 20 })
--- Buffs and debuffs on the pet frames, laid out like the members'.
+-- Buffs and debuffs on the pet frames: one row beside the pet, centred on
+-- it, debuffs first (Units/PartyPets.lua). The members' layout does not
+-- fit a frame this low: their groups landed on top of each other. Size,
+-- side and offset (positive: right, up) of their own; filters and the
+-- maximum are the party's.
 Settings.Define({ key = "partyPetAuras", code = "PA", scope = "frame", only = PARTY, type = "bool", default = false })
+Settings.Define({ key = "partyPetAuraSize", code = "PU", scope = "frame", only = PARTY, type = "int", min = 8, max = 40,
+    default = 14 })
+Settings.Define({ key = "partyPetAuraSide", code = "PV", scope = "frame", only = PARTY, type = "enum",
+    values = { "RIGHT", "LEFT" }, default = "RIGHT" })
+Settings.Define({ key = "partyPetAuraX", code = "PX", scope = "frame", only = PARTY, type = "int", min = -200, max = 200,
+    default = 2 })
+Settings.Define({ key = "partyPetAuraY", code = "PY", scope = "frame", only = PARTY, type = "int", min = -200, max = 200,
+    default = 0 })
 
 -- Party targets (Units/PartyTargets.lua): what each member has targeted, a
 -- small frame beside the member. Off by default (it clutters). Side: where

@@ -37,9 +37,42 @@ local FIXED = {
     portraitMode = "OFF", eliteMarker = false, combatFeedback = false, textHealthLeft = "NAME",
 }
 
+-- The pets' own aura layout: one row beside the pet, centred on it. The
+-- debuffs hang from the frame's edge, the buffs from the debuffs (OTHER),
+-- both growing away from the pet in one row.
+local OPPOSITE = { RIGHT = "LEFT", LEFT = "RIGHT" }
+local function auraLayout(key)
+    local side = get("partyPetAuraSide")
+    local group, rest = key:match("^(%l*buffs)(%u%a*)$")
+    if not group then return nil end
+    if rest == "Size" or rest == "OwnSize" then return get("partyPetAuraSize") end
+    if rest == "HighlightOwn" then return false end
+    if rest == "Growth" then return side end
+    if rest == "RowGrowth" then return "DOWN" end
+    if rest == "PerRow" then return 40 end
+    if rest == "FramePoint" then return side end
+    if rest == "Point" then return OPPOSITE[side] end
+    if group == "debuffs" then
+        if rest == "Anchor" then return "FRAME" end
+        if rest == "X" then return get("partyPetAuraX") end
+        if rest == "Y" then return get("partyPetAuraY") end
+    else
+        if rest == "Anchor" then return "OTHER" end
+        -- Beside the debuffs, one spacing away.
+        if rest == "X" then
+            local spacing = Config.Get(Party.KEY, "buffsSpacing")
+            return side == "RIGHT" and spacing or -spacing
+        end
+        if rest == "Y" then return 0 end
+    end
+    return nil
+end
+
 local function resolve(key)
     local fixed = FIXED[key]
     if fixed ~= nil then return fixed end
+    local aura = auraLayout(key)
+    if aura ~= nil then return aura end
     if key == "height" then return get("partyPetHeight") end
     -- A marker no taller than the pet frame.
     if key == "raidMarkerSize" then return math.min(get("raidMarkerSize"), get("partyPetHeight")) end

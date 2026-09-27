@@ -43,7 +43,7 @@ for _, tab in ipairs(ns.Schema.Tabs("party")) do
 end
 H.checkTrue("pets section in the layout tab", found)
 if found then
-    H.check("pets section keys", table.concat(found.keys, ","), "partyShowPets,partyPetHeight,partyPetAuras")
+    H.check("pets section keys", table.concat(found.keys, ","), "partyShowPets,partyPetHeight,partyPetAuras,partyPetAuraSize,partyPetAuraSide,partyPetAuraX,partyPetAuraY")
 end
 H.check("section title", ns.L.SECTION_pets, "Pets")
 for key in pairs(CODES) do
@@ -314,3 +314,47 @@ H.check("blizzard pet frame: invisible", member.PetFrame:GetAlpha(), 0)
 H.check("blizzard pet frame: mouse off", member.PetFrame._mouse, false)
 H.check("blizzard pet frame: hidden", member.PetFrame:IsShown(), false)
 _G.PartyFrame = nil
+
+-- Pet auras: one row beside the pet, centred, debuffs first, own size.
+-- The members' layout (groups in rows under each other) overlapped on a
+-- frame this low.
+do
+    local ns2 = H.LoadAddon()
+    local C2 = ns2.Config
+    C2.Use({})
+    local CODES2 = { partyPetAuraSize = "PU", partyPetAuraSide = "PV", partyPetAuraX = "PX", partyPetAuraY = "PY" }
+    for key, code in pairs(CODES2) do
+        H.check(key .. " code", ns2.Settings.Get(key).code, code)
+        H.checkTrue(key .. " labelled", ns2.L["SETTING_" .. key] ~= "SETTING_" .. key)
+    end
+    local P2 = "partypet"
+    C2.Set("party", "partyPetAuras", true)
+    H.check("pet icon size", C2.Get(P2, "buffsSize"), 14)
+    H.check("pet debuff size", C2.Get(P2, "debuffsSize"), 14)
+    C2.Set("party", "partyPetAuraSize", 18)
+    H.check("pet icon size setting: buffs", C2.Get(P2, "buffsSize"), 18)
+    H.check("pet icon size setting: debuffs", C2.Get(P2, "debuffsSize"), 18)
+    H.check("members keep theirs", C2.Get("party", "buffsSize"), 18)
+    C2.Set("party", "buffsSize", 22)
+    H.check("members' size does not reach the pets", C2.Get(P2, "buffsSize"), 18)
+    -- Right: debuffs at the pet's right edge, centred; buffs after them.
+    H.check("debuffs from the frame", C2.Get(P2, "debuffsAnchor"), "FRAME")
+    H.check("debuffs at the right edge", C2.Get(P2, "debuffsFramePoint") .. ">" .. C2.Get(P2, "debuffsPoint"), "RIGHT>LEFT")
+    H.check("debuffs offset x", C2.Get(P2, "debuffsX"), 2)
+    H.check("buffs after the debuffs", C2.Get(P2, "buffsAnchor"), "OTHER")
+    H.check("buffs to their right", C2.Get(P2, "buffsFramePoint") .. ">" .. C2.Get(P2, "buffsPoint"), "RIGHT>LEFT")
+    H.check("buffs one spacing on", C2.Get(P2, "buffsX"), C2.Get("party", "buffsSpacing"))
+    H.check("one row: growing right", C2.Get(P2, "buffsGrowth"), "RIGHT")
+    -- Left: mirrored.
+    C2.Set("party", "partyPetAuraSide", "LEFT")
+    H.check("left: debuffs at the left edge", C2.Get(P2, "debuffsFramePoint") .. ">" .. C2.Get(P2, "debuffsPoint"), "LEFT>RIGHT")
+    H.check("left: growing left", C2.Get(P2, "debuffsGrowth"), "LEFT")
+    H.check("left: buffs one spacing further left", C2.Get(P2, "buffsX"), -C2.Get("party", "buffsSpacing"))
+    C2.Set("party", "partyPetAuraX", -6)
+    C2.Set("party", "partyPetAuraY", 3)
+    H.check("offset x", C2.Get(P2, "debuffsX"), -6)
+    H.check("offset y", C2.Get(P2, "debuffsY"), 3)
+    -- Filters stay the party's.
+    C2.Set("party", "buffsOnlyMine", false)
+    H.check("filters: the party's", C2.Get(P2, "buffsOnlyMine"), false)
+end
