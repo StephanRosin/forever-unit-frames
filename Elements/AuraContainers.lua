@@ -50,6 +50,16 @@ AuraContainers.PARTS = { "own", "other" }
 -- Ten years in seconds: longer than any timed aura.
 AuraContainers.ANY_DURATION = 10 * 365 * 86400
 
+-- The container's own filters for "hide permanent" and "hide tracking";
+-- nil when neither is on.
+function AuraContainers.CandidateFilters(group)
+    if not (group.hidePermanent or group.hideTracking) then return nil end
+    local filters = {}
+    if group.hidePermanent then filters.maxDuration = AuraContainers.ANY_DURATION end
+    if group.hideTracking then filters.excludeSpellIDs = ns.Settings.TRACKING_SPELLS end
+    return filters
+end
+
 local HORIZONTAL = { RIGHT = true, LEFT = true }
 local FLOW_NAMES = { RIGHT = "Right", LEFT = "Left", UP = "Up", DOWN = "Down" }
 
@@ -100,7 +110,7 @@ function AuraContainers.Part(group, part)
             groupLineSpacing = spacing, forceNewLine = newLine },
         -- Any maxDuration hides auras without one; this one keeps every
         -- timed aura (it is compared with the aura's full duration).
-        candidateFilters = group.hidePermanent and { maxDuration = AuraContainers.ANY_DURATION } or nil,
+        candidateFilters = AuraContainers.CandidateFilters(group),
     }
 end
 

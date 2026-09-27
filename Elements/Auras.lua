@@ -194,6 +194,7 @@ local function readSettings(frame, group)
     group.ownFilter = onlyMine and filter or filter .. "|PLAYER"
     group.otherFilter = not onlyMine and filter .. "|!PLAYER" or nil
     group.hidePermanent = get(frame, group, "HidePermanent")
+    group.hideTracking = not group.isDebuff and get(frame, group, "HideTracking") or false
     group.enabled = get(frame, group, "Enabled")
     group.max = get(frame, group, "Max")
     group.size = Pixel.Snap(get(frame, group, "Size"), nil, 1)
@@ -258,6 +259,9 @@ local function testing()
 end
 
 -- One list from the client; nil when it refused.
+Auras.IS_TRACKING = {}
+for _, id in ipairs(ns.Settings.TRACKING_SPELLS) do Auras.IS_TRACKING[id] = true end
+
 local function query(frame, filter, max)
     local ok, list = pcall(C_UnitAuras.GetUnitAuras, frame.unit, filter, max, SORT_RULE)
     if ok and type(list) == "table" then return list end
@@ -273,6 +277,10 @@ local function fill(frame, group, list, count)
         -- cannot be told apart and stays).
         if group.hidePermanent and not Secrets.IsSecret(aura) and type(aura) == "table"
             and Secrets.Number(aura.duration) == 0 then
+            aura = nil
+        end
+        if aura and group.hideTracking and not Secrets.IsSecret(aura) and type(aura) == "table"
+            and Auras.IS_TRACKING[Secrets.Number(aura.spellId) or false] then
             aura = nil
         end
         local button = aura ~= nil and not Secrets.IsSecret(aura) and type(aura) == "table"

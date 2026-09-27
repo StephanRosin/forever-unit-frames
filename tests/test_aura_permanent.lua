@@ -37,3 +37,24 @@ for _, tab in ipairs(ns.Schema.Tabs("target")) do
 end
 H.check("in the buffs section", found, "buffs")
 H.checkTrue("labelled", ns.L.SETTING_buffsHidePermanent ~= "SETTING_buffsHidePermanent")
+
+-- "Hide tracking": only the tracking and sensing spells are left out, by
+-- the container's excludeSpellIDs; auras and stances stay.
+H.check("tracking code", S.Get("buffsHideTracking").code, "JK")
+H.check("buffs only", S.Get("debuffsHideTracking"), nil)
+H.check("tracking off by default", C.Get("target", "buffsHideTracking"), false)
+C.Set("target", "buffsHideTracking", true)
+local tf = bc._groups.other.candidateFilters
+H.checkTrue("tracking: excluded ids", tf and type(tf.excludeSpellIDs) == "table")
+local ids = {}
+for _, id in ipairs(tf.excludeSpellIDs) do ids[id] = true end
+H.checkTrue("Find Herbs", ids[2383])
+H.checkTrue("Find Minerals", ids[2580])
+H.checkTrue("Track Beasts", ids[1494])
+H.check("no duration limit from tracking alone", tf.maxDuration, nil)
+C.Set("target", "buffsHidePermanent", true)
+tf = bc._groups.other.candidateFilters
+H.checkTrue("both: ids and duration", tf.excludeSpellIDs ~= nil and tf.maxDuration ~= nil)
+C.Set("target", "buffsHidePermanent", false)
+C.Set("target", "buffsHideTracking", false)
+H.check("both off: no filter", bc._groups.other.candidateFilters, nil)

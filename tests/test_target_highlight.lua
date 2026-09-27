@@ -50,3 +50,14 @@ H.checkTrue("above threat", a.targetHighlight.frame:GetFrameLevel() > a.threat.f
 ns.TestMode.Set(true)
 H.check("test: member 1 highlighted", ns.Party.fakes[1].targetHighlight.frame:IsShown(), true)
 ns.TestMode.Set(false)
+
+-- Colour: General for every frame, overridable per frame; white by default.
+local cdef = S.Get("targetHighlightColor")
+H.check("colour code", cdef.code, "TK")
+H.check("colour inherited", cdef.scope, "inherit")
+H.check("white by default", C.Get("party", "targetHighlightColor")[1], 1)
+C.Set("general", "targetHighlightColor", { 1, 0.8, 0, 1 })
+M.units.target = M.units.party1
+M.FireEvent("PLAYER_TARGET_CHANGED")
+local piece = ns.Border.GlowPieces(a.targetHighlight.frame)[1]
+H.check("band takes the colour", piece._color[3], 0)

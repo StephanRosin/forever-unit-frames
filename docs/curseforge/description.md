@@ -27,7 +27,7 @@ In a "Status" tab per frame.
 - Group icons on the player and party frames: leader (or guide) and assistant, the ready check (waiting, ready, not ready; the result stays a few seconds after the check) and an incoming resurrection. Blizzard's own art, in a row at the frame's top left corner by default.
 - Dead, ghost and offline units always grey out and show "Dead", "Ghost" or "Offline" instead of their health values.
 - Range fading: party members, their pets, your pet, the target and the focus fade while out of range (the opacity is configurable). Under General > Status > Range you choose, separately for friends and enemies, how range is measured: automatic (your class's spell, e.g. Priest: Lesser Heal / Smite, Druid: Healing Touch / Wrath, Shaman: Healing Wave / Lightning Bolt, Paladin: Holy Light, Mage: Arcane Intellect / Fireball, Warlock: Unending Breath / Shadow Bolt, Hunter: Mend Pet / Auto Shot), any spell by name or ID, or a range in yards (5 to 40). Classes without a suitable spell, such as Warriors and Rogues, use yards automatically: group members by their exact distance, others by item range checks, with the follow distance as the last resort.
-- Target highlight: the party member you have targeted gets a bright border.
+- Target highlight: the party member you have targeted gets a bright border, in a colour of your choice.
 - Threat glow: the player and party frames glow in the threat colour while the unit has threat; on the target, focus and target of target it shows your threat on the unit (off by default there).
 - Dispel highlight: the border of the player and party frames takes the debuff's colour while the unit carries a debuff your class can dispel.
 
@@ -36,7 +36,7 @@ In a "Status" tab per frame.
 - Your own debuffs come first and bigger.
 - Wraps to new rows when they don't fit, with a limit per row.
 - Anchor to the frame, the health bar, the power bar, the castbar or the other aura group, with any of the 9 points and an X/Y offset.
-- Size, spacing, growth direction, maximum count, "only mine", "dispellable only", "hide permanent" (auras without a duration, e.g. tracking), remaining time and dispel-type colours.
+- Size, spacing, growth direction, maximum count, "only mine", "dispellable only", "hide tracking" (herb, mineral and treasure finding, hunter tracking, sensing), "hide permanent" (every aura without a duration, e.g. auras and stances), remaining time and dispel-type colours.
 
 ## Castbars
 - Castbars for player, target, target of target, focus and party.

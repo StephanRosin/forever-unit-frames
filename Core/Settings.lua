@@ -268,6 +268,15 @@ Settings.Define({ key = "textPowerRight", code = "UR", scope = "frame", type = "
 -- debuffs (the letter is the same for both groups). Anchor OTHER is the
 -- other group.
 Settings.AURA_GROUPS = { "buffs", "debuffs" }
+-- Tracking and sensing spells (Classic IDs): profession finds, hunter,
+-- druid, paladin and warlock tracking. Left out by "Hide tracking".
+Settings.TRACKING_SPELLS = {
+    2383, 2580, 2481, -- Find Herbs, Find Minerals, Find Treasure
+    1494, 19878, 19879, 19880, 19882, 19883, 19884, 19885, -- hunter: Track ...
+    5225, -- druid: Track Humanoids
+    5502, -- paladin: Sense Undead
+    5500, -- warlock: Sense Demons
+}
 Settings.POINTS = { "TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT" }
 local AURA_ANCHORS = { "FRAME", "HEALTH", "POWER", "CASTBAR", "OTHER" }
 local DIRECTIONS = { "RIGHT", "LEFT", "UP", "DOWN" }
@@ -287,6 +296,8 @@ local AURA_SETTINGS = {
     { "Dispellable", "V", { type = "bool" } },
     -- Leave out auras without a duration (tracking, stances, auras).
     { "HidePermanent", "P", { type = "bool" } },
+    -- Leave out tracking and sensing spells (Settings.TRACKING_SPELLS).
+    { "HideTracking", "K", { type = "bool" } },
     { "ShowTime", "T", { type = "bool" } },
     { "Anchor", "A", { type = "enum", values = AURA_ANCHORS } },
     { "FramePoint", "F", { type = "enum", values = Settings.POINTS } },
@@ -315,6 +326,7 @@ local AURA_DEFAULTS = {
         Enabled = { target = true, focus = true, party = true, _ = false },
         OnlyMine = { party = true, _ = false },
         HidePermanent = false,
+        HideTracking = false,
         ShowTime = true,
         Anchor = "OTHER",
         FramePoint = { party = "TOPRIGHT", _ = "TOPLEFT" },
@@ -466,6 +478,8 @@ Settings.Define({ key = "threatGlow", code = "TH", scope = "frame", type = "bool
 -- have targeted gets a bright band; its pets follow the party setting.
 Settings.Define({ key = "targetHighlight", code = "TG", scope = "frame", only = { party = true }, type = "bool",
     default = true })
+Settings.Define({ key = "targetHighlightColor", code = "TK", scope = "inherit", only = { party = true }, type = "color",
+    default = { 1, 1, 1, 0.9 } })
 -- Player frame out of combat (Elements/CombatFade.lua): faded to this
 -- opacity while idle.
 Settings.Define({ key = "playerFadeOOC", code = "WF", scope = "frame", only = { player = true }, type = "bool",

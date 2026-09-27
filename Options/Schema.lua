@@ -23,6 +23,7 @@ Schema.GENERAL = {
     { id = "colors", sections = {
         { id = "health", keys = { "healthColorMode", "healthColor" } },
         { id = "absorbs", keys = { "absorbColor" } },
+        { id = "highlight", keys = { "targetHighlightColor" } },
         { id = "healPrediction", keys = { "healMyColor", "healOtherColor" } },
     } },
     -- How range fading measures and how strongly it fades; the switches
@@ -62,7 +63,7 @@ Schema.FRAME = {
         { id = "font", keys = { "fontFace", "fontSize", "fontOutline", "fontShadow", "showSurname" } },
     } },
     { id = "auras", sections = {
-        { id = "buffs", keys = { "buffsEnabled", "buffsOnlyMine", "buffsHidePermanent", "buffsShowTime", "buffsAnchor", "buffsFramePoint",
+        { id = "buffs", keys = { "buffsEnabled", "buffsOnlyMine", "buffsHideTracking", "buffsHidePermanent", "buffsShowTime", "buffsAnchor", "buffsFramePoint",
             "buffsPoint", "buffsX", "buffsY", "buffsGrowth", "buffsRowGrowth", "buffsSize", "buffsSpacing",
             "buffsPerRow", "buffsMax", "buffsHighlightOwn", "buffsOwnSize" } },
         { id = "debuffs", keys = { "debuffsEnabled", "debuffsOnlyMine", "debuffsDispellable", "debuffsHidePermanent", "debuffsShowTime",
@@ -82,7 +83,7 @@ Schema.FRAME = {
         { id = "statusIcons", keys = { "statusCombat", "statusResting", "statusSize", "statusFramePoint",
             "statusPoint", "statusX", "statusY" } },
         { id = "range", keys = { "rangeFade", "rangeAlpha" } },
-        { id = "threat", keys = { "threatGlow", "targetHighlight" } },
+        { id = "threat", keys = { "threatGlow", "targetHighlight", "targetHighlightColor" } },
         { id = "dispel", keys = { "dispelHighlight" } },
     } },
     { id = "castbar", sections = {
