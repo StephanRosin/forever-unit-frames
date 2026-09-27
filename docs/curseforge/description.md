@@ -33,6 +33,7 @@ In a "Status" tab per frame.
 
 ## Auras
 - Buffs and debuffs on every frame, drawn by the game's own aura containers, so they **keep updating in combat**.
+- Weapon enchants (poisons, sharpening stones, Rockbiter Weapon ...) before the player's buffs, with their time left and the weapon's tooltip.
 - Your own debuffs come first and bigger.
 - Wraps to new rows when they don't fit, with a limit per row.
 - Anchor to the frame, the health bar, the power bar, the castbar or the other aura group, with any of the 9 points and an X/Y offset.
