@@ -115,6 +115,7 @@ L.AURAS_READ = "lues par l'addon (figées en combat)"
 
 L.TAB_appearance = "Apparence"; L.TAB_colors = "Couleurs"; L.TAB_profile = "Profil"
 L.TAB_layout = "Disposition"; L.TAB_bars = "Barres"; L.TAB_text = "Texte"; L.TAB_castbar = "Incantation"
+L.TAB_group = "Groupe"
 L.SECTION_font = "Police"; L.SECTION_bars = "Barres"; L.SECTION_border = "Bordure"
 L.SECTION_shape = "Forme"
 L.SECTION_health = "Barre de santé"; L.SECTION_frame = "Cadre"; L.SECTION_size = "Taille"

@@ -35,13 +35,13 @@ H.check("decoded pet auras", back.party.partyPetAuras, true)
 -- Options: a "Pets" section in the party Layout tab, with English texts.
 local found
 for _, tab in ipairs(ns.Schema.Tabs("party")) do
-    if tab.id == "layout" then
+    if tab.id == "group" then
         for _, sec in ipairs(tab.sections) do
             if sec.id == "pets" then found = sec end
         end
     end
 end
-H.checkTrue("pets section in the layout tab", found)
+H.checkTrue("pets section in the group tab", found)
 if found then
     H.check("pets section keys", table.concat(found.keys, ","), "partyShowPets,partyPetHeight,partyPetAuras,partyPetAuraSize,partyPetAuraSide,partyPetAuraX,partyPetAuraY")
 end

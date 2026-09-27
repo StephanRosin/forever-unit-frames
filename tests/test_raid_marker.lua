@@ -55,7 +55,8 @@ do
             if tab.id == "status" then found = tab end
         end
         H.checkTrue("status tab on " .. scope, found)
-        H.check("raid marker section first on " .. scope, found and found.sections[1].id, "raidMarker")
+        H.check("raid marker section right after the status icons on " .. scope,
+            found and found.sections[1].id .. "," .. found.sections[2].id, "statusIcons,raidMarker")
     end
     H.check("tab label", ns.L.TAB_status, "Status")
     H.check("section label", ns.L.SECTION_raidMarker, "Raid target marker")

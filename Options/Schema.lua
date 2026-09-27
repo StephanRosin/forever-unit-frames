@@ -40,24 +40,27 @@ Schema.FRAME = {
     { id = "layout", sections = {
         { id = "frame", keys = { "enabled" } },
         { id = "size", keys = { "width", "height" } },
+        { id = "position", keys = { "x", "y" } },
         { id = "barHeights", keys = { "titlePercent", "healthPercent", "powerPercent", "powerEnabled" } },
         { id = "portrait", keys = { "portraitMode", "portraitStyle" } },
         { id = "indicators", keys = { "eliteMarker", "combatFeedback" } },
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },
+        { id = "shape", keys = { "cornerRadius" } },
+    } },
+    -- The party's arrangement and what hangs beside its members.
+    { id = "group", sections = {
         { id = "group", keys = { "partyOrientation", "partySpacing", "partyShowPlayer", "partyShowSolo", "partyHideInRaid" } },
         { id = "pets", keys = { "partyShowPets", "partyPetHeight", "partyPetAuras", "partyPetAuraSize",
             "partyPetAuraSide", "partyPetAuraX", "partyPetAuraY" } },
         { id = "partyTargets", keys = { "partyTargets", "partyTargetSide", "partyTargetWidth", "partyTargetHeight",
             "partyTargetX", "partyTargetY" } },
-        { id = "position", keys = { "x", "y" } },
     } },
     { id = "bars", sections = {
         { id = "health", keys = { "healthColorMode", "healthColor" } },
         { id = "textures", keys = { "barTexture", "backgroundColor", "titleBackground" } },
         { id = "absorbs", keys = { "absorbEnabled", "absorbColor" } },
         { id = "healPrediction", keys = { "healPrediction", "healOverflow", "powerMatchesHealth", "healMyColor", "healOtherColor" } },
-        { id = "shape", keys = { "cornerRadius" } },
     } },
     { id = "text", sections = {
         { id = "titleText", keys = { "titleText", "titleColorMode", "titleClassIcon", "classIconSize", "classIconX",
@@ -67,6 +70,7 @@ Schema.FRAME = {
         { id = "font", keys = { "fontFace", "fontSize", "fontOutline", "fontShadow", "showSurname" } },
     } },
     { id = "auras", sections = {
+        { id = "auraIcons", keys = { "auraBorder" } },
         { id = "buffs", keys = { "buffsEnabled", "weaponEnchants", "buffsOnlyMine", "buffsHideTracking", "buffsHidePermanent", "buffsHideLonger", "buffsShowTime", "buffsAnchor", "buffsFramePoint",
             "buffsPoint", "buffsX", "buffsY", "buffsGrowth", "buffsRowGrowth", "buffsSize", "buffsSpacing",
             "buffsPerRow", "buffsMax", "buffsHighlightOwn", "buffsOwnSize" } },
@@ -74,22 +78,22 @@ Schema.FRAME = {
             "debuffsAnchor", "debuffsFramePoint", "debuffsPoint", "debuffsX", "debuffsY", "debuffsGrowth",
             "debuffsRowGrowth", "debuffsSize", "debuffsSpacing", "debuffsPerRow", "debuffsMax", "debuffsHighlightOwn",
             "debuffsOwnSize" } },
-        { id = "auraIcons", keys = { "auraBorder" } },
         { id = "totems", keys = { "totemsEnabled", "totemsSize", "totemsSpacing", "totemsFramePoint", "totemsPoint",
             "totemsX", "totemsY" } },
     } },
     -- What the unit is doing or what state it is in, drawn on the frame.
     { id = "status", sections = {
+        { id = "statusIcons", keys = { "statusCombat", "statusResting", "statusSize", "statusFramePoint",
+            "statusPoint", "statusX", "statusY" } },
         { id = "raidMarker", keys = { "raidMarker", "raidMarkerSize", "raidMarkerFramePoint", "raidMarkerPoint",
             "raidMarkerX", "raidMarkerY" } },
         { id = "groupIcons", keys = { "groupLeader", "groupReadyCheck", "groupResurrect", "groupIconSize",
             "groupIconFramePoint", "groupIconPoint", "groupIconX", "groupIconY" } },
-        { id = "outOfCombat", keys = { "playerFadeOOC", "playerFadeAlpha" } },
-        { id = "statusIcons", keys = { "statusCombat", "statusResting", "statusSize", "statusFramePoint",
-            "statusPoint", "statusX", "statusY" } },
-        { id = "range", keys = { "rangeFade", "rangeAlpha" } },
         { id = "threat", keys = { "threatGlow", "targetHighlight", "targetHighlightColor" } },
         { id = "dispel", keys = { "dispelHighlight" } },
+        -- Fading comes last: how the frame behaves, not what it shows.
+        { id = "range", keys = { "rangeFade", "rangeAlpha" } },
+        { id = "outOfCombat", keys = { "playerFadeOOC", "playerFadeAlpha" } },
     } },
     { id = "castbar", sections = {
         { id = "castbar", keys = { "castbarEnabled", "castbarAlwaysShow", "hideBlizzardCastbar", "castbarPosition", "castbarDock",

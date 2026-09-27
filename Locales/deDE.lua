@@ -115,6 +115,7 @@ L.AURAS_READ = "vom Addon gelesen (im Kampf eingefroren)"
 
 L.TAB_appearance = "Aussehen"; L.TAB_colors = "Farben"; L.TAB_profile = "Profil"
 L.TAB_layout = "Anordnung"; L.TAB_bars = "Leisten"; L.TAB_text = "Text"; L.TAB_castbar = "Zauberleiste"
+L.TAB_group = "Gruppe"
 L.SECTION_font = "Schrift"; L.SECTION_bars = "Leisten"; L.SECTION_border = "Rahmen"
 L.SECTION_shape = "Form"
 L.SECTION_health = "Gesundheitsleiste"; L.SECTION_frame = "Rahmen"; L.SECTION_size = "Größe"

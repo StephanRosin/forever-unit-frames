@@ -28,7 +28,7 @@ for _, tab in ipairs(ns.Schema.Tabs("party")) do
         if sec.id == "partyTargets" then found = tab.id end
     end
 end
-H.check("in the party layout tab", found, "layout")
+H.check("in the party group tab", found, "group")
 
 -- The XML declares the child the mock builds.
 local xml = H.ReadFile("Units/Party.xml")

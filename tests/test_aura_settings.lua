@@ -71,7 +71,8 @@ H.check("decoded dispellable", back.party.debuffsDispellable, true)
 -- Options: an Auras tab between Text and Castbar, Buffs and Debuffs sections.
 local tabs = Schema.Tabs("target")
 H.check("auras tab", tabs[4].id, "auras")
-H.check("auras sections", tabs[4].sections[1].id .. "," .. tabs[4].sections[2].id, "buffs,debuffs")
+H.check("auras sections", tabs[4].sections[1].id .. "," .. tabs[4].sections[2].id .. "," .. tabs[4].sections[3].id,
+    "auraIcons,buffs,debuffs")
 H.check("pet has auras", Schema.Tabs("pet")[4].id, "auras")
 H.check("tab label", L.TAB_auras, "Auras")
 H.check("other group label (buffs)", Schema.EnumText(S.Get("buffsAnchor"), "OTHER"), "Debuffs")

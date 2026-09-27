@@ -116,6 +116,7 @@ L.AURAS_READ = "leídas por el addon (congeladas en combate)"
 
 L.TAB_appearance = "Apariencia"; L.TAB_colors = "Colores"; L.TAB_profile = "Perfil"
 L.TAB_layout = "Diseño"; L.TAB_bars = "Barras"; L.TAB_text = "Texto"; L.TAB_castbar = "Barra de lanzamiento"
+L.TAB_group = "Grupo"
 L.SECTION_font = "Fuente"; L.SECTION_bars = "Barras"; L.SECTION_border = "Borde"
 L.SECTION_shape = "Forma"
 L.SECTION_health = "Barra de salud"; L.SECTION_frame = "Marco"; L.SECTION_size = "Tamaño"

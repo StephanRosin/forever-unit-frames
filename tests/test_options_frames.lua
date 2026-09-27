@@ -28,21 +28,23 @@ end
 -- Tabs per frame: no castbar for the pet.
 H.check("player tabs", tabIds("player"), "layout,bars,text,auras,status,castbar")
 H.check("pet tabs", tabIds("pet"), "layout,bars,text,auras,status")
-H.check("party tabs", tabIds("party"), "layout,bars,text,auras,status,castbar")
+H.check("party tabs", tabIds("party"), "layout,group,bars,text,auras,status,castbar")
 
 -- Party layout only on the party page; portrait everywhere.
 O.Select("party")
-O.SelectTab("layout")
+O.SelectTab("group")
 local rows = rowKeys()
 H.checkTrue("party: orientation row", rows.partyOrientation)
 H.checkTrue("party: spacing row", rows.partySpacing)
 H.checkTrue("party: show player row", rows.partyShowPlayer)
 H.checkTrue("party: show solo row", rows.partyShowSolo)
-H.checkTrue("party: block X", rows.x)
-H.checkTrue("party: portrait", rows.portraitMode)
 rows.partySpacing.edit:SetText("20")
 rows.partySpacing.edit:GetScript("OnEnterPressed")(rows.partySpacing.edit)
 H.check("spacing set through the window", ns.Config.Get("party", "partySpacing"), 20)
+O.SelectTab("layout")
+rows = rowKeys()
+H.checkTrue("party: block X", rows.x)
+H.checkTrue("party: portrait", rows.portraitMode)
 -- Party's own spacing plus room for its docked castbar (on by default).
 H.check("header follows", ns.Party.header:GetAttribute("yOffset"), -(20 + ns.Castbar.DockedDepth("party")))
 

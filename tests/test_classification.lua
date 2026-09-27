@@ -4,11 +4,12 @@ local S, L, Cl = ns.Settings, ns.L, ns.Classification
 
 local def = S.Get("eliteMarker")
 H.check("code", def.code, "EM")
-for _, scope in ipairs({ "target", "targettarget", "focus", "party" }) do
+for _, scope in ipairs({ "target", "targettarget", "focus" }) do
     H.checkTrue("applies to " .. scope, S.AppliesTo(def, scope))
 end
 H.check("not on the player", S.AppliesTo(def, "player"), false)
 H.check("not on the pet", S.AppliesTo(def, "pet"), false)
+H.check("not on the party (players are never elite)", S.AppliesTo(def, "party"), false)
 H.check("on by default", S.Default(def, "target"), true)
 H.check("label", L.SETTING_eliteMarker, "Elite / rare marker")
 
@@ -182,7 +183,7 @@ ns.TestMode.Set(true)
 H.check("sample on target", icon._atlas, "nameplates-icon-elite-silver")
 H.checkTrue("sample on focus (word)", ns.Frames.focus.eliteText:IsShown())
 H.check("sample word", ns.Frames.focus.eliteText:GetText(), L.CLASS_rareelite)
-H.checkTrue("sample on the pretend party", ns.Party.fakes[1].eliteText:IsShown())
+H.check("no sample on the pretend party", ns.Party.fakes[1].eliteText, nil)
 M.FireEvent("UNIT_CLASSIFICATION_CHANGED", "player")
 H.checkTrue("sample kept", ns.Frames.focus.eliteText:IsShown())
 C.Set("focus", "fontSize", 14)
@@ -190,7 +191,6 @@ H.checkTrue("sample kept through a restyle", ns.Frames.focus.eliteText:IsShown()
 ns.TestMode.Set(false)
 H.check("target: real marker back", icon._atlas, "nameplates-icon-elite-gold")
 H.check("focus: nothing", ns.Frames.focus.eliteText:IsShown(), false)
-H.check("party: sample gone", ns.Party.fakes[1].eliteText:IsShown(), false)
 
 -- Options: its own section on the frame's Layout tab.
 local found

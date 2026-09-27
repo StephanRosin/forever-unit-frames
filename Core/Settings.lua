@@ -125,17 +125,19 @@ Settings.Define({ key = "fontShadow", code = "FH", scope = "inherit", type = "bo
 -- Secondary name (surname) next to the first name, like Blizzard's frames.
 Settings.Define({ key = "showSurname", code = "SN", scope = "inherit", type = "bool", default = true })
 -- Class icon at the right end of the title row (players only).
-Settings.Define({ key = "titleClassIcon", code = "CL", scope = "inherit", type = "bool", default = true })
+-- Only players have a class: no class icon settings for the pet frame.
+local CLASS_UNITS = { player = true, target = true, targettarget = true, focus = true, party = true }
+Settings.Define({ key = "titleClassIcon", only = CLASS_UNITS, code = "CL", scope = "inherit", type = "bool", default = true })
 -- The icon is a round badge on the frame's top right corner: its size and
 -- the offset of its centre from that corner. The defaults put it slightly
 -- inside horizontally and mostly above the top edge.
-Settings.Define({ key = "classIconSize", code = "KS", scope = "inherit", type = "int", min = 10, max = 48, default = 28 })
-Settings.Define({ key = "classIconX", code = "KX", scope = "inherit", type = "int", min = -64, max = 64, default = -6 })
-Settings.Define({ key = "classIconY", code = "KY", scope = "inherit", type = "int", min = -64, max = 64, default = 2 })
+Settings.Define({ key = "classIconSize", only = CLASS_UNITS, code = "KS", scope = "inherit", type = "int", min = 10, max = 48, default = 28 })
+Settings.Define({ key = "classIconX", only = CLASS_UNITS, code = "KX", scope = "inherit", type = "int", min = -64, max = 64, default = -6 })
+Settings.Define({ key = "classIconY", only = CLASS_UNITS, code = "KY", scope = "inherit", type = "int", min = -64, max = 64, default = 2 })
 -- The badge's own round ring, independent of the frame border: thickness
 -- (0 turns it off, the icon then fills the badge) and colour.
-Settings.Define({ key = "classIconRing", code = "KR", scope = "inherit", type = "int", min = 0, max = 4, default = 2 })
-Settings.Define({ key = "classIconRingColor", code = "KC", scope = "inherit", type = "color",
+Settings.Define({ key = "classIconRing", only = CLASS_UNITS, code = "KR", scope = "inherit", type = "int", min = 0, max = 4, default = 2 })
+Settings.Define({ key = "classIconRingColor", only = CLASS_UNITS, code = "KC", scope = "inherit", type = "color",
     default = { 0.78, 0.78, 0.8, 1 } })
 Settings.Define({ key = "barTexture", code = "BT", scope = "inherit", type = "media", mediaKind = "statusbar", default = "Flat" })
 Settings.Define({ key = "backgroundColor", code = "BC", scope = "inherit", type = "color", default = { 0, 0, 0, 0.6 } })
@@ -199,9 +201,10 @@ Settings.Define({ key = "portraitMode", code = "PM", scope = "frame", type = "en
 Settings.Define({ key = "portraitStyle", code = "PS", scope = "frame", type = "enum",
     values = { "2D", "3D" }, default = "2D" })
 
--- Elite / rare marker: frames that show units other than you and your pet.
+-- Elite / rare marker: frames that show units other than you, your pet and
+-- your party (players are never elite).
 Settings.Define({ key = "eliteMarker", code = "EM", scope = "frame",
-    only = { target = true, targettarget = true, focus = true, party = true }, type = "bool", default = true })
+    only = { target = true, targettarget = true, focus = true }, type = "bool", default = true })
 -- Damage and heal numbers inside the frame (Blizzard shows them on the
 -- player and pet frames).
 Settings.Define({ key = "combatFeedback", code = "CF", scope = "frame", type = "bool",

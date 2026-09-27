@@ -38,8 +38,17 @@ do
     H.check("classIconRingColor: inherited", d and d.scope, "inherit")
     H.check("classIconRingColor: color", d and d.type, "color")
     H.check("classIconRingColor: default", d and table.concat(d.default, ","), "0.78,0.78,0.8,1")
-    H.check("classIconRingColor: label", ns.L.SETTING_classIconRingColor, "Badge ring colour")
+    H.check("classIconRingColor: label", ns.L.SETTING_classIconRingColor, "Badge ring color")
     H.checkTrue("classIconRingColor: hint", ns.L.HINT_classIconRingColor)
+end
+
+-- Pets have no class: none of the class icon settings on the pet page.
+for _, key in ipairs({ "titleClassIcon", "classIconSize", "classIconX", "classIconY", "classIconRing",
+    "classIconRingColor" }) do
+    local d = S.Get(key)
+    H.check(key .. ": not on the pet", S.AppliesTo(d, "pet"), false)
+    H.checkTrue(key .. ": on the party", S.AppliesTo(d, "party"))
+    H.checkTrue(key .. ": in general", S.AppliesTo(d, "general"))
 end
 
 _G.ForeverUnitFramesDB = nil
