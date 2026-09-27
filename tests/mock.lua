@@ -501,12 +501,12 @@ local function newWidget(kind, name, parent)
         local old = self._scripts[s]
         self._scripts[s] = function(...) if old then old(...) end fn(...) end
     end
-    function w:RegisterEvent(e) self._events[e] = true; M.eventFrames[self] = true end
+    function w:RegisterEvent(e) self._events[e] = true; M.Listen(self) end
     -- Unit events: delivered only when the event's first argument is one of
     -- the registered units, like the client's RegisterUnitEvent.
     function w:RegisterUnitEvent(e, ...)
         self._events[e] = { ... }
-        M.eventFrames[self] = true
+        M.Listen(self)
         return true
     end
     function w:UnregisterEvent(e) self._events[e] = nil end
@@ -883,6 +883,7 @@ M.newWidget = newWidget
 
 function M.Reset()
     M.eventFrames = {}
+    M.eventOrder = {}
     M.frames = {}
     M.widgets = {}         -- every widget created, in creation order
     M.chat = {}
@@ -1823,9 +1824,18 @@ local function wants(registration, unit)
     return false
 end
 
+-- Frames that listen to events, in the order they first registered: the
+-- client dispatches in registration order (a plain table's pairs order
+-- would differ from run to run).
+function M.Listen(f)
+    if M.eventFrames[f] then return end
+    M.eventFrames[f] = true
+    M.eventOrder[#M.eventOrder + 1] = f
+end
+
 function M.FireEvent(event, ...)
     local unit = ...
-    for f in pairs(M.eventFrames) do
+    for _, f in ipairs(M.eventOrder) do
         local registration = f._events[event]
         if registration and f._scripts.OnEvent and wants(registration, unit) then
             f._scripts.OnEvent(f, event, ...)

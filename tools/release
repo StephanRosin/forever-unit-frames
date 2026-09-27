@@ -17,6 +17,12 @@ VERSION="$(sed -n 's/^## Version: *//p' "$HERE/ForeverUnitFrames.toc" | tr -d '\
 if git -C "$HERE" rev-parse -q --verify "refs/tags/v$VERSION" >/dev/null; then
     echo "v$VERSION is already released: bump ## Version in the TOC" >&2; exit 1
 fi
+# Never upload a build whose tests fail.
+if ! "$HERE/tests/run" > /tmp/fuf-release-tests.txt 2>&1; then
+    tail -5 /tmp/fuf-release-tests.txt >&2
+    echo "tests failed: nothing uploaded" >&2
+    exit 1
+fi
 ZIP="$("$HERE/tools/package")"
 METADATA="$(python3 -c 'import json,sys; print(json.dumps({"changelog": sys.argv[1], "changelogType": "markdown", "displayName": "Forever Unit Frames " + sys.argv[2], "gameVersions": [int(sys.argv[3])], "releaseType": sys.argv[4]}))' \
     "$CHANGELOG" "$VERSION" "$GAME_VERSION_ID" "$TYPE")"
