@@ -211,6 +211,8 @@ Settings.Define({ key = "partyOrientation", code = "OR", scope = "frame", only =
 Settings.Define({ key = "partySpacing", code = "GS", scope = "frame", only = PARTY, type = "int", min = 0, max = 60, default = 12 })
 Settings.Define({ key = "partyShowPlayer", code = "SP", scope = "frame", only = PARTY, type = "bool", default = false })
 Settings.Define({ key = "partyShowSolo", code = "SO", scope = "frame", only = PARTY, type = "bool", default = false })
+-- Hidden while in a raid group (a visibility driver on the headers).
+Settings.Define({ key = "partyHideInRaid", code = "HR", scope = "frame", only = PARTY, type = "bool", default = true })
 -- Party pets (Units/PartyPets.lua): one small frame under each member
 -- whose pet exists. Height in pixels; the width is the member's.
 Settings.Define({ key = "partyShowPets", code = "PT", scope = "frame", only = PARTY, type = "bool", default = false })
@@ -266,6 +268,15 @@ Settings.Define({ key = "textPowerRight", code = "UR", scope = "frame", type = "
 -- debuffs (the letter is the same for both groups). Anchor OTHER is the
 -- other group.
 Settings.AURA_GROUPS = { "buffs", "debuffs" }
+-- Tracking and sensing spells (Classic IDs): profession finds, hunter,
+-- druid, paladin and warlock tracking. Left out by "Hide tracking".
+Settings.TRACKING_SPELLS = {
+    2383, 2580, 2481, -- Find Herbs, Find Minerals, Find Treasure
+    1494, 19878, 19879, 19880, 19882, 19883, 19884, 19885, -- hunter: Track ...
+    5225, -- druid: Track Humanoids
+    5502, -- paladin: Sense Undead
+    5500, -- warlock: Sense Demons
+}
 Settings.POINTS = { "TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT" }
 local AURA_ANCHORS = { "FRAME", "HEALTH", "POWER", "CASTBAR", "OTHER" }
 local DIRECTIONS = { "RIGHT", "LEFT", "UP", "DOWN" }
@@ -283,6 +294,10 @@ local AURA_SETTINGS = {
     { "Enabled", "E", { type = "bool" } },
     { "OnlyMine", "M", { type = "bool" } },
     { "Dispellable", "V", { type = "bool" } },
+    -- Leave out auras without a duration (tracking, stances, auras).
+    { "HidePermanent", "P", { type = "bool" } },
+    -- Leave out tracking and sensing spells (Settings.TRACKING_SPELLS).
+    { "HideTracking", "K", { type = "bool" } },
     { "ShowTime", "T", { type = "bool" } },
     { "Anchor", "A", { type = "enum", values = AURA_ANCHORS } },
     { "FramePoint", "F", { type = "enum", values = Settings.POINTS } },
@@ -310,6 +325,8 @@ local AURA_DEFAULTS = {
         letter = "J",
         Enabled = { target = true, focus = true, party = true, _ = false },
         OnlyMine = { party = true, _ = false },
+        HidePermanent = false,
+        HideTracking = false,
         ShowTime = true,
         Anchor = "OTHER",
         FramePoint = { party = "TOPRIGHT", _ = "TOPLEFT" },
@@ -327,6 +344,7 @@ local AURA_DEFAULTS = {
         Enabled = { targettarget = false, _ = true },
         OnlyMine = false,
         Dispellable = false,
+        HidePermanent = false,
         ShowTime = true,
         Anchor = "FRAME",
         FramePoint = { party = "TOPRIGHT", _ = "TOPLEFT" },
@@ -456,6 +474,18 @@ Settings.Define({ key = "rangeHostileYards", code = "VZ", scope = "general", typ
 -- party and pet frames, your threat on it on the others.
 Settings.Define({ key = "threatGlow", code = "TH", scope = "frame", type = "bool",
     default = { player = true, party = true, _ = false } })
+-- Target highlight (Elements/TargetHighlight.lua): the party member you
+-- have targeted gets a bright band; its pets follow the party setting.
+Settings.Define({ key = "targetHighlight", code = "TG", scope = "frame", only = { party = true }, type = "bool",
+    default = true })
+Settings.Define({ key = "targetHighlightColor", code = "TK", scope = "inherit", only = { party = true }, type = "color",
+    default = { 1, 1, 1, 0.9 } })
+-- Player frame out of combat (Elements/CombatFade.lua): faded to this
+-- opacity while idle.
+Settings.Define({ key = "playerFadeOOC", code = "WF", scope = "frame", only = { player = true }, type = "bool",
+    default = false })
+Settings.Define({ key = "playerFadeAlpha", code = "WA", scope = "frame", only = { player = true }, type = "int",
+    min = 0, max = 100, default = 25 })
 
 -- Dispel highlight (Elements/Dispel.lua): the border of the player and
 -- party frames tints while the unit has a debuff you can dispel.

@@ -134,9 +134,9 @@ function Pets.StyleAll(testing)
             style(button)
             button:ClearAllPoints()
         end
-        -- Hide + Show lays the list out again (OnShow).
-        header:Hide()
-        if on and not testing then header:Show() end
+        -- Hide + Show lays the list out again (OnShow); hidden in a raid
+        -- like the party.
+        Party.ShowHeader(header, on and not testing)
     end
     if on and testing then
         showFakes()

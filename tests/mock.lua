@@ -395,6 +395,7 @@ function M.NewAuraContainer(w, template)
         if max == nil then max = math.huge end
         assert(validMax(max), "maxFrameCount must be a non-negative integer or infinity.")
         local group = { key = key, filter = filter, max = max, enabled = true, layout = copyLayout(options.layout),
+            candidateFilters = options.candidateFilters,
             initializeFrame = options.initializeFrame, frames = {} }
         self._groups[key] = group
         table.insert(self._groupOrder, key)
@@ -420,6 +421,16 @@ function M.NewAuraContainer(w, template)
     end
     -- Replaces the whole layout (merged with the defaults), like the source.
     function w:SetAuraGroupLayout(key, layout) required(self, key).layout = copyLayout(layout) end
+    -- candidateFilters (Blizzard_CustomAuraContainer.lua ValidateCandidateFilters):
+    -- a table or nil; maxDuration a non-negative number (hides permanent auras).
+    function w:SetAuraGroupCandidateFilters(key, filters)
+        assert(filters == nil or type(filters) == "table", "candidateFilters must be a table or nil.")
+        if filters and filters.maxDuration ~= nil then
+            assert(type(filters.maxDuration) == "number" and filters.maxDuration >= 0,
+                "maxDuration must be a non-negative number or nil.")
+        end
+        required(self, key).candidateFilters = filters
+    end
     function w:GetAuraGroupFrameCount(key)
         local group = self._groups[key]
         return group and #group.frames or 0
@@ -957,6 +968,38 @@ function M.Reset()
     _G.IsResting = function() return M.resting end
     _G.GetTime = function() return M.now end
     _G.IsInGroup = function() return #M.group > 0 end
+    -- Raid: M.inRaid (M.SetRaid). Visibility drivers (SecureStateDriver.lua:
+    -- RegisterStateDriver(frame, "visibility", values) sets state-visibility);
+    -- the mock knows the conditions the addon uses.
+    M.inRaid = false
+    M.drivers = setmetatable({}, { __mode = "k" })
+    _G.IsInRaid = function() return M.inRaid end
+    local function evaluate(frame, values)
+        for clause in (values .. ";"):gmatch("%s*([^;]+);") do
+            local cond, action = clause:match("^%[(.-)%]%s*(%a+)$")
+            if not cond then action = clause:match("^(%a+)$") end
+            local match = cond == nil or (cond == "group:raid" and M.inRaid) or (cond == "nogroup:raid" and not M.inRaid)
+            assert(cond == nil or cond == "group:raid" or cond == "nogroup:raid", "mock: unknown condition " .. tostring(cond))
+            if match then
+                if action == "show" then frame:Show() else frame:Hide() end
+                return
+            end
+        end
+    end
+    _G.RegisterStateDriver = function(frame, state, values)
+        assert(not M.combat, "RegisterStateDriver: in combat")
+        assert(state == "visibility", "mock: only the visibility state")
+        M.drivers[frame] = values
+        evaluate(frame, values)
+    end
+    _G.UnregisterStateDriver = function(frame, state)
+        assert(not M.combat, "UnregisterStateDriver: in combat")
+        M.drivers[frame] = nil
+    end
+    function M.SetRaid(on)
+        M.inRaid = on
+        for frame, values in pairs(M.drivers) do evaluate(frame, values) end
+    end
     _G.geterrorhandler = function()
         return function(err) table.insert(M.errors, err) end
     end
@@ -1033,6 +1076,7 @@ function M.Reset()
     end
     _G.UnitPower = function(unit) local d = u(unit); return d and d.power or 0 end
     _G.UnitPowerMax = function(unit) local d = u(unit); return d and d.powerMax or 0 end
+    _G.UnitAffectingCombat = function(unit) return unit == "player" and M.combat or false end
     _G.UnitPowerType = function(unit) local d = u(unit); return d and d.powerType or 0, d and d.powerToken or "MANA" end
     _G.UnitPowerPercent = function(unit, _, _, curve)
         local d = u(unit); local p = d and d.powerPercent or 0

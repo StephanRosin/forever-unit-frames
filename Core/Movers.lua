@@ -148,6 +148,7 @@ function Movers.Unlock()
     unlocked = true
     showActive()
     ns.Print(L.UNLOCKED)
+    ns.Fire("MOVERS_UNLOCKED", true)
     return true
 end
 
@@ -155,6 +156,7 @@ end
 -- cleared; hiding and disabling the movers waits until combat ends.
 function Movers.Lock()
     unlocked = false
+    ns.Fire("MOVERS_UNLOCKED", false)
     for _, target in ipairs(targets) do
         local mover = target.mover
         if mover.dragging then

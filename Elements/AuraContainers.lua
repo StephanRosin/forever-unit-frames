@@ -47,6 +47,18 @@ end
 -- their own size) and "other" (the rest, or everything when yours are not
 -- put first). Plain values in, plain tables out; no widget is touched.
 AuraContainers.PARTS = { "own", "other" }
+-- Ten years in seconds: longer than any timed aura.
+AuraContainers.ANY_DURATION = 10 * 365 * 86400
+
+-- The container's own filters for "hide permanent" and "hide tracking";
+-- nil when neither is on.
+function AuraContainers.CandidateFilters(group)
+    if not (group.hidePermanent or group.hideTracking) then return nil end
+    local filters = {}
+    if group.hidePermanent then filters.maxDuration = AuraContainers.ANY_DURATION end
+    if group.hideTracking then filters.excludeSpellIDs = ns.Settings.TRACKING_SPELLS end
+    return filters
+end
 
 local HORIZONTAL = { RIGHT = true, LEFT = true }
 local FLOW_NAMES = { RIGHT = "Right", LEFT = "Left", UP = "Up", DOWN = "Down" }
@@ -96,6 +108,9 @@ function AuraContainers.Part(group, part)
         max = group.max,
         layout = { elementWidth = size, elementHeight = size, elementSpacing = spacing, lineSpacing = spacing,
             groupLineSpacing = spacing, forceNewLine = newLine },
+        -- Any maxDuration hides auras without one; this one keeps every
+        -- timed aura (it is compared with the aura's full duration).
+        candidateFilters = AuraContainers.CandidateFilters(group),
     }
 end
 
@@ -167,6 +182,7 @@ local function create(frame, key, made)
     for _, part in ipairs(AuraContainers.PARTS) do
         local p, own = AuraContainers.Part(group, part), part == "own"
         container:AddAuraGroup(part, p.filter, { maxFrameCount = p.max, layout = p.layout,
+            candidateFilters = p.candidateFilters,
             initializeFrame = function(button) AuraContainers.InitButton(entry, own, button) end })
     end
     container:SetUnit(frame.unit or "none")
@@ -210,6 +226,7 @@ local function apply(frame)
             container:SetAuraGroupFilterString(part, p.filter)
             container:SetAuraGroupMaxFrameCount(part, p.max)
             container:SetAuraGroupLayout(part, p.layout)
+            container:SetAuraGroupCandidateFilters(part, p.candidateFilters)
             container:SetAuraGroupEnabled(part, p.enabled)
         end
         if restyle(entry, group) then stale[frame] = true end
