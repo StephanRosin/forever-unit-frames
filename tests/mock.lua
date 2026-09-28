@@ -845,6 +845,14 @@ local function newWidget(kind, name, parent)
             function anim:SetDuration(v) self._duration = v end
             function anim:SetStartDelay(v) self._delay = v end
             function anim:SetOrder(v) self._order = v end
+            -- Scale (SimpleAnimScaleAPI)
+            function anim:SetScaleFrom(x, y) self._scaleFrom = { x, y } end
+            function anim:SetScaleTo(x, y) self._scaleTo = { x, y } end
+            function anim:SetOrigin(point, x, y) self._origin = { point, x, y } end
+            function anim:SetSmoothing(v)
+                assert(({ NONE = 1, IN = 1, OUT = 1, IN_OUT = 1 })[v], "SetSmoothing: bad smoothing")
+                self._smoothing = v
+            end
             -- FlipBook (SimpleAnimFlipBookAPI)
             function anim:SetFlipBookRows(v) self._rows = v end
             function anim:SetFlipBookColumns(v) self._columns = v end

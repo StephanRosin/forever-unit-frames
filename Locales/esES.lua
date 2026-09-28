@@ -499,3 +499,10 @@ L.SETTING_pvpIconFramePoint = "Punto del marco"
 L.SETTING_pvpIconPoint = "Punto del icono"
 L.SETTING_pvpIconX = "Desplazamiento X"
 L.SETTING_pvpIconY = "Desplazamiento Y"
+
+-- Combat icon animation.
+L.SETTING_combatAnimation = "Animación del icono de combate"
+L.ENUM_combatAnimation_OFF = "Desactivada"
+L.ENUM_combatAnimation_BURST = "Destello"
+L.ENUM_combatAnimation_PULSE = "Pulso"
+L.HINT_combatAnimation = "Destello: aparece de golpe y brilla al entrar en combate"

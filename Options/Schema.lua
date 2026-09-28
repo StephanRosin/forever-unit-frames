@@ -31,6 +31,7 @@ Schema.GENERAL = {
     -- How range fading measures and how strongly it fades; the switches
     -- (and opacity overrides) are per frame (Status > Range on each page).
     { id = "status", sections = {
+        { id = "combatIcon", keys = { "combatAnimation" } },
         { id = "range", keys = { "rangeAlpha", "rangeFriendlyMode", "rangeFriendlySpell", "rangeFriendlyYards",
             "rangeHostileMode", "rangeHostileSpell", "rangeHostileYards" } },
     } },
@@ -91,7 +92,7 @@ Schema.FRAME = {
     { id = "status", sections = {
         { id = "statusIcons", keys = { "statusCombat", "statusResting", "statusSize", "statusFramePoint",
             "statusPoint", "statusX", "statusY" } },
-        { id = "combatIcon", keys = { "combatIcon", "combatIconSize", "combatIconFramePoint", "combatIconPoint",
+        { id = "combatIcon", keys = { "combatIcon", "combatAnimation", "combatIconSize", "combatIconFramePoint", "combatIconPoint",
             "combatIconX", "combatIconY" } },
         { id = "pvpIcon", keys = { "pvpIcon", "pvpIconSize", "pvpIconFramePoint", "pvpIconPoint", "pvpIconX",
             "pvpIconY" } },

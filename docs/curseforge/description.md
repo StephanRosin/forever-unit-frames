@@ -18,7 +18,7 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 - Round class badge, and a secondary name (surname) that can be turned on or off.
 - Elite, rare and boss marker on the portrait or as a word.
 - Combo points on the target frame: a row of square or round pips below the frame (size, color, position, hide when empty).
-- Combat icon on target, target of target, focus and party (see who pulled), and a PvP crest on every player frame; both optional, with size and position.
+- Combat icon on target, target of target, focus and party (see who pulled), and a PvP crest on every player frame; both optional, with size and position. Combat icons spring in with a flash as a fight starts (or pulse, or stay still).
 - Absorb shields and incoming heals drawn in the health bar, with an optional overheal lane. Shields can also sit at the bar's end, so they show at full health too.
 - Texts on each bar: name, level, health or power values, or level, class and race ("60 Mage Gnome"; creatures show their type, "60 Humanoid"). Names on the bars can take the class or reaction color.
 - Level numbers can take their difficulty color (red, orange, yellow, green, grey), independent of the rest of the line.

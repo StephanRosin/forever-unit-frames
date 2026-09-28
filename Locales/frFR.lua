@@ -498,3 +498,10 @@ L.SETTING_pvpIconFramePoint = "Point du cadre"
 L.SETTING_pvpIconPoint = "Point de l'icône"
 L.SETTING_pvpIconX = "Décalage X"
 L.SETTING_pvpIconY = "Décalage Y"
+
+-- Combat icon animation.
+L.SETTING_combatAnimation = "Animation de l'icône de combat"
+L.ENUM_combatAnimation_OFF = "Aucune"
+L.ENUM_combatAnimation_BURST = "Éclat"
+L.ENUM_combatAnimation_PULSE = "Pulsation"
+L.HINT_combatAnimation = "Éclat : surgit et brille au début du combat"

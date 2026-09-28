@@ -498,3 +498,10 @@ L.SETTING_pvpIconFramePoint = "Punkt am Frame"
 L.SETTING_pvpIconPoint = "Punkt des Symbols"
 L.SETTING_pvpIconX = "Versatz X"
 L.SETTING_pvpIconY = "Versatz Y"
+
+-- Combat icon animation.
+L.SETTING_combatAnimation = "Animation des Kampfsymbols"
+L.ENUM_combatAnimation_OFF = "Aus"
+L.ENUM_combatAnimation_BURST = "Aufschlag"
+L.ENUM_combatAnimation_PULSE = "Pulsieren"
+L.HINT_combatAnimation = "Aufschlag: springt beim Kampfbeginn auf und blitzt"

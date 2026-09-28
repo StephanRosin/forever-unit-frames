@@ -517,6 +517,11 @@ Settings.Define({ key = "comboY", code = "XY", scope = "frame", only = COMBO, ty
 -- by default. The combat icon sits left of the frame, the crest on its top
 -- left corner.
 local COMBAT_ICON = { target = true, targettarget = true, focus = true, party = true }
+-- How the combat icons move (Elements/CombatAnimation.lua), the player's
+-- included: a burst as they appear, a steady pulse, or not at all.
+Settings.Define({ key = "combatAnimation", code = "EA", scope = "inherit", type = "enum",
+    only = { player = true, target = true, targettarget = true, focus = true, party = true },
+    values = { "OFF", "BURST", "PULSE" }, default = "BURST" })
 local PVP_ICON = { player = true, target = true, targettarget = true, focus = true, party = true }
 for _, icon in ipairs({
     { key = "combatIcon", letter = "E", only = COMBAT_ICON, size = 18, framePoint = "LEFT", point = "RIGHT", x = -2, y = 0 },

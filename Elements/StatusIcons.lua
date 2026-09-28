@@ -57,7 +57,8 @@ function StatusIcons.Build(frame)
     local combat = holder:CreateTexture(nil, "ARTWORK")
     combat:SetAtlas(StatusIcons.COMBAT_ATLAS)
     local resting, restAnim = newRestIcon(holder)
-    frame.statusIcons = { holder = holder, combat = combat, resting = resting, restAnim = restAnim }
+    frame.statusIcons = { holder = holder, combat = combat, resting = resting, restAnim = restAnim,
+        combatAnim = ns.CombatAnimation.New(combat, StatusIcons.COMBAT_ATLAS) }
 end
 
 local function wanted(key) return Config.Get(StatusIcons.SCOPE, key) end
@@ -117,6 +118,7 @@ function StatusIcons.Refresh(frame)
     local combat = wanted("statusCombat") and (s.preview or fighting)
     local resting = wanted("statusResting") and (s.preview or ns.Secrets.Bool(IsResting) == true)
     s.combat:SetShown(combat)
+    ns.CombatAnimation.Set(s.combatAnim, combat, Config.Get(StatusIcons.SCOPE, "combatAnimation"))
     s.resting:SetShown(resting)
     local shown = {}
     if combat then shown[#shown + 1] = s.combat end

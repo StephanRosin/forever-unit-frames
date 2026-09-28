@@ -60,9 +60,13 @@ function UnitIcons.Build(frame)
             local holder = CreateFrame("Frame", nil, frame)
             local tex = holder:CreateTexture(nil, "OVERLAY")
             tex:SetAllPoints(holder)
-            if kind == "combatIcon" then tex:SetAtlas(UnitIcons.COMBAT_ATLAS) end
+            local icon = { holder = holder, tex = tex }
+            if kind == "combatIcon" then
+                tex:SetAtlas(UnitIcons.COMBAT_ATLAS)
+                icon.anim = ns.CombatAnimation.New(tex, UnitIcons.COMBAT_ATLAS)
+            end
             holder:Hide()
-            icons[kind] = { holder = holder, tex = tex }
+            icons[kind] = icon
         end
     end
     if next(icons) then frame.unitIcons = icons end
@@ -112,9 +116,21 @@ local function ask(fn, unit)
     return nil
 end
 
+-- The icon's animation follows it: a secret answer counts as shown (the
+-- opacity decides whether it is seen).
+local function animate(frame, icon, answer)
+    ns.CombatAnimation.Set(icon.anim, Secrets.IsSecret(answer) or answer == true,
+        Config.Get(frame.key, "combatAnimation"))
+end
+
 local function updateCombat(frame, icon)
-    if not wanted(frame, "combatIcon") or not frame.unit then return icon.holder:Hide() end
-    showFrom(icon, ask(UnitAffectingCombat, frame.unit))
+    if not wanted(frame, "combatIcon") or not frame.unit then
+        ns.CombatAnimation.Reset(icon.anim)
+        return icon.holder:Hide()
+    end
+    local answer = ask(UnitAffectingCombat, frame.unit)
+    showFrom(icon, answer)
+    animate(frame, icon, answer)
 end
 
 local function updatePvp(frame, icon)
@@ -171,7 +187,9 @@ function UnitIcons.Preview(frame, on)
         return
     end
     if icons.combatIcon then
-        showFrom(icons.combatIcon, wanted(frame, "combatIcon") and s.combatIcon == true)
+        local shown = wanted(frame, "combatIcon") and s.combatIcon == true
+        showFrom(icons.combatIcon, shown)
+        animate(frame, icons.combatIcon, shown)
     end
     if icons.pvpIcon then
         local faction = s.pvpIcon == "PLAYER_FACTION" and ownFaction() or s.pvpIcon

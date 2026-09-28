@@ -522,3 +522,10 @@ L.SETTING_pvpIconFramePoint = "Point on the frame"
 L.SETTING_pvpIconPoint = "Point of the icon"
 L.SETTING_pvpIconX = "Offset X"
 L.SETTING_pvpIconY = "Offset Y"
+
+-- Combat icon animation.
+L.SETTING_combatAnimation = "Combat icon animation"
+L.ENUM_combatAnimation_OFF = "Off"
+L.ENUM_combatAnimation_BURST = "Burst"
+L.ENUM_combatAnimation_PULSE = "Pulse"
+L.HINT_combatAnimation = "Burst: springs in and flashes as combat starts"
