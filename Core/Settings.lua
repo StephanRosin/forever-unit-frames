@@ -472,6 +472,28 @@ Settings.Define({ key = "totemsX", code = "QX", scope = "frame", only = TOTEMS, 
 Settings.Define({ key = "totemsY", code = "QY", scope = "frame", only = TOTEMS, type = "int", min = -400, max = 400,
     default = 0 })
 
+-- Combo points (target only, Elements/ComboPoints.lua): a row of pips
+-- below the target's block, right-aligned; hidden while there are none.
+local COMBO = { target = true }
+Settings.Define({ key = "comboPoints", code = "XE", scope = "frame", only = COMBO, type = "bool", default = true })
+Settings.Define({ key = "comboHideEmpty", code = "XH", scope = "frame", only = COMBO, type = "bool", default = true })
+Settings.Define({ key = "comboShape", code = "XR", scope = "frame", only = COMBO, type = "enum",
+    values = { "SQUARE", "ROUND" }, default = "SQUARE" })
+Settings.Define({ key = "comboSize", code = "XS", scope = "frame", only = COMBO, type = "int", min = 4, max = 40,
+    default = 10 })
+Settings.Define({ key = "comboSpacing", code = "XD", scope = "frame", only = COMBO, type = "int", min = 0, max = 20,
+    default = 3 })
+Settings.Define({ key = "comboColor", code = "XC", scope = "frame", only = COMBO, type = "color",
+    default = { 1, 0.82, 0.1, 1 } })
+Settings.Define({ key = "comboFramePoint", code = "XF", scope = "frame", only = COMBO, type = "enum",
+    values = Settings.POINTS, default = "BOTTOMRIGHT" })
+Settings.Define({ key = "comboPoint", code = "XO", scope = "frame", only = COMBO, type = "enum",
+    values = Settings.POINTS, default = "TOPRIGHT" })
+Settings.Define({ key = "comboX", code = "XX", scope = "frame", only = COMBO, type = "int", min = -400, max = 400,
+    default = 0 })
+Settings.Define({ key = "comboY", code = "XY", scope = "frame", only = COMBO, type = "int", min = -400, max = 400,
+    default = -3 })
+
 -- Status icons (player only, Elements/StatusIcons.lua): Blizzard's combat
 -- and resting icons in a row on the player's health bar, centred on it by
 -- default (above the bar's texts).

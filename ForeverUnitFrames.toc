@@ -2,7 +2,7 @@
 ## Title: Forever Unit Frames
 ## Notes: Clean, flat and fully configurable unit frames for WoW: Forever.
 ## Author: StephanRosin
-## Version: 0.12.0
+## Version: 0.12.1
 ## SavedVariables: ForeverUnitFramesDB
 
 Locales\enUS.lua
@@ -39,6 +39,7 @@ Elements\Classification.lua
 Elements\CombatFeedback.lua
 Elements\Shape.lua
 Elements\Totems.lua
+Elements\ComboPoints.lua
 Elements\StatusIcons.lua
 Elements\RaidMarker.lua
 Elements\GroupIcons.lua

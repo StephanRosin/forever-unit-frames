@@ -1138,7 +1138,17 @@ function M.Reset()
         return p
     end
     _G.UnitPower = function(unit) local d = u(unit); return d and d.power or 0 end
-    _G.UnitPowerMax = function(unit) local d = u(unit); return d and d.powerMax or 0 end
+    -- Power type 4 (combo points): d.comboMax; M.comboPoints is what
+    -- GetComboPoints("player", "target") answers.
+    _G.UnitPowerMax = function(unit, powerType)
+        local d = u(unit)
+        if powerType == 4 then return d and d.comboMax or 0 end
+        return d and d.powerMax or 0
+    end
+    _G.GetComboPoints = function(unit, target)
+        assert(unit == "player" and target == "target", "GetComboPoints: player and target expected")
+        return M.comboPoints or 0
+    end
     _G.UnitAffectingCombat = function(unit) return unit == "player" and M.combat or false end
     _G.UnitPowerType = function(unit) local d = u(unit); return d and d.powerType or 0, d and d.powerToken or "MANA" end
     _G.UnitPowerPercent = function(unit, _, _, curve)

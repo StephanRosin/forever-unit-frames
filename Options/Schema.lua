@@ -94,6 +94,8 @@ Schema.FRAME = {
             "raidMarkerX", "raidMarkerY" } },
         { id = "groupIcons", keys = { "groupLeader", "groupReadyCheck", "groupResurrect", "groupIconSize",
             "groupIconFramePoint", "groupIconPoint", "groupIconX", "groupIconY" } },
+        { id = "comboPoints", keys = { "comboPoints", "comboHideEmpty", "comboShape", "comboSize", "comboSpacing", "comboColor",
+            "comboFramePoint", "comboPoint", "comboX", "comboY" } },
         { id = "threat", keys = { "threatGlow" } },
         { id = "targetHighlight", keys = { "targetHighlight", "targetHighlightColor", "targetHighlightSize" } },
         { id = "dispel", keys = { "dispelHighlight" } },
