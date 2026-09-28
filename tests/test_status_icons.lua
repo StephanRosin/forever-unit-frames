@@ -80,8 +80,13 @@ do
     for _, key in ipairs({ "target", "targettarget", "pet", "focus" }) do
         H.check("none on " .. key, ns.Frames[key].statusIcons, nil)
     end
-    -- Blizzard's PlayerFrame art (Blizzard_UnitFrame/Mainline/PlayerFrame.xml).
-    H.check("combat atlas", s.combat._atlas, "UI-HUD-UnitFrame-Player-CombatIcon")
+    -- Our clashing swords by default (combatAnimation DUEL); Blizzard's
+    -- PlayerFrame art (Blizzard_UnitFrame/Mainline/PlayerFrame.xml) with the
+    -- other animations.
+    H.check("combat art: the duel sheet", s.combat._texture, ns.CombatAnimation.DUEL_TEXTURE)
+    ns.Config.Set("general", "combatAnimation", "BURST")
+    H.check("combat atlas otherwise", s.combat._atlas, "UI-HUD-UnitFrame-Player-CombatIcon")
+    ns.Config.Set("general", "combatAnimation", "DUEL")
     H.check("resting atlas", s.resting._atlas, "UI-HUD-UnitFrame-Player-Rest-Flipbook")
     local anim = s.restAnim._anims[1]
     H.check("resting flipbook", anim._kind, "FlipBook")

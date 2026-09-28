@@ -12,7 +12,9 @@ local p, t = ns.Frames.player, ns.Frames.target
 
 local def = S.Get("combatAnimation")
 H.check("code", def.code, "EA")
-H.check("burst by default", C.Get("target", "combatAnimation"), "BURST")
+H.check("duel by default", C.Get("target", "combatAnimation"), "DUEL")
+H.check("duel on every frame by default", C.Get("party", "combatAnimation"), "DUEL")
+C.Set("general", "combatAnimation", "BURST")
 H.checkTrue("on the player", S.AppliesTo(def, "player"))
 H.check("not on the pet (no combat icon)", S.AppliesTo(def, "pet"), false)
 H.checkTrue("set in General", S.AppliesTo(def, "general"))

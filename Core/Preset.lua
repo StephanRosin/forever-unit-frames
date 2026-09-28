@@ -11,6 +11,7 @@ local PRESET = {
         borderStyle = "GOLD",
         classIconSize = 30,
         classIconY = -9,
+        combatAnimation = "DUEL",
         fontOutline = "OUTLINE",
         fontShadow = true,
         minimapAngle = 282,
