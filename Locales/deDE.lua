@@ -462,3 +462,39 @@ L.HINT_comboFramePoint = "Der Frame und eine angedockte Zauberleiste als ein Blo
 L.SETTING_comboShape = "Form"
 L.ENUM_comboShape_SQUARE = "Eckig"
 L.ENUM_comboShape_ROUND = "Rund"
+
+-- Buff borders by caster.
+L.SETTING_buffsCasterBorder = "Rahmenfarbe nach Zaubernden"
+L.HINT_buffsCasterBorder = "Eigene in einer Farbe, fremde in einer anderen"
+L.SETTING_buffsOwnBorderColor = "Rahmen der eigenen"
+L.SETTING_buffsOtherBorderColor = "Rahmen der fremden"
+
+-- Level colour.
+L.SETTING_levelColorMode = "Stufenfarbe"
+L.ENUM_levelColorMode_TEXT = "Textfarbe"
+L.ENUM_levelColorMode_DIFFICULTY = "Nach Schwierigkeit"
+L.HINT_levelColorMode = "Rot, orange, gelb, grün, grau gegenüber deiner Stufe"
+
+-- Party pet list offset.
+L.SETTING_partyPetsX = "Begleiter Versatz X"
+L.SETTING_partyPetsY = "Begleiter Versatz Y"
+L.HINT_partyPetsX = "Verschiebt die Begleiterliste"
+L.HINT_partyPetsY = "Verschiebt die Begleiterliste"
+
+-- Combat and PvP icons.
+L.SECTION_combatIcon = "Kampfsymbol"
+L.SETTING_combatIcon = "Kampfsymbol anzeigen"
+L.HINT_combatIcon = "Gekreuzte Schwerter, solange die Einheit kämpft"
+L.SECTION_pvpIcon = "PvP-Symbol"
+L.SETTING_pvpIcon = "PvP-Symbol anzeigen"
+L.HINT_pvpIcon = "Das Fraktionswappen, solange die Einheit für PvP markiert ist"
+L.SETTING_combatIconSize = "Symbolgröße"
+L.SETTING_combatIconFramePoint = "Punkt am Frame"
+L.SETTING_combatIconPoint = "Punkt des Symbols"
+L.SETTING_combatIconX = "Versatz X"
+L.SETTING_combatIconY = "Versatz Y"
+L.SETTING_pvpIconSize = "Symbolgröße"
+L.SETTING_pvpIconFramePoint = "Punkt am Frame"
+L.SETTING_pvpIconPoint = "Punkt des Symbols"
+L.SETTING_pvpIconX = "Versatz X"
+L.SETTING_pvpIconY = "Versatz Y"

@@ -486,3 +486,39 @@ L.HINT_comboFramePoint = "The frame and a docked castbar, as one block"
 L.SETTING_comboShape = "Shape"
 L.ENUM_comboShape_SQUARE = "Square"
 L.ENUM_comboShape_ROUND = "Round"
+
+-- Buff borders by caster.
+L.SETTING_buffsCasterBorder = "Border color by caster"
+L.HINT_buffsCasterBorder = "Yours in one color, others' in another"
+L.SETTING_buffsOwnBorderColor = "Border of mine"
+L.SETTING_buffsOtherBorderColor = "Border of others'"
+
+-- Level colour.
+L.SETTING_levelColorMode = "Level color"
+L.ENUM_levelColorMode_TEXT = "Text color"
+L.ENUM_levelColorMode_DIFFICULTY = "By difficulty"
+L.HINT_levelColorMode = "Red, orange, yellow, green, grey against your level"
+
+-- Party pet list offset.
+L.SETTING_partyPetsX = "Pets offset X"
+L.SETTING_partyPetsY = "Pets offset Y"
+L.HINT_partyPetsX = "Moves the pet list"
+L.HINT_partyPetsY = "Moves the pet list"
+
+-- Combat and PvP icons.
+L.SECTION_combatIcon = "Combat icon"
+L.SETTING_combatIcon = "Show combat icon"
+L.HINT_combatIcon = "Crossed swords while the unit is in combat"
+L.SECTION_pvpIcon = "PvP icon"
+L.SETTING_pvpIcon = "Show PvP icon"
+L.HINT_pvpIcon = "The faction crest while the unit is flagged for PvP"
+L.SETTING_combatIconSize = "Icon size"
+L.SETTING_combatIconFramePoint = "Point on the frame"
+L.SETTING_combatIconPoint = "Point of the icon"
+L.SETTING_combatIconX = "Offset X"
+L.SETTING_combatIconY = "Offset Y"
+L.SETTING_pvpIconSize = "Icon size"
+L.SETTING_pvpIconFramePoint = "Point on the frame"
+L.SETTING_pvpIconPoint = "Point of the icon"
+L.SETTING_pvpIconX = "Offset X"
+L.SETTING_pvpIconY = "Offset Y"

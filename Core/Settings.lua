@@ -236,6 +236,12 @@ Settings.Define({ key = "partyHideInRaid", code = "HR", scope = "frame", only = 
 Settings.Define({ key = "partyShowPets", code = "PT", scope = "frame", only = PARTY, type = "bool", default = false })
 Settings.Define({ key = "partyPetHeight", code = "PH", scope = "frame", only = PARTY, type = "int", min = 10, max = 60,
     default = 20 })
+-- Moves the whole pet list from its place below the block (positive:
+-- right, up), e.g. past buffs that hang below the members.
+Settings.Define({ key = "partyPetsX", code = "PJ", scope = "frame", only = PARTY, type = "int", min = -400, max = 400,
+    default = 0 })
+Settings.Define({ key = "partyPetsY", code = "PK", scope = "frame", only = PARTY, type = "int", min = -400, max = 400,
+    default = 0 })
 -- Buffs and debuffs on the pet frames: one row beside the pet, centred on
 -- it, debuffs first (Units/PartyPets.lua). The members' layout does not
 -- fit a frame this low: their groups landed on top of each other. Size,
@@ -302,6 +308,10 @@ Settings.Define({ key = "titleText", code = "NT", scope = "frame", type = "enum"
     default = { player = "NAME_LEVEL", target = "NAME_LEVEL", party = "NAME_LEVEL", _ = "NAME" } })
 Settings.Define({ key = "titleColorMode", code = "NC", scope = "frame", type = "enum",
     values = { "CLASS", "REACTION", "WHITE" }, default = "CLASS" })
+-- The level number: the text's colour, or by difficulty (red, orange,
+-- yellow, green, grey against your level), whatever colour the line has.
+Settings.Define({ key = "levelColorMode", code = "LV", scope = "frame", type = "enum",
+    values = { "TEXT", "DIFFICULTY" }, default = "TEXT" })
 -- Colour of names on the health and power bars (the name tags and INFO);
 -- value texts stay white.
 Settings.Define({ key = "barNameColorMode", code = "NY", scope = "frame", type = "enum",
@@ -453,6 +463,15 @@ for _, group in ipairs(Settings.AURA_GROUPS) do
     end
 end
 
+-- Buff borders by caster: yours in one colour, everyone else's in another
+-- (the container's own/other groups tell them apart). Buffs only: debuff
+-- borders show the dispel type.
+Settings.Define({ key = "buffsCasterBorder", code = "JW", scope = "frame", type = "bool", default = false })
+Settings.Define({ key = "buffsOwnBorderColor", code = "JQ", scope = "frame", type = "color",
+    default = { 0.2, 0.85, 0.2, 1 } })
+Settings.Define({ key = "buffsOtherBorderColor", code = "JU", scope = "frame", type = "color",
+    default = { 0.85, 0.2, 0.2, 1 } })
+
 -- Totems (player only, Elements/Totems.lua): one icon per totem slot in a
 -- row that hangs from the player's block (the frame and a docked castbar)
 -- like an aura group. Right of the block by default: the shipped buffs
@@ -493,6 +512,29 @@ Settings.Define({ key = "comboX", code = "XX", scope = "frame", only = COMBO, ty
     default = 0 })
 Settings.Define({ key = "comboY", code = "XY", scope = "frame", only = COMBO, type = "int", min = -400, max = 400,
     default = -3 })
+
+-- Combat and PvP icons on the other frames (Elements/UnitIcons.lua), off
+-- by default. The combat icon sits left of the frame, the crest on its top
+-- left corner.
+local COMBAT_ICON = { target = true, targettarget = true, focus = true, party = true }
+local PVP_ICON = { player = true, target = true, targettarget = true, focus = true, party = true }
+for _, icon in ipairs({
+    { key = "combatIcon", letter = "E", only = COMBAT_ICON, size = 18, framePoint = "LEFT", point = "RIGHT", x = -2, y = 0 },
+    { key = "pvpIcon", letter = "H", only = PVP_ICON, size = 24, framePoint = "TOPLEFT", point = "CENTER", x = 0, y = 0 },
+}) do
+    local only, l = icon.only, icon.letter
+    Settings.Define({ key = icon.key, code = l .. "E", scope = "frame", only = only, type = "bool", default = false })
+    Settings.Define({ key = icon.key .. "Size", code = l .. "S", scope = "frame", only = only, type = "int",
+        min = 8, max = 48, default = icon.size })
+    Settings.Define({ key = icon.key .. "FramePoint", code = l .. "F", scope = "frame", only = only, type = "enum",
+        values = Settings.POINTS, default = icon.framePoint })
+    Settings.Define({ key = icon.key .. "Point", code = l .. "O", scope = "frame", only = only, type = "enum",
+        values = Settings.POINTS, default = icon.point })
+    Settings.Define({ key = icon.key .. "X", code = l .. "X", scope = "frame", only = only, type = "int",
+        min = -200, max = 200, default = icon.x })
+    Settings.Define({ key = icon.key .. "Y", code = l .. "Y", scope = "frame", only = only, type = "int",
+        min = -200, max = 200, default = icon.y })
+end
 
 -- Status icons (player only, Elements/StatusIcons.lua): Blizzard's combat
 -- and resting icons in a row on the player's health bar, centred on it by

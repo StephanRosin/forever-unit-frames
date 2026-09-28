@@ -91,6 +91,12 @@ function Pets.Gap()
     return Party.PetStep()
 end
 
+-- The pet list's own offset from its place below the block, on the pixel
+-- grid.
+function Pets.ListOffset()
+    return ns.Pixel.Snap(get("partyPetsX")), ns.Pixel.Snap(get("partyPetsY"))
+end
+
 -- Offset of pet i (1-based) from the pet list's top-left corner.
 function Pets.SlotOffset(i)
     local w, h = Single.Size(Pets.KEY)
@@ -148,14 +154,15 @@ end
 -- Under the pretend block (every slot filled), one pet per slot.
 local function showFakes()
     local _, blockH = Party.BlockSize()
-    local top = -(blockH + Party.PetListOffset())
+    local dx, dy = Pets.ListOffset()
+    local top = -(blockH + Party.PetListOffset()) + dy
     local slots = Party.Slots()
     for i = 1, slots do
         local button = fakeButton(i)
         Single.SetUnit(button, "player")
         local x, y = Pets.SlotOffset(i)
         button:ClearAllPoints()
-        button:SetPoint("TOPLEFT", Party.testBlock, "TOPLEFT", x, top + y)
+        button:SetPoint("TOPLEFT", Party.testBlock, "TOPLEFT", x + dx, top + y)
         style(button)
         Single.Preview(button, true)
         button:Show()
@@ -171,7 +178,8 @@ function Pets.StyleAll(testing)
     if header then
         setAttributes(header, headerAttributes())
         header:ClearAllPoints()
-        header:SetPoint("TOPLEFT", Party.header, "BOTTOMLEFT", 0, -Party.PetListOffset())
+        local dx, dy = Pets.ListOffset()
+        header:SetPoint("TOPLEFT", Party.header, "BOTTOMLEFT", dx, -Party.PetListOffset() + dy)
         -- The header only SetPoints the buttons it shows.
         for _, button in ipairs(Pets.buttons) do
             style(button)

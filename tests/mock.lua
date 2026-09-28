@@ -1149,7 +1149,16 @@ function M.Reset()
         assert(unit == "player" and target == "target", "GetComboPoints: player and target expected")
         return M.comboPoints or 0
     end
-    _G.UnitAffectingCombat = function(unit) return unit == "player" and M.combat or false end
+    -- Other units: d.inCombat. PvP: d.pvp, d.ffa, d.faction.
+    _G.UnitAffectingCombat = function(unit)
+        if unit == "player" then return M.combat or false end
+        local d = u(unit)
+        if d and d.inCombat ~= nil then return d.inCombat end
+        return false
+    end
+    _G.UnitIsPVP = function(unit) local d = u(unit); if d and d.pvp ~= nil then return d.pvp end; return false end
+    _G.UnitIsPVPFreeForAll = function(unit) local d = u(unit); if d and d.ffa ~= nil then return d.ffa end; return false end
+    _G.UnitFactionGroup = function(unit) local d = u(unit); if d then return d.faction, d.faction end end
     _G.UnitPowerType = function(unit) local d = u(unit); return d and d.powerType or 0, d and d.powerToken or "MANA" end
     _G.UnitPowerPercent = function(unit, _, _, curve)
         local d = u(unit); local p = d and d.powerPercent or 0

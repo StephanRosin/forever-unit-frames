@@ -124,7 +124,9 @@ local function shape(button, scope, size, showTime)
     end
     button.cooldown:SetHideCountdownNumbers(not showTime)
     button.plainBorder = Config.Get(scope, "borderColor")
-    if not button.isDebuff then paintBorder(button, button.plainBorder) end
+    -- A buff whose border shows its caster (button.casterBorder, set by the
+    -- aura groups) keeps that colour.
+    if not button.isDebuff then paintBorder(button, button.casterBorder or button.plainBorder) end
     return font, fontSize, outline
 end
 
@@ -215,6 +217,13 @@ function AuraButton.Show(button, unit, aura, filter)
     if pcall(apply, button, unit, aura, filter) then return true end
     AuraButton.Clear(button)
     return false
+end
+
+-- A buff's border by caster: color (a colour table) or nil for the plain
+-- border.
+function AuraButton.SetCasterBorder(button, color)
+    button.casterBorder = color
+    if not button.isDebuff then paintBorder(button, color or button.plainBorder or { 0, 0, 0 }) end
 end
 
 -- Test mode: sample = { icon, count, duration, dispel }, started at start.

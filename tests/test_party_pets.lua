@@ -43,7 +43,7 @@ for _, tab in ipairs(ns.Schema.Tabs("party")) do
 end
 H.checkTrue("pets section in the group tab", found)
 if found then
-    H.check("pets section keys", table.concat(found.keys, ","), "partyShowPets,partyPetHeight,partyPetAuras,partyPetAuraSize,partyPetAuraSide,partyPetAuraX,partyPetAuraY")
+    H.check("pets section keys", table.concat(found.keys, ","), "partyShowPets,partyPetHeight,partyPetsX,partyPetsY,partyPetAuras,partyPetAuraSize,partyPetAuraSide,partyPetAuraX,partyPetAuraY")
 end
 H.check("section title", ns.L.SECTION_pets, "Pets")
 for key in pairs(CODES) do
@@ -196,6 +196,15 @@ C.Set("party", "shadowEnabled", true)
 C.Set("party", "shadowSize", 4)
 H.check("shadow: room below the block", select(5, pets:GetPoint(1)), -(1 + 2 + 4 + 1))
 H.check("shadow: room between pets", pets:GetAttribute("yOffset"), -(2 + 4 + 1 + 1))
+-- The whole list moves by its own offset (past buffs below the members).
+local _, _, _, x0, y0 = pets:GetPoint(1)
+C.Set("party", "partyPetsX", 12)
+C.Set("party", "partyPetsY", -30)
+local _, _, _, x1, y1 = pets:GetPoint(1)
+H.check("offset X moves the list", x1 - x0, 12)
+H.check("offset Y moves the list down", y1 - y0, -30)
+C.Set("party", "partyPetsX", 0)
+C.Set("party", "partyPetsY", 0)
 C.Set("party", "shadowEnabled", false)
 C.Set("party", "castbarEnabled", true)
 

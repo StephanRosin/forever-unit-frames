@@ -52,7 +52,7 @@ Schema.FRAME = {
     -- The party's arrangement and what hangs beside its members.
     { id = "group", sections = {
         { id = "group", keys = { "partyOrientation", "partySpacing", "partyShowPlayer", "partyShowSolo", "partyHideInRaid" } },
-        { id = "pets", keys = { "partyShowPets", "partyPetHeight", "partyPetAuras", "partyPetAuraSize",
+        { id = "pets", keys = { "partyShowPets", "partyPetHeight", "partyPetsX", "partyPetsY", "partyPetAuras", "partyPetAuraSize",
             "partyPetAuraSide", "partyPetAuraX", "partyPetAuraY" } },
         { id = "partyTargets", keys = { "partyTargets", "partyTargetSide", "partyTargetWidth", "partyTargetHeight",
             "partyTargetX", "partyTargetY" } },
@@ -65,7 +65,7 @@ Schema.FRAME = {
         { id = "powerColors", keys = { "powerColorMana", "powerColorRage", "powerColorFocus", "powerColorEnergy" } },
     } },
     { id = "text", sections = {
-        { id = "titleText", keys = { "titleText", "titleColorMode", "titleClassIcon", "classIconSize", "classIconX",
+        { id = "titleText", keys = { "titleText", "titleColorMode", "levelColorMode", "titleClassIcon", "classIconSize", "classIconX",
             "classIconY", "classIconRing", "classIconRingColor" } },
         { id = "healthText", keys = { "textHealthLeft", "textHealthRight", "barNameColorMode" } },
         { id = "powerText", keys = { "textPowerLeft", "textPowerRight" } },
@@ -75,7 +75,8 @@ Schema.FRAME = {
         { id = "auraIcons", keys = { "auraBorder" } },
         { id = "buffs", keys = { "buffsEnabled", "weaponEnchants", "buffsOnlyMine", "buffsHideTracking", "buffsHidePermanent", "buffsHideLonger", "buffsShowTime", "buffsAnchor", "buffsFramePoint",
             "buffsPoint", "buffsX", "buffsY", "buffsGrowth", "buffsRowGrowth", "buffsSize", "buffsSpacing",
-            "buffsPerRow", "buffsMax", "buffsHighlightOwn", "buffsOwnSize" } },
+            "buffsPerRow", "buffsMax", "buffsHighlightOwn", "buffsOwnSize", "buffsCasterBorder", "buffsOwnBorderColor",
+            "buffsOtherBorderColor" } },
         { id = "debuffs", keys = { "debuffsEnabled", "debuffsOnlyMine", "debuffsDispellable", "debuffsHidePermanent", "debuffsShowTime",
             "debuffsAnchor", "debuffsFramePoint", "debuffsPoint", "debuffsX", "debuffsY", "debuffsGrowth",
             "debuffsRowGrowth", "debuffsSize", "debuffsSpacing", "debuffsPerRow", "debuffsMax", "debuffsHighlightOwn",
@@ -90,6 +91,10 @@ Schema.FRAME = {
     { id = "status", sections = {
         { id = "statusIcons", keys = { "statusCombat", "statusResting", "statusSize", "statusFramePoint",
             "statusPoint", "statusX", "statusY" } },
+        { id = "combatIcon", keys = { "combatIcon", "combatIconSize", "combatIconFramePoint", "combatIconPoint",
+            "combatIconX", "combatIconY" } },
+        { id = "pvpIcon", keys = { "pvpIcon", "pvpIconSize", "pvpIconFramePoint", "pvpIconPoint", "pvpIconX",
+            "pvpIconY" } },
         { id = "raidMarker", keys = { "raidMarker", "raidMarkerSize", "raidMarkerFramePoint", "raidMarkerPoint",
             "raidMarkerX", "raidMarkerY" } },
         { id = "groupIcons", keys = { "groupLeader", "groupReadyCheck", "groupResurrect", "groupIconSize",

@@ -29,7 +29,8 @@ local GROUPS = {
     dispels = { filter = "HARMFUL|RAID", isDebuff = true, other = "debuffs" },
 }
 -- What a group has no setting for (the dispels group has only some).
-local FIXED = { OnlyMine = false, Dispellable = false, HidePermanent = false, HighlightOwn = false }
+local FIXED = { OnlyMine = false, Dispellable = false, HidePermanent = false, HighlightOwn = false,
+    CasterBorder = false }
 local ORDER = ns.Settings.AURA_GROUPS
 
 -- Test mode samples, repeated up to each group's maximum. Icons Blizzard's
@@ -213,6 +214,16 @@ local function readSettings(frame, group)
     -- your pet or vehicle; "!PLAYER": everything else), so no aura field
     -- is ever compared here.
     group.highlightOwn = get(frame, group, "HighlightOwn")
+    -- Borders by caster (buffs): yours and the rest must be told apart
+    -- too, in the same rows and at the same size unless "mine first".
+    group.casterBorder = not group.isDebuff and get(frame, group, "CasterBorder") or false
+    group.split = group.highlightOwn or group.casterBorder
+    if group.casterBorder then
+        group.ownBorder = get(frame, group, "OwnBorderColor")
+        group.otherBorder = get(frame, group, "OtherBorderColor")
+    else
+        group.ownBorder, group.otherBorder = nil, nil
+    end
     group.ownFilter = onlyMine and filter or filter .. "|PLAYER"
     group.otherFilter = not onlyMine and filter .. "|!PLAYER" or nil
     group.hidePermanent = get(frame, group, "HidePermanent")
@@ -226,7 +237,8 @@ local function readSettings(frame, group)
     if group.key == "dispels" then group.enabled = Auras.DispelsShown(frame) end
     group.max = get(frame, group, "Max")
     group.size = Pixel.Snap(get(frame, group, "Size"), nil, 1)
-    group.ownSize = Pixel.Snap(get(frame, group, "OwnSize") or get(frame, group, "Size"), nil, 1)
+    local ownSize = group.highlightOwn and get(frame, group, "OwnSize") or get(frame, group, "Size")
+    group.ownSize = Pixel.Snap(ownSize, nil, 1)
     group.spacing = Pixel.Snap(get(frame, group, "Spacing"))
     group.primary = get(frame, group, "Growth")
     group.row = Layout.AuraRowDirection(group.primary, get(frame, group, "RowGrowth"))
@@ -266,11 +278,15 @@ local function showSamples(frame)
     for _, key in ipairs(ORDER) do
         local group, samples = frame.auras[key], Auras.SAMPLES[key]
         local count = group.enabled and group.max or 0
-        -- The first samples pass for yours, so "mine first" can be seen.
-        local own = group.highlightOwn and math.min(Auras.OWN_SAMPLES, count) or 0
+        -- The first samples pass for yours, so "mine first" and borders by
+        -- caster can be seen.
+        local mine = group.split and math.min(Auras.OWN_SAMPLES, count) or 0
+        local own = group.highlightOwn and mine or 0
         arrange(group, own)
         for i = 1, count do
-            AuraButton.ShowSample(acquire(frame, group, i), samples[(i - 1) % #samples + 1], sampleStart)
+            local button = acquire(frame, group, i)
+            AuraButton.ShowSample(button, samples[(i - 1) % #samples + 1], sampleStart)
+            AuraButton.SetCasterBorder(button, AuraContainers.CasterBorder(group, i <= mine))
         end
         settle(group, count, own)
     end
@@ -297,7 +313,7 @@ end
 
 -- Shows the auras of a list from icon count + 1 on, up to the maximum.
 -- Returns the new count.
-local function fill(frame, group, list, count)
+local function fill(frame, group, list, count, mine)
     for i = 1, #list do
         if count >= group.max then break end
         local aura = list[i]
@@ -320,6 +336,7 @@ local function fill(frame, group, list, count)
         local button = aura ~= nil and not Secrets.IsSecret(aura) and type(aura) == "table"
             and acquire(frame, group, count + 1)
         if button and AuraButton.Show(button, frame.unit, aura, group.filter) then
+            AuraButton.SetCasterBorder(button, AuraContainers.CasterBorder(group, mine))
             count = count + 1
             -- Shown from a secret instance ID: later events cannot name it.
             if not button.auraID then group.hasUnknownIDs = true end
@@ -333,7 +350,7 @@ end
 -- and both are asked for before anything is shown.
 local function readGroup(frame, group)
     local own, other
-    if group.highlightOwn then
+    if group.split then
         own = query(frame, group.ownFilter, group.max)
         if not own then return false end
         if group.otherFilter and #own < group.max then
@@ -345,9 +362,10 @@ local function readGroup(frame, group)
         if not other then return false end
     end
     group.hasUnknownIDs = false
-    local mine = own and fill(frame, group, own, 0) or 0
-    local count = other and fill(frame, group, other, mine) or mine
-    settle(group, count, mine)
+    local mine = own and fill(frame, group, own, 0, true) or 0
+    local count = other and fill(frame, group, other, mine, false) or mine
+    -- Only "mine first" lays yours out apart (own size, own rows).
+    settle(group, count, group.highlightOwn and mine or 0)
     return true
 end
 

@@ -462,3 +462,39 @@ L.HINT_comboFramePoint = "Le cadre et une barre d'incantation ancrée, comme un 
 L.SETTING_comboShape = "Forme"
 L.ENUM_comboShape_SQUARE = "Carré"
 L.ENUM_comboShape_ROUND = "Rond"
+
+-- Buff borders by caster.
+L.SETTING_buffsCasterBorder = "Couleur de bordure selon le lanceur"
+L.HINT_buffsCasterBorder = "Les vôtres d'une couleur, les autres d'une autre"
+L.SETTING_buffsOwnBorderColor = "Bordure des miens"
+L.SETTING_buffsOtherBorderColor = "Bordure des autres"
+
+-- Level colour.
+L.SETTING_levelColorMode = "Couleur du niveau"
+L.ENUM_levelColorMode_TEXT = "Couleur du texte"
+L.ENUM_levelColorMode_DIFFICULTY = "Selon la difficulté"
+L.HINT_levelColorMode = "Rouge, orange, jaune, vert, gris selon votre niveau"
+
+-- Party pet list offset.
+L.SETTING_partyPetsX = "Familiers décalage X"
+L.SETTING_partyPetsY = "Familiers décalage Y"
+L.HINT_partyPetsX = "Déplace la liste des familiers"
+L.HINT_partyPetsY = "Déplace la liste des familiers"
+
+-- Combat and PvP icons.
+L.SECTION_combatIcon = "Icône de combat"
+L.SETTING_combatIcon = "Afficher l'icône de combat"
+L.HINT_combatIcon = "Épées croisées tant que l'unité est en combat"
+L.SECTION_pvpIcon = "Icône JcJ"
+L.SETTING_pvpIcon = "Afficher l'icône JcJ"
+L.HINT_pvpIcon = "L'emblème de faction tant que l'unité est marquée JcJ"
+L.SETTING_combatIconSize = "Taille de l'icône"
+L.SETTING_combatIconFramePoint = "Point du cadre"
+L.SETTING_combatIconPoint = "Point de l'icône"
+L.SETTING_combatIconX = "Décalage X"
+L.SETTING_combatIconY = "Décalage Y"
+L.SETTING_pvpIconSize = "Taille de l'icône"
+L.SETTING_pvpIconFramePoint = "Point du cadre"
+L.SETTING_pvpIconPoint = "Point de l'icône"
+L.SETTING_pvpIconX = "Décalage X"
+L.SETTING_pvpIconY = "Décalage Y"

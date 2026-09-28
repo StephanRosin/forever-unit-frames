@@ -95,18 +95,20 @@ function AuraContainers.Flow(group)
     }
 end
 
--- One container group: shown or not, filter, maximum and layout. Yours
--- first: "own" takes the PLAYER filter at the own size, "other" the rest
--- on a new line (nothing when only yours are shown). Otherwise "own" is
--- off and "other" shows everything the group's filter lets through.
+-- One container group: shown or not, filter, maximum and layout. Split
+-- (yours first, or borders by caster): "own" takes the PLAYER filter,
+-- "other" the rest (nothing when only yours are shown); with "mine first"
+-- yours are at the own size and the rest start a new line. Otherwise "own"
+-- is off and "other" shows everything the group's filter lets through.
 function AuraContainers.Part(group, part)
     local own = part == "own"
+    local split = group.highlightOwn or group.casterBorder
     local enabled, filter, size, newLine
     if own then
-        enabled, filter, size, newLine = group.enabled and group.highlightOwn, group.ownFilter, group.ownSize, false
-    elseif group.highlightOwn then
+        enabled, filter, size, newLine = group.enabled and split, group.ownFilter, group.ownSize, false
+    elseif split then
         enabled, filter, size, newLine = group.enabled and group.otherFilter ~= nil,
-            group.otherFilter or group.filter, group.size, true
+            group.otherFilter or group.filter, group.size, group.highlightOwn
     else
         enabled, filter, size, newLine = group.enabled, group.filter, group.size, false
     end
@@ -121,6 +123,12 @@ function AuraContainers.Part(group, part)
         -- timed aura (it is compared with the aura's full duration).
         candidateFilters = AuraContainers.CandidateFilters(group),
     }
+end
+
+-- A buff's border colour by caster (own or other group), or nil.
+function AuraContainers.CasterBorder(group, own)
+    if not group.casterBorder then return nil end
+    return own and group.ownBorder or group.otherBorder
 end
 
 -- Buttons -----------------------------------------------------------------------
@@ -148,6 +156,7 @@ function AuraContainers.InitButton(entry, own, button)
     local group = entry.frame.auras[entry.key]
     local size = own and group.ownSize or group.size
     AuraButton.Decorate(button, entry.isDebuff)
+    button.casterBorder = AuraContainers.CasterBorder(group, own)
     -- Fonts before the count is registered: the client writes it at once.
     AuraButton.StyleManaged(button, entry.frame.key, size, group.showTime)
     entry.buttons[#entry.buttons + 1] = { button = button, own = own }
@@ -215,6 +224,7 @@ local function restyle(entry, group)
     local refused = false
     for _, record in ipairs(entry.buttons) do
         local size = record.own and group.ownSize or group.size
+        record.button.casterBorder = AuraContainers.CasterBorder(group, record.own)
         if not pcall(ns.AuraButton.StyleManaged, record.button, entry.frame.key, size, group.showTime) then
             refused = true
         end

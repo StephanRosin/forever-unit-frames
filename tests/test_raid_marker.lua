@@ -55,8 +55,10 @@ do
             if tab.id == "status" then found = tab end
         end
         H.checkTrue("status tab on " .. scope, found)
-        H.check("raid marker section right after the status icons on " .. scope,
-            found and found.sections[1].id .. "," .. found.sections[2].id, "statusIcons,raidMarker")
+        local ids = {}
+        for i = 1, 4 do ids[i] = found and found.sections[i].id end
+        H.check("icons first, the raid marker after them on " .. scope, table.concat(ids, ","),
+            "statusIcons,combatIcon,pvpIcon,raidMarker")
     end
     H.check("tab label", ns.L.TAB_status, "Status")
     H.check("section label", ns.L.SECTION_raidMarker, "Raid target marker")

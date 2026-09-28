@@ -19,18 +19,57 @@ local SLOTS = {
     { field = "powerRight", setting = "textPowerRight", bar = "power", point = "RIGHT", x = -4 },
 }
 
-local function levelText(unit)
+-- Difficulty colours against the player's level, as Blizzard's
+-- (DifficultyUtil): red from 5 above, orange 3-4, yellow within 2, green
+-- below, grey from the grey level on (no experience).
+Texts.DIFFICULTY = {
+    impossible = { 1, 0.1, 0.1 }, verydifficult = { 1, 0.5, 0.25 }, difficult = { 1, 0.82, 0 },
+    standard = { 0.25, 0.75, 0.25 }, trivial = { 0.5, 0.5, 0.5 },
+}
+
+-- The highest level that is grey for a player of level p (Classic rule).
+function Texts.GreyLevel(p)
+    if p <= 5 then return 0 end
+    if p <= 39 then return p - math.floor(p / 10) - 5 end
+    if p <= 59 then return p - math.floor(p / 5) - 1 end
+    return p - 9
+end
+
+-- r, g, b of a level (-1 or less: a boss, "??").
+function Texts.DifficultyColor(level)
+    local own = Secrets.Number(UnitLevel("player")) or level
+    local d = Texts.DIFFICULTY
+    local c
+    if level <= 0 then
+        c = d.impossible
+    else
+        local diff = level - own
+        if diff >= 5 then c = d.impossible
+        elseif diff >= 3 then c = d.verydifficult
+        elseif diff >= -2 then c = d.difficult
+        elseif level > Texts.GreyLevel(own) then c = d.standard
+        else c = d.trivial end
+    end
+    return c[1], c[2], c[3]
+end
+
+-- The level as text; coloured: wrapped in its difficulty colour, so it
+-- keeps it whatever colour the rest of the line has. A secret level is
+-- left out, as before.
+local function levelText(unit, colored)
     local level = Secrets.Number(UnitLevel(unit))
     if not level then return "" end
-    if level <= 0 then return "??" end
-    return tostring(level)
+    local text = level <= 0 and "??" or tostring(level)
+    if not colored then return text end
+    local r, g, b = Texts.DifficultyColor(level)
+    return ("|cff%02x%02x%02x%s|r"):format(r * 255, g * 255, b * 255, text)
 end
 
 -- INFO: "60 Mage Gnome" for players, "60 Humanoid" for creatures. Class,
 -- race and type may be secret: passed to the font string untouched,
 -- presence asked with type(). A unit of unknown kind counts as a creature.
-local function setInfo(fs, unit)
-    local level = levelText(unit)
+local function setInfo(fs, unit, colored)
+    local level = levelText(unit, colored)
     if Secrets.Bool(UnitIsPlayer, unit) == true then
         local class = UnitClass(unit)
         local race = UnitRace(unit)
@@ -142,7 +181,8 @@ local SAMPLE_TAGS = { CURRENT = true, CURRENT_MAX = true, PERCENT = true, DEFICI
 
 -- sample (optional): plain health numbers that replace the unit's for
 -- the value tags of health texts (test mode).
-function Texts.Apply(fs, tag, unit, kind, showSurname, sample)
+-- levelColored: the level in its difficulty colour.
+function Texts.Apply(fs, tag, unit, kind, showSurname, sample, levelColored)
     if sample and kind == "health" and SAMPLE_TAGS[tag] then
         applySample(fs, tag, sample)
     elseif tag == "NONE" then
@@ -150,11 +190,11 @@ function Texts.Apply(fs, tag, unit, kind, showSurname, sample)
     elseif tag == "NAME" then
         Texts.SetName(fs, unit, showSurname)
     elseif tag == "NAME_LEVEL" then
-        Texts.SetName(fs, unit, showSurname, levelText(unit))
+        Texts.SetName(fs, unit, showSurname, levelText(unit, levelColored))
     elseif tag == "LEVEL" then
-        fs:SetText(levelText(unit))
+        fs:SetText(levelText(unit, levelColored))
     elseif tag == "INFO" then
-        setInfo(fs, unit)
+        setInfo(fs, unit, levelColored)
     elseif tag == "CURRENT" then
         fs:SetText(Secrets.Abbreviate(current(unit, kind)))
     elseif tag == "CURRENT_MAX" then
@@ -465,6 +505,7 @@ end
 
 function Texts.Update(frame)
     local showSurname = Config.Get(frame.key, "showSurname")
+    local levelColored = Config.Get(frame.key, "levelColorMode") == "DIFFICULTY"
     local sample = sampleHealth(frame)
     local word = ns.UnitStatus.Word(ns.UnitStatus.Of(frame))
     local wordSlot = word and statusSlot(frame)
@@ -476,7 +517,7 @@ function Texts.Update(frame)
             fs:SetText("")
         else
             Texts.Apply(fs, Config.Get(frame.key, slot.setting), frame.unit, slot.kind or slot.bar, showSurname,
-                sample)
+                sample, levelColored)
         end
     end
     paintTitle(frame)

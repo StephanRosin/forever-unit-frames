@@ -463,3 +463,39 @@ L.HINT_comboFramePoint = "El marco y una barra de lanzamiento acoplada, como un 
 L.SETTING_comboShape = "Forma"
 L.ENUM_comboShape_SQUARE = "Cuadrado"
 L.ENUM_comboShape_ROUND = "Redondo"
+
+-- Buff borders by caster.
+L.SETTING_buffsCasterBorder = "Color del borde según lanzador"
+L.HINT_buffsCasterBorder = "Los tuyos en un color, los ajenos en otro"
+L.SETTING_buffsOwnBorderColor = "Borde de los míos"
+L.SETTING_buffsOtherBorderColor = "Borde de los ajenos"
+
+-- Level colour.
+L.SETTING_levelColorMode = "Color del nivel"
+L.ENUM_levelColorMode_TEXT = "Color del texto"
+L.ENUM_levelColorMode_DIFFICULTY = "Según dificultad"
+L.HINT_levelColorMode = "Rojo, naranja, amarillo, verde, gris según tu nivel"
+
+-- Party pet list offset.
+L.SETTING_partyPetsX = "Mascotas desplaz. X"
+L.SETTING_partyPetsY = "Mascotas desplaz. Y"
+L.HINT_partyPetsX = "Mueve la lista de mascotas"
+L.HINT_partyPetsY = "Mueve la lista de mascotas"
+
+-- Combat and PvP icons.
+L.SECTION_combatIcon = "Icono de combate"
+L.SETTING_combatIcon = "Mostrar icono de combate"
+L.HINT_combatIcon = "Espadas cruzadas mientras la unidad está en combate"
+L.SECTION_pvpIcon = "Icono JcJ"
+L.SETTING_pvpIcon = "Mostrar icono JcJ"
+L.HINT_pvpIcon = "El emblema de facción mientras la unidad tiene JcJ activo"
+L.SETTING_combatIconSize = "Tamaño del icono"
+L.SETTING_combatIconFramePoint = "Punto del marco"
+L.SETTING_combatIconPoint = "Punto del icono"
+L.SETTING_combatIconX = "Desplazamiento X"
+L.SETTING_combatIconY = "Desplazamiento Y"
+L.SETTING_pvpIconSize = "Tamaño del icono"
+L.SETTING_pvpIconFramePoint = "Punto del marco"
+L.SETTING_pvpIconPoint = "Punto del icono"
+L.SETTING_pvpIconX = "Desplazamiento X"
+L.SETTING_pvpIconY = "Desplazamiento Y"
