@@ -74,6 +74,11 @@ local function resolve(key)
     local aura = auraLayout(key)
     if aura ~= nil then return aura end
     if key == "height" then return get("partyPetHeight") end
+    if key == "width" then
+        local width = get("partyPetWidth")
+        if width > 0 then return width end
+        return nil
+    end
     -- A marker no taller than the pet frame.
     if key == "raidMarkerSize" then return math.min(get("raidMarkerSize"), get("partyPetHeight")) end
     if (key == "buffsEnabled" or key == "debuffsEnabled") and not get("partyPetAuras") then return false end
@@ -87,9 +92,17 @@ Config.Derive(Pets.KEY, Party.KEY, resolve)
 -- equal it). In a column the pets are a list of their own below the
 -- block, with PetStep between them.
 function Pets.Gap()
-    if get("partyOrientation") == "HORIZONTAL" then return Party.Spacing() end
+    if get("partyOrientation") == "HORIZONTAL" then
+        -- Narrower (or wider) pets than members: the gap makes up the
+        -- difference, so each pet still starts under its owner.
+        local memberW = Single.Size(Party.KEY)
+        local petW = Single.Size(Pets.KEY)
+        return Party.Spacing() + memberW - petW
+    end
     return Party.PetStep()
 end
+
+function Pets.Beside() return get("partyPetLayout") == "BESIDE" end
 
 -- The pet list's own offset from its place below the block, on the pixel
 -- grid.
@@ -151,8 +164,38 @@ local function fakeButton(i)
     return button
 end
 
--- Under the pretend block (every slot filled), one pet per slot.
+-- BESIDE: where a pet sits next to its owner, ring to ring and the gap
+-- apart, top edges level; the list offset (partyPetsX/Y) moves it on.
+function Pets.BesideAnchor()
+    local gap = ns.Border.Extent(Party.KEY) + Party.PetGap() + ns.Border.Extent(Pets.KEY)
+    local dx, dy = Pets.ListOffset()
+    if get("partyPetSide") == "LEFT" then return "TOPRIGHT", "TOPLEFT", -gap + dx, dy end
+    return "TOPLEFT", "TOPRIGHT", gap + dx, dy
+end
+
+local function placeBeside(button, member)
+    local point, relPoint, x, y = Pets.BesideAnchor()
+    button:ClearAllPoints()
+    button:SetPoint(point, member, relPoint, x, y)
+end
+
+-- Under the pretend block (every slot filled), one pet per slot; beside
+-- each pretend member in the BESIDE layout.
 local function showFakes()
+    if Pets.Beside() then
+        local slots = Party.Slots()
+        for i = 1, slots do
+            local member = Party.fakes[i]
+            local button = fakeButton(i)
+            Single.SetUnit(button, "player")
+            if member then placeBeside(button, member) end
+            style(button)
+            Single.Preview(button, true)
+            button:SetShown(member ~= nil and member:IsShown())
+        end
+        for i = slots + 1, #Pets.fakes do Party.ReleaseFake(Pets.fakes[i]) end
+        return
+    end
     local _, blockH = Party.BlockSize()
     local dx, dy = Pets.ListOffset()
     local top = -(blockH + Party.PetListOffset()) + dy
@@ -187,8 +230,9 @@ function Pets.StyleAll(testing)
         end
         -- Hide + Show lays the list out again (OnShow); hidden in a raid
         -- like the party.
-        Party.ShowHeader(header, on and not testing)
+        Party.ShowHeader(header, on and not testing and not Pets.Beside())
     end
+    Pets.StyleBeside(on and Pets.Beside() and not testing)
     if on and testing then
         showFakes()
     else
@@ -216,6 +260,55 @@ function Pets.OnUnitChanged(button, unit)
     Single.UpdateAll(button)
 end
 
+-- BESIDE buttons (children of the members, Units/Party.xml) ---------------------
+Pets.beside = {}
+
+-- A member's unit -> its pet's. The player's pet is "pet"; partyN's is
+-- partypetN (the secure code maps it the same way).
+function Pets.PetUnit(unit)
+    if not unit then return nil end
+    if unit == "player" then return "pet" end
+    local n = unit:match("^party(%d)$")
+    if n then return "partypet" .. n end
+    return nil
+end
+
+-- XML OnLoad of the child, before its member's.
+function Pets.InitBeside(button)
+    button.key = Pets.KEY
+    for _, el in ipairs(ns.Elements) do el.Build(button) end
+    Pets.beside[#Pets.beside + 1] = button
+    ns.Units.EnableTooltip(button)
+    Single.StyleContent(button)
+    if InCombatLockdown() then ns.AfterCombat("partyStyle", Party.StyleAll) end
+end
+
+-- The member's unit changed (header, in or out of combat).
+function Pets.OnMemberUnit(member, unit)
+    local button = member.petButton
+    if not button then return end
+    button.unit = Pets.PetUnit(unit)
+    ns.UnitEvents.Bind(button)
+    if button.unit then Single.UpdateAll(button) end
+end
+
+-- Out of combat only: size, place, look, and the unit watch that shows a
+-- pet while it exists. The player's own pet never shows here: the watch
+-- asks for "playerpet", which the client does not know (the pet frame
+-- shows it anyway).
+function Pets.StyleBeside(on)
+    for _, button in ipairs(Pets.beside) do
+        placeBeside(button, button:GetParent())
+        style(button)
+        if on then
+            RegisterUnitWatch(button)
+        else
+            UnregisterUnitWatch(button)
+            button:Hide()
+        end
+    end
+end
+
 -- Out of combat, from Party.Create.
 function Pets.Create()
     if Pets.header then return Pets.header end
@@ -234,4 +327,8 @@ end
 -- unit again, so refresh the bound buttons. UpdateAll skips missing pets.
 ns.On("UNIT_PET", function(event)
     for _, button in ipairs(Pets.buttons) do Single.UpdateAll(button, event) end
+    for _, button in ipairs(Pets.beside) do
+        if button.unit then Single.UpdateAll(button, event) end
+    end
 end)
+ns.api.PartyPetBesideOnLoad = function(button) Pets.InitBeside(button) end

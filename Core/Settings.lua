@@ -236,6 +236,20 @@ Settings.Define({ key = "partyHideInRaid", code = "HR", scope = "frame", only = 
 Settings.Define({ key = "partyShowPets", code = "PT", scope = "frame", only = PARTY, type = "bool", default = false })
 Settings.Define({ key = "partyPetHeight", code = "PH", scope = "frame", only = PARTY, type = "int", min = 10, max = 60,
     default = 20 })
+-- How the pets stand: LIST, their own packed list below the block; BESIDE,
+-- each one next to its owner (a child of the member's button, like the
+-- party targets), on the side partyPetSide.
+Settings.Define({ key = "partyPetLayout", code = "PL", scope = "frame", only = PARTY, type = "enum",
+    values = { "LIST", "BESIDE" }, default = "LIST" })
+Settings.Define({ key = "partyPetSide", code = "PB", scope = "frame", only = PARTY, type = "enum",
+    values = { "RIGHT", "LEFT" }, default = "RIGHT" })
+-- Width of a pet frame; 0: the members' width.
+Settings.Define({ key = "partyPetWidth", code = "PW", scope = "frame", only = PARTY, type = "int", min = 0, max = 300,
+    default = 0, zeroText = "AUTO" })
+-- Room between two pets in the list, and between the block and the list
+-- or a member and its pet (ring to ring).
+Settings.Define({ key = "partyPetGap", code = "PG", scope = "frame", only = PARTY, type = "int", min = 0, max = 40,
+    default = 2 })
 -- Moves the whole pet list from its place below the block (positive:
 -- right, up), e.g. past buffs that hang below the members.
 Settings.Define({ key = "partyPetsX", code = "PJ", scope = "frame", only = PARTY, type = "int", min = -400, max = 400,
@@ -327,6 +341,8 @@ Settings.Define({ key = "textPowerRight", code = "UR", scope = "frame", type = "
 -- The border around every aura icon (plain colour on buffs, the dispel
 -- colour on debuffs). General, overridable per frame.
 Settings.Define({ key = "auraBorder", code = "AZ", scope = "inherit", type = "bool", default = true })
+-- Its thickness in pixels.
+Settings.Define({ key = "auraBorderSize", code = "AW", scope = "inherit", type = "int", min = 1, max = 6, default = 1 })
 
 -- Auras. Buffs and debuffs are two groups with the same settings, each
 -- configured on its own. Codes: J + letter for buffs, D + letter for

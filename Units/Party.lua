@@ -16,10 +16,9 @@ Party.HEADER = "ForeverUnitFramesParty"
 Party.TEMPLATE = "ForeverUnitFramesPartyButtonTemplate"
 Party.MEMBERS = 4
 -- Pet frames under the block (Units/PartyPets.lua) read their settings
--- through this derived scope; PET_GAP is the room between two rings, plus
--- the drop shadow when it is on (Party.PetGap).
+-- through this derived scope; partyPetGap is the room between two rings,
+-- plus the drop shadow when it is on (Party.PetGap).
 Party.PET_KEY = "partypet"
-Party.PET_GAP = 2
 -- Every button the header made, in creation order.
 Party.buttons = {}
 -- Test mode: pretend members (secure buttons on the player) in a plain
@@ -55,11 +54,11 @@ function Party.BlockSize()
 end
 
 -- Pets (Units/PartyPets.lua) form their own list under the members.
--- Between two rings: PET_GAP, and the drop shadow when it is on (one
+-- Between two rings: partyPetGap, and the drop shadow when it is on (one
 -- frame's below, the other's above), so no shadow lies on a ring.
 function Party.PetGap()
     local shadow = math.max(ns.Border.ShadowSize(Party.KEY), ns.Border.ShadowSize(Party.PET_KEY))
-    return Pixel.Snap(Party.PET_GAP) + shadow
+    return Pixel.Snap(get("partyPetGap")) + shadow
 end
 
 -- From the members' bottom edge to the pet list's top edge: the last
@@ -282,6 +281,7 @@ function Party.OnUnitChanged(button, unit)
     button.unit = unit
     ns.UnitEvents.Bind(button)
     ns.PartyTargets.OnMemberUnit(button, unit)
+    ns.PartyPets.OnMemberUnit(button, unit)
     if not unit then return end
     if InCombatLockdown() then ns.AfterCombat("partyStyle", Party.StyleAll) end
     Single.UpdateAll(button)

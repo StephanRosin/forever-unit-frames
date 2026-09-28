@@ -529,3 +529,16 @@ L.ENUM_combatAnimation_OFF = "Off"
 L.ENUM_combatAnimation_BURST = "Burst"
 L.ENUM_combatAnimation_PULSE = "Pulse"
 L.HINT_combatAnimation = "Burst: springs in and flashes as combat starts"
+
+-- Aura border thickness.
+L.SETTING_auraBorderSize = "Border thickness"
+
+-- Party pet layout.
+L.SETTING_partyPetLayout = "Pet layout"
+L.ENUM_partyPetLayout_LIST = "List below the group"
+L.ENUM_partyPetLayout_BESIDE = "Beside the owner"
+L.HINT_partyPetLayout = "Beside: each pet next to its member (not your own pet)"
+L.SETTING_partyPetSide = "Side"
+L.SETTING_partyPetWidth = "Pet width"
+L.SETTING_partyPetGap = "Pet spacing"
+L.HINT_partyPetGap = "Between the pets, and to the group or owner"

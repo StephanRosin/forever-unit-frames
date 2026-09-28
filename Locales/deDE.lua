@@ -505,3 +505,16 @@ L.ENUM_combatAnimation_OFF = "Aus"
 L.ENUM_combatAnimation_BURST = "Aufschlag"
 L.ENUM_combatAnimation_PULSE = "Pulsieren"
 L.HINT_combatAnimation = "Aufschlag: springt beim Kampfbeginn auf und blitzt"
+
+-- Aura border thickness.
+L.SETTING_auraBorderSize = "Rahmendicke"
+
+-- Party pet layout.
+L.SETTING_partyPetLayout = "Anordnung der Begleiter"
+L.ENUM_partyPetLayout_LIST = "Liste unter der Gruppe"
+L.ENUM_partyPetLayout_BESIDE = "Neben dem Besitzer"
+L.HINT_partyPetLayout = "Neben: jeder Begleiter an seinem Mitglied (nicht dein eigener)"
+L.SETTING_partyPetSide = "Seite"
+L.SETTING_partyPetWidth = "Begleiterbreite"
+L.SETTING_partyPetGap = "Begleiterabstand"
+L.HINT_partyPetGap = "Zwischen den Begleitern und zur Gruppe bzw. zum Besitzer"

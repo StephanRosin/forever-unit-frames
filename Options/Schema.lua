@@ -15,7 +15,7 @@ Schema.GENERAL = {
         { id = "titleText", keys = { "titleClassIcon", "classIconSize", "classIconX", "classIconY",
             "classIconRing", "classIconRingColor" } },
         { id = "bars", keys = { "barTexture", "backgroundColor", "titleBackground", "absorbMode" } },
-        { id = "auraIcons", keys = { "auraBorder" } },
+        { id = "auraIcons", keys = { "auraBorder", "auraBorderSize" } },
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },
         { id = "shape", keys = { "cornerRadius" } },
@@ -53,7 +53,8 @@ Schema.FRAME = {
     -- The party's arrangement and what hangs beside its members.
     { id = "group", sections = {
         { id = "group", keys = { "partyOrientation", "partySpacing", "partyShowPlayer", "partyShowSolo", "partyHideInRaid" } },
-        { id = "pets", keys = { "partyShowPets", "partyPetHeight", "partyPetsX", "partyPetsY", "partyPetAuras", "partyPetAuraSize",
+        { id = "pets", keys = { "partyShowPets", "partyPetLayout", "partyPetSide", "partyPetWidth", "partyPetHeight",
+            "partyPetGap", "partyPetsX", "partyPetsY", "partyPetAuras", "partyPetAuraSize",
             "partyPetAuraSide", "partyPetAuraX", "partyPetAuraY" } },
         { id = "partyTargets", keys = { "partyTargets", "partyTargetSide", "partyTargetWidth", "partyTargetHeight",
             "partyTargetX", "partyTargetY" } },
@@ -73,7 +74,7 @@ Schema.FRAME = {
         { id = "font", keys = { "fontFace", "fontSize", "fontOutline", "fontShadow", "showSurname" } },
     } },
     { id = "auras", sections = {
-        { id = "auraIcons", keys = { "auraBorder" } },
+        { id = "auraIcons", keys = { "auraBorder", "auraBorderSize" } },
         { id = "buffs", keys = { "buffsEnabled", "weaponEnchants", "buffsOnlyMine", "buffsHideTracking", "buffsHidePermanent", "buffsHideLonger", "buffsShowTime", "buffsAnchor", "buffsFramePoint",
             "buffsPoint", "buffsX", "buffsY", "buffsGrowth", "buffsRowGrowth", "buffsSize", "buffsSpacing",
             "buffsPerRow", "buffsMax", "buffsHighlightOwn", "buffsOwnSize", "buffsCasterBorder", "buffsOwnBorderColor",

@@ -506,3 +506,16 @@ L.ENUM_combatAnimation_OFF = "Desactivada"
 L.ENUM_combatAnimation_BURST = "Destello"
 L.ENUM_combatAnimation_PULSE = "Pulso"
 L.HINT_combatAnimation = "Destello: aparece de golpe y brilla al entrar en combate"
+
+-- Aura border thickness.
+L.SETTING_auraBorderSize = "Grosor del borde"
+
+-- Party pet layout.
+L.SETTING_partyPetLayout = "Disposición de mascotas"
+L.ENUM_partyPetLayout_LIST = "Lista bajo el grupo"
+L.ENUM_partyPetLayout_BESIDE = "Junto al dueño"
+L.HINT_partyPetLayout = "Junto: cada mascota al lado de su miembro (no la tuya)"
+L.SETTING_partyPetSide = "Lado"
+L.SETTING_partyPetWidth = "Ancho de mascota"
+L.SETTING_partyPetGap = "Espaciado de mascotas"
+L.HINT_partyPetGap = "Entre las mascotas y hacia el grupo o dueño"

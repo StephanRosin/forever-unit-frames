@@ -70,6 +70,19 @@ M.templates = {
         t._attr["*type2"] = "togglemenu"
         w.targetButton = t
         ForeverUnitFrames.PartyTargetOnLoad(t)
+        -- The pet child (layout BESIDE), likewise.
+        local pb = M.newWidget("Button", nil, w)
+        pb._template = "SecureUnitButtonTemplate"
+        pb._protected = true
+        pb._w, pb._h = 160, 20
+        pb._clicks = { "AnyUp" }
+        pb._shown = false
+        pb._attr["useparent-unit"] = true
+        pb._attr["unitsuffix"] = "pet"
+        pb._attr["*type1"] = "target"
+        pb._attr["*type2"] = "togglemenu"
+        w.petButton = pb
+        ForeverUnitFrames.PartyPetBesideOnLoad(pb)
         w._scripts.OnAttributeChanged = function(self, name, value)
             ForeverUnitFrames.PartyButtonOnAttributeChanged(self, name, value)
         end

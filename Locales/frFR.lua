@@ -505,3 +505,16 @@ L.ENUM_combatAnimation_OFF = "Aucune"
 L.ENUM_combatAnimation_BURST = "Éclat"
 L.ENUM_combatAnimation_PULSE = "Pulsation"
 L.HINT_combatAnimation = "Éclat : surgit et brille au début du combat"
+
+-- Aura border thickness.
+L.SETTING_auraBorderSize = "Épaisseur de la bordure"
+
+-- Party pet layout.
+L.SETTING_partyPetLayout = "Disposition des familiers"
+L.ENUM_partyPetLayout_LIST = "Liste sous le groupe"
+L.ENUM_partyPetLayout_BESIDE = "À côté du maître"
+L.HINT_partyPetLayout = "À côté : chaque familier près de son membre (pas le vôtre)"
+L.SETTING_partyPetSide = "Côté"
+L.SETTING_partyPetWidth = "Largeur des familiers"
+L.SETTING_partyPetGap = "Espacement des familiers"
+L.HINT_partyPetGap = "Entre les familiers et vers le groupe ou le maître"

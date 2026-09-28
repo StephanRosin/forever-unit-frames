@@ -105,7 +105,7 @@ local function shape(button, scope, size, showTime)
     -- (a container colours it for dispel types) but is not seen.
     local bordered = Config.Get(scope, "auraBorder")
     button.border:SetAlpha(bordered and 1 or 0)
-    local inset = bordered and Pixel.Snap(1, button, 1) or 0
+    local inset = bordered and Pixel.Snap(Config.Get(scope, "auraBorderSize"), button, 1) or 0
     button.icon:ClearAllPoints()
     button.icon:SetPoint("TOPLEFT", button, "TOPLEFT", inset, -inset)
     button.icon:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", -inset, inset)

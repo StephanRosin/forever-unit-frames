@@ -31,6 +31,23 @@
 					<OnLoad>ForeverUnitFrames.PartyTargetOnLoad(self)</OnLoad>
 				</Scripts>
 			</Button>
+			<!--
+				The member's pet beside it (Units/PartyPets.lua, layout BESIDE).
+				Unit: the parent's plus "pet" (party1pet -> partypet1 in the
+				secure code). Hidden until the unit watch shows it.
+			-->
+			<Button parentKey="petButton" inherits="SecureUnitButtonTemplate" registerForClicks="AnyUp" hidden="true">
+				<Size x="160" y="20"/>
+				<Attributes>
+					<Attribute name="useparent-unit" type="boolean" value="true"/>
+					<Attribute name="unitsuffix" type="string" value="pet"/>
+					<Attribute name="*type1" type="string" value="target"/>
+					<Attribute name="*type2" type="string" value="togglemenu"/>
+				</Attributes>
+				<Scripts>
+					<OnLoad>ForeverUnitFrames.PartyPetBesideOnLoad(self)</OnLoad>
+				</Scripts>
+			</Button>
 		</Frames>
 		<Scripts>
 			<OnLoad>ForeverUnitFrames.PartyButtonOnLoad(self)</OnLoad>

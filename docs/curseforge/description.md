@@ -10,7 +10,7 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 
 ## Frames
 - Player, Target, Target of Target, Focus, Pet and Party.
-- Party pets: a list directly below the party block, showing only the pets that exist, without gaps (can be turned off). Their buffs and debuffs in one row beside each pet, with their own icon size, side and offset. The whole pet list can be moved with its own X/Y offset.
+- Party pets: a list directly below the party block, showing only the pets that exist, without gaps (can be turned off). Their buffs and debuffs in one row beside each pet, with their own icon size, side and offset. Pets can stand in a list below the group or each one beside its owner (left or right), with their own width, height, spacing and X/Y offset.
 - Party targets: beside each member a small frame with what that member has targeted, right, left, above or below; size and X/Y offset adjustable (off by default).
 - Party frames hide while you are in a raid group (can be turned off).
 - Player frame can fade out of combat while nothing is going on (out of combat, not casting, full health); opacity configurable.
@@ -45,7 +45,7 @@ In a "Status" tab per frame.
 - Party: debuffs you can dispel can get a group of their own, with their own size and position (for example big in the middle of the frame); the normal debuff row then leaves them out.
 - Wraps to new rows when they don't fit, with a limit per row.
 - Anchor to the frame, the health bar, the power bar, the castbar or the other aura group, with any of the 9 points and an X/Y offset.
-- Size, spacing, growth direction, maximum count, "only mine", "dispellable only", "hide tracking" (herb, mineral and treasure finding, hunter tracking, sensing), "hide permanent" (every aura without a duration, e.g. auras and stances), "hide longer than N minutes" (hour potions, food, hour-long buffs), remaining time, dispel-type colours and an icon border that can be switched off.
+- Size, spacing, growth direction, maximum count, "only mine", "dispellable only", "hide tracking" (herb, mineral and treasure finding, hunter tracking, sensing), "hide permanent" (every aura without a duration, e.g. auras and stances), "hide longer than N minutes" (hour potions, food, hour-long buffs), remaining time, dispel-type colours and an icon border that can be switched off or made thicker.
 
 ## Castbars
 - Castbars for player, target, target of target, focus and party.
