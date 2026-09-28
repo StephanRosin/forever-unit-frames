@@ -102,6 +102,7 @@ function Targets.InitButton(button)
     for _, el in ipairs(ns.Elements) do el.Build(button) end
     Targets.buttons[#Targets.buttons + 1] = button
     ns.Units.EnableTooltip(button)
+    ns.Units.EnableClickCast(button)
     Single.StyleContent(button)
     -- Made in combat (someone joined): placed and watched after combat.
     if InCombatLockdown() then ns.AfterCombat("partyStyle", Party.StyleAll) end

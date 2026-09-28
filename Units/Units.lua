@@ -50,6 +50,16 @@ function ns.Units.EnableTooltip(frame)
     frame:HookScript("OnLeave", onLeave)
 end
 
+-- Click-casting addons (Clique and others) find unit frames through the
+-- shared global table ClickCastFrames: frame -> true. Clique takes the
+-- entries made before it loaded and watches the table afterwards,
+-- queueing registrations made in combat itself. Live unit buttons only,
+-- not test mode's pretend ones.
+function ns.Units.EnableClickCast(frame)
+    ClickCastFrames = ClickCastFrames or {}
+    ClickCastFrames[frame] = true
+end
+
 ns.Elements = {}
 function ns.RegisterElement(element)
     ns.Elements[#ns.Elements + 1] = element
