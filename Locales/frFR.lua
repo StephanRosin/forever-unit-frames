@@ -432,6 +432,7 @@ L.FADE_TEST = "le mode test est actif"
 L.FADE_UNLOCKED = "les cadres sont déverrouillés"
 L.FADE_COMBAT = "en combat"
 L.FADE_CASTING = "incantation"
+L.FADE_TARGET = "vous avez une cible"
 
 -- Bar name colour, level/class/race text, shield position, power colours.
 L.SETTING_barNameColorMode = "Couleur du nom sur les barres"
@@ -534,3 +535,17 @@ L.ENUM_eliteMarkerStyle_MARKER = "Marqueur"
 L.ENUM_eliteMarkerStyle_BORDER = "Bordure"
 L.HINT_eliteMarkerStyle = "Bordure : dorée pour les élites, argentée pour les rares"
 L.SETTING_eliteBorderSize = "Épaisseur de la bordure d'élite"
+
+-- Tapped by others.
+L.SETTING_tapDenied = "Gris si d'autres l'ont attaqué"
+L.HINT_tapDenied = "Quelqu'un d'autre a attaqué en premier : ni expérience ni butin"
+
+-- Player fade: back with a target.
+L.SETTING_playerFadeTarget = "Afficher en entier avec une cible"
+L.HINT_playerFadeTarget = "Réapparaît dès que vous choisissez une cible"
+
+-- Druid mana.
+L.SECTION_druidMana = "Mana du druide"
+L.SETTING_druidMana = "Afficher le mana en forme"
+L.HINT_druidMana = "Ours et félin : une bande sous la barre de ressource"
+L.SETTING_druidManaHeight = "Hauteur de la bande"

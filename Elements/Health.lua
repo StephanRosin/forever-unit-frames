@@ -1,6 +1,7 @@
 local _, ns = ...
 
-local Health = { name = "Health", unitEvents = { "UNIT_HEALTH", "UNIT_MAXHEALTH", "UNIT_CONNECTION" } }
+-- UNIT_FACTION: a creature became tapped (or free again).
+local Health = { name = "Health", unitEvents = { "UNIT_HEALTH", "UNIT_MAXHEALTH", "UNIT_CONNECTION", "UNIT_FACTION" } }
 ns.Health = Health
 
 local Secrets, Config = ns.Secrets, ns.Config
@@ -79,8 +80,25 @@ function Health.UnitColor(unit, mode, scope)
     return c[1], c[2], c[3]
 end
 
+-- Tapped by someone else: a creature (not player-controlled) another
+-- player or group has claimed. Blizzard's grey. A secret answer counts as
+-- not tapped (the bar keeps its colour).
+Health.TAPPED = { 0.5, 0.5, 0.5 }
+
+function Health.IsTapDenied(frame)
+    local unit = frame.unit
+    if not unit or not ns.Settings.AppliesTo(ns.Settings.Get("tapDenied"), frame.key) then return false end
+    if not Config.Get(frame.key, "tapDenied") then return false end
+    if Secrets.Bool(UnitPlayerControlled, unit) ~= false then return false end
+    return Secrets.Bool(UnitIsTapDenied, unit) == true
+end
+
 function Health.ColorFor(frame)
     local scope, unit = frame.key, frame.unit
+    if Health.IsTapDenied(frame) then
+        local t = Health.TAPPED
+        return t[1], t[2], t[3]
+    end
     local mode = Config.Get(scope, "healthColorMode")
     if mode == "CLASS" or mode == "REACTION" then
         return Health.UnitColor(unit, mode, scope)

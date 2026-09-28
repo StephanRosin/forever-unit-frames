@@ -30,11 +30,21 @@ M.SetCombat(false)
 M.FireEvent("PLAYER_REGEN_ENABLED")
 H.check("after combat: faded", f:GetAlpha(), 0.2)
 
--- A target does not matter.
+-- A target brings it back in full (see your resources before a pull),
+-- unless that is switched off.
+H.check("with a target by default", C.Get("player", "playerFadeTarget"), true)
+M.units.target = { name = "Foe", health = 1, healthMax = 1 }
+M.FireEvent("PLAYER_TARGET_CHANGED")
+H.check("target: back in full", f:GetAlpha(), 1)
+H.check("target: the reason", ns.CombatFade.Blocker(), "TARGET")
+M.units.target = nil
+M.FireEvent("PLAYER_TARGET_CHANGED")
+H.check("target gone: faded again", f:GetAlpha(), 0.2)
+C.Set("player", "playerFadeTarget", false)
 M.units.target = { name = "Foe", health = 1, healthMax = 1 }
 M.FireEvent("PLAYER_TARGET_CHANGED")
 M.FireEvent("UNIT_HEALTH", "player")
-H.check("target: still faded", f:GetAlpha(), 0.2)
+H.check("option off: a target does not matter", f:GetAlpha(), 0.2)
 M.units.target = nil
 
 M.units.player.health = 60

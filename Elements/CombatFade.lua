@@ -1,7 +1,8 @@
 local _, ns = ...
 
 -- Player frame out of combat (optional): faded to a set opacity while
--- nothing is going on -- no combat, no cast, full health. Test mode and
+-- nothing is going on -- no combat, no cast, full health, and (optional)
+-- no target, so a target brings it back before the pull. Test mode and
 -- unlocked frames always show it in full. Only the opacity changes:
 -- allowed on a secure frame at any time.
 --
@@ -46,6 +47,7 @@ function CombatFade.Blocker()
     if ns.Movers and ns.Movers.IsUnlocked() then return "UNLOCKED" end
     if InCombatLockdown() or Secrets.Bool(UnitAffectingCombat, "player") ~= false then return "COMBAT" end
     if casting() then return "CASTING" end
+    if Config.Get("player", "playerFadeTarget") and Secrets.Bool(UnitExists, "target") then return "TARGET" end
     return nil
 end
 
@@ -73,7 +75,8 @@ function CombatFade.Style(frame) if frame.key == "player" then CombatFade.Apply(
 function CombatFade.Update(frame) if frame.key == "player" then CombatFade.Apply(frame) end end
 
 local function applyPlayer() CombatFade.Apply() end
-for _, event in ipairs({ "PLAYER_REGEN_DISABLED", "PLAYER_REGEN_ENABLED", "PLAYER_ENTERING_WORLD" }) do
+for _, event in ipairs({ "PLAYER_REGEN_DISABLED", "PLAYER_REGEN_ENABLED", "PLAYER_ENTERING_WORLD",
+    "PLAYER_TARGET_CHANGED" }) do
     ns.On(event, applyPlayer)
 end
 ns.Listen("TEST_MODE", applyPlayer)

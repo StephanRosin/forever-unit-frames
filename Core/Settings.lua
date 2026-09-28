@@ -226,6 +226,10 @@ Settings.Define({ key = "eliteMarker", code = "EM", scope = "frame",
     only = { target = true, targettarget = true, focus = true }, type = "bool", default = true })
 -- How: the marker (badge on the portrait, or a word), or a thin ring
 -- around the frame, gold for elites and bosses, silver for rares.
+-- Grey health bar while a creature is tapped by someone else (you get
+-- no experience or loot from it), as Blizzard's target frame shows it.
+Settings.Define({ key = "tapDenied", code = "TD", scope = "frame",
+    only = { target = true, targettarget = true, focus = true }, type = "bool", default = true })
 Settings.Define({ key = "eliteMarkerStyle", code = "EZ", scope = "frame",
     only = { target = true, targettarget = true, focus = true }, type = "enum", values = { "MARKER", "BORDER" },
     default = "MARKER" })
@@ -688,6 +692,15 @@ Settings.Define({ key = "playerFadeOOC", code = "WF", scope = "frame", only = { 
     default = false })
 Settings.Define({ key = "playerFadeAlpha", code = "WA", scope = "frame", only = { player = true }, type = "int",
     min = 0, max = 100, default = 25 })
+-- A druid's mana while shapeshifted: a strip along the bottom of the power
+-- bar (Elements/DruidMana.lua).
+Settings.Define({ key = "druidMana", code = "MD", scope = "frame", only = { player = true }, type = "bool",
+    default = true })
+Settings.Define({ key = "druidManaHeight", code = "MH", scope = "frame", only = { player = true }, type = "int",
+    min = 2, max = 20, default = 4 })
+-- Back in full while you have a target: see your resources before a pull.
+Settings.Define({ key = "playerFadeTarget", code = "WT", scope = "frame", only = { player = true }, type = "bool",
+    default = true })
 
 -- Dispel highlight (Elements/Dispel.lua): the border of the player and
 -- party frames tints while the unit has a debuff you can dispel.

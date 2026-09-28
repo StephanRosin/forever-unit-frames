@@ -46,7 +46,7 @@ Schema.FRAME = {
         { id = "position", keys = { "x", "y" } },
         { id = "barHeights", keys = { "titlePercent", "healthPercent", "powerPercent", "powerEnabled" } },
         { id = "portrait", keys = { "portraitMode", "portraitStyle" } },
-        { id = "indicators", keys = { "eliteMarker", "eliteMarkerStyle", "eliteBorderSize", "combatFeedback" } },
+        { id = "indicators", keys = { "tapDenied", "eliteMarker", "eliteMarkerStyle", "eliteBorderSize", "combatFeedback" } },
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },
         { id = "shape", keys = { "cornerRadius" } },
@@ -67,6 +67,7 @@ Schema.FRAME = {
         { id = "absorbs", keys = { "absorbEnabled", "absorbMode", "absorbColor" } },
         { id = "healPrediction", keys = { "healPrediction", "healOverflow", "powerMatchesHealth", "healMyColor", "healOtherColor" } },
         { id = "powerColors", keys = { "powerColorMana", "powerColorRage", "powerColorFocus", "powerColorEnergy" } },
+        { id = "druidMana", keys = { "druidMana", "druidManaHeight" } },
     } },
     { id = "text", sections = {
         { id = "titleText", keys = { "titleText", "titleColorMode", "levelColorMode", "titleClassIcon", "classIconSize", "classIconX",
@@ -110,7 +111,7 @@ Schema.FRAME = {
         { id = "dispel", keys = { "dispelHighlight" } },
         -- Fading comes last: how the frame behaves, not what it shows.
         { id = "range", keys = { "rangeFade", "rangeAlpha" } },
-        { id = "outOfCombat", keys = { "playerFadeOOC", "playerFadeAlpha" } },
+        { id = "outOfCombat", keys = { "playerFadeOOC", "playerFadeAlpha", "playerFadeTarget" } },
     } },
     { id = "castbar", sections = {
         { id = "castbar", keys = { "castbarEnabled", "castbarAlwaysShow", "hideBlizzardCastbar", "castbarPosition", "castbarDock",

@@ -456,6 +456,7 @@ L.FADE_TEST = "test mode is on"
 L.FADE_UNLOCKED = "frames are unlocked"
 L.FADE_COMBAT = "in combat"
 L.FADE_CASTING = "casting"
+L.FADE_TARGET = "you have a target"
 
 -- Bar name colour, level/class/race text, shield position, power colours.
 L.SETTING_barNameColorMode = "Name color on the bars"
@@ -558,3 +559,17 @@ L.ENUM_eliteMarkerStyle_MARKER = "Marker"
 L.ENUM_eliteMarkerStyle_BORDER = "Border"
 L.HINT_eliteMarkerStyle = "Border: gold for elites, silver for rares"
 L.SETTING_eliteBorderSize = "Elite border thickness"
+
+-- Tapped by others.
+L.SETTING_tapDenied = "Grey when tapped by others"
+L.HINT_tapDenied = "Someone else attacked it first: no experience or loot"
+
+-- Player fade: back with a target.
+L.SETTING_playerFadeTarget = "Show in full with a target"
+L.HINT_playerFadeTarget = "Fades back in when you select a target"
+
+-- Druid mana.
+L.SECTION_druidMana = "Druid mana"
+L.SETTING_druidMana = "Show mana in forms"
+L.HINT_druidMana = "Bear and cat form: a strip under the power bar"
+L.SETTING_druidManaHeight = "Strip height"

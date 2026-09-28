@@ -902,9 +902,44 @@ local function newWidget(kind, name, parent)
     -- (SimpleScriptRegionAPI; protected on protected frames in combat).
     function w:SetPassThroughButtons(...) self._passThrough = { ... } end
     -- PlayerModel
-    function w:SetUnit(unit) self._modelUnit = unit; return true end
-    function w:ClearModel() self._modelUnit = nil; self._cleared = true end
+    -- A unit without a (loaded) model (d.noModel): the client keeps what
+    -- the model showed, as it does in game.
+    -- d.modelLater: loaded frames later (M.LoadModels fires OnModelLoaded).
+    function w:SetUnit(unit)
+        local d = M.units[unit]
+        if d and d.noModel then return false end
+        if d and d.modelLater then
+            M.pendingModels = M.pendingModels or {}
+            M.pendingModels[self] = unit
+            return nil
+        end
+        -- A creature (d.creatureModel): as measured in Forever, SetUnit
+        -- loads nothing and answers nil (model empty, display 0).
+        if d and d.creatureModel then return nil end
+        self._modelUnit = unit
+        return true
+    end
+    -- Players have a file; creatures (d.creatureModel) only a display ID.
+    function w:GetModelFileID()
+        local d = self._modelUnit and M.units[self._modelUnit]
+        if not self._modelUnit or (d and d.creatureModel) then return nil end
+        return 12345
+    end
+    function w:GetDisplayInfo() return self._modelUnit and 678 or 0 end
+    -- By NPC ID: loads the creature (d.npcID must match a known unit).
+    function w:SetCreature(id)
+        for token, d in pairs(M.units) do
+            if d.npcID == id then self._modelUnit = token; self._creature = id; return end
+        end
+    end
+    function w:ClearModel()
+        self._modelUnit = nil
+        self._cleared = true
+        if M.pendingModels then M.pendingModels[self] = nil end
+    end
     function w:SetPortraitZoom(z) self._zoom = z end
+    function w:SetCamDistanceScale(v) self._camScale = v end
+    function w:SetPosition(x, y, z) self._position = { x, y, z } end
     -- Movable
     function w:SetMovable(v) self._movable = v end
     function w:RegisterForDrag(...) self._drag = { ... } end
@@ -1125,6 +1160,14 @@ function M.Reset()
     _G.UnitLevel = function(unit) local d = u(unit); return d and d.level or 0 end
     _G.UnitClass = function(unit) local d = u(unit); if d then return d.className, d.class end end
     -- Localised race and creature type (units: race, creatureType).
+    -- d.guid ("Creature-0-1-2-3-<npcID>-4"), may be secret.
+    _G.UnitGUID = function(unit) local d = u(unit); return d and d.guid end
+    -- WoW's strsplit: the parts between the (single-character) delimiter.
+    _G.strsplit = function(delim, str)
+        local parts = {}
+        for part in (str .. delim):gmatch("(.-)" .. delim:gsub("%p", "%%%0")) do parts[#parts + 1] = part end
+        return unpack(parts)
+    end
     _G.UnitRace = function(unit) local d = u(unit); if d then return d.race, d.race end end
     _G.UnitCreatureType = function(unit) local d = u(unit); if d then return d.creatureType end end
     -- Takes secret class tokens (SecretArguments = AllowedWhenTainted); a
@@ -1140,7 +1183,13 @@ function M.Reset()
     _G.UnitIsPlayer = function(unit) local d = u(unit); return d and d.isPlayer or false end
     _G.UnitIsVisible = function(unit) local d = u(unit); return d ~= nil and d.visible ~= false end
     -- Records the last unit drawn into each texture.
-    _G.SetPortraitTexture = function(texture, unit) texture._portraitUnit = unit end
+    -- No portrait for the unit (d.noPortrait): the texture stays as it was.
+    _G.SetPortraitTexture = function(texture, unit)
+        local d = M.units[unit]
+        if d and d.noPortrait then return end
+        texture._portraitUnit = unit
+        texture._texture = "portrait:" .. tostring(unit)
+    end
     _G.UnitIsFriend = function(_, unit) local d = u(unit); return d and d.friend or false end
     _G.UnitReaction = function(unit) local d = u(unit); return d and d.reaction end
     _G.UnitHealth = function(unit) local d = u(unit); return d and d.health or 0 end
@@ -1158,12 +1207,19 @@ function M.Reset()
         if curve then return curve:Evaluate(p) end
         return p
     end
-    _G.UnitPower = function(unit) local d = u(unit); return d and d.power or 0 end
+    -- Power type 0 asked for explicitly: d.mana (a druid in form), else
+    -- the current power.
+    _G.UnitPower = function(unit, powerType)
+        local d = u(unit)
+        if powerType == 0 and d and d.mana ~= nil then return d.mana end
+        return d and d.power or 0
+    end
     -- Power type 4 (combo points): d.comboMax; M.comboPoints is what
     -- GetComboPoints("player", "target") answers.
     _G.UnitPowerMax = function(unit, powerType)
         local d = u(unit)
         if powerType == 4 then return d and d.comboMax or 0 end
+        if powerType == 0 and d and d.manaMax ~= nil then return d.manaMax end
         return d and d.powerMax or 0
     end
     _G.GetComboPoints = function(unit, target)
@@ -1176,6 +1232,14 @@ function M.Reset()
         local d = u(unit)
         if d and d.inCombat ~= nil then return d.inCombat end
         return false
+    end
+    -- d.tapDenied; d.playerControlled (players are, creatures not).
+    _G.UnitIsTapDenied = function(unit) local d = u(unit); return d and d.tapDenied or false end
+    _G.UnitPlayerControlled = function(unit)
+        local d = u(unit)
+        if not d then return false end
+        if d.playerControlled ~= nil then return d.playerControlled end
+        return d.isPlayer or false
     end
     _G.UnitIsPVP = function(unit) local d = u(unit); if d and d.pvp ~= nil then return d.pvp end; return false end
     _G.UnitIsPVPFreeForAll = function(unit) local d = u(unit); if d and d.ffa ~= nil then return d.ffa end; return false end
@@ -1937,6 +2001,17 @@ end
 -- itself queues are appended and run too, so this drains to empty.
 -- With maxSeconds, only timers of at most that delay run; longer ones stay
 -- queued (e.g. run a 0.5 s save but not a 15 s timeout).
+-- Models that were loading (d.modelLater) arrive: OnModelLoaded fires.
+function M.LoadModels()
+    local list = M.pendingModels or {}
+    M.pendingModels = {}
+    for model, unit in pairs(list) do
+        model._modelUnit = unit
+        local script = model._scripts and model._scripts.OnModelLoaded
+        if script then script(model) end
+    end
+end
+
 function M.RunTimers(maxSeconds)
     while true do
         local due, later = {}, {}
