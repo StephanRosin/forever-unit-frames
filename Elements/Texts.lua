@@ -413,16 +413,25 @@ function Texts.Build(frame)
     frame.classRingSize = 0
     showClassIcon(frame, false)
     frame.texts = {}
+    -- Power texts: on a layer of their own, a child of the power bar (so
+    -- they hide with it) above what lies on the bar, e.g. the druid's mana
+    -- strip (Elements/DruidMana.lua).
+    frame.powerTextLayer = CreateFrame("Frame", nil, frame.power)
+    frame.powerTextLayer:SetAllPoints(frame.power)
     for _, slot in ipairs(SLOTS) do
         -- Title and health texts sit on the overlay, above shields and
-        -- heals; power texts on their bar, so they hide with it.
-        local parent = slot.bar == "power" and frame.power or frame.overlay
+        -- heals; power texts on the power bar's text layer.
+        local parent = slot.bar == "power" and frame.powerTextLayer or frame.overlay
         frame.texts[slot.field] = parent:CreateFontString(nil, "OVERLAY")
     end
 end
 
+-- The power texts' layer above the power bar and anything on it.
+Texts.POWER_TEXT_LEVELS = 5
+
 function Texts.Style(frame)
     local scope = frame.key
+    frame.powerTextLayer:SetFrameLevel(frame.power:GetFrameLevel() + Texts.POWER_TEXT_LEVELS)
     local font = ns.Media.Font(Config.Get(scope, "fontFace"))
     local size = Config.Get(scope, "fontSize")
     local outline = Config.Get(scope, "fontOutline")

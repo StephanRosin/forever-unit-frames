@@ -35,6 +35,11 @@ H.check("mana colour", bar._color[3], C.Get("player", "powerColorMana")[3])
 M.units.player.mana = M.Secret(350)
 M.FireEvent("UNIT_POWER_UPDATE", "player")
 H.check("secret mana passed on", bar:GetValue(), M.units.player.mana)
+-- Reported: the strip covered the power texts. They sit on a layer above it.
+local textLayer = p.texts.powerRight:GetParent()
+H.check("power texts on their own layer", textLayer, p.powerTextLayer)
+H.checkTrue("that layer is above the strip", textLayer:GetFrameLevel() > bar:GetFrameLevel())
+H.check("the layer hides with the power bar", textLayer:GetParent(), p.power)
 -- Height and switch.
 C.Set("player", "druidManaHeight", 8)
 H.check("taller", bar:GetHeight(), 8)

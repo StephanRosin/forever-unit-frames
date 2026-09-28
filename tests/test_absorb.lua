@@ -55,7 +55,7 @@ H.check("health text on the overlay", f.texts.healthLeft:GetParent(), f.overlay)
 H.check("title text on the overlay", f.texts.title:GetParent(), f.overlay)
 H.checkTrue("overlay above the shield", f.overlay:GetFrameLevel() > bar:GetFrameLevel())
 H.check("overlay covers the frame", f.overlay._allPoints, f)
-H.check("power text on its bar", f.texts.powerRight:GetParent(), f.power)
+H.check("power text on its bar (its text layer)", f.texts.powerRight:GetParent():GetParent(), f.power)
 H.checkTrue("badge still above the overlay", f.classBadge:GetFrameLevel() > f.overlay:GetFrameLevel())
 -- Aura icons over the health row draw above texts and shield, below the
 -- badge.
