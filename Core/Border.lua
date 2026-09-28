@@ -352,6 +352,24 @@ function Border.Draw(owner, scope, box, radius)
     drawShadow(owner, scope, box, radius)
 end
 
+-- A plain ring in one colour (the elite / rare ring, Elements/
+-- Classification.lua): size thick, padding away from box, rounded with it.
+function Border.DrawRing(owner, box, size, padding, radius, c)
+    owner.plainRing = owner.plainRing or newRing(owner, 2)
+    placeRing(owner.plainRing, box, size, padding, radius)
+    paintFlat(owner.plainRing, c)
+    showRing(owner.plainRing, size > 0)
+end
+
+function Border.HideRing(owner)
+    if owner.plainRing then showRing(owner.plainRing, false) end
+end
+
+-- The plain ring's pieces, for the tests.
+function Border.RingPieces(owner)
+    return owner.plainRing and ringPieces(owner.plainRing) or {}
+end
+
 function Border.Hide(owner)
     local ring = owner.border
     if not ring then return end

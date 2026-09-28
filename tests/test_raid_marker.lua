@@ -192,7 +192,7 @@ do
     H.check("target sample: skull", r.icon:IsShown() and r.icon._spriteCell[1], 8)
     local fake = ns.Party.fakes[1]
     H.check("pretend member 1: star", fake.raidMarker.icon:IsShown() and fake.raidMarker.icon._spriteCell[1], 1)
-    H.check("pretend member 2: none", ns.Party.fakes[2].raidMarker.icon:IsShown(), false)
+    H.checkTrue("pretend member 2: a marker too (every frame shows one)", ns.Party.fakes[2].raidMarker.icon:IsShown())
     M.FireEvent("RAID_TARGET_UPDATE")
     H.check("real events leave the sample alone", r.icon:IsShown(), true)
     ns.Config.Set("target", "raidMarker", false)

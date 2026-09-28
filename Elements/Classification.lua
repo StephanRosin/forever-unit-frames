@@ -141,7 +141,8 @@ local function show(frame, kind, force)
     local icon, text = frame.eliteIcon, frame.eliteText
     icon:SetShown(marker ~= nil and mode == "ICON")
     text:SetShown(marker ~= nil and mode == "TEXT")
-    if not marker then return end
+    Classification.ShowRing(frame, mode == "BORDER" and marker or nil)
+    if not marker or mode == "BORDER" then return end
     if mode == "ICON" then
         placeIcon(frame)
         icon:SetAtlas(atlas)
@@ -150,6 +151,40 @@ local function show(frame, kind, force)
     end
     text:SetText(L["CLASS_" .. kind])
     text:SetTextColor(marker.color[1], marker.color[2], marker.color[3], 1)
+end
+
+-- Ring holders on the frame's and the block's ring (one shows at a time,
+-- with its box). Made when first needed: Elements/Shape.lua builds the
+-- rings after this element.
+local function ringHolders(frame)
+    if frame.eliteRings or not frame.frameRing then return frame.eliteRings end
+    local rings = {}
+    for _, ring in ipairs({ frame.frameRing, frame.blockRing }) do
+        local holder = CreateFrame("Frame", nil, ring)
+        holder:SetAllPoints(ring)
+        holder:SetFrameLevel(ring:GetFrameLevel() + 1)
+        rings[#rings + 1] = holder
+    end
+    frame.eliteRings = rings
+    return rings
+end
+
+-- The ring: just outside the frame's own border (frame and block rings,
+-- as the target highlight), gold or silver; marker nil hides it.
+function Classification.ShowRing(frame, marker)
+    local holders = marker and ringHolders(frame) or frame.eliteRings
+    if not holders then return end
+    local scope = frame.key
+    for _, holder in ipairs(holders) do
+        if marker then
+            local size = ns.Pixel.Snap(Config.Get(scope, "eliteBorderSize"), nil, 1)
+            local radius = ns.Shape.Radius(frame)
+            local c = marker.color
+            ns.Border.DrawRing(holder, holder, size, ns.Border.Extent(scope), radius, { c[1], c[2], c[3], 1 })
+        else
+            ns.Border.HideRing(holder)
+        end
+    end
 end
 
 -- The word's font size: a little below the frame's.
@@ -169,12 +204,15 @@ function Classification.Build(frame)
     frame.eliteText:Hide()
 end
 
+
 function Classification.Style(frame)
     if not frame.eliteIcon then return end
     local scope = frame.key
     frame.eliteLayer:SetFrameLevel(frame:GetFrameLevel() + Classification.LEVELS)
     if not Config.Get(scope, "eliteMarker") then
         frame.eliteMode = nil
+    elseif Config.Get(scope, "eliteMarkerStyle") == "BORDER" then
+        frame.eliteMode = "BORDER"
     elseif Config.Get(scope, "portraitMode") == "OFF" then
         frame.eliteMode = "TEXT"
     else

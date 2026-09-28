@@ -165,6 +165,13 @@ Settings.Define({ key = "cornerRadius", code = "CR", scope = "inherit", type = "
 Settings.Define({ key = "healthColorMode", code = "HM", scope = "inherit", type = "enum",
     values = { "CLASS", "REACTION", "STATIC", "GRADIENT" }, default = "STATIC" })
 Settings.Define({ key = "healthColor", code = "HC", scope = "inherit", type = "color", default = { 0.2, 0.75, 0.3, 1 } })
+-- The reaction colours (health bar and title "by reaction").
+Settings.Define({ key = "reactionFriendlyColor", code = "RG", scope = "inherit", type = "color",
+    default = { 0.2, 0.75, 0.3, 1 } })
+Settings.Define({ key = "reactionNeutralColor", code = "RN", scope = "inherit", type = "color",
+    default = { 0.9, 0.8, 0.25, 1 } })
+Settings.Define({ key = "reactionHostileColor", code = "RH", scope = "inherit", type = "color",
+    default = { 0.85, 0.2, 0.2, 1 } })
 -- Colour of the shield's stripes; the shield darkens the bar under them.
 Settings.Define({ key = "absorbColor", code = "AC", scope = "inherit", type = "color", default = { 1, 1, 1, 0.65 } })
 Settings.Define({ key = "healMyColor", code = "MC", scope = "inherit", type = "color", default = { 0.3, 0.95, 0.45, 0.65 } })
@@ -217,6 +224,13 @@ Settings.Define({ key = "portraitStyle", code = "PS", scope = "frame", type = "e
 -- your party (players are never elite).
 Settings.Define({ key = "eliteMarker", code = "EM", scope = "frame",
     only = { target = true, targettarget = true, focus = true }, type = "bool", default = true })
+-- How: the marker (badge on the portrait, or a word), or a thin ring
+-- around the frame, gold for elites and bosses, silver for rares.
+Settings.Define({ key = "eliteMarkerStyle", code = "EZ", scope = "frame",
+    only = { target = true, targettarget = true, focus = true }, type = "enum", values = { "MARKER", "BORDER" },
+    default = "MARKER" })
+Settings.Define({ key = "eliteBorderSize", code = "EU", scope = "frame",
+    only = { target = true, targettarget = true, focus = true }, type = "int", min = 1, max = 6, default = 2 })
 -- Damage and heal numbers inside the frame (Blizzard shows them on the
 -- player and pet frames).
 Settings.Define({ key = "combatFeedback", code = "CF", scope = "frame", type = "bool",
@@ -264,6 +278,9 @@ Settings.Define({ key = "partyPetsY", code = "PK", scope = "frame", only = PARTY
 Settings.Define({ key = "partyPetAuras", code = "PA", scope = "frame", only = PARTY, type = "bool", default = false })
 Settings.Define({ key = "partyPetAuraSize", code = "PU", scope = "frame", only = PARTY, type = "int", min = 8, max = 40,
     default = 14 })
+-- How many buffs and how many debuffs a pet shows; 0: as the party.
+Settings.Define({ key = "partyPetAuraMax", code = "PZ", scope = "frame", only = PARTY, type = "int", min = 0, max = 16,
+    default = 0, zeroText = "AUTO" })
 Settings.Define({ key = "partyPetAuraSide", code = "PV", scope = "frame", only = PARTY, type = "enum",
     values = { "RIGHT", "LEFT" }, default = "RIGHT" })
 Settings.Define({ key = "partyPetAuraX", code = "PX", scope = "frame", only = PARTY, type = "int", min = -200, max = 200,
@@ -537,7 +554,7 @@ local COMBAT_ICON = { target = true, targettarget = true, focus = true, party = 
 -- included: a burst as they appear, a steady pulse, or not at all.
 Settings.Define({ key = "combatAnimation", code = "EA", scope = "inherit", type = "enum",
     only = { player = true, target = true, targettarget = true, focus = true, party = true },
-    values = { "OFF", "BURST", "PULSE" }, default = "BURST" })
+    values = { "OFF", "BURST", "PULSE", "DUEL" }, default = "BURST" })
 local PVP_ICON = { player = true, target = true, targettarget = true, focus = true, party = true }
 for _, icon in ipairs({
     { key = "combatIcon", letter = "E", only = COMBAT_ICON, size = 18, framePoint = "LEFT", point = "RIGHT", x = -2, y = 0 },

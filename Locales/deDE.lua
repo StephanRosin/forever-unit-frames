@@ -504,6 +504,7 @@ L.SETTING_combatAnimation = "Animation des Kampfsymbols"
 L.ENUM_combatAnimation_OFF = "Aus"
 L.ENUM_combatAnimation_BURST = "Aufschlag"
 L.ENUM_combatAnimation_PULSE = "Pulsieren"
+L.ENUM_combatAnimation_DUEL = "Duell (Schwerter im Kampf)"
 L.HINT_combatAnimation = "Aufschlag: springt beim Kampfbeginn auf und blitzt"
 
 -- Aura border thickness.
@@ -518,3 +519,18 @@ L.SETTING_partyPetSide = "Seite"
 L.SETTING_partyPetWidth = "Begleiterbreite"
 L.SETTING_partyPetGap = "Begleiterabstand"
 L.HINT_partyPetGap = "Zwischen den Begleitern und zur Gruppe bzw. zum Besitzer"
+
+-- Reaction colours, pet aura count.
+L.SETTING_reactionFriendlyColor = "Farbe freundlich"
+L.SETTING_reactionNeutralColor = "Farbe neutral"
+L.SETTING_reactionHostileColor = "Farbe feindlich"
+L.HINT_reactionFriendlyColor = "Für Lebens- und Titelfarbe nach Reaktion"
+L.SETTING_partyPetAuraMax = "Begleiter-Auren"
+L.HINT_partyPetAuraMax = "Buffs und Debuffs je; Auto: wie die Gruppe"
+
+-- Elite / rare ring.
+L.SETTING_eliteMarkerStyle = "Elite-/Rar-Anzeige"
+L.ENUM_eliteMarkerStyle_MARKER = "Marker"
+L.ENUM_eliteMarkerStyle_BORDER = "Rahmen"
+L.HINT_eliteMarkerStyle = "Rahmen: gold für Elite, silber für Rar"
+L.SETTING_eliteBorderSize = "Dicke des Elite-Rahmens"

@@ -43,7 +43,7 @@ for _, tab in ipairs(ns.Schema.Tabs("party")) do
 end
 H.checkTrue("pets section in the group tab", found)
 if found then
-    H.check("pets section keys", table.concat(found.keys, ","), "partyShowPets,partyPetLayout,partyPetSide,partyPetWidth,partyPetHeight,partyPetGap,partyPetsX,partyPetsY,partyPetAuras,partyPetAuraSize,partyPetAuraSide,partyPetAuraX,partyPetAuraY")
+    H.check("pets section keys", table.concat(found.keys, ","), "partyShowPets,partyPetLayout,partyPetSide,partyPetWidth,partyPetHeight,partyPetGap,partyPetsX,partyPetsY,partyPetAuras,partyPetAuraSize,partyPetAuraMax,partyPetAuraSide,partyPetAuraX,partyPetAuraY")
 end
 H.check("section title", ns.L.SECTION_pets, "Pets")
 for key in pairs(CODES) do

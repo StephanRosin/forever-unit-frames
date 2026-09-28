@@ -10,19 +10,20 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 
 ## Frames
 - Player, Target, Target of Target, Focus, Pet and Party.
-- Party pets: a list directly below the party block, showing only the pets that exist, without gaps (can be turned off). Their buffs and debuffs in one row beside each pet, with their own icon size, side and offset. Pets can stand in a list below the group or each one beside its owner (left or right), with their own width, height, spacing and X/Y offset.
+- Party pets: a list directly below the party block, showing only the pets that exist, without gaps (can be turned off). Their buffs and debuffs in one row beside each pet, with their own icon size, count, side and offset. Pets can stand in a list below the group or each one beside its owner (left or right), with their own width, height, spacing and X/Y offset.
 - Party targets: beside each member a small frame with what that member has targeted, right, left, above or below; size and X/Y offset adjustable (off by default).
 - Party frames hide while you are in a raid group (can be turned off).
 - Player frame can fade out of combat while nothing is going on (out of combat, not casting, full health); opacity configurable.
 - A three-row layout: a title row with name and level in class colour, health, and power. Each row's height is set in percent of the frame.
 - Round class badge, and a secondary name (surname) that can be turned on or off.
-- Elite, rare and boss marker on the portrait or as a word.
+- Elite, rare and boss marker on the portrait, as a word, or as a thin gold (elite) or silver (rare) ring around the frame.
 - Combo points on the target frame: a row of square or round pips below the frame (size, color, position, hide when empty).
 - Combat icon on target, target of target, focus and party (see who pulled), and a PvP crest on every player frame; both optional, with size and position. Combat icons spring in with a flash as a fight starts (or pulse, or stay still).
 - Absorb shields and incoming heals drawn in the health bar, with an optional overheal lane. Shields can also sit at the bar's end, so they show at full health too.
 - Texts on each bar: name, level, health or power values, or level, class and race ("60 Mage Gnome"; creatures show their type, "60 Humanoid"). Names on the bars can take the class or reaction color.
 - Level numbers can take their difficulty color (red, orange, yellow, green, grey), independent of the rest of the line.
 - Power bar colors per type (mana, rage, focus, energy).
+- Health bar colored by class, reaction, a gradient or one color of your choice; the reaction colors (friendly, neutral, hostile) are yours to pick too.
 - Damage and heal numbers on the frame (combat feedback).
 - Combat and resting icons on the player frame, with Blizzard's own art: crossed swords while you are in combat, the animated "Zzz" while you rest in an inn or a city. Centred on the health bar by default, side by side when both show. Each can be turned off; size, anchor point on the health bar and X/Y offset are configurable.
 - 2D or 3D portraits.
@@ -75,7 +76,7 @@ In a "Status" tab per frame.
 - Long option descriptions show in full in a tooltip when you hover the row.
 - A minimap button: left-click opens the options, right-click unlocks or locks the frames, drag it around the minimap (round or square). It can be hidden; with a LibDataBroker display it also appears there.
 - Every position can be set by dragging (`/fuf unlock`) or as exact X/Y values.
-- Test mode shows sample auras, casts, totems, the combat and resting icons, raid markers, the group and ready check icons, a threat glow on the player, and a full party with one member dead, one offline, one out of range, a threat glow and a dispel highlight, so you can set everything up without a group.
+- Test mode shows every enabled indicator on every frame: sample auras, casts, totems, the combat, resting and PvP icons, raid markers, the group and ready check icons, a threat glow on the player, and a full party with one member dead, one offline, one out of range, a threat glow and a dispel highlight, so you can set everything up without a group.
 - Settings are stored compactly. They can be exported and imported as a string. Importing a profile keeps your own language.
 
 ## Commands

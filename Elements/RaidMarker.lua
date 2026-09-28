@@ -26,10 +26,10 @@ RaidMarker.ROWS, RaidMarker.COLUMNS = 4, 4
 -- The holder's layer above the unit frame: over the elite marker (+16),
 -- below the class badge (+20).
 RaidMarker.LEVELS = 18
--- Test mode: a skull on the target, a star on the first pretend party
--- member.
-RaidMarker.SAMPLES = { target = 8 }
-RaidMarker.PARTY_SAMPLES = { [1] = 1 }
+-- Test mode: a marker on every frame, so each can be placed (skull on the
+-- target, the others spread over the rest).
+RaidMarker.SAMPLES = { target = 8, player = 1, targettarget = 7, pet = 3, focus = 2 }
+RaidMarker.PARTY_SAMPLES = { [1] = 1, [2] = 4, [3] = 5, [4] = 6 }
 
 function RaidMarker.Build(frame)
     local holder = CreateFrame("Frame", nil, frame)

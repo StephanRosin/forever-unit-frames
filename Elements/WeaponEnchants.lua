@@ -168,7 +168,9 @@ end
 function WeaponEnchants.Update(frame)
     local list = WeaponEnchants.Wanted(frame) and WeaponEnchants.Read() or {}
     -- Styled and placed before they are filled: a new icon has no font yet.
-    local moved = (frame.enchantLead or 0) ~= #list
+    -- nil (Layout: the buffs were just placed again) always counts as moved,
+    -- so the buffs give back room the icons no longer need.
+    local moved = frame.enchantLead ~= #list
     if moved then
         frame.enchantLead = #list
         for i = 1, #list do place(frame, button(frame, i), i) end

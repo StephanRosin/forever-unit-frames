@@ -528,6 +528,7 @@ L.SETTING_combatAnimation = "Combat icon animation"
 L.ENUM_combatAnimation_OFF = "Off"
 L.ENUM_combatAnimation_BURST = "Burst"
 L.ENUM_combatAnimation_PULSE = "Pulse"
+L.ENUM_combatAnimation_DUEL = "Duel (clashing swords)"
 L.HINT_combatAnimation = "Burst: springs in and flashes as combat starts"
 
 -- Aura border thickness.
@@ -542,3 +543,18 @@ L.SETTING_partyPetSide = "Side"
 L.SETTING_partyPetWidth = "Pet width"
 L.SETTING_partyPetGap = "Pet spacing"
 L.HINT_partyPetGap = "Between the pets, and to the group or owner"
+
+-- Reaction colours, pet aura count.
+L.SETTING_reactionFriendlyColor = "Friendly color"
+L.SETTING_reactionNeutralColor = "Neutral color"
+L.SETTING_reactionHostileColor = "Hostile color"
+L.HINT_reactionFriendlyColor = "For health and title colors by reaction"
+L.SETTING_partyPetAuraMax = "Pet auras shown"
+L.HINT_partyPetAuraMax = "Buffs and debuffs each; Auto: as the party"
+
+-- Elite / rare ring.
+L.SETTING_eliteMarkerStyle = "Elite / rare style"
+L.ENUM_eliteMarkerStyle_MARKER = "Marker"
+L.ENUM_eliteMarkerStyle_BORDER = "Border"
+L.HINT_eliteMarkerStyle = "Border: gold for elites, silver for rares"
+L.SETTING_eliteBorderSize = "Elite border thickness"

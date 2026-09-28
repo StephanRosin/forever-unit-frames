@@ -82,7 +82,14 @@ H.check("buffs back at the anchor", back, bx)
 
 -- Switched off, or buffs off: nothing.
 M.weaponEnchants[0] = { { hasEnchant = true, timeLeft = 60000, charges = 0, enchantIconID = 1, enchantID = 1 } }
+W.Update(p)
+H.check("an oil on: room for one", p.enchantLead, 1)
+-- Switching the option off (reported: an empty slot stayed until the
+-- buffs changed). The setting's own restyle must give the room back.
 C.Set("player", "weaponEnchants", false)
+local _, _, _, afterOff = p.auraContainers.buffs.container:GetPoint(1)
+H.check("setting off: buffs back at the anchor at once", afterOff, bx)
+H.check("setting off: no room kept", p.enchantLead, 0)
 W.Update(p)
 H.check("setting off: no icon", b:IsShown(), false)
 C.Set("player", "weaponEnchants", true)

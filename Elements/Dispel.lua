@@ -45,6 +45,8 @@ Dispel.MIN_THICKNESS = 2
 Dispel.LEVELS = 3
 -- Test mode: pretend party member 1 carries a magic debuff.
 Dispel.PARTY_SAMPLES = { [1] = "Magic" }
+-- The player frame shows one too, so its ring can be seen.
+Dispel.SAMPLES = { player = "Poison" }
 
 -- Frames with a container, frames waiting for the end of combat.
 local all = setmetatable({}, { __mode = "k" })
@@ -253,7 +255,11 @@ function Dispel.Preview(frame, on)
     local d = frame.dispel
     if not d then return end
     if on then
-        d.sample = frame.sampleIndex and Dispel.PARTY_SAMPLES[frame.sampleIndex] or false
+        if frame.sampleIndex then
+            d.sample = Dispel.PARTY_SAMPLES[frame.sampleIndex] or false
+        else
+            d.sample = Dispel.SAMPLES[frame.key] or false
+        end
         showPlain(frame, d.sample or nil)
     else
         d.sample = nil

@@ -23,16 +23,26 @@ local function gradient()
 end
 
 -- { r, g, b } of the unit's reaction to the player.
-function Health.ReactionColor(unit)
+-- scope (optional): its own colours (reaction*Color), else the defaults.
+local REACTION_KEYS = { hostile = "reactionHostileColor", neutral = "reactionNeutralColor",
+    friendly = "reactionFriendlyColor" }
+
+local function reaction(unit)
     local r = Secrets.Number(UnitReaction(unit, "player"))
     if r then
-        if r <= 3 then return REACTION.hostile end
-        if r == 4 then return REACTION.neutral end
-        return REACTION.friendly
+        if r <= 3 then return "hostile" end
+        if r == 4 then return "neutral" end
+        return "friendly"
     end
     -- Reaction can be secret; friend/foe is the coarse fallback.
-    if Secrets.Bool(UnitIsFriend, "player", unit) then return REACTION.friendly end
-    return REACTION.hostile
+    if Secrets.Bool(UnitIsFriend, "player", unit) then return "friendly" end
+    return "hostile"
+end
+
+function Health.ReactionColor(unit, scope)
+    local kind = reaction(unit)
+    if scope then return Config.Get(scope, REACTION_KEYS[kind]) end
+    return REACTION[kind]
 end
 
 -- r, g, b of a player's class, or nothing (not a player, class unknown).
@@ -59,13 +69,13 @@ function Health.ClassColor(unit)
 end
 
 -- Class colour for players, reaction colour for everyone else.
-function Health.UnitColor(unit, mode)
+function Health.UnitColor(unit, mode, scope)
     if mode == "CLASS" then
         local r, g, b = Health.ClassColor(unit)
         -- Presence by type(): the colour may be secret.
         if type(r) ~= "nil" then return r, g, b end
     end
-    local c = Health.ReactionColor(unit)
+    local c = Health.ReactionColor(unit, scope)
     return c[1], c[2], c[3]
 end
 
@@ -73,7 +83,7 @@ function Health.ColorFor(frame)
     local scope, unit = frame.key, frame.unit
     local mode = Config.Get(scope, "healthColorMode")
     if mode == "CLASS" or mode == "REACTION" then
-        return Health.UnitColor(unit, mode)
+        return Health.UnitColor(unit, mode, scope)
     end
     if mode == "GRADIENT" then
         return UnitHealthPercent(unit, true, gradient()):GetRGB()

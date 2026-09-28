@@ -46,6 +46,11 @@ local function auraLayout(key)
     local group, rest = key:match("^(%l*buffs)(%u%a*)$")
     if not group then return nil end
     if rest == "Size" or rest == "OwnSize" then return get("partyPetAuraSize") end
+    if rest == "Max" then
+        local max = get("partyPetAuraMax")
+        if max > 0 then return max end
+        return nil
+    end
     if rest == "HighlightOwn" then return false end
     if rest == "Growth" then return side end
     if rest == "RowGrowth" then return "DOWN" end

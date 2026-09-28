@@ -6,6 +6,9 @@ local _, ns = ...
 -- * BURST: as the icon appears it springs in from bigger and flashes once
 --   (an additive copy of the art fading out), then stands still.
 -- * PULSE: while shown it breathes between full and faint.
+-- * DUEL: our own art instead of Blizzard's still one, two swords clashing
+--   in a loop while shown (Media/CombatDuel.tga, a 4 x 4 flipbook made by
+--   tools/make_combat_duel.py).
 -- Plain textures and animation groups: nothing protected, fine in combat.
 local CombatAnimation = {}
 ns.CombatAnimation = CombatAnimation
@@ -17,6 +20,8 @@ CombatAnimation.FLASH_SECONDS = 0.5
 -- The pulse: down to this opacity and back, per half cycle.
 CombatAnimation.PULSE_ALPHA = 0.4
 CombatAnimation.PULSE_SECONDS = 0.6
+CombatAnimation.DUEL_TEXTURE = "Interface\\AddOns\\ForeverUnitFrames\\Media\\CombatDuel"
+CombatAnimation.DUEL = { rows = 4, columns = 4, frames = 16, duration = 1.0 }
 
 -- tex: the icon; atlas: its art, for the flash. Returns the controller.
 function CombatAnimation.New(tex, atlas)
@@ -53,14 +58,40 @@ function CombatAnimation.New(tex, atlas)
     breathe:SetDuration(CombatAnimation.PULSE_SECONDS)
     pulse:SetLooping("BOUNCE")
 
-    return { tex = tex, flash = flash, burst = burst, shine = shine, pulse = pulse, shown = false }
+    local duel = tex:CreateAnimationGroup()
+    local book = duel:CreateAnimation("FlipBook")
+    local d = CombatAnimation.DUEL
+    book:SetFlipBookRows(d.rows)
+    book:SetFlipBookColumns(d.columns)
+    book:SetFlipBookFrames(d.frames)
+    book:SetFlipBookFrameWidth(0)
+    book:SetFlipBookFrameHeight(0)
+    book:SetDuration(d.duration)
+    duel:SetLooping("REPEAT")
+
+    return { tex = tex, atlas = atlas, flash = flash, burst = burst, shine = shine, pulse = pulse, duel = duel,
+        shown = false, art = "ATLAS" }
 end
 
 local function stop(a)
     a.burst:Stop()
     a.shine:Stop()
     a.pulse:Stop()
+    a.duel:Stop()
     a.flash:SetAlpha(0)
+end
+
+-- Blizzard's still art, or the duel sheet (DUEL only).
+local function useArt(a, duel)
+    local art = duel and "DUEL" or "ATLAS"
+    if a.art == art then return end
+    a.art = art
+    if duel then
+        a.tex:SetTexture(CombatAnimation.DUEL_TEXTURE)
+    else
+        a.duel:Stop()
+        a.tex:SetAtlas(a.atlas)
+    end
 end
 
 -- The icon's state: shown or not, and the mode (OFF, BURST, PULSE). Starts
@@ -70,6 +101,17 @@ function CombatAnimation.Set(a, shown, mode)
     if not a then return end
     local was = a.shown
     a.shown = shown
+    useArt(a, mode == "DUEL")
+    if mode == "DUEL" then
+        a.burst:Stop()
+        a.pulse:Stop()
+        if not shown then
+            a.duel:Stop()
+        elseif not a.duel:IsPlaying() then
+            a.duel:Play()
+        end
+        return
+    end
     if not shown or mode == "OFF" then
         if was or mode == "OFF" then stop(a) end
         return

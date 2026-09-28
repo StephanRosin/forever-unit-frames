@@ -505,6 +505,7 @@ L.SETTING_combatAnimation = "Animación del icono de combate"
 L.ENUM_combatAnimation_OFF = "Desactivada"
 L.ENUM_combatAnimation_BURST = "Destello"
 L.ENUM_combatAnimation_PULSE = "Pulso"
+L.ENUM_combatAnimation_DUEL = "Duelo (espadas chocando)"
 L.HINT_combatAnimation = "Destello: aparece de golpe y brilla al entrar en combate"
 
 -- Aura border thickness.
@@ -519,3 +520,18 @@ L.SETTING_partyPetSide = "Lado"
 L.SETTING_partyPetWidth = "Ancho de mascota"
 L.SETTING_partyPetGap = "Espaciado de mascotas"
 L.HINT_partyPetGap = "Entre las mascotas y hacia el grupo o dueño"
+
+-- Reaction colours, pet aura count.
+L.SETTING_reactionFriendlyColor = "Color amistoso"
+L.SETTING_reactionNeutralColor = "Color neutral"
+L.SETTING_reactionHostileColor = "Color hostil"
+L.HINT_reactionFriendlyColor = "Para colores de salud y título por reacción"
+L.SETTING_partyPetAuraMax = "Auras de mascota"
+L.HINT_partyPetAuraMax = "Beneficios y perjuicios cada uno; Auto: como el grupo"
+
+-- Elite / rare ring.
+L.SETTING_eliteMarkerStyle = "Estilo élite / raro"
+L.ENUM_eliteMarkerStyle_MARKER = "Marcador"
+L.ENUM_eliteMarkerStyle_BORDER = "Borde"
+L.HINT_eliteMarkerStyle = "Borde: dorado para élites, plateado para raros"
+L.SETTING_eliteBorderSize = "Grosor del borde de élite"

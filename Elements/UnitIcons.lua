@@ -34,10 +34,18 @@ UnitIcons.PVP_TEXTURE = {
 }
 -- Above the elite marker (+16), with the raid marker (+18).
 UnitIcons.LEVELS = 18
--- Test mode: what the samples show. The player shows its own faction's
--- crest (PLAYER_FACTION); frames without a sample show their live state.
-UnitIcons.SAMPLES = { target = { combatIcon = true, pvpIcon = "Horde" }, player = { pvpIcon = "PLAYER_FACTION" } }
-UnitIcons.PARTY_SAMPLES = { [2] = { combatIcon = true, pvpIcon = "Alliance" } }
+-- Test mode: every frame shows each icon that is on, so all of them can
+-- be placed. The player shows its own faction's crest (PLAYER_FACTION).
+UnitIcons.SAMPLES = {
+    player = { pvpIcon = "PLAYER_FACTION" },
+    target = { combatIcon = true, pvpIcon = "Horde" },
+    targettarget = { combatIcon = true, pvpIcon = "Alliance" },
+    focus = { combatIcon = true, pvpIcon = "Horde" },
+}
+UnitIcons.PARTY_SAMPLES = {
+    [1] = { combatIcon = true, pvpIcon = "Alliance" }, [2] = { combatIcon = true, pvpIcon = "Horde" },
+    [3] = { combatIcon = true, pvpIcon = "Alliance" }, [4] = { combatIcon = true, pvpIcon = "FFA" },
+}
 
 local function hasAtlas(name)
     return C_Texture and C_Texture.GetAtlasInfo and C_Texture.GetAtlasInfo(name) ~= nil

@@ -459,7 +459,7 @@ end
 local function paintTitle(frame)
     local mode = Config.Get(frame.key, "titleColorMode")
     local r, g, b = 1, 1, 1
-    if mode ~= "WHITE" then r, g, b = ns.Health.UnitColor(frame.unit, mode) end
+    if mode ~= "WHITE" then r, g, b = ns.Health.UnitColor(frame.unit, mode, frame.key) end
     frame.texts.title:SetTextColor(r, g, b, 1)
 end
 
@@ -470,7 +470,7 @@ Texts.NAME_TAGS = { NAME = true, NAME_LEVEL = true, INFO = true }
 local function paintBars(frame, wordSlot)
     local mode = Config.Get(frame.key, "barNameColorMode")
     local r, g, b = 1, 1, 1
-    if mode ~= "WHITE" then r, g, b = ns.Health.UnitColor(frame.unit, mode) end
+    if mode ~= "WHITE" then r, g, b = ns.Health.UnitColor(frame.unit, mode, frame.key) end
     for _, slot in ipairs(SLOTS) do
         if slot.bar ~= "title" then
             local named = slot.field ~= wordSlot and Texts.NAME_TAGS[Config.Get(frame.key, slot.setting)]

@@ -504,6 +504,7 @@ L.SETTING_combatAnimation = "Animation de l'icône de combat"
 L.ENUM_combatAnimation_OFF = "Aucune"
 L.ENUM_combatAnimation_BURST = "Éclat"
 L.ENUM_combatAnimation_PULSE = "Pulsation"
+L.ENUM_combatAnimation_DUEL = "Duel (épées qui s'entrechoquent)"
 L.HINT_combatAnimation = "Éclat : surgit et brille au début du combat"
 
 -- Aura border thickness.
@@ -518,3 +519,18 @@ L.SETTING_partyPetSide = "Côté"
 L.SETTING_partyPetWidth = "Largeur des familiers"
 L.SETTING_partyPetGap = "Espacement des familiers"
 L.HINT_partyPetGap = "Entre les familiers et vers le groupe ou le maître"
+
+-- Reaction colours, pet aura count.
+L.SETTING_reactionFriendlyColor = "Couleur amicale"
+L.SETTING_reactionNeutralColor = "Couleur neutre"
+L.SETTING_reactionHostileColor = "Couleur hostile"
+L.HINT_reactionFriendlyColor = "Pour les couleurs de vie et de titre selon la réaction"
+L.SETTING_partyPetAuraMax = "Auras des familiers"
+L.HINT_partyPetAuraMax = "Améliorations et affaiblissements chacun ; Auto : comme le groupe"
+
+-- Elite / rare ring.
+L.SETTING_eliteMarkerStyle = "Style élite / rare"
+L.ENUM_eliteMarkerStyle_MARKER = "Marqueur"
+L.ENUM_eliteMarkerStyle_BORDER = "Bordure"
+L.HINT_eliteMarkerStyle = "Bordure : dorée pour les élites, argentée pour les rares"
+L.SETTING_eliteBorderSize = "Épaisseur de la bordure d'élite"
