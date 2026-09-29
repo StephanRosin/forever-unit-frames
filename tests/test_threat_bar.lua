@@ -57,6 +57,7 @@ do
     local bar = frame.threatBar
     C.Set("player", "castbarEnabled", false)
     C.Set("player", "cornerRadius", 6)
+    C.Set("player", "threatBarSolo", true)
     C.Set("player", "threatBar", true)
     H.checkTrue("on: shown", bar:IsShown())
     local point, rel, relPoint, x, y = bar:GetPoint(1)
@@ -213,4 +214,35 @@ do
     H.check("short: thousands", short(1234), "1.2k")
     H.check("short: ten thousands", short(12345), "12k")
     H.check("short: negative uses the size", short(-1500), "1.5k")
+end
+
+-- Reported: alone, with "also without a group" off, the row stayed (empty).
+-- Without company it is gone; a group or a pet brings it back, laid out
+-- out of combat only.
+do
+    local ns = boot()
+    local C = ns.Config
+    local frame = ns.Frames.player
+    local bar = frame.threatBar
+    C.Set("player", "threatBarSolo", false)
+    C.Set("player", "threatBar", true)
+    H.check("alone: no row", bar:IsShown(), false)
+    H.check("alone: no height", ns.ThreatBar.Height("player"), 0)
+    M.units.party1 = { name = "Ann", health = 1, healthMax = 1 }
+    M.SetGroup({ "party1" })
+    H.checkTrue("a group: the row", bar:IsShown())
+    M.SetGroup({})
+    H.check("alone again: gone", bar:IsShown(), false)
+    M.units.pet = { name = "Imp", health = 1, healthMax = 1 }
+    M.FireEvent("UNIT_PET", "player")
+    H.checkTrue("a pet out: the row", bar:IsShown())
+    -- Changes in combat wait for its end.
+    M.SetCombat(true)
+    M.units.pet = nil
+    M.FireEvent("UNIT_PET", "player")
+    H.checkTrue("in combat: unchanged", bar:IsShown())
+    M.SetCombat(false)
+    H.check("after combat: gone", bar:IsShown(), false)
+    C.Set("player", "threatBarSolo", true)
+    H.checkTrue("also without a group: the row alone", bar:IsShown())
 end

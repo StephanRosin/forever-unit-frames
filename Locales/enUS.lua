@@ -581,3 +581,7 @@ L.SETTING_textCompact = "Compact values"
 L.HINT_textCompact = "1234/1234 instead of 1234 / 1234"
 L.SETTING_infoClassColor = "Info: class in color"
 L.HINT_infoClassColor = "Level, class and race: only the class or creature type colored"
+
+-- Heals past the frame.
+L.SETTING_healBeyond = "Heals past the frame"
+L.HINT_healBeyond = "Incoming heals drawn in full, past the right edge"

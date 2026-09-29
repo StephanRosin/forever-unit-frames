@@ -20,7 +20,7 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 - Creatures someone else has tapped (no experience or loot for you) get a grey health bar, as on Blizzard's target frame.
 - Combo points on the target frame: a row of square or round pips below the frame (size, color, position, hide when empty).
 - Combat icon on target, target of target, focus and party (see who pulled), and a PvP crest on every player frame; both optional, with size and position. Combat icons show two animated swords clashing while in combat (or Blizzard's icon springing in with a flash, pulsing, or still).
-- Absorb shields and incoming heals drawn in the health bar, with an optional overheal lane. Shields can also sit at the bar's end, so they show at full health too.
+- Absorb shields and incoming heals drawn in the health bar, with an optional overheal lane; incoming heals can also be drawn in full past the frame's edge. Shields can also sit at the bar's end, so they show at full health too.
 - Texts on each bar: name, level, health or power values, or level, class and race ("60 Mage Gnome"; creatures show their type, "60 Humanoid"). Names on the bars can take the class or reaction color; in "level, class and race" just the class (or creature type) can. Value texts can be compact (1234/1234) and have a size of their own.
 - Level numbers can take their difficulty color (red, orange, yellow, green, grey), independent of the rest of the line.
 - Power bar colors per type (mana, rage, focus, energy).

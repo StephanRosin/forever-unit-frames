@@ -66,7 +66,7 @@ Schema.FRAME = {
             "reactionHostileColor" } },
         { id = "textures", keys = { "barTexture", "backgroundColor", "titleBackground" } },
         { id = "absorbs", keys = { "absorbEnabled", "absorbMode", "absorbColor" } },
-        { id = "healPrediction", keys = { "healPrediction", "healOverflow", "powerMatchesHealth", "healMyColor", "healOtherColor" } },
+        { id = "healPrediction", keys = { "healPrediction", "healOverflow", "healBeyond", "powerMatchesHealth", "healMyColor", "healOtherColor" } },
         { id = "powerColors", keys = { "powerColorMana", "powerColorRage", "powerColorFocus", "powerColorEnergy" } },
         { id = "druidMana", keys = { "druidMana", "druidManaHeight" } },
     } },

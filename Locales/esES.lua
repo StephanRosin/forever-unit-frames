@@ -558,3 +558,7 @@ L.SETTING_textCompact = "Valores compactos"
 L.HINT_textCompact = "1234/1234 en vez de 1234 / 1234"
 L.SETTING_infoClassColor = "Info: clase en color"
 L.HINT_infoClassColor = "Solo la clase o el tipo de criatura en color"
+
+-- Heals past the frame.
+L.SETTING_healBeyond = "Sanación fuera del marco"
+L.HINT_healBeyond = "Sanación entrante completa, también tras el borde derecho"

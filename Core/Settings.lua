@@ -208,6 +208,9 @@ Settings.Define({ key = "absorbEnabled", code = "AB", scope = "frame", type = "b
 -- heals past full health.
 Settings.Define({ key = "healPrediction", code = "IH", scope = "frame", type = "bool", default = true })
 Settings.Define({ key = "healOverflow", code = "OV", scope = "frame", type = "bool", default = false })
+-- Incoming heals drawn in full, past the frame's right edge when they
+-- overheal (up to one more bar width).
+Settings.Define({ key = "healBeyond", code = "OB", scope = "frame", type = "bool", default = false })
 -- With the overheal lane: the power bar ends where the health bar ends.
 Settings.Define({ key = "powerMatchesHealth", code = "OM", scope = "frame", type = "bool", default = false })
 Settings.Define({ key = "x", code = "X", scope = "frame", type = "int", min = -4000, max = 4000,

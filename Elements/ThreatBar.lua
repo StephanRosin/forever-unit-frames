@@ -23,6 +23,9 @@ local _, ns = ...
 -- The row stays in place while the setting is on, empty when there is no
 -- threat to show: nothing is anchored in combat. For the same reason a
 -- castbar docked on this frame then keeps its place too (Castbar.Stop).
+-- Without company (no group, no pet) and without "also without a group"
+-- the row is not there at all; that is decided out of combat only, a
+-- change during combat is laid out after it.
 --
 -- Role detection and the tank / non-tank split follow Forever Threat by
 -- David Stratmann (MIT licence); the code here is written for this addon.
@@ -49,10 +52,38 @@ ThreatBar.SAMPLE = { color = "yellow", fill = 88, left = "88%", right = "-240 Ta
 
 function ThreatBar.Applies(scope) return scope == "player" end
 
+-- Someone to share threat with: a group, or a pet out; or the bar is
+-- wanted alone too.
+local function company()
+    if Config.Get("player", "threatBarSolo") then return true end
+    if IsInGroup and IsInGroup() then return true end
+    return Secrets.Bool(UnitExists, "pet") == true
+end
+
+-- The last answer out of combat: the row may only come or go then.
+local present
+
 -- Is the row there? Height 0 without it.
 function ThreatBar.Active(scope)
-    return ThreatBar.Applies(scope) and Config.Get(scope, "threatBar") == true
+    if not (ThreatBar.Applies(scope) and Config.Get(scope, "threatBar") == true) then return false end
+    if present == nil or not InCombatLockdown() then present = company() end
+    return present
 end
+
+-- Group, pet or combat changed: lay the player frame out again if the row
+-- comes or goes, now or after combat.
+local function recheck()
+    if InCombatLockdown() then
+        ns.AfterCombat("threatBarCompany", recheck)
+        return
+    end
+    local before = present
+    local frame = ns.Frames and ns.Frames.player
+    if not frame or Config.Get("player", "threatBar") ~= true then return end
+    ThreatBar.Active("player")
+    if before ~= present then ns.Single.StyleAll(frame) end
+end
+ThreatBar.Recheck = recheck
 
 function ThreatBar.Height(scope)
     if not ThreatBar.Active(scope) then return 0 end
@@ -383,9 +414,11 @@ for _, event in ipairs({ "UNIT_THREAT_LIST_UPDATE", "UNIT_THREAT_SITUATION_UPDAT
     "GROUP_ROSTER_UPDATE", "PLAYER_REGEN_ENABLED", "PLAYER_REGEN_DISABLED" }) do
     pcall(driver.RegisterEvent, driver, event)
 end
-driver:SetScript("OnEvent", function()
+driver:SetScript("OnEvent", function(_, event)
     local frame = ns.Frames and ns.Frames.player
     if frame then ThreatBar.Refresh(frame) end
+    if event == "GROUP_ROSTER_UPDATE" then recheck() end
 end)
+ns.On("UNIT_PET", function(_, unit) if unit == "player" then recheck() end end)
 
 ns.RegisterElement(ThreatBar)

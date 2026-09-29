@@ -557,3 +557,7 @@ L.SETTING_textCompact = "Kompakte Werte"
 L.HINT_textCompact = "1234/1234 statt 1234 / 1234"
 L.SETTING_infoClassColor = "Info: Klasse farbig"
 L.HINT_infoClassColor = "Stufe, Klasse und Volk: nur Klasse bzw. Kreaturtyp farbig"
+
+-- Heals past the frame.
+L.SETTING_healBeyond = "Heilung über den Rahmen hinaus"
+L.HINT_healBeyond = "Eingehende Heilung ganz zeichnen, auch über den rechten Rand"

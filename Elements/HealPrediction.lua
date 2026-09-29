@@ -8,7 +8,9 @@ local _, ns = ...
 -- else's. No value is added, subtracted or compared; they may be secret.
 -- A clipping frame over the health bar cuts them at full health, or at
 -- the end of the overheal lane when that is on (Units/Single.lua makes
--- the room).
+-- the room). With healBeyond it reaches one more bar width past the
+-- frame, so a heal shows in full; the bars then skip the frame's rounded
+-- mask, which would cut off whatever lies outside the frame.
 --
 -- Blizzard's own frames (UnitFrameHealPredictionBars_Update) split and
 -- clamp the amounts in Lua; that is only possible for secure code. Here
@@ -41,8 +43,15 @@ function HealPrediction.Build(frame)
     frame.overhealBg = frame:CreateTexture(nil, "BACKGROUND")
     frame.healClip, frame.healAll, frame.healMine = clip, all, mine
     ns.Corners.Add(frame, frame.overhealBg)
-    ns.Corners.Add(frame, function() return all:GetStatusBarTexture() end)
-    ns.Corners.Add(frame, function() return mine:GetStatusBarTexture() end)
+    -- Rounded with the frame, unless drawn past its edge (healBeyond).
+    local function masked(bar)
+        return function()
+            if frame.healBeyond then return nil end
+            return bar:GetStatusBarTexture()
+        end
+    end
+    ns.Corners.Add(frame, masked(all))
+    ns.Corners.Add(frame, masked(mine))
 end
 
 -- Runs after Health.Style (element order), so the fill texture the bars
@@ -53,9 +62,11 @@ function HealPrediction.Style(frame)
     local fill = health:GetStatusBarTexture()
     local tex = ns.Media.StatusBar(Config.Get(scope, "barTexture"))
     local clip = frame.healClip
+    local beyond = Config.Get(scope, "healBeyond")
+    frame.healBeyond = beyond
     clip:ClearAllPoints()
     clip:SetPoint("TOPLEFT", health, "TOPLEFT", 0, 0)
-    clip:SetPoint("BOTTOMRIGHT", health, "BOTTOMRIGHT", lane, 0)
+    clip:SetPoint("BOTTOMRIGHT", health, "BOTTOMRIGHT", beyond and math.max(lane, frame.healthWidth) or lane, 0)
     clip:SetShown(Config.Get(scope, "healPrediction"))
     for _, pair in ipairs({ { frame.healAll, "healOtherColor" }, { frame.healMine, "healMyColor" } }) do
         local bar, key = pair[1], pair[2]
@@ -66,6 +77,9 @@ function HealPrediction.Style(frame)
         bar:SetPoint("TOPLEFT", fill, "TOPRIGHT", 0, 0)
         bar:SetPoint("BOTTOMLEFT", fill, "BOTTOMRIGHT", 0, 0)
         bar:SetWidth(frame.healthWidth)
+        -- Past the frame the rounded mask must be off (Elements/Shape.lua
+        -- puts it on the listed textures, which skip themselves then).
+        if beyond and frame.clip then ns.Corners.SetMasked(bar:GetStatusBarTexture(), frame.clip.mask, false) end
     end
     local laneBg = frame.overhealBg
     laneBg:ClearAllPoints()
