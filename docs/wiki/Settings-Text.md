@@ -15,6 +15,7 @@ The **Text** tab on each frame's page in `/fuf`. The last column says which fram
 <tbody>
 <tr><td><b>Title row text</b></td><td>Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>Player, Target, Party: Level and name; Target of Target, Focus, Pet: Name</td><td>all</td></tr>
 <tr><td><b>Title text color</b></td><td></td><td>Class (players), Reaction, White</td><td>Class (players)</td><td>all</td></tr>
+<tr><td><b>AFK/DND badge</b></td><td>Gold AFK or red DND badge after the name</td><td>On, Off</td><td>On</td><td>all</td></tr>
 <tr><td><b>Show class icon</b></td><td>Players only, as a round badge on the frame's top right corner</td><td>On, Off</td><td>On</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
 <tr><td><b>Class icon size</b></td><td>Diameter of the badge, ring included</td><td>10 – 48</td><td>30</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
 <tr><td><b>Class icon X</b></td><td>Badge centre from the frame's right edge; negative moves it inside</td><td>-64 – 64</td><td>-6</td><td>Player, Target, Target of Target, Focus, Party</td></tr>

@@ -126,6 +126,9 @@ Settings.Define({ key = "fontOutline", code = "FO", scope = "inherit", type = "e
 Settings.Define({ key = "fontShadow", code = "FH", scope = "inherit", type = "bool", default = false })
 -- Secondary name (surname) next to the first name, like Blizzard's frames.
 Settings.Define({ key = "showSurname", code = "SN", scope = "inherit", type = "bool", default = true })
+-- Blizzard's AFK or DND icon (as in the friends list) right after the name
+-- in the title text.
+Settings.Define({ key = "awayBadge", code = "AK", scope = "inherit", type = "bool", default = true })
 -- Class icon at the right end of the title row (players only).
 -- Only players have a class: no class icon settings for the pet frame.
 local CLASS_UNITS = { player = true, target = true, targettarget = true, focus = true, party = true }

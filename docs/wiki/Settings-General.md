@@ -45,6 +45,7 @@ Button: **Apply to all frames**.
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
+<tr><td><b>AFK/DND badge</b></td><td>Gold AFK or red DND badge after the name</td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Show class icon</b></td><td>Players only, as a round badge on the frame's top right corner</td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Class icon size</b></td><td>Diameter of the badge, ring included</td><td>10 – 48</td><td>30</td></tr>
 <tr><td><b>Class icon X</b></td><td>Badge centre from the frame's right edge; negative moves it inside</td><td>-64 – 64</td><td>-6</td></tr>

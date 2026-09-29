@@ -3,7 +3,7 @@ local _, ns = ...
 local Texts = {
     name = "Texts",
     unitEvents = { "UNIT_HEALTH", "UNIT_MAXHEALTH", "UNIT_POWER_UPDATE", "UNIT_MAXPOWER", "UNIT_DISPLAYPOWER",
-        "UNIT_NAME_UPDATE", "UNIT_LEVEL" },
+        "UNIT_NAME_UPDATE", "UNIT_LEVEL", "PLAYER_FLAGS_CHANGED" },
 }
 ns.Texts = Texts
 
@@ -422,6 +422,123 @@ local function styleBadge(frame)
     frame.classBadgeBox = { left = left, right = x + half, bottom = y - half, top = y + half }
 end
 
+-- Away badge ------------------------------------------------------------------
+-- A small pill right after the name in the title row: "AFK" in gold, "DND"
+-- in red, each on a dark ground with a rim of its colour. Round ends: two
+-- circle-masked squares either side of a plain middle, once for the rim and
+-- once, a pixel smaller, for the ground.
+Texts.AWAY_STYLES = {
+    AFK = { rim = { 0.80, 0.55, 0.12 }, ground = { 0.16, 0.11, 0.03 }, text = { 1, 0.82, 0.25 } },
+    DND = { rim = { 0.72, 0.12, 0.12 }, ground = { 0.22, 0.03, 0.03 }, text = { 1, 0.45, 0.40 } },
+}
+local AWAY_GAP = 5
+
+-- AFK, DND or nil. The flags are secret in chat lockdown (encounters): then
+-- nil, no badge.
+function Texts.AwayState(unit)
+    if Secrets.Bool(UnitIsAFK, unit) then return "AFK" end
+    if Secrets.Bool(UnitIsDND, unit) then return "DND" end
+    return nil
+end
+
+local function pillLayer(badge, sublevel)
+    local layer = {}
+    for i, part in ipairs({ "left", "middle", "right" }) do
+        local tex = badge:CreateTexture(nil, "ARTWORK", nil, sublevel)
+        tex:SetColorTexture(1, 1, 1, 1)
+        if part ~= "middle" then makeRound(badge, tex) end
+        layer[i] = tex
+    end
+    return layer
+end
+
+-- A layer of the pill, inset pixels from the badge's edge.
+local function placePill(badge, layer, inset)
+    local h = math.max(1, badge:GetHeight() - 2 * inset)
+    local left, middle, right = layer[1], layer[2], layer[3]
+    left:ClearAllPoints()
+    left:SetPoint("LEFT", badge, "LEFT", inset, 0)
+    left:SetSize(h, h)
+    right:ClearAllPoints()
+    right:SetPoint("RIGHT", badge, "RIGHT", -inset, 0)
+    right:SetSize(h, h)
+    middle:ClearAllPoints()
+    middle:SetPoint("TOPLEFT", left, "TOP", 0, 0)
+    middle:SetPoint("BOTTOMRIGHT", right, "BOTTOM", 0, 0)
+end
+
+local function paintPill(layer, c)
+    for _, tex in ipairs(layer) do tex:SetVertexColor(c[1], c[2], c[3], 1) end
+end
+
+function Texts.BuildAwayBadge(frame)
+    local badge = CreateFrame("Frame", nil, frame.overlay)
+    badge.rim = pillLayer(badge, 0)
+    badge.ground = pillLayer(badge, 1)
+    badge.text = badge:CreateFontString(nil, "OVERLAY")
+    badge.text:SetPoint("CENTER", badge, "CENTER", 0, 0)
+    badge:Hide()
+    frame.awayBadge = badge
+end
+
+-- The title back to its own anchors (as Style set them).
+local function restoreTitle(frame)
+    local title = frame.texts.title
+    title:ClearAllPoints()
+    title:SetWidth(0)
+    title:SetPoint("LEFT", frame.title, "LEFT", ns.Pixel.Snap(4, title), 0)
+    placeTitleEnd(frame)
+end
+
+-- The room the title text has: the title row less its insets, and less the
+-- class badge where that sits in the row.
+local function titleRoom(frame)
+    local width = (frame.title:GetWidth() or 0) - 8
+    if frame.classIcon:IsShown() and frame.classBadgeInRow then
+        width = width - (frame.classBadgeBox.right - frame.classBadgeBox.left) - 2
+    end
+    return math.max(0, width)
+end
+
+function Texts.UpdateAwayBadge(frame)
+    local badge = frame.awayBadge
+    local state = frame.titleHeight > 0 and Config.Get(frame.key, "awayBadge") and Texts.AwayState(frame.unit)
+    if not state then
+        if badge:IsShown() then
+            badge:Hide()
+            restoreTitle(frame)
+        end
+        return
+    end
+    local style = Texts.AWAY_STYLES[state]
+    local title = frame.texts.title
+    local titleSize = select(2, title:GetFont()) or 12
+    local height = ns.Pixel.Snap(math.floor(titleSize * 1.05 + 0.5), nil, 1)
+    local textSize = math.max(7, math.floor(titleSize * 0.62 + 0.5))
+    Texts.SetFont(badge.text, ns.Media.Font(Config.Get(frame.key, "fontFace")), textSize, "NONE")
+    badge.text:SetText(state)
+    badge.text:SetTextColor(style.text[1], style.text[2], style.text[3], 1)
+    local width = ns.Pixel.Snap((badge.text:GetStringWidth() or 0) + height, nil, 1)
+    badge:SetSize(width, height)
+    local px = ns.Pixel.Snap(1, nil, 1)
+    placePill(badge, badge.rim, 0)
+    placePill(badge, badge.ground, px)
+    paintPill(badge.rim, style.rim)
+    paintPill(badge.ground, style.ground)
+    -- The title is as wide as its text (at most the room left for it), so
+    -- the badge sits right after the name; a long name ends in "...".
+    -- A secret name cannot be measured: then it takes all the room.
+    local room = math.max(1, titleRoom(frame) - width - AWAY_GAP)
+    local measure = title.GetUnboundedStringWidth or title.GetStringWidth
+    local nameWidth = Secrets.Number(measure(title))
+    title:ClearAllPoints()
+    title:SetPoint("LEFT", frame.title, "LEFT", ns.Pixel.Snap(4, title), 0)
+    title:SetWidth(math.min(nameWidth and (nameWidth + 1) or room, room))
+    badge:ClearAllPoints()
+    badge:SetPoint("LEFT", title, "RIGHT", AWAY_GAP, 0)
+    badge:Show()
+end
+
 function Texts.Build(frame)
     -- Its own frame so it draws above the bars; a child of the unit frame
     -- so it hides with it.
@@ -435,6 +552,7 @@ function Texts.Build(frame)
     makeRound(badge, frame.classIcon)
     frame.classRingSize = 0
     showClassIcon(frame, false)
+    Texts.BuildAwayBadge(frame)
     frame.texts = {}
     -- Power texts: on a layer of their own, a child of the power bar (so
     -- they hide with it) above what lies on the bar, e.g. the druid's mana
@@ -563,6 +681,7 @@ function Texts.Update(frame)
     paintTitle(frame)
     paintBars(frame, wordSlot)
     updateClassIcon(frame)
+    Texts.UpdateAwayBadge(frame)
 end
 
 -- Test mode: Health.Preview (an earlier element) has switched the health

@@ -14,7 +14,7 @@ Schema.GENERAL = {
             action = "applyFontToFrames" },
         -- How the texts read (not the font): also each frame's Text tab.
         { id = "display", keys = { "showSurname", "textCompact", "infoClassColor" } },
-        { id = "titleText", keys = { "titleClassIcon", "classIconSize", "classIconX", "classIconY",
+        { id = "titleText", keys = { "awayBadge", "titleClassIcon", "classIconSize", "classIconX", "classIconY",
             "classIconRing", "classIconRingColor" } },
         { id = "bars", keys = { "barTexture", "backgroundColor", "titleBackground", "absorbMode" } },
         { id = "auraIcons", keys = { "auraBorder", "auraBorderSize" } },
@@ -39,6 +39,9 @@ Schema.GENERAL = {
             "rangeHostileMode", "rangeHostileSpell", "rangeHostileYards" } },
     } },
     { id = "profile", custom = "profile" },
+    -- Every frame on or off at a glance: the same "enabled" as on each
+    -- frame's Layout tab (Options/Window.lua builds it).
+    { id = "frames", custom = "frames" },
 }
 
 Schema.FRAME = {
@@ -73,8 +76,8 @@ Schema.FRAME = {
         { id = "druidMana", keys = { "druidMana", "druidManaHeight" } },
     } },
     { id = "text", sections = {
-        { id = "titleText", keys = { "titleText", "titleColorMode", "titleClassIcon", "classIconSize", "classIconX",
-            "classIconY", "classIconRing", "classIconRingColor" } },
+        { id = "titleText", keys = { "titleText", "titleColorMode", "awayBadge", "titleClassIcon", "classIconSize",
+            "classIconX", "classIconY", "classIconRing", "classIconRingColor" } },
         { id = "healthText", keys = { "textHealthLeft", "textHealthRight" } },
         { id = "powerText", keys = { "textPowerLeft", "textPowerRight" } },
         -- How the texts read, on every bar: colours, level colour, compact

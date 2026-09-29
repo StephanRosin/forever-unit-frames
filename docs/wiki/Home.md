@@ -13,6 +13,7 @@ Source: [GitHub](https://github.com/StephanRosin/forever-unit-frames)
   of the selected page are along the top.
 - **General** sets the look of every frame at once. A frame's own page can override any of those
   settings; an overridden setting has a **Reset** button that hands it back to General.
+- **General > Frames** lists every frame with a switch, to turn frames on or off at a glance.
 - **Test mode** (button at the bottom of the window) shows every frame with sample values: auras,
   casts, a full party, and every indicator you have switched on, so you can set everything up
   without a target or a group.

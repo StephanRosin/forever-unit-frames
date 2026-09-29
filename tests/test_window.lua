@@ -55,6 +55,22 @@ M.SetCombat(false)
 H.check("slider enabled after combat", wr.slider._enabled, true)
 H.check("combat notice hidden", ns.Options.combatNotice:IsShown(), false)
 
+-- General > Frames: one switch per frame, the frame's own "enabled".
+ns.Options.Select("general")
+ns.Options.SelectTab("frames")
+local switches = {}
+for _, row in ipairs(ns.Options.rows) do if row.key == "enabled" then switches[#switches + 1] = row end end
+local frameCount = 0
+for _, def in ipairs(ns.Units.List) do if not def.available or def.available() then frameCount = frameCount + 1 end end
+H.check("frames tab: a switch per frame", #switches, frameCount)
+H.check("frames tab: last of the general tabs", ns.Schema.Tabs("general")[#ns.Schema.Tabs("general")].id, "frames")
+local targetSwitch
+for i, def in ipairs(ns.Units.List) do if def.key == "target" then targetSwitch = switches[i] end end
+targetSwitch.box:GetScript("OnClick")(targetSwitch.box)
+H.check("switch off: target disabled", ns.Config.Get("target", "enabled"), false)
+targetSwitch.box:GetScript("OnClick")(targetSwitch.box)
+H.check("switch on again", ns.Config.Get("target", "enabled"), true)
+
 -- Export / import
 ns.Options.Select("general")
 ns.Options.SelectTab("profile")

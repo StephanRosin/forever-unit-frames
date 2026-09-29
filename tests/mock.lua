@@ -1184,6 +1184,9 @@ function M.Reset()
         end,
     }
     _G.UnitIsPlayer = function(unit) local d = u(unit); return d and d.isPlayer or false end
+    -- d.afk, d.dnd: the away flags (true, false or a secret).
+    _G.UnitIsAFK = function(unit) local d = u(unit); if d and d.afk ~= nil then return d.afk end return false end
+    _G.UnitIsDND = function(unit) local d = u(unit); if d and d.dnd ~= nil then return d.dnd end return false end
     _G.UnitIsVisible = function(unit) local d = u(unit); return d ~= nil and d.visible ~= false end
     -- Records the last unit drawn into each texture.
     -- No portrait for the unit (d.noPortrait): the texture stays as it was.

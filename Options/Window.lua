@@ -384,13 +384,37 @@ local function buildProfilePage(page)
     stack.finish()
 end
 
+-- General > Frames: one switch per frame, the frame's own "enabled".
+local function buildFramesPage(page)
+    local stack = newStack(page)
+    stack.add(sectionHeader(page, "frames"))
+    for _, def in ipairs(ns.Units.List) do
+        if not def.available or def.available() then
+            local row = Widgets.Checkbox(page, {
+                label = L["FRAME_" .. def.key], hint = localized("HINT_frameEnabled"),
+                get = function() return Config.Get(def.key, "enabled") end,
+                set = function(v) return Config.Set(def.key, "enabled", v) end,
+            })
+            row.key = "enabled"
+            stack.add(row)
+        end
+    end
+    stack.finish()
+end
+
 local function pageFor(scope, tab)
     local id = scope .. ":" .. tab.id
     if pages[id] then return pages[id] end
     local page = CreateFrame("Frame", nil, frame.scrollChild)
     page:SetPoint("TOPLEFT", frame.scrollChild, "TOPLEFT", 0, 0)
     page:SetWidth(CONTENT_W)
-    if tab.custom == "profile" then buildProfilePage(page) else buildSettingsPage(page, scope, tab) end
+    if tab.custom == "profile" then
+        buildProfilePage(page)
+    elseif tab.custom == "frames" then
+        buildFramesPage(page)
+    else
+        buildSettingsPage(page, scope, tab)
+    end
     page:SetHeight(page.height)
     page:Hide()
     pages[id] = page

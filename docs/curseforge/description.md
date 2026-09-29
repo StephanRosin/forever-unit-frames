@@ -18,6 +18,7 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 - Player frame can fade out of combat while nothing is going on (out of combat, not casting, full health, no target); opacity configurable. Selecting a target brings it back so you see your resources before a pull.
 - A three-row layout: a title row with name and level in class colour, health, and power. Each row's height is set in percent of the frame.
 - Round class badge, and a secondary name (surname) that can be turned on or off.
+- A small gold **AFK** or red **DND** badge right after the name of anyone who is away or busy.
 - Elite, rare and boss marker on the portrait, as a word, or as a thin gold (elite) or silver (rare) ring around the frame.
 - Creatures someone else has tapped (no experience or loot for you) get a grey health bar, as on Blizzard's target frame.
 - Combo points on the target frame: a row of square or round pips below the frame (size, color, position, hide when empty).
@@ -78,6 +79,7 @@ In a "Status" tab per frame.
 
 ## Options
 - `/fuf` opens a movable options window: frames on the left, tabs on top.
+- General > Frames: every frame with an on/off switch in one list.
 - Works with click-casting addons such as Clique: every unit frame registers itself through the common ClickCastFrames table.
 - Long option descriptions show in full in a tooltip when you hover the row.
 - A minimap button: left-click opens the options, right-click unlocks or locks the frames, drag it around the minimap (round or square). It can be hidden; with a LibDataBroker display it also appears there, and it is listed in Blizzard's addon compartment.
