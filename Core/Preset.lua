@@ -47,7 +47,7 @@ local PRESET = {
         debuffsY = -3,
         healthColorMode = "CLASS",
         healthPercent = 79,
-        height = 66,
+        height = 70,
         playerFadeAlpha = 0,
         portraitMode = "LEFT",
         portraitStyle = "3D",
@@ -62,7 +62,7 @@ local PRESET = {
         textPowerRight = "PERCENT",
         threatBarSolo = true,
         titlePercent = 24,
-        width = 293,
+        width = 300,
         x = -400,
     },
     target = {

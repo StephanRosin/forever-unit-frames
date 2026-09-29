@@ -14,8 +14,8 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
-| **Width** |  | 40 – 600 | Player: 293; Target: 300; Target of Target: 120; Focus: 160; Pet: 115; Party: 200 | all |
-| **Height** |  | 8 – 200 | Player: 66; Target: 70; Target of Target, Pet: 28; Focus: 36; Party: 53 | all |
+| **Width** |  | 40 – 600 | Player, Target: 300; Target of Target: 120; Focus: 160; Pet: 115; Party: 200 | all |
+| **Height** |  | 8 – 200 | Player, Target: 70; Target of Target, Pet: 28; Focus: 36; Party: 53 | all |
 
 ### Position
 
