@@ -10,9 +10,10 @@ local SHADOW_KEYS = { "shadowEnabled", "shadowAlpha", "shadowSize" }
 Schema.GENERAL = {
     { id = "appearance", sections = {
         -- action: a two-click button under the rows (Options/Window.lua).
-        { id = "font", keys = { "fontFace", "fontSize", "valueFontSize", "fontOutline", "fontShadow", "textCompact",
-            "infoClassColor", "showSurname" },
+        { id = "font", keys = { "fontFace", "fontSize", "valueFontSize", "fontOutline", "fontShadow" },
             action = "applyFontToFrames" },
+        -- How the texts read (not the font): also each frame's Text tab.
+        { id = "display", keys = { "showSurname", "textCompact", "infoClassColor" } },
         { id = "titleText", keys = { "titleClassIcon", "classIconSize", "classIconX", "classIconY",
             "classIconRing", "classIconRingColor" } },
         { id = "bars", keys = { "barTexture", "backgroundColor", "titleBackground", "absorbMode" } },
@@ -47,7 +48,7 @@ Schema.FRAME = {
         { id = "position", keys = { "x", "y" } },
         { id = "barHeights", keys = { "titlePercent", "healthPercent", "powerPercent", "powerEnabled" } },
         { id = "portrait", keys = { "portraitMode", "portraitStyle" } },
-        { id = "indicators", keys = { "tapDenied", "eliteMarker", "eliteMarkerStyle", "eliteBorderSize", "combatFeedback" } },
+        { id = "indicators", keys = { "eliteMarker", "eliteMarkerStyle", "eliteBorderSize", "combatFeedback" } },
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },
         { id = "shape", keys = { "cornerRadius" } },
@@ -56,14 +57,15 @@ Schema.FRAME = {
     { id = "group", sections = {
         { id = "group", keys = { "partyOrientation", "partySpacing", "partyShowPlayer", "partyShowSolo", "partyHideInRaid" } },
         { id = "pets", keys = { "partyShowPets", "partyPetLayout", "partyPetSide", "partyPetWidth", "partyPetHeight",
-            "partyPetGap", "partyPetsX", "partyPetsY", "partyPetAuras", "partyPetAuraSize", "partyPetAuraMax",
-            "partyPetAuraSide", "partyPetAuraX", "partyPetAuraY" } },
+            "partyPetGap", "partyPetsX", "partyPetsY" } },
+        { id = "petAuras", keys = { "partyPetAuras", "partyPetAuraSize", "partyPetAuraMax", "partyPetAuraSide",
+            "partyPetAuraX", "partyPetAuraY" } },
         { id = "partyTargets", keys = { "partyTargets", "partyTargetSide", "partyTargetWidth", "partyTargetHeight",
             "partyTargetX", "partyTargetY" } },
     } },
     { id = "bars", sections = {
         { id = "health", keys = { "healthColorMode", "healthColor", "reactionFriendlyColor", "reactionNeutralColor",
-            "reactionHostileColor" } },
+            "reactionHostileColor", "tapDenied" } },
         { id = "textures", keys = { "barTexture", "backgroundColor", "titleBackground" } },
         { id = "absorbs", keys = { "absorbEnabled", "absorbMode", "absorbColor" } },
         { id = "healPrediction", keys = { "healPrediction", "healOverflow", "healBeyond", "powerMatchesHealth", "healMyColor", "healOtherColor" } },
@@ -71,12 +73,15 @@ Schema.FRAME = {
         { id = "druidMana", keys = { "druidMana", "druidManaHeight" } },
     } },
     { id = "text", sections = {
-        { id = "titleText", keys = { "titleText", "titleColorMode", "levelColorMode", "titleClassIcon", "classIconSize", "classIconX",
+        { id = "titleText", keys = { "titleText", "titleColorMode", "titleClassIcon", "classIconSize", "classIconX",
             "classIconY", "classIconRing", "classIconRingColor" } },
-        { id = "healthText", keys = { "textHealthLeft", "textHealthRight", "barNameColorMode" } },
+        { id = "healthText", keys = { "textHealthLeft", "textHealthRight" } },
         { id = "powerText", keys = { "textPowerLeft", "textPowerRight" } },
-        { id = "font", keys = { "fontFace", "fontSize", "valueFontSize", "fontOutline", "fontShadow", "textCompact",
-            "infoClassColor", "showSurname" } },
+        -- How the texts read, on every bar: colours, level colour, compact
+        -- values, the secondary name.
+        { id = "display", keys = { "levelColorMode", "barNameColorMode", "infoClassColor", "textCompact",
+            "showSurname" } },
+        { id = "font", keys = { "fontFace", "fontSize", "valueFontSize", "fontOutline", "fontShadow" } },
     } },
     { id = "auras", sections = {
         { id = "auraIcons", keys = { "auraBorder", "auraBorderSize" } },

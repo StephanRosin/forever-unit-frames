@@ -115,7 +115,8 @@ H.check("frame override wins", left._args[2], "Brightwood")
 H.checkTrue("override stored", C.IsOverridden("player", "showSurname"))
 H.check("target inherits general", C.Get("target", "showSurname"), false)
 
--- Apply to all frames clears it with the font overrides.
+-- It sits in General -> Appearance -> Display now; "apply font to all
+-- frames" only hands back the font settings of its own section.
 O.Open("general")
 O.SelectTab("appearance")
 local found
@@ -124,8 +125,7 @@ H.checkTrue("on General -> Appearance", found)
 local button = O.actionButtons.applyFontToFrames
 local click = button:GetScript("OnClick")
 click(button); click(button)
-H.check("apply clears the override", C.IsOverridden("player", "showSurname"), false)
-H.check("frame shows the general value", left._text, "Aria")
+H.check("apply leaves the display override", C.IsOverridden("player", "showSurname"), true)
 O.Select("player")
 O.SelectTab("text")
 found = nil

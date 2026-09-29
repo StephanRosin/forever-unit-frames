@@ -561,3 +561,7 @@ L.HINT_infoClassColor = "Seulement la classe ou le type de créature en couleur"
 -- Heals past the frame.
 L.SETTING_healBeyond = "Soins au-delà du cadre"
 L.HINT_healBeyond = "Soins entrants dessinés en entier, au-delà du bord droit"
+
+-- Menu sections (0.16.2).
+L.SECTION_display = "Affichage"
+L.SECTION_petAuras = "Auras des familiers"

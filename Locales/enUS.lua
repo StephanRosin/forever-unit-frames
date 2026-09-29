@@ -585,3 +585,7 @@ L.HINT_infoClassColor = "Level, class and race: only the class or creature type 
 -- Heals past the frame.
 L.SETTING_healBeyond = "Heals past the frame"
 L.HINT_healBeyond = "Incoming heals drawn in full, past the right edge"
+
+-- Menu sections (0.16.2).
+L.SECTION_display = "Display"
+L.SECTION_petAuras = "Pet auras"

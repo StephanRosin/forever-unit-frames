@@ -561,3 +561,7 @@ L.HINT_infoClassColor = "Stufe, Klasse und Volk: nur Klasse bzw. Kreaturtyp farb
 -- Heals past the frame.
 L.SETTING_healBeyond = "Heilung über den Rahmen hinaus"
 L.HINT_healBeyond = "Eingehende Heilung ganz zeichnen, auch über den rechten Rand"
+
+-- Menu sections (0.16.2).
+L.SECTION_display = "Darstellung"
+L.SECTION_petAuras = "Begleiter-Auren"

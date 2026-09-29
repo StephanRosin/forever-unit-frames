@@ -116,10 +116,9 @@ Settings.TEXT_TAGS = TEXT_TAGS
 -- General appearance (inherited by every frame, overridable per frame)
 -- The font settings, in the order the options page lists them.
 Settings.FONT_KEYS = { "fontFace", "fontSize", "fontOutline", "fontShadow" }
--- What "Apply to all frames" hands back to General: the font settings and
--- the name style listed with them.
-Settings.TEXT_STYLE_KEYS = { "fontFace", "fontSize", "valueFontSize", "fontOutline", "fontShadow", "textCompact",
-    "infoClassColor", "showSurname" }
+-- What "Apply to all frames" hands back to General: the font settings of
+-- the section the button sits in (the display options have their own).
+Settings.TEXT_STYLE_KEYS = { "fontFace", "fontSize", "valueFontSize", "fontOutline", "fontShadow" }
 Settings.Define({ key = "fontFace", code = "FF", scope = "inherit", type = "media", mediaKind = "font", default = "Friz Quadrata" })
 Settings.Define({ key = "fontSize", code = "FS", scope = "inherit", type = "int", min = 6, max = 32, default = 12 })
 Settings.Define({ key = "fontOutline", code = "FO", scope = "inherit", type = "enum",

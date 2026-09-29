@@ -51,4 +51,4 @@ for _, tab in ipairs(ns.Schema.Tabs("target")) do
         for _, k in ipairs(sec.keys) do if k == "levelColorMode" then found = tab.id .. ":" .. sec.id end end
     end
 end
-H.check("in the title text section", found, "text:titleText")
+H.check("in the text display section", found, "text:display")
