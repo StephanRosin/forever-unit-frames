@@ -221,7 +221,7 @@ L.COMBAT_LOCKED = "Im Kampf – Änderungen sind nach dem Kampf wieder möglich.
 L.EXPORT = "Exportieren"; L.IMPORT = "Importieren"; L.RESET = "Zurücksetzen"
 L.RESET_ALL = "Alles zurücksetzen"
 L.ACTION_applyFontToFrames = "Auf alle Rahmen anwenden"
-L.ACTION_HINT_applyFontToFrames = "Entfernt die eigenen Schrift- und Namenseinstellungen aller Rahmen"
+L.ACTION_HINT_applyFontToFrames = "Entfernt die eigenen Schrifteinstellungen aller Rahmen"
 L.EXPORT_HINT = "Diesen Text kopieren, um das Profil zu teilen oder zu sichern."
 L.IMPORT_DONE = "Profil importiert."
 L.IMPORT_CODEC_EMPTY = "Nichts zu importieren."

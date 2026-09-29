@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Publishes docs/wiki to the GitHub wiki (a git repository of its own):
+#   tools/publish_wiki
+# Regenerates the settings pages first (tools/make_wiki), refuses to push
+# anything that matches the private patterns (as the main repository's
+# pre-push hook does), and commits only when something changed.
+# The wiki repository exists once its first page was created on GitHub.
+set -eu
+HERE="$(cd "$(dirname "$0")/.." && pwd)"
+WIKI_URL="git@github.com:StephanRosin/forever-unit-frames.wiki.git"
+PATTERNS="$HOME/.config/forever-unit-frames/private-patterns"
+
+"$HERE/tools/make_wiki" >/dev/null
+
+if [ -f "$PATTERNS" ]; then
+    pat=$(grep -v '^#' "$PATTERNS" | grep -v '^$' | paste -sd'|')
+    if grep -r -I -n -i -E "$pat" "$HERE/docs/wiki"; then
+        echo "publish_wiki: private details found in docs/wiki, nothing published." >&2
+        exit 1
+    fi
+fi
+
+WORK="$(mktemp -d)"
+trap 'rm -rf "$WORK"' EXIT
+git clone -q "$WIKI_URL" "$WORK/wiki"
+# The wiki is exactly docs/wiki: pages removed there go here too.
+find "$WORK/wiki" -maxdepth 1 -name '*.md' -delete
+cp "$HERE"/docs/wiki/*.md "$WORK/wiki/"
+cd "$WORK/wiki"
+git add -A
+if git diff --cached --quiet; then
+    echo "publish_wiki: wiki already up to date."
+    exit 0
+fi
+VERSION="$(sed -n 's/^## Version: *//p' "$HERE/ForeverUnitFrames.toc" | tr -d '\r')"
+git -c user.name="$(git -C "$HERE" config user.name || echo Forever Unit Frames)" \
+    -c user.email="$(git -C "$HERE" config user.email || echo noreply@users.noreply.github.com)" \
+    commit -q -m "Wiki for Forever Unit Frames $VERSION"
+git push -q origin HEAD
+echo "publish_wiki: wiki updated ($VERSION)."

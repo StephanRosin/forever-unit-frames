@@ -221,7 +221,7 @@ L.COMBAT_LOCKED = "En combat : les modifications seront à nouveau possibles apr
 L.EXPORT = "Exporter"; L.IMPORT = "Importer"; L.RESET = "Réinitialiser"
 L.RESET_ALL = "Tout réinitialiser"
 L.ACTION_applyFontToFrames = "Appliquer aux cadres"
-L.ACTION_HINT_applyFontToFrames = "Supprime les réglages de police et de nom propres à chaque cadre"
+L.ACTION_HINT_applyFontToFrames = "Supprime les réglages de police propres à chaque cadre"
 L.EXPORT_HINT = "Copiez ce texte pour partager ou sauvegarder votre profil."
 L.IMPORT_DONE = "Profil importé."
 L.IMPORT_CODEC_EMPTY = "Rien à importer."

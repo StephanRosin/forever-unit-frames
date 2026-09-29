@@ -32,3 +32,6 @@ curl -sS --fail-with-body -H "X-Api-Token: $AUTH" \
 echo
 git -C "$HERE" tag -a "v$VERSION" -m "Forever Unit Frames $VERSION"
 echo "Uploaded $ZIP as $TYPE, tagged v$VERSION (push the tag with: git push origin v$VERSION)"
+# The wiki follows the release (its settings pages are generated from the
+# options; tests/test_wiki_current.lua made sure they are committed).
+"$HERE/tools/publish_wiki" || echo "Wiki not published (see above)." >&2

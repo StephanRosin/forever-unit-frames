@@ -1,0 +1,47 @@
+# FAQ
+
+### Why do some things look different in combat, or in dungeons and PvP?
+
+WoW: Forever hides some values from addons in certain situations ("secret values"): the player's
+health, a target's threat or class, combo points in PvP and more. Addons may still show them, but
+may not compare or calculate with them. Forever Unit Frames always shows what the game allows, so a
+few details are simpler then: a secret class token shows the class without its color, a secret
+faction shows no PvP crest, a secret dispel type uses the plain border color. Nothing breaks, and it
+all comes back as soon as the value is readable again.
+
+### Click-casting (Clique) doesn't work
+
+Every unit frame registers with click-casting addons through the common `ClickCastFrames` table
+(since 0.15.2). If it still doesn't work, please report it with the addon's version; many addons
+aren't built for WoW: Forever yet.
+
+### 3D portraits of creatures show a flat picture
+
+The game client currently loads no 3D models of creatures for addons (players work). Creatures show
+their 2D portrait instead of an empty or wrong one.
+
+### Heals over time don't show as incoming heals
+
+The client's incoming-heal information only covers heals being cast, not the ticks of heals over
+time. Blizzard's own frames have the same limit.
+
+### Where did an option go?
+
+Each settings page lists every option with its place: tab, then section. For example "the name color
+on the bars" is on [[Text|Settings-Text]] > *Display*. The page names match the tabs in `/fuf`.
+
+### How do I get my frames back in place after a mistake?
+
+`/fuf reset <frame>` resets one frame (player, target, targettarget, pet, focus, party),
+`/fuf reset all` everything. Export your profile first (**General** > **Profile**) if you want to keep
+a copy.
+
+### The frames block other addons' frames / the default UI
+
+Blizzard's own player, target, focus, pet and party frames are hidden while ours are on. Switch a
+frame off on its **Layout** tab (*Enabled*) to get Blizzard's back after a `/reload`.
+
+### I found a bug or have an idea
+
+Comments on CurseForge or an issue on GitHub. The more exact the better: which frame, which tab and
+setting, what you expected, and other addons involved.

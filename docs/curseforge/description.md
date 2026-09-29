@@ -75,6 +75,7 @@ In a "Status" tab per frame.
 
 ## Options
 - `/fuf` opens a movable options window: frames on the left, tabs on top.
+- Every setting explained, with its default and the frames it applies to, in the [wiki](https://github.com/StephanRosin/forever-unit-frames/wiki).
 - Works with click-casting addons such as Clique: every unit frame registers itself through the common ClickCastFrames table.
 - Long option descriptions show in full in a tooltip when you hover the row.
 - A minimap button: left-click opens the options, right-click unlocks or locks the frames, drag it around the minimap (round or square). It can be hidden; with a LibDataBroker display it also appears there.

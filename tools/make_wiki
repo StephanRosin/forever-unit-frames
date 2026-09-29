@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Writes the wiki's settings reference (docs/wiki/) from the addon's own
+# options; see tools/make_wiki.lua. Run from anywhere in the repository.
+set -e
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+mkdir -p "$ROOT/docs/wiki"
+cd "$ROOT/tests"
+exec lua5.1 -e "ADDONDIR='$ROOT'" -e 'package.path = "./?.lua;" .. package.path; H = dofile("harness.lua")' \
+    "$ROOT/tools/make_wiki.lua"
