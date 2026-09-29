@@ -15,10 +15,10 @@ Every unit frame registers with click-casting addons through the common `ClickCa
 (since 0.15.2). If it still doesn't work, please report it with the addon's version; many addons
 aren't built for WoW: Forever yet.
 
-### 3D portraits of creatures show a flat picture
+### A portrait shows a flat picture for a moment
 
-The game client currently loads no 3D models of creatures for addons (players work). Creatures show
-their 2D portrait instead of an empty or wrong one.
+With 3D portraits the 2D picture stands in while the game loads the 3D model, usually only for a
+split second. If a unit has no 3D model at all, the 2D picture stays.
 
 ### Heals over time don't show as incoming heals
 

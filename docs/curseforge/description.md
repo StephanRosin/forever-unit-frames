@@ -8,6 +8,8 @@ Clean, fully configurable unit frames for WoW: Forever. Player, target, target o
 
 Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. Every size, position, colour and font is configurable in a movable options window. The frames look good out of the box.
 
+📖 **[Wiki: every setting explained, getting started and FAQ](https://github.com/StephanRosin/forever-unit-frames/wiki)**. Each option with what it does, its default and the frames it applies to, always matching the current version.
+
 ## Frames
 - Player, Target, Target of Target, Focus, Pet and Party.
 - Party pets: a list directly below the party block, showing only the pets that exist, without gaps (can be turned off). Their buffs and debuffs in one row beside each pet, with their own icon size, count, side and offset. Pets can stand in a list below the group or each one beside its owner (left or right), with their own width, height, spacing and X/Y offset.
@@ -28,7 +30,7 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 - Health bar colored by class, reaction, a gradient or one color of your choice; the reaction colors (friendly, neutral, hostile) are yours to pick too.
 - Damage and heal numbers on the frame (combat feedback).
 - Combat and resting icons on the player frame, with Blizzard's own art: crossed swords while you are in combat, the animated "Zzz" while you rest in an inn or a city. Centred on the health bar by default, side by side when both show. Each can be turned off; size, anchor point on the health bar and X/Y offset are configurable.
-- 2D or 3D portraits.
+- 2D or 3D portraits, for players and creatures.
 
 ## Status
 In a "Status" tab per frame.
@@ -75,7 +77,6 @@ In a "Status" tab per frame.
 
 ## Options
 - `/fuf` opens a movable options window: frames on the left, tabs on top.
-- Every setting explained, with its default and the frames it applies to, in the [wiki](https://github.com/StephanRosin/forever-unit-frames/wiki).
 - Works with click-casting addons such as Clique: every unit frame registers itself through the common ClickCastFrames table.
 - Long option descriptions show in full in a tooltip when you hover the row.
 - A minimap button: left-click opens the options, right-click unlocks or locks the frames, drag it around the minimap (round or square). It can be hidden; with a LibDataBroker display it also appears there.
