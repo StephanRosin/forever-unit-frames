@@ -55,7 +55,8 @@ local function layoutBars(frame)
     -- while that differs (see Single.LayoutSize).
     local _, configured = Single.Size(scope)
     local rowsHeight = height == configured and Config.Get(scope, "height") or height
-    local powerOn = Config.Get(scope, "powerEnabled")
+    -- Hidden for a unit without power (Elements/Power.lua): health takes the row.
+    local powerOn = Config.Get(scope, "powerEnabled") and not frame.powerEmpty
     local th, _, ph = Layout.Rows(rowsHeight, Config.Get(scope, "titlePercent"),
         Config.Get(scope, "healthPercent"), Config.Get(scope, "powerPercent"), powerOn)
     local powerShown = powerOn and ph > 0
@@ -94,6 +95,10 @@ local function layoutBars(frame)
         frame.power:SetShown(powerShown)
     end
 end
+
+-- The rows again without restyling, e.g. when the power bar comes or goes;
+-- plain frames only, so fine in combat.
+Single.LayoutBars = layoutBars
 
 local function applyEnabled(frame)
     if Config.Get(frame.key, "enabled") then

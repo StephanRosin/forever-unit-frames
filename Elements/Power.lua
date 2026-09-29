@@ -31,8 +31,38 @@ function Power.Style(frame)
     frame.powerBg:SetVertexColor(bg[1], bg[2], bg[3], bg[4])
 end
 
+Power.RAGE = 1
+
+-- True when the unit has no power to show. A readable maximum of 0 says so.
+-- WoW: Forever hands out an enemy NPC's power as secret values, though, so
+-- the maximum often cannot be read. Then the power type (readable) decides:
+-- an NPC with rage never builds any, its rage bar is always empty. Players
+-- and what they control (pets) do build rage, so for them the bar stays,
+-- as it does whenever nothing can be told.
+function Power.IsEmpty(unit)
+    local max = UnitPowerMax(unit)
+    if not ns.Secrets.IsSecret(max) then return ns.Secrets.Number(max) == 0 end
+    if ns.Secrets.Number(UnitPowerType(unit)) ~= Power.RAGE then return false end
+    return ns.Secrets.Bool(UnitIsPlayer, unit) == false and ns.Secrets.Bool(UnitPlayerControlled, unit) == false
+end
+
+-- With "Hide without power" the bar goes and the health bar takes its row;
+-- the frame is laid out again only when that changes (a new target).
+local function checkEmpty(frame)
+    -- Config.Get answers every scope; the setting exists for some only.
+    local applies = ns.Settings.AppliesTo(ns.Settings.Get("powerHideEmpty"), frame.key)
+    local empty = applies and Config.Get(frame.key, "powerHideEmpty") == true and Power.IsEmpty(frame.unit)
+    if empty == (frame.powerEmpty == true) then return end
+    frame.powerEmpty = empty
+    -- The rows only: the health bar takes the power bar's row. Auras hung
+    -- from the power bar stay put: its hidden one-pixel strip lies at the
+    -- frame's bottom edge, where the health bar now ends.
+    ns.Single.LayoutBars(frame)
+end
+
 function Power.Update(frame)
     local unit = frame.unit
+    checkEmpty(frame)
     local powerType = UnitPowerType(unit)
     local key = Power.COLOR_KEYS[ns.Secrets.Number(powerType) or -1]
     local c = key and Config.Get(frame.key, key) or DEFAULT

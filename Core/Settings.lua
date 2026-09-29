@@ -202,6 +202,11 @@ Settings.Define({ key = "healthPercent", code = "HP", scope = "frame", type = "i
     default = { player = 45, target = 45, focus = 45, party = 45, _ = 75 } })
 Settings.Define({ key = "powerPercent", code = "PP", scope = "frame", type = "int", min = 0, max = 90, default = 25 })
 Settings.Define({ key = "powerEnabled", code = "PE", scope = "frame", type = "bool", default = true })
+-- NPCs without any power (most beasts) show no empty power bar: the health
+-- bar takes its row. Players always have power, so it only ever acts on NPCs.
+-- Off by default: the look stays as it was until switched on.
+Settings.Define({ key = "powerHideEmpty", code = "PN", scope = "frame",
+    only = { target = true, targettarget = true, focus = true }, type = "bool", default = false })
 Settings.Define({ key = "absorbEnabled", code = "AB", scope = "frame", type = "bool", default = true })
 -- Incoming heals; the overheal lane gives the end of the health row to
 -- heals past full health.

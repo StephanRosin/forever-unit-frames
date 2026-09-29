@@ -46,6 +46,7 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 <tr><td><b>Health bar height (%)</b></td><td>Share of the frame height</td><td>10 – 100</td><td>Player: 79; Target: 68; Target of Target, Pet: 75; Focus: 45; Party: 17</td><td>all</td></tr>
 <tr><td><b>Power bar height (%)</b></td><td>Share of the frame height; room left over goes to health and power</td><td>0 – 90</td><td>Player: 20; Target, Target of Target, Pet: 25; Focus: 21; Party: 9</td><td>all</td></tr>
 <tr><td><b>Show power bar</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
+<tr><td><b>Hide without power</b></td><td>NPCs without mana, rage or energy: no empty bar</td><td>On, Off</td><td>Off</td><td>Target, Target of Target, Focus</td></tr>
 </tbody>
 </table>
 

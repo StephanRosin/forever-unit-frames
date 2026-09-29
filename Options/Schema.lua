@@ -46,7 +46,7 @@ Schema.FRAME = {
         { id = "frame", keys = { "enabled" } },
         { id = "size", keys = { "width", "height" } },
         { id = "position", keys = { "x", "y" } },
-        { id = "barHeights", keys = { "titlePercent", "healthPercent", "powerPercent", "powerEnabled" } },
+        { id = "barHeights", keys = { "titlePercent", "healthPercent", "powerPercent", "powerEnabled", "powerHideEmpty" } },
         { id = "portrait", keys = { "portraitMode", "portraitStyle" } },
         { id = "indicators", keys = { "eliteMarker", "eliteMarkerStyle", "eliteBorderSize", "combatFeedback" } },
         { id = "border", keys = BORDER_KEYS },

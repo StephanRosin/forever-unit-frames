@@ -4,7 +4,8 @@ M.FireEvent("PLAYER_LOGIN")
 M.RunTimers()
 local C, P, Auras = ns.Config, ns.Party, ns.Auras
 M.units.player = { name = "Me", level = 60, health = 5, healthMax = 10 }
-M.units.target = { name = "Foe", level = 60, health = 5, healthMax = 10 }
+-- With power: a target without any may hide its power bar (powerHideEmpty).
+M.units.target = { name = "Foe", level = 60, health = 5, healthMax = 10, power = 5, powerMax = 10 }
 
 local t = ns.Frames.target
 local debuffs, buffs = t.auras.debuffs, t.auras.buffs

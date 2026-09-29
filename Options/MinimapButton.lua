@@ -192,3 +192,22 @@ end
 ns.Listen("CONFIG_CHANGED", function(_, key)
     if key == nil or key == "minimapAngle" or key == "minimapShow" then MinimapButton.Place() end
 end)
+
+-- Blizzard's addon compartment (the button by the minimap that lists
+-- addons) calls these global functions named in the TOC: the same clicks
+-- and tooltip as the minimap button.
+function ForeverUnitFrames_OnAddonCompartmentClick(_, mouseButton)
+    onClick(nil, mouseButton)
+end
+
+function ForeverUnitFrames_OnAddonCompartmentEnter(_, menuButton)
+    if not menuButton then return end
+    GameTooltip:SetOwner(menuButton, "ANCHOR_LEFT")
+    GameTooltip:SetText(L.ADDON_NAME)
+    tooltipLines(GameTooltip)
+    GameTooltip:Show()
+end
+
+function ForeverUnitFrames_OnAddonCompartmentLeave(_, menuButton)
+    if menuButton and GameTooltip:IsOwned(menuButton) then GameTooltip:Hide() end
+end

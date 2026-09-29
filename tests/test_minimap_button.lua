@@ -110,6 +110,15 @@ do
     button:GetScript("OnClick")(button, "LeftButton")
     H.check("again: closed", ns.Options.IsOpen(), false)
 
+    -- Blizzard's addon compartment: the same clicks through the TOC's globals.
+    ForeverUnitFrames_OnAddonCompartmentClick("ForeverUnitFrames", "LeftButton")
+    H.check("compartment click opens the options", ns.Options.IsOpen(), true)
+    ForeverUnitFrames_OnAddonCompartmentClick("ForeverUnitFrames", "LeftButton")
+    H.check("compartment click again: closed", ns.Options.IsOpen(), false)
+    local toc = io.open(H.ROOT and (H.ROOT .. "/ForeverUnitFrames.toc") or "../ForeverUnitFrames.toc"):read("*a")
+    H.checkTrue("TOC names the compartment function",
+        toc:find("AddonCompartmentFunc: ForeverUnitFrames_OnAddonCompartmentClick", 1, true))
+
     -- Right-click: unlock, lock.
     button:GetScript("OnClick")(button, "RightButton")
     H.check("right-click unlocks", ns.Movers.IsUnlocked(), true)

@@ -26,6 +26,7 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 - Texts on each bar: name, level, health or power values, or level, class and race ("60 Mage Gnome"; creatures show their type, "60 Humanoid"). Names on the bars can take the class or reaction color; in "level, class and race" just the class (or creature type) can. Value texts can be compact (1234/1234) and have a size of their own.
 - Level numbers can take their difficulty color (red, orange, yellow, green, grey), independent of the rest of the line.
 - Power bar colors per type (mana, rage, focus, energy).
+- Optionally no empty power bar on NPCs without power (target, target of target, focus): the health bar takes its space.
 - Druids see their mana in bear and cat form: a thin strip along the bottom of the power bar.
 - Health bar colored by class, reaction, a gradient or one color of your choice; the reaction colors (friendly, neutral, hostile) are yours to pick too.
 - Damage and heal numbers on the frame (combat feedback).
@@ -79,7 +80,7 @@ In a "Status" tab per frame.
 - `/fuf` opens a movable options window: frames on the left, tabs on top.
 - Works with click-casting addons such as Clique: every unit frame registers itself through the common ClickCastFrames table.
 - Long option descriptions show in full in a tooltip when you hover the row.
-- A minimap button: left-click opens the options, right-click unlocks or locks the frames, drag it around the minimap (round or square). It can be hidden; with a LibDataBroker display it also appears there.
+- A minimap button: left-click opens the options, right-click unlocks or locks the frames, drag it around the minimap (round or square). It can be hidden; with a LibDataBroker display it also appears there, and it is listed in Blizzard's addon compartment.
 - Every position can be set by dragging (`/fuf unlock`) or as exact X/Y values.
 - Test mode shows every enabled indicator on every frame: sample auras, casts, totems, the combat, resting and PvP icons, raid markers, the group and ready check icons, a threat glow on the player, and a full party with one member dead, one offline, one out of range, a threat glow and a dispel highlight, so you can set everything up without a group.
 - Settings are stored compactly. They can be exported and imported as a string. Importing a profile keeps your own language.
