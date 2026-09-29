@@ -2,16 +2,20 @@
 
 # Settings: Auras
 
-The **Auras** tab on each frame's page in `/fuf`. The last column says which frames have the option.
+Buffs, debuffs, the party's dispellable debuffs and the player's totems.
 
-### Aura icons
+The **Auras** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
+
+**On this page:** [Aura icons](#aura-icons) · [Buffs](#buffs) · [Debuffs](#debuffs) · [Dispellable debuffs](#dispellable-debuffs) · [Totems](#totems)
+
+## Aura icons
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
 | **Border around the icons** | Debuffs: shows the dispel type (magic, curse, poison, disease) | On, Off | On | all |
 | **Border thickness** |  | 1 – 6 | 1 | all |
 
-### Buffs
+## Buffs
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
@@ -23,8 +27,8 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 | **Hide longer than (min)** | Hour potions, food, long buffs; also auras without a duration | 0 – 120 (0: Off) | Off | all |
 | **Show time left** |  | On, Off | On | all |
 | **Anchor to** | Debuffs: next to the debuff icons | Frame, Health bar, Power bar, Castbar, Debuffs | Player, Target, Party: Frame; Target of Target, Focus, Pet: Debuffs | all |
-| **Point on the anchor** |  | Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right | Top left | all |
-| **Point of the icons** |  | Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right | Player, Target, Target of Target, Focus, Pet: Bottom left; Party: Top right | all |
+| **Point on the anchor** |  | Any of the 9 points (corners, edges, center) | Top left | all |
+| **Point of the icons** |  | Any of the 9 points (corners, edges, center) | Player, Target, Target of Target, Focus, Pet: Bottom left; Party: Top right | all |
 | **Offset X** |  | -200 – 200 | Player, Target of Target, Focus, Pet, Party: 0; Target: -1 | all |
 | **Offset Y** |  | -200 – 200 | Player, Target: 3; Target of Target, Focus, Pet: 2; Party: 0 | all |
 | **Grow** |  | Right, Left, Up, Down | Player, Target, Target of Target, Focus, Pet: Right; Party: Left | all |
@@ -36,10 +40,10 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 | **Mine first** | Yours in their own rows, bigger | On, Off | Player, Target, Party: On; Target of Target, Focus, Pet: Off | all |
 | **Size of mine** |  | 10 – 64 | Player: 25; Target, Focus: 26; Target of Target, Pet: 21; Party: 28 | all |
 | **Border color by caster** | Yours in one color, others' in another | On, Off | Off | all |
-| **Border of mine** |  | color | `#33d933` | all |
-| **Border of others'** |  | color | `#d93333` | all |
+| **Border of mine** |  | Color | `#33d933` | all |
+| **Border of others'** |  | Color | `#d93333` | all |
 
-### Debuffs
+## Debuffs
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
@@ -49,8 +53,8 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 | **Hide permanent** | Everything without a duration, e.g. paladin auras, stances | On, Off | Off | all |
 | **Show time left** |  | On, Off | On | all |
 | **Anchor to** | Buffs: next to the buff icons | Frame, Health bar, Power bar, Castbar, Buffs | Player, Target: Castbar; Target of Target, Focus, Pet, Party: Frame | all |
-| **Point on the anchor** |  | Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right | Player, Target, Party: Bottom left; Target of Target, Focus, Pet: Top left | all |
-| **Point of the icons** |  | Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right | Player, Target: Top left; Target of Target, Focus, Pet: Bottom left; Party: Top right | all |
+| **Point on the anchor** |  | Any of the 9 points (corners, edges, center) | Player, Target, Party: Bottom left; Target of Target, Focus, Pet: Top left | all |
+| **Point of the icons** |  | Any of the 9 points (corners, edges, center) | Player, Target: Top left; Target of Target, Focus, Pet: Bottom left; Party: Top right | all |
 | **Offset X** |  | -200 – 200 | Player: -1; Target, Target of Target, Focus, Pet: 0; Party: -3 | all |
 | **Offset Y** |  | -200 – 200 | Player: -3; Target: -4; Target of Target, Focus, Pet: 2; Party: 19 | all |
 | **Grow** |  | Right, Left, Up, Down | Player, Target, Target of Target, Focus, Pet: Right; Party: Left | all |
@@ -62,15 +66,15 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 | **Mine first** | Yours in their own rows, bigger | On, Off | Player, Target, Focus: On; Target of Target, Pet, Party: Off | all |
 | **Size of mine** |  | 10 – 64 | Player, Target, Focus: 26; Target of Target, Pet: 21; Party: 25 | all |
 
-### Dispellable debuffs
+## Dispellable debuffs
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
 | **Show separately** | Debuffs you can dispel, in their own place and size | On, Off | Off | Party |
 | **Show time left** |  | On, Off | On | Party |
-| **Anchor to** |  | Frame, Health bar, Power bar, Castbar, Debuffs | Frame | Party |
-| **Point on the anchor** |  | Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right | Center | Party |
-| **Point of the icons** |  | Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right | Center | Party |
+| **Anchor to** | Debuffs: next to the debuff icons | Frame, Health bar, Power bar, Castbar, Debuffs | Frame | Party |
+| **Point on the anchor** |  | Any of the 9 points (corners, edges, center) | Center | Party |
+| **Point of the icons** |  | Any of the 9 points (corners, edges, center) | Center | Party |
 | **Offset X** |  | -200 – 200 | 0 | Party |
 | **Offset Y** |  | -200 – 200 | 0 | Party |
 | **Grow** |  | Right, Left, Up, Down | Right | Party |
@@ -80,15 +84,15 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 | **Icons per row** | Auto: as many as fit the frame | 0 – 40 (0: Auto) | Auto | Party |
 | **Maximum icons** |  | 1 – 40 | 3 | Party |
 
-### Totems
+## Totems
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
 | **Show totems** | Shown while a totem is out; right-click one to destroy it | On, Off | On | Player |
 | **Icon size** |  | 12 – 64 | 24 | Player |
 | **Spacing** |  | 0 – 20 | 3 | Player |
-| **Point on the frame** | The frame and a docked castbar, as one block | Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right | Right | Player |
-| **Point of the icons** |  | Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right | Left | Player |
+| **Point on the frame** | The frame and a docked castbar, as one block | Any of the 9 points (corners, edges, center) | Right | Player |
+| **Point of the icons** |  | Any of the 9 points (corners, edges, center) | Left | Player |
 | **Offset X** |  | -400 – 400 | 6 | Player |
 | **Offset Y** |  | -400 – 400 | 0 | Player |
 

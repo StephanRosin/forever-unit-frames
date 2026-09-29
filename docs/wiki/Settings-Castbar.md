@@ -2,9 +2,13 @@
 
 # Settings: Castbar
 
-The **Castbar** tab on each frame's page in `/fuf`. The last column says which frames have the option.
+Castbars, and the player's threat bar below them.
 
-### Castbar
+The **Castbar** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
+
+**On this page:** [Castbar](#castbar) · [Shown on the bar](#shown-on-the-bar) · [Detached position](#detached-position) · [Threat bar](#threat-bar)
+
+## Castbar
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
@@ -15,7 +19,7 @@ The **Castbar** tab on each frame's page in `/fuf`. The last column says which f
 | **Castbar position** |  | Below the frame, Above the frame | Below the frame | Party |
 | **Castbar height** |  | 4 – 60 | Player: 18; Target, Focus: 16; Target of Target, Party: 12 | Player, Target, Target of Target, Focus, Party |
 
-### Shown on the bar
+## Shown on the bar
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
@@ -23,14 +27,14 @@ The **Castbar** tab on each frame's page in `/fuf`. The last column says which f
 | **Spell name** |  | On, Off | On | Player, Target, Target of Target, Focus, Party |
 | **Cast time** |  | On, Off | On | Player, Target, Target of Target, Focus, Party |
 
-### Detached position
+## Detached position
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
 | **Detached X** | Used when detached | -4000 – 4000 | Player: -4; Target: 366; Target of Target: 480; Focus: -300 | Player, Target, Target of Target, Focus |
 | **Detached Y** | Used when detached | -4000 – 4000 | Player: -160; Target, Target of Target: -300; Focus: -170 | Player, Target, Target of Target, Focus |
 
-### Threat bar
+## Threat bar
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
@@ -38,5 +42,5 @@ The **Castbar** tab on each frame's page in `/fuf`. The last column says which f
 | **Height** |  | 6 – 30 | 12 | Player |
 | **Yellow from (%)** | Tank: someone reaches this share of your threat. Others: of the pull | 50 – 99 | 80 | Player |
 | **Role** |  | Automatic, Tank, Damage or healer | Automatic | Player |
-| **Also without a group** |  | On, Off | On | Player |
+| **Also without a group** | Also when alone; a pet out counts as a group | On, Off | On | Player |
 

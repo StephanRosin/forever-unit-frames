@@ -2,55 +2,59 @@
 
 # Settings: Status
 
-The **Status** tab on each frame's page in `/fuf`. The last column says which frames have the option.
+Icons and markers on the frame, combo points, threat, highlights and fading.
 
-### Status icons
+The **Status** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
+
+**On this page:** [Status icons](#status-icons) · [Combat icon](#combat-icon) · [PvP icon](#pvp-icon) · [Raid target marker](#raid-target-marker) · [Group icons](#group-icons) · [Combo points](#combo-points) · [Threat](#threat) · [Target highlight](#target-highlight) · [Dispellable debuffs](#dispellable-debuffs) · [Range](#range) · [Out of combat](#out-of-combat)
+
+## Status icons
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
 | **Show combat icon** | Crossed swords while you are in combat | On, Off | On | Player |
 | **Show resting icon** | While you rest in an inn or a city | On, Off | On | Player |
 | **Icon size** |  | 10 – 48 | 21 | Player |
-| **Point on the health bar** | The icons follow the health bar | Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right | Center | Player |
-| **Point of the icons** |  | Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right | Center | Player |
+| **Point on the health bar** | The icons follow the health bar | Any of the 9 points (corners, edges, center) | Center | Player |
+| **Point of the icons** |  | Any of the 9 points (corners, edges, center) | Center | Player |
 | **Offset X** |  | -400 – 400 | 49 | Player |
 | **Offset Y** |  | -400 – 400 | -1 | Player |
 
-### Combat icon
+## Combat icon
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
 | **Show combat icon** | Crossed swords while the unit is in combat | On, Off | Off | Target, Target of Target, Focus, Party |
-| **Combat icon animation** | Burst: springs in and flashes as combat starts | Off, Burst, Pulse, Duel (clashing swords) | Duel (clashing swords) | Player, Target, Target of Target, Focus, Party |
+| **Combat icon animation** | Duel: clashing swords. Burst: springs in. Pulse: breathes | Off, Burst, Pulse, Duel (clashing swords) | Duel (clashing swords) | Player, Target, Target of Target, Focus, Party |
 | **Icon size** |  | 8 – 48 | 18 | Target, Target of Target, Focus, Party |
-| **Point on the frame** |  | Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right | Left | Target, Target of Target, Focus, Party |
-| **Point of the icon** |  | Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right | Right | Target, Target of Target, Focus, Party |
+| **Point on the frame** |  | Any of the 9 points (corners, edges, center) | Left | Target, Target of Target, Focus, Party |
+| **Point of the icon** |  | Any of the 9 points (corners, edges, center) | Right | Target, Target of Target, Focus, Party |
 | **Offset X** |  | -200 – 200 | -2 | Target, Target of Target, Focus, Party |
 | **Offset Y** |  | -200 – 200 | 0 | Target, Target of Target, Focus, Party |
 
-### PvP icon
+## PvP icon
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
-| **Show PvP icon** | The faction crest while the unit is flagged for PvP | On, Off | Player, Target: On; Target of Target, Focus, Party: Off | Player, Target, Target of Target, Focus, Party |
+| **Show PvP icon** | The faction crest while a player is flagged for PvP | On, Off | Player, Target: On; Target of Target, Focus, Party: Off | Player, Target, Target of Target, Focus, Party |
 | **Icon size** |  | 8 – 48 | Player: 25; Target, Target of Target, Focus, Party: 24 | Player, Target, Target of Target, Focus, Party |
-| **Point on the frame** |  | Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right | Top left | Player, Target, Target of Target, Focus, Party |
-| **Point of the icon** |  | Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right | Center | Player, Target, Target of Target, Focus, Party |
+| **Point on the frame** |  | Any of the 9 points (corners, edges, center) | Top left | Player, Target, Target of Target, Focus, Party |
+| **Point of the icon** |  | Any of the 9 points (corners, edges, center) | Center | Player, Target, Target of Target, Focus, Party |
 | **Offset X** |  | -200 – 200 | 0 | Player, Target, Target of Target, Focus, Party |
 | **Offset Y** |  | -200 – 200 | 0 | Player, Target, Target of Target, Focus, Party |
 
-### Raid target marker
+## Raid target marker
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
 | **Show raid target marker** | Skull, cross, star and the other raid target icons | On, Off | On | all |
 | **Icon size** |  | 8 – 64 | Player, Target, Focus, Party: 20; Target of Target, Pet: 16 | all |
-| **Point on the frame** |  | Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right | Top | all |
-| **Point of the icon** |  | Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right | Center | all |
+| **Point on the frame** |  | Any of the 9 points (corners, edges, center) | Top | all |
+| **Point of the icon** |  | Any of the 9 points (corners, edges, center) | Center | all |
 | **Offset X** |  | -200 – 200 | 0 | all |
 | **Offset Y** |  | -200 – 200 | 0 | all |
 
-### Group icons
+## Group icons
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
@@ -58,54 +62,54 @@ The **Status** tab on each frame's page in `/fuf`. The last column says which fr
 | **Ready check** | Waiting, ready or not ready; stays a few seconds after the check | On, Off | On | Player, Party |
 | **Incoming resurrection** |  | On, Off | On | Player, Party |
 | **Icon size** |  | 8 – 48 | 16 | Player, Party |
-| **Point on the frame** |  | Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right | Top left | Player, Party |
-| **Point of the icons** |  | Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right | Left | Player, Party |
+| **Point on the frame** |  | Any of the 9 points (corners, edges, center) | Top left | Player, Party |
+| **Point of the icons** |  | Any of the 9 points (corners, edges, center) | Left | Player, Party |
 | **Offset X** |  | -200 – 200 | 2 | Player, Party |
 | **Offset Y** |  | -200 – 200 | 0 | Player, Party |
 
-### Combo points
+## Combo points
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
 | **Show combo points** |  | On, Off | On | Target |
-| **Hide when empty** |  | On, Off | On | Target |
+| **Hide when empty** | Only shown while you have points | On, Off | On | Target |
 | **Shape** |  | Square, Round | Square | Target |
 | **Pip size** |  | 4 – 40 | 10 | Target |
 | **Spacing** |  | 0 – 20 | 3 | Target |
-| **Color** |  | color | `#ffd11a` | Target |
-| **Point on the frame** | The frame and a docked castbar, as one block | Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right | Bottom right | Target |
-| **Point of the pips** |  | Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right | Top right | Target |
+| **Color** |  | Color | `#ffd11a` | Target |
+| **Point on the frame** | The frame and a docked castbar, as one block | Any of the 9 points (corners, edges, center) | Bottom right | Target |
+| **Point of the pips** |  | Any of the 9 points (corners, edges, center) | Top right | Target |
 | **Offset X** |  | -400 – 400 | 0 | Target |
 | **Offset Y** |  | -400 – 400 | -3 | Target |
 
-### Threat
+## Threat
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
 | **Threat glow** | Player, party, pet: the unit's own threat. Target, focus: your threat on it | On, Off | Player, Party: On; Target, Target of Target, Focus, Pet: Off | all |
 
-### Target highlight
+## Target highlight
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
 | **Highlight your target** | The party member you have targeted | On, Off | On | Party |
-| **Target highlight color** |  | color | `#ffffff`, 90 % opaque | Party |
+| **Target highlight color** |  | Color | `#ffffff`, 90 % opaque | Party |
 | **Thickness** |  | 1 – 12 | 3 | Party |
 
-### Dispellable debuffs
+## Dispellable debuffs
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
 | **Tint the border** | In the debuff's color while it carries one you can dispel | On, Off | On | Player, Party |
 
-### Range
+## Range
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
 | **Fade when out of range** | Measured as set in General > Status > Range | On, Off | On | Target, Target of Target, Focus, Pet, Party |
 | **Opacity out of range (%)** |  | 0 – 100 | 70 | Target, Target of Target, Focus, Pet, Party |
 
-### Out of combat
+## Out of combat
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|

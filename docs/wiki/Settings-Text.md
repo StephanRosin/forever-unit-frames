@@ -2,36 +2,40 @@
 
 # Settings: Text
 
-The **Text** tab on each frame's page in `/fuf`. The last column says which frames have the option.
+What the texts on the title row and the bars show, how they read, and the font.
 
-### Title row
+The **Text** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
+
+**On this page:** [Title row](#title-row) · [Health bar text](#health-bar-text) · [Power bar text](#power-bar-text) · [Display](#display) · [Font](#font)
+
+## Title row
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
-| **Title row text** |  | None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race | Player, Target, Party: Level and name; Target of Target, Focus, Pet: Name | all |
+| **Title row text** | Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid | None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race | Player, Target, Party: Level and name; Target of Target, Focus, Pet: Name | all |
 | **Title text color** |  | Class (players), Reaction, White | Class (players) | all |
 | **Show class icon** | Players only, as a round badge on the frame's top right corner | On, Off | On | Player, Target, Target of Target, Focus, Party |
 | **Class icon size** | Diameter of the badge, ring included | 10 – 48 | 30 | Player, Target, Target of Target, Focus, Party |
 | **Class icon X** | Badge centre from the frame's right edge; negative moves it inside | -64 – 64 | -6 | Player, Target, Target of Target, Focus, Party |
 | **Class icon Y** | Badge centre from the frame's top edge; positive moves it up | -64 – 64 | -9 | Player, Target, Target of Target, Focus, Party |
 | **Badge ring** | Ring thickness around the icon; 0 = no ring | 0 – 4 | 2 | Player, Target, Target of Target, Focus, Party |
-| **Badge ring color** | Color of the badge's ring | color | `#c7c7cc` | Player, Target, Target of Target, Focus, Party |
+| **Badge ring color** | Color of the badge's ring | Color | `#c7c7cc` | Player, Target, Target of Target, Focus, Party |
 
-### Health bar text
-
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Health bar, left text** |  | Empty, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race | Player, Target, Party: Current / max; Target of Target, Pet: Name; Focus: Empty | all |
-| **Health bar, right text** |  | None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race | Player, Target, Focus, Party: Percent; Target of Target, Pet: None | all |
-
-### Power bar text
+## Health bar text
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
-| **Power bar, left text** |  | None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race | Player, Target, Party: Current / max; Target of Target, Focus, Pet: None | all |
-| **Power bar, right text** |  | None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race | Player, Target, Party: Percent; Target of Target, Focus, Pet: None | all |
+| **Health bar, left text** | Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid | None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race | Player, Target, Party: Current / max; Target of Target, Pet: Name; Focus: None | all |
+| **Health bar, right text** | Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid | None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race | Player, Target, Focus, Party: Percent; Target of Target, Pet: None | all |
 
-### Display
+## Power bar text
+
+| Option | What it does | Choices | Default | Frames |
+|---|---|---|---|---|
+| **Power bar, left text** | Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid | None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race | Player, Target, Party: Current / max; Target of Target, Focus, Pet: None | all |
+| **Power bar, right text** | Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid | None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race | Player, Target, Party: Percent; Target of Target, Focus, Pet: None | all |
+
+## Display
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
@@ -41,11 +45,11 @@ The **Text** tab on each frame's page in `/fuf`. The last column says which fram
 | **Compact values** | 1234/1234 instead of 1234 / 1234 | On, Off | Off | all |
 | **Show secondary name** | Surname next to the first name | On, Off | Player, Target, Focus, Pet: On; Target of Target, Party: Off | all |
 
-### Font
+## Font
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
-| **Font** |  | font | Friz Quadrata | all |
+| **Font** |  | Font | Friz Quadrata | all |
 | **Font size** |  | 6 – 32 | 12 | all |
 | **Value font size** | Health and power numbers; Auto: the font size | 0 – 32 (0: Auto) | Auto | all |
 | **Font style** |  | None, Outline, Thick outline, Monochrome, Soft outline | Outline | all |

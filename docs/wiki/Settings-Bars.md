@@ -2,36 +2,40 @@
 
 # Settings: Bars
 
-The **Bars** tab on each frame's page in `/fuf`. The last column says which frames have the option.
+Colors and textures of the bars, shields, incoming heals, power colors and the druid's mana.
 
-### Health bar
+The **Bars** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
+
+**On this page:** [Health bar](#health-bar) · [Textures](#textures) · [Absorb shields](#absorb-shields) · [Incoming heals](#incoming-heals) · [Power colors](#power-colors) · [Druid mana](#druid-mana)
+
+## Health bar
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
 | **Health color** |  | Class, Reaction, Static color, Gradient by health | Player, Target, Target of Target, Party: Class; Focus, Pet: Static color | all |
-| **Static health color** |  | color | `#33bf4d` | all |
-| **Friendly color** | For health and title colors by reaction | color | `#33bf4d` | all |
-| **Neutral color** |  | color | `#e6cc40` | all |
-| **Hostile color** |  | color | `#d93333` | all |
+| **Static health color** |  | Color | `#33bf4d` | all |
+| **Friendly color** | For health and title colors by reaction | Color | `#33bf4d` | all |
+| **Neutral color** |  | Color | `#e6cc40` | all |
+| **Hostile color** |  | Color | `#d93333` | all |
 | **Grey when tapped by others** | Someone else attacked it first: no experience or loot | On, Off | On | Target, Target of Target, Focus |
 
-### Textures
+## Textures
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
-| **Bar texture** |  | texture | Raid | all |
-| **Background color** |  | color | `#000000`, 60 % opaque | all |
+| **Bar texture** |  | Texture | Raid | all |
+| **Background color** |  | Color | `#000000`, 60 % opaque | all |
 | **Background behind the name** | Off: only the bars keep a background | On, Off | On | all |
 
-### Absorb shields
+## Absorb shields
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
 | **Show absorb shields** | Over the end of the health bar | On, Off | On | all |
 | **Shield position** | At the end: also shown at full health | After the health, At the bar's end | After the health | all |
-| **Absorb shield stripes** | Under the shield the bar is darkened, its empty part lit | color | `#ffffff`, 65 % opaque | all |
+| **Absorb shield stripes** | Under the shield the bar is darkened, its empty part lit | Color | `#ffffff`, 65 % opaque | all |
 
-### Incoming heals
+## Incoming heals
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
@@ -39,19 +43,19 @@ The **Bars** tab on each frame's page in `/fuf`. The last column says which fram
 | **Overheal lane** | Shows heals and shields past full health | On, Off | Off | all |
 | **Heals past the frame** | Incoming heals drawn in full, past the right edge | On, Off | Off | all |
 | **Power bar matches health bar** | With the overheal lane: the power bar ends where the health bar ends | On, Off | Off | all |
-| **Your heals color** |  | color | `#4df273`, 65 % opaque | all |
-| **Other heals color** |  | color | `#26a64d`, 55 % opaque | all |
+| **Your heals color** |  | Color | `#4df273`, 65 % opaque | all |
+| **Other heals color** |  | Color | `#26a64d`, 55 % opaque | all |
 
-### Power colors
+## Power colors
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
-| **Mana** |  | color | `#4080ff` | all |
-| **Rage** |  | color | `#d93333` | all |
-| **Focus** |  | color | `#ff8040` | all |
-| **Energy** |  | color | `#ffd933` | all |
+| **Mana** |  | Color | `#4080ff` | all |
+| **Rage** |  | Color | `#d93333` | all |
+| **Focus** |  | Color | `#ff8040` | all |
+| **Energy** |  | Color | `#ffd933` | all |
 
-### Druid mana
+## Druid mana
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|

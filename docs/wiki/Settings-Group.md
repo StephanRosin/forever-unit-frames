@@ -2,9 +2,13 @@
 
 # Settings: Group
 
-The **Group** tab on each frame's page in `/fuf`. The last column says which frames have the option.
+The party only: how the members are arranged, their pets and their targets.
 
-### Party layout
+The **Group** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
+
+**On this page:** [Party layout](#party-layout) · [Pets](#pets) · [Pet auras](#pet-auras) · [Targets](#targets)
+
+## Party layout
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
@@ -14,20 +18,20 @@ The **Group** tab on each frame's page in `/fuf`. The last column says which fra
 | **Show when solo** | Shows your own frame outside a group | On, Off | Off | Party |
 | **Hide in raid** | While you are in a raid group | On, Off | On | Party |
 
-### Pets
+## Pets
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
-| **Show pets** | A small frame under each member who has a pet | On, Off | On | Party |
+| **Show pets** | A small frame for each member's pet | On, Off | On | Party |
 | **Pet layout** | Beside: each pet next to its member (not your own pet) | List below the group, Beside the owner | List below the group | Party |
-| **Side** |  | Right, Left | Right | Party |
-| **Pet width** |  | 0 – 300 (0: Auto) | Auto | Party |
+| **Side** | Beside the owner: the side the pet sits on | Right, Left | Right | Party |
+| **Pet width** | Auto: as wide as the members | 0 – 300 (0: Auto) | Auto | Party |
 | **Pet frame height** |  | 10 – 60 | 23 | Party |
 | **Pet spacing** | Between the pets, and to the group or owner | 0 – 40 | 2 | Party |
-| **Pets offset X** | Moves the pet list | -400 – 400 | 0 | Party |
-| **Pets offset Y** | Moves the pet list | -400 – 400 | 0 | Party |
+| **Pets offset X** | Moves the pets: the list, or each pet beside its owner | -400 – 400 | 0 | Party |
+| **Pets offset Y** | Moves the pets: the list, or each pet beside its owner | -400 – 400 | 0 | Party |
 
-### Pet auras
+## Pet auras
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
@@ -38,7 +42,7 @@ The **Group** tab on each frame's page in `/fuf`. The last column says which fra
 | **Aura offset X** |  | -200 – 200 | 2 | Party |
 | **Aura offset Y** |  | -200 – 200 | 0 | Party |
 
-### Targets
+## Targets
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|

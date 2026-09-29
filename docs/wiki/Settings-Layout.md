@@ -2,29 +2,33 @@
 
 # Settings: Layout
 
-The **Layout** tab on each frame's page in `/fuf`. The last column says which frames have the option.
+Size, position, the rows of the frame, portrait, markers, border, shadow and corners.
 
-### Frame
+The **Layout** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
+
+**On this page:** [Frame](#frame) · [Size](#size) · [Position](#position) · [Bar heights](#bar-heights) · [Portrait](#portrait) · [Indicators](#indicators) · [Border](#border) · [Shadow](#shadow) · [Shape](#shape)
+
+## Frame
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
 | **Enabled** | Needs /reload after re-enabling | On, Off | On | all |
 
-### Size
+## Size
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
 | **Width** |  | 40 – 600 | Player, Target: 300; Target of Target: 120; Focus: 160; Pet: 115; Party: 200 | all |
 | **Height** |  | 8 – 200 | Player, Target: 70; Target of Target, Pet: 28; Focus: 36; Party: 53 | all |
 
-### Position
+## Position
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
 | **Position X** | Offset from the screen centre | -4000 – 4000 | Player: -400; Target: 400; Target of Target: 536; Focus: 520; Pet: -624; Party: -709 | all |
 | **Position Y** | Offset from the screen centre | -4000 – 4000 | Player, Target: -220; Target of Target: -304; Focus: 232; Pet: -324; Party: 150 | all |
 
-### Bar heights
+## Bar heights
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
@@ -33,14 +37,14 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 | **Power bar height (%)** | Share of the frame height; room left over goes to health and power | 0 – 90 | Player: 20; Target, Target of Target, Pet: 25; Focus: 21; Party: 9 | all |
 | **Show power bar** |  | On, Off | On | all |
 
-### Portrait
+## Portrait
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
 | **Portrait** | Square as tall as the frame | Off, Left, Right | Player, Target: Left; Target of Target, Focus, Pet, Party: Off | all |
 | **Portrait style** |  | 2D, 3D (model) | Player, Target: 3D (model); Target of Target, Focus, Pet, Party: 2D | all |
 
-### Indicators
+## Indicators
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
@@ -49,7 +53,7 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 | **Elite border thickness** |  | 1 – 6 | 2 | Target, Target of Target, Focus |
 | **Damage and heal numbers** | Shown briefly inside the frame | On, Off | Player, Target, Focus, Pet, Party: On; Target of Target: Off | all |
 
-### Border
+## Border
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
@@ -57,9 +61,9 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 | **Border style** | Gold is shaded and ignores the border color | Flat, Gold | Gold | all |
 | **Border size** | 0 = no border | 0 – 8 | 1 | all |
 | **Border padding** | Gap between frame and border | 0 – 8 | 0 | all |
-| **Border color** |  | color | `#000000` | all |
+| **Border color** |  | Color | `#000000` | all |
 
-### Shadow
+## Shadow
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|
@@ -67,7 +71,7 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 | **Shadow strength** | Opacity in percent | 0 – 100 | 16 | all |
 | **Shadow size** | Width of the soft edge in pixels | 1 – 16 | Player: 1; Target, Target of Target, Focus, Pet, Party: 9 | all |
 
-### Shape
+## Shape
 
 | Option | What it does | Choices | Default | Frames |
 |---|---|---|---|---|

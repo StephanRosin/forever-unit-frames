@@ -4,6 +4,13 @@
 
 The **General** page (top of the list on the left in `/fuf`) sets the look for every frame at once.
 Most of these can be overridden on a frame's own page; the frame then keeps its own value.
+The **Profile** tab (export, import, reset) is explained on the [[Home]] page.
+
+**On this page:**
+
+- **[Appearance](#appearance):** [Font](#font) · [Display](#display) · [Title row](#title-row) · [Bars](#bars) · [Aura icons](#aura-icons) · [Border](#border) · [Shadow](#shadow) · [Shape](#shape) · [Minimap](#minimap)
+- **[Colors](#colors):** [Health bar](#health-bar) · [Absorb shields](#absorb-shields) · [Target highlight](#target-highlight) · [Incoming heals](#incoming-heals) · [Power colors](#power-colors)
+- **[Status](#status):** [Combat icon](#combat-icon) · [Range](#range)
 
 ## Appearance
 
@@ -13,7 +20,7 @@ Button: **Apply to all frames**.
 
 | Option | What it does | Choices | Default |
 |---|---|---|---|
-| **Font** |  | font | Friz Quadrata |
+| **Font** |  | Font | Friz Quadrata |
 | **Font size** |  | 6 – 32 | 12 |
 | **Value font size** | Health and power numbers; Auto: the font size | 0 – 32 (0: Auto) | Auto |
 | **Font style** |  | None, Outline, Thick outline, Monochrome, Soft outline | Outline |
@@ -36,14 +43,14 @@ Button: **Apply to all frames**.
 | **Class icon X** | Badge centre from the frame's right edge; negative moves it inside | -64 – 64 | -6 |
 | **Class icon Y** | Badge centre from the frame's top edge; positive moves it up | -64 – 64 | -9 |
 | **Badge ring** | Ring thickness around the icon; 0 = no ring | 0 – 4 | 2 |
-| **Badge ring color** | Color of the badge's ring | color | `#c7c7cc` |
+| **Badge ring color** | Color of the badge's ring | Color | `#c7c7cc` |
 
 ### Bars
 
 | Option | What it does | Choices | Default |
 |---|---|---|---|
-| **Bar texture** |  | texture | Raid |
-| **Background color** |  | color | `#000000`, 60 % opaque |
+| **Bar texture** |  | Texture | Raid |
+| **Background color** |  | Color | `#000000`, 60 % opaque |
 | **Background behind the name** | Off: only the bars keep a background | On, Off | On |
 | **Shield position** | At the end: also shown at full health | After the health, At the bar's end | After the health |
 
@@ -62,7 +69,7 @@ Button: **Apply to all frames**.
 | **Border style** | Gold is shaded and ignores the border color | Flat, Gold | Gold |
 | **Border size** | 0 = no border | 0 – 8 | 1 |
 | **Border padding** | Gap between frame and border | 0 – 8 | 0 |
-| **Border color** |  | color | `#000000` |
+| **Border color** |  | Color | `#000000` |
 
 ### Shadow
 
@@ -92,38 +99,38 @@ Button: **Apply to all frames**.
 | Option | What it does | Choices | Default |
 |---|---|---|---|
 | **Health color** |  | Class, Reaction, Static color, Gradient by health | Static color |
-| **Static health color** |  | color | `#33bf4d` |
-| **Friendly color** | For health and title colors by reaction | color | `#33bf4d` |
-| **Neutral color** |  | color | `#e6cc40` |
-| **Hostile color** |  | color | `#d93333` |
+| **Static health color** |  | Color | `#33bf4d` |
+| **Friendly color** | For health and title colors by reaction | Color | `#33bf4d` |
+| **Neutral color** |  | Color | `#e6cc40` |
+| **Hostile color** |  | Color | `#d93333` |
 
 ### Absorb shields
 
 | Option | What it does | Choices | Default |
 |---|---|---|---|
-| **Absorb shield stripes** | Under the shield the bar is darkened, its empty part lit | color | `#ffffff`, 65 % opaque |
+| **Absorb shield stripes** | Under the shield the bar is darkened, its empty part lit | Color | `#ffffff`, 65 % opaque |
 
 ### Target highlight
 
 | Option | What it does | Choices | Default |
 |---|---|---|---|
-| **Target highlight color** |  | color | `#ffffff`, 90 % opaque |
+| **Target highlight color** |  | Color | `#ffffff`, 90 % opaque |
 
 ### Incoming heals
 
 | Option | What it does | Choices | Default |
 |---|---|---|---|
-| **Your heals color** |  | color | `#4df273`, 65 % opaque |
-| **Other heals color** |  | color | `#26a64d`, 55 % opaque |
+| **Your heals color** |  | Color | `#4df273`, 65 % opaque |
+| **Other heals color** |  | Color | `#26a64d`, 55 % opaque |
 
 ### Power colors
 
 | Option | What it does | Choices | Default |
 |---|---|---|---|
-| **Mana** |  | color | `#4080ff` |
-| **Rage** |  | color | `#d93333` |
-| **Focus** |  | color | `#ff8040` |
-| **Energy** |  | color | `#ffd933` |
+| **Mana** |  | Color | `#4080ff` |
+| **Rage** |  | Color | `#d93333` |
+| **Focus** |  | Color | `#ff8040` |
+| **Energy** |  | Color | `#ffd933` |
 
 ## Status
 
@@ -131,7 +138,7 @@ Button: **Apply to all frames**.
 
 | Option | What it does | Choices | Default |
 |---|---|---|---|
-| **Combat icon animation** | Burst: springs in and flashes as combat starts | Off, Burst, Pulse, Duel (clashing swords) | Duel (clashing swords) |
+| **Combat icon animation** | Duel: clashing swords. Burst: springs in. Pulse: breathes | Off, Burst, Pulse, Duel (clashing swords) | Duel (clashing swords) |
 
 ### Range
 
@@ -139,9 +146,9 @@ Button: **Apply to all frames**.
 |---|---|---|---|
 | **Opacity out of range (%)** |  | 0 – 100 | 70 |
 | **Friends: measure by** |  | Automatic (spell), Spell, Yards, Off | Yards |
-| **Spell for friends** |  | text |  |
+| **Spell for friends** |  | Text (a spell name or ID) | (none) |
 | **Friendly range (yards)** |  | 5 – 40 | 40 |
 | **Enemies: measure by** |  | Automatic (spell), Spell, Yards, Off | Automatic (spell) |
-| **Spell for enemies** |  | text |  |
+| **Spell for enemies** |  | Text (a spell name or ID) | (none) |
 | **Hostile range (yards)** |  | 5 – 40 | 40 |
 
