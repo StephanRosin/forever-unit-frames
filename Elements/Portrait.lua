@@ -86,20 +86,29 @@ end
 -- Forever's SetUnit loads nothing for creatures (it answers nil and the
 -- model stays empty, checked in game): they are set by NPC ID. That may
 -- load later, so the model is looked at again a little after.
-Portrait.RECHECK = { 0.2, 1 }
+-- Players too: a model can finish loading without OnModelLoaded (reported:
+-- the 2D picture stayed behind a player's model now and then).
+Portrait.RECHECK = { 0.05, 0.2, 1 }
+
+-- Looks at the model again a little later, as long as nothing newer was
+-- set (the generation: "target" is the same token for every target).
+local function watch(frame)
+    local model = frame.portrait3D
+    local generation = model.generation
+    for _, delay in ipairs(Portrait.RECHECK) do
+        C_Timer.After(delay, function()
+            if model.generation == generation and not model.ready and hasModel(model) then
+                Portrait.ModelReady(frame)
+            end
+        end)
+    end
+end
 
 local function setCreature(frame, unit)
     local id = Portrait.CreatureID(unit)
     local model = frame.portrait3D
     if not id or not pcall(model.SetCreature, model, id) then return end
     model.wantsUnit = unit
-    for _, delay in ipairs(Portrait.RECHECK) do
-        C_Timer.After(delay, function()
-            if model.wantsUnit == unit and not model.ready and frame.unit == unit and hasModel(model) then
-                Portrait.ModelReady(frame)
-            end
-        end)
-    end
     return hasModel(model)
 end
 
@@ -111,6 +120,7 @@ local function updateModel(frame)
     local model, unit = frame.portrait3D, frame.unit
     model:ClearModel()
     model.ready, model.wantsUnit = false, nil
+    model.generation = (model.generation or 0) + 1
     updatePicture(frame)
     frame.portrait2D:Show()
     if not Secrets.Bool(UnitIsVisible, unit) then return end
@@ -119,7 +129,8 @@ local function updateModel(frame)
     -- The model is there (SetUnit succeeded or reports a file or display):
     -- framed now; OnModelLoaded frames it again once it has finished.
     if ok and (success == true or hasModel(model)) then return Portrait.ModelReady(frame) end
-    if setCreature(frame, unit) then Portrait.ModelReady(frame) end
+    if setCreature(frame, unit) then return Portrait.ModelReady(frame) end
+    watch(frame)
 end
 
 function Portrait.Update(frame, event)

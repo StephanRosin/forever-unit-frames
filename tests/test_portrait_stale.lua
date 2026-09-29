@@ -67,3 +67,28 @@ H.check("2D: the wolf's face", t.portrait2D._texture, "portrait:target")
 M.units.target = { name = "Ghost", hostile = true, health = 5, healthMax = 10, noPortrait = true }
 M.FireEvent("PLAYER_TARGET_CHANGED")
 H.check("2D: no leftover face", t.portrait2D._texture, nil)
+
+-- Reported: now and then the 2D picture stayed behind a player's model.
+-- SetUnit gave no clear answer and no OnModelLoaded came, but the model
+-- finished loading: the rechecks see it and take the picture away.
+do
+    local frame = t
+    C.Set("target", "portraitStyle", "3D")
+    M.units.target = { name = "Ann", isPlayer = true, health = 5, healthMax = 10, modelLater = true }
+    M.FireEvent("PLAYER_TARGET_CHANGED")
+    H.checkTrue("loading: 2D for now", frame.portrait2D:IsShown())
+    -- The model arrives without the event.
+    for model, unit in pairs(M.pendingModels or {}) do model._modelUnit = unit end
+    M.pendingModels = {}
+    M.RunTimers(0.1)
+    H.check("recheck: the picture goes", frame.portrait2D:IsShown(), false)
+    -- A recheck of an older target does nothing for the next one.
+    M.units.target = { name = "Bob", isPlayer = true, health = 5, healthMax = 10, modelLater = true }
+    M.FireEvent("PLAYER_TARGET_CHANGED")
+    local gen = frame.portrait3D.generation
+    M.units.target = { name = "Cid", isPlayer = true, health = 5, healthMax = 10, noModel = true }
+    M.FireEvent("PLAYER_TARGET_CHANGED")
+    H.checkTrue("newer target set", frame.portrait3D.generation > gen)
+    M.RunTimers(2)
+    H.checkTrue("no model for the new one: 2D stays", frame.portrait2D:IsShown())
+end
