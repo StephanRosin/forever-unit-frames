@@ -549,3 +549,11 @@ L.SECTION_druidMana = "Mana du druide"
 L.SETTING_druidMana = "Afficher le mana en forme"
 L.HINT_druidMana = "Ours et félin : une bande sous la barre de ressource"
 L.SETTING_druidManaHeight = "Hauteur de la bande"
+
+-- Value size, compact values, INFO class colour.
+L.SETTING_valueFontSize = "Taille des valeurs"
+L.HINT_valueFontSize = "Chiffres de vie et de ressource ; Auto : la taille de police"
+L.SETTING_textCompact = "Valeurs compactes"
+L.HINT_textCompact = "1234/1234 au lieu de 1234 / 1234"
+L.SETTING_infoClassColor = "Info : classe en couleur"
+L.HINT_infoClassColor = "Seulement la classe ou le type de créature en couleur"

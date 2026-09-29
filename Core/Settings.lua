@@ -118,7 +118,8 @@ Settings.TEXT_TAGS = TEXT_TAGS
 Settings.FONT_KEYS = { "fontFace", "fontSize", "fontOutline", "fontShadow" }
 -- What "Apply to all frames" hands back to General: the font settings and
 -- the name style listed with them.
-Settings.TEXT_STYLE_KEYS = { "fontFace", "fontSize", "fontOutline", "fontShadow", "showSurname" }
+Settings.TEXT_STYLE_KEYS = { "fontFace", "fontSize", "valueFontSize", "fontOutline", "fontShadow", "textCompact",
+    "infoClassColor", "showSurname" }
 Settings.Define({ key = "fontFace", code = "FF", scope = "inherit", type = "media", mediaKind = "font", default = "Friz Quadrata" })
 Settings.Define({ key = "fontSize", code = "FS", scope = "inherit", type = "int", min = 6, max = 32, default = 12 })
 Settings.Define({ key = "fontOutline", code = "FO", scope = "inherit", type = "enum",
@@ -347,6 +348,15 @@ Settings.Define({ key = "titleColorMode", code = "NC", scope = "frame", type = "
 -- yellow, green, grey against your level), whatever colour the line has.
 Settings.Define({ key = "levelColorMode", code = "LV", scope = "frame", type = "enum",
     values = { "TEXT", "DIFFICULTY" }, default = "TEXT" })
+-- "1234/1234" instead of "1234 / 1234".
+Settings.Define({ key = "textCompact", code = "TC", scope = "inherit", type = "bool", default = false })
+-- Size of the value texts (health and power numbers, percent, deficit);
+-- 0: the font size. Names, level, class and race keep the font size.
+Settings.Define({ key = "valueFontSize", code = "TV", scope = "inherit", type = "int", min = 0, max = 32, default = 0,
+    zeroText = "AUTO" })
+-- In "Level, class and race" the class (players) or creature type in the
+-- class colour or the reaction colour; race and the rest keep theirs.
+Settings.Define({ key = "infoClassColor", code = "NK", scope = "inherit", type = "bool", default = false })
 -- Colour of names on the health and power bars (the name tags and INFO);
 -- value texts stay white.
 Settings.Define({ key = "barNameColorMode", code = "NY", scope = "frame", type = "enum",

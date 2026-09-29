@@ -573,3 +573,11 @@ L.SECTION_druidMana = "Druid mana"
 L.SETTING_druidMana = "Show mana in forms"
 L.HINT_druidMana = "Bear and cat form: a strip under the power bar"
 L.SETTING_druidManaHeight = "Strip height"
+
+-- Value size, compact values, INFO class colour.
+L.SETTING_valueFontSize = "Value font size"
+L.HINT_valueFontSize = "Health and power numbers; Auto: the font size"
+L.SETTING_textCompact = "Compact values"
+L.HINT_textCompact = "1234/1234 instead of 1234 / 1234"
+L.SETTING_infoClassColor = "Info: class in color"
+L.HINT_infoClassColor = "Level, class and race: only the class or creature type colored"

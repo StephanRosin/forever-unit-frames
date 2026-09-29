@@ -68,22 +68,40 @@ end
 -- INFO: "60 Mage Gnome" for players, "60 Humanoid" for creatures. Class,
 -- race and type may be secret: passed to the font string untouched,
 -- presence asked with type(). A unit of unknown kind counts as a creature.
-local function setInfo(fs, unit, colored)
-    local level = levelText(unit, colored)
-    if Secrets.Bool(UnitIsPlayer, unit) == true then
+-- The colour code for the class part of INFO ("%s" around it when none):
+-- a player's class colour, a creature's reaction colour, readable only.
+local function infoWrap(unit, isPlayer, scope)
+    local r, g, b
+    if isPlayer then
+        local ok, _, token = pcall(UnitClass, unit)
+        local c = ok and not Secrets.IsSecret(token) and RAID_CLASS_COLORS and RAID_CLASS_COLORS[token]
+        if c then r, g, b = c.r, c.g, c.b end
+    else
+        local c = ns.Health.ReactionColor(unit, scope)
+        if c then r, g, b = c[1], c[2], c[3] end
+    end
+    if not r or Secrets.IsSecret(r) then return "%s" end
+    return ("|cff%02x%02x%02x"):format(r * 255, g * 255, b * 255) .. "%s|r"
+end
+
+local function setInfo(fs, unit, opts)
+    local level = levelText(unit, opts.levelColored)
+    local isPlayer = Secrets.Bool(UnitIsPlayer, unit) == true
+    local wrap = opts.infoColor and infoWrap(unit, isPlayer, opts.scope) or "%s"
+    if isPlayer then
         local class = UnitClass(unit)
         local race = UnitRace(unit)
         if type(class) ~= "nil" and type(race) ~= "nil" then
-            fs:SetFormattedText("%s %s %s", level, class, race)
+            fs:SetFormattedText("%s " .. wrap .. " %s", level, class, race)
             return
         elseif type(class) ~= "nil" then
-            fs:SetFormattedText("%s %s", level, class)
+            fs:SetFormattedText("%s " .. wrap, level, class)
             return
         end
     else
         local kind = UnitCreatureType(unit)
         if type(kind) ~= "nil" then
-            fs:SetFormattedText("%s %s", level, kind)
+            fs:SetFormattedText("%s " .. wrap, level, kind)
             return
         end
     end
@@ -166,11 +184,12 @@ local function sampleHealth(frame)
 end
 
 -- The value tags drawn from sample numbers.
-local function applySample(fs, tag, sample)
+local function applySample(fs, tag, sample, compact)
     if tag == "CURRENT" then
         fs:SetText(Secrets.Abbreviate(sample.current))
     elseif tag == "CURRENT_MAX" then
-        fs:SetFormattedText("%s / %s", Secrets.Abbreviate(sample.current), Secrets.Abbreviate(sample.max))
+        fs:SetFormattedText(compact and "%s/%s" or "%s / %s", Secrets.Abbreviate(sample.current),
+            Secrets.Abbreviate(sample.max))
     elseif tag == "PERCENT" then
         fs:SetFormattedText("%.0f%%", sample.percent)
     else
@@ -181,24 +200,28 @@ local SAMPLE_TAGS = { CURRENT = true, CURRENT_MAX = true, PERCENT = true, DEFICI
 
 -- sample (optional): plain health numbers that replace the unit's for
 -- the value tags of health texts (test mode).
--- levelColored: the level in its difficulty colour.
-function Texts.Apply(fs, tag, unit, kind, showSurname, sample, levelColored)
+-- opts (optional): levelColored (the level in its difficulty colour),
+-- compact ("1234/1234"), infoColor (INFO's class part coloured), scope.
+local NO_OPTS = {}
+function Texts.Apply(fs, tag, unit, kind, showSurname, sample, opts)
+    opts = opts or NO_OPTS
     if sample and kind == "health" and SAMPLE_TAGS[tag] then
-        applySample(fs, tag, sample)
+        applySample(fs, tag, sample, opts.compact)
     elseif tag == "NONE" then
         fs:SetText("")
     elseif tag == "NAME" then
         Texts.SetName(fs, unit, showSurname)
     elseif tag == "NAME_LEVEL" then
-        Texts.SetName(fs, unit, showSurname, levelText(unit, levelColored))
+        Texts.SetName(fs, unit, showSurname, levelText(unit, opts.levelColored))
     elseif tag == "LEVEL" then
-        fs:SetText(levelText(unit, levelColored))
+        fs:SetText(levelText(unit, opts.levelColored))
     elseif tag == "INFO" then
-        setInfo(fs, unit, levelColored)
+        setInfo(fs, unit, opts)
     elseif tag == "CURRENT" then
         fs:SetText(Secrets.Abbreviate(current(unit, kind)))
     elseif tag == "CURRENT_MAX" then
-        fs:SetFormattedText("%s / %s", Secrets.Abbreviate(current(unit, kind)), Secrets.Abbreviate(maximum(unit, kind)))
+        fs:SetFormattedText(opts.compact and "%s/%s" or "%s / %s", Secrets.Abbreviate(current(unit, kind)),
+            Secrets.Abbreviate(maximum(unit, kind)))
     elseif tag == "PERCENT" then
         local pct
         if kind == "health" then
@@ -436,9 +459,12 @@ function Texts.Style(frame)
     local size = Config.Get(scope, "fontSize")
     local outline = Config.Get(scope, "fontOutline")
     local shadow = Config.Get(scope, "fontShadow")
+    local valueSize = Config.Get(scope, "valueFontSize")
     for _, slot in ipairs(SLOTS) do
         local fs = frame.texts[slot.field]
-        Texts.SetFont(fs, font, size, outline)
+        -- Value texts (numbers, percent) may have a size of their own.
+        local isValue = SAMPLE_TAGS[Config.Get(scope, slot.setting)] ~= nil
+        Texts.SetFont(fs, font, (isValue and valueSize > 0) and valueSize or size, outline)
         fs:SetShadowOffset(shadow and 1 or 0, shadow and -1 or 0)
         fs:ClearAllPoints()
         fs:SetPoint(slot.point, frame[slot.bar], slot.point, ns.Pixel.Snap(slot.x, fs), 0)
@@ -514,7 +540,12 @@ end
 
 function Texts.Update(frame)
     local showSurname = Config.Get(frame.key, "showSurname")
-    local levelColored = Config.Get(frame.key, "levelColorMode") == "DIFFICULTY"
+    local opts = {
+        levelColored = Config.Get(frame.key, "levelColorMode") == "DIFFICULTY",
+        compact = Config.Get(frame.key, "textCompact"),
+        infoColor = Config.Get(frame.key, "infoClassColor"),
+        scope = frame.key,
+    }
     local sample = sampleHealth(frame)
     local word = ns.UnitStatus.Word(ns.UnitStatus.Of(frame))
     local wordSlot = word and statusSlot(frame)
@@ -526,7 +557,7 @@ function Texts.Update(frame)
             fs:SetText("")
         else
             Texts.Apply(fs, Config.Get(frame.key, slot.setting), frame.unit, slot.kind or slot.bar, showSurname,
-                sample, levelColored)
+                sample, opts)
         end
     end
     paintTitle(frame)

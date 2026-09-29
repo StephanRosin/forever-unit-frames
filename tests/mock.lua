@@ -1122,6 +1122,7 @@ function M.Reset()
     _G.RAID_CLASS_COLORS = {
         WARLOCK = { r = 0.53, g = 0.53, b = 0.93, GetRGB = function(c) return c.r, c.g, c.b end },
         WARRIOR = { r = 0.78, g = 0.61, b = 0.43, GetRGB = function(c) return c.r, c.g, c.b end },
+        DRUID = { r = 1, g = 0.49, b = 0.04, GetRGB = function(c) return c.r, c.g, c.b end },
     }
     -- Class icons (Blizzard_SharedXML/SharedConstants.lua); atlases the
     -- client knows are listed in M.atlases, GetAtlasInfo gives nothing for

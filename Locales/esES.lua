@@ -550,3 +550,11 @@ L.SECTION_druidMana = "Maná de druida"
 L.SETTING_druidMana = "Mostrar maná en formas"
 L.HINT_druidMana = "Oso y felino: una franja bajo la barra de poder"
 L.SETTING_druidManaHeight = "Altura de la franja"
+
+-- Value size, compact values, INFO class colour.
+L.SETTING_valueFontSize = "Tamaño de los valores"
+L.HINT_valueFontSize = "Números de salud y poder; Auto: el tamaño de fuente"
+L.SETTING_textCompact = "Valores compactos"
+L.HINT_textCompact = "1234/1234 en vez de 1234 / 1234"
+L.SETTING_infoClassColor = "Info: clase en color"
+L.HINT_infoClassColor = "Solo la clase o el tipo de criatura en color"

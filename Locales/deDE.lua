@@ -549,3 +549,11 @@ L.SECTION_druidMana = "Druidenmana"
 L.SETTING_druidMana = "Mana in Gestalten anzeigen"
 L.HINT_druidMana = "Bär und Katze: ein Streifen unter der Ressourcenleiste"
 L.SETTING_druidManaHeight = "Höhe des Streifens"
+
+-- Value size, compact values, INFO class colour.
+L.SETTING_valueFontSize = "Schriftgröße der Werte"
+L.HINT_valueFontSize = "Lebens- und Ressourcenzahlen; Auto: die Schriftgröße"
+L.SETTING_textCompact = "Kompakte Werte"
+L.HINT_textCompact = "1234/1234 statt 1234 / 1234"
+L.SETTING_infoClassColor = "Info: Klasse farbig"
+L.HINT_infoClassColor = "Stufe, Klasse und Volk: nur Klasse bzw. Kreaturtyp farbig"
