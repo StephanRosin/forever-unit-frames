@@ -10,48 +10,63 @@ The **Text** tab on each frame's page in `/fuf`. The last column says which fram
 
 ## Title row
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Title row text** | Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid | None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race | Player, Target, Party: Level and name; Target of Target, Focus, Pet: Name | all |
-| **Title text color** |  | Class (players), Reaction, White | Class (players) | all |
-| **Show class icon** | Players only, as a round badge on the frame's top right corner | On, Off | On | Player, Target, Target of Target, Focus, Party |
-| **Class icon size** | Diameter of the badge, ring included | 10 – 48 | 30 | Player, Target, Target of Target, Focus, Party |
-| **Class icon X** | Badge centre from the frame's right edge; negative moves it inside | -64 – 64 | -6 | Player, Target, Target of Target, Focus, Party |
-| **Class icon Y** | Badge centre from the frame's top edge; positive moves it up | -64 – 64 | -9 | Player, Target, Target of Target, Focus, Party |
-| **Badge ring** | Ring thickness around the icon; 0 = no ring | 0 – 4 | 2 | Player, Target, Target of Target, Focus, Party |
-| **Badge ring color** | Color of the badge's ring | Color | `#c7c7cc` | Player, Target, Target of Target, Focus, Party |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Title row text</b></td><td>Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>Player, Target, Party: Level and name; Target of Target, Focus, Pet: Name</td><td>all</td></tr>
+<tr><td><b>Title text color</b></td><td></td><td>Class (players), Reaction, White</td><td>Class (players)</td><td>all</td></tr>
+<tr><td><b>Show class icon</b></td><td>Players only, as a round badge on the frame's top right corner</td><td>On, Off</td><td>On</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Class icon size</b></td><td>Diameter of the badge, ring included</td><td>10 – 48</td><td>30</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Class icon X</b></td><td>Badge centre from the frame's right edge; negative moves it inside</td><td>-64 – 64</td><td>-6</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Class icon Y</b></td><td>Badge centre from the frame's top edge; positive moves it up</td><td>-64 – 64</td><td>-9</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Badge ring</b></td><td>Ring thickness around the icon; 0 = no ring</td><td>0 – 4</td><td>2</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Badge ring color</b></td><td>Color of the badge's ring</td><td>Color</td><td><code>#c7c7cc</code></td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+</tbody>
+</table>
 
 ## Health bar text
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Health bar, left text** | Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid | None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race | Player, Target, Party: Current / max; Target of Target, Pet: Name; Focus: None | all |
-| **Health bar, right text** | Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid | None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race | Player, Target, Focus, Party: Percent; Target of Target, Pet: None | all |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Health bar, left text</b></td><td>Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>Player, Target, Party: Current / max; Target of Target, Pet: Name; Focus: None</td><td>all</td></tr>
+<tr><td><b>Health bar, right text</b></td><td>Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>Player, Target, Focus, Party: Percent; Target of Target, Pet: None</td><td>all</td></tr>
+</tbody>
+</table>
 
 ## Power bar text
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Power bar, left text** | Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid | None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race | Player, Target, Party: Current / max; Target of Target, Focus, Pet: None | all |
-| **Power bar, right text** | Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid | None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race | Player, Target, Party: Percent; Target of Target, Focus, Pet: None | all |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Power bar, left text</b></td><td>Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>Player, Target, Party: Current / max; Target of Target, Focus, Pet: None</td><td>all</td></tr>
+<tr><td><b>Power bar, right text</b></td><td>Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>Player, Target, Party: Percent; Target of Target, Focus, Pet: None</td><td>all</td></tr>
+</tbody>
+</table>
 
 ## Display
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Level color** | Red, orange, yellow, green, grey against your level | Text color, By difficulty | Text color | all |
-| **Name color in bar texts** | Only names on the health or power bar; the title row has its own | White, Class, Reaction | White | all |
-| **Info: class in color** | Level, class and race: only the class or creature type colored | On, Off | Off | all |
-| **Compact values** | 1234/1234 instead of 1234 / 1234 | On, Off | Off | all |
-| **Show secondary name** | Surname next to the first name | On, Off | Player, Target, Focus, Pet: On; Target of Target, Party: Off | all |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Level color</b></td><td>Red, orange, yellow, green, grey against your level</td><td>Text color, By difficulty</td><td>Text color</td><td>all</td></tr>
+<tr><td><b>Name color in bar texts</b></td><td>Only names on the health or power bar; the title row has its own</td><td>White, Class, Reaction</td><td>White</td><td>all</td></tr>
+<tr><td><b>Info: class in color</b></td><td>Level, class and race: only the class or creature type colored</td><td>On, Off</td><td>Off</td><td>all</td></tr>
+<tr><td><b>Compact values</b></td><td>1234/1234 instead of 1234 / 1234</td><td>On, Off</td><td>Off</td><td>all</td></tr>
+<tr><td><b>Show secondary name</b></td><td>Surname next to the first name</td><td>On, Off</td><td>Player, Target, Focus, Pet: On; Target of Target, Party: Off</td><td>all</td></tr>
+</tbody>
+</table>
 
 ## Font
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Font** |  | Font | Friz Quadrata | all |
-| **Font size** |  | 6 – 32 | 12 | all |
-| **Value font size** | Health and power numbers; Auto: the font size | 0 – 32 (0: Auto) | Auto | all |
-| **Font style** |  | None, Outline, Thick outline, Monochrome, Soft outline | Outline | all |
-| **Font shadow** |  | On, Off | On | all |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Font</b></td><td></td><td>Font</td><td>Friz Quadrata</td><td>all</td></tr>
+<tr><td><b>Font size</b></td><td></td><td>6 – 32</td><td>12</td><td>all</td></tr>
+<tr><td><b>Value font size</b></td><td>Health and power numbers; Auto: the font size</td><td>0 – 32 (0: Auto)</td><td>Auto</td><td>all</td></tr>
+<tr><td><b>Font style</b></td><td></td><td>None, Outline, Thick outline, Monochrome, Soft outline</td><td>Outline</td><td>all</td></tr>
+<tr><td><b>Font shadow</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
+</tbody>
+</table>
 

@@ -10,46 +10,58 @@ The **Group** tab on each frame's page in `/fuf`. The last column says which fra
 
 ## Party layout
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Orientation** |  | Vertical, Horizontal | Vertical | Party |
-| **Spacing** |  | 0 – 60 | 25 | Party |
-| **Show player** |  | On, Off | Off | Party |
-| **Show when solo** | Shows your own frame outside a group | On, Off | Off | Party |
-| **Hide in raid** | While you are in a raid group | On, Off | On | Party |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Orientation</b></td><td></td><td>Vertical, Horizontal</td><td>Vertical</td><td>Party</td></tr>
+<tr><td><b>Spacing</b></td><td></td><td>0 – 60</td><td>25</td><td>Party</td></tr>
+<tr><td><b>Show player</b></td><td></td><td>On, Off</td><td>Off</td><td>Party</td></tr>
+<tr><td><b>Show when solo</b></td><td>Shows your own frame outside a group</td><td>On, Off</td><td>Off</td><td>Party</td></tr>
+<tr><td><b>Hide in raid</b></td><td>While you are in a raid group</td><td>On, Off</td><td>On</td><td>Party</td></tr>
+</tbody>
+</table>
 
 ## Pets
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Show pets** | A small frame for each member's pet | On, Off | On | Party |
-| **Pet layout** | Beside: each pet next to its member (not your own pet) | List below the group, Beside the owner | List below the group | Party |
-| **Side** | Beside the owner: the side the pet sits on | Right, Left | Right | Party |
-| **Pet width** | Auto: as wide as the members | 0 – 300 (0: Auto) | Auto | Party |
-| **Pet frame height** |  | 10 – 60 | 23 | Party |
-| **Pet spacing** | Between the pets, and to the group or owner | 0 – 40 | 2 | Party |
-| **Pets offset X** | Moves the pets: the list, or each pet beside its owner | -400 – 400 | 0 | Party |
-| **Pets offset Y** | Moves the pets: the list, or each pet beside its owner | -400 – 400 | 0 | Party |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Show pets</b></td><td>A small frame for each member's pet</td><td>On, Off</td><td>On</td><td>Party</td></tr>
+<tr><td><b>Pet layout</b></td><td>Beside: each pet next to its member (not your own pet)</td><td>List below the group, Beside the owner</td><td>List below the group</td><td>Party</td></tr>
+<tr><td><b>Side</b></td><td>Beside the owner: the side the pet sits on</td><td>Right, Left</td><td>Right</td><td>Party</td></tr>
+<tr><td><b>Pet width</b></td><td>Auto: as wide as the members</td><td>0 – 300 (0: Auto)</td><td>Auto</td><td>Party</td></tr>
+<tr><td><b>Pet frame height</b></td><td></td><td>10 – 60</td><td>23</td><td>Party</td></tr>
+<tr><td><b>Pet spacing</b></td><td>Between the pets, and to the group or owner</td><td>0 – 40</td><td>2</td><td>Party</td></tr>
+<tr><td><b>Pets offset X</b></td><td>Moves the pets: the list, or each pet beside its owner</td><td>-400 – 400</td><td>0</td><td>Party</td></tr>
+<tr><td><b>Pets offset Y</b></td><td>Moves the pets: the list, or each pet beside its owner</td><td>-400 – 400</td><td>0</td><td>Party</td></tr>
+</tbody>
+</table>
 
 ## Pet auras
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Buffs and debuffs** | Uses the party frame's buff and debuff settings | On, Off | On | Party |
-| **Aura icon size** |  | 8 – 40 | 14 | Party |
-| **Pet auras shown** | Buffs and debuffs each; Auto: as the party | 0 – 16 (0: Auto) | Auto | Party |
-| **Aura side** |  | Right, Left | Right | Party |
-| **Aura offset X** |  | -200 – 200 | 2 | Party |
-| **Aura offset Y** |  | -200 – 200 | 0 | Party |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Buffs and debuffs</b></td><td>Uses the party frame's buff and debuff settings</td><td>On, Off</td><td>On</td><td>Party</td></tr>
+<tr><td><b>Aura icon size</b></td><td></td><td>8 – 40</td><td>14</td><td>Party</td></tr>
+<tr><td><b>Pet auras shown</b></td><td>Buffs and debuffs each; Auto: as the party</td><td>0 – 16 (0: Auto)</td><td>Auto</td><td>Party</td></tr>
+<tr><td><b>Aura side</b></td><td></td><td>Right, Left</td><td>Right</td><td>Party</td></tr>
+<tr><td><b>Aura offset X</b></td><td></td><td>-200 – 200</td><td>2</td><td>Party</td></tr>
+<tr><td><b>Aura offset Y</b></td><td></td><td>-200 – 200</td><td>0</td><td>Party</td></tr>
+</tbody>
+</table>
 
 ## Targets
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Show their targets** | A small frame beside each member with what it has targeted | On, Off | Off | Party |
-| **Side** |  | Right, Left, Above, Below | Right | Party |
-| **Width** |  | 40 – 300 | 100 | Party |
-| **Height** |  | 10 – 60 | 22 | Party |
-| **Offset X** |  | -200 – 200 | 4 | Party |
-| **Offset Y** |  | -200 – 200 | -28 | Party |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Show their targets</b></td><td>A small frame beside each member with what it has targeted</td><td>On, Off</td><td>Off</td><td>Party</td></tr>
+<tr><td><b>Side</b></td><td></td><td>Right, Left, Above, Below</td><td>Right</td><td>Party</td></tr>
+<tr><td><b>Width</b></td><td></td><td>40 – 300</td><td>100</td><td>Party</td></tr>
+<tr><td><b>Height</b></td><td></td><td>10 – 60</td><td>22</td><td>Party</td></tr>
+<tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>4</td><td>Party</td></tr>
+<tr><td><b>Offset Y</b></td><td></td><td>-200 – 200</td><td>-28</td><td>Party</td></tr>
+</tbody>
+</table>
 

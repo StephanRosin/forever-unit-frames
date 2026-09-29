@@ -10,70 +10,97 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 
 ## Frame
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Enabled** | Needs /reload after re-enabling | On, Off | On | all |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Enabled</b></td><td>Needs /reload after re-enabling</td><td>On, Off</td><td>On</td><td>all</td></tr>
+</tbody>
+</table>
 
 ## Size
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Width** |  | 40 – 600 | Player, Target: 300; Target of Target: 120; Focus: 160; Pet: 115; Party: 200 | all |
-| **Height** |  | 8 – 200 | Player, Target: 70; Target of Target, Pet: 28; Focus: 36; Party: 53 | all |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Width</b></td><td></td><td>40 – 600</td><td>Player, Target: 300; Target of Target: 120; Focus: 160; Pet: 115; Party: 200</td><td>all</td></tr>
+<tr><td><b>Height</b></td><td></td><td>8 – 200</td><td>Player, Target: 70; Target of Target, Pet: 28; Focus: 36; Party: 53</td><td>all</td></tr>
+</tbody>
+</table>
 
 ## Position
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Position X** | Offset from the screen centre | -4000 – 4000 | Player: -400; Target: 400; Target of Target: 536; Focus: 520; Pet: -624; Party: -709 | all |
-| **Position Y** | Offset from the screen centre | -4000 – 4000 | Player, Target: -220; Target of Target: -304; Focus: 232; Pet: -324; Party: 150 | all |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Position X</b></td><td>Offset from the screen centre</td><td>-4000 – 4000</td><td>Player: -400; Target: 400; Target of Target: 536; Focus: 520; Pet: -624; Party: -709</td><td>all</td></tr>
+<tr><td><b>Position Y</b></td><td>Offset from the screen centre</td><td>-4000 – 4000</td><td>Player, Target: -220; Target of Target: -304; Focus: 232; Pet: -324; Party: 150</td><td>all</td></tr>
+</tbody>
+</table>
 
 ## Bar heights
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Title row height (%)** | 0 = no title row | 0 – 60 | Player: 24; Target, Focus: 30; Target of Target, Pet: 0; Party: 26 | all |
-| **Health bar height (%)** | Share of the frame height | 10 – 100 | Player: 79; Target: 68; Target of Target, Pet: 75; Focus: 45; Party: 17 | all |
-| **Power bar height (%)** | Share of the frame height; room left over goes to health and power | 0 – 90 | Player: 20; Target, Target of Target, Pet: 25; Focus: 21; Party: 9 | all |
-| **Show power bar** |  | On, Off | On | all |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Title row height (%)</b></td><td>0 = no title row</td><td>0 – 60</td><td>Player: 24; Target, Focus: 30; Target of Target, Pet: 0; Party: 26</td><td>all</td></tr>
+<tr><td><b>Health bar height (%)</b></td><td>Share of the frame height</td><td>10 – 100</td><td>Player: 79; Target: 68; Target of Target, Pet: 75; Focus: 45; Party: 17</td><td>all</td></tr>
+<tr><td><b>Power bar height (%)</b></td><td>Share of the frame height; room left over goes to health and power</td><td>0 – 90</td><td>Player: 20; Target, Target of Target, Pet: 25; Focus: 21; Party: 9</td><td>all</td></tr>
+<tr><td><b>Show power bar</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
+</tbody>
+</table>
 
 ## Portrait
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Portrait** | Square as tall as the frame | Off, Left, Right | Player, Target: Left; Target of Target, Focus, Pet, Party: Off | all |
-| **Portrait style** |  | 2D, 3D (model) | Player, Target: 3D (model); Target of Target, Focus, Pet, Party: 2D | all |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Portrait</b></td><td>Square as tall as the frame</td><td>Off, Left, Right</td><td>Player, Target: Left; Target of Target, Focus, Pet, Party: Off</td><td>all</td></tr>
+<tr><td><b>Portrait style</b></td><td></td><td>2D, 3D (model)</td><td>Player, Target: 3D (model); Target of Target, Focus, Pet, Party: 2D</td><td>all</td></tr>
+</tbody>
+</table>
 
 ## Indicators
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Elite / rare marker** | On the portrait, else above the frame | On, Off | On | Target, Target of Target, Focus |
-| **Elite / rare style** | Border: gold for elites, silver for rares | Marker, Border | Marker | Target, Target of Target, Focus |
-| **Elite border thickness** |  | 1 – 6 | 2 | Target, Target of Target, Focus |
-| **Damage and heal numbers** | Shown briefly inside the frame | On, Off | Player, Target, Focus, Pet, Party: On; Target of Target: Off | all |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Elite / rare marker</b></td><td>On the portrait, else above the frame</td><td>On, Off</td><td>On</td><td>Target, Target of Target, Focus</td></tr>
+<tr><td><b>Elite / rare style</b></td><td>Border: gold for elites, silver for rares</td><td>Marker, Border</td><td>Marker</td><td>Target, Target of Target, Focus</td></tr>
+<tr><td><b>Elite border thickness</b></td><td></td><td>1 – 6</td><td>2</td><td>Target, Target of Target, Focus</td></tr>
+<tr><td><b>Damage and heal numbers</b></td><td>Shown briefly inside the frame</td><td>On, Off</td><td>Player, Target, Focus, Pet, Party: On; Target of Target: Off</td><td>all</td></tr>
+</tbody>
+</table>
 
 ## Border
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Show border** | One ring around the frame and a docked castbar | On, Off | On | all |
-| **Border style** | Gold is shaded and ignores the border color | Flat, Gold | Gold | all |
-| **Border size** | 0 = no border | 0 – 8 | 1 | all |
-| **Border padding** | Gap between frame and border | 0 – 8 | 0 | all |
-| **Border color** |  | Color | `#000000` | all |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Show border</b></td><td>One ring around the frame and a docked castbar</td><td>On, Off</td><td>On</td><td>all</td></tr>
+<tr><td><b>Border style</b></td><td>Gold is shaded and ignores the border color</td><td>Flat, Gold</td><td>Gold</td><td>all</td></tr>
+<tr><td><b>Border size</b></td><td>0 = no border</td><td>0 – 8</td><td>1</td><td>all</td></tr>
+<tr><td><b>Border padding</b></td><td>Gap between frame and border</td><td>0 – 8</td><td>0</td><td>all</td></tr>
+<tr><td><b>Border color</b></td><td></td><td>Color</td><td><code>#000000</code></td><td>all</td></tr>
+</tbody>
+</table>
 
 ## Shadow
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Drop shadow** |  | On, Off | On | all |
-| **Shadow strength** | Opacity in percent | 0 – 100 | 16 | all |
-| **Shadow size** | Width of the soft edge in pixels | 1 – 16 | Player: 1; Target, Target of Target, Focus, Pet, Party: 9 | all |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Drop shadow</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
+<tr><td><b>Shadow strength</b></td><td>Opacity in percent</td><td>0 – 100</td><td>16</td><td>all</td></tr>
+<tr><td><b>Shadow size</b></td><td>Width of the soft edge in pixels</td><td>1 – 16</td><td>Player: 1; Target, Target of Target, Focus, Pet, Party: 9</td><td>all</td></tr>
+</tbody>
+</table>
 
 ## Shape
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Corner radius** | 0 = square corners | 0 – 12 | Player, Target, Party: 10; Target of Target, Focus, Pet: 0 | all |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Corner radius</b></td><td>0 = square corners</td><td>0 – 12</td><td>Player, Target, Party: 10; Target of Target, Focus, Pet: 0</td><td>all</td></tr>
+</tbody>
+</table>
 

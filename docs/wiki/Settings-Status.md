@@ -10,110 +10,143 @@ The **Status** tab on each frame's page in `/fuf`. The last column says which fr
 
 ## Status icons
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Show combat icon** | Crossed swords while you are in combat | On, Off | On | Player |
-| **Show resting icon** | While you rest in an inn or a city | On, Off | On | Player |
-| **Icon size** |  | 10 – 48 | 21 | Player |
-| **Point on the health bar** | The icons follow the health bar | Any of the 9 points (corners, edges, center) | Center | Player |
-| **Point of the icons** |  | Any of the 9 points (corners, edges, center) | Center | Player |
-| **Offset X** |  | -400 – 400 | 49 | Player |
-| **Offset Y** |  | -400 – 400 | -1 | Player |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Show combat icon</b></td><td>Crossed swords while you are in combat</td><td>On, Off</td><td>On</td><td>Player</td></tr>
+<tr><td><b>Show resting icon</b></td><td>While you rest in an inn or a city</td><td>On, Off</td><td>On</td><td>Player</td></tr>
+<tr><td><b>Icon size</b></td><td></td><td>10 – 48</td><td>21</td><td>Player</td></tr>
+<tr><td><b>Point on the health bar</b></td><td>The icons follow the health bar</td><td>Any of the 9 points (corners, edges, center)</td><td>Center</td><td>Player</td></tr>
+<tr><td><b>Point of the icons</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Center</td><td>Player</td></tr>
+<tr><td><b>Offset X</b></td><td></td><td>-400 – 400</td><td>49</td><td>Player</td></tr>
+<tr><td><b>Offset Y</b></td><td></td><td>-400 – 400</td><td>-1</td><td>Player</td></tr>
+</tbody>
+</table>
 
 ## Combat icon
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Show combat icon** | Crossed swords while the unit is in combat | On, Off | Off | Target, Target of Target, Focus, Party |
-| **Combat icon animation** | Duel: clashing swords. Burst: springs in. Pulse: breathes | Off, Burst, Pulse, Duel (clashing swords) | Duel (clashing swords) | Player, Target, Target of Target, Focus, Party |
-| **Icon size** |  | 8 – 48 | 18 | Target, Target of Target, Focus, Party |
-| **Point on the frame** |  | Any of the 9 points (corners, edges, center) | Left | Target, Target of Target, Focus, Party |
-| **Point of the icon** |  | Any of the 9 points (corners, edges, center) | Right | Target, Target of Target, Focus, Party |
-| **Offset X** |  | -200 – 200 | -2 | Target, Target of Target, Focus, Party |
-| **Offset Y** |  | -200 – 200 | 0 | Target, Target of Target, Focus, Party |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Show combat icon</b></td><td>Crossed swords while the unit is in combat</td><td>On, Off</td><td>Off</td><td>Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Combat icon animation</b></td><td>Duel: clashing swords. Burst: springs in. Pulse: breathes</td><td>Off, Burst, Pulse, Duel (clashing swords)</td><td>Duel (clashing swords)</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Icon size</b></td><td></td><td>8 – 48</td><td>18</td><td>Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Point on the frame</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Left</td><td>Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Point of the icon</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Right</td><td>Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>-2</td><td>Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Offset Y</b></td><td></td><td>-200 – 200</td><td>0</td><td>Target, Target of Target, Focus, Party</td></tr>
+</tbody>
+</table>
 
 ## PvP icon
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Show PvP icon** | The faction crest while a player is flagged for PvP | On, Off | Player, Target: On; Target of Target, Focus, Party: Off | Player, Target, Target of Target, Focus, Party |
-| **Icon size** |  | 8 – 48 | Player: 25; Target, Target of Target, Focus, Party: 24 | Player, Target, Target of Target, Focus, Party |
-| **Point on the frame** |  | Any of the 9 points (corners, edges, center) | Top left | Player, Target, Target of Target, Focus, Party |
-| **Point of the icon** |  | Any of the 9 points (corners, edges, center) | Center | Player, Target, Target of Target, Focus, Party |
-| **Offset X** |  | -200 – 200 | 0 | Player, Target, Target of Target, Focus, Party |
-| **Offset Y** |  | -200 – 200 | 0 | Player, Target, Target of Target, Focus, Party |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Show PvP icon</b></td><td>The faction crest while a player is flagged for PvP</td><td>On, Off</td><td>Player, Target: On; Target of Target, Focus, Party: Off</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Icon size</b></td><td></td><td>8 – 48</td><td>Player: 25; Target, Target of Target, Focus, Party: 24</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Point on the frame</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Top left</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Point of the icon</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Center</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>0</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Offset Y</b></td><td></td><td>-200 – 200</td><td>0</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+</tbody>
+</table>
 
 ## Raid target marker
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Show raid target marker** | Skull, cross, star and the other raid target icons | On, Off | On | all |
-| **Icon size** |  | 8 – 64 | Player, Target, Focus, Party: 20; Target of Target, Pet: 16 | all |
-| **Point on the frame** |  | Any of the 9 points (corners, edges, center) | Top | all |
-| **Point of the icon** |  | Any of the 9 points (corners, edges, center) | Center | all |
-| **Offset X** |  | -200 – 200 | 0 | all |
-| **Offset Y** |  | -200 – 200 | 0 | all |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Show raid target marker</b></td><td>Skull, cross, star and the other raid target icons</td><td>On, Off</td><td>On</td><td>all</td></tr>
+<tr><td><b>Icon size</b></td><td></td><td>8 – 64</td><td>Player, Target, Focus, Party: 20; Target of Target, Pet: 16</td><td>all</td></tr>
+<tr><td><b>Point on the frame</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Top</td><td>all</td></tr>
+<tr><td><b>Point of the icon</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Center</td><td>all</td></tr>
+<tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>0</td><td>all</td></tr>
+<tr><td><b>Offset Y</b></td><td></td><td>-200 – 200</td><td>0</td><td>all</td></tr>
+</tbody>
+</table>
 
 ## Group icons
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Leader and assistant** | The group's leader (or guide) and assistants | On, Off | On | Player, Party |
-| **Ready check** | Waiting, ready or not ready; stays a few seconds after the check | On, Off | On | Player, Party |
-| **Incoming resurrection** |  | On, Off | On | Player, Party |
-| **Icon size** |  | 8 – 48 | 16 | Player, Party |
-| **Point on the frame** |  | Any of the 9 points (corners, edges, center) | Top left | Player, Party |
-| **Point of the icons** |  | Any of the 9 points (corners, edges, center) | Left | Player, Party |
-| **Offset X** |  | -200 – 200 | 2 | Player, Party |
-| **Offset Y** |  | -200 – 200 | 0 | Player, Party |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Leader and assistant</b></td><td>The group's leader (or guide) and assistants</td><td>On, Off</td><td>On</td><td>Player, Party</td></tr>
+<tr><td><b>Ready check</b></td><td>Waiting, ready or not ready; stays a few seconds after the check</td><td>On, Off</td><td>On</td><td>Player, Party</td></tr>
+<tr><td><b>Incoming resurrection</b></td><td></td><td>On, Off</td><td>On</td><td>Player, Party</td></tr>
+<tr><td><b>Icon size</b></td><td></td><td>8 – 48</td><td>16</td><td>Player, Party</td></tr>
+<tr><td><b>Point on the frame</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Top left</td><td>Player, Party</td></tr>
+<tr><td><b>Point of the icons</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Left</td><td>Player, Party</td></tr>
+<tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>2</td><td>Player, Party</td></tr>
+<tr><td><b>Offset Y</b></td><td></td><td>-200 – 200</td><td>0</td><td>Player, Party</td></tr>
+</tbody>
+</table>
 
 ## Combo points
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Show combo points** |  | On, Off | On | Target |
-| **Hide when empty** | Only shown while you have points | On, Off | On | Target |
-| **Shape** |  | Square, Round | Square | Target |
-| **Pip size** |  | 4 – 40 | 10 | Target |
-| **Spacing** |  | 0 – 20 | 3 | Target |
-| **Color** |  | Color | `#ffd11a` | Target |
-| **Point on the frame** | The frame and a docked castbar, as one block | Any of the 9 points (corners, edges, center) | Bottom right | Target |
-| **Point of the pips** |  | Any of the 9 points (corners, edges, center) | Top right | Target |
-| **Offset X** |  | -400 – 400 | 0 | Target |
-| **Offset Y** |  | -400 – 400 | -3 | Target |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Show combo points</b></td><td></td><td>On, Off</td><td>On</td><td>Target</td></tr>
+<tr><td><b>Hide when empty</b></td><td>Only shown while you have points</td><td>On, Off</td><td>On</td><td>Target</td></tr>
+<tr><td><b>Shape</b></td><td></td><td>Square, Round</td><td>Square</td><td>Target</td></tr>
+<tr><td><b>Pip size</b></td><td></td><td>4 – 40</td><td>10</td><td>Target</td></tr>
+<tr><td><b>Spacing</b></td><td></td><td>0 – 20</td><td>3</td><td>Target</td></tr>
+<tr><td><b>Color</b></td><td></td><td>Color</td><td><code>#ffd11a</code></td><td>Target</td></tr>
+<tr><td><b>Point on the frame</b></td><td>The frame and a docked castbar, as one block</td><td>Any of the 9 points (corners, edges, center)</td><td>Bottom right</td><td>Target</td></tr>
+<tr><td><b>Point of the pips</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Top right</td><td>Target</td></tr>
+<tr><td><b>Offset X</b></td><td></td><td>-400 – 400</td><td>0</td><td>Target</td></tr>
+<tr><td><b>Offset Y</b></td><td></td><td>-400 – 400</td><td>-3</td><td>Target</td></tr>
+</tbody>
+</table>
 
 ## Threat
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Threat glow** | Player, party, pet: the unit's own threat. Target, focus: your threat on it | On, Off | Player, Party: On; Target, Target of Target, Focus, Pet: Off | all |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Threat glow</b></td><td>Player, party, pet: the unit's own threat. Target, focus: your threat on it</td><td>On, Off</td><td>Player, Party: On; Target, Target of Target, Focus, Pet: Off</td><td>all</td></tr>
+</tbody>
+</table>
 
 ## Target highlight
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Highlight your target** | The party member you have targeted | On, Off | On | Party |
-| **Target highlight color** |  | Color | `#ffffff`, 90 % opaque | Party |
-| **Thickness** |  | 1 – 12 | 3 | Party |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Highlight your target</b></td><td>The party member you have targeted</td><td>On, Off</td><td>On</td><td>Party</td></tr>
+<tr><td><b>Target highlight color</b></td><td></td><td>Color</td><td><code>#ffffff</code>, 90 % opaque</td><td>Party</td></tr>
+<tr><td><b>Thickness</b></td><td></td><td>1 – 12</td><td>3</td><td>Party</td></tr>
+</tbody>
+</table>
 
 ## Dispellable debuffs
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Tint the border** | In the debuff's color while it carries one you can dispel | On, Off | On | Player, Party |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Tint the border</b></td><td>In the debuff's color while it carries one you can dispel</td><td>On, Off</td><td>On</td><td>Player, Party</td></tr>
+</tbody>
+</table>
 
 ## Range
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Fade when out of range** | Measured as set in General > Status > Range | On, Off | On | Target, Target of Target, Focus, Pet, Party |
-| **Opacity out of range (%)** |  | 0 – 100 | 70 | Target, Target of Target, Focus, Pet, Party |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Fade when out of range</b></td><td>Measured as set in General &gt; Status &gt; Range</td><td>On, Off</td><td>On</td><td>Target, Target of Target, Focus, Pet, Party</td></tr>
+<tr><td><b>Opacity out of range (%)</b></td><td></td><td>0 – 100</td><td>70</td><td>Target, Target of Target, Focus, Pet, Party</td></tr>
+</tbody>
+</table>
 
 ## Out of combat
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Fade out of combat** | While idle: no combat, no cast, full health | On, Off | Off | Player |
-| **Opacity when faded (%)** |  | 0 – 100 | 0 | Player |
-| **Show in full with a target** | Fades back in when you select a target | On, Off | On | Player |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Fade out of combat</b></td><td>While idle: no combat, no cast, full health</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
+<tr><td><b>Opacity when faded (%)</b></td><td></td><td>0 – 100</td><td>0</td><td>Player</td></tr>
+<tr><td><b>Show in full with a target</b></td><td>Fades back in when you select a target</td><td>On, Off</td><td>On</td><td>Player</td></tr>
+</tbody>
+</table>
 

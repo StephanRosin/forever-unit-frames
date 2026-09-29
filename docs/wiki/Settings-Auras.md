@@ -10,89 +10,104 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 
 ## Aura icons
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Border around the icons** | Debuffs: shows the dispel type (magic, curse, poison, disease) | On, Off | On | all |
-| **Border thickness** |  | 1 – 6 | 1 | all |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Border around the icons</b></td><td>Debuffs: shows the dispel type (magic, curse, poison, disease)</td><td>On, Off</td><td>On</td><td>all</td></tr>
+<tr><td><b>Border thickness</b></td><td></td><td>1 – 6</td><td>1</td><td>all</td></tr>
+</tbody>
+</table>
 
 ## Buffs
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Show buffs** |  | On, Off | Player, Target, Focus, Party: On; Target of Target, Pet: Off | all |
-| **Weapon enchants** | Poisons, stones, Rockbiter Weapon and the like, before the buffs | On, Off | On | Player |
-| **Only mine** | Cast by you or your pet | On, Off | Player, Target, Target of Target, Focus, Pet: Off; Party: On | all |
-| **Hide tracking** | Herb, mineral and treasure finding, tracking and sensing | On, Off | Player, Target: On; Target of Target, Focus, Pet, Party: Off | all |
-| **Hide permanent** | Everything without a duration, e.g. paladin auras, stances | On, Off | Player, Target, Target of Target, Focus, Pet: Off; Party: On | all |
-| **Hide longer than (min)** | Hour potions, food, long buffs; also auras without a duration | 0 – 120 (0: Off) | Off | all |
-| **Show time left** |  | On, Off | On | all |
-| **Anchor to** | Debuffs: next to the debuff icons | Frame, Health bar, Power bar, Castbar, Debuffs | Player, Target, Party: Frame; Target of Target, Focus, Pet: Debuffs | all |
-| **Point on the anchor** |  | Any of the 9 points (corners, edges, center) | Top left | all |
-| **Point of the icons** |  | Any of the 9 points (corners, edges, center) | Player, Target, Target of Target, Focus, Pet: Bottom left; Party: Top right | all |
-| **Offset X** |  | -200 – 200 | Player, Target of Target, Focus, Pet, Party: 0; Target: -1 | all |
-| **Offset Y** |  | -200 – 200 | Player, Target: 3; Target of Target, Focus, Pet: 2; Party: 0 | all |
-| **Grow** |  | Right, Left, Up, Down | Player, Target, Target of Target, Focus, Pet: Right; Party: Left | all |
-| **New rows** | Across the growth direction | Right, Left, Up, Down | Player, Target, Target of Target, Focus, Pet: Up; Party: Down | all |
-| **Icon size** |  | 8 – 64 | Player, Target: 18; Target of Target: 14; Focus: 20; Pet: 16; Party: 22 | all |
-| **Spacing** |  | 0 – 20 | Player: 4; Target, Target of Target, Focus, Pet: 2; Party: 0 | all |
-| **Icons per row** | Auto: as many as fit the frame | 0 – 40 (0: Auto) | Player: 9; Target: 5; Target of Target, Focus, Pet, Party: Auto | all |
-| **Maximum icons** |  | 1 – 40 | Player, Target: 24; Target of Target: 9; Focus: 16; Pet: 6; Party: 8 | all |
-| **Mine first** | Yours in their own rows, bigger | On, Off | Player, Target, Party: On; Target of Target, Focus, Pet: Off | all |
-| **Size of mine** |  | 10 – 64 | Player: 25; Target, Focus: 26; Target of Target, Pet: 21; Party: 28 | all |
-| **Border color by caster** | Yours in one color, others' in another | On, Off | Off | all |
-| **Border of mine** |  | Color | `#33d933` | all |
-| **Border of others'** |  | Color | `#d93333` | all |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Show buffs</b></td><td></td><td>On, Off</td><td>Player, Target, Focus, Party: On; Target of Target, Pet: Off</td><td>all</td></tr>
+<tr><td><b>Weapon enchants</b></td><td>Poisons, stones, Rockbiter Weapon and the like, before the buffs</td><td>On, Off</td><td>On</td><td>Player</td></tr>
+<tr><td><b>Only mine</b></td><td>Cast by you or your pet</td><td>On, Off</td><td>Player, Target, Target of Target, Focus, Pet: Off; Party: On</td><td>all</td></tr>
+<tr><td><b>Hide tracking</b></td><td>Herb, mineral and treasure finding, tracking and sensing</td><td>On, Off</td><td>Player, Target: On; Target of Target, Focus, Pet, Party: Off</td><td>all</td></tr>
+<tr><td><b>Hide permanent</b></td><td>Everything without a duration, e.g. paladin auras, stances</td><td>On, Off</td><td>Player, Target, Target of Target, Focus, Pet: Off; Party: On</td><td>all</td></tr>
+<tr><td><b>Hide longer than (min)</b></td><td>Hour potions, food, long buffs; also auras without a duration</td><td>0 – 120 (0: Off)</td><td>Off</td><td>all</td></tr>
+<tr><td><b>Show time left</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
+<tr><td><b>Anchor to</b></td><td>Debuffs: next to the debuff icons</td><td>Frame, Health bar, Power bar, Castbar, Debuffs</td><td>Player, Target, Party: Frame; Target of Target, Focus, Pet: Debuffs</td><td>all</td></tr>
+<tr><td><b>Point on the anchor</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Top left</td><td>all</td></tr>
+<tr><td><b>Point of the icons</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Player, Target, Target of Target, Focus, Pet: Bottom left; Party: Top right</td><td>all</td></tr>
+<tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>Player, Target of Target, Focus, Pet, Party: 0; Target: -1</td><td>all</td></tr>
+<tr><td><b>Offset Y</b></td><td></td><td>-200 – 200</td><td>Player, Target: 3; Target of Target, Focus, Pet: 2; Party: 0</td><td>all</td></tr>
+<tr><td><b>Grow</b></td><td></td><td>Right, Left, Up, Down</td><td>Player, Target, Target of Target, Focus, Pet: Right; Party: Left</td><td>all</td></tr>
+<tr><td><b>New rows</b></td><td>Across the growth direction</td><td>Right, Left, Up, Down</td><td>Player, Target, Target of Target, Focus, Pet: Up; Party: Down</td><td>all</td></tr>
+<tr><td><b>Icon size</b></td><td></td><td>8 – 64</td><td>Player, Target: 18; Target of Target: 14; Focus: 20; Pet: 16; Party: 22</td><td>all</td></tr>
+<tr><td><b>Spacing</b></td><td></td><td>0 – 20</td><td>Player: 4; Target, Target of Target, Focus, Pet: 2; Party: 0</td><td>all</td></tr>
+<tr><td><b>Icons per row</b></td><td>Auto: as many as fit the frame</td><td>0 – 40 (0: Auto)</td><td>Player: 9; Target: 5; Target of Target, Focus, Pet, Party: Auto</td><td>all</td></tr>
+<tr><td><b>Maximum icons</b></td><td></td><td>1 – 40</td><td>Player, Target: 24; Target of Target: 9; Focus: 16; Pet: 6; Party: 8</td><td>all</td></tr>
+<tr><td><b>Mine first</b></td><td>Yours in their own rows, bigger</td><td>On, Off</td><td>Player, Target, Party: On; Target of Target, Focus, Pet: Off</td><td>all</td></tr>
+<tr><td><b>Size of mine</b></td><td></td><td>10 – 64</td><td>Player: 25; Target, Focus: 26; Target of Target, Pet: 21; Party: 28</td><td>all</td></tr>
+<tr><td><b>Border color by caster</b></td><td>Yours in one color, others' in another</td><td>On, Off</td><td>Off</td><td>all</td></tr>
+<tr><td><b>Border of mine</b></td><td></td><td>Color</td><td><code>#33d933</code></td><td>all</td></tr>
+<tr><td><b>Border of others'</b></td><td></td><td>Color</td><td><code>#d93333</code></td><td>all</td></tr>
+</tbody>
+</table>
 
 ## Debuffs
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Show debuffs** |  | On, Off | Player, Target, Focus, Pet, Party: On; Target of Target: Off | all |
-| **Only mine** | Cast by you or your pet | On, Off | Off | all |
-| **Only dispellable** | Debuffs you can remove | On, Off | Player, Target, Target of Target, Focus, Pet: Off; Party: On | all |
-| **Hide permanent** | Everything without a duration, e.g. paladin auras, stances | On, Off | Off | all |
-| **Show time left** |  | On, Off | On | all |
-| **Anchor to** | Buffs: next to the buff icons | Frame, Health bar, Power bar, Castbar, Buffs | Player, Target: Castbar; Target of Target, Focus, Pet, Party: Frame | all |
-| **Point on the anchor** |  | Any of the 9 points (corners, edges, center) | Player, Target, Party: Bottom left; Target of Target, Focus, Pet: Top left | all |
-| **Point of the icons** |  | Any of the 9 points (corners, edges, center) | Player, Target: Top left; Target of Target, Focus, Pet: Bottom left; Party: Top right | all |
-| **Offset X** |  | -200 – 200 | Player: -1; Target, Target of Target, Focus, Pet: 0; Party: -3 | all |
-| **Offset Y** |  | -200 – 200 | Player: -3; Target: -4; Target of Target, Focus, Pet: 2; Party: 19 | all |
-| **Grow** |  | Right, Left, Up, Down | Player, Target, Target of Target, Focus, Pet: Right; Party: Left | all |
-| **New rows** | Across the growth direction | Right, Left, Up, Down | Player, Target of Target, Focus, Pet: Up; Target, Party: Down | all |
-| **Icon size** |  | 8 – 64 | Player, Target: 18; Target of Target: 14; Focus: 20; Pet: 16; Party: 22 | all |
-| **Spacing** |  | 0 – 20 | Player, Target of Target, Focus, Pet, Party: 2; Target: 4 | all |
-| **Icons per row** | Auto: as many as fit the frame | 0 – 40 (0: Auto) | Player, Target of Target, Focus, Pet, Party: Auto; Target: 12 | all |
-| **Maximum icons** |  | 1 – 40 | Player, Target: 24; Target of Target, Pet, Party: 6; Focus: 16 | all |
-| **Mine first** | Yours in their own rows, bigger | On, Off | Player, Target, Focus: On; Target of Target, Pet, Party: Off | all |
-| **Size of mine** |  | 10 – 64 | Player, Target, Focus: 26; Target of Target, Pet: 21; Party: 25 | all |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Show debuffs</b></td><td></td><td>On, Off</td><td>Player, Target, Focus, Pet, Party: On; Target of Target: Off</td><td>all</td></tr>
+<tr><td><b>Only mine</b></td><td>Cast by you or your pet</td><td>On, Off</td><td>Off</td><td>all</td></tr>
+<tr><td><b>Only dispellable</b></td><td>Debuffs you can remove</td><td>On, Off</td><td>Player, Target, Target of Target, Focus, Pet: Off; Party: On</td><td>all</td></tr>
+<tr><td><b>Hide permanent</b></td><td>Everything without a duration, e.g. paladin auras, stances</td><td>On, Off</td><td>Off</td><td>all</td></tr>
+<tr><td><b>Show time left</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
+<tr><td><b>Anchor to</b></td><td>Buffs: next to the buff icons</td><td>Frame, Health bar, Power bar, Castbar, Buffs</td><td>Player, Target: Castbar; Target of Target, Focus, Pet, Party: Frame</td><td>all</td></tr>
+<tr><td><b>Point on the anchor</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Player, Target, Party: Bottom left; Target of Target, Focus, Pet: Top left</td><td>all</td></tr>
+<tr><td><b>Point of the icons</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Player, Target: Top left; Target of Target, Focus, Pet: Bottom left; Party: Top right</td><td>all</td></tr>
+<tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>Player: -1; Target, Target of Target, Focus, Pet: 0; Party: -3</td><td>all</td></tr>
+<tr><td><b>Offset Y</b></td><td></td><td>-200 – 200</td><td>Player: -3; Target: -4; Target of Target, Focus, Pet: 2; Party: 19</td><td>all</td></tr>
+<tr><td><b>Grow</b></td><td></td><td>Right, Left, Up, Down</td><td>Player, Target, Target of Target, Focus, Pet: Right; Party: Left</td><td>all</td></tr>
+<tr><td><b>New rows</b></td><td>Across the growth direction</td><td>Right, Left, Up, Down</td><td>Player, Target of Target, Focus, Pet: Up; Target, Party: Down</td><td>all</td></tr>
+<tr><td><b>Icon size</b></td><td></td><td>8 – 64</td><td>Player, Target: 18; Target of Target: 14; Focus: 20; Pet: 16; Party: 22</td><td>all</td></tr>
+<tr><td><b>Spacing</b></td><td></td><td>0 – 20</td><td>Player, Target of Target, Focus, Pet, Party: 2; Target: 4</td><td>all</td></tr>
+<tr><td><b>Icons per row</b></td><td>Auto: as many as fit the frame</td><td>0 – 40 (0: Auto)</td><td>Player, Target of Target, Focus, Pet, Party: Auto; Target: 12</td><td>all</td></tr>
+<tr><td><b>Maximum icons</b></td><td></td><td>1 – 40</td><td>Player, Target: 24; Target of Target, Pet, Party: 6; Focus: 16</td><td>all</td></tr>
+<tr><td><b>Mine first</b></td><td>Yours in their own rows, bigger</td><td>On, Off</td><td>Player, Target, Focus: On; Target of Target, Pet, Party: Off</td><td>all</td></tr>
+<tr><td><b>Size of mine</b></td><td></td><td>10 – 64</td><td>Player, Target, Focus: 26; Target of Target, Pet: 21; Party: 25</td><td>all</td></tr>
+</tbody>
+</table>
 
 ## Dispellable debuffs
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Show separately** | Debuffs you can dispel, in their own place and size | On, Off | Off | Party |
-| **Show time left** |  | On, Off | On | Party |
-| **Anchor to** | Debuffs: next to the debuff icons | Frame, Health bar, Power bar, Castbar, Debuffs | Frame | Party |
-| **Point on the anchor** |  | Any of the 9 points (corners, edges, center) | Center | Party |
-| **Point of the icons** |  | Any of the 9 points (corners, edges, center) | Center | Party |
-| **Offset X** |  | -200 – 200 | 0 | Party |
-| **Offset Y** |  | -200 – 200 | 0 | Party |
-| **Grow** |  | Right, Left, Up, Down | Right | Party |
-| **New rows** | Across the growth direction | Right, Left, Up, Down | Down | Party |
-| **Icon size** |  | 8 – 64 | 24 | Party |
-| **Spacing** |  | 0 – 20 | 2 | Party |
-| **Icons per row** | Auto: as many as fit the frame | 0 – 40 (0: Auto) | Auto | Party |
-| **Maximum icons** |  | 1 – 40 | 3 | Party |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Show separately</b></td><td>Debuffs you can dispel, in their own place and size</td><td>On, Off</td><td>Off</td><td>Party</td></tr>
+<tr><td><b>Show time left</b></td><td></td><td>On, Off</td><td>On</td><td>Party</td></tr>
+<tr><td><b>Anchor to</b></td><td>Debuffs: next to the debuff icons</td><td>Frame, Health bar, Power bar, Castbar, Debuffs</td><td>Frame</td><td>Party</td></tr>
+<tr><td><b>Point on the anchor</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Center</td><td>Party</td></tr>
+<tr><td><b>Point of the icons</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Center</td><td>Party</td></tr>
+<tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>0</td><td>Party</td></tr>
+<tr><td><b>Offset Y</b></td><td></td><td>-200 – 200</td><td>0</td><td>Party</td></tr>
+<tr><td><b>Grow</b></td><td></td><td>Right, Left, Up, Down</td><td>Right</td><td>Party</td></tr>
+<tr><td><b>New rows</b></td><td>Across the growth direction</td><td>Right, Left, Up, Down</td><td>Down</td><td>Party</td></tr>
+<tr><td><b>Icon size</b></td><td></td><td>8 – 64</td><td>24</td><td>Party</td></tr>
+<tr><td><b>Spacing</b></td><td></td><td>0 – 20</td><td>2</td><td>Party</td></tr>
+<tr><td><b>Icons per row</b></td><td>Auto: as many as fit the frame</td><td>0 – 40 (0: Auto)</td><td>Auto</td><td>Party</td></tr>
+<tr><td><b>Maximum icons</b></td><td></td><td>1 – 40</td><td>3</td><td>Party</td></tr>
+</tbody>
+</table>
 
 ## Totems
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Show totems** | Shown while a totem is out; right-click one to destroy it | On, Off | On | Player |
-| **Icon size** |  | 12 – 64 | 24 | Player |
-| **Spacing** |  | 0 – 20 | 3 | Player |
-| **Point on the frame** | The frame and a docked castbar, as one block | Any of the 9 points (corners, edges, center) | Right | Player |
-| **Point of the icons** |  | Any of the 9 points (corners, edges, center) | Left | Player |
-| **Offset X** |  | -400 – 400 | 6 | Player |
-| **Offset Y** |  | -400 – 400 | 0 | Player |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Show totems</b></td><td>Shown while a totem is out; right-click one to destroy it</td><td>On, Off</td><td>On</td><td>Player</td></tr>
+<tr><td><b>Icon size</b></td><td></td><td>12 – 64</td><td>24</td><td>Player</td></tr>
+<tr><td><b>Spacing</b></td><td></td><td>0 – 20</td><td>3</td><td>Player</td></tr>
+<tr><td><b>Point on the frame</b></td><td>The frame and a docked castbar, as one block</td><td>Any of the 9 points (corners, edges, center)</td><td>Right</td><td>Player</td></tr>
+<tr><td><b>Point of the icons</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Left</td><td>Player</td></tr>
+<tr><td><b>Offset X</b></td><td></td><td>-400 – 400</td><td>6</td><td>Player</td></tr>
+<tr><td><b>Offset Y</b></td><td></td><td>-400 – 400</td><td>0</td><td>Player</td></tr>
+</tbody>
+</table>
 

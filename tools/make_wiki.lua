@@ -91,7 +91,20 @@ local function defaultText(def, scopes)
     return table.concat(parts, "; ")
 end
 
-local function cell(s) return (tostring(s):gsub("|", "\\|"):gsub("\n", " ")) end
+-- A table cell's HTML: escaped, `code` as <code>.
+local function cell(s)
+    s = tostring(s):gsub("&", "&amp;"):gsub("<", "&lt;"):gsub(">", "&gt;"):gsub("\n", " ")
+    return (s:gsub("`(.-)`", "<code>%1</code>"))
+end
+
+-- Fixed column widths: GitHub sizes Markdown tables to their content, so
+-- every table looked different. The wiki's text column is 896 px wide;
+-- both layouts fill it without scrolling.
+local WIDTHS = {
+    [4] = { 190, 350, 190, 160 },
+    [5] = { 170, 280, 160, 150, 130 },
+}
+local HEADINGS = { "Option", "What it does", "Choices", "Default", "Frames" }
 
 -- GitHub's anchor for a heading: lower case, spaces to hyphens, most
 -- punctuation dropped.
@@ -126,22 +139,27 @@ local function section(lines, sec, keys, scopesFor, showFrames, level)
         lines[#lines + 1] = ("Button: **%s**."):format(label("ACTION_" .. sec.action, sec.action))
         lines[#lines + 1] = ""
     end
-    lines[#lines + 1] = showFrames and "| Option | What it does | Choices | Default | Frames |"
-        or "| Option | What it does | Choices | Default |"
-    lines[#lines + 1] = showFrames and "|---|---|---|---|---|" or "|---|---|---|---|"
+    local widths = WIDTHS[showFrames and 5 or 4]
+    lines[#lines + 1] = "<table>"
+    local head = {}
+    for i, w in ipairs(widths) do head[#head + 1] = ('<th align="left" width="%d">%s</th>'):format(w, HEADINGS[i]) end
+    lines[#lines + 1] = "<thead><tr>" .. table.concat(head) .. "</tr></thead>"
+    lines[#lines + 1] = "<tbody>"
     for _, key in ipairs(keys) do
         local def = S.Get(key)
         local scopes = scopesFor(def)
         local hint = label("HINT_" .. key, "")
-        local row = { "**" .. cell(label("SETTING_" .. key, key)) .. "**", cell(hint), cell(choices(def)),
+        local row = { "<b>" .. cell(label("SETTING_" .. key, key)) .. "</b>", cell(hint), cell(choices(def)),
             cell(defaultText(def, scopes)) }
         if showFrames then
             local names = {}
             for _, scope in ipairs(scopes) do names[#names + 1] = frameName(scope) end
-            row[#row + 1] = #scopes == #FRAMES and "all" or table.concat(names, ", ")
+            row[#row + 1] = cell(#scopes == #FRAMES and "all" or table.concat(names, ", "))
         end
-        lines[#lines + 1] = "| " .. table.concat(row, " | ") .. " |"
+        lines[#lines + 1] = "<tr><td>" .. table.concat(row, "</td><td>") .. "</td></tr>"
     end
+    lines[#lines + 1] = "</tbody>"
+    lines[#lines + 1] = "</table>"
     lines[#lines + 1] = ""
 end
 

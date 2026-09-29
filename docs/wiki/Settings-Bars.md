@@ -10,55 +10,73 @@ The **Bars** tab on each frame's page in `/fuf`. The last column says which fram
 
 ## Health bar
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Health color** |  | Class, Reaction, Static color, Gradient by health | Player, Target, Target of Target, Party: Class; Focus, Pet: Static color | all |
-| **Static health color** |  | Color | `#33bf4d` | all |
-| **Friendly color** | For health and title colors by reaction | Color | `#33bf4d` | all |
-| **Neutral color** |  | Color | `#e6cc40` | all |
-| **Hostile color** |  | Color | `#d93333` | all |
-| **Grey when tapped by others** | Someone else attacked it first: no experience or loot | On, Off | On | Target, Target of Target, Focus |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Health color</b></td><td></td><td>Class, Reaction, Static color, Gradient by health</td><td>Player, Target, Target of Target, Party: Class; Focus, Pet: Static color</td><td>all</td></tr>
+<tr><td><b>Static health color</b></td><td></td><td>Color</td><td><code>#33bf4d</code></td><td>all</td></tr>
+<tr><td><b>Friendly color</b></td><td>For health and title colors by reaction</td><td>Color</td><td><code>#33bf4d</code></td><td>all</td></tr>
+<tr><td><b>Neutral color</b></td><td></td><td>Color</td><td><code>#e6cc40</code></td><td>all</td></tr>
+<tr><td><b>Hostile color</b></td><td></td><td>Color</td><td><code>#d93333</code></td><td>all</td></tr>
+<tr><td><b>Grey when tapped by others</b></td><td>Someone else attacked it first: no experience or loot</td><td>On, Off</td><td>On</td><td>Target, Target of Target, Focus</td></tr>
+</tbody>
+</table>
 
 ## Textures
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Bar texture** |  | Texture | Raid | all |
-| **Background color** |  | Color | `#000000`, 60 % opaque | all |
-| **Background behind the name** | Off: only the bars keep a background | On, Off | On | all |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Bar texture</b></td><td></td><td>Texture</td><td>Raid</td><td>all</td></tr>
+<tr><td><b>Background color</b></td><td></td><td>Color</td><td><code>#000000</code>, 60 % opaque</td><td>all</td></tr>
+<tr><td><b>Background behind the name</b></td><td>Off: only the bars keep a background</td><td>On, Off</td><td>On</td><td>all</td></tr>
+</tbody>
+</table>
 
 ## Absorb shields
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Show absorb shields** | Over the end of the health bar | On, Off | On | all |
-| **Shield position** | At the end: also shown at full health | After the health, At the bar's end | After the health | all |
-| **Absorb shield stripes** | Under the shield the bar is darkened, its empty part lit | Color | `#ffffff`, 65 % opaque | all |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Show absorb shields</b></td><td>Over the end of the health bar</td><td>On, Off</td><td>On</td><td>all</td></tr>
+<tr><td><b>Shield position</b></td><td>At the end: also shown at full health</td><td>After the health, At the bar's end</td><td>After the health</td><td>all</td></tr>
+<tr><td><b>Absorb shield stripes</b></td><td>Under the shield the bar is darkened, its empty part lit</td><td>Color</td><td><code>#ffffff</code>, 65 % opaque</td><td>all</td></tr>
+</tbody>
+</table>
 
 ## Incoming heals
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Show incoming heals** |  | On, Off | On | all |
-| **Overheal lane** | Shows heals and shields past full health | On, Off | Off | all |
-| **Heals past the frame** | Incoming heals drawn in full, past the right edge | On, Off | Off | all |
-| **Power bar matches health bar** | With the overheal lane: the power bar ends where the health bar ends | On, Off | Off | all |
-| **Your heals color** |  | Color | `#4df273`, 65 % opaque | all |
-| **Other heals color** |  | Color | `#26a64d`, 55 % opaque | all |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Show incoming heals</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
+<tr><td><b>Overheal lane</b></td><td>Shows heals and shields past full health</td><td>On, Off</td><td>Off</td><td>all</td></tr>
+<tr><td><b>Heals past the frame</b></td><td>Incoming heals drawn in full, past the right edge</td><td>On, Off</td><td>Off</td><td>all</td></tr>
+<tr><td><b>Power bar matches health bar</b></td><td>With the overheal lane: the power bar ends where the health bar ends</td><td>On, Off</td><td>Off</td><td>all</td></tr>
+<tr><td><b>Your heals color</b></td><td></td><td>Color</td><td><code>#4df273</code>, 65 % opaque</td><td>all</td></tr>
+<tr><td><b>Other heals color</b></td><td></td><td>Color</td><td><code>#26a64d</code>, 55 % opaque</td><td>all</td></tr>
+</tbody>
+</table>
 
 ## Power colors
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Mana** |  | Color | `#4080ff` | all |
-| **Rage** |  | Color | `#d93333` | all |
-| **Focus** |  | Color | `#ff8040` | all |
-| **Energy** |  | Color | `#ffd933` | all |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Mana</b></td><td></td><td>Color</td><td><code>#4080ff</code></td><td>all</td></tr>
+<tr><td><b>Rage</b></td><td></td><td>Color</td><td><code>#d93333</code></td><td>all</td></tr>
+<tr><td><b>Focus</b></td><td></td><td>Color</td><td><code>#ff8040</code></td><td>all</td></tr>
+<tr><td><b>Energy</b></td><td></td><td>Color</td><td><code>#ffd933</code></td><td>all</td></tr>
+</tbody>
+</table>
 
 ## Druid mana
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Show mana in forms** | Bear and cat form: a strip under the power bar | On, Off | On | Player |
-| **Strip height** |  | 2 – 20 | 4 | Player |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Show mana in forms</b></td><td>Bear and cat form: a strip under the power bar</td><td>On, Off</td><td>On</td><td>Player</td></tr>
+<tr><td><b>Strip height</b></td><td></td><td>2 – 20</td><td>4</td><td>Player</td></tr>
+</tbody>
+</table>
 

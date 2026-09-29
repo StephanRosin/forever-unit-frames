@@ -10,37 +10,49 @@ The **Castbar** tab on each frame's page in `/fuf`. The last column says which f
 
 ## Castbar
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Show castbar** |  | On, Off | On | Player, Target, Target of Target, Focus, Party |
-| **Always show** | Keep an empty bar while nothing is cast | On, Off | Player, Target, Party: On; Target of Target, Focus: Off | Player, Target, Target of Target, Focus, Party |
-| **Hide Blizzard cast bar** | Needs /reload to show it again | On, Off | Off | Player |
-| **Castbar position** |  | Below the frame, Above the frame, Detached | Below the frame | Player, Target, Target of Target, Focus |
-| **Castbar position** |  | Below the frame, Above the frame | Below the frame | Party |
-| **Castbar height** |  | 4 – 60 | Player: 18; Target, Focus: 16; Target of Target, Party: 12 | Player, Target, Target of Target, Focus, Party |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Show castbar</b></td><td></td><td>On, Off</td><td>On</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Always show</b></td><td>Keep an empty bar while nothing is cast</td><td>On, Off</td><td>Player, Target, Party: On; Target of Target, Focus: Off</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Hide Blizzard cast bar</b></td><td>Needs /reload to show it again</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
+<tr><td><b>Castbar position</b></td><td></td><td>Below the frame, Above the frame, Detached</td><td>Below the frame</td><td>Player, Target, Target of Target, Focus</td></tr>
+<tr><td><b>Castbar position</b></td><td></td><td>Below the frame, Above the frame</td><td>Below the frame</td><td>Party</td></tr>
+<tr><td><b>Castbar height</b></td><td></td><td>4 – 60</td><td>Player: 18; Target, Focus: 16; Target of Target, Party: 12</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+</tbody>
+</table>
 
 ## Shown on the bar
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Spell icon** |  | On, Off | On | Player, Target, Target of Target, Focus, Party |
-| **Spell name** |  | On, Off | On | Player, Target, Target of Target, Focus, Party |
-| **Cast time** |  | On, Off | On | Player, Target, Target of Target, Focus, Party |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Spell icon</b></td><td></td><td>On, Off</td><td>On</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Spell name</b></td><td></td><td>On, Off</td><td>On</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Cast time</b></td><td></td><td>On, Off</td><td>On</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+</tbody>
+</table>
 
 ## Detached position
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Detached X** | Used when detached | -4000 – 4000 | Player: -4; Target: 366; Target of Target: 480; Focus: -300 | Player, Target, Target of Target, Focus |
-| **Detached Y** | Used when detached | -4000 – 4000 | Player: -160; Target, Target of Target: -300; Focus: -170 | Player, Target, Target of Target, Focus |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Detached X</b></td><td>Used when detached</td><td>-4000 – 4000</td><td>Player: -4; Target: 366; Target of Target: 480; Focus: -300</td><td>Player, Target, Target of Target, Focus</td></tr>
+<tr><td><b>Detached Y</b></td><td>Used when detached</td><td>-4000 – 4000</td><td>Player: -160; Target, Target of Target: -300; Focus: -170</td><td>Player, Target, Target of Target, Focus</td></tr>
+</tbody>
+</table>
 
 ## Threat bar
 
-| Option | What it does | Choices | Default | Frames |
-|---|---|---|---|---|
-| **Threat bar below the castbar** | Your threat on your target. Keeps a docked castbar's place | On, Off | Off | Player |
-| **Height** |  | 6 – 30 | 12 | Player |
-| **Yellow from (%)** | Tank: someone reaches this share of your threat. Others: of the pull | 50 – 99 | 80 | Player |
-| **Role** |  | Automatic, Tank, Damage or healer | Automatic | Player |
-| **Also without a group** | Also when alone; a pet out counts as a group | On, Off | On | Player |
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Threat bar below the castbar</b></td><td>Your threat on your target. Keeps a docked castbar's place</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
+<tr><td><b>Height</b></td><td></td><td>6 – 30</td><td>12</td><td>Player</td></tr>
+<tr><td><b>Yellow from (%)</b></td><td>Tank: someone reaches this share of your threat. Others: of the pull</td><td>50 – 99</td><td>80</td><td>Player</td></tr>
+<tr><td><b>Role</b></td><td></td><td>Automatic, Tank, Damage or healer</td><td>Automatic</td><td>Player</td></tr>
+<tr><td><b>Also without a group</b></td><td>Also when alone; a pet out counts as a group</td><td>On, Off</td><td>On</td><td>Player</td></tr>
+</tbody>
+</table>
 

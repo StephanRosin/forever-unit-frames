@@ -18,137 +18,185 @@ The **Profile** tab (export, import, reset) is explained on the [[Home]] page.
 
 Button: **Apply to all frames**.
 
-| Option | What it does | Choices | Default |
-|---|---|---|---|
-| **Font** |  | Font | Friz Quadrata |
-| **Font size** |  | 6 – 32 | 12 |
-| **Value font size** | Health and power numbers; Auto: the font size | 0 – 32 (0: Auto) | Auto |
-| **Font style** |  | None, Outline, Thick outline, Monochrome, Soft outline | Outline |
-| **Font shadow** |  | On, Off | On |
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Font</b></td><td></td><td>Font</td><td>Friz Quadrata</td></tr>
+<tr><td><b>Font size</b></td><td></td><td>6 – 32</td><td>12</td></tr>
+<tr><td><b>Value font size</b></td><td>Health and power numbers; Auto: the font size</td><td>0 – 32 (0: Auto)</td><td>Auto</td></tr>
+<tr><td><b>Font style</b></td><td></td><td>None, Outline, Thick outline, Monochrome, Soft outline</td><td>Outline</td></tr>
+<tr><td><b>Font shadow</b></td><td></td><td>On, Off</td><td>On</td></tr>
+</tbody>
+</table>
 
 ### Display
 
-| Option | What it does | Choices | Default |
-|---|---|---|---|
-| **Show secondary name** | Surname next to the first name | On, Off | On |
-| **Compact values** | 1234/1234 instead of 1234 / 1234 | On, Off | Off |
-| **Info: class in color** | Level, class and race: only the class or creature type colored | On, Off | Off |
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Show secondary name</b></td><td>Surname next to the first name</td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Compact values</b></td><td>1234/1234 instead of 1234 / 1234</td><td>On, Off</td><td>Off</td></tr>
+<tr><td><b>Info: class in color</b></td><td>Level, class and race: only the class or creature type colored</td><td>On, Off</td><td>Off</td></tr>
+</tbody>
+</table>
 
 ### Title row
 
-| Option | What it does | Choices | Default |
-|---|---|---|---|
-| **Show class icon** | Players only, as a round badge on the frame's top right corner | On, Off | On |
-| **Class icon size** | Diameter of the badge, ring included | 10 – 48 | 30 |
-| **Class icon X** | Badge centre from the frame's right edge; negative moves it inside | -64 – 64 | -6 |
-| **Class icon Y** | Badge centre from the frame's top edge; positive moves it up | -64 – 64 | -9 |
-| **Badge ring** | Ring thickness around the icon; 0 = no ring | 0 – 4 | 2 |
-| **Badge ring color** | Color of the badge's ring | Color | `#c7c7cc` |
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Show class icon</b></td><td>Players only, as a round badge on the frame's top right corner</td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Class icon size</b></td><td>Diameter of the badge, ring included</td><td>10 – 48</td><td>30</td></tr>
+<tr><td><b>Class icon X</b></td><td>Badge centre from the frame's right edge; negative moves it inside</td><td>-64 – 64</td><td>-6</td></tr>
+<tr><td><b>Class icon Y</b></td><td>Badge centre from the frame's top edge; positive moves it up</td><td>-64 – 64</td><td>-9</td></tr>
+<tr><td><b>Badge ring</b></td><td>Ring thickness around the icon; 0 = no ring</td><td>0 – 4</td><td>2</td></tr>
+<tr><td><b>Badge ring color</b></td><td>Color of the badge's ring</td><td>Color</td><td><code>#c7c7cc</code></td></tr>
+</tbody>
+</table>
 
 ### Bars
 
-| Option | What it does | Choices | Default |
-|---|---|---|---|
-| **Bar texture** |  | Texture | Raid |
-| **Background color** |  | Color | `#000000`, 60 % opaque |
-| **Background behind the name** | Off: only the bars keep a background | On, Off | On |
-| **Shield position** | At the end: also shown at full health | After the health, At the bar's end | After the health |
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Bar texture</b></td><td></td><td>Texture</td><td>Raid</td></tr>
+<tr><td><b>Background color</b></td><td></td><td>Color</td><td><code>#000000</code>, 60 % opaque</td></tr>
+<tr><td><b>Background behind the name</b></td><td>Off: only the bars keep a background</td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Shield position</b></td><td>At the end: also shown at full health</td><td>After the health, At the bar's end</td><td>After the health</td></tr>
+</tbody>
+</table>
 
 ### Aura icons
 
-| Option | What it does | Choices | Default |
-|---|---|---|---|
-| **Border around the icons** | Debuffs: shows the dispel type (magic, curse, poison, disease) | On, Off | On |
-| **Border thickness** |  | 1 – 6 | 1 |
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Border around the icons</b></td><td>Debuffs: shows the dispel type (magic, curse, poison, disease)</td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Border thickness</b></td><td></td><td>1 – 6</td><td>1</td></tr>
+</tbody>
+</table>
 
 ### Border
 
-| Option | What it does | Choices | Default |
-|---|---|---|---|
-| **Show border** | One ring around the frame and a docked castbar | On, Off | On |
-| **Border style** | Gold is shaded and ignores the border color | Flat, Gold | Gold |
-| **Border size** | 0 = no border | 0 – 8 | 1 |
-| **Border padding** | Gap between frame and border | 0 – 8 | 0 |
-| **Border color** |  | Color | `#000000` |
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Show border</b></td><td>One ring around the frame and a docked castbar</td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Border style</b></td><td>Gold is shaded and ignores the border color</td><td>Flat, Gold</td><td>Gold</td></tr>
+<tr><td><b>Border size</b></td><td>0 = no border</td><td>0 – 8</td><td>1</td></tr>
+<tr><td><b>Border padding</b></td><td>Gap between frame and border</td><td>0 – 8</td><td>0</td></tr>
+<tr><td><b>Border color</b></td><td></td><td>Color</td><td><code>#000000</code></td></tr>
+</tbody>
+</table>
 
 ### Shadow
 
-| Option | What it does | Choices | Default |
-|---|---|---|---|
-| **Drop shadow** |  | On, Off | On |
-| **Shadow strength** | Opacity in percent | 0 – 100 | 16 |
-| **Shadow size** | Width of the soft edge in pixels | 1 – 16 | 9 |
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Drop shadow</b></td><td></td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Shadow strength</b></td><td>Opacity in percent</td><td>0 – 100</td><td>16</td></tr>
+<tr><td><b>Shadow size</b></td><td>Width of the soft edge in pixels</td><td>1 – 16</td><td>9</td></tr>
+</tbody>
+</table>
 
 ### Shape
 
-| Option | What it does | Choices | Default |
-|---|---|---|---|
-| **Corner radius** | 0 = square corners | 0 – 12 | 0 |
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Corner radius</b></td><td>0 = square corners</td><td>0 – 12</td><td>0</td></tr>
+</tbody>
+</table>
 
 ### Minimap
 
-| Option | What it does | Choices | Default |
-|---|---|---|---|
-| **Show minimap button** |  | On, Off | On |
-| **Button position** | Degrees around the minimap; drag the button to set it | 0 – 359 | 282 |
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Show minimap button</b></td><td></td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Button position</b></td><td>Degrees around the minimap; drag the button to set it</td><td>0 – 359</td><td>282</td></tr>
+</tbody>
+</table>
 
 ## Colors
 
 ### Health bar
 
-| Option | What it does | Choices | Default |
-|---|---|---|---|
-| **Health color** |  | Class, Reaction, Static color, Gradient by health | Static color |
-| **Static health color** |  | Color | `#33bf4d` |
-| **Friendly color** | For health and title colors by reaction | Color | `#33bf4d` |
-| **Neutral color** |  | Color | `#e6cc40` |
-| **Hostile color** |  | Color | `#d93333` |
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Health color</b></td><td></td><td>Class, Reaction, Static color, Gradient by health</td><td>Static color</td></tr>
+<tr><td><b>Static health color</b></td><td></td><td>Color</td><td><code>#33bf4d</code></td></tr>
+<tr><td><b>Friendly color</b></td><td>For health and title colors by reaction</td><td>Color</td><td><code>#33bf4d</code></td></tr>
+<tr><td><b>Neutral color</b></td><td></td><td>Color</td><td><code>#e6cc40</code></td></tr>
+<tr><td><b>Hostile color</b></td><td></td><td>Color</td><td><code>#d93333</code></td></tr>
+</tbody>
+</table>
 
 ### Absorb shields
 
-| Option | What it does | Choices | Default |
-|---|---|---|---|
-| **Absorb shield stripes** | Under the shield the bar is darkened, its empty part lit | Color | `#ffffff`, 65 % opaque |
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Absorb shield stripes</b></td><td>Under the shield the bar is darkened, its empty part lit</td><td>Color</td><td><code>#ffffff</code>, 65 % opaque</td></tr>
+</tbody>
+</table>
 
 ### Target highlight
 
-| Option | What it does | Choices | Default |
-|---|---|---|---|
-| **Target highlight color** |  | Color | `#ffffff`, 90 % opaque |
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Target highlight color</b></td><td></td><td>Color</td><td><code>#ffffff</code>, 90 % opaque</td></tr>
+</tbody>
+</table>
 
 ### Incoming heals
 
-| Option | What it does | Choices | Default |
-|---|---|---|---|
-| **Your heals color** |  | Color | `#4df273`, 65 % opaque |
-| **Other heals color** |  | Color | `#26a64d`, 55 % opaque |
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Your heals color</b></td><td></td><td>Color</td><td><code>#4df273</code>, 65 % opaque</td></tr>
+<tr><td><b>Other heals color</b></td><td></td><td>Color</td><td><code>#26a64d</code>, 55 % opaque</td></tr>
+</tbody>
+</table>
 
 ### Power colors
 
-| Option | What it does | Choices | Default |
-|---|---|---|---|
-| **Mana** |  | Color | `#4080ff` |
-| **Rage** |  | Color | `#d93333` |
-| **Focus** |  | Color | `#ff8040` |
-| **Energy** |  | Color | `#ffd933` |
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Mana</b></td><td></td><td>Color</td><td><code>#4080ff</code></td></tr>
+<tr><td><b>Rage</b></td><td></td><td>Color</td><td><code>#d93333</code></td></tr>
+<tr><td><b>Focus</b></td><td></td><td>Color</td><td><code>#ff8040</code></td></tr>
+<tr><td><b>Energy</b></td><td></td><td>Color</td><td><code>#ffd933</code></td></tr>
+</tbody>
+</table>
 
 ## Status
 
 ### Combat icon
 
-| Option | What it does | Choices | Default |
-|---|---|---|---|
-| **Combat icon animation** | Duel: clashing swords. Burst: springs in. Pulse: breathes | Off, Burst, Pulse, Duel (clashing swords) | Duel (clashing swords) |
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Combat icon animation</b></td><td>Duel: clashing swords. Burst: springs in. Pulse: breathes</td><td>Off, Burst, Pulse, Duel (clashing swords)</td><td>Duel (clashing swords)</td></tr>
+</tbody>
+</table>
 
 ### Range
 
-| Option | What it does | Choices | Default |
-|---|---|---|---|
-| **Opacity out of range (%)** |  | 0 – 100 | 70 |
-| **Friends: measure by** |  | Automatic (spell), Spell, Yards, Off | Yards |
-| **Spell for friends** |  | Text (a spell name or ID) | (none) |
-| **Friendly range (yards)** |  | 5 – 40 | 40 |
-| **Enemies: measure by** |  | Automatic (spell), Spell, Yards, Off | Automatic (spell) |
-| **Spell for enemies** |  | Text (a spell name or ID) | (none) |
-| **Hostile range (yards)** |  | 5 – 40 | 40 |
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Opacity out of range (%)</b></td><td></td><td>0 – 100</td><td>70</td></tr>
+<tr><td><b>Friends: measure by</b></td><td></td><td>Automatic (spell), Spell, Yards, Off</td><td>Yards</td></tr>
+<tr><td><b>Spell for friends</b></td><td></td><td>Text (a spell name or ID)</td><td>(none)</td></tr>
+<tr><td><b>Friendly range (yards)</b></td><td></td><td>5 – 40</td><td>40</td></tr>
+<tr><td><b>Enemies: measure by</b></td><td></td><td>Automatic (spell), Spell, Yards, Off</td><td>Automatic (spell)</td></tr>
+<tr><td><b>Spell for enemies</b></td><td></td><td>Text (a spell name or ID)</td><td>(none)</td></tr>
+<tr><td><b>Hostile range (yards)</b></td><td></td><td>5 – 40</td><td>40</td></tr>
+</tbody>
+</table>
 
