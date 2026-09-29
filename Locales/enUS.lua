@@ -459,8 +459,8 @@ L.FADE_CASTING = "casting"
 L.FADE_TARGET = "you have a target"
 
 -- Bar name colour, level/class/race text, shield position, power colours.
-L.SETTING_barNameColorMode = "Name color on the bars"
-L.HINT_barNameColorMode = "Names on the health and power bars"
+L.SETTING_barNameColorMode = "Name color in bar texts"
+L.HINT_barNameColorMode = "Only names on the health or power bar; the title row has its own"
 L.ENUM_INFO = "Level, class and race"
 L.SETTING_absorbMode = "Shield position"
 L.ENUM_absorbMode_AFTER = "After the health"

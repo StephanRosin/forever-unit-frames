@@ -249,3 +249,26 @@ for _, f in ipairs(M.frames) do
 end
 H.checkTrue("profile reset header translated", headers[ns.L.RESET] and ns.L.RESET == "Reset")
 H.check("no raw RESET key shown", headers.RESET, nil)
+
+-- Reported: scrolling the page with the wheel changed whatever slider came
+-- under the cursor. Over a slider the wheel scrolls the page; only with
+-- Shift held it moves the slider.
+do
+    O.Open("player", "layout")
+    local row = rowFor("width")
+    local scroll = row.slider
+    while scroll and scroll:GetObjectType() ~= "ScrollFrame" do scroll = scroll:GetParent() end
+    H.checkTrue("the page is a scroll frame", scroll)
+    scroll:SetVerticalScroll(0)
+    scroll._vrange = 500
+    local before = ns.Config.Get("player", "width")
+    M.shiftDown = false
+    row.slider:GetScript("OnMouseWheel")(row.slider, -1)
+    H.check("wheel over a slider: value unchanged", ns.Config.Get("player", "width"), before)
+    H.checkTrue("wheel over a slider: the page scrolled", scroll:GetVerticalScroll() > 0)
+    M.shiftDown = true
+    row.slider:GetScript("OnMouseWheel")(row.slider, 1)
+    H.checkTrue("Shift + wheel: the slider moves", ns.Config.Get("player", "width") ~= before)
+    M.shiftDown = false
+    O.Close()
+end

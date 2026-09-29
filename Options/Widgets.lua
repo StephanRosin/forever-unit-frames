@@ -161,6 +161,20 @@ local function newSliderControl(row, opts, step)
     return s
 end
 
+-- Hands a mouse wheel turn on to the nearest scroll frame above frame (the
+-- options page), as if it had been turned there.
+function Widgets.PassWheel(frame, delta)
+    local parent = frame:GetParent()
+    while parent do
+        if parent:GetObjectType() == "ScrollFrame" then
+            local handler = parent:GetScript("OnMouseWheel")
+            if handler then handler(parent, delta) end
+            return
+        end
+        parent = parent:GetParent()
+    end
+end
+
 local function newNumberBox(row, anchor)
     local e = CreateFrame("EditBox", nil, row)
     e:SetSize(60, 20)
@@ -225,7 +239,11 @@ function Widgets.Slider(parent, opts)
         e:SetText(display(r))
         commit(r)
     end)
+    -- The wheel scrolls the page, even over a slider (reported: scrolling
+    -- down the page changed whatever slider passed under the cursor). With
+    -- Shift held it moves the slider.
     s:SetScript("OnMouseWheel", function(_, delta)
+        if not IsShiftKeyDown() then return Widgets.PassWheel(s, delta) end
         if not s:IsEnabled() then return end
         local v = math.max(opts.min, math.min(opts.max, opts.get() + delta * step))
         commit(v); show(opts.get())

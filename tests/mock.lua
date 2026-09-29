@@ -1169,6 +1169,8 @@ function M.Reset()
         for part in (str .. delim):gmatch("(.-)" .. delim:gsub("%p", "%%%0")) do parts[#parts + 1] = part end
         return unpack(parts)
     end
+    -- Modifier keys: M.shiftDown.
+    _G.IsShiftKeyDown = function() return M.shiftDown or false end
     _G.UnitRace = function(unit) local d = u(unit); if d then return d.race, d.race end end
     _G.UnitCreatureType = function(unit) local d = u(unit); if d then return d.creatureType end end
     -- Takes secret class tokens (SecretArguments = AllowedWhenTainted); a

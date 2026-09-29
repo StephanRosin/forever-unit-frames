@@ -435,8 +435,8 @@ L.FADE_CASTING = "zaubert"
 L.FADE_TARGET = "du hast ein Ziel"
 
 -- Bar name colour, level/class/race text, shield position, power colours.
-L.SETTING_barNameColorMode = "Namensfarbe auf den Leisten"
-L.HINT_barNameColorMode = "Namen auf Lebens- und Ressourcenleiste"
+L.SETTING_barNameColorMode = "Namensfarbe in Leistentexten"
+L.HINT_barNameColorMode = "Nur Namen auf Lebens- oder Ressourcenleiste; die Titelzeile hat eine eigene"
 L.ENUM_INFO = "Stufe, Klasse und Volk"
 L.SETTING_absorbMode = "Position des Schilds"
 L.ENUM_absorbMode_AFTER = "Nach dem Leben"

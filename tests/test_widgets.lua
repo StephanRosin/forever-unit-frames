@@ -119,6 +119,9 @@ H.check("drag to the same rounded value does not set", calls, 0)
 quiet.slider:GetScript("OnValueChanged")(quiet.slider, 7, false)
 H.check("programmatic value change does not set", calls, 0)
 
+-- The wheel only moves a slider with Shift held (without, it scrolls the
+-- page: tests/test_window.lua).
+M.shiftDown = true
 local wheelValue = 10
 local wheel = W.Slider(parent, { label = "Wheel", min = 0, max = 10, step = 2,
     get = function() return wheelValue end, set = function(v) wheelValue = v; return true end })
@@ -150,6 +153,10 @@ H.check("refresh updates text without focus", typed.edit:GetText(), "6")
 wheel:SetEnabled(false)
 wheel.slider:GetScript("OnMouseWheel")(wheel.slider, -1)
 H.check("wheel does nothing while disabled", wheelValue, 10)
+wheel:SetEnabled(true)
+M.shiftDown = false
+wheel.slider:GetScript("OnMouseWheel")(wheel.slider, -1)
+H.check("without Shift the wheel leaves the slider alone", wheelValue, 10)
 
 M.timers = {}
 sl:SetEnabled(true)

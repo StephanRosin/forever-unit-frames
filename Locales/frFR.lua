@@ -435,8 +435,8 @@ L.FADE_CASTING = "incantation"
 L.FADE_TARGET = "vous avez une cible"
 
 -- Bar name colour, level/class/race text, shield position, power colours.
-L.SETTING_barNameColorMode = "Couleur du nom sur les barres"
-L.HINT_barNameColorMode = "Noms sur les barres de vie et de ressource"
+L.SETTING_barNameColorMode = "Couleur du nom dans les barres"
+L.HINT_barNameColorMode = "Noms sur la barre de vie ou de ressource ; le titre a la sienne"
 L.ENUM_INFO = "Niveau, classe et race"
 L.SETTING_absorbMode = "Position du bouclier"
 L.ENUM_absorbMode_AFTER = "Après la vie"

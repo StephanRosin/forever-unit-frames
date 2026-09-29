@@ -437,7 +437,7 @@ L.FADE_TARGET = "tienes un objetivo"
 
 -- Bar name colour, level/class/race text, shield position, power colours.
 L.SETTING_barNameColorMode = "Color del nombre en las barras"
-L.HINT_barNameColorMode = "Nombres en las barras de salud y poder"
+L.HINT_barNameColorMode = "Solo nombres en la barra de salud o poder; el título tiene el suyo"
 L.ENUM_INFO = "Nivel, clase y raza"
 L.SETTING_absorbMode = "Posición del escudo"
 L.ENUM_absorbMode_AFTER = "Tras la salud"
