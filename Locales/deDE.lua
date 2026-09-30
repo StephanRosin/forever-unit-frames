@@ -506,6 +506,21 @@ L.SETTING_pvpIconPoint = "Punkt des Symbols"
 L.SETTING_pvpIconX = "Versatz X"
 L.SETTING_pvpIconY = "Versatz Y"
 
+-- Pet happiness. PET_HAPPINESS1-3 only where the client lacks its own.
+L.SECTION_petHappiness = "Zufriedenheit des Begleiters"
+L.SETTING_petHappiness = "Zufriedenheit anzeigen"
+L.HINT_petHappiness = "Laune deines Jägerbegleiters. Maus aufs Symbol: Treue und Futter"
+L.SETTING_petHappinessHideHappy = "Nur wenn nicht glücklich"
+L.HINT_petHappinessHideHappy = "Blendet das Symbol aus, solange der Begleiter glücklich ist"
+L.SETTING_petHappinessSize = "Symbolgröße"
+L.SETTING_petHappinessFramePoint = "Punkt am Frame"
+L.SETTING_petHappinessPoint = "Punkt des Symbols"
+L.SETTING_petHappinessX = "Versatz X"
+L.SETTING_petHappinessY = "Versatz Y"
+L.PET_HAPPINESS1 = "Unglücklich"
+L.PET_HAPPINESS2 = "Zufrieden"
+L.PET_HAPPINESS3 = "Glücklich"
+
 -- Combat icon animation.
 L.SETTING_combatAnimation = "Animation des Kampfsymbols"
 L.ENUM_combatAnimation_OFF = "Aus"

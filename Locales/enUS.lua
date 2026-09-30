@@ -530,6 +530,21 @@ L.SETTING_pvpIconPoint = "Point of the icon"
 L.SETTING_pvpIconX = "Offset X"
 L.SETTING_pvpIconY = "Offset Y"
 
+-- Pet happiness. PET_HAPPINESS1-3 only where the client lacks its own.
+L.SECTION_petHappiness = "Pet happiness"
+L.SETTING_petHappiness = "Show pet happiness"
+L.HINT_petHappiness = "Your hunter pet's mood. Hover the icon for loyalty and diet"
+L.SETTING_petHappinessHideHappy = "Only when not happy"
+L.HINT_petHappinessHideHappy = "Hides the icon while the pet is happy"
+L.SETTING_petHappinessSize = "Icon size"
+L.SETTING_petHappinessFramePoint = "Point on the frame"
+L.SETTING_petHappinessPoint = "Point of the icon"
+L.SETTING_petHappinessX = "Offset X"
+L.SETTING_petHappinessY = "Offset Y"
+L.PET_HAPPINESS1 = "Unhappy"
+L.PET_HAPPINESS2 = "Content"
+L.PET_HAPPINESS3 = "Happy"
+
 -- Combat icon animation.
 L.SETTING_combatAnimation = "Combat icon animation"
 L.ENUM_combatAnimation_OFF = "Off"

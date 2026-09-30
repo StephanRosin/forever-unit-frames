@@ -6,7 +6,7 @@ Icons and markers on the frame, combo points, threat, highlights and fading.
 
 The **Status** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
 
-**On this page:** [Status icons](#status-icons) · [Combat icon](#combat-icon) · [PvP icon](#pvp-icon) · [Raid target marker](#raid-target-marker) · [Group icons](#group-icons) · [Combo points](#combo-points) · [Threat](#threat) · [Target highlight](#target-highlight) · [Dispellable debuffs](#dispellable-debuffs) · [Range](#range) · [Out of combat](#out-of-combat)
+**On this page:** [Status icons](#status-icons) · [Combat icon](#combat-icon) · [PvP icon](#pvp-icon) · [Raid target marker](#raid-target-marker) · [Pet happiness](#pet-happiness) · [Group icons](#group-icons) · [Combo points](#combo-points) · [Threat](#threat) · [Target highlight](#target-highlight) · [Dispellable debuffs](#dispellable-debuffs) · [Range](#range) · [Out of combat](#out-of-combat)
 
 ## Status icons
 
@@ -63,6 +63,21 @@ The **Status** tab on each frame's page in `/fuf`. The last column says which fr
 <tr><td><b>Point of the icon</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Center</td><td>all</td></tr>
 <tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>0</td><td>all</td></tr>
 <tr><td><b>Offset Y</b></td><td></td><td>-200 – 200</td><td>0</td><td>all</td></tr>
+</tbody>
+</table>
+
+## Pet happiness
+
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Show pet happiness</b></td><td>Your hunter pet's mood. Hover the icon for loyalty and diet</td><td>On, Off</td><td>On</td><td>Pet</td></tr>
+<tr><td><b>Only when not happy</b></td><td>Hides the icon while the pet is happy</td><td>On, Off</td><td>Off</td><td>Pet</td></tr>
+<tr><td><b>Icon size</b></td><td></td><td>8 – 48</td><td>20</td><td>Pet</td></tr>
+<tr><td><b>Point on the frame</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Right</td><td>Pet</td></tr>
+<tr><td><b>Point of the icon</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Left</td><td>Pet</td></tr>
+<tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>2</td><td>Pet</td></tr>
+<tr><td><b>Offset Y</b></td><td></td><td>-200 – 200</td><td>0</td><td>Pet</td></tr>
 </tbody>
 </table>
 

@@ -49,6 +49,7 @@ Elements\CombatAnimation.lua
 Elements\StatusIcons.lua
 Elements\RaidMarker.lua
 Elements\UnitIcons.lua
+Elements\PetHappiness.lua
 Elements\GroupIcons.lua
 Elements\UnitStatus.lua
 Elements\Range.lua

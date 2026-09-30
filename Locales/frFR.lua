@@ -506,6 +506,21 @@ L.SETTING_pvpIconPoint = "Point de l'icône"
 L.SETTING_pvpIconX = "Décalage X"
 L.SETTING_pvpIconY = "Décalage Y"
 
+-- Pet happiness. PET_HAPPINESS1-3 only where the client lacks its own.
+L.SECTION_petHappiness = "Humeur du familier"
+L.SETTING_petHappiness = "Afficher l'humeur du familier"
+L.HINT_petHappiness = "Humeur de votre familier. Survol : loyauté et régime"
+L.SETTING_petHappinessHideHappy = "Seulement s'il n'est pas heureux"
+L.HINT_petHappinessHideHappy = "Masque l'icône tant que le familier est heureux"
+L.SETTING_petHappinessSize = "Taille de l'icône"
+L.SETTING_petHappinessFramePoint = "Point du cadre"
+L.SETTING_petHappinessPoint = "Point de l'icône"
+L.SETTING_petHappinessX = "Décalage X"
+L.SETTING_petHappinessY = "Décalage Y"
+L.PET_HAPPINESS1 = "Mécontent"
+L.PET_HAPPINESS2 = "Content"
+L.PET_HAPPINESS3 = "Heureux"
+
 -- Combat icon animation.
 L.SETTING_combatAnimation = "Animation de l'icône de combat"
 L.ENUM_combatAnimation_OFF = "Aucune"

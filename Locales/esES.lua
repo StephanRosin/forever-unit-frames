@@ -507,6 +507,21 @@ L.SETTING_pvpIconPoint = "Punto del icono"
 L.SETTING_pvpIconX = "Desplazamiento X"
 L.SETTING_pvpIconY = "Desplazamiento Y"
 
+-- Pet happiness. PET_HAPPINESS1-3 only where the client lacks its own.
+L.SECTION_petHappiness = "Felicidad de la mascota"
+L.SETTING_petHappiness = "Mostrar felicidad de la mascota"
+L.HINT_petHappiness = "Ánimo de tu mascota de cazador. Ratón encima: lealtad y dieta"
+L.SETTING_petHappinessHideHappy = "Solo si no está feliz"
+L.HINT_petHappinessHideHappy = "Oculta el icono mientras la mascota está feliz"
+L.SETTING_petHappinessSize = "Tamaño de icono"
+L.SETTING_petHappinessFramePoint = "Punto del marco"
+L.SETTING_petHappinessPoint = "Punto del icono"
+L.SETTING_petHappinessX = "Desplazamiento X"
+L.SETTING_petHappinessY = "Desplazamiento Y"
+L.PET_HAPPINESS1 = "Descontenta"
+L.PET_HAPPINESS2 = "Contenta"
+L.PET_HAPPINESS3 = "Feliz"
+
 -- Combat icon animation.
 L.SETTING_combatAnimation = "Animación del icono de combate"
 L.ENUM_combatAnimation_OFF = "Desactivada"

@@ -599,6 +599,25 @@ for _, icon in ipairs({
         min = -200, max = 200, default = icon.y })
 end
 
+-- The hunter pet's happiness (pet only, Elements/PetHappiness.lua), on by
+-- default as on Blizzard's pet frame: right of the frame.
+local PET_HAPPINESS = { pet = true }
+Settings.Define({ key = "petHappiness", code = "GE", scope = "frame", only = PET_HAPPINESS, type = "bool",
+    default = true })
+-- Only while the pet is not happy: the icon then asks for food.
+Settings.Define({ key = "petHappinessHideHappy", code = "GN", scope = "frame", only = PET_HAPPINESS, type = "bool",
+    default = false })
+Settings.Define({ key = "petHappinessSize", code = "GZ", scope = "frame", only = PET_HAPPINESS, type = "int",
+    min = 8, max = 48, default = 20 })
+Settings.Define({ key = "petHappinessFramePoint", code = "GF", scope = "frame", only = PET_HAPPINESS, type = "enum",
+    values = Settings.POINTS, default = "RIGHT" })
+Settings.Define({ key = "petHappinessPoint", code = "GO", scope = "frame", only = PET_HAPPINESS, type = "enum",
+    values = Settings.POINTS, default = "LEFT" })
+Settings.Define({ key = "petHappinessX", code = "GX", scope = "frame", only = PET_HAPPINESS, type = "int",
+    min = -200, max = 200, default = 2 })
+Settings.Define({ key = "petHappinessY", code = "GY", scope = "frame", only = PET_HAPPINESS, type = "int",
+    min = -200, max = 200, default = 0 })
+
 -- Status icons (player only, Elements/StatusIcons.lua): Blizzard's combat
 -- and resting icons in a row on the player's health bar, centred on it by
 -- default (above the bar's texts).
