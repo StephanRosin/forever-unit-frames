@@ -54,7 +54,7 @@ M.units.player.health = 100
 M.FireEvent("UNIT_HEALTH", "player")
 -- Power is not looked at.
 M.units.player.power = 10
-M.FireEvent("UNIT_POWER_UPDATE", "player")
+M.FireEvent("UNIT_POWER_FREQUENT", "player")
 H.check("mana missing: still faded", f:GetAlpha(), 0.2)
 
 -- Secret health (as the client gives it to addons): the curve still

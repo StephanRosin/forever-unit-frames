@@ -33,7 +33,7 @@ H.check("4 px", bar:GetHeight(), 4)
 H.check("mana colour", bar._color[3], C.Get("player", "powerColorMana")[3])
 -- Secret mana goes through.
 M.units.player.mana = M.Secret(350)
-M.FireEvent("UNIT_POWER_UPDATE", "player")
+M.FireEvent("UNIT_POWER_FREQUENT", "player")
 H.check("secret mana passed on", bar:GetValue(), M.units.player.mana)
 -- Reported: the strip covered the power texts. They sit on a layer above it.
 local textLayer = p.texts.powerRight:GetParent()

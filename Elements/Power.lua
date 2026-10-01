@@ -1,6 +1,9 @@
 local _, ns = ...
 
-local Power = { name = "Power", unitEvents = { "UNIT_POWER_UPDATE", "UNIT_MAXPOWER", "UNIT_DISPLAYPOWER" } }
+-- UNIT_POWER_FREQUENT, not UNIT_POWER_UPDATE: the latter comes throttled
+-- and at uneven moments, so regenerating energy and mana jumped in odd
+-- steps. Blizzard's player frame reads every change too (frequentUpdates).
+local Power = { name = "Power", unitEvents = { "UNIT_POWER_FREQUENT", "UNIT_MAXPOWER", "UNIT_DISPLAYPOWER" } }
 ns.Power = Power
 
 local Config = ns.Config

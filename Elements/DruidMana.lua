@@ -5,7 +5,7 @@ local _, ns = ...
 -- the player's power bar, only while the power bar shows something other
 -- than mana. Values may be secret: they go to the status bar as they are.
 -- A plain frame, so it follows forms in combat too.
-local DruidMana = { name = "DruidMana", unitEvents = { "UNIT_POWER_UPDATE", "UNIT_MAXPOWER", "UNIT_DISPLAYPOWER" } }
+local DruidMana = { name = "DruidMana", unitEvents = { "UNIT_POWER_FREQUENT", "UNIT_MAXPOWER", "UNIT_DISPLAYPOWER" } }
 ns.DruidMana = DruidMana
 
 local Config, Pixel, Secrets = ns.Config, ns.Pixel, ns.Secrets

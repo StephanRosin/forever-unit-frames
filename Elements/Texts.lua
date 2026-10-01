@@ -2,7 +2,7 @@ local _, ns = ...
 
 local Texts = {
     name = "Texts",
-    unitEvents = { "UNIT_HEALTH", "UNIT_MAXHEALTH", "UNIT_POWER_UPDATE", "UNIT_MAXPOWER", "UNIT_DISPLAYPOWER",
+    unitEvents = { "UNIT_HEALTH", "UNIT_MAXHEALTH", "UNIT_POWER_FREQUENT", "UNIT_MAXPOWER", "UNIT_DISPLAYPOWER",
         "UNIT_NAME_UPDATE", "UNIT_LEVEL", "PLAYER_FLAGS_CHANGED" },
 }
 ns.Texts = Texts
