@@ -6,7 +6,7 @@ Colors and textures of the bars, shields, incoming heals, power colors and the d
 
 The **Bars** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
 
-**On this page:** [Health bar](#health-bar) · [Textures](#textures) · [Absorb shields](#absorb-shields) · [Incoming heals](#incoming-heals) · [Power colors](#power-colors) · [Druid mana](#druid-mana)
+**On this page:** [Health bar](#health-bar) · [Textures](#textures) · [Absorb shields](#absorb-shields) · [Incoming heals](#incoming-heals) · [Power colors](#power-colors) · [Spell cost](#spell-cost) · [Druid mana](#druid-mana)
 
 ## Health bar
 
@@ -67,6 +67,16 @@ The **Bars** tab on each frame's page in `/fuf`. The last column says which fram
 <tr><td><b>Rage</b></td><td></td><td>Color</td><td><code>#d93333</code></td><td>all</td></tr>
 <tr><td><b>Focus</b></td><td></td><td>Color</td><td><code>#ff8040</code></td><td>all</td></tr>
 <tr><td><b>Energy</b></td><td></td><td>Color</td><td><code>#ffd933</code></td><td>all</td></tr>
+</tbody>
+</table>
+
+## Spell cost
+
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Show spell cost</b></td><td>While you cast, the end of the power bar shows what the spell will cost</td><td>On, Off</td><td>On</td><td>Player</td></tr>
+<tr><td><b>Cost colour</b></td><td></td><td>Color</td><td><code>#ffffff</code>, 45 % opaque</td><td>Player</td></tr>
 </tbody>
 </table>
 

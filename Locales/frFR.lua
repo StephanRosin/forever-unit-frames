@@ -79,7 +79,8 @@ L.ENUM_partyPetAuraSide_RIGHT = "Droite"
 L.ENUM_partyPetAuraSide_LEFT = "Gauche"
 L.SETTING_partyPetAuraX = "Auras : décalage X"
 L.SETTING_partyPetAuraY = "Auras : décalage Y"
-L.SETTING_titleText = "Texte de la ligne de titre"
+L.SETTING_titleText = "Ligne de titre, texte à gauche"
+L.SETTING_titleTextRight = "Ligne de titre, texte à droite"
 L.SETTING_titleColorMode = "Couleur du texte du titre"
 L.SETTING_textHealthLeft = "Barre de santé, texte à gauche"
 L.SETTING_textHealthRight = "Barre de santé, texte à droite"
@@ -505,6 +506,12 @@ L.SETTING_pvpIconFramePoint = "Point du cadre"
 L.SETTING_pvpIconPoint = "Point de l'icône"
 L.SETTING_pvpIconX = "Décalage X"
 L.SETTING_pvpIconY = "Décalage Y"
+
+-- Spell cost on the player's power bar.
+L.SECTION_powerCost = "Coût du sort"
+L.SETTING_powerCostPrediction = "Afficher le coût du sort"
+L.HINT_powerCostPrediction = "Pendant l'incantation, la fin de la barre de ressource montre le coût"
+L.SETTING_powerCostColor = "Couleur du coût"
 
 -- Pet happiness. PET_HAPPINESS1-3 only where the client lacks its own.
 L.SECTION_petHappiness = "Humeur du familier"

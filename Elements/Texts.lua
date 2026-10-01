@@ -13,6 +13,8 @@ local Config, Secrets = ns.Config, ns.Secrets
 -- power, default the bar).
 local SLOTS = {
     { field = "title", setting = "titleText", bar = "title", kind = "health", point = "LEFT", x = 4 },
+    -- Its own end is placed with the class badge (placeTitleEnd).
+    { field = "titleRight", setting = "titleTextRight", bar = "title", kind = "health", point = "RIGHT", x = -4 },
     { field = "healthLeft", setting = "textHealthLeft", bar = "health", point = "LEFT", x = 4, before = "healthRight" },
     { field = "healthRight", setting = "textHealthRight", bar = "health", point = "RIGHT", x = -4 },
     { field = "powerLeft", setting = "textPowerLeft", bar = "power", point = "LEFT", x = 4, before = "powerRight" },
@@ -374,18 +376,21 @@ local function showClassIcon(frame, shown)
     frame.classRing:SetShown(shown and frame.classRingSize > 0)
 end
 
--- The title text ends before the badge when it shows and its left edge
--- lies within the title row, else at the row's right edge. No measuring:
--- the text may be secret; the badge's place is plain numbers. The
--- vertical offset keeps the text centred on the row.
+-- The right title text ends before the badge when it shows and its left
+-- edge lies within the title row, else at the row's right edge; the left
+-- one ends where the right one begins (an empty text is zero wide). No
+-- measuring: the texts may be secret; the badge's place is plain numbers.
+-- The vertical offset keeps the text centred on the row.
 local function placeTitleEnd(frame)
-    local title = frame.texts.title
+    local title, right = frame.texts.title, frame.texts.titleRight
+    right:ClearAllPoints()
     if frame.classIcon:IsShown() and frame.classBadgeInRow then
-        title:SetPoint("RIGHT", frame.classBadge, "LEFT", ns.Pixel.Snap(-2, title),
+        right:SetPoint("RIGHT", frame.classBadge, "LEFT", ns.Pixel.Snap(-2, right),
             -frame.titleHeight / 2 - frame.classBadgeY)
     else
-        title:SetPoint("RIGHT", frame.title, "RIGHT", ns.Pixel.Snap(-4, title), 0)
+        right:SetPoint("RIGHT", frame.title, "RIGHT", ns.Pixel.Snap(-4, right), 0)
     end
+    title:SetPoint("RIGHT", right, "LEFT", ns.Pixel.Snap(-4, title), 0)
 end
 
 local function updateClassIcon(frame)
@@ -490,12 +495,19 @@ local function restoreTitle(frame)
     placeTitleEnd(frame)
 end
 
--- The room the title text has: the title row less its insets, and less the
--- class badge where that sits in the row.
+-- The room the title text has: the title row less its insets, less the
+-- class badge where that sits in the row, and less the right title text.
+-- A secret right text cannot be measured: it is given half the room.
 local function titleRoom(frame)
     local width = (frame.title:GetWidth() or 0) - 8
     if frame.classIcon:IsShown() and frame.classBadgeInRow then
         width = width - (frame.classBadgeBox.right - frame.classBadgeBox.left) - 2
+    end
+    local right = frame.texts.titleRight
+    if Config.Get(frame.key, "titleTextRight") ~= "NONE" then
+        local measure = right.GetUnboundedStringWidth or right.GetStringWidth
+        local w = Secrets.Number(measure(right))
+        width = width - (w and (w + 4) or width / 2)
     end
     return math.max(0, width)
 end
@@ -598,6 +610,8 @@ function Texts.Style(frame)
     local title = frame.texts.title
     title:SetWordWrap(false)
     title:SetShown(frame.titleHeight > 0)
+    frame.texts.titleRight:SetWordWrap(false)
+    frame.texts.titleRight:SetShown(frame.titleHeight > 0)
     styleBadge(frame)
     if not classIconWanted(frame) then
         showClassIcon(frame, false)
@@ -608,12 +622,18 @@ function Texts.Style(frame)
     placeTitleEnd(frame)
 end
 
--- Title text colour: class (players) or reaction, or plain white.
+-- Title text colour: class (players) or reaction, or plain white. The
+-- right title text takes it when it names the unit; values stay white.
 local function paintTitle(frame)
     local mode = Config.Get(frame.key, "titleColorMode")
     local r, g, b = 1, 1, 1
     if mode ~= "WHITE" then r, g, b = ns.Health.UnitColor(frame.unit, mode, frame.key) end
     frame.texts.title:SetTextColor(r, g, b, 1)
+    if Texts.NAME_TAGS[Config.Get(frame.key, "titleTextRight")] then
+        frame.texts.titleRight:SetTextColor(r, g, b, 1)
+    else
+        frame.texts.titleRight:SetTextColor(1, 1, 1, 1)
+    end
 end
 
 -- Texts on the bars that name the unit take barNameColorMode; value

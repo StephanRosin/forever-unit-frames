@@ -204,6 +204,14 @@ Settings.Define({ key = "titlePercent", code = "TP", scope = "frame", type = "in
 Settings.Define({ key = "healthPercent", code = "HP", scope = "frame", type = "int", min = 10, max = 100,
     default = { player = 45, target = 45, focus = 45, party = 45, _ = 75 } })
 Settings.Define({ key = "powerPercent", code = "PP", scope = "frame", type = "int", min = 0, max = 90, default = 25 })
+-- The cost of the spell being cast, faded over the end of the player's
+-- power bar (Elements/PowerCost.lua), on by default as on Blizzard's
+-- player frame. The colour lies over the bar's own: a light veil.
+local POWER_COST = { player = true }
+Settings.Define({ key = "powerCostPrediction", code = "PC", scope = "frame", only = POWER_COST, type = "bool",
+    default = true })
+Settings.Define({ key = "powerCostColor", code = "PQ", scope = "frame", only = POWER_COST, type = "color",
+    default = { 1, 1, 1, 0.45 } })
 Settings.Define({ key = "powerEnabled", code = "PE", scope = "frame", type = "bool", default = true })
 -- NPCs without any power (most beasts) show no empty power bar: the health
 -- bar takes its row. Players always have power, so it only ever acts on NPCs.
@@ -352,6 +360,10 @@ Settings.Define({ key = "castbarAlwaysShow", code = "CA", scope = "frame", only 
 -- shows values.
 Settings.Define({ key = "titleText", code = "NT", scope = "frame", type = "enum", values = TEXT_TAGS,
     default = { player = "NAME_LEVEL", target = "NAME_LEVEL", party = "NAME_LEVEL", _ = "NAME" } })
+-- A second title text at the row's right end (the left one ends where it
+-- begins), like the left and right texts on the bars.
+Settings.Define({ key = "titleTextRight", code = "NR", scope = "frame", type = "enum", values = TEXT_TAGS,
+    default = "NONE" })
 Settings.Define({ key = "titleColorMode", code = "NC", scope = "frame", type = "enum",
     values = { "CLASS", "REACTION", "WHITE" }, default = "CLASS" })
 -- The level number: the text's colour, or by difficulty (red, orange,

@@ -56,7 +56,7 @@ M.FireEvent("PLAYER_LOGIN")
 M.RunTimers()
 local C, O = ns.Config, ns.Options
 local f = ns.Frames.player
-local icon, tt = f.classIcon, f.texts.title
+local icon, tt, tr = f.classIcon, f.texts.title, f.texts.titleRight
 local badge, ring = f.classBadge, f.classRing
 local CIRCLE = "Interface\\CharacterFrame\\TempPortraitAlphaMask"
 
@@ -106,10 +106,11 @@ local _, iconSub = icon:GetDrawLayer()
 local _, ringSub = ring:GetDrawLayer()
 H.checkTrue("icon drawn over the ring", iconSub > ringSub)
 -- Default X/Y: the badge's left edge (-20) is inside the title row.
-H.check("title text ends at the badge", point(tt, "RIGHT")[2], badge)
-H.check("badge side", point(tt, "RIGHT")[3], "LEFT")
-H.check("2 px before the badge", point(tt, "RIGHT")[4], -2)
-H.check("text stays centred on the row", point(tt, "RIGHT")[5], -f.titleHeight / 2 - 2)
+H.check("title text ends at the badge", point(tr, "RIGHT")[2], badge)
+H.check("badge side", point(tr, "RIGHT")[3], "LEFT")
+H.check("2 px before the badge", point(tr, "RIGHT")[4], -2)
+H.check("text stays centred on the row", point(tr, "RIGHT")[5], -f.titleHeight / 2 - 2)
+H.check("left title text ends where the right one begins", point(tt, "RIGHT")[2], tr)
 
 -- Without the atlas: the character-create class texture with its coords.
 M.atlases["classicon-warlock"] = nil
@@ -128,8 +129,8 @@ M.units.player.class = "TINKER"
 M.FireEvent("UNIT_NAME_UPDATE", "player")
 H.check("unknown class hidden", icon:IsShown(), false)
 H.check("ring hidden with the icon", ring:IsShown(), false)
-H.check("title text back at the row edge", point(tt, "RIGHT")[2], f.title)
-H.check("row edge offset", point(tt, "RIGHT")[4], -4)
+H.check("title text back at the row edge", point(tr, "RIGHT")[2], f.title)
+H.check("row edge offset", point(tr, "RIGHT")[4], -4)
 M.units.player.class = "WARLOCK"
 
 -- NPC target: no icon; target change updates it.
@@ -137,7 +138,7 @@ local target = ns.Frames.target
 M.units.target = { name = "Wolf", level = 10, health = 1, healthMax = 1, reaction = 2, class = "WARRIOR" }
 M.FireEvent("PLAYER_TARGET_CHANGED")
 H.check("npc: hidden", target.classIcon:IsShown(), false)
-H.check("npc: title to the row edge", point(target.texts.title, "RIGHT")[2], target.title)
+H.check("npc: title to the row edge", point(target.texts.titleRight, "RIGHT")[2], target.title)
 M.units.target = { name = "Ally", level = 60, class = "WARRIOR", className = "Warrior", isPlayer = true,
     health = 1, healthMax = 1 }
 M.FireEvent("PLAYER_TARGET_CHANGED")
@@ -169,7 +170,7 @@ H.checkTrue("readable again: shown", target.classIcon:IsShown())
 -- Setting off (General, then a frame override).
 C.Set("general", "titleClassIcon", false)
 H.check("off: hidden", icon:IsShown(), false)
-H.check("off: title to the row edge", point(tt, "RIGHT")[2], f.title)
+H.check("off: title to the row edge", point(tr, "RIGHT")[2], f.title)
 C.Set("player", "titleClassIcon", true)
 H.checkTrue("frame override on", icon:IsShown())
 H.check("other frames stay off", target.classIcon:IsShown(), false)
@@ -187,12 +188,12 @@ H.check("y from General", point(badge, "CENTER")[5], -3)
 H.check("target inherits x", point(target.classBadge, "CENTER")[4], 6)
 C.Set("player", "classIconX", 30)
 H.check("frame x override", point(badge, "CENTER")[4], 30)
-H.check("left edge right of the row: title to the row edge", point(tt, "RIGHT")[2], f.title)
-H.check("row edge offset again", point(tt, "RIGHT")[4], -4)
+H.check("left edge right of the row: title to the row edge", point(tr, "RIGHT")[2], f.title)
+H.check("row edge offset again", point(tr, "RIGHT")[4], -4)
 C.Set("player", "classIconX", -6)
-H.check("left edge in the row again", point(tt, "RIGHT")[2], badge)
+H.check("left edge in the row again", point(tr, "RIGHT")[2], badge)
 C.Set("player", "portraitMode", "RIGHT")
-H.check("badge over a right portrait: title to the row edge", point(tt, "RIGHT")[2], f.title)
+H.check("badge over a right portrait: title to the row edge", point(tr, "RIGHT")[2], f.title)
 C.Set("player", "portraitMode", "OFF")
 C.Set("player", "classIconSize", 31)
 H.check("size setting: badge", badge:GetWidth(), 31)
@@ -241,7 +242,7 @@ H.check("party: badge offset", point(member.classBadge, "CENTER")[5], 2)
 H.checkTrue("party: badge above the bars", member.classBadge:GetFrameLevel() > member.health:GetFrameLevel())
 H.check("party: masked", member.classIcon:GetNumMaskTextures(), 1)
 H.checkTrue("party: ring shown", member.classRing:IsShown())
-H.check("party: title text ends at the badge", point(member.texts.title, "RIGHT")[2], member.classBadge)
+H.check("party: title text ends at the badge", point(member.texts.titleRight, "RIGHT")[2], member.classBadge)
 
 -- Test mode: the player's own class.
 M.units.target = nil

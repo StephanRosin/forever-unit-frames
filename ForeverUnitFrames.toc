@@ -32,6 +32,7 @@ Elements\HealPrediction.lua
 Elements\Absorb.lua
 Elements\Power.lua
 Elements\DruidMana.lua
+Elements\PowerCost.lua
 Elements\Texts.lua
 Elements\Portrait.lua
 Elements\Castbar.lua

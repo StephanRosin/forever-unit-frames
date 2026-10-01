@@ -91,6 +91,7 @@ local function layoutBars(frame)
         frame.power:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", left, 0)
         local powerLane = Config.Get(scope, "powerMatchesHealth") and lane or 0
         frame.power:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -(right + powerLane), 0)
+        frame.powerWidth = width - powerLane
         frame.power:SetHeight(powerShown and powerH or pixel)
         frame.power:SetShown(powerShown)
     end

@@ -73,10 +73,11 @@ Schema.FRAME = {
         { id = "absorbs", keys = { "absorbEnabled", "absorbMode", "absorbColor" } },
         { id = "healPrediction", keys = { "healPrediction", "healOverflow", "healBeyond", "powerMatchesHealth", "healMyColor", "healOtherColor" } },
         { id = "powerColors", keys = { "powerColorMana", "powerColorRage", "powerColorFocus", "powerColorEnergy" } },
+        { id = "powerCost", keys = { "powerCostPrediction", "powerCostColor" } },
         { id = "druidMana", keys = { "druidMana", "druidManaHeight" } },
     } },
     { id = "text", sections = {
-        { id = "titleText", keys = { "titleText", "titleColorMode", "awayBadge", "titleClassIcon", "classIconSize",
+        { id = "titleText", keys = { "titleText", "titleTextRight", "titleColorMode", "awayBadge", "titleClassIcon", "classIconSize",
             "classIconX", "classIconY", "classIconRing", "classIconRingColor" } },
         { id = "healthText", keys = { "textHealthLeft", "textHealthRight" } },
         { id = "powerText", keys = { "textPowerLeft", "textPowerRight" } },

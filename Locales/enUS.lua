@@ -100,7 +100,8 @@ L.ENUM_partyPetAuraSide_RIGHT = "Right"
 L.ENUM_partyPetAuraSide_LEFT = "Left"
 L.SETTING_partyPetAuraX = "Aura offset X"
 L.SETTING_partyPetAuraY = "Aura offset Y"
-L.SETTING_titleText = "Title row text"
+L.SETTING_titleText = "Title row, left text"
+L.SETTING_titleTextRight = "Title row, right text"
 L.SETTING_titleColorMode = "Title text color"
 L.SETTING_textHealthLeft = "Health bar, left text"
 L.SETTING_textHealthRight = "Health bar, right text"
@@ -529,6 +530,12 @@ L.SETTING_pvpIconFramePoint = "Point on the frame"
 L.SETTING_pvpIconPoint = "Point of the icon"
 L.SETTING_pvpIconX = "Offset X"
 L.SETTING_pvpIconY = "Offset Y"
+
+-- Spell cost on the player's power bar.
+L.SECTION_powerCost = "Spell cost"
+L.SETTING_powerCostPrediction = "Show spell cost"
+L.HINT_powerCostPrediction = "While you cast, the end of the power bar shows what the spell will cost"
+L.SETTING_powerCostColor = "Cost colour"
 
 -- Pet happiness. PET_HAPPINESS1-3 only where the client lacks its own.
 L.SECTION_petHappiness = "Pet happiness"
