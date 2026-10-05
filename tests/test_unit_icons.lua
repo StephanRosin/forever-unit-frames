@@ -49,7 +49,20 @@ local pi = t.unitIcons.pvpIcon
 C.Set("target", "pvpIcon", true)
 M.units.target.pvp = true
 M.FireEvent("UNIT_FACTION", "target")
-H.check("a flagged NPC: no crest (the elite marker's corner)", pi.holder:IsShown(), false)
+-- Flagged NPCs show it too (pvpIconNPC, on by default; asked for on
+-- CurseForge: attacking one flags you). Off: players only, as before.
+H.checkTrue("a flagged NPC: crest", pi.holder:IsShown())
+H.check("NPC setting on by default", C.Get("target", "pvpIconNPC"), true)
+H.check("NPC setting: code", S.Get("pvpIconNPC").code, "HN")
+H.check("NPC setting: not on the party (players)", S.AppliesTo(S.Get("pvpIconNPC"), "party"), false)
+C.Set("target", "pvpIconNPC", false)
+H.check("NPC setting off: no crest on an NPC", pi.holder:IsShown(), false)
+C.Set("target", "pvpIconNPC", true)
+H.checkTrue("NPC setting on again: crest", pi.holder:IsShown())
+M.units.target.faction = nil
+M.FireEvent("UNIT_FACTION", "target")
+H.check("an NPC without a faction: no crest (no art for it)", pi.holder:IsShown(), false)
+M.units.target.faction = "Horde"
 M.units.target.pvp = nil
 M.units.target.isPlayer = true
 M.FireEvent("UNIT_FACTION", "target")

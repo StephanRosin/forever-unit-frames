@@ -30,7 +30,7 @@ local GROUPS = {
 }
 -- What a group has no setting for (the dispels group has only some).
 local FIXED = { OnlyMine = false, Dispellable = false, HidePermanent = false, HighlightOwn = false,
-    CasterBorder = false }
+    CasterBorder = false, OwnSameRow = false }
 local ORDER = ns.Settings.AURA_GROUPS
 
 -- Test mode samples, repeated up to each group's maximum. Icons Blizzard's
@@ -214,6 +214,8 @@ local function readSettings(frame, group)
     -- your pet or vehicle; "!PLAYER": everything else), so no aura field
     -- is ever compared here.
     group.highlightOwn = get(frame, group, "HighlightOwn")
+    -- Yours first in the same rows as the rest instead of rows of their own.
+    group.ownSameRow = group.highlightOwn and get(frame, group, "OwnSameRow") == true
     -- Borders by caster (buffs): yours and the rest must be told apart
     -- too, in the same rows and at the same size unless "mine first".
     group.casterBorder = not group.isDebuff and get(frame, group, "CasterBorder") or false

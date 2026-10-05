@@ -98,8 +98,9 @@ end
 -- One container group: shown or not, filter, maximum and layout. Split
 -- (yours first, or borders by caster): "own" takes the PLAYER filter,
 -- "other" the rest (nothing when only yours are shown); with "mine first"
--- yours are at the own size and the rest start a new line. Otherwise "own"
--- is off and "other" shows everything the group's filter lets through.
+-- yours are at the own size and the rest start a new line, unless they
+-- share the rows (ownSameRow). Otherwise "own" is off and "other" shows
+-- everything the group's filter lets through.
 function AuraContainers.Part(group, part)
     local own = part == "own"
     local split = group.highlightOwn or group.casterBorder
@@ -108,7 +109,7 @@ function AuraContainers.Part(group, part)
         enabled, filter, size, newLine = group.enabled and split, group.ownFilter, group.ownSize, false
     elseif split then
         enabled, filter, size, newLine = group.enabled and group.otherFilter ~= nil,
-            group.otherFilter or group.filter, group.size, group.highlightOwn
+            group.otherFilter or group.filter, group.size, group.highlightOwn and not group.ownSameRow
     else
         enabled, filter, size, newLine = group.enabled, group.filter, group.size, false
     end
@@ -118,7 +119,7 @@ function AuraContainers.Part(group, part)
         filter = filter,
         max = group.max,
         layout = { elementWidth = size, elementHeight = size, elementSpacing = spacing, lineSpacing = spacing,
-            groupLineSpacing = spacing, forceNewLine = newLine },
+            groupSpacing = spacing, groupLineSpacing = spacing, forceNewLine = newLine },
         -- Any maxDuration hides auras without one; this one keeps every
         -- timed aura (it is compared with the aura's full duration).
         candidateFilters = AuraContainers.CandidateFilters(group),

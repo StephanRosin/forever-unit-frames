@@ -51,7 +51,7 @@ local function auraLayout(key)
         if max > 0 then return max end
         return nil
     end
-    if rest == "HighlightOwn" then return false end
+    if rest == "HighlightOwn" or rest == "OwnSameRow" then return false end
     if rest == "Growth" then return side end
     if rest == "RowGrowth" then return "DOWN" end
     if rest == "PerRow" then return 40 end

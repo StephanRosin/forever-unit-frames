@@ -43,6 +43,7 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <tr><td><b>Maximum icons</b></td><td></td><td>1 – 40</td><td>Player, Target: 24; Target of Target: 9; Focus: 16; Pet: 6; Party: 8</td><td>all</td></tr>
 <tr><td><b>Mine first</b></td><td>Yours in their own rows, bigger</td><td>On, Off</td><td>Player, Target, Party: On; Target of Target, Focus, Pet: Off</td><td>all</td></tr>
 <tr><td><b>Size of mine</b></td><td></td><td>10 – 64</td><td>Player: 25; Target, Focus: 26; Target of Target, Pet: 21; Party: 28</td><td>all</td></tr>
+<tr><td><b>Mine in the same rows</b></td><td>Yours first, then the rest in the same rows, as SUF shows them</td><td>On, Off</td><td>Off</td><td>all</td></tr>
 <tr><td><b>Border color by caster</b></td><td>Yours in one color, others' in another</td><td>On, Off</td><td>Off</td><td>all</td></tr>
 <tr><td><b>Border of mine</b></td><td></td><td>Color</td><td><code>#33d933</code></td><td>all</td></tr>
 <tr><td><b>Border of others'</b></td><td></td><td>Color</td><td><code>#d93333</code></td><td>all</td></tr>
@@ -72,6 +73,7 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <tr><td><b>Maximum icons</b></td><td></td><td>1 – 40</td><td>Player, Target: 24; Target of Target, Pet, Party: 6; Focus: 16</td><td>all</td></tr>
 <tr><td><b>Mine first</b></td><td>Yours in their own rows, bigger</td><td>On, Off</td><td>Player, Target, Focus: On; Target of Target, Pet, Party: Off</td><td>all</td></tr>
 <tr><td><b>Size of mine</b></td><td></td><td>10 – 64</td><td>Player, Target, Focus: 26; Target of Target, Pet: 21; Party: 25</td><td>all</td></tr>
+<tr><td><b>Mine in the same rows</b></td><td>Yours first, then the rest in the same rows, as SUF shows them</td><td>On, Off</td><td>Off</td><td>all</td></tr>
 </tbody>
 </table>
 

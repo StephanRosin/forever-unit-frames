@@ -5,10 +5,12 @@ local _, ns = ...
 -- * combat: the crossed swords while the unit is in combat (target,
 --   target of target, focus, party). Handy to see a pull without line of
 --   sight.
--- * pvp: the faction crest (or the free-for-all one) while a player is
+-- * pvp: the faction crest (or the free-for-all one) while a unit is
 --   flagged for PvP (player, target, target of target, focus, party).
---   Never on NPCs: flagged guards may be elite, and the elite marker
---   shares the top left corner.
+--   On NPCs too unless pvpIconNPC is off (asked for on CurseForge: attacking
+--   a flagged NPC flags you). Flagged guards may be elite, and the elite
+--   marker shares the top left corner; that was why NPCs were left out
+--   before 0.21.0.
 --
 -- UnitAffectingCombat and UnitIsPVP may be secret (UnitDocumentation.lua):
 -- such an answer is never compared, it sets the icon's opacity
@@ -141,12 +143,17 @@ local function updateCombat(frame, icon)
     animate(frame, icon, answer)
 end
 
+-- Whether flagged NPCs show the crest on this frame (party members and the
+-- player are players anyway).
+local function npcCrest(frame)
+    return Settings.AppliesTo(Settings.Get("pvpIconNPC"), frame.key) and Config.Get(frame.key, "pvpIconNPC") == true
+end
+
 local function updatePvp(frame, icon)
     local unit = frame.unit
     if not wanted(frame, "pvpIcon") or not unit then return icon.holder:Hide() end
-    -- Players only: flagged NPCs (city guards) can be elite, and the elite
-    -- marker sits in the same corner. Unknown (secret) counts as a player.
-    if Secrets.Bool(UnitIsPlayer, unit) == false then return icon.holder:Hide() end
+    -- NPCs only with pvpIconNPC. Unknown (secret) counts as a player.
+    if Secrets.Bool(UnitIsPlayer, unit) == false and not npcCrest(frame) then return icon.holder:Hide() end
     -- Free for all first: it has its own crest.
     local ffa = ask(UnitIsPVPFreeForAll, unit)
     if ffa == true and drawCrest(icon.tex, "FFA") then return showFrom(icon, true) end

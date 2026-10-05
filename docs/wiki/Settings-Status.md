@@ -44,6 +44,7 @@ The **Status** tab on each frame's page in `/fuf`. The last column says which fr
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
 <tr><td><b>Show PvP icon</b></td><td>The faction crest while a player is flagged for PvP</td><td>On, Off</td><td>Player, Target: On; Target of Target, Focus, Party: Off</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Also on NPCs</b></td><td>Flagged NPCs too, such as guards: attacking one flags you</td><td>On, Off</td><td>On</td><td>Target, Target of Target, Focus</td></tr>
 <tr><td><b>Icon size</b></td><td></td><td>8 – 48</td><td>Player: 25; Target, Target of Target, Focus, Party: 24</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
 <tr><td><b>Point on the frame</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Top left</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
 <tr><td><b>Point of the icon</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Center</td><td>Player, Target, Target of Target, Focus, Party</td></tr>

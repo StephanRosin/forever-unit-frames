@@ -456,6 +456,9 @@ local AURA_SETTINGS = {
     -- Own auras first, in their own rows, at their own size.
     { "HighlightOwn", "H", { type = "bool" } },
     { "OwnSize", "B", { type = "int", min = 10, max = 64 } },
+    -- Yours first, but in the same rows as the rest (as Shadowed Unit
+    -- Frames shows them), not in rows of their own.
+    { "OwnSameRow", "Z", { type = "bool" } },
 }
 
 -- Debuffs sit above the frame, buffs above the debuffs; party auras to
@@ -479,7 +482,7 @@ local AURA_DEFAULTS = {
         RowGrowth = { party = "DOWN", _ = "UP" },
         Size = AURA_SIZE, Spacing = 2, PerRow = 0,
         Max = { party = 4, targettarget = 6, pet = 6, _ = 16 },
-        HighlightOwn = false, OwnSize = ownSizes(AURA_SIZE),
+        HighlightOwn = false, OwnSize = ownSizes(AURA_SIZE), OwnSameRow = false,
     },
     debuffs = {
         letter = "D",
@@ -498,6 +501,7 @@ local AURA_DEFAULTS = {
         Size = AURA_SIZE, Spacing = 2, PerRow = 0,
         Max = { party = 6, targettarget = 6, pet = 6, _ = 16 },
         HighlightOwn = { target = true, focus = true, _ = false }, OwnSize = ownSizes(AURA_SIZE),
+        OwnSameRow = false,
     },
     -- Off by default; when on, centred on the member.
     dispels = {
@@ -629,6 +633,12 @@ Settings.Define({ key = "petHappinessX", code = "GX", scope = "frame", only = PE
     min = -200, max = 200, default = 2 })
 Settings.Define({ key = "petHappinessY", code = "GY", scope = "frame", only = PET_HAPPINESS, type = "int",
     min = -200, max = 200, default = 0 })
+
+-- The PvP crest on flagged NPCs too (city guards, faction NPCs): attacking
+-- one flags you. On by default; flagged elite guards then show the crest
+-- in the elite marker's corner as well (move one of them if they clash).
+Settings.Define({ key = "pvpIconNPC", code = "HN", scope = "frame",
+    only = { target = true, targettarget = true, focus = true }, type = "bool", default = true })
 
 -- Status icons (player only, Elements/StatusIcons.lua): Blizzard's combat
 -- and resting icons in a row on the player's health bar, centred on it by

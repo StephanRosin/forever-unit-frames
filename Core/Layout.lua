@@ -119,9 +119,35 @@ local function ownDepth(shape, own)
 end
 
 -- Offset of icon i from the corner, and its size.
+-- Yours first in the same rows as the rest (shape.ownSameRow): one flow of
+-- icons of two sizes. A row ends after perRowSetting icons, or (Auto) when
+-- the next icon would pass shape.length; a row is as deep as its biggest
+-- icon. Returns along, across and size of icon i (counting from 1).
+function Layout.AuraFlow(shape, i, own)
+    local along, across, depth, inRow = 0, 0, 0, 0
+    local limit = (shape.perRowSetting or 0) > 0 and shape.perRowSetting or nil
+    -- Half a pixel of slack, as the container needs (rows wrap too early
+    -- otherwise).
+    local length = (shape.length or math.huge) + 0.5
+    for n = 1, i do
+        local size = n <= own and shape.ownSize or shape.size
+        if inRow > 0 and ((limit and inRow >= limit) or (not limit and along + size > length)) then
+            across, along, depth, inRow = across + depth + shape.spacing, 0, 0, 0
+        end
+        if n == i then return along, across, size end
+        along, inRow = along + size + shape.spacing, inRow + 1
+        depth = math.max(depth, size)
+    end
+    return 0, 0, shape.size
+end
+
 function Layout.AuraPlace(shape, i, own)
     local row = Layout.AuraRowDirection(shape.primary, shape.row)
     local p, r = VECTOR[shape.primary], VECTOR[row]
+    if shape.ownSameRow then
+        local along, across, size = Layout.AuraFlow(shape, i, own)
+        return p[1] * along + r[1] * across + 0, p[2] * along + r[2] * across + 0, size
+    end
     local index, perRow, size, shift = i, shape.ownPerRow, shape.ownSize, 0
     if i > own then
         index, perRow, size, shift = i - own, shape.perRow, shape.size, ownDepth(shape, own)
@@ -135,6 +161,15 @@ end
 -- Width and height of count icons, the first `own` of them yours.
 function Layout.AuraBlock(shape, own, count)
     own = math.min(own, count)
+    if shape.ownSameRow then
+        local along, across = 0, 0
+        for i = 1, count do
+            local a, c, size = Layout.AuraFlow(shape, i, own)
+            along, across = math.max(along, a + size), math.max(across, c + size)
+        end
+        if HORIZONTAL[shape.primary] then return along, across end
+        return across, along
+    end
     local ownAlong, ownAcross = Layout.AuraExtent(own, shape.ownPerRow, shape.ownSize, shape.spacing, "RIGHT")
     local along, across = Layout.AuraExtent(count - own, shape.perRow, shape.size, shape.spacing, "RIGHT")
     along = math.max(along, ownAlong)
