@@ -457,9 +457,10 @@ local function pillLayer(badge, sublevel)
     return layer
 end
 
--- A layer of the pill, inset pixels from the badge's edge.
-local function placePill(badge, layer, inset)
-    local h = math.max(1, badge:GetHeight() - 2 * inset)
+-- A layer of the pill, inset pixels from the badge's edge. The height is
+-- handed in, not read back: the badge may only report secret sizes.
+local function placePill(badge, layer, inset, height)
+    local h = math.max(1, height - 2 * inset)
     local left, middle, right = layer[1], layer[2], layer[3]
     left:ClearAllPoints()
     left:SetPoint("LEFT", badge, "LEFT", inset, 0)
@@ -499,7 +500,7 @@ end
 -- class badge where that sits in the row, and less the right title text.
 -- A secret right text cannot be measured: it is given half the room.
 local function titleRoom(frame)
-    local width = (frame.title:GetWidth() or 0) - 8
+    local width = (Secrets.Number(frame.title:GetWidth()) or 0) - 8
     if frame.classIcon:IsShown() and frame.classBadgeInRow then
         width = width - (frame.classBadgeBox.right - frame.classBadgeBox.left) - 2
     end
@@ -530,11 +531,15 @@ function Texts.UpdateAwayBadge(frame)
     Texts.SetFont(badge.text, ns.Media.Font(Config.Get(frame.key, "fontFace")), textSize, "NONE")
     badge.text:SetText(state)
     badge.text:SetTextColor(style.text[1], style.text[2], style.text[3], 1)
-    local width = ns.Pixel.Snap((badge.text:GetStringWidth() or 0) + height, nil, 1)
+    -- The pill hangs from the title text, whose name may be secret; then the
+    -- client hands out its own text width as a secret too (reported
+    -- 04.10.2026). Such a width is estimated from the font size.
+    local textWidth = Secrets.Number(badge.text:GetStringWidth()) or #state * textSize * 0.7
+    local width = ns.Pixel.Snap(textWidth + height, nil, 1)
     badge:SetSize(width, height)
     local px = ns.Pixel.Snap(1, nil, 1)
-    placePill(badge, badge.rim, 0)
-    placePill(badge, badge.ground, px)
+    placePill(badge, badge.rim, 0, height)
+    placePill(badge, badge.ground, px, height)
     paintPill(badge.rim, style.rim)
     paintPill(badge.ground, style.ground)
     -- The title is as wide as its text (at most the room left for it), so

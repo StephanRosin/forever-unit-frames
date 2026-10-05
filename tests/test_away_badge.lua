@@ -52,3 +52,25 @@ H.check("off: no badge", badge:IsShown(), false)
 C.Set("target", "awayBadge", true)
 ns.Single.UpdateAll(t)
 H.check("on again", badge:IsShown(), true)
+
+-- Reported 04.10.2026 (CurseForge, by mail): targeting an AFK player threw
+-- "attempt to perform arithmetic on a secret number value" in
+-- UpdateAwayBadge: the badge's own text width came back secret (its pill
+-- hangs from the title text, whose name may be secret). Widths that cannot
+-- be read are estimated; nothing is calculated with a secret.
+do
+    local text = t.awayBadge.text
+    local plainWidth = text.GetStringWidth
+    text.GetStringWidth = function() return M.Secret(14) end
+    local titleWidth = t.title.GetWidth
+    t.title.GetWidth = function() return M.Secret(200) end
+    local badgeHeight = t.awayBadge.GetHeight
+    t.awayBadge.GetHeight = function() return M.Secret(13) end
+    M.units.target.afk, M.units.target.dnd = true, false
+    local ok, err = pcall(ns.Single.UpdateAll, t)
+    H.checkTrue("secret widths: no error (" .. tostring(err) .. ")", ok)
+    H.check("secret widths: badge still shown", t.awayBadge:IsShown(), true)
+    local w = t.awayBadge:GetWidth()
+    H.checkTrue("secret widths: a plain, sensible badge width", type(w) == "number" and w > 10 and w < 60)
+    text.GetStringWidth, t.title.GetWidth, t.awayBadge.GetHeight = plainWidth, titleWidth, badgeHeight
+end
