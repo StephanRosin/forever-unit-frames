@@ -4,8 +4,9 @@ local _, ns = ...
 -- in the style of the options windows (the same colours, title bar and
 -- close cross). Its left button runs the entry's action (0.22.0: opens
 -- the raid options window) and closes it; Close closes it. A plain
--- (non-secure) frame; ESC closes it too. Every text is set when it
--- opens, and again when the language changes while it is open.
+-- (non-secure) frame; ESC closes it too; /fuf news opens it again (its
+-- footer says so). Every text is set when it opens, and again when the
+-- language changes while it is open.
 local NewsWindow = {}
 ns.NewsWindow = NewsWindow
 
@@ -93,7 +94,14 @@ local function createFooter(parent)
     close:SetPoint("RIGHT", footer, "RIGHT", -FOOTER_INSET, 0)
     local action = Widgets.Button(footer, { text = "", width = WIDE_BUTTON_W, onClick = runAction })
     action:SetPoint("RIGHT", close, "LEFT", -GAP, 0)
-    NewsWindow.closeButton, NewsWindow.actionButton = close, action
+    -- The hint takes the room left of the (variable-width) action button
+    -- and wraps there rather than run under it.
+    local hint = Style.Text(footer, 11, "muted")
+    hint:SetPoint("LEFT", footer, "LEFT", INSET, 0)
+    hint:SetPoint("RIGHT", action, "LEFT", -GAP, 0)
+    hint:SetJustifyH("LEFT")
+    hint:SetWordWrap(true)
+    NewsWindow.closeButton, NewsWindow.actionButton, NewsWindow.hint = close, action, hint
     return footer
 end
 
@@ -178,6 +186,7 @@ local function render()
         NewsWindow.lines[i].bullet:Hide(); NewsWindow.lines[i].text:Hide()
     end
     NewsWindow.closeButton.text:SetText(L.NEWS_CLOSE)
+    NewsWindow.hint:SetText(L.NEWS_AGAIN)
     local action = entry.action
     NewsWindow.actionButton:SetShown(action ~= nil)
     if action then

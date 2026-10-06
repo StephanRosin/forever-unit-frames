@@ -51,6 +51,7 @@ Source: [GitHub](https://github.com/StephanRosin/forever-unit-frames)
 |---|---|
 | `/fuf` | Opens the options |
 | `/fuf raid` | Opens the raid frames' options |
+| `/fuf news` | Shows what's new in this version (shown once by itself after an update) |
 | `/fuf unlock`, `/fuf lock` | Lets you drag the frames, and locks them again |
 | `/fuf status` | Prints the client version and where the settings came from |
 | `/fuf reset <frame\|all>` | Resets one frame (player, target, targettarget, pet, focus, party) or everything |

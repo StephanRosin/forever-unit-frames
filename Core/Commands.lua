@@ -64,6 +64,12 @@ function Commands.ToggleRaidOptions()
     if Commands.IsReady() then ns.RaidOptions.Toggle() end
 end
 
+-- /fuf news: the news of this version again (Options/News.lua), or why
+-- not. What was recorded at login stays as it is.
+function Commands.ShowNews()
+    if not ns.NewsWindow.Open(ns.News.Current()) then ns.Print(L.NEWS_NONE) end
+end
+
 -- Unlocking is refused in combat (Movers.Unlock says so).
 function Commands.ToggleLock()
     if not Commands.IsReady() then return end
@@ -81,6 +87,8 @@ SlashCmdList.FOREVERUNITFRAMES = function(msg)
         ns.Print(L.HELP)
     elseif cmd == "raid" then
         Commands.ToggleRaidOptions()
+    elseif cmd == "news" then
+        Commands.ShowNews()
     elseif cmd == "unlock" then
         ns.Movers.Unlock()
     elseif cmd == "lock" then
