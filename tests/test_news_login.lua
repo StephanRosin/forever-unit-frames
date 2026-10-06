@@ -86,3 +86,13 @@ H.checkTrue("the raid panel built", ns.RaidHeader.anchor)
 H.check("nothing printed", #M.chat, chatBefore)
 H.check("nothing blocked", #M.blocked, 0)
 H.check("no error", #M.errors, 0)
+
+-- A fresh install that logs in in combat and logs out before combat ends:
+-- the version is recorded at login already, so the next login shows
+-- nothing either.
+H.check("fresh install in combat: not shown", login(nil, "0.22.0", { combat = true }), false)
+H.check("fresh install in combat: recorded at once", ForeverUnitFramesDB.newsSeen, "0.22.0")
+logout()
+local fresh = ForeverUnitFramesDB
+H.check("next login: not shown", login(fresh, "0.22.0"), false)
+H.check("next login: still recorded", ForeverUnitFramesDB.newsSeen, "0.22.0")

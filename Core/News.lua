@@ -13,9 +13,11 @@ local _, ns = ...
 --   * there is no newsSeen (or none that is a string), but the
 --     SavedVariables held a unit-frame profile or raid profiles before
 --     this login: an update from a version before the news.
--- A fresh install (neither) shows nothing. A login that finds an entry
--- records its version as newsSeen, unless newsSeen is newer already (a
--- downgrade keeps it). A version without news shows and records nothing.
+-- A fresh install (neither) shows nothing and records the version at once
+-- (News.Begin), so a logout before the deferred check still counts. A
+-- login that finds an entry records its version as newsSeen, unless
+-- newsSeen is newer already (a downgrade keeps it). A version without
+-- news shows and records nothing.
 local News = {}
 ns.News = News
 
@@ -54,16 +56,20 @@ end
 local db            -- ForeverUnitFramesDB
 local hadSettings   -- it held a profile before this login
 
--- At PLAYER_LOGIN, before anything writes to the SavedVariables.
-function News.Begin(saved)
-    db = saved
-    hadSettings = type(saved.profile) == "table" or type(saved.raid) == "table"
-end
-
 local function seenVersion()
     local seen = db.newsSeen
     if type(seen) == "string" then return seen end
     return nil
+end
+
+-- At PLAYER_LOGIN, before anything writes to the SavedVariables. A fresh
+-- install records the version here already: News.AtLogin waits for the
+-- end of combat, which a logout may come before.
+function News.Begin(saved)
+    db = saved
+    hadSettings = type(saved.profile) == "table" or type(saved.raid) == "table"
+    local current = News.Current()
+    if not hadSettings and not seenVersion() and News.Entry(current) then db.newsSeen = current end
 end
 
 -- Whether this login shows the news of the TOC version (see above).
