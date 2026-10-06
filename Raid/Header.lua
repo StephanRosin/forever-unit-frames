@@ -311,6 +311,10 @@ function Header.Create()
 end
 
 local function refresh() ns.AfterCombat("raidLayout", Header.Refresh) end
+-- Only the position changed: the anchor moves, the headers and cells
+-- hanging from it go along. Out of combat: the secure headers hang from
+-- the anchor.
+local function move() ns.AfterCombat("raidAnchor", placeAnchor) end
 
 -- Cells got or lost units. In combat: a cell made now needs its size and
 -- the blocks their places, after combat. Out of combat: blocks are placed
@@ -338,12 +342,17 @@ ns.On("GROUP_ROSTER_UPDATE", Header.UpdateVisibility)
 ns.Listen("RAID_SIZE_CHANGED", function() if Header.anchor then refresh() end end)
 -- A setting of the active size or the character; another size's profile
 -- does not show, nor does the raid minimap button (Raid/MinimapButton.lua).
+-- The shown size's x / y only move the panel.
 local BUTTON_KEYS = { minimapAngle = true, minimapShow = true }
+local POSITION_KEYS = { x = true, y = true }
 ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
     if not Header.anchor then return end
-    local panel = scope == nil or scope == ns.Raid.Scope(Cell.Size())
-        or (scope == "general" and not BUTTON_KEYS[key])
-    if panel then refresh() end
+    local shown = scope == ns.Raid.Scope(Cell.Size())
+    if shown and POSITION_KEYS[key] then
+        move()
+    elseif shown or scope == nil or (scope == "general" and not BUTTON_KEYS[key]) then
+        refresh()
+    end
     -- Raid view in party switched, or the raid frames: the party block.
     if scope == nil or (scope == "general" and (key == nil or key == "enabled" or key == "showInParty")) then
         ns.AfterCombat("partyStyle", ns.Party.StyleAll)
