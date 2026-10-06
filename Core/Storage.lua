@@ -50,27 +50,6 @@ function Storage.Attach(db)
     attached = db
 end
 
--- Only known scopes and settings that apply to them survive, each with a
--- value that passes validation: a hand-edited or outdated SavedVariables
--- file must never reach Config or the codec.
-local function sanitise(profile)
-    local Settings = ns.Settings
-    local clean = {}
-    for _, scope in ipairs(Settings.SCOPES) do
-        clean[scope] = {}
-        local values = profile[scope]
-        if type(values) == "table" then
-            for key, v in pairs(values) do
-                local def = Settings.Get(key)
-                if def and Settings.AppliesTo(def, scope) then
-                    clean[scope][key] = Settings.Validate(def, v)
-                end
-            end
-        end
-    end
-    return clean
-end
-
 local function from(name, isProvider, profile)
     source, sourceIsProvider = name, isProvider
     return profile, source
@@ -78,7 +57,7 @@ end
 
 function Storage.Load(db)
     if type(db) == "table" and type(db.profile) == "table" then
-        return from("SavedVariables", false, sanitise(db.profile))
+        return from("SavedVariables", false, ns.Settings.Sanitise(db.profile))
     end
     for _, p in ipairs(providers) do
         local ok, str = pcall(p.load)

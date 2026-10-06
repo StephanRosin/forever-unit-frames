@@ -15,6 +15,7 @@ Locales\esES.lua
 Locales\frFR.lua
 Core\Init.lua
 Core\Secrets.lua
+Core\Registry.lua
 Core\Settings.lua
 Core\Preset.lua
 Core\Config.lua

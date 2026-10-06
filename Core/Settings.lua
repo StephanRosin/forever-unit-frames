@@ -1,109 +1,13 @@
 local _, ns = ...
 
--- The one list of every setting. Config, Codec, the options window and the
--- tests all read from here. A setting's `code` is written into saved and
--- exported strings: once released it must never change or be reused.
-local Settings = {}
+-- The one list of every unit-frame setting. Config, Codec, the options
+-- window and the tests all read from here. A setting's `code` is written
+-- into saved and exported strings: once released it must never change or
+-- be reused. The registry itself is Core/Registry.lua.
+local Settings = ns.NewRegistry(
+    { "general", "player", "target", "targettarget", "pet", "focus", "party" },
+    { general = "g", player = "p", target = "t", targettarget = "o", pet = "e", focus = "f", party = "y" })
 ns.Settings = Settings
-
-Settings.SCOPES = { "general", "player", "target", "targettarget", "pet", "focus", "party" }
-Settings.PREFIX = {
-    general = "g", player = "p", target = "t", targettarget = "o",
-    pet = "e", focus = "f", party = "y",
-}
-
-local list, byKey, byCode = {}, {}, {}
-
-function Settings.Define(def)
-    assert(not byKey[def.key], "duplicate key " .. def.key)
-    assert(not byCode[def.code], "duplicate code " .. def.code)
-    list[#list + 1] = def
-    byKey[def.key] = def
-    byCode[def.code] = def
-end
-
-function Settings.Get(key) return byKey[key] end
-function Settings.ByCode(code) return byCode[code] end
-function Settings.All() return list end
-
-function Settings.Default(def, scope)
-    local d = def.default
-    if type(d) == "table" and d._ ~= nil then
-        local v = d[scope]
-        if v == nil then v = d._ end
-        return v
-    end
-    return d
-end
-
--- The shipped look (Core/Preset.lua) on top of the plain defaults:
--- preset[scope][key] = value. A general value becomes the setting's base
--- default, a frame value that frame's own default.
-function Settings.ApplyPreset(preset)
-    for scope, values in pairs(preset) do
-        for key, value in pairs(values) do
-            local def = assert(byKey[key], "preset: unknown setting " .. key)
-            assert(Settings.AppliesTo(def, scope), "preset: " .. key .. " does not apply to " .. scope)
-            assert(Settings.Validate(def, value) == value or def.type == "color", "preset: invalid " .. key)
-            local d = def.default
-            if type(d) ~= "table" or d._ == nil then d = { _ = d } end
-            if scope == "general" then d._ = value else d[scope] = value end
-            def.default = d
-        end
-    end
-end
-
--- def.only (optional) limits a frame setting to some frames, e.g.
--- { party = true } for the party layout.
-function Settings.AppliesTo(def, scope)
-    if scope == "general" then return def.scope ~= "frame" end
-    if def.scope == "general" then return false end
-    if def.only then return def.only[scope] == true end
-    return true
-end
-
-local function inList(values, v)
-    for i = 1, #values do if values[i] == v then return true end end
-    return false
-end
-
--- The longest free text a setting takes (a spell name, or its ID).
-Settings.TEXT_MAX = 64
-
-function Settings.Validate(def, v)
-    local t = def.type
-    if t == "int" then
-        if type(v) ~= "number" then return nil end
-        if v ~= v or v == math.huge or v == -math.huge then return nil end
-        v = math.floor(v + 0.5)
-        if def.min and v < def.min then v = def.min end
-        if def.max and v > def.max then v = def.max end
-        return v
-    elseif t == "bool" then
-        if type(v) ~= "boolean" then return nil end
-        return v
-    elseif t == "enum" then
-        if not inList(def.values, v) then return nil end
-        return v
-    elseif t == "color" then
-        if type(v) ~= "table" then return nil end
-        for i = 1, 4 do
-            local c = v[i]
-            if type(c) ~= "number" or c < 0 or c > 1 then return nil end
-        end
-        return { v[1], v[2], v[3], v[4] }
-    elseif t == "media" then
-        if type(v) ~= "string" or v == "" then return nil end
-        return v
-    elseif t == "text" then
-        -- Free text, trimmed; empty is allowed. def.maxLetters caps it.
-        if type(v) ~= "string" then return nil end
-        v = v:match("^%s*(.-)%s*$")
-        if #v > (def.maxLetters or Settings.TEXT_MAX) then return nil end
-        return v
-    end
-    return nil
-end
 
 -- Definitions -----------------------------------------------------------------
 -- Order here is the order of the options pages; codes are permanent.
