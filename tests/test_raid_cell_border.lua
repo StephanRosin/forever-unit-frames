@@ -1,7 +1,8 @@
 -- The raid cell's border and corners (Raid/Settings.lua, Raid/Cell.lua):
 -- the ring around each cell (switched on the Cell tab now) in its own
 -- style, thickness and colour, and the cell's corner radius, per raid
--- size. The party frame's border does not count.
+-- size. The party frame's border does not count. The radius starts
+-- small, smaller as the raid grows.
 local M = H.M
 local ns = H.LoadAddon()
 local RC, C, RS, Header = ns.RaidConfig, ns.Config, ns.RaidSettings, ns.RaidHeader
@@ -19,7 +20,9 @@ H.check("style", default("cellBorderStyle"), "GOLD")
 H.check("style choices: the unit frames'", table.concat(RS.Get("cellBorderStyle").values, ","), "FLAT,GOLD")
 H.check("thickness", default("cellBorderSize"), 1)
 H.check("colour", default("cellBorderColor"), "0 0 0 1")
-H.check("corner radius", default("cellCornerRadius"), 0)
+H.check("corner radius", default("cellCornerRadius"), 4)
+H.check("corner radius, 20", RS.Default(RS.Get("cellCornerRadius"), "r20"), 3)
+H.check("corner radius, 40", RS.Default(RS.Get("cellCornerRadius"), "r40"), 2)
 local codes = {}
 for i, key in ipairs({ "cellBorderStyle", "cellBorderSize", "cellBorderColor", "cellCornerRadius" }) do
     codes[i] = RS.Get(key).code
@@ -29,13 +32,14 @@ H.check("codes", table.concat(codes, " "), "CY CZ CK CR")
 -- The cell asks the raid profile; the ring hugs the cell.
 H.check("cell style", C.Get("raid", "borderStyle"), "GOLD")
 H.check("cell thickness", C.Get("raid", "borderSize"), 1)
-H.check("cell radius", C.Get("raid", "cornerRadius"), 0)
+H.check("cell radius", C.Get("raid", "cornerRadius"), 4)
 H.check("no padding", C.Get("raid", "borderPadding"), 0)
 C.Set("party", "borderStyle", "FLAT")
 C.Set("party", "cornerRadius", 6)
 C.Set("party", "borderPadding", 4)
 H.check("not the party frame's style", C.Get("raid", "borderStyle"), "GOLD")
-H.check("not the party frame's radius", C.Get("raid", "cornerRadius"), 0)
+C.Set("party", "cornerRadius", 3)
+H.check("not the party frame's radius", C.Get("raid", "cornerRadius"), 4)
 H.check("not the party frame's padding", C.Get("raid", "borderPadding"), 0)
 RC.Set("r10", "cellBorderStyle", "FLAT")
 RC.Set("r10", "cellBorderSize", 3)
@@ -61,6 +65,13 @@ RC.Set("r10", "cellBorderStyle", "FLAT")
 RC.Set("r10", "cellBorderColor", { 0.5, 0, 0, 1 })
 local cell = Header.headers[1]:GetAttribute("child1")
 H.check("ring in its colour", cell.frameRing.border[1]._color[1], 0.5)
+
+-- The rounding drawn: on at the default radius, off at 0.
+H.check("rounded by default", cell.clip.radius, 4)
+H.check("rounding mask on", cell.clip.mask:IsShown(), true)
+RC.Set("r10", "cellCornerRadius", 0)
+H.check("square: no radius", cell.clip.radius, 0)
+H.check("square: mask off", cell.clip.mask:IsShown(), false)
 
 -- In the window: the switch with the ring's look on the Cell tab.
 local function tab(id)
