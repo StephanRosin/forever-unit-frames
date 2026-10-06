@@ -28,6 +28,7 @@ end
 Schema.TABS = {
     { id = "general", sections = {
         { id = "raidFrames", keys = { "enabled", "showInParty", "hideBlizzard" } },
+        { id = "minimap", keys = { "minimapShow", "minimapAngle" } },
     } },
     { id = "layout", sections = {
         { id = "grouping", keys = { "groupBy", "sortBy", "classOrder", "hideEmpty", "blockTitles" } },

@@ -796,3 +796,11 @@ L.RAID_ENUM_dispelSquarePoint_TOPLEFT = "Arriba a la izquierda"
 L.RAID_ENUM_dispelSquarePoint_TOPRIGHT = "Arriba a la derecha"
 L.RAID_ENUM_dispelSquarePoint_BOTTOMLEFT = "Abajo a la izquierda"
 L.RAID_ENUM_dispelSquarePoint_BOTTOMRIGHT = "Abajo a la derecha"
+
+-- Marcos de banda: su propio botón del minimapa y su entrada en el compartimento.
+L.RAID_SECTION_minimap = "Botón del minimapa"
+L.RAID_SETTING_minimapShow = "Mostrar el botón"
+L.RAID_SETTING_minimapAngle = "Posición del botón"
+L.RAID_HINT_minimapAngle = "Grados alrededor del minimapa; o arrástralo"
+L.RAID_MINIMAP_LEFT_CLICK = "Clic izquierdo: opciones de marcos de banda"
+L.RAID_COMPARTMENT = "Forever Unit Frames: marcos de banda"

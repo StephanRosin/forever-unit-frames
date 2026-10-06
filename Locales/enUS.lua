@@ -819,3 +819,11 @@ L.RAID_ENUM_dispelSquarePoint_TOPLEFT = "Top left"
 L.RAID_ENUM_dispelSquarePoint_TOPRIGHT = "Top right"
 L.RAID_ENUM_dispelSquarePoint_BOTTOMLEFT = "Bottom left"
 L.RAID_ENUM_dispelSquarePoint_BOTTOMRIGHT = "Bottom right"
+
+-- Raid frames: their own minimap button and compartment entry.
+L.RAID_SECTION_minimap = "Minimap button"
+L.RAID_SETTING_minimapShow = "Show the button"
+L.RAID_SETTING_minimapAngle = "Button position"
+L.RAID_HINT_minimapAngle = "Degrees around the minimap; or drag it"
+L.RAID_MINIMAP_LEFT_CLICK = "Left-click: raid frame options"
+L.RAID_COMPARTMENT = "Forever Unit Frames: raid frames"

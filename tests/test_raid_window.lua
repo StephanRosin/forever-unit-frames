@@ -48,7 +48,7 @@ local titles = {}
 for i, b in ipairs(RO.tabButtons) do titles[i] = b.text:GetText() end
 H.check("tabs", table.concat(titles, ","), "General,Layout,Cell,Texts,Debuffs,Indicators,Icons & states")
 H.check("first tab", RO.currentTab, "general")
-H.check("general rows", keys(), "enabled,showInParty,hideBlizzard")
+H.check("general rows", keys(), "enabled,showInParty,hideBlizzard,minimapShow,minimapAngle")
 H.check("label", rowFor("showInParty").label:GetText(), "Raid view in a party")
 H.check("hint", rowFor("hideBlizzard").hintText:GetText(), "Needs /reload to show them again")
 click(rowFor("showInParty").box)

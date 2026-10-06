@@ -795,3 +795,11 @@ L.RAID_ENUM_dispelSquarePoint_TOPLEFT = "En haut à gauche"
 L.RAID_ENUM_dispelSquarePoint_TOPRIGHT = "En haut à droite"
 L.RAID_ENUM_dispelSquarePoint_BOTTOMLEFT = "En bas à gauche"
 L.RAID_ENUM_dispelSquarePoint_BOTTOMRIGHT = "En bas à droite"
+
+-- Cadres de raid : leur propre bouton de minicarte et leur entrée dans le compartiment.
+L.RAID_SECTION_minimap = "Bouton de minicarte"
+L.RAID_SETTING_minimapShow = "Afficher le bouton"
+L.RAID_SETTING_minimapAngle = "Position du bouton"
+L.RAID_HINT_minimapAngle = "Degrés autour de la minicarte ; ou glissez-le"
+L.RAID_MINIMAP_LEFT_CLICK = "Clic gauche : options des cadres de raid"
+L.RAID_COMPARTMENT = "Forever Unit Frames : cadres de raid"

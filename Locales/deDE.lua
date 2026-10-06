@@ -795,3 +795,11 @@ L.RAID_ENUM_dispelSquarePoint_TOPLEFT = "Oben links"
 L.RAID_ENUM_dispelSquarePoint_TOPRIGHT = "Oben rechts"
 L.RAID_ENUM_dispelSquarePoint_BOTTOMLEFT = "Unten links"
 L.RAID_ENUM_dispelSquarePoint_BOTTOMRIGHT = "Unten rechts"
+
+-- Schlachtzugsrahmen: eigene Minikarten-Schaltfläche und Eintrag im Addon-Fach.
+L.RAID_SECTION_minimap = "Minikarten-Schaltfläche"
+L.RAID_SETTING_minimapShow = "Schaltfläche anzeigen"
+L.RAID_SETTING_minimapAngle = "Position der Schaltfläche"
+L.RAID_HINT_minimapAngle = "Grad um die Minikarte; oder ziehen"
+L.RAID_MINIMAP_LEFT_CLICK = "Linksklick: Optionen der Schlachtzugsrahmen"
+L.RAID_COMPARTMENT = "Forever Unit Frames: Schlachtzugsrahmen"

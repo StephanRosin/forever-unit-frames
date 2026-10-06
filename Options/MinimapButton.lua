@@ -14,6 +14,9 @@ local _, ns = ...
 --
 -- When another addon provides LibDataBroker-1.1 through LibStub, a
 -- launcher with the same clicks is registered too, for broker displays.
+--
+-- MinimapButton.New builds such a button for any settings registry: the
+-- raid frames have one of their own (Raid/MinimapButton.lua).
 local MinimapButton = {}
 ns.MinimapButton = MinimapButton
 
@@ -79,9 +82,7 @@ end
 -- Out of combat or in: the button is not protected.
 function MinimapButton.Place()
     local button = MinimapButton.button
-    if not button then return end
-    moveTo(button, Config.Get("general", "minimapAngle"))
-    button:SetShown(Config.Get("general", "minimapShow"))
+    if button then button.place() end
 end
 
 -- The cursor's angle around the minimap's centre, in whole degrees.
@@ -114,14 +115,6 @@ local function tooltipLines(tooltip)
     tooltip:AddLine(L.MINIMAP_RIGHT_CLICK, 1, 1, 1)
 end
 
-local function showTooltip(button)
-    GameTooltip:SetOwner(button, "ANCHOR_LEFT")
-    GameTooltip:SetText(L.ADDON_NAME)
-    tooltipLines(GameTooltip)
-    GameTooltip:AddLine(L.MINIMAP_DRAG, 1, 1, 1)
-    GameTooltip:Show()
-end
-
 local function hideTooltip(button)
     if GameTooltip:IsOwned(button) then GameTooltip:Hide() end
 end
@@ -134,19 +127,31 @@ local function texture(button, file, layer, size, x, y)
     return t
 end
 
-local function newButton()
-    local button = CreateFrame("Button", "ForeverUnitFramesMinimapButton", Minimap)
+-- A button on the minimap's edge. spec: name (the frame's), icon (a file),
+-- clicks (for RegisterForClicks), onClick, lines(tooltip) (the
+-- tooltip's lines under the addon's name; the drag hint follows), and
+-- config with the keys of its General settings: show (whether it shows)
+-- and angle (where; set by dragging). button.place() puts it where they
+-- say; it follows a minimap another addon resizes.
+function MinimapButton.New(spec)
+    local button = CreateFrame("Button", spec.name, Minimap)
     button:SetSize(SIZE, SIZE)
     button:SetFrameStrata("MEDIUM")
     button:SetFrameLevel(8)
-    button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+    button:RegisterForClicks(unpack(spec.clicks))
     button:RegisterForDrag("LeftButton")
     button:SetHighlightTexture(HIGHLIGHT, "ADD")
     button.background = texture(button, BACKGROUND, "BACKGROUND", BACKGROUND_SIZE, 7, -5)
-    button.icon = texture(button, MinimapButton.ICON, "ARTWORK", ICON_SIZE, 6.5, -6)
+    button.icon = texture(button, spec.icon, "ARTWORK", ICON_SIZE, 6.5, -6)
     button.border = texture(button, BORDER, "OVERLAY", BORDER_SIZE, 0, 0)
-    button:SetScript("OnClick", onClick)
-    button:SetScript("OnEnter", showTooltip)
+    button:SetScript("OnClick", spec.onClick)
+    button:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+        GameTooltip:SetText(L.ADDON_NAME)
+        spec.lines(GameTooltip)
+        GameTooltip:AddLine(L.MINIMAP_DRAG, 1, 1, 1)
+        GameTooltip:Show()
+    end)
     button:SetScript("OnLeave", hideTooltip)
     button:SetScript("OnDragStart", function(self)
         hideTooltip(self)
@@ -154,9 +159,19 @@ local function newButton()
     end)
     button:SetScript("OnDragStop", function(self)
         self:SetScript("OnUpdate", nil)
-        if self.dragAngle then Config.Set("general", "minimapAngle", self.dragAngle) end
+        if self.dragAngle then spec.config.Set("general", spec.angle, self.dragAngle) end
         self.dragAngle = nil
     end)
+    function button.place()
+        moveTo(button, spec.config.Get("general", spec.angle))
+        button:SetShown(spec.config.Get("general", spec.show))
+    end
+    button.place()
+    -- The offset is fixed at placing: follow a minimap another addon
+    -- resizes later (a square minimap does so in its own PLAYER_LOGIN,
+    -- after ours). HookScript, not hooksecurefunc: Forever hides hooked
+    -- frame methods from Blizzard's code.
+    Minimap:HookScript("OnSizeChanged", button.place)
     return button
 end
 
@@ -179,13 +194,11 @@ end
 -- Once, after the settings are loaded (Core/Boot.lua).
 function MinimapButton.Create()
     if MinimapButton.button or not Minimap then return end
-    MinimapButton.button = newButton()
-    MinimapButton.Place()
-    -- The offset is fixed at placing: follow a minimap another addon resizes
-    -- later (a square minimap does so in its own PLAYER_LOGIN, after ours).
-    -- HookScript, not hooksecurefunc: Forever hides hooked frame methods
-    -- from Blizzard's code.
-    Minimap:HookScript("OnSizeChanged", MinimapButton.Place)
+    MinimapButton.button = MinimapButton.New({
+        name = "ForeverUnitFramesMinimapButton", icon = MinimapButton.ICON,
+        clicks = { "LeftButtonUp", "RightButtonUp" }, onClick = onClick, lines = tooltipLines,
+        config = Config, show = "minimapShow", angle = "minimapAngle",
+    })
     registerLauncher()
 end
 

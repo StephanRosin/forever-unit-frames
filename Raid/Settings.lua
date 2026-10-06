@@ -91,6 +91,12 @@ RaidSettings.Define({ key = "sizeMode", code = "SM", scope = "general", type = "
 RaidSettings.Define({ key = "showInParty", code = "SP", scope = "general", type = "bool", default = false })
 -- Blizzard's raid frames hidden while ours are on.
 RaidSettings.Define({ key = "hideBlizzard", code = "HB", scope = "general", type = "bool", default = true })
+-- The raid frames' minimap button (Raid/MinimapButton.lua): shown, and its
+-- angle around the minimap in degrees, counter-clockwise from the right
+-- (250: below the unit frames' button); set by dragging it.
+RaidSettings.Define({ key = "minimapShow", code = "MS", scope = "general", type = "bool", default = true })
+RaidSettings.Define({ key = "minimapAngle", code = "MA", scope = "general", type = "int", min = 0, max = 359,
+    default = 250 })
 
 -- Per size ------------------------------------------------------------------------
 -- Position of the panel's top left corner, relative to the screen centre.

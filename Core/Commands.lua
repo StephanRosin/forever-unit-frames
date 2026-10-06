@@ -58,6 +58,12 @@ function Commands.ToggleOptions()
     if Commands.IsReady() then ns.Options.Toggle() end
 end
 
+-- The raid frames' window: /fuf raid, the raid minimap button and its
+-- addon compartment entry.
+function Commands.ToggleRaidOptions()
+    if Commands.IsReady() then ns.RaidOptions.Toggle() end
+end
+
 -- Unlocking is refused in combat (Movers.Unlock says so).
 function Commands.ToggleLock()
     if not Commands.IsReady() then return end
@@ -74,7 +80,7 @@ SlashCmdList.FOREVERUNITFRAMES = function(msg)
     elseif cmd == "help" then
         ns.Print(L.HELP)
     elseif cmd == "raid" then
-        ns.RaidOptions.Toggle()
+        Commands.ToggleRaidOptions()
     elseif cmd == "unlock" then
         ns.Movers.Unlock()
     elseif cmd == "lock" then

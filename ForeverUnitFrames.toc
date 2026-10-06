@@ -90,5 +90,6 @@ Options\Window.lua
 Options\MinimapButton.lua
 Raid\Options\Schema.lua
 Raid\Options\Window.lua
+Raid\MinimapButton.lua
 Core\Debug.lua
 Core\Boot.lua

@@ -2149,6 +2149,15 @@ function M.Reset()
     M.cursor = { 0, 0 }
     _G.GetCursorPosition = function() return M.cursor[1], M.cursor[2] end
     _G.LibStub = nil
+    -- Blizzard's addon compartment (Blizzard_Minimap/Mainline/
+    -- AddonCompartment.lua, loaded on this game type too): besides the
+    -- TOC's entries, addons may add their own with RegisterAddon({ text,
+    -- icon, func, funcOnEnter, funcOnLeave }).
+    _G.AddonCompartmentFrame = newWidget("Frame", "AddonCompartmentFrame")
+    AddonCompartmentFrame.registeredAddons = {}
+    function AddonCompartmentFrame:RegisterAddon(data)
+        table.insert(self.registeredAddons, data)
+    end
     local function auraTooltip(method)
         GameTooltip[method] = function(self, unit, id, filter)
             refuseAuras()

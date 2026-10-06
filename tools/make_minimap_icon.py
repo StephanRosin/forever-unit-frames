@@ -48,7 +48,14 @@ def main():
     height = round(graphic.height * GRAPHIC_WIDTH / graphic.width)
     graphic = graphic.resize((GRAPHIC_WIDTH, height), Image.LANCZOS)
     canvas.paste(graphic, ((logo.width - GRAPHIC_WIDTH) // 2, (logo.height - height) // 2), graphic)
-    icon = canvas.resize((SIZE, SIZE), Image.LANCZOS)
+    write_round_tga(canvas, os.path.join(here, "..", "Media", "MinimapIcon.tga"))
+
+
+def write_round_tga(image, path):
+    """Scales an RGBA image to SIZE x SIZE, cuts it to the icon's circle
+    and writes it as an uncompressed 32-bit TGA (also used by
+    tools/make_raid_minimap_icon.py)."""
+    icon = image.resize((SIZE, SIZE), Image.LANCZOS)
     header = struct.pack("<BBBHHBHHHHBB", 0, 0, 2, 0, 0, 0, 0, 0, SIZE, SIZE, 32, 8)
     rows = []
     for y in range(SIZE - 1, -1, -1):  # bottom row first
@@ -58,7 +65,7 @@ def main():
             alpha = int(round(a * circle_coverage(x, y)))
             row += bytes((b, g, r, alpha))
         rows.append(bytes(row))
-    with open(os.path.join(here, "..", "Media", "MinimapIcon.tga"), "wb") as fh:
+    with open(path, "wb") as fh:
         fh.write(header)
         fh.write(b"".join(rows))
 
