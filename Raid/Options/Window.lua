@@ -3,10 +3,12 @@ local _, ns = ...
 -- The raid options window, in the style of the unit frames' (the same
 -- widgets and colours): a header bar with the raid size whose profile is
 -- edited (the one shown now is marked) and which size the panel shows,
--- the tabs of the raid menu (Raid/Options/Schema.lua) and their rows. A
--- plain (non-secure) frame: every change goes through ns.RaidConfig,
--- whose RAID_CONFIG_CHANGED listeners restyle the raid panel out of
--- combat. In combat the window stays open but its controls lock.
+-- the tabs of the raid menu (Raid/Options/Schema.lua) and their rows; a
+-- footer with what acts on the edited size as a whole: copy from another
+-- size or character, export and import it, reset it. A plain
+-- (non-secure) frame: every change goes through ns.RaidConfig, whose
+-- RAID_CONFIG_CHANGED listeners restyle the raid panel out of combat. In
+-- combat the window stays open but its controls lock.
 local RaidOptions = {}
 ns.RaidOptions = RaidOptions
 
@@ -20,7 +22,8 @@ local SIZE_TAB_PADDING, TAB_PADDING, TAB_MIN_W, UNDERLINE_H, ACCENT_W = 24, 28, 
 local SCROLLBAR_W, WHEEL_STEP = 10, 40
 local CONTENT_W = WIDTH - SCROLLBAR_W
 local PAGE_TOP, PAGE_BOTTOM, SECTION_GAP, INSET, NOTE_H = 4, 16, 8, 16, 34
-local BUTTON_H, DROPDOWN_W, GAP = 24, 160, 8
+local BUTTON_H, DROPDOWN_W, GAP, WIDE_BUTTON_W, SHARE_BUTTON_W = 24, 160, 8, 160, 140
+local TEXT_AREA_H, MESSAGE_H, CONFIRM_SECONDS = 70, 20, 3
 local DEFAULT_POSITION = { point = "TOPLEFT", relativePoint = "TOPLEFT", x = 90, y = -150 }
 
 local frame
@@ -398,12 +401,161 @@ local function createTitleBar(parent)
     return bar
 end
 
+-- Copy from: the other sizes, and every size of the other characters
+-- that have a raid profile. Picking one arms the button; a second click
+-- within a few seconds copies onto the edited size.
+local function copyItems()
+    local items = {}
+    for _, size in ipairs(Raid.SIZES) do
+        if size ~= RaidOptions.Size() then items[#items + 1] = { value = "size:" .. size, text = sizeText(size) } end
+    end
+    for _, key in ipairs(ns.RaidProfiles.Characters()) do
+        for _, size in ipairs(Raid.SIZES) do
+            local text = L.RAID_COPY_CHARACTER:format(key, sizeText(size))
+            items[#items + 1] = { value = "char:" .. key .. ":" .. size, text = text }
+        end
+    end
+    return items
+end
+
+local function runCopy(value)
+    local to = RaidOptions.Size()
+    local size = tonumber(value:match("^size:(%d+)$"))
+    if size then
+        ns.RaidProfiles.CopySize(size, to)
+        return
+    end
+    local key, from = value:match("^char:(.+):(%d+)$")
+    if key then ns.RaidProfiles.CopyFromCharacter(key, tonumber(from), to) end
+end
+
+local function copyFromRow(footer)
+    local row
+    local function disarm()
+        row.pending = nil
+        row.button.text:SetText(L.COPY_FROM)
+        Style.Paint(row.button.text, "text")
+    end
+    row = Widgets.Dropdown(footer, {
+        items = copyItems,
+        get = function() return nil end,
+        set = function(value)
+            local token = {}
+            row.pending, row.token = value, token
+            C_Timer.After(CONFIRM_SECONDS, function() if row.token == token and row.pending then disarm() end end)
+        end,
+    })
+    row:SetSize(WIDE_BUTTON_W, BUTTON_H)
+    row:EnableMouse(false)
+    row.hover:SetAlpha(0)
+    row.button:ClearAllPoints()
+    row.button:SetAllPoints(row)
+    local open = row.button:GetScript("OnClick")
+    row.button:SetScript("OnClick", function(self)
+        local value = row.pending
+        if not value then return open(self) end
+        disarm()
+        runCopy(value)
+    end)
+    local refresh = row.Refresh
+    function row:Refresh()
+        refresh(self)
+        if self.pending then
+            self.button.text:SetText(L.CONFIRM)
+            Style.Paint(self.button.text, "error")
+        else
+            self.button.text:SetText(L.COPY_FROM)
+        end
+    end
+    row.Disarm = disarm
+    row:Refresh()
+    return row
+end
+
+-- Export and import of the edited size, over the tabs' pages.
+local function showImportMessage(text, colorKey)
+    RaidOptions.importMessage:SetText(text)
+    Style.Paint(RaidOptions.importMessage, colorKey)
+end
+
+local function runImport()
+    local text = (RaidOptions.importArea:GetText() or ""):match("^%s*(.-)%s*$")
+    local ok, result = ns.RaidProfiles.Import(text, RaidOptions.Size())
+    if not ok then
+        showImportMessage(L["IMPORT_" .. result], "error")
+        return
+    end
+    RaidOptions.importArea:SetText("")
+    showImportMessage(result > 0 and L.IMPORT_SKIPPED:format(result) or L.IMPORT_DONE, "accent")
+end
+
+local function refreshShare()
+    local size = sizeText(RaidOptions.Size())
+    RaidOptions.exportHint:SetText(L.RAID_EXPORT_HINT:format(size))
+    RaidOptions.importHint:SetText(L.RAID_IMPORT_HINT:format(size))
+    RaidOptions.exportArea:SetText(ns.RaidProfiles.Export(RaidOptions.Size()))
+end
+
+local function textArea(panel, readOnly, anchor, y)
+    local area = Widgets.TextArea(panel, { width = CONTENT_W - 2 * INSET, height = TEXT_AREA_H, readOnly = readOnly })
+    area:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -y)
+    return area
+end
+
+local function createShare(body)
+    local panel = CreateFrame("Frame", nil, body)
+    panel:SetAllPoints(body)
+    panel:SetFrameLevel(body:GetFrameLevel() + 10)
+    panel:EnableMouse(true)
+    Style.Fill(panel, "bg")
+    local export = Widgets.Header(panel, L.EXPORT)
+    export:SetPoint("TOPLEFT", panel, "TOPLEFT", 0, -PAGE_TOP)
+    export:SetPoint("TOPRIGHT", panel, "TOPRIGHT", 0, -PAGE_TOP)
+    local exportHint = Style.Text(panel, 11, "muted")
+    exportHint:SetPoint("TOPLEFT", export, "BOTTOMLEFT", INSET, -4)
+    local exportArea = textArea(panel, true, exportHint, 6)
+    local import = Widgets.Header(panel, L.IMPORT)
+    import:SetPoint("TOPLEFT", exportArea, "BOTTOMLEFT", -INSET, -SECTION_GAP)
+    import:SetPoint("RIGHT", panel, "RIGHT", 0, 0)
+    local importHint = Style.Text(panel, 11, "muted")
+    importHint:SetPoint("TOPLEFT", import, "BOTTOMLEFT", INSET, -4)
+    local importArea = textArea(panel, false, importHint, 6)
+    local button = Widgets.Button(panel, { text = L.IMPORT, width = 120, onClick = runImport })
+    button:SetPoint("TOPLEFT", importArea, "BOTTOMLEFT", 0, -GAP)
+    local message = Style.Text(panel, 11, "muted")
+    message:SetPoint("TOPLEFT", button, "BOTTOMLEFT", 0, -6)
+    message:SetJustifyH("LEFT")
+    panel:Hide()
+    RaidOptions.share, RaidOptions.exportHint, RaidOptions.exportArea = panel, exportHint, exportArea
+    RaidOptions.importHint, RaidOptions.importArea = importHint, importArea
+    RaidOptions.importButton, RaidOptions.importMessage = button, message
+end
+
+-- Shows or hides export and import in place of the tab's page.
+function RaidOptions.ShowShare(on)
+    Widgets.CloseList()
+    if on then
+        refreshShare()
+        showImportMessage("", "muted")
+    end
+    RaidOptions.share:SetShown(on)
+end
+
 local function createFooter(parent)
     local footer = CreateFrame("Frame", nil, parent)
     footer:SetHeight(FOOTER_H)
     footer:SetPoint("BOTTOMLEFT"); footer:SetPoint("BOTTOMRIGHT")
     Style.Fill(footer, "panel")
     horizontalLine(footer, "TOP")
+    local reset = ns.Options.ConfirmButton(footer, L.RAID_RESET_SIZE,
+        function() ns.RaidProfiles.ResetSize(RaidOptions.Size()) end)
+    reset:SetPoint("RIGHT", footer, "RIGHT", -12, 0)
+    local copy = copyFromRow(footer)
+    copy:SetPoint("RIGHT", reset, "LEFT", -GAP, 0)
+    local share = Widgets.Button(footer, { text = L.RAID_SHARE, width = SHARE_BUTTON_W,
+        onClick = function() RaidOptions.ShowShare(not RaidOptions.share:IsShown()) end })
+    share:SetPoint("RIGHT", copy, "LEFT", -GAP, 0)
+    RaidOptions.resetButton, RaidOptions.copyRow, RaidOptions.shareButton = reset, copy, share
     frame.footer = footer
     return footer
 end
@@ -441,6 +593,7 @@ local function createBody(parent, top, footer)
     createNotice(body)
     createScroll(body)
     anchorScroll()
+    createShare(body)
 end
 
 -- Window ------------------------------------------------------------------------
@@ -462,10 +615,15 @@ local function createWindow()
     local footer = createFooter(frame)
     createBody(frame, frame.sizeBar, footer)
     -- Locked in combat with the rows.
-    frame.lockedControls = { RaidOptions.sizeModeRow }
+    frame.lockedControls = { RaidOptions.sizeModeRow, RaidOptions.copyRow, RaidOptions.resetButton,
+        RaidOptions.importButton, RaidOptions.importArea.edit }
     -- Hiding the window (ESC, close button, /fuf raid) takes an open
-    -- dropdown list with it.
-    frame:SetScript("OnHide", function() Widgets.CloseList() end)
+    -- dropdown list and armed confirmations with it.
+    frame:SetScript("OnHide", function()
+        Widgets.CloseList()
+        RaidOptions.resetButton.Disarm()
+        RaidOptions.copyRow.Disarm()
+    end)
     frame:Hide()
     for _, name in ipairs(UISpecialFrames) do
         if name == WINDOW_NAME then return end
@@ -481,6 +639,7 @@ local function refreshAll()
     forEachRow(function(row) row:Refresh() end)
     RaidOptions.sizeModeRow:Refresh()
     renderSizeTabs()
+    if RaidOptions.share:IsShown() then refreshShare() end
 end
 
 -- Public API ----------------------------------------------------------------------
@@ -493,7 +652,7 @@ function RaidOptions.SelectTab(id)
     ensureWindow()
     for _, tab in ipairs(Schema.TABS) do
         if tab.id == id then
-            Widgets.CloseList()
+            RaidOptions.ShowShare(false)
             if RaidOptions.page then RaidOptions.page:Hide() end
             local page = pageFor(tab)
             RaidOptions.page, RaidOptions.currentTab, RaidOptions.rows = page, id, page.rows
@@ -509,11 +668,14 @@ function RaidOptions.SelectTab(id)
     end
 end
 
--- Edits another size's profile: the rows read it from now on.
+-- Edits another size's profile: the rows (and export) read it from now
+-- on; a copy or reset armed for the size before is not.
 function RaidOptions.SelectSize(size)
     ensureWindow()
     Raid.Scope(size)
     Widgets.CloseList()
+    RaidOptions.resetButton.Disarm()
+    RaidOptions.copyRow.Disarm()
     RaidOptions.size = size
     refreshAll()
 end
