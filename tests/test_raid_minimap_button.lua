@@ -27,7 +27,7 @@ do
         H.check(key .. " not per size", RS.AppliesTo(def, "r10"), false)
     end
     H.check("shown by default", RS.Default(RS.Get("minimapShow"), "general"), true)
-    H.check("default angle: below the unit frames' button", RS.Default(RS.Get("minimapAngle"), "general"), 250)
+    H.check("default angle: below the unit frames' button", RS.Default(RS.Get("minimapAngle"), "general"), 260)
     H.check("angle range", RS.Get("minimapAngle").min .. "-" .. RS.Get("minimapAngle").max, "0-359")
     local general = ns.RaidSchema.TABS[1]
     H.check("minimap section", general.sections[2].id, "minimap")
@@ -54,8 +54,8 @@ do
     local r = 70 + 5
     local p = { button:GetPoint(1) }
     H.check("centred on the minimap", p[1] .. p[2]:GetName() .. p[3], "CENTERMinimapCENTER")
-    H.checkTrue("round: x", close(p[4], math.cos(math.rad(250)) * r))
-    H.checkTrue("round: y", close(p[5], math.sin(math.rad(250)) * r))
+    H.checkTrue("round: x", close(p[4], math.cos(math.rad(260)) * r))
+    H.checkTrue("round: y", close(p[5], math.sin(math.rad(260)) * r))
     _G.GetMinimapShape = function() return "SQUARE" end
     RC.Set("general", "minimapAngle", 180)
     p = { button:GetPoint(1) }
