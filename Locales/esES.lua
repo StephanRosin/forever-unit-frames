@@ -804,3 +804,9 @@ L.RAID_SETTING_minimapAngle = "Posición del botón"
 L.RAID_HINT_minimapAngle = "Grados alrededor del minimapa; o arrástralo"
 L.RAID_MINIMAP_LEFT_CLICK = "Clic izquierdo: opciones de marcos de banda"
 L.RAID_COMPARTMENT = "Forever Unit Frames: marcos de banda"
+
+-- Marcos de banda: por qué se rechazó un valor escrito.
+L.RAID_TYPED_CLASS_UNKNOWN = "Clase desconocida: %s"
+L.RAID_TYPED_CLASS_TWICE = "Clase nombrada dos veces: %s"
+L.RAID_TYPED_SPELL_UNKNOWN = "No es un hechizo de tu libro de hechizos: %s"
+L.RAID_TYPED_TOO_LONG = "Demasiados hechizos: la lista admite %d caracteres."

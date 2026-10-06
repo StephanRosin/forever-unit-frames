@@ -803,3 +803,9 @@ L.RAID_SETTING_minimapAngle = "Position du bouton"
 L.RAID_HINT_minimapAngle = "Degrés autour de la minicarte ; ou glissez-le"
 L.RAID_MINIMAP_LEFT_CLICK = "Clic gauche : options des cadres de raid"
 L.RAID_COMPARTMENT = "Forever Unit Frames : cadres de raid"
+
+-- Cadres de raid : pourquoi une valeur saisie a été refusée.
+L.RAID_TYPED_CLASS_UNKNOWN = "Classe inconnue : %s"
+L.RAID_TYPED_CLASS_TWICE = "Classe nommée deux fois : %s"
+L.RAID_TYPED_SPELL_UNKNOWN = "Pas un sort de votre grimoire : %s"
+L.RAID_TYPED_TOO_LONG = "Trop de sorts : la liste peut contenir %d caractères."

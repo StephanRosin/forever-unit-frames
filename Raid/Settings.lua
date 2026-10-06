@@ -46,8 +46,9 @@ Raid.CLASS_ORDER_LETTERS = 100
 
 -- What the options window stores for a typed class order: the tokens,
 -- comma-separated. It takes tokens in any case and the game's class
--- names (commas between them, a name may hold a space); nil when a
--- class is unknown or named twice.
+-- names (commas between them, a name may hold a space). nil, why
+-- ("UNKNOWN" or "TWICE") and the word in question when a class is
+-- unknown or named twice.
 local function tokenOf(word)
     local upper = word:upper()
     if isClass(upper) then return upper end
@@ -67,7 +68,8 @@ function Raid.ParseClassOrder(text)
         local word = piece:match("^%s*(.-)%s*$")
         if word ~= "" then
             local token = tokenOf(word)
-            if not token or seen[token] then return nil end
+            if not token then return nil, "UNKNOWN", word end
+            if seen[token] then return nil, "TWICE", word end
             seen[token] = true
             tokens[#tokens + 1] = token
         end

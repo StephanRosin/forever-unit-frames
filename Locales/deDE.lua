@@ -803,3 +803,9 @@ L.RAID_SETTING_minimapAngle = "Position der Schaltfläche"
 L.RAID_HINT_minimapAngle = "Grad um die Minikarte; oder ziehen"
 L.RAID_MINIMAP_LEFT_CLICK = "Linksklick: Optionen der Schlachtzugsrahmen"
 L.RAID_COMPARTMENT = "Forever Unit Frames: Schlachtzugsrahmen"
+
+-- Schlachtzugsrahmen: warum ein eingegebener Wert abgelehnt wurde.
+L.RAID_TYPED_CLASS_UNKNOWN = "Unbekannte Klasse: %s"
+L.RAID_TYPED_CLASS_TWICE = "Klasse doppelt genannt: %s"
+L.RAID_TYPED_SPELL_UNKNOWN = "Kein Zauber aus deinem Zauberbuch: %s"
+L.RAID_TYPED_TOO_LONG = "Zu viele Zauber: Die Liste fasst %d Zeichen."

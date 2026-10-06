@@ -827,3 +827,9 @@ L.RAID_SETTING_minimapAngle = "Button position"
 L.RAID_HINT_minimapAngle = "Degrees around the minimap; or drag it"
 L.RAID_MINIMAP_LEFT_CLICK = "Left-click: raid frame options"
 L.RAID_COMPARTMENT = "Forever Unit Frames: raid frames"
+
+-- Raid frames: why a typed value was refused.
+L.RAID_TYPED_CLASS_UNKNOWN = "Unknown class: %s"
+L.RAID_TYPED_CLASS_TWICE = "Class named twice: %s"
+L.RAID_TYPED_SPELL_UNKNOWN = "Not a spell in your spell book: %s"
+L.RAID_TYPED_TOO_LONG = "Too many spells: the list may hold %d characters."

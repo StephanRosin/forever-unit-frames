@@ -86,10 +86,25 @@ end
 -- Setting rows ------------------------------------------------------------------
 
 -- What a typed text becomes before it is stored: class names to tokens,
--- spell names to the IDs of their ranks. nil refuses it.
+-- spell names to the IDs of their ranks. nil and why (for the chat)
+-- refuses it: an unknown class or one named twice, a spell name the
+-- spell book does not know, more spell IDs than the setting can hold.
+local function classOrder(text)
+    local tokens, problem, word = Raid.ParseClassOrder(text)
+    if tokens then return tokens end
+    return nil, (problem == "TWICE" and L.RAID_TYPED_CLASS_TWICE or L.RAID_TYPED_CLASS_UNKNOWN):format(word)
+end
+
+local function spellList(text)
+    local ids, word = ns.RaidSpellbook.Resolve(text)
+    if not ids then return nil, L.RAID_TYPED_SPELL_UNKNOWN:format(word) end
+    if #ids > Raid.SPELL_LIST_LETTERS then return nil, L.RAID_TYPED_TOO_LONG:format(Raid.SPELL_LIST_LETTERS) end
+    return ids
+end
+
 local function typedValue(key)
-    if key == "classOrder" then return Raid.ParseClassOrder end
-    if key:match("^indicator%a+Spells$") then return ns.RaidSpellbook.Resolve end
+    if key == "classOrder" then return classOrder end
+    if key:match("^indicator%a+Spells$") then return spellList end
     return nil
 end
 
@@ -100,8 +115,14 @@ local function settingRow(parent, key)
         label = Schema.Label(key), hint = Schema.Hint(key), enumText = Schema.EnumText,
         get = function() return RaidConfig.Get(scopeOf(def), key) end,
         set = function(v)
-            if convert then v = convert(v) end
-            if v == nil then return false end
+            if convert then
+                local converted, why = convert(v)
+                if converted == nil then
+                    ns.Print(why)
+                    return false
+                end
+                v = converted
+            end
             return RaidConfig.Set(scopeOf(def), key, v)
         end,
     })
