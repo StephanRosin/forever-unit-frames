@@ -17,6 +17,9 @@ ns.On("PLAYER_LOGIN", function()
     if ns.booted then return end
     ns.booted = true
     ForeverUnitFramesDB = ForeverUnitFramesDB or {}
+    -- Whether the SavedVariables held settings before this login (an
+    -- update), before anything writes to them.
+    ns.News.Begin(ForeverUnitFramesDB)
     ns.Config.Use(ns.Storage.Load(ForeverUnitFramesDB))
     ns.Storage.Attach(ForeverUnitFramesDB)
     -- Before anything writes a text: frames, movers, the options window.
@@ -38,6 +41,9 @@ ns.On("PLAYER_LOGIN", function()
     ns.RaidSize.Update()
     ns.AfterCombat("raidCreate", ns.RaidHeader.Create)
     ns.Blizzard.HideRaid()
+    -- What's new, once per new version: after everything above, out of
+    -- combat.
+    ns.AfterCombat("news", ns.News.AtLogin)
 end)
 
 ns.Listen("CONFIG_CHANGED", function()
