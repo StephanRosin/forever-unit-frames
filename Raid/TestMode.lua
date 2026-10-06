@@ -28,6 +28,8 @@ Test.STATUS = { [3] = "DEAD", [7] = "OFFLINE" }
 -- samples): a magic one and a curse, a poison, a disease, one without a
 -- type and magic again.
 Test.DEBUFFS = { [2] = { 1, 2 }, [5] = { 3 }, [9] = { 4, 5, 1 } }
+-- Raid target markers by raid index: a skull on the first tank, a star.
+Test.MARKERS = { [1] = 8, [6] = 1 }
 
 local on = false
 
@@ -36,7 +38,7 @@ function Test.IsOn()
 end
 
 -- The pretend raid of a size: { subgroup, class, assignedRole, name,
--- health, status, role, debuffs } per member, in raid order.
+-- health, status, role, debuffs, marker } per member, in raid order.
 function Test.Members(size)
     local list = {}
     for i = 1, size do
@@ -46,7 +48,7 @@ function Test.Members(size)
             subgroup = math.floor((i - 1) / Layout.GROUP_SIZE) + 1, class = s[1], assignedRole = s[2], role = s[2],
             name = type(names) == "table" and names[s[1]] or s[1],
             health = Test.HEALTH[(i - 1) % #Test.HEALTH + 1], status = Test.STATUS[i] or false,
-            debuffs = Test.DEBUFFS[(i - 1) % #Test.SAMPLES + 1] or {},
+            debuffs = Test.DEBUFFS[(i - 1) % #Test.SAMPLES + 1] or {}, marker = Test.MARKERS[i],
         }
     end
     return list

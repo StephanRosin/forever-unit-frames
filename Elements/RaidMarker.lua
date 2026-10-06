@@ -54,8 +54,10 @@ function RaidMarker.Style(frame)
     if r.preview then RaidMarker.Preview(frame, true) end
 end
 
--- The sample of test mode for this frame, or nil.
+-- The sample of test mode for this frame, or nil: a raid test cell's own
+-- (frame.sample.marker), the pretend party's, or the frame's.
 local function sample(frame)
+    if frame.sample then return frame.sample.marker end
     if frame.sampleIndex then return RaidMarker.PARTY_SAMPLES[frame.sampleIndex] end
     return RaidMarker.SAMPLES[frame.key]
 end

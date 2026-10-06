@@ -37,21 +37,33 @@ end
 local get = Cell.Get
 
 -- What a cell never shows, whatever the party frame does: no title row,
--- portrait, castbar, auras, combat numbers, threat glow or raid marker
--- (markers, dispels, range and icons come with the next raid step), no
--- overheal lane or heals past the edge (the next cell sits there), no
--- shadow (it would lie on the neighbours), no power texts. The rows: a
--- thin power strip under the health bar.
+-- portrait, castbar, the unit frames' aura icons (a cell's are its own,
+-- Raid/CellAuras.lua), combat numbers or threat glow, no overheal lane or
+-- heals past the edge (the next cell sits there), no shadow (it would lie
+-- on the neighbours), no power texts. The rows: a thin power strip under
+-- the health bar.
 local FIXED = {
     titlePercent = 0, portraitMode = "OFF", castbarEnabled = false, combatFeedback = false,
-    buffsEnabled = false, debuffsEnabled = false, threatGlow = false, raidMarker = false,
+    buffsEnabled = false, debuffsEnabled = false, threatGlow = false,
     titleClassIcon = false, healOverflow = false, healBeyond = false, shadowEnabled = false,
     textHealthLeft = "NAME", textPowerLeft = "NONE", textPowerRight = "NONE",
     healthPercent = 90, powerPercent = 10, fontSize = 11, valueFontSize = 10,
 }
 
+-- An icon at one of the cell's points sits just inside it: a pixel in
+-- from each edge the point touches.
+function Cell.Inset(point)
+    local x = point:find("LEFT") and 1 or (point:find("RIGHT") and -1 or 0)
+    local y = point:find("TOP") and -1 or (point:find("BOTTOM") and 1 or 0)
+    return x, y
+end
+
+local function insetX(key) return function() return (Cell.Inset(get(key))) end end
+local function insetY(key) return function() return select(2, Cell.Inset(get(key))) end end
+
 -- The raid profile's look, in unit-frame settings. The second line's
--- values are the text tags of the same name.
+-- values are the text tags of the same name. The raid marker
+-- (Elements/RaidMarker.lua) at its point, centred on it.
 local MAPPED = {
     width = function() return get("cellWidth") end,
     height = function() return get("cellHeight") end,
@@ -60,6 +72,12 @@ local MAPPED = {
     textHealthRight = function() return get("secondLine") end,
     barNameColorMode = function() return get("nameClassColor") and "CLASS" or "WHITE" end,
     borderShow = function() return get("cellBorder") end,
+    raidMarker = function() return get("raidMarker") end,
+    raidMarkerSize = function() return get("iconSize") end,
+    raidMarkerFramePoint = function() return get("raidMarkerPoint") end,
+    raidMarkerPoint = function() return get("raidMarkerPoint") end,
+    raidMarkerX = insetX("raidMarkerPoint"),
+    raidMarkerY = insetY("raidMarkerPoint"),
 }
 
 function Cell.Resolve(key)
