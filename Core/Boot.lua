@@ -28,6 +28,9 @@ ns.On("PLAYER_LOGIN", function()
     ns.Single.CreateAll(afterBuild)
     ns.Blizzard.HideDefaults()
     ns.MinimapButton.Create()
+    -- Raid profiles last: nothing above depends on them.
+    ns.RaidProfiles.Attach(ForeverUnitFramesDB)
+    ns.RaidSize.Update()
 end)
 
 ns.Listen("CONFIG_CHANGED", function()
