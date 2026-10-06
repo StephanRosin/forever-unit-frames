@@ -22,8 +22,8 @@ ns.Options.SelectTab("layout")
 local widthRow
 for _, row in ipairs(ns.Options.rows) do if row.key == "width" then widthRow = row end end
 H.checkTrue("width row exists", widthRow)
-widthRow.edit:SetText("310")
-widthRow.edit:GetScript("OnEnterPressed")(widthRow.edit)
+M.Type(widthRow.edit, "310")
+M.PressEnter(widthRow.edit)
 H.check("width set through window", ns.Config.Get("player", "width"), 310)
 
 -- Inherited font on frame page

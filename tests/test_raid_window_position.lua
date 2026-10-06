@@ -14,8 +14,8 @@ local function rowFor(key)
     for _, row in ipairs(RO.rows) do if row.key == key then return row end end
 end
 local function enter(row, text)
-    row.edit:SetText(text)
-    row.edit:GetScript("OnEnterPressed")(row.edit)
+    M.Type(row.edit, text)
+    M.PressEnter(row.edit)
 end
 local function count(module, name, fn)
     local original, n = module[name], 0

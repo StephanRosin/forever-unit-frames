@@ -308,8 +308,8 @@ do
     H.checkTrue("hostile row", row)
     if row then
         H.check("hint shows the automatic spell", row.hintText:GetText(), ns.L.RANGE_SPELL_AUTO:format("Smite"))
-        row.edit:SetText(" Shoot ")
-        row.edit:GetScript("OnEnterPressed")(row.edit)
+        M.Type(row.edit, " Shoot ")
+        M.PressEnter(row.edit)
         H.check("typed name stored", ns.Config.Get("general", "rangeHostileSpell"), "Shoot")
         H.check("hint follows", row.hintText:GetText(), ns.L.RANGE_SPELL_UNKNOWN)
     end

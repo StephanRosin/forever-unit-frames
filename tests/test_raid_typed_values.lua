@@ -16,8 +16,8 @@ local function rowFor(key)
     end
 end
 local function enter(row, text)
-    row.edit:SetText(text)
-    row.edit:GetScript("OnEnterPressed")(row.edit)
+    M.Type(row.edit, text)
+    M.PressEnter(row.edit)
 end
 local function said() return M.chat[#M.chat] end
 
@@ -28,6 +28,8 @@ H.check("named twice", select(2, Raid.ParseClassOrder("Priest, priest")), "TWICE
 H.check("the second naming", select(3, Raid.ParseClassOrder("Priest, priest")), "priest")
 H.check("fine", Raid.ParseClassOrder("Priest, Druid"), "PRIEST,DRUID")
 
+-- The field only takes text while the size groups by class.
+RC.Set("r10", "groupBy", "CLASS")
 RO.Open(10, "layout")
 local before = #M.chat
 enter(rowFor("classOrder"), "Druid, Mage")

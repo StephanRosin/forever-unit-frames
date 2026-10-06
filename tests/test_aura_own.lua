@@ -80,12 +80,12 @@ local row = W.Slider(CreateFrame("Frame", nil, UIParent), { label = "x", min = 0
     zeroText = L.AUTO, get = function() return perRow end, set = function(v) perRow = v; return true end })
 row:Refresh()
 H.check("slider box shows Auto", row.edit:GetText(), "Auto")
-row.edit:SetText("6")
-row.edit:GetScript("OnEnterPressed")(row.edit)
+M.Type(row.edit, "6")
+M.PressEnter(row.edit)
 H.check("typed a number", perRow, 6)
 H.check("box shows the number", row.edit:GetText(), "6")
-row.edit:SetText("auto")
-row.edit:GetScript("OnEnterPressed")(row.edit)
+M.Type(row.edit, "auto")
+M.PressEnter(row.edit)
 H.check("typed auto", perRow, 0)
 H.check("box shows Auto again", row.edit:GetText(), "Auto")
 row.slider:GetScript("OnValueChanged")(row.slider, 3, true)
@@ -98,7 +98,7 @@ local sets = 0
 local quiet = W.Slider(CreateFrame("Frame", nil, UIParent), { label = "q", min = 0, max = 40, step = 1,
     zeroText = L.AUTO, get = function() return 0 end, set = function() sets = sets + 1; return true end })
 quiet:Refresh()
-quiet.edit:GetScript("OnEditFocusLost")(quiet.edit)
+M.LeaveBox(quiet.edit)
 H.check("focus lost on Auto: no set", sets, 0)
 
 -- Layout maths ----------------------------------------------------------------

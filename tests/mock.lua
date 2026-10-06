@@ -1071,7 +1071,11 @@ local function newWidget(kind, name, parent)
         return width > 0 and self:GetStringWidth() > width
     end
     -- Enable state (Button, CheckButton, EditBox, Slider)
-    function w:SetEnabled(v) self._enabled = not not v end
+    -- A disabled EditBox loses its focus and cannot take it (SetFocus).
+    function w:SetEnabled(v)
+        self._enabled = not not v
+        if not v then self._focus = false end
+    end
     function w:IsEnabled() return self._enabled ~= false end
     function w:Enable() self._enabled = true end
     function w:Disable() self._enabled = false end
@@ -1101,7 +1105,7 @@ local function newWidget(kind, name, parent)
     function w:GetCheckedTexture() return self._checkedTex end
     -- EditBox
     function w:SetAutoFocus(v) self._autoFocus = v end
-    function w:SetFocus() self._focus = true end
+    function w:SetFocus() if self._enabled ~= false then self._focus = true end end
     function w:ClearFocus() self._focus = false end
     function w:HasFocus() return self._focus or false end
     function w:SetCursorPosition(p) self._cursor = p end
@@ -2457,6 +2461,30 @@ end
 function M.LoadingScreenEnds()
     M.FireEvent("LOADING_SCREEN_DISABLED")
     UIParent:Show()
+end
+
+-- The player typing into an EditBox: focus, the text, then a key (or
+-- clicking elsewhere). A disabled box takes none of it: each returns
+-- false and changes nothing, as in the client.
+function M.Type(box, text)
+    if not box:IsEnabled() then return false end
+    box:SetFocus()
+    box:SetText(text)
+    return true
+end
+local function key(box, script)
+    if not box:IsEnabled() then return false end
+    box:GetScript(script)(box)
+    return true
+end
+function M.PressEnter(box) return key(box, "OnEnterPressed") end
+function M.PressEscape(box) return key(box, "OnEscapePressed") end
+-- Focus moves elsewhere (a click outside the box).
+function M.LeaveBox(box)
+    if not box:IsEnabled() then return false end
+    box:ClearFocus()
+    box:GetScript("OnEditFocusLost")(box)
+    return true
 end
 
 function M.SetCombat(v)

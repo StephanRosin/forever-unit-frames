@@ -19,8 +19,8 @@ local function keys()
     return table.concat(list, ",")
 end
 local function enter(row, text)
-    row.edit:SetText(text)
-    row.edit:GetScript("OnEnterPressed")(row.edit)
+    M.Type(row.edit, text)
+    M.PressEnter(row.edit)
 end
 local function errorBorder(box)
     return box.edges[1]._color[1] == ns.Style.COLORS.error[1]
@@ -90,6 +90,8 @@ H.check("switch follows a change from elsewhere", RO.sizeModeRow.button.text:Get
 
 -- Typed names: class names to tokens, spell names to their ranks' IDs.
 RO.SelectTab("layout")
+-- The field only takes text while the size groups by class.
+RC.Set("r40", "groupBy", "CLASS")
 enter(rowFor("classOrder"), "priest, Druid")
 H.check("class order stored as tokens", RC.Get("r40", "classOrder"), "PRIEST,DRUID")
 H.check("shown as stored", rowFor("classOrder").edit:GetText(), "PRIEST,DRUID")
