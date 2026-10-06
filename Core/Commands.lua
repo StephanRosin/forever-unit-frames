@@ -92,7 +92,7 @@ SlashCmdList.FOREVERUNITFRAMES = function(msg)
     elseif cmd == "unlock" then
         ns.Movers.Unlock()
     elseif cmd == "lock" then
-        ns.Movers.Lock()
+        ns.Movers.LockAll()
     elseif cmd == "status" then
         status()
     elseif cmd == "reset" then

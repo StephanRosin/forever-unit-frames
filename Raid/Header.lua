@@ -246,7 +246,7 @@ end
 -- Blizzard's word for a raid and the size.
 function Header.MoverSpec()
     return {
-        scope = function() return ns.Raid.Scope(Cell.Size()) end, config = ns.RaidConfig, id = "raid",
+        scope = function() return ns.Raid.Scope(Cell.Size()) end, config = ns.RaidConfig, id = "raid", group = "raid",
         point = "TOPLEFT", origin = "TOPLEFT", size = Header.Size, active = Header.Enabled,
         label = function() return ("%s %d"):format(Layout.Title({ kind = "NONE" }), Cell.Size()) end,
     }

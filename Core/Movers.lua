@@ -25,11 +25,18 @@ local _, ns = ...
 --                  again when the language changes)
 --   id             combat-queue key suffix (default scope; required when
 --                  scope is a function)
+--   group          "units" (default) or "raid": which windows' unlock
+--                  shows the handle
+--
+-- Each group is unlocked on its own: the unit frames' (the unit window,
+-- /fuf unlock, the minimap button) and the raid panel's (the raid
+-- window). Locking all (/fuf lock, the start of combat) locks both.
 local Movers = {}
 ns.Movers = Movers
 
 local GRID = 8
-local unlocked = false
+Movers.GROUPS = { "units", "raid" }
+local unlocked = { units = false, raid = false }
 local L = ns.L
 -- Every target that has a mover, in attach order.
 local targets = {}
@@ -64,6 +71,8 @@ local function complete(spec)
     assert(spec.id ~= nil or type(spec.scope) ~= "function", "mover spec: a function scope needs an id")
     assert(type(spec.id) ~= "function", "mover spec: id must not be a function")
     spec.id = spec.id or spec.scope
+    spec.group = spec.group or "units"
+    assert(unlocked[spec.group] ~= nil, "mover spec: unknown group")
     return spec
 end
 
@@ -154,51 +163,83 @@ function Movers.Attach(target, spec)
     end
 end
 
-function Movers.IsUnlocked() return unlocked end
+-- A group name; nil is the unit frames'.
+local function groupOf(group)
+    group = group or "units"
+    assert(unlocked[group] ~= nil, "Movers: unknown group " .. tostring(group))
+    return group
+end
 
--- Shows the handles that are active right now (a castbar's only while it
--- is detached). Also run when settings change while unlocked.
+local function anyUnlocked()
+    for _, group in ipairs(Movers.GROUPS) do
+        if unlocked[group] then return true end
+    end
+    return false
+end
+
+function Movers.IsUnlocked(group) return unlocked[groupOf(group)] end
+
+-- Shows the handles of the unlocked groups that are active right now (a
+-- castbar's only while it is detached). Also run when settings change
+-- while unlocked.
 local function showActive()
     for _, target in ipairs(targets) do
         local mover = target.mover
-        local on = isActive(mover)
-        mover:EnableMouse(on)
-        mover:SetShown(on)
+        if unlocked[mover.spec.group] then
+            local on = isActive(mover)
+            mover:EnableMouse(on)
+            mover:SetShown(on)
+        end
     end
 end
 
-function Movers.Unlock()
+function Movers.Unlock(group)
+    group = groupOf(group)
     if InCombatLockdown() then
         ns.Print(L.LOCKED_IN_COMBAT)
         return false
     end
-    unlocked = true
+    unlocked[group] = true
     showActive()
     ns.Print(L.UNLOCKED)
-    ns.Fire("MOVERS_UNLOCKED", true)
+    ns.Fire("MOVERS_UNLOCKED", true, group)
     return true
+end
+
+local function lockGroup(group)
+    unlocked[group] = false
+    ns.Fire("MOVERS_UNLOCKED", false, group)
+    for _, target in ipairs(targets) do
+        local mover = target.mover
+        if mover.spec.group == group then
+            if mover.dragging then
+                Movers.OnDragStop(mover)
+            else
+                mover:StopMovingOrSizing()
+            end
+        end
+    end
+    ns.AfterCombat("lockMovers:" .. group, function()
+        if unlocked[group] then return end
+        for _, target in ipairs(targets) do
+            if target.mover.spec.group == group then
+                target.mover:EnableMouse(false)
+                target.mover:Hide()
+            end
+        end
+    end)
 end
 
 -- A drag in progress is stopped at once. In combat only the flag is
 -- cleared; hiding and disabling the movers waits until combat ends.
-function Movers.Lock()
-    unlocked = false
-    ns.Fire("MOVERS_UNLOCKED", false)
-    for _, target in ipairs(targets) do
-        local mover = target.mover
-        if mover.dragging then
-            Movers.OnDragStop(mover)
-        else
-            mover:StopMovingOrSizing()
-        end
-    end
-    ns.AfterCombat("lockMovers", function()
-        if unlocked then return end
-        for _, target in ipairs(targets) do
-            target.mover:EnableMouse(false)
-            target.mover:Hide()
-        end
-    end)
+function Movers.Lock(group)
+    lockGroup(groupOf(group))
+    ns.Print(L.LOCKED)
+end
+
+-- Every group (/fuf lock, the start of combat), with one message.
+function Movers.LockAll()
+    for _, group in ipairs(Movers.GROUPS) do lockGroup(group) end
     ns.Print(L.LOCKED)
 end
 
@@ -206,17 +247,17 @@ end
 -- PLAYER_REGEN_DISABLED fires just before lockdown takes effect, so hiding
 -- and disabling the (unprotected) movers here is still allowed.
 ns.On("PLAYER_REGEN_DISABLED", function()
-    if unlocked then Movers.Lock() end
+    if anyUnlocked() then Movers.LockAll() end
 end)
 
 -- A castbar switched to detached (or back), or the raid frames switched
 -- on or off, while unlocked: the handle comes or goes at once. Unlocked
 -- implies out of combat.
 ns.Listen("CONFIG_CHANGED", function()
-    if unlocked then showActive() end
+    if anyUnlocked() then showActive() end
 end)
 ns.Listen("RAID_CONFIG_CHANGED", function()
-    if unlocked then showActive() end
+    if anyUnlocked() then showActive() end
 end)
 
 -- Handles only hold a plain text: set it again in the new language.

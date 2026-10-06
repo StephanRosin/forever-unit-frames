@@ -945,13 +945,11 @@ ns.Listen("TEST_MODE", function()
     if frame then refreshFooter() end
 end)
 
--- Movers have no event of their own; /fuf lock and the combat lock call
--- these directly (post-hooks on a plain addon table).
-local function onMoversChanged()
-    if frame then refreshFooter() end
-end
-hooksecurefunc(ns.Movers, "Lock", onMoversChanged)
-hooksecurefunc(ns.Movers, "Unlock", onMoversChanged)
+-- The unit frames' movers locked or unlocked from anywhere: this window,
+-- /fuf, the minimap button, the start of combat.
+ns.Listen("MOVERS_UNLOCKED", function(_, group)
+    if frame and group == "units" then refreshFooter() end
+end)
 
 -- Tracked from the events rather than InCombatLockdown(): lockdown only
 -- starts after PLAYER_REGEN_DISABLED has fired.

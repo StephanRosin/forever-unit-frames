@@ -1,7 +1,7 @@
 -- The raid panel's mover (Core/Movers.lua with a raid spec): its handle
 -- covers the panel, holds the top-left corner of the active size's
 -- profile (raid profile, not the unit-frame one) and shows while the raid
--- frames are on.
+-- frames are on and the raid group is unlocked (tests/test_movers_groups.lua).
 local M = H.M
 local ns = H.LoadAddon()
 local RC, Header, Movers = ns.RaidConfig, ns.RaidHeader, ns.Movers
@@ -22,7 +22,7 @@ H.check("label", mover.label:GetText(), "Raid 10")
 
 -- Dragged: the raid profile of the active size takes the corner, snapped
 -- to the movers' grid; the unit frames' profile is not touched.
-Movers.Unlock()
+Movers.Unlock("raid")
 H.checkTrue("shown when unlocked", mover:IsShown())
 local w, h = mover:GetWidth(), mover:GetHeight()
 mover._cx, mover._cy = 97 + w / 2, -47 - h / 2
@@ -48,5 +48,5 @@ RC.Set("general", "enabled", false)
 H.check("off: handle hidden", mover:IsShown(), false)
 RC.Set("general", "enabled", true)
 H.checkTrue("on: handle back", mover:IsShown())
-Movers.Lock()
+Movers.Lock("raid")
 H.check("locked: hidden", mover:IsShown(), false)
