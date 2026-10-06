@@ -364,3 +364,6 @@ Raid.DefinePanel({ id = "mainAssists", letter = "W", show = false, perLine = 5, 
 -- My tanks (your own list): off, a column right of the main panel.
 Raid.DefinePanel({ id = "myTanks", letter = "Z", show = false, perLine = 5, growth = "DOWN", x = 120, y = 150,
     names = "myTankNames" })
+-- Favourites (your own list): off, a column beside my tanks.
+Raid.DefinePanel({ id = "favourites", letter = "G", show = false, perLine = 5, growth = "DOWN", x = 240, y = 150,
+    names = "favouriteNames" })

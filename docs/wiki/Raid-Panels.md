@@ -2,13 +2,13 @@
 
 # Raid frames: Panels
 
-Panels of their own beside the main panel, each with its own position per raid size: the main tanks and the main assists of the raid, and your own list of tanks. Their players stay in their groups as well.
+Panels of their own beside the main panel, each with its own position per raid size: the main tanks and the main assists of the raid, your own lists of tanks and of favourites. Their players stay in their groups as well.
 
 The **Panels** tab of the raid options window (`/fuf raid`). Each raid size (10, 20, 40) has a profile of its own: the size tabs at the top choose which one you edit; a default that differs per size is listed per size.
 
 Players in a special panel stay in their group as well. The raid leader sets main tanks and main assists.
 
-**On this page:** [Main tanks](#main-tanks) · [Main assists](#main-assists) · [My tanks](#my-tanks)
+**On this page:** [Main tanks](#main-tanks) · [Main assists](#main-assists) · [My tanks](#my-tanks) · [Favourites](#favourites)
 
 ## Main tanks
 
@@ -49,6 +49,21 @@ Players in a special panel stay in their group as well. The raid leader sets mai
 <tr><td><b>Cells per line</b></td><td>Then a new column (or row) of cells</td><td>1 – 40</td><td>5</td></tr>
 <tr><td><b>Cells grow</b></td><td></td><td>Down, Right</td><td>Down</td></tr>
 <tr><td><b>Position X</b></td><td>Top left corner, from the screen centre</td><td>-4000 – 4000</td><td>120</td></tr>
+<tr><td><b>Position Y</b></td><td>Top left corner, from the screen centre</td><td>-4000 – 4000</td><td>150</td></tr>
+</tbody>
+</table>
+
+## Favourites
+
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Names</b></td><td>Player names separated by commas; Name-Realm too</td><td>Text</td><td>(none)</td></tr>
+<tr><td><b>Show the panel</b></td><td></td><td>On, Off</td><td>Off</td></tr>
+<tr><td><b>Title above it</b></td><td></td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Cells per line</b></td><td>Then a new column (or row) of cells</td><td>1 – 40</td><td>5</td></tr>
+<tr><td><b>Cells grow</b></td><td></td><td>Down, Right</td><td>Down</td></tr>
+<tr><td><b>Position X</b></td><td>Top left corner, from the screen centre</td><td>-4000 – 4000</td><td>240</td></tr>
 <tr><td><b>Position Y</b></td><td>Top left corner, from the screen centre</td><td>-4000 – 4000</td><td>150</td></tr>
 </tbody>
 </table>

@@ -1,11 +1,12 @@
 local _, ns = ...
 
--- Your own name lists (my tanks, ...): kept in the raid profile's General
--- settings, so per character and permanent, as text (Raid/Settings.lua:
--- Raid.ParseNameList), written "Ann, Bob-Realm". The special panels show
--- them through their headers' nameList (Raid/SpecialPanels.lua); the raid
--- window changes them. A changed list reaches the panels out of combat
--- (a header's filter); one changed in combat after combat.
+-- Your own name lists (my tanks, favourites): kept in the raid profile's
+-- General settings, so per character and permanent, as text
+-- (Raid/Settings.lua: Raid.ParseNameList), written "Ann, Bob-Realm". The
+-- special panels show them through their headers' nameList
+-- (Raid/SpecialPanels.lua); the raid window changes them. A changed list
+-- reaches the panels out of combat (a header's filter); one changed in
+-- combat after combat.
 local Lists = {}
 ns.RaidLists = Lists
 
