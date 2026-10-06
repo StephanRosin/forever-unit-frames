@@ -148,3 +148,33 @@ for _, ind in ipairs(Raid.INDICATORS) do
     RaidSettings.Define({ key = key .. "Time", code = l .. "M", scope = "frame", type = "enum",
         values = { "SWIPE", "NUMBER", "NONE" }, default = "SWIPE" })
 end
+
+-- Icons (Raid/Cell.lua and the elements it maps them to), each switched
+-- on its own and placed on one of the cell's nine points (just inside
+-- it), all at one size per raid size: the assigned role (tank and
+-- healer; damage too when asked), the raid target marker, the group's
+-- leader or an assistant, the master looter, the ready check.
+local POINTS = ns.Settings.POINTS
+for _, icon in ipairs({
+    { key = "roleIcon", code = "RI", pointCode = "RP", point = "LEFT" },
+    { key = "raidMarker", code = "RM", pointCode = "RQ", point = "RIGHT" },
+    { key = "leaderIcon", code = "LI", pointCode = "LP", point = "TOPLEFT" },
+    { key = "looterIcon", code = "MI", pointCode = "MP", point = "TOPRIGHT" },
+    { key = "readyCheckIcon", code = "YI", pointCode = "YP", point = "CENTER" },
+}) do
+    RaidSettings.Define({ key = icon.key, code = icon.code, scope = "frame", type = "bool", default = true })
+    RaidSettings.Define({ key = icon.key .. "Point", code = icon.pointCode, scope = "frame", type = "enum",
+        values = POINTS, default = icon.point })
+end
+RaidSettings.Define({ key = "roleIconDamager", code = "RD", scope = "frame", type = "bool", default = false })
+RaidSettings.Define({ key = "iconSize", code = "IZ", scope = "frame", type = "int", min = 8, max = 32,
+    default = { r10 = 14, r20 = 13, _ = 12 } })
+
+-- States (Raid/CellStates.lua, Elements/Range.lua): out of range faded
+-- to rangeAlpha percent; a red inner border while the unit has aggro, a
+-- light one on your current target.
+RaidSettings.Define({ key = "rangeFade", code = "RF", scope = "frame", type = "bool", default = true })
+RaidSettings.Define({ key = "rangeAlpha", code = "RA", scope = "frame", type = "int", min = 0, max = 100,
+    default = 40 })
+RaidSettings.Define({ key = "aggroBorder", code = "AB", scope = "frame", type = "bool", default = true })
+RaidSettings.Define({ key = "targetBorder", code = "TB", scope = "frame", type = "bool", default = true })
