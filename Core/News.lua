@@ -116,6 +116,9 @@ function News.AtLogin()
     if not News.Due() then return end
     if not UIParent:IsShown() then return afterUIParentShows() end
     local current = News.Current()
+    -- Opened but not visible with UIParent shown (not expected): nothing
+    -- is recorded and nothing waits; the news shows at the next login.
+    -- Safe by design: never recorded unseen.
     if ns.NewsWindow.Open(current) and ns.NewsWindow.frame:IsVisible() then db.newsSeen = current end
 end
 
