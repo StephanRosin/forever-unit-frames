@@ -69,9 +69,24 @@ function Test.Members(size)
     return list
 end
 
--- Members into blocks, as the headers would sort them: by raid order or
--- by name, the single block by group first.
-function Test.Distribute(blocks, members, size, byName)
+-- What a block's header groups its members by (its filter's groupBy),
+-- as a rank: the group, or the place of the assigned role; 0 without.
+local ROLE_RANK, rank = {}, 0
+for role in Layout.ROLE_ORDER:gmatch("[^,]+") do
+    rank = rank + 1
+    ROLE_RANK[role] = rank
+end
+local function groupRank(block, member)
+    local by = block.filter.groupBy
+    if by == "GROUP" then return member.subgroup end
+    if by == "ASSIGNEDROLE" then return ROLE_RANK[member.assignedRole or "NONE"] end
+    return 0
+end
+
+-- Members into blocks, as the headers would sort them (sortBy: the
+-- setting): grouped as the block's header groups them, then by name or
+-- raid order.
+function Test.Distribute(blocks, members, size, sortBy)
     local lists = {}
     for b, block in ipairs(blocks) do
         local list = {}
@@ -79,10 +94,9 @@ function Test.Distribute(blocks, members, size, byName)
             if Layout.Matches(block, m, size) then list[#list + 1] = { index = i, member = m } end
         end
         table.sort(list, function(x, y)
-            if block.kind == "NONE" and x.member.subgroup ~= y.member.subgroup then
-                return x.member.subgroup < y.member.subgroup
-            end
-            if byName and x.member.name ~= y.member.name then return x.member.name < y.member.name end
+            local rx, ry = groupRank(block, x.member), groupRank(block, y.member)
+            if rx ~= ry then return rx < ry end
+            if sortBy == "NAME" and x.member.name ~= y.member.name then return x.member.name < y.member.name end
             return x.index < y.index
         end)
         lists[b] = list
@@ -114,8 +128,8 @@ end
 -- the headers' cells.
 function Test.Show()
     local size = Cell.Size()
-    local byName = ns.RaidConfig.Get(ns.Raid.Scope(size), "sortBy") == "NAME"
-    local lists = Test.Distribute(Header.blocks, Test.Members(size), size, byName)
+    local sortBy = ns.RaidConfig.Get(ns.Raid.Scope(size), "sortBy")
+    local lists = Test.Distribute(Header.blocks, Test.Members(size), size, sortBy)
     local counts = {}
     for b, list in ipairs(lists) do counts[b] = #list end
     local positions, s = Header.Place(counts)

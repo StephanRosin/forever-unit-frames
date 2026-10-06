@@ -10,6 +10,9 @@ local Layout = {}
 ns.RaidLayout = Layout
 
 Layout.ROLES = { "TANK", "HEALER", "DAMAGER" }
+-- Sorted by role within a block: the assigned roles in this order, those
+-- without one last.
+Layout.ROLE_ORDER = "TANK,HEALER,DAMAGER,NONE"
 -- Every filter attribute a block may set; the others are cleared.
 Layout.FILTER_KEYS = { "groupFilter", "roleFilter", "strictFiltering", "groupBy", "groupingOrder" }
 -- A group never holds more than five.
@@ -30,11 +33,23 @@ local function classes()
         "HUNTER" }
 end
 
+-- Sorted by role: the header groups its members by assigned role (a role
+-- block holds one role already). In the single block this replaces the
+-- order by group.
+local function sortByRole(blocks)
+    for _, block in ipairs(blocks) do
+        if block.kind ~= "ROLE" then
+            block.filter.groupBy, block.filter.groupingOrder = "ASSIGNEDROLE", Layout.ROLE_ORDER
+        end
+    end
+end
+
 -- The blocks of a grouping: { kind, id, capacity (groups only), filter }.
 -- Each block keeps to the size's groups. A class or role block filters
 -- strictly: group and class (and role) must all match. Members without
--- an assigned role count as damage.
-function Layout.Blocks(groupBy, size)
+-- an assigned role count as damage. sortBy (the setting, optional):
+-- ROLE sorts by role within each block.
+function Layout.Blocks(groupBy, size, sortBy)
     local groups = joined(Layout.Groups(size))
     local blocks = {}
     if groupBy == "GROUP" then
@@ -56,6 +71,7 @@ function Layout.Blocks(groupBy, size)
         blocks[1] = { kind = "NONE", id = "ALL",
             filter = { groupFilter = groups, groupBy = "GROUP", groupingOrder = groups } }
     end
+    if sortBy == "ROLE" then sortByRole(blocks) end
     return blocks
 end
 

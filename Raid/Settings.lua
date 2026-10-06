@@ -44,9 +44,10 @@ RaidSettings.Define({ key = "y", code = "Y", scope = "frame", type = "int", min 
 -- block for everyone. Stored by index: append only.
 RaidSettings.Define({ key = "groupBy", code = "GB", scope = "frame", type = "enum",
     values = { "GROUP", "CLASS", "ROLE", "NONE" }, default = "GROUP" })
--- Order within a block: raid order or name.
+-- Order within a block: raid order, name, or role (tanks, healers,
+-- damage, the rest; each in raid order).
 RaidSettings.Define({ key = "sortBy", code = "SO", scope = "frame", type = "enum",
-    values = { "INDEX", "NAME" }, default = "INDEX" })
+    values = { "INDEX", "NAME", "ROLE" }, default = "INDEX" })
 -- Blocks side by side (a row of blocks) or stacked (a column), wrapping
 -- after blocksPerLine.
 RaidSettings.Define({ key = "blockDirection", code = "BD", scope = "frame", type = "enum",

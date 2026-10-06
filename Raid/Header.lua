@@ -105,7 +105,8 @@ local function headerAttributes(s, size)
     local a = Layout.HeaderAttributes(s, size)
     a.template, a.templateType = Cell.TEMPLATE, "Button"
     a.showRaid, a.showParty, a.showPlayer, a.showSolo = true, general("showInParty") == true, true, false
-    a.sortMethod = get("sortBy")
+    -- By role: the blocks group by role (Raid/Layout.lua), raid order within.
+    a.sortMethod = get("sortBy") == "NAME" and "NAME" or "INDEX"
     return a
 end
 
@@ -267,7 +268,7 @@ end
 function Header.Refresh()
     if not Header.anchor then return end
     local size = Cell.Size()
-    Header.blocks = Layout.Blocks(get("groupBy"), size)
+    Header.blocks = Layout.Blocks(get("groupBy"), size, get("sortBy"))
     local s = Header.Shape()
     for i, block in ipairs(Header.blocks) do
         setAttributes(header(i), headerAttributes(s, size), block.filter)

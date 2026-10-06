@@ -22,7 +22,7 @@ end
 
 local function values(key) return table.concat(RS.Get(key).values, ",") end
 H.check("grouping values", values("groupBy"), "GROUP,CLASS,ROLE,NONE")
-H.check("sort values", values("sortBy"), "INDEX,NAME")
+H.check("sort values", values("sortBy"), "INDEX,NAME,ROLE")
 H.check("direction values", values("blockDirection"), "HORIZONTAL,VERTICAL")
 H.check("growth values", values("cellGrowth"), "DOWN,RIGHT")
 H.check("health colour values", values("healthColorMode"), "CLASS,STATIC,GRADIENT")
