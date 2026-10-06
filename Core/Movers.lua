@@ -59,6 +59,10 @@ local function complete(spec)
     spec.yKey = spec.yKey or "y"
     spec.point = spec.point or "CENTER"
     spec.origin = spec.origin or "CENTER"
+    -- The id keys the mover's queued work ("attach:" .. id); a scope that
+    -- is a function cannot stand in for it.
+    assert(spec.id ~= nil or type(spec.scope) ~= "function", "mover spec: a function scope needs an id")
+    assert(type(spec.id) ~= "function", "mover spec: id must not be a function")
     spec.id = spec.id or spec.scope
     return spec
 end

@@ -66,3 +66,10 @@ H.check("unit frame: x", ns.Config.Get("player", "x"), 40)
 H.check("unit frame: y", ns.Config.Get("player", "y"), 8)
 H.check("unit frame: raid profile untouched", RC.Get("r10", "x"), 96)
 Movers.Lock()
+
+-- A scope that changes cannot name the mover: such a spec brings an id.
+H.checkError("function scope without an id", function()
+    Movers.Attach(CreateFrame("Frame", nil, UIParent), {
+        scope = function() return "r10" end, config = RC, size = function() return 10, 10 end,
+    })
+end)
