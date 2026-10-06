@@ -177,6 +177,7 @@ end
 -- The header sets every cell's unit on each roster update; a cell that
 -- keeps its unit keeps its events and the panel its layout, but the
 -- person behind the same raid unit may have changed, so it shows anew.
+-- A cleared cell's aura container looks at no unit any more.
 function Cell.OnUnitChanged(button, unit)
     if button.unit == unit then
         if unit then ns.Single.UpdateAll(button) end
@@ -185,7 +186,11 @@ function Cell.OnUnitChanged(button, unit)
     button.unit = unit
     ns.UnitEvents.Bind(button)
     ns.Fire("RAID_CELLS_CHANGED")
-    if unit then ns.Single.UpdateAll(button) end
+    if unit then
+        ns.Single.UpdateAll(button)
+    else
+        ns.RaidAuras.Release(button)
+    end
 end
 
 -- Size, contents and data of one cell; its size out of combat only.

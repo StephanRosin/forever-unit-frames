@@ -415,6 +415,15 @@ function CellAuras.Update(frame)
     end
 end
 
+-- The cell lost its unit: its container stops looking at the old one.
+-- In combat too: SetUnit only re-registers the container's events.
+-- A cell without a container yet gets none for it.
+function CellAuras.Release(frame)
+    local auras = frame.raidAuras
+    if not (auras and auras.built) then return end
+    auras.container:SetUnit("none")
+end
+
 ns.On("PLAYER_REGEN_ENABLED", function()
     for frame in pairs(stale) do
         if not waiting[frame] then apply(frame) end

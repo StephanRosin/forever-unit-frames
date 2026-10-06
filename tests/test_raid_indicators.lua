@@ -104,3 +104,15 @@ H.checkTrue("after combat: the slot", c._slots.indicatorBOTTOMRIGHT)
 H.check("after combat: red", c._slots.indicatorBOTTOMRIGHT.frame.color._color[1], 1)
 H.check("nothing blocked", #M.blocked, 0)
 H.check("no errors", #M.errors, 0)
+
+-- A cell that loses its unit points its container at none, in combat too.
+local oc = other.raidAuras.container
+H.checkTrue("the other cell: a unit", oc:GetUnit() ~= "none")
+M.SetCombat(true)
+M.SetRaidRoster({ { name = "Ann", class = "PRIEST", subgroup = 1 } })
+M.RunTimers()
+H.check("cell cleared", other.unit, nil)
+H.check("cleared: the container on none", oc:GetUnit(), "none")
+M.SetCombat(false)
+H.check("cleared: nothing blocked", #M.blocked, 0)
+H.check("cleared: no errors", #M.errors, 0)
