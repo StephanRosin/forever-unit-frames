@@ -723,8 +723,12 @@ function Texts.Update(frame)
     local sample = sampleHealth(frame)
     local word = ns.UnitStatus.Word(ns.UnitStatus.Of(frame))
     -- A cell's second line also says AFK (the badge's word; the badge
-    -- itself needs a unit frame's title row).
-    if not word and frame.centerTexts and Texts.AwayState(frame.unit) == "AFK" then word = "AFK" end
+    -- itself needs a unit frame's title row). Not on a sample: a pretend
+    -- cell sits on the player and never shows the player's live state.
+    if not word and frame.centerTexts and not ns.Health.Sample(frame)
+        and Texts.AwayState(frame.unit) == "AFK" then
+        word = "AFK"
+    end
     local wordSlot = word and statusSlot(frame)
     for _, slot in ipairs(SLOTS) do
         local fs = frame.texts[slot.field]

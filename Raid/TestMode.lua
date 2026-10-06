@@ -81,6 +81,12 @@ local function fakeButton(i)
     return button
 end
 
+-- Hidden and quiet, its sample gone: nothing reads a stale one later.
+local function release(button)
+    ns.Party.ReleaseFake(button)
+    button.sample = nil
+end
+
 -- Out of combat (Raid/Header.lua's layout): the pretend raid in place of
 -- the headers' cells.
 function Test.Show()
@@ -107,13 +113,13 @@ function Test.Show()
             button:Show()
         end
     end
-    for i = used + 1, #Cell.fakes do ns.Party.ReleaseFake(Cell.fakes[i]) end
+    for i = used + 1, #Cell.fakes do release(Cell.fakes[i]) end
 end
 
 -- Out of combat: every pretend cell hidden and quiet.
 function Test.Hide()
     for _, button in ipairs(Cell.fakes) do
-        if button.unit or button:IsShown() then ns.Party.ReleaseFake(button) end
+        if button.unit or button:IsShown() or button.sample then release(button) end
     end
 end
 

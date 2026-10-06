@@ -53,6 +53,17 @@ local seen = {}
 ns.Units.ForEachFrame(function(frame) seen[frame] = true end)
 H.checkTrue("every-frame loop reaches them", seen[f1])
 
+-- The player AFK: the pretend cells keep their samples (they sit on the
+-- player, but never show its live state).
+local sampleSecond = Cell.fakes[4].texts.healthRight:GetText()
+M.units.player.afk = true
+M.FireEvent("PLAYER_FLAGS_CHANGED", "player")
+H.check("player AFK: sample's second line kept", Cell.fakes[4].texts.healthRight:GetText(), sampleSecond)
+H.checkTrue("player AFK: not the AFK word", Cell.fakes[4].texts.healthRight:GetText() ~= "AFK")
+H.check("player AFK: dead sample still dead", Cell.fakes[3].texts.healthRight:GetText(), ns.L.STATUS_DEAD)
+M.units.player.afk = nil
+M.FireEvent("PLAYER_FLAGS_CHANGED", "player")
+
 -- By class: the pretend members go to their class blocks, packed.
 RC.Set("r10", "groupBy", "CLASS")
 H.check("warriors first", point(Cell.fakes[1]), "TOPLEFT anchor TOPLEFT 0 0")
@@ -80,10 +91,26 @@ H.check("off: panel hidden", Header.panel:IsShown(), false)
 RC.Set("general", "enabled", true)
 H.checkTrue("on: back", Cell.fakes[1]:IsShown())
 
+-- Off out of combat: the pretend cells go, samples and all; the real
+-- headers come back.
+ns.TestMode.Set(false)
+H.check("off: test mode off", ns.TestMode.IsOn(), false)
+local stale = 0
+for _, f in ipairs(Cell.fakes) do
+    if f:IsShown() or f.sample ~= nil or f.unit ~= nil then stale = stale + 1 end
+end
+H.check("off: pretend cells hidden, samples cleared", stale, 0)
+H.checkTrue("off: headers back", Header.headers[1]:IsShown())
+H.check("off: panel hidden solo", Header.panel:IsShown(), false)
+ns.TestMode.Set(true)
+H.checkTrue("on again: pretend cells back", Cell.fakes[1]:IsShown())
+H.check("on again: samples back", Cell.fakes[1].texts.healthLeft:GetText(), "Warrior")
+
 -- Entering combat ends test mode; the real headers come back.
 M.FireEvent("PLAYER_REGEN_DISABLED")
 H.check("combat: test mode off", ns.TestMode.IsOn(), false)
 H.check("combat: pretend cells hidden", Cell.fakes[1]:IsShown(), false)
 H.checkTrue("combat: headers back", Header.headers[1]:IsShown())
+H.check("combat: samples cleared", Cell.fakes[1].sample, nil)
 H.check("combat: panel hidden solo", Header.panel:IsShown(), false)
 H.check("nothing blocked", #M.blocked, 0)
