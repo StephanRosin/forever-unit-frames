@@ -102,12 +102,12 @@ News.ENTRIES["9.9.9"] = nil
 NW.Close()
 
 -- The action button fits its label: at least the wide button, wider for a
--- longer label, never past the Close button.
+-- longer label, never into the footer hint's least width (140).
 local enUS = ns.Locales.enUS
 local function labelFits()
     local b = NW.actionButton
     return b:GetWidth() >= b.text:GetStringWidth() and b:GetWidth() >= 160
-        and b:GetWidth() <= 560 - 2 * 12 - NW.closeButton:GetWidth() - 8
+        and b:GetWidth() <= 560 - 12 - NW.closeButton:GetWidth() - 8 - 8 - 140 - 16
 end
 NW.Open("0.22.0")
 H.check("English label: wide button", NW.actionButton:GetWidth(), 160)
@@ -117,10 +117,15 @@ for _, code in ipairs({ "deDE", "frFR", "esES" }) do
 end
 ns.Config.Set("general", "language", "AUTO")
 local openRaid = enUS.NEWS_OPEN_RAID
-enUS.NEWS_OPEN_RAID = "Open the raid frame options window right now"
+enUS.NEWS_OPEN_RAID = "Open the raid frame options now"
 NW.Open("0.22.0")
 H.checkTrue("a longer label: wider", NW.actionButton:GetWidth() > 160)
 H.checkTrue("a longer label fits", labelFits())
+-- However long the label, the footer hint keeps room left of the button.
+enUS.NEWS_OPEN_RAID = string.rep("Open the raid frame options window ", 6)
+NW.Open("0.22.0")
+local hintRoom = 560 - 12 - NW.closeButton:GetWidth() - 8 - NW.actionButton:GetWidth() - 8 - 16
+H.checkTrue("a very long label: the hint keeps room", hintRoom >= 140)
 enUS.NEWS_OPEN_RAID = openRaid
 NW.Open("0.22.0")
 H.check("the wide button again", NW.actionButton:GetWidth(), 160)

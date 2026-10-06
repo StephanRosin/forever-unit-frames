@@ -17,8 +17,10 @@ local WIDTH, MIN_HEIGHT, MAX_HEIGHT = 560, 440, 600
 local TITLE_H, FOOTER_H, INSET, LINE_GAP, BULLET_W = 32, 40, 16, 8, 12
 local FONT_SIZE = 13
 local BUTTON_W, WIDE_BUTTON_W, GAP, FOOTER_INSET, BUTTON_PADDING = 120, 160, 8, 12, 16
--- The action button may take the footer up to the Close button.
-local MAX_ACTION_W = WIDTH - 2 * FOOTER_INSET - BUTTON_W - GAP
+-- The widest action button: what the footer leaves beside the Close
+-- button, the footer hint's least width (HINT_MIN_W) and the gaps.
+local HINT_MIN_W = 140
+local MAX_ACTION_W = WIDTH - FOOTER_INSET - BUTTON_W - GAP - GAP - HINT_MIN_W - INSET
 local CROSS_SIZE, CROSS_ANGLE = 14, math.pi / 4
 
 local frame
