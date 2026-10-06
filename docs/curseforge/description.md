@@ -1,6 +1,6 @@
 **Summary**
 
-Clean, fully configurable unit frames for WoW: Forever. Player, target, target of target, focus, pet and party, with auras that update in combat, threat, range and dispel indicators. English, Deutsch, Español, Français.
+Clean, fully configurable unit frames for WoW: Forever. Player, target, target of target, focus, pet and party, with auras that update in combat, threat, range and dispel indicators, and raid frames for 10, 20 and 40 players. English, Deutsch, Español, Français.
 
 ---
 
@@ -33,6 +33,18 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 - Damage and heal numbers on the frame (combat feedback).
 - Combat and resting icons on the player frame, with Blizzard's own art: crossed swords while you are in combat, the animated "Zzz" while you rest in an inn or a city. Centred on the health bar by default, side by side when both show. Each can be turned off; size, anchor point on the health bar and X/Y offset are configurable.
 - 2D or 3D portraits, for players and creatures.
+
+## Raid frames
+- Raid frames for 10, 20 and 40 players in the look of the unit frames: a panel of blocks (raid groups, classes, roles, or one block for everyone), side by side or stacked, wrapping after a number of your choice, with a gold border around the panel (borders around each block and each cell can be switched on).
+- Three profiles per character, one per raid size. The size follows the raid instance (outside one, the size of the group), or is fixed. Copy a size from another size or from another of your characters, reset it, or export and import one size as a text.
+- Cells with a look of their own per raid size, independent of the party frame: bar texture, background, font, name and second-line sizes, outline and shadow, the colours of the name and the second line, a border in its own style, thickness and colour, rounded corners.
+- Health in the class colour, a fixed colour or a gradient; name and missing health (or percent, or current health) in the middle; Dead, Ghost, Offline and AFK in place of the number; a thin power strip for everyone, mana users or healers; incoming heals, an overheal lane, shields and damage and heal numbers, each switched on or off.
+- The most important debuff you can dispel (or any dispellable debuff) as an icon in the centre, bordered in its type's colour, or as a small square in a corner (from a single pixel) in that colour, beside a corner indicator in the same corner; the whole cell can take that colour, and a row of further debuffs can be switched on.
+- Up to five corner indicators for spells of your choice (heals over time, shields): spell IDs, or spell names from your spell book (a name stands for every rank you know; a name it does not know is named in the chat). Each with its colour, size, your own casts only, and the time left as a darkening or a number. The game's aura containers fill them, so they keep updating in combat.
+- Icons for the role, the raid target marker, the leader and assistants, the master looter and the ready check, each at a point of your choice. Members out of range fade; a red line inside the cell shows aggro, a light one your target.
+- Within a block: raid order, name or role; class blocks in an order of your choice.
+- A 5-player group can be shown as a raid as well; Blizzard's raid frames hide while ours are on (unless you switch that off).
+- `/fuf raid` opens the raid options window; so do a button in `/fuf`, the raid frames' own minimap button (drag it, or hide it) and their entry in Blizzard's addon compartment. Its test mode shows a pretend raid of the size you edit, at that size's place: mixed classes and roles, one member dead, one offline, one out of range, debuffs and indicators.
 
 ## Status
 In a "Status" tab per frame.
@@ -88,7 +100,7 @@ In a "Status" tab per frame.
 - Settings are stored compactly. They can be exported and imported as a string. Importing a profile keeps your own language.
 
 ## Commands
-`/fuf` (options), `/fuf unlock`, `/fuf lock`, `/fuf status`, `/fuf reset <frame|all>`, `/fuf set <scope> <setting> <value>`
+`/fuf` (options), `/fuf raid` (raid frames' options), `/fuf unlock`, `/fuf lock`, `/fuf status`, `/fuf reset <frame|all>`, `/fuf set <scope> <setting> <value>`
 
 ## Notes
 - Made for WoW: Forever only. It relies on Forever's API and will not load on other clients.
