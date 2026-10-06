@@ -563,7 +563,12 @@ local function createFooter(parent)
         onClick = function() ns.RaidTestMode.Set(not ns.RaidTestMode.IsOwnOn()) end })
     test:SetPoint("LEFT", footer, "LEFT", 12, 0)
     test:HookScript("OnLeave", paintTestButton)
-    RaidOptions.testButton = test
+    local units = Widgets.Button(footer, { text = L.UNIT_FRAMES_BUTTON, width = BUTTON_W, onClick = function()
+        RaidOptions.Close()
+        ns.Options.Open()
+    end })
+    units:SetPoint("LEFT", test, "RIGHT", GAP, 0)
+    RaidOptions.testButton, RaidOptions.unitButton = test, units
     local reset = ns.Options.ConfirmButton(footer, L.RAID_RESET_SIZE,
         function() ns.RaidProfiles.ResetSize(RaidOptions.Size()) end)
     reset:SetPoint("RIGHT", footer, "RIGHT", -12, 0)

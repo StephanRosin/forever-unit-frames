@@ -814,3 +814,7 @@ L.RAID_SHARE = "Export / Import"
 L.RAID_COPY_CHARACTER = "%s: %s"
 L.RAID_EXPORT_HINT = "Diesen Text kopieren, um das Profil %s zu teilen oder zu sichern."
 L.RAID_IMPORT_HINT = "Eine Schlachtzugsgröße hier einfügen: Sie ersetzt das Profil %s."
+
+-- Schlachtzugsrahmen: die Wege zwischen den beiden Optionsfenstern.
+L.RAID_FRAMES_BUTTON = "Schlachtzugsrahmen…"
+L.UNIT_FRAMES_BUTTON = "Einheitenrahmen…"

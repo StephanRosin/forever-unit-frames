@@ -574,6 +574,20 @@ local function languageRow(nav)
     return row
 end
 
+-- The raid frames have a window of their own: a button above the
+-- language opens it in place of this one.
+local RAID_BUTTON_GAP = 10
+
+local function raidButton(nav)
+    local button = Widgets.Button(nav, { text = L.RAID_FRAMES_BUTTON, width = NAV_W - 2 * INSET, onClick = function()
+        Options.Close()
+        ns.RaidOptions.Open()
+    end })
+    button:SetPoint("BOTTOMLEFT", Options.languageRow, "TOPLEFT", 0, RAID_BUTTON_GAP)
+    Options.raidButton = button
+    return button
+end
+
 local function createNav(parent)
     local nav = CreateFrame("Frame", nil, parent)
     nav:SetWidth(NAV_W)
@@ -594,6 +608,7 @@ local function createNav(parent)
         y = y + NAV_ROW_H
     end
     languageRow(nav)
+    raidButton(nav)
     return nav
 end
 

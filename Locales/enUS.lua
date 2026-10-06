@@ -838,3 +838,7 @@ L.RAID_SHARE = "Export / Import"
 L.RAID_COPY_CHARACTER = "%s: %s"
 L.RAID_EXPORT_HINT = "Copy this text to share or back up the %s profile."
 L.RAID_IMPORT_HINT = "Paste a raid size here: it replaces the %s profile."
+
+-- Raid frames: the ways between the two options windows.
+L.RAID_FRAMES_BUTTON = "Raid frames…"
+L.UNIT_FRAMES_BUTTON = "Unit frames…"

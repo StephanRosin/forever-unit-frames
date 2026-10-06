@@ -814,3 +814,7 @@ L.RAID_SHARE = "Exporter / Importer"
 L.RAID_COPY_CHARACTER = "%s : %s"
 L.RAID_EXPORT_HINT = "Copiez ce texte pour partager ou sauvegarder le profil %s."
 L.RAID_IMPORT_HINT = "Collez ici une taille de raid : elle remplace le profil %s."
+
+-- Cadres de raid : les accès entre les deux fenêtres d'options.
+L.RAID_FRAMES_BUTTON = "Cadres de raid…"
+L.UNIT_FRAMES_BUTTON = "Cadres d'unité…"

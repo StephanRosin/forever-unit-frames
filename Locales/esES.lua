@@ -815,3 +815,7 @@ L.RAID_SHARE = "Exportar / Importar"
 L.RAID_COPY_CHARACTER = "%s: %s"
 L.RAID_EXPORT_HINT = "Copia este texto para compartir o guardar el perfil de %s."
 L.RAID_IMPORT_HINT = "Pega aquí un tamaño de banda: sustituye el perfil de %s."
+
+-- Marcos de banda: los accesos entre las dos ventanas de opciones.
+L.RAID_FRAMES_BUTTON = "Marcos de banda…"
+L.UNIT_FRAMES_BUTTON = "Marcos de unidad…"
