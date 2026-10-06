@@ -28,9 +28,12 @@ ns.On("PLAYER_LOGIN", function()
     ns.Single.CreateAll(afterBuild)
     ns.Blizzard.HideDefaults()
     ns.MinimapButton.Create()
-    -- Raid profiles last: nothing above depends on them.
+    -- The raid frames last: their profile, the active size, then the
+    -- panel built from both (out of combat, like the unit frames). The
+    -- unit frames above never read the raid profile.
     ns.RaidProfiles.Attach(ForeverUnitFramesDB)
     ns.RaidSize.Update()
+    ns.AfterCombat("raidCreate", ns.RaidHeader.Create)
 end)
 
 ns.Listen("CONFIG_CHANGED", function()
