@@ -40,6 +40,25 @@ H.check("swipe registered", b._durationCooldown, b.cooldown)
 H.check("no number", b._durationText, nil)
 H.check("no mouse", b._clickEnabled, false)
 
+-- The spells are given to the container again only when they change.
+local candidateCalls = {}
+local setCandidates = c.SetAuraSlotCandidateFilters
+c.SetAuraSlotCandidateFilters = function(self, key, filters)
+    candidateCalls[key] = (candidateCalls[key] or 0) + 1
+    return setCandidates(self, key, filters)
+end
+RC.Set("r10", "indicatorTopLeftSize", 9)
+H.check("same spells: not given again", candidateCalls.indicatorTOPLEFT, nil)
+RC.Set("r10", "indicatorTopLeftSpells", "6074 139")
+H.check("same set in another order: not given again", candidateCalls.indicatorTOPLEFT, nil)
+RC.Set("r10", "indicatorTopLeftSpells", "139")
+H.check("changed spells: given once", candidateCalls.indicatorTOPLEFT, 1)
+H.check("changed spells: the new set", slot.candidateFilters.includeSpellIDs[6074], nil)
+RC.Set("r10", "indicatorTopLeftSpells", "139, 6074")
+RC.Set("r10", "indicatorTopLeftSize", 8)
+H.check("back: given once more", candidateCalls.indicatorTOPLEFT, 2)
+c.SetAuraSlotCandidateFilters = setCandidates
+
 -- Settings of the position.
 RC.Set("r10", "indicatorTopLeftOwn", false)
 H.check("anyone's", slot.filter, "HELPFUL")

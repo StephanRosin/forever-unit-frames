@@ -82,20 +82,39 @@ local stale = setmetatable({}, { __mode = "k" })
 
 -- Slots -------------------------------------------------------------------------------
 
+-- Whether two values are the same, tables compared by contents.
+local function same(a, b)
+    if type(a) ~= "table" or type(b) ~= "table" then return a == b end
+    for k, v in pairs(a) do
+        if not same(v, b[k]) then return false end
+    end
+    for k in pairs(b) do
+        if a[k] == nil then return false end
+    end
+    return true
+end
+
 -- Switches a slot of the cell's container, making it when it is wanted
 -- for the first time (init(frame, button) gives its frame regions); one
 -- that was never wanted is not made. candidateFilters (optional) are the
--- container's own filters for it. Returns its frame, or nil.
--- auras.slots[key] is the frame.
+-- container's own filters for it, given again only when they changed.
+-- Returns its frame, or nil.
+-- auras.slots[key] is the frame, auras.candidates[key] its last filters.
 function CellAuras.SetSlot(frame, container, key, filter, wanted, init, candidateFilters)
-    local slots = frame.raidAuras.slots
+    local auras = frame.raidAuras
+    local slots = auras.slots
     if not slots[key] and not wanted then return nil end
+    auras.candidates = auras.candidates or {}
     if not slots[key] then
         slots[key] = container:AddAuraSlot(key, filter, { candidateFilters = candidateFilters,
             initializeFrame = function(b) init(frame, b) end })
+        auras.candidates[key] = candidateFilters
     end
     container:SetAuraSlotFilterString(key, filter)
-    if candidateFilters then container:SetAuraSlotCandidateFilters(key, candidateFilters) end
+    if candidateFilters and not same(candidateFilters, auras.candidates[key]) then
+        container:SetAuraSlotCandidateFilters(key, candidateFilters)
+        auras.candidates[key] = candidateFilters
+    end
     container:SetAuraSlotEnabled(key, wanted == true)
     return slots[key]
 end
