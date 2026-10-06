@@ -55,5 +55,13 @@ H.check("back to auto", Size.Current(), 40)
 RC.Set("general", "sizeMode", "20")
 RC.ResetAll()
 H.check("reset: auto again", Size.Current(), 40)
+local update, updates = Size.Update, 0
+Size.Update = function(...)
+    updates = updates + 1
+    return update(...)
+end
 RC.Set("r10", "x", 5)
-H.check("other settings: no new size", sizes[#sizes], 40)
+H.check("other settings: no recomputation", updates, 0)
+RC.Set("general", "sizeMode", "10")
+H.check("sizeMode: recomputation", updates, 1)
+Size.Update = update
