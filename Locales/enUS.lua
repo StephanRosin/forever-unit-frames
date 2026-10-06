@@ -634,3 +634,7 @@ L.HINT_textHealthLeft = "Level, class and race: e.g. 60 Mage Gnome, or 60 Humano
 L.HINT_textHealthRight = "Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid"
 L.HINT_textPowerLeft = "Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid"
 L.HINT_textPowerRight = "Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid"
+
+-- Raid frames: importing one raid size.
+L.IMPORT_RAID_NO_SIZE = "This text holds no raid size."
+L.IMPORT_SKIPPED = "Imported; %d entries could not be read and were left out."

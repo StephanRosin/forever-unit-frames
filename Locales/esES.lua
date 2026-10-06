@@ -611,3 +611,7 @@ L.HINT_textHealthLeft = "Nivel, clase y raza: p. ej. 60 Mago Gnomo o 60 Humanoid
 L.HINT_textHealthRight = "Nivel, clase y raza: p. ej. 60 Mago Gnomo o 60 Humanoide"
 L.HINT_textPowerLeft = "Nivel, clase y raza: p. ej. 60 Mago Gnomo o 60 Humanoide"
 L.HINT_textPowerRight = "Nivel, clase y raza: p. ej. 60 Mago Gnomo o 60 Humanoide"
+
+-- Marcos de banda: importar un tamaño de banda.
+L.IMPORT_RAID_NO_SIZE = "Este texto no contiene ningún tamaño de banda."
+L.IMPORT_SKIPPED = "Importado; %d entradas no se pudieron leer y se omitieron."

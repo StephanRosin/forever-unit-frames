@@ -610,3 +610,7 @@ L.HINT_textHealthLeft = "Stufe, Klasse und Volk: z. B. 60 Magier Gnom oder 60 Hu
 L.HINT_textHealthRight = "Stufe, Klasse und Volk: z. B. 60 Magier Gnom oder 60 Humanoid"
 L.HINT_textPowerLeft = "Stufe, Klasse und Volk: z. B. 60 Magier Gnom oder 60 Humanoid"
 L.HINT_textPowerRight = "Stufe, Klasse und Volk: z. B. 60 Magier Gnom oder 60 Humanoid"
+
+-- Schlachtzugsrahmen: eine Schlachtzugsgröße importieren.
+L.IMPORT_RAID_NO_SIZE = "Dieser Text enthält keine Schlachtzugsgröße."
+L.IMPORT_SKIPPED = "Importiert; %d Einträge waren nicht lesbar und wurden ausgelassen."

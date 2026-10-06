@@ -70,20 +70,23 @@ function Profiles.Export(size)
 end
 
 -- Puts an exported size on `size`, replacing everything that size had.
--- The first size found in the string counts (an export holds one); a
--- string with none is a size left at the defaults. Returns true, or nil
--- and the codec's error key.
+-- The first size found in the string counts (an export holds one). A
+-- string without any is refused (RAID_NO_SIZE), unless it is exactly
+-- what a size left at the defaults exports: the format version alone,
+-- which resets the size. Returns true and how many entries the codec
+-- could not read (they are left out); or nil and an error key.
 function Profiles.Import(str, size)
-    local decoded, err = RaidCodec.Decode(str)
+    local decoded, err, rejected = RaidCodec.Decode(str)
     if not decoded then return nil, err end
     local target = Raid.Scope(size)
     for _, s in ipairs(Raid.SIZES) do
         local scope = Raid.Scope(s)
         if next(decoded[scope]) then
             RaidConfig.CopyScopeFrom(decoded, scope, target)
-            return true
+            return true, rejected
         end
     end
+    if str ~= tostring(RaidCodec.VERSION) then return nil, "RAID_NO_SIZE" end
     RaidConfig.ResetScope(target)
-    return true
+    return true, rejected
 end

@@ -610,3 +610,7 @@ L.HINT_textHealthLeft = "Niveau, classe et race : p. ex. 60 Mage Gnome ou 60 Hum
 L.HINT_textHealthRight = "Niveau, classe et race : p. ex. 60 Mage Gnome ou 60 Humanoïde"
 L.HINT_textPowerLeft = "Niveau, classe et race : p. ex. 60 Mage Gnome ou 60 Humanoïde"
 L.HINT_textPowerRight = "Niveau, classe et race : p. ex. 60 Mage Gnome ou 60 Humanoïde"
+
+-- Cadres de raid : importer une taille de raid.
+L.IMPORT_RAID_NO_SIZE = "Ce texte ne contient aucune taille de raid."
+L.IMPORT_SKIPPED = "Importé ; %d entrées illisibles ont été ignorées."
