@@ -62,6 +62,15 @@ H.check("role, strict, groups limit", units(header({ showRaid = true, groupFilte
 H.check("by name", units(header({ showRaid = true, sortMethod = "NAME" })), "raid3,raid5,raid2,raid1,raid4")
 H.check("grouped by group", units(header({ showRaid = true, groupBy = "GROUP", groupingOrder = "1,2,3,4,5,6,7,8" })),
     "raid1,raid3,raid2,raid5,raid4")
+-- The grouping order as the client builds it (doubleFillTable): group
+-- numbers collide with the positions stored as strings.
+H.check("grouping order 3,1,2: the client's 2,3,1",
+    units(header({ showRaid = true, groupBy = "GROUP", groupingOrder = "3,1,2" })), "raid2,raid5,raid4,raid1,raid3")
+local ok, err = pcall(header, { showRaid = true, groupBy = "GROUP", groupingOrder = "3,1" })
+H.checkTrue("grouping order 3,1 raises: number against string",
+    not ok and tostring(err):find("attempt to compare number with string", 1, true))
+ok, err = pcall(header, { showRaid = true, groupBy = "GROUP" })
+H.checkTrue("groupBy without groupingOrder raises", not ok and tostring(err):find("groupingOrder", 1, true))
 
 -- Columns: 5 units, 2 per column, columns to the right.
 local h = header({ showRaid = true, point = "TOP", yOffset = -2, unitsPerColumn = 2, maxColumns = 3,

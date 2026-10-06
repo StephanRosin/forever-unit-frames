@@ -177,6 +177,13 @@ local function fill(t, keys)
     for i, key in ipairs(keys) do t[tonumber(key) or trim(tostring(key))] = i end
     return t
 end
+-- doubleFillTable: fill, then each key (trimmed, a string) at its
+-- position in the array part.
+local function doubleFill(t, keys)
+    fill(t, keys)
+    for i, key in ipairs(keys) do t[i] = trim(key) end
+    return t
+end
 
 local function sortedUnits(header)
     local a = header._attr
@@ -234,12 +241,20 @@ local function sortedUnits(header)
         return id(x) < id(y)
     end
     if a.groupBy then
-        local rank = fill({}, split((a.groupingOrder or ""):gsub("%s+", "")))
+        -- As the client: groupingOrder is required (nil raises), and the
+        -- order is built with doubleFillTable, which then also stores each
+        -- key as a string in the array part. Numeric group keys collide
+        -- with those: "3,1,2" sorts groups 2,3,1, and "3,1" compares a
+        -- number with a string and raises.
+        local rank = doubleFill({}, split(a.groupingOrder:gsub("%s+", "")))
         table.sort(units, function(x, y)
             local o1, o2 = rank[grouping[x]], rank[grouping[y]]
-            if o1 and o2 and o1 ~= o2 then return o1 < o2 end
-            if o1 and not o2 then return true end
-            if o2 and not o1 then return false end
+            if o1 then
+                if not o2 then return true end
+                if o1 == o2 then return within(x, y) end
+                return o1 < o2
+            end
+            if o2 then return false end
             return within(x, y)
         end)
     elseif a.sortMethod == "NAME" then
