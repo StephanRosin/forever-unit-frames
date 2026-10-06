@@ -330,3 +330,5 @@ end
 
 -- Main tanks (the raid assignment): on, a row above the main panel.
 Raid.DefinePanel({ id = "mainTanks", letter = "Q", show = true, perLine = 5, growth = "RIGHT", x = -600, y = 260 })
+-- Main assists (the raid assignment): off, a row above the main tanks.
+Raid.DefinePanel({ id = "mainAssists", letter = "W", show = false, perLine = 5, growth = "RIGHT", x = -600, y = 340 })

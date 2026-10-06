@@ -71,3 +71,4 @@ function Special.New(id, how)
 end
 
 Special.New("mainTanks", { filter = function() return { roleFilter = "MAINTANK" } end })
+Special.New("mainAssists", { filter = function() return { roleFilter = "MAINASSIST" } end })
