@@ -20,8 +20,13 @@ function Blizzard.Conceal(frame)
     frame:UnregisterAllEvents()
     -- IsProtected may return a secret or fail; unknown counts as protected.
     if ns.Secrets.Bool(frame.IsProtected, frame) ~= false then
-        -- Protected frames may not be reparented; make them invisible and
-        -- inert instead.
+        -- Reparenting a protected frame is refused only in combat, and
+        -- Conceal runs out of combat (ns.AfterCombat). These frames still
+        -- keep their parent: they are made invisible and inert instead
+        -- (alpha 0, no mouse), so a later Show from Blizzard's code shows
+        -- nothing and takes no clicks. Only the raid container, whose own
+        -- secure children stayed clickable that way, moves under the
+        -- hidden parent (concealContainer below).
         frame:SetAlpha(0)
         frame:EnableMouse(false)
         hide(frame)
