@@ -661,10 +661,10 @@ end
 
 -- Footer ------------------------------------------------------------------------
 
--- The unit frames' movers only; the raid window has its own button.
+-- The unit frames' movers only; the raid window has its own button. The
+-- MOVERS_UNLOCKED listener repaints the footer.
 local function toggleMovers()
     if ns.Movers.IsUnlocked("units") then ns.Movers.Lock("units") else ns.Movers.Unlock("units") end
-    refreshFooter()
 end
 
 local function otherFrames()
