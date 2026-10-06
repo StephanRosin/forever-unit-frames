@@ -101,57 +101,218 @@ M.templates = {
     end,
 }
 
--- SecureGroupHeaderTemplate, reduced to what the addon relies on: party
--- or solo detection, showPlayer/showSolo/showParty, point and offsets,
+-- SecureGroupHeaderTemplate and SecureGroupPetHeaderTemplate
+-- (Blizzard_RestrictedAddOnEnvironment/SecureGroupHeaders.lua), ported
+-- from the client source: which units a header shows (GetGroupHeaderType:
+-- a raid with showRaid, a party with showParty, else showSolo; showPlayer),
+-- the filters groupFilter, roleFilter and strictFiltering, groupBy with
+-- groupingOrder, sortMethod INDEX or NAME, sortDir, startingIndex, the
+-- columns (unitsPerColumn, maxColumns, columnSpacing, columnAnchorPoint),
 -- child creation from the template attribute, unit assignment through
--- SetAttribute("unit"), and updates on show, attribute change and roster
--- change while shown.
+-- SetAttribute("unit"), the header's own size, and updates on show,
+-- attribute change and roster change while visible. Party members are
+-- M.group's tokens in order; raid members M.raid (M.SetRaidRoster), read
+-- through GetRaidRosterInfo as the client does. The pet header lists the
+-- pets of the units the party rule picks, packed.
+-- Stricter than the client: an initialConfigFunction or refreshUnitChange
+-- snippet raises (snippets do not run on this client), and so does a
+-- nameList (not modelled).
 -- Like the client, shown buttons are only SetPoint'ed (never cleared): a
 -- button keeps an anchor from an earlier layout on another point. Only
 -- unused buttons lose their anchors. The header sizes itself from child1
 -- as it is at layout time.
-local OPPOSITE = { TOP = "BOTTOM", BOTTOM = "TOP", LEFT = "RIGHT", RIGHT = "LEFT" }
-local MULTIPLIER = { TOP = { 0, -1 }, BOTTOM = { 0, 1 }, LEFT = { 1, 0 }, RIGHT = { -1, 0 } }
+local function relativePoint(point)
+    point = point:upper()
+    if point == "TOP" then return "BOTTOM", 0, -1 end
+    if point == "BOTTOM" then return "TOP", 0, 1 end
+    if point == "LEFT" then return "RIGHT", 1, 0 end
+    if point == "RIGHT" then return "LEFT", -1, 0 end
+    if point == "TOPLEFT" then return "BOTTOMRIGHT", 1, -1 end
+    if point == "TOPRIGHT" then return "BOTTOMLEFT", -1, -1 end
+    if point == "BOTTOMLEFT" then return "TOPRIGHT", 1, 1 end
+    if point == "BOTTOMRIGHT" then return "TOPLEFT", -1, 1 end
+    return "CENTER", 0, 0
+end
 
+local function headerKind(a)
+    if IsInRaid() and a.showRaid then return "RAID", 1, GetNumGroupMembers() end
+    if IsInGroup() and a.showParty then return "PARTY", a.showPlayer and 1 or 2, #M.group + 1 end
+    if a.showSolo then return "SOLO", 1, #M.group + 1 end
+end
+
+-- unit, name, subgroup, class token, role (MAINTANK, MAINASSIST), assigned
+-- role, as GetGroupRosterInfo. Party slot 1 is the player (the client's
+-- index 0), slot n + 1 is M.group[n].
+local function rosterInfo(kind, slot)
+    if kind == "RAID" then
+        local name, _, subgroup, _, _, className, _, _, _, role, _, assignedRole = GetRaidRosterInfo(slot)
+        return "raid" .. slot, name, subgroup, className, role, assignedRole
+    end
+    local unit = slot > 1 and M.group[slot - 1] or "player"
+    local name, className, role, assignedRole
+    -- The player always exists in the client, also in a test that gave
+    -- it no unit data.
+    if unit == "player" and not UnitExists(unit) then return unit, "player", 1, nil, nil, "NONE" end
+    if UnitExists(unit) then
+        name = UnitName(unit)
+        className = select(2, UnitClass(unit))
+        if GetPartyAssignment("MAINTANK", unit) then
+            role = "MAINTANK"
+        elseif GetPartyAssignment("MAINASSIST", unit) then
+            role = "MAINASSIST"
+        end
+        assignedRole = UnitGroupRolesAssigned(unit)
+    end
+    return unit, name, 1, className, role, assignedRole
+end
+
+local function trim(s) return (s:gsub("^%s+", ""):gsub("%s+$", "")) end
+local function split(s)
+    local parts = {}
+    for part in (s .. ","):gmatch("([^,]*),") do parts[#parts + 1] = part end
+    return parts
+end
+-- fillTable: each key (a number when it reads as one) -> its position.
+local function fill(t, keys)
+    for i, key in ipairs(keys) do t[tonumber(key) or trim(tostring(key))] = i end
+    return t
+end
+
+local function sortedUnits(header)
+    local a = header._attr
+    assert(not a.nameList, "mock: nameList is not modelled")
+    local kind, start, stop = headerKind(a)
+    local units = {}
+    if not kind then return units end
+    if header._pets then
+        -- SecureGroupPetHeaderTemplate: the owners' pets that exist, packed.
+        for slot = start, stop do
+            local unit = rosterInfo(kind, slot)
+            local pet = unit == "player" and "pet" or unit:gsub("^party", "partypet"):gsub("^raid", "raidpet")
+            if M.units[pet] then units[#units + 1] = pet end
+        end
+        return units
+    end
+    local groupFilter, roleFilter = a.groupFilter, a.roleFilter
+    if not groupFilter and not roleFilter then groupFilter = "1,2,3,4,5,6,7,8" end
+    local strict = a.strictFiltering
+    local tokens = {}
+    if groupFilter and not roleFilter then
+        fill(tokens, split(groupFilter))
+        if strict then fill(tokens, { "MAINTANK", "MAINASSIST", "TANK", "HEALER", "DAMAGER", "NONE" }) end
+    elseif roleFilter and not groupFilter then
+        fill(tokens, split(roleFilter))
+        if strict then
+            local keys = { 1, 2, 3, 4, 5, 6, 7, 8 }
+            for _, class in ipairs(CLASS_SORT_ORDER) do keys[#keys + 1] = class end
+            fill(tokens, keys)
+        end
+    else
+        fill(tokens, split(groupFilter))
+        fill(tokens, split(roleFilter))
+    end
+    local names, grouping, order = {}, {}, {}
+    for slot = start, stop do
+        local unit, name, subgroup, className, role, assignedRole = rosterInfo(kind, slot)
+        local loose = not strict and (tokens[subgroup] or tokens[className] or (role and tokens[role])
+            or tokens[assignedRole])
+        local tight = tokens[subgroup] and tokens[className] and ((role and tokens[role]) or tokens[assignedRole])
+        if name and (loose or tight) then
+            units[#units + 1] = unit
+            names[unit] = name
+            order[unit] = slot
+            if a.groupBy == "GROUP" then grouping[unit] = subgroup
+            elseif a.groupBy == "CLASS" then grouping[unit] = className
+            elseif a.groupBy == "ROLE" then grouping[unit] = role
+            elseif a.groupBy == "ASSIGNEDROLE" then grouping[unit] = assignedRole end
+        end
+    end
+    -- The client's IDs: the number in the token ("player" is -1).
+    local function id(unit) return tonumber(unit:match("%d+") or -1) end
+    local function within(x, y)
+        if a.sortMethod == "NAME" then return names[x] < names[y] end
+        return id(x) < id(y)
+    end
+    if a.groupBy then
+        local rank = fill({}, split((a.groupingOrder or ""):gsub("%s+", "")))
+        table.sort(units, function(x, y)
+            local o1, o2 = rank[grouping[x]], rank[grouping[y]]
+            if o1 and o2 and o1 ~= o2 then return o1 < o2 end
+            if o1 and not o2 then return true end
+            if o2 and not o1 then return false end
+            return within(x, y)
+        end)
+    elseif a.sortMethod == "NAME" then
+        table.sort(units, function(x, y) return names[x] < names[y] end)
+    end
+    return units
+end
+
+-- configureChildren.
 local function groupHeaderLayout(header)
     local a = header._attr
-    local kind
-    if #M.group > 0 and a.showParty then kind = "PARTY" elseif a.showSolo then kind = "SOLO" end
-    local units = {}
-    if kind == "SOLO" or (kind == "PARTY" and a.showPlayer) then units[1] = "player" end
-    if kind == "PARTY" then
-        for _, u in ipairs(M.group) do units[#units + 1] = u end
+    assert(not a.initialConfigFunction, "mock: secure snippets do not run on this client")
+    local units = sortedUnits(header)
+    local point = a.point or "TOP"
+    local relPoint, xMult, yMult = relativePoint(point)
+    local xMultiplier, yMultiplier = math.abs(xMult), math.abs(yMult)
+    local xOffset, yOffset = a.xOffset or 0, a.yOffset or 0
+    local columnSpacing = a.columnSpacing or 0
+    local startingIndex = a.startingIndex or 1
+    local unitCount = #units
+    local numDisplayed = unitCount - (startingIndex - 1)
+    local unitsPerColumn = a.unitsPerColumn
+    local numColumns
+    if unitsPerColumn and numDisplayed > unitsPerColumn then
+        numColumns = math.min(math.ceil(numDisplayed / unitsPerColumn), a.maxColumns or 1)
+    else
+        unitsPerColumn = numDisplayed
+        numColumns = 1
     end
-    -- SecureGroupPetHeaderTemplate: the owners' pets that exist, packed.
-    if header._pets then
-        local pets = {}
-        for _, u in ipairs(units) do
-            local pet = u == "player" and "pet" or u:gsub("^party", "partypet")
-            if M.units[pet] then pets[#pets + 1] = pet end
-        end
-        units = pets
+    local loopStart, step = startingIndex, 1
+    local loopFinish = math.min((startingIndex - 1) + unitsPerColumn * numColumns, unitCount)
+    numDisplayed = loopFinish - (loopStart - 1)
+    if a.sortDir == "DESC" then
+        loopStart = unitCount - (startingIndex - 1)
+        loopFinish = loopStart - (numDisplayed - 1)
+        step = -1
     end
-    for i = 1, math.max(1, #units) do
+    for i = 1, math.max(1, numDisplayed) do
         if not a["child" .. i] then
             local child = CreateFrame(a.templateType or "Button", header:GetName() .. "UnitButton" .. i, header, a.template)
             header[i] = child
+            if a.auraContainerTemplate then
+                child.AuraContainer = CreateFrame("AuraContainer", nil, child, a.auraContainerTemplate)
+            end
             a["child" .. i] = child
         end
     end
-    local point = a.point or "TOP"
-    local previous
-    for i, unit in ipairs(units) do
-        local child = a["child" .. i]
-        if previous then
-            child:SetPoint(point, previous, OPPOSITE[point], a.xOffset or 0, a.yOffset or 0)
-        else
-            child:SetPoint(point, header, point, 0, 0)
-        end
-        child:SetAttribute("unit", unit)
-        child:Show()
-        previous = child
+    local columnAnchorPoint, columnRelPoint, colxMulti, colyMulti
+    if numColumns > 1 then
+        columnAnchorPoint = a.columnAnchorPoint
+        columnRelPoint, colxMulti, colyMulti = relativePoint(columnAnchorPoint)
     end
-    local i = #units + 1
+    local buttonNum, columnUnitCount, currentAnchor = 0, 0, header
+    for i = loopStart, loopFinish, step do
+        buttonNum = buttonNum + 1
+        columnUnitCount = columnUnitCount + 1
+        if columnUnitCount > unitsPerColumn then columnUnitCount = 1 end
+        local child = a["child" .. buttonNum]
+        if buttonNum == 1 then
+            child:SetPoint(point, currentAnchor, point, 0, 0)
+            if columnAnchorPoint then child:SetPoint(columnAnchorPoint, currentAnchor, columnAnchorPoint, 0, 0) end
+        elseif columnUnitCount == 1 then
+            local columnAnchor = a["child" .. (buttonNum - unitsPerColumn)]
+            child:SetPoint(columnAnchorPoint, columnAnchor, columnRelPoint, colxMulti * columnSpacing, colyMulti * columnSpacing)
+        else
+            child:SetPoint(point, currentAnchor, relPoint, xMultiplier * xOffset, yMultiplier * yOffset)
+        end
+        child:SetAttribute("unit", units[i])
+        assert(not child._attr.refreshUnitChange, "mock: secure snippets do not run on this client")
+        if not child._attr.statehidden then child:Show() end
+        currentAnchor = child
+    end
+    local i = buttonNum + 1
     while a["child" .. i] do
         local child = a["child" .. i]
         child:Hide()
@@ -159,15 +320,19 @@ local function groupHeaderLayout(header)
         child:SetAttribute("unit", nil)
         i = i + 1
     end
-    local xm, ym = MULTIPLIER[point][1], MULTIPLIER[point][2]
     local bw, bh = a.child1:GetWidth(), a.child1:GetHeight()
-    local n = #units
-    if n > 0 then
-        header:SetWidth(math.abs(xm) * (n - 1) * bw + (n - 1) * (a.xOffset or 0) * xm + bw)
-        header:SetHeight(math.abs(ym) * (n - 1) * bh + (n - 1) * (a.yOffset or 0) * ym + bh)
+    if numDisplayed > 0 then
+        local width = xMultiplier * (unitsPerColumn - 1) * bw + ((unitsPerColumn - 1) * (xOffset * xMult)) + bw
+        local height = yMultiplier * (unitsPerColumn - 1) * bh + ((unitsPerColumn - 1) * (yOffset * yMult)) + bh
+        if numColumns > 1 then
+            width = width + ((numColumns - 1) * math.abs(colxMulti) * (width + columnSpacing))
+            height = height + ((numColumns - 1) * math.abs(colyMulti) * (height + columnSpacing))
+        end
+        header:SetWidth(width)
+        header:SetHeight(height)
     else
-        header:SetWidth(math.max(math.abs(ym) * bw, 0.1))
-        header:SetHeight(math.max(math.abs(xm) * bh, 0.1))
+        header:SetWidth(math.max(a.minWidth or (yMultiplier * bw), 0.1))
+        header:SetHeight(math.max(a.minHeight or (xMultiplier * bh), 0.1))
     end
     M.headerUpdates = M.headerUpdates + 1
 end
@@ -185,12 +350,13 @@ local function makeGroupHeader(w, pets)
     w._shown = false   -- the template is hidden="true"
     w._pets = pets
     w:RegisterEvent("GROUP_ROSTER_UPDATE")
+    w:RegisterEvent("UNIT_NAME_UPDATE")
     if pets then w:RegisterEvent("UNIT_PET") end
-    w._scripts.OnEvent = function(self) if self:IsShown() then groupHeaderUpdate(self) end end
+    w._scripts.OnEvent = function(self) if self:IsVisible() then groupHeaderUpdate(self) end end
     w._scripts.OnShow = groupHeaderUpdate
     w._scripts.OnAttributeChanged = function(self, name)
         if name == "_ignore" or self._attr._ignore then return end
-        if self:IsShown() then groupHeaderUpdate(self) end
+        if self:IsVisible() then groupHeaderUpdate(self) end
     end
 end
 
@@ -1076,7 +1242,8 @@ function M.Reset()
     M.resting = false
     _G.IsResting = function() return M.resting end
     _G.GetTime = function() return M.now end
-    _G.IsInGroup = function() return #M.group > 0 end
+    -- In a group: a party (M.group) or a raid (M.inRaid).
+    _G.IsInGroup = function() return #M.group > 0 or M.inRaid end
     -- Raid: M.inRaid (M.SetRaid). Visibility drivers (SecureStateDriver.lua:
     -- RegisterStateDriver(frame, "visibility", values) sets state-visibility);
     -- the mock knows the conditions the addon uses.
@@ -1122,6 +1289,26 @@ function M.Reset()
         if #M.group > 0 then return #M.group + 1 end
         return 0
     end
+    -- The raid roster (M.SetRaidRoster): member i is unit "raid"..i.
+    -- GetRaidRosterInfo's values in the client's order: name, rank,
+    -- subgroup, level, class (localised), class token, zone, online,
+    -- dead, role (MAINTANK, MAINASSIST or nil), master looter, assigned
+    -- role (TANK, HEALER, DAMAGER or NONE).
+    M.raid = {}
+    _G.GetRaidRosterInfo = function(index)
+        local m = M.raid[index]
+        if not m then return nil end
+        local u = M.units["raid" .. index] or {}
+        return m.name, m.rank or 0, m.subgroup, u.level or 60, u.className, m.class, "Zone", not u.offline,
+            u.dead or false, m.role, false, m.assignedRole or "NONE"
+    end
+    -- d.assignment: "MAINTANK" or "MAINASSIST" (party members).
+    _G.GetPartyAssignment = function(assignment, unit)
+        local d = M.units[unit]
+        return d ~= nil and d.assignment == assignment
+    end
+    -- Blizzard_FrameXMLBase/Camelot/Constants.lua (this game type).
+    _G.CLASS_SORT_ORDER = { "WARRIOR", "PALADIN", "PRIEST", "SHAMAN", "DRUID", "ROGUE", "MAGE", "WARLOCK", "HUNTER" }
     -- The player's name and realm (Raid/Profiles.lua: one raid profile per
     -- character). UnitFullName may leave the realm out early in the login.
     M.playerName, M.realm, M.fullNameRealm = "Tester", "Testrealm", true
@@ -1968,6 +2155,27 @@ end
 -- Joins or leaves a party: M.SetGroup({ "party1", "party2" }) or M.SetGroup({}).
 function M.SetGroup(units)
     M.group = units
+    M.FireEvent("GROUP_ROSTER_UPDATE")
+end
+
+-- Joins a raid: members[i] = { name =, class = (token), subgroup =,
+-- assignedRole = (TANK, HEALER, DAMAGER or NONE; default NONE), role =
+-- (MAINTANK, MAINASSIST or nil), unit = { more unit data } } is unit
+-- raid<i>, with its unit data. An empty list leaves the raid. Visibility
+-- drivers follow, then GROUP_ROSTER_UPDATE fires.
+function M.SetRaidRoster(members)
+    M.raid = members
+    for token in pairs(M.units) do
+        if token:match("^raid%d+$") then M.units[token] = nil end
+    end
+    for i, m in ipairs(members) do
+        local u = { name = m.name, class = m.class, className = m.class, isPlayer = true,
+            role = m.assignedRole or "NONE", health = 100, healthMax = 100 }
+        for k, v in pairs(m.unit or {}) do u[k] = v end
+        M.units["raid" .. i] = u
+    end
+    M.raidMembers = #members
+    M.SetRaid(#members > 0)
     M.FireEvent("GROUP_ROSTER_UPDATE")
 end
 
