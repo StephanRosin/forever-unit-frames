@@ -397,9 +397,22 @@ end
 
 local paintFooter
 
+-- Rows that only mean something while another setting of the edited
+-- size allows it: the class order, while it groups by class.
+local ROW_ACTIVE = {
+    classOrder = function() return RaidConfig.Get(Raid.Scope(RaidOptions.Size()), "groupBy") == "CLASS" end,
+}
+
+local function setRowStates()
+    forEachRow(function(row)
+        local active = ROW_ACTIVE[row.key]
+        row:SetEnabled(not inCombat and (not active or active()))
+    end)
+end
+
 local function applyLock()
     local on = not inCombat
-    forEachRow(function(row) row:SetEnabled(on) end)
+    setRowStates()
     for _, control in ipairs(frame.lockedControls) do control:SetEnabled(on) end
     RaidOptions.combatNotice:SetShown(inCombat)
     anchorScroll()
@@ -730,6 +743,7 @@ end
 
 local function refreshAll()
     forEachRow(function(row) row:Refresh() end)
+    setRowStates()
     RaidOptions.sizeModeRow:Refresh()
     renderSizeTabs()
 end

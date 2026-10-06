@@ -15,7 +15,7 @@ The **Layout** tab of the raid options window (`/fuf raid`). Each raid size (10,
 <tbody>
 <tr><td><b>Group by</b></td><td></td><td>Group, Class, Role, None (one block)</td><td>Group</td></tr>
 <tr><td><b>Sort within a block</b></td><td>Role: tanks, healers, damage, then the rest</td><td>Raid order, Name, Role</td><td>Raid order</td></tr>
-<tr><td><b>Class order</b></td><td>Class names, e.g. Priest, Druid; the rest follow</td><td>Text</td><td>(none)</td></tr>
+<tr><td><b>Class order</b></td><td>Only with Group by: Class; e.g. Warrior, Priest, Paladin, Druid</td><td>Text</td><td>(none)</td></tr>
 <tr><td><b>Hide empty blocks</b></td><td>Blocks without members take no room</td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Block titles</b></td><td></td><td>On, Off</td><td>Off</td></tr>
 </tbody>
