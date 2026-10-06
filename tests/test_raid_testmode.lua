@@ -114,3 +114,19 @@ H.checkTrue("combat: headers back", Header.headers[1]:IsShown())
 H.check("combat: samples cleared", Cell.fakes[1].sample, nil)
 H.check("combat: panel hidden solo", Header.panel:IsShown(), false)
 H.check("nothing blocked", #M.blocked, 0)
+
+-- Combat lockdown had already begun: the panel's border goes at once (a
+-- plain frame), the pretend cells wait for the end of combat.
+ns.TestMode.Set(true)
+H.checkTrue("lockdown: panel shown in test mode", Header.panel:IsShown())
+M.combat = true
+M.FireEvent("PLAYER_REGEN_DISABLED")
+H.check("lockdown: test mode off", ns.TestMode.IsOn(), false)
+H.check("lockdown: panel hidden at once", Header.panel:IsShown(), false)
+H.checkTrue("lockdown: pretend cells wait", Cell.fakes[1]:IsShown())
+H.check("lockdown: nothing blocked", #M.blocked, 0)
+M.SetCombat(false)
+H.check("after combat: pretend cells hidden", Cell.fakes[1]:IsShown(), false)
+H.checkTrue("after combat: headers back", Header.headers[1]:IsShown())
+H.check("after combat: panel hidden solo", Header.panel:IsShown(), false)
+H.check("after combat: nothing blocked", #M.blocked, 0)

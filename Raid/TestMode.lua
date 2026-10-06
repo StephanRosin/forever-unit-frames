@@ -8,7 +8,8 @@ local _, ns = ...
 -- name is Blizzard's class name), health, a role, and one dead, one
 -- offline member. Made once, out of combat, and reused. Entering combat
 -- ends test mode (Options/TestMode.lua); the cells go with the next
--- layout, after combat if it had already begun.
+-- layout, after combat if it had already begun (the panel then hides at
+-- once).
 local Test = {}
 ns.RaidTestMode = Test
 
@@ -125,5 +126,9 @@ end
 
 ns.Listen("TEST_MODE", function(state)
     on = state and true or false
-    if Header.anchor then ns.AfterCombat("raidLayout", Header.Refresh) end
+    if not Header.anchor then return end
+    -- The panel is a plain frame: in combat it follows at once, the
+    -- cells with the layout after combat.
+    if InCombatLockdown() then Header.UpdateVisibility() end
+    ns.AfterCombat("raidLayout", Header.Refresh)
 end)
