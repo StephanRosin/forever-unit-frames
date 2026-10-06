@@ -2,6 +2,9 @@
 -- version, only after an update (SavedVariables with a unit-frame or raid
 -- profile from before), never in combat; a fresh install only records
 -- the version. ForeverUnitFramesDB.newsSeen holds the version recorded.
+-- The window opens a moment after the login loading screen is gone:
+-- UIParent showing again after it closes every UISpecialFrames window
+-- (CloseAllWindows), so a window opened at PLAYER_LOGIN never stays.
 local M = H.M
 local ns
 
@@ -15,8 +18,11 @@ local function login(db, version, opts)
     _G.ForeverUnitFramesDB = db
     for v, entry in pairs(opts.entries or {}) do ns.News.ENTRIES[v] = entry end
     M.combat = opts.combat or false
+    M.LoadingScreenStarts()
     M.FireEvent("PLAYER_LOGIN")
-    if not opts.combat then M.RunTimers() end
+    M.FireEvent("PLAYER_ENTERING_WORLD", true, false)
+    M.LoadingScreenEnds()
+    M.RunTimers()
     return ns.NewsWindow.IsOpen()
 end
 local function logout() M.FireEvent("PLAYER_LOGOUT") end
@@ -96,3 +102,49 @@ logout()
 local fresh = ForeverUnitFramesDB
 H.check("next login: not shown", login(fresh, "0.22.0"), false)
 H.check("next login: still recorded", ForeverUnitFramesDB.newsSeen, "0.22.0")
+
+-- The bug of 0.22.0: opened at PLAYER_LOGIN, the window was closed again
+-- when UIParent showed after the loading screen. Now it waits for the
+-- loading screen to end and a moment more.
+ns = H.LoadAddon()
+M.units.player = { name = "Me", class = "MAGE", health = 1, healthMax = 1 }
+M.addonVersion = "0.22.0"
+_G.ForeverUnitFramesDB = { profile = {} }
+M.LoadingScreenStarts()
+M.FireEvent("PLAYER_LOGIN")
+M.RunTimers()
+H.check("loading screen up: not shown yet", ns.NewsWindow.IsOpen(), false)
+H.check("loading screen up: not recorded yet", ForeverUnitFramesDB.newsSeen, nil)
+M.LoadingScreenEnds()
+H.check("loading screen gone: not before the delay", ns.NewsWindow.IsOpen(), false)
+H.check("not recorded before it opens", ForeverUnitFramesDB.newsSeen, nil)
+M.RunTimers()
+H.checkTrue("after the delay: shown", ns.NewsWindow.IsOpen())
+H.checkTrue("and visible", ns.NewsWindow.frame:IsVisible())
+H.check("recorded once shown", ForeverUnitFramesDB.newsSeen, "0.22.0")
+-- A later loading screen (a zone change) does not open it again.
+ns.NewsWindow.Close()
+M.LoadingScreenStarts()
+M.LoadingScreenEnds()
+M.RunTimers()
+H.check("zone change: not shown again", ns.NewsWindow.IsOpen(), false)
+-- UIParent hidden and shown (Alt+Z) closes it, like Blizzard's windows.
+ns.NewsWindow.Open("0.22.0")
+UIParent:Hide(); UIParent:Show()
+H.check("UIParent shown again: closed like any special frame", ns.NewsWindow.IsOpen(), false)
+
+-- In combat when the loading screen ends: after combat.
+ns = H.LoadAddon()
+M.units.player = { name = "Me", class = "MAGE", health = 1, healthMax = 1 }
+M.addonVersion = "0.22.0"
+_G.ForeverUnitFramesDB = { profile = {} }
+M.LoadingScreenStarts()
+M.FireEvent("PLAYER_LOGIN")
+M.LoadingScreenEnds()
+M.combat = true
+M.RunTimers()
+H.check("combat after the loading screen: not shown", ns.NewsWindow.IsOpen(), false)
+H.check("combat after the loading screen: not recorded", ForeverUnitFramesDB.newsSeen, nil)
+M.SetCombat(false)
+H.checkTrue("after combat: shown", ns.NewsWindow.IsOpen())
+H.check("after combat: recorded", ForeverUnitFramesDB.newsSeen, "0.22.0")

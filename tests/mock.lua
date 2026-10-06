@@ -1332,6 +1332,16 @@ function M.Reset()
 
     _G.UIParent = newWidget("Frame", "UIParent")
     _G.UIParent._w, _G.UIParent._h = 1920, 1080
+    -- Blizzard_UIParent/UIParent.lua: UIParent's OnShow triggers
+    -- "UI.TopLevelParentShown", which Blizzard_Game/Shared/Game.lua answers
+    -- with CloseAllWindows(): CloseSpecialWindows() hides every shown frame
+    -- named in UISpecialFrames. (Bags and UI panels are not modelled.)
+    _G.UIParent._scripts.OnShow = function()
+        for _, value in pairs(UISpecialFrames) do
+            local frame = _G[value]
+            if frame and frame:IsShown() then frame:Hide() end
+        end
+    end
     _G.DEFAULT_CHAT_FRAME = { AddMessage = function(_, msg)
         assert(type(msg) == "string", "chat message must be a plain string")
         table.insert(M.chat, msg)
@@ -2434,6 +2444,19 @@ function M.SecureClick(button, mouseButton)
         if not ok then error(err, 0) end
     end
     return kind
+end
+
+-- The login loading screen: UIParent is hidden while it is up (the client
+-- shows it again afterwards, which closes the UISpecialFrames, see
+-- M.Reset). M.LoadingScreenEnds fires LOADING_SCREEN_DISABLED before
+-- UIParent shows again: the order the addon cannot rely on either way.
+function M.LoadingScreenStarts()
+    UIParent:Hide()
+    M.FireEvent("LOADING_SCREEN_ENABLED")
+end
+function M.LoadingScreenEnds()
+    M.FireEvent("LOADING_SCREEN_DISABLED")
+    UIParent:Show()
 end
 
 function M.SetCombat(v)

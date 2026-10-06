@@ -5,8 +5,13 @@ local _, ns = ...
 -- an action for the window's left button. A version without an entry has
 -- no news. Options/News.lua shows an entry.
 --
--- Once per new version, at login (Core/Boot.lua), after everything else
--- is built and out of combat. ForeverUnitFramesDB.newsSeen is the newest
+-- Once per new version, after login: a moment after the login loading
+-- screen is gone (LOADING_SCREEN_DISABLED, then SHOW_DELAY seconds) and
+-- out of combat. Not at PLAYER_LOGIN: UIParent shows again after the
+-- loading screen, and its OnShow closes every UISpecialFrames window
+-- (Blizzard_UIParent/UIParent.lua "UI.TopLevelParentShown" ->
+-- Blizzard_Game/Shared/Game.lua CloseAllWindows), ours included; the
+-- delay lets that OnShow run first. ForeverUnitFramesDB.newsSeen is the newest
 -- version this account has had news for. The news of the TOC version
 -- shows when that version has an entry and
 --   * newsSeen is an older version, or
@@ -15,9 +20,9 @@ local _, ns = ...
 --     this login: an update from a version before the news.
 -- A fresh install (neither) shows nothing and records the version at once
 -- (News.Begin), so a logout before the deferred check still counts. A
--- login that finds an entry records its version as newsSeen, unless
--- newsSeen is newer already (a downgrade keeps it). A version without
--- news shows and records nothing.
+-- login that shows the news records its version as newsSeen (a downgrade
+-- shows nothing and keeps the newer one). A version without news shows
+-- and records nothing.
 local News = {}
 ns.News = News
 
@@ -53,8 +58,11 @@ function News.Compare(a, b)
     return 0
 end
 
+local SHOW_DELAY = 1   -- seconds after the loading screen
+
 local db            -- ForeverUnitFramesDB
 local hadSettings   -- it held a profile before this login
+local waiting       -- logged in, the loading screen not yet gone
 
 local function seenVersion()
     local seen = db.newsSeen
@@ -64,9 +72,10 @@ end
 
 -- At PLAYER_LOGIN, before anything writes to the SavedVariables. A fresh
 -- install records the version here already: News.AtLogin waits for the
--- end of combat, which a logout may come before.
+-- loading screen and the end of combat, which a logout may come before.
 function News.Begin(saved)
     db = saved
+    waiting = true
     hadSettings = type(saved.profile) == "table" or type(saved.raid) == "table"
     local current = News.Current()
     if not hadSettings and not seenVersion() and News.Entry(current) then db.newsSeen = current end
@@ -81,12 +90,17 @@ function News.Due()
     return hadSettings
 end
 
--- Out of combat, after the frames are built: shows the news if due and
--- records the version.
+-- Out of combat, after the loading screen: shows the news if due and
+-- records the version it showed.
 function News.AtLogin()
     local current = News.Current()
-    if not News.Entry(current) then return end
-    if News.Due() then ns.NewsWindow.Open(current) end
-    local seen = seenVersion()
-    if not seen or News.Compare(seen, current) < 0 then db.newsSeen = current end
+    if News.Due() and ns.NewsWindow.Open(current) then db.newsSeen = current end
 end
+
+-- The first loading screen after login only; later ones (zone changes)
+-- show nothing.
+ns.On("LOADING_SCREEN_DISABLED", function()
+    if not waiting then return end
+    waiting = false
+    C_Timer.After(SHOW_DELAY, function() ns.AfterCombat("news", News.AtLogin) end)
+end)

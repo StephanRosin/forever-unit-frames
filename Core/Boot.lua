@@ -41,9 +41,7 @@ ns.On("PLAYER_LOGIN", function()
     ns.RaidSize.Update()
     ns.AfterCombat("raidCreate", ns.RaidHeader.Create)
     ns.Blizzard.HideRaid()
-    -- What's new, once per new version: after everything above, out of
-    -- combat.
-    ns.AfterCombat("news", ns.News.AtLogin)
+    -- What's new follows once the loading screen is gone (Core/News.lua).
 end)
 
 ns.Listen("CONFIG_CHANGED", function()
