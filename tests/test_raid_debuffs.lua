@@ -1,6 +1,6 @@
 -- The debuff row of raid cells (Raid/CellAuras.lua): an aura group of the
 -- cell's container along the bottom of the health bar, made when first
--- switched on, showing the debuffs the centre icon does not.
+-- switched on, showing every debuff (the centre icon's one as well).
 local M = H.M
 local ns = H.LoadAddon()
 local RC, Header, CellAuras = ns.RaidConfig, ns.RaidHeader, ns.RaidAuras
@@ -18,7 +18,7 @@ H.check("off by default: no group", #c._groupOrder, 0)
 RC.Set("r10", "debuffRow", true)
 local group = c._groups[CellAuras.ROW_GROUP]
 H.checkTrue("on: a group", group)
-H.check("the rest of the debuffs", group.filter, "HARMFUL|!RAID")
+H.check("every debuff", group.filter, "HARMFUL")
 H.check("three", group.max, 3)
 H.check("icons of the 10 profile", group.layout.elementWidth, 14)
 H.check("a pixel apart", group.layout.elementSpacing, 1)
@@ -36,9 +36,9 @@ H.check("icon registered", b._icon, b.icon)
 H.check("border by dispel type", b._dispelTextures[1].texture, b.border)
 H.check("the centre icon stays", c._slots.dispel.enabled, true)
 
--- Filters follow the centre icon.
+-- Every debuff, whatever the centre icon shows: it shows one at most.
 RC.Set("r10", "dispelFilter", "ALL")
-H.check("all dispellable in the centre: the rest", group.filter, "HARMFUL|!DISPELLABLE")
+H.check("all dispellable in the centre: every debuff", group.filter, "HARMFUL")
 RC.Set("r10", "dispelIcon", false)
 H.check("no centre icon: every debuff", group.filter, "HARMFUL")
 RC.Set("r10", "dispelIcon", true)

@@ -15,8 +15,9 @@ local _, ns = ...
 --   the same colours at a lower opacity. Its own slot, so switching it is
 --   a container call (SetAuraSlotEnabled), never a touch of a button;
 -- * the debuff row: an aura group along the bottom of the health bar
---   with the debuffs the centre icon does not show (its filter negated
---   while it is on: "!" is AuraUtil.AuraFilterNegationPrefix);
+--   with every debuff ("HARMFUL"). The centre slot shows one aura only, so
+--   a negated filter would hide every dispellable debuff after the first;
+--   the one in the centre may show in the row as well;
 -- * more parts register with CellAuras.AddPart (the corner indicators).
 -- A slot is made the first time it is switched on: cells that never use
 -- one never pay for its frame.
@@ -38,7 +39,7 @@ local Cell, AuraButton, Pixel = ns.RaidCell, ns.AuraButton, ns.Pixel
 local get = Cell.Get
 
 CellAuras.FILTERS = { MINE = "HARMFUL|RAID", ALL = "HARMFUL|DISPELLABLE" }
-CellAuras.ROW_FILTERS = { MINE = "HARMFUL|!RAID", ALL = "HARMFUL|!DISPELLABLE" }
+CellAuras.ROW_FILTER = "HARMFUL"
 CellAuras.ROW_GROUP = "debuffs"
 -- The row's distance from the health bar's corner and between its icons.
 CellAuras.ROW_INSET = 1
@@ -89,18 +90,23 @@ function CellAuras.SetSlot(frame, container, key, filter, wanted, init)
     return slot
 end
 
+-- The unit frames' debuff icon look, for the centre icon and the row.
+local function decorate(frame, button, size)
+    AuraButton.Decorate(button, true)
+    AuraButton.StyleManaged(button, frame.key, size, false)
+    ns.AuraContainers.Wire(button, true)
+end
+
 -- The centre icon and the tint --------------------------------------------------------
 
 local function dispelSize()
     return Pixel.Snap(get("dispelIconSize"), nil, 1)
 end
 
--- The icon: the unit frames' debuff icon look, centred on the health bar.
+-- The icon, centred on the health bar.
 local function initIcon(frame, button)
-    AuraButton.Decorate(button, true)
-    AuraButton.StyleManaged(button, frame.key, dispelSize(), false)
+    decorate(frame, button, dispelSize())
     button:SetPoint("CENTER", frame.health, "CENTER", 0, 0)
-    ns.AuraContainers.Wire(button, true)
 end
 
 -- The tint: a slot frame of one pixel with no mouse; its texture covers
@@ -130,11 +136,6 @@ CellAuras.AddPart({
 
 -- The debuff row ----------------------------------------------------------------------
 
-local function rowFilter()
-    if get("dispelIcon") then return CellAuras.ROW_FILTERS[get("dispelFilter")] end
-    return "HARMFUL"
-end
-
 local function rowSize()
     return Pixel.Snap(get("debuffSize"), nil, 1)
 end
@@ -144,30 +145,30 @@ local function rowLayout(size)
     return { elementWidth = size, elementHeight = size, elementSpacing = spacing, lineSpacing = spacing }
 end
 
-local function initRowButton(frame, button)
-    AuraButton.Decorate(button, true)
-    AuraButton.StyleManaged(button, frame.key, rowSize(), false)
-    ns.AuraContainers.Wire(button, true)
-    local row = frame.raidAuras.row
+local function initRowButton(frame, row, button)
+    decorate(frame, button, rowSize())
     row[#row + 1] = button
 end
 
 -- The group is made the first time the row is switched on; its buttons
--- (a batch at a time, the client's choice) are recorded for restyling.
+-- (a batch at a time, the client's choice) are recorded for restyling;
+-- auras.row is set once the group exists, so a refused group leaves none.
 CellAuras.AddPart({
     Apply = function(frame, container, auras)
         local wanted, key = get("debuffRow") == true, CellAuras.ROW_GROUP
         if not auras.row and not wanted then return false end
-        local size, layout = rowSize(), rowLayout(rowSize())
+        local size = rowSize()
+        local layout = rowLayout(size)
         if not auras.row then
-            auras.row = {}
-            container:AddAuraGroup(key, rowFilter(), { maxFrameCount = get("debuffCount"), layout = layout,
-                initializeFrame = function(b) initRowButton(frame, b) end })
+            local row = {}
+            container:AddAuraGroup(key, CellAuras.ROW_FILTER, { maxFrameCount = get("debuffCount"), layout = layout,
+                initializeFrame = function(b) initRowButton(frame, row, b) end })
+            auras.row = row
         end
         container:SetFlowLayoutAxis(AnchorUtil.FlowLayoutAxis.Horizontal)
         container:SetFlowLayoutAnchorPoint("BOTTOMLEFT")
         container:SetFlowLayoutGrowthDirection(AnchorUtil.FlowDirection.Right, AnchorUtil.FlowDirection.Up)
-        container:SetAuraGroupFilterString(key, rowFilter())
+        container:SetAuraGroupFilterString(key, CellAuras.ROW_FILTER)
         container:SetAuraGroupMaxFrameCount(key, get("debuffCount"))
         container:SetAuraGroupLayout(key, layout)
         container:SetAuraGroupEnabled(key, wanted)
