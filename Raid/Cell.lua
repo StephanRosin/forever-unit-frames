@@ -21,6 +21,9 @@ ns.RaidCell = Cell
 local Config, Secrets = ns.Config, ns.Secrets
 
 Cell.KEY = "raid"
+-- The pets panel's cells (Raid/SpecialPanels.lua): a raid cell with a
+-- height of its own.
+Cell.PET_KEY = "raidpet"
 Cell.TEMPLATE = "ForeverUnitFramesRaidButtonTemplate"
 -- Every cell a header made, in creation order.
 Cell.buttons = {}
@@ -136,6 +139,15 @@ function Cell.Resolve(key)
     return shipped(key)
 end
 Config.Derive(Cell.KEY, ns.Party.KEY, Cell.Resolve)
+Config.Derive(Cell.PET_KEY, Cell.KEY, function(key)
+    if key == "height" then return get("petsCellHeight") end
+    return nil
+end)
+
+-- A raid cell of any panel, a pet's too.
+function Cell.Is(frame)
+    return frame.key == Cell.KEY or frame.key == Cell.PET_KEY
+end
 
 -- Classes that use mana (this game type's classes).
 Cell.MANA_CLASSES = { PALADIN = true, PRIEST = true, SHAMAN = true, DRUID = true, MAGE = true, WARLOCK = true,
@@ -183,9 +195,10 @@ function Cell.TextColors()
     return get("nameColor"), get("secondLineColor")
 end
 
--- What every cell is, real or pretend.
+-- What every cell is, real or pretend: a raid cell, unless it was made
+-- a pet's (button.key set before).
 function Cell.Setup(button)
-    button.key = Cell.KEY
+    button.key = button.key or Cell.KEY
     button.centerTexts = true
     button.textColors = Cell.TextColors
     button.showsPower = Cell.ShowsPower
@@ -199,13 +212,16 @@ function Cell.Setup(button)
     ns.Units.EnableTooltip(button)
 end
 
--- XML OnLoad: the cell exists, its unit is not known yet.
+-- XML OnLoad: the cell exists, its unit is not known yet. Its header
+-- says which cells it makes (Raid/Panel.lua: cellKey).
 function Cell.InitButton(button)
+    local header = button:GetParent()
+    button.key = header and header.cellKey or Cell.KEY
     Cell.Setup(button)
     Cell.buttons[#Cell.buttons + 1] = button
     ns.Units.EnableClickCast(button)
     -- Made in combat it keeps the XML size until the relayout after combat.
-    if not InCombatLockdown() then button:SetSize(ns.Single.Size(Cell.KEY)) end
+    if not InCombatLockdown() then button:SetSize(ns.Single.Size(button.key)) end
     ns.Single.StyleContent(button)
 end
 
@@ -232,7 +248,7 @@ end
 
 -- Size, contents and data of one cell; its size out of combat only.
 function Cell.Style(button)
-    if not InCombatLockdown() then button:SetSize(ns.Single.Size(Cell.KEY)) end
+    if not InCombatLockdown() then button:SetSize(ns.Single.Size(button.key)) end
     ns.Single.StyleContent(button)
     ns.Single.UpdateAll(button)
 end

@@ -13,7 +13,7 @@ local _, ns = ...
 -- MAINASSIST: /maintank, the raid leader's menu), which the headers
 -- follow by themselves, in combat too. My tanks and favourites are your
 -- own lists (Raid/Lists.lua) in the list's order; a changed list is a
--- header filter, set after combat.
+-- header filter, set after combat. Pets: the pet header, smaller cells.
 local Special = {}
 ns.RaidSpecialPanels = Special
 
@@ -53,14 +53,15 @@ local function frameName(id)
     return "ForeverUnitFramesRaid" .. id:sub(1, 1):upper() .. id:sub(2)
 end
 
--- A special panel from its definition in Raid.PANELS. how: filter() (the
--- block's header filter), optional attributes(a, size) and cellKey.
+-- A special panel from its definition in Raid.PANELS. how: filter(size)
+-- (the block's header filter), optional attributes(a, size), template
+-- and cellKey.
 function Special.New(id, how)
     local cellKey = how.cellKey or Cell.KEY
     local P = Panel.New({
         id = id, name = frameName(id), xKey = id .. "X", yKey = id .. "Y", cellKey = cellKey,
         template = how.template, maxUnits = Special.MAX_UNITS,
-        blocks = function() return { { kind = "PANEL", id = id, filter = how.filter() } } end,
+        blocks = function(size) return { { kind = "PANEL", id = id, filter = how.filter(size) } } end,
         shape = function() return shape(id, cellKey) end,
         attributes = how.attributes,
         enabled = function() return Panel.Enabled() and get(id .. "Show") == true end,
@@ -83,3 +84,11 @@ local function nameList(id)
 end
 Special.New("myTanks", nameList("myTanks"))
 Special.New("favourites", nameList("favourites"))
+
+-- Every pet of the raid's groups the size shows (the pet header lists
+-- the pets that exist, in raid order, in combat too), in cells of their
+-- own height.
+Special.New("pets", {
+    template = "SecureGroupPetHeaderTemplate", cellKey = Cell.PET_KEY,
+    filter = function(size) return { groupFilter = table.concat(ns.RaidLayout.Groups(size), ",") } end,
+})

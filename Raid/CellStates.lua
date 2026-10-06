@@ -52,7 +52,7 @@ local function placeInner(edges, frame, inset, thick)
 end
 
 function States.Build(frame)
-    if frame.key ~= Cell.KEY then return end
+    if not Cell.Is(frame) then return end
     local aggro, target = CreateFrame("Frame", nil, frame), CreateFrame("Frame", nil, frame)
     local c = States.AGGRO_COLOR
     aggro.bars = {}

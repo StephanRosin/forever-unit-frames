@@ -367,3 +367,10 @@ Raid.DefinePanel({ id = "myTanks", letter = "Z", show = false, perLine = 5, grow
 -- Favourites (your own list): off, a column beside my tanks.
 Raid.DefinePanel({ id = "favourites", letter = "G", show = false, perLine = 5, growth = "DOWN", x = 240, y = 150,
     names = "favouriteNames" })
+-- Pets (every pet of the raid): off, rows below the main panel; their
+-- cells are as wide as the main panel's, with a height of their own.
+local pets = Raid.DefinePanel({ id = "pets", letter = "O", show = false, perLine = 8, growth = "RIGHT", x = -600,
+    y = -100 })
+RaidSettings.Define({ key = "petsCellHeight", code = "OH", scope = "frame", type = "int", min = 12, max = 100,
+    default = 24 })
+table.insert(pets.keys, 5, "petsCellHeight")

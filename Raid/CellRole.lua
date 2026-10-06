@@ -20,7 +20,7 @@ Role.ATLAS = { TANK = "UI-LFG-RoleIcon-Tank-Micro-GroupFinder", HEALER = "UI-LFG
 Role.LEVELS = 18
 
 function Role.Build(frame)
-    if frame.key ~= Cell.KEY then return end
+    if not Cell.Is(frame) then return end
     local holder = CreateFrame("Frame", nil, frame)
     local icon = holder:CreateTexture(nil, "OVERLAY")
     icon:Hide()

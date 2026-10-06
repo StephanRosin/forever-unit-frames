@@ -418,7 +418,7 @@ end
 
 -- Pretend cells get the parts' sample frames instead of a container.
 function CellAuras.Build(frame)
-    if frame.key ~= Cell.KEY then return end
+    if not Cell.Is(frame) then return end
     frame.raidAuras = { slots = {} }
     if not frame.pretend then return end
     local samples = {}

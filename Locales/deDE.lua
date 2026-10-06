@@ -843,6 +843,7 @@ L.RAID_SETTING_panelShow = "Feld anzeigen"
 L.RAID_SETTING_panelTitle = "Titel darüber"
 L.RAID_SECTION_myTanks = "Meine Tanks"
 L.RAID_SECTION_favourites = "Favoriten"
+L.RAID_SECTION_pets = L.SECTION_pets
 L.RAID_SETTING_nameList = "Namen"
 L.RAID_HINT_nameList = "Spielernamen, durch Kommas getrennt; auch Name-Realm"
 L.RAID_TYPED_NAME_INVALID = "Kein Spielername: %s"

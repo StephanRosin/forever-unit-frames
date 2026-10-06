@@ -105,6 +105,7 @@ for _, p in ipairs(ns.Raid.PANELS) do
     for part, wordKey in pairs(PANEL_WORDS) do SHARED[p.id .. part] = wordKey end
     if p.names then SHARED[p.names] = "nameList" end
 end
+SHARED.petsCellHeight = "cellHeight"
 
 -- The name a setting's words go by.
 function Schema.WordKey(key)
