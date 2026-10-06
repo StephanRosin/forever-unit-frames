@@ -1755,7 +1755,14 @@ function M.Reset()
         end
     end
     _G.C_PartyInfo = { GetLootMethod = function() return M.lootMethod, M.masterLootPartyID, M.masterLooterRaidID end,
-        DoReadyCheck = record("DoReadyCheck") }
+        DoReadyCheck = record("DoReadyCheck"), SetEveryoneIsAssistant = record("SetEveryoneIsAssistant"),
+        ConvertToRaid = record("ConvertToRaid"), ConvertToParty = record("ConvertToParty"),
+        SetLootMethod = record("SetLootMethod") }
+    _G.InitiateRolePoll = record("InitiateRolePoll")
+    -- Everyone an assistant (an undocumented global Blizzard's raid
+    -- manager reads): M.everyoneAssistant.
+    M.everyoneAssistant = false
+    _G.IsEveryoneAssistant = function() return M.everyoneAssistant end
     -- d.offline: the unit's player is disconnected. d.dead / d.ghost:
     -- dead, or a ghost (UnitIsDeadOrGhost is true for both). Any of them
     -- may be a secret proxy.
@@ -2441,6 +2448,17 @@ function M.Reset()
     end
     _G.UnitIsOtherPlayersPet = function(unit) local d = u(unit); return d ~= nil and d.otherPet == true end
     _G.UnitIsOtherPlayersBattlePet = function() return false end
+    -- MenuUtil.CreateContextMenu(owner, generator): a menu of the addon's
+    -- own, recorded in M.menu.
+    _G.MenuUtil = {
+        CreateContextMenu = function(owner, generator)
+            assert(type(generator) == "function", "CreateContextMenu: generator")
+            local root = M.NewMenuDescription("context", { ownerFrame = owner })
+            generator(owner, root)
+            M.menu = root
+            return root
+        end,
+    }
     _G.C_AddOns = { GetAddOnMetadata = function(name, field)
         assert(name ~= nil and type(field) == "string", "GetAddOnMetadata: name and field required")
         if name == "ForeverUnitFrames" and field == "Version" then return M.addonVersion end
@@ -2576,8 +2594,9 @@ end
 local BUTTON_SUFFIX = { LeftButton = "1", RightButton = "2", MiddleButton = "3" }
 
 -- A menu's root description (Blizzard_Menu): the elements added to it,
--- in order, as { kind = "button" | "title" | "divider", text =,
--- callback =, data = }. Stricter than the client: no other method.
+-- in order, as { kind = "button" | "title" | "divider" | "radio", text =,
+-- callback =, data = } (a radio: isSelected, setSelected). Stricter than
+-- the client: no other method.
 local function menuDescription(tag, contextData)
     local root = { tag = tag, contextData = contextData, elements = {} }
     local methods = {
@@ -2597,11 +2616,20 @@ local function menuDescription(tag, contextData)
             table.insert(self.elements, e)
             return e
         end,
+        CreateRadio = function(self, text, isSelected, setSelected, data)
+            assert(type(text) == "string", "CreateRadio: text")
+            assert(type(isSelected) == "function" and type(setSelected) == "function", "CreateRadio: functions")
+            local e = { kind = "radio", text = text, isSelected = isSelected, setSelected = setSelected, data = data }
+            table.insert(self.elements, e)
+            return e
+        end,
     }
     return setmetatable(root, { __index = function(_, k)
         return methods[k] or error("mock: menu description has no " .. tostring(k), 2)
     end })
 end
+
+M.NewMenuDescription = menuDescription
 
 -- UnitPopup_OpenMenu (Blizzard_UnitPopupShared/UnitPopupShared.lua): the
 -- unit menu "which", tagged MENU_UNIT_<which>; the mock holds none of
@@ -2625,10 +2653,17 @@ function M.OpenUnitMenu(which, contextData)
     return root
 end
 
--- A click on a menu button: its callback with its data.
+-- A click on a menu button: its callback with its data; on a radio, its
+-- setSelected.
 function M.ClickMenu(element)
-    assert(element and element.kind == "button", "mock: not a menu button")
+    assert(element and (element.kind == "button" or element.kind == "radio"), "mock: not a menu button")
+    if element.kind == "radio" then return element.setSelected(element.data) end
     return element.callback(element.data)
+end
+
+-- A radio's state: its isSelected for its data.
+function M.MenuSelected(element)
+    return element.isSelected(element.data)
 end
 
 -- SECURE_ACTIONS.togglemenu (Blizzard_FrameXML/SecureTemplates.lua): the

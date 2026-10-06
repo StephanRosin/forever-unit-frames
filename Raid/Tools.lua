@@ -5,24 +5,25 @@ local _, ns = ...
 -- its own: the raid target icons for your target; the ready check (the
 -- last result for everyone, starting one for the leader and assistants:
 -- tools only they may use show for them only, and while test mode is on);
--- the world markers (leader and assistants).
--- It shows in a raid
--- and in a party while the raid frames are on, hidden when solo, and
--- while test mode is on, so it can be placed. Docked, it hangs on the
--- main panel's right edge behind a handle that folds it out and in (out
--- of combat; the panel's anchor never moves in combat) and follows the
--- panel; free, it has its own mover (the raid window's lock) and its
--- top-left corner in the raid profile's General settings, the same for
--- every size.
+-- the world markers (leader and assistants); a role poll (leader and
+-- assistants), everyone an assistant, party to raid and back, the loot
+-- method (the leader). It shows in a raid and in a party while the raid
+-- frames are on, hidden when solo, and while test mode is on, so it can
+-- be placed. Docked, it hangs on the main panel's right edge behind a
+-- handle that folds it out and in (out of combat; the panel's anchor
+-- never moves in combat) and follows the panel; free, it has its own
+-- mover (the raid window's lock) and its top-left corner in the raid
+-- profile's General settings, the same for every size.
 --
 -- Secure buttons (the raid target icons and the world markers:
--- SECURE_ACTIONS.raidtarget and .worldmarker,
--- Blizzard_FrameXML/SecureTemplates.lua) make the bar protected: it is
+-- SECURE_ACTIONS.raidtarget and .worldmarker, Blizzard_FrameXML/
+-- SecureTemplates.lua) make the bar protected: it is
 -- built, shown, hidden, sized and moved only out of combat
 -- (ns.AfterCombat); a change of the group in combat waits for its end.
 -- No secure snippets: a secure button's action is the client's own
 -- (it calls SetRaidTarget, PlaceRaidMarker or ClearRaidMarker in secure
--- code); the addon never calls a restricted function itself.
+-- code). The other tools are plain buttons that call the group functions
+-- Blizzard's raid manager calls (C_PartyInfo, InitiateRolePoll).
 local Tools = {}
 ns.RaidTools = Tools
 
@@ -41,15 +42,16 @@ Tools.MARKERS = 8
 Tools.POSITION_KEYS = { toolsX = "x", toolsY = "y" }
 -- The bar's own settings: the panels do not follow them.
 Tools.KEYS = { "toolsShow", "toolsMode", "toolsOpen", "toolsX", "toolsY", "toolsTargets", "toolsReady",
-    "toolsMarkers" }
+    "toolsMarkers", "toolsRolePoll", "toolsAssist", "toolsConvert", "toolsLoot" }
 for _, key in ipairs(Tools.KEYS) do Panel.UNRELATED_KEYS[key] = true end
 -- Its position shows in the raid window like a panel's.
 Panel.others[#Panel.others + 1] = Tools
 
--- The rows, top to bottom: { id, key (its switch), build(bar) -> a plain
--- frame of its size, visible() (optional: whether it shows now),
--- layout(frame) (optional: out of combat, its buttons for who you are and
--- its size) }.
+-- The rows, top to bottom: { id, key (its switch; optional), build(bar)
+-- -> a plain frame of its size, visible() (optional: whether it shows
+-- now), texts(frame) (optional: its words, in the language of the
+-- moment), layout(frame) (optional: out of combat, its buttons for who
+-- you are and its size) }.
 Tools.rows = {}
 function Tools.AddRow(row)
     Tools.rows[#Tools.rows + 1] = row
@@ -218,7 +220,7 @@ end
 
 Tools.AddRow({ id = "ready", key = "toolsReady", build = function(bar)
     local row = CreateFrame("Frame", nil, bar)
-    row.start = ns.Widgets.Button(row, { text = L.RAID_TOOLS_READY_CHECK, width = Tools.READY_W,
+    row.start = ns.Widgets.Button(row, { text = "", width = Tools.READY_W,
         onClick = function() C_PartyInfo.DoReadyCheck() end })
     row.start:SetHeight(Tools.ICON)
     row.counts = {}
@@ -233,6 +235,8 @@ Tools.AddRow({ id = "ready", key = "toolsReady", build = function(bar)
     readyRow = row
     renderReady()
     return row
+end, texts = function(row)
+    row.start.text:SetText(L.RAID_TOOLS_READY_CHECK)
 end, layout = function(row)
     local leads = Tools.Leads()
     row.start:SetShown(leads)
@@ -305,6 +309,121 @@ Tools.AddRow({ id = "markers", key = "toolsMarkers", visible = function() return
         return row
     end })
 
+-- The group: role poll, everyone assistant, party and raid, loot -----------------------
+
+-- Whether you lead the group (secret while your identity is restricted:
+-- then not); in test mode yes.
+function Tools.IsLeader()
+    if testing() then return true end
+    return ns.Secrets.Bool(UnitIsGroupLeader, "player") == true
+end
+
+-- The loot methods offered (Enum.LootMethod, LootConstantsDocumentation.lua)
+-- in this order, with their words.
+Tools.LOOT_METHODS = { "Freeforall", "Roundrobin", "Masterlooter", "Group", "Needbeforegreed" }
+Tools.GROUP_BUTTON_W, Tools.BUTTON_PADDING = 60, 16
+
+-- Everyone an assistant (the raid's leader): IsEveryoneAssistant, as
+-- Blizzard's raid manager reads it.
+local function everyoneAssists()
+    local ok, on = pcall(IsEveryoneAssistant)
+    return ok and not ns.Secrets.IsSecret(on) and on == true
+end
+
+-- Master looter is the player himself, as Blizzard's unit menu sets it.
+local function setLoot(name)
+    local method = Enum.LootMethod[name]
+    local looter
+    if name == "Masterlooter" then
+        local ok, me = pcall(UnitName, "player")
+        if ok and not ns.Secrets.IsSecret(me) and type(me) == "string" then looter = me end
+    end
+    C_PartyInfo.SetLootMethod(method, looter)
+end
+
+-- The current method marked (never secret, PartyInfoDocumentation.lua;
+-- checked all the same).
+local function openLootMenu(owner)
+    local ok, current = pcall(C_PartyInfo.GetLootMethod)
+    if not ok or ns.Secrets.IsSecret(current) then current = nil end
+    MenuUtil.CreateContextMenu(owner, function(_, root)
+        root:CreateTitle(L.RAID_TOOLS_LOOT)
+        for _, name in ipairs(Tools.LOOT_METHODS) do
+            local function selected(n) return current ~= nil and current == Enum.LootMethod[n] end
+            root:CreateRadio(L["RAID_LOOT_" .. name], selected, setLoot, name)
+        end
+    end)
+end
+
+-- Each button: its switch, who may use it, when it applies, its click,
+-- its words (a function: party or raid).
+local GROUP_BUTTONS = {
+    { id = "rolePoll", key = "toolsRolePoll", who = Tools.Leads,
+        click = function() InitiateRolePoll() end, text = function() return L.RAID_TOOLS_ROLE_POLL end },
+    { id = "assist", key = "toolsAssist", who = Tools.IsLeader, applies = function() return IsInRaid() or testing() end,
+        click = function() C_PartyInfo.SetEveryoneIsAssistant(not everyoneAssists()) end,
+        text = function() return L.RAID_TOOLS_ASSIST end },
+    { id = "convert", key = "toolsConvert", who = Tools.IsLeader,
+        applies = function() return not IsInRaid() or GetNumGroupMembers() <= 5 end,
+        click = function()
+            if IsInRaid() then C_PartyInfo.ConvertToParty() else C_PartyInfo.ConvertToRaid() end
+        end,
+        text = function() return IsInRaid() and L.RAID_TOOLS_TO_PARTY or L.RAID_TOOLS_TO_RAID end },
+    { id = "loot", key = "toolsLoot", who = Tools.IsLeader, click = openLootMenu,
+        text = function() return L.RAID_TOOLS_LOOT end },
+}
+
+local function wanted(spec)
+    return general(spec.key) == true and spec.who() and (not spec.applies or spec.applies())
+end
+
+-- Any time: the everyone-assistant button is outlined while it is on.
+local groupRow
+local function paintAssist()
+    if not groupRow then return end
+    Style.SetBorderColor(groupRow.buttons.assist, everyoneAssists() and "accent" or "border")
+end
+
+Tools.AddRow({ id = "group", visible = function()
+    for _, spec in ipairs(GROUP_BUTTONS) do
+        if wanted(spec) then return true end
+    end
+    return false
+end, build = function(bar)
+    local row = CreateFrame("Frame", nil, bar)
+    row.buttons = {}
+    for _, spec in ipairs(GROUP_BUTTONS) do
+        local b
+        b = ns.Widgets.Button(row, { text = "", width = Tools.GROUP_BUTTON_W, onClick = function() spec.click(b) end })
+        b:SetHeight(Tools.ICON)
+        row.buttons[spec.id] = b
+    end
+    -- A hover repaints the outline; the switch's state comes back after.
+    row.buttons.assist:HookScript("OnLeave", function() paintAssist() end)
+    groupRow = row
+    return row
+end, texts = function(row)
+    for _, spec in ipairs(GROUP_BUTTONS) do
+        local b = row.buttons[spec.id]
+        b.text:SetText(spec.text())
+        b:SetWidth(math.max(Tools.GROUP_BUTTON_W, (b.text:GetStringWidth() or 0) + Tools.BUTTON_PADDING))
+    end
+    paintAssist()
+end, layout = function(row)
+    local shown = {}
+    for _, spec in ipairs(GROUP_BUTTONS) do
+        local b = row.buttons[spec.id]
+        local on = wanted(spec)
+        b:SetShown(on)
+        b:ClearAllPoints()
+        if on then shown[#shown + 1] = b end
+    end
+    lineUp(row, shown)
+end })
+
+ns.On("PARTY_LEADER_CHANGED", paintAssist)
+ns.On("GROUP_ROSTER_UPDATE", paintAssist)
+
 -- The bar ---------------------------------------------------------------------------
 
 -- Docked: the handle beside the main panel, the bar beyond it, both
@@ -341,9 +460,10 @@ function Tools.Refresh()
     local y, width, any = Tools.PADDING, 0, false
     for _, row in ipairs(Tools.rows) do
         local f = row.frame
-        local on = general(row.key) == true and (not row.visible or row.visible())
+        local on = (not row.key or general(row.key) == true) and (not row.visible or row.visible())
         f:SetShown(on)
         if on then
+            if row.texts then row.texts(f) end
             if row.layout then row.layout(f) end
             f:ClearAllPoints()
             f:SetPoint("TOPLEFT", bar, "TOPLEFT", Tools.PADDING, -y)
@@ -414,6 +534,8 @@ ns.On("PARTY_LEADER_CHANGED", update)
 ns.Listen("RAID_CONFIG_CHANGED", update)
 ns.Listen("RAID_TEST_MODE", update)
 ns.Listen("TEST_MODE", update)
+-- The words of the moment (a button's width may change).
+ns.Listen("LANGUAGE_CHANGED", update)
 -- Docked, it follows the main panel's size (placed out of combat).
 ns.Listen("RAID_PANEL_PLACED", function(P)
     if P == ns.RaidHeader and Tools.bar and docked() then place() end

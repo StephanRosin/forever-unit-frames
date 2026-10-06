@@ -394,3 +394,9 @@ RaidSettings.Define({ key = "toolsTargets", code = "IT", scope = "general", type
 RaidSettings.Define({ key = "toolsReady", code = "IR", scope = "general", type = "bool", default = true })
 -- The world markers (leader, assistants).
 RaidSettings.Define({ key = "toolsMarkers", code = "IW", scope = "general", type = "bool", default = true })
+-- A role poll (leader, assistants); everyone an assistant, party to raid
+-- and back, the loot method (the leader).
+RaidSettings.Define({ key = "toolsRolePoll", code = "IP", scope = "general", type = "bool", default = true })
+RaidSettings.Define({ key = "toolsAssist", code = "IA", scope = "general", type = "bool", default = true })
+RaidSettings.Define({ key = "toolsConvert", code = "IC", scope = "general", type = "bool", default = true })
+RaidSettings.Define({ key = "toolsLoot", code = "IL", scope = "general", type = "bool", default = true })
