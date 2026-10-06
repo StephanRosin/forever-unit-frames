@@ -743,6 +743,7 @@ L.RAID_ENUM_indicatorTime_NONE = "Nicht anzeigen"
 -- Schlachtzugsrahmen: das Optionsfenster (Raid/Options/Window.lua).
 L.RAID_WINDOW_TITLE = "Schlachtzugsrahmen"
 L.RAID_SIZE_SHOWN = "%s (angezeigt)"
+L.RAID_EDITING_NOT_SHOWN = "Du bearbeitest die Anordnung für %d Spieler – angezeigt wird die für %d. Schalte den Testmodus ein, um sie zu sehen."
 
 -- Schlachtzugsrahmen: die Schriften der Zelle.
 L.RAID_SECTION_fonts = "Schriften"

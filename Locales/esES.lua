@@ -744,6 +744,7 @@ L.RAID_ENUM_indicatorTime_NONE = "No mostrar"
 -- Marcos de banda: la ventana de opciones (Raid/Options/Window.lua).
 L.RAID_WINDOW_TITLE = "Marcos de banda"
 L.RAID_SIZE_SHOWN = "%s (mostrado)"
+L.RAID_EDITING_NOT_SHOWN = "Estás editando el diseño de %d jugadores; el panel muestra el de %d. Activa el modo de prueba para verlo."
 
 -- Marcos de banda: las fuentes de la celda.
 L.RAID_SECTION_fonts = "Fuentes"

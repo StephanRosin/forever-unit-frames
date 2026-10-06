@@ -131,8 +131,10 @@ H.check("position saved", ForeverUnitFramesDB.raidWindow.x, 120)
 SlashCmdList.FOREVERUNITFRAMES("raid")
 H.check("toggled closed", RO.IsOpen(), false)
 RO.Open()
-H.check("reopens on the same size", RO.Size(), 40)
-H.check("and tab", RO.currentTab, "indicators")
+-- On the size shown, not the one edited before (tests/test_raid_window_size_note.lua).
+H.check("reopens on the size shown", RO.Size(), 10)
+H.check("on the same tab", RO.currentTab, "indicators")
+RO.SelectSize(40)
 H.check("where it was", select(4, RO.frame:GetPoint(1)), 120)
 
 -- A new language: a new window on the same size and tab.

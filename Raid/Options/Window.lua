@@ -20,7 +20,7 @@ local RaidConfig, Raid = ns.RaidConfig, ns.Raid
 
 local WINDOW_NAME = "ForeverUnitFramesRaidOptions"
 local WIDTH, HEIGHT = 780, 560
-local TITLE_H, SIZE_BAR_H, TAB_H, FOOTER_H, NOTICE_H = 32, 40, 30, 40, 26
+local TITLE_H, SIZE_BAR_H, TAB_H, FOOTER_H, NOTICE_H, SIZE_NOTICE_H = 32, 40, 30, 40, 26, 36
 local SIZE_TAB_PADDING, TAB_PADDING, TAB_MIN_W, UNDERLINE_H, ACCENT_W = 24, 28, 70, 2, 3
 local SCROLLBAR_W, WHEEL_STEP = 10, 40
 local CONTENT_W = WIDTH - SCROLLBAR_W
@@ -278,7 +278,22 @@ local function tabButton(parent, height)
     return b
 end
 
--- The sizes: the edited one underlined, the one shown now says so.
+local anchorScroll
+
+-- Edited values of a size the panel does not show change nothing on
+-- screen: the note says so (test mode would show the edited size).
+local function renderSizeNotice()
+    local edited, shown = RaidOptions.Size(), ns.RaidCell.Size()
+    local notice = RaidOptions.sizeNotice
+    local on = edited ~= shown
+    if on then notice.text:SetText(L.RAID_EDITING_NOT_SHOWN:format(edited, shown)) end
+    if on == notice:IsShown() then return end
+    notice:SetShown(on)
+    anchorScroll()
+end
+
+-- The sizes: the edited one underlined, the one shown now says so; the
+-- note on a size not shown.
 local function renderSizeTabs()
     local shown = ns.RaidSize.Current()
     for _, size in ipairs(Raid.SIZES) do
@@ -290,6 +305,7 @@ local function renderSizeTabs()
         paintSelection(b, size == RaidOptions.Size(), "muted")
         b.underline:SetShown(size == RaidOptions.Size())
     end
+    renderSizeNotice()
 end
 
 local function menuTabs()
@@ -362,8 +378,18 @@ end
 
 -- Combat lock -------------------------------------------------------------------
 
-local function anchorScroll()
-    local top = inCombat and RaidOptions.combatNotice or frame.tabRow
+-- Under the tabs: the combat notice while in combat, then the note on
+-- the size edited, while it is not the one shown; then the page.
+function anchorScroll()
+    local top = frame.tabRow
+    for _, notice in ipairs({ RaidOptions.combatNotice, RaidOptions.sizeNotice }) do
+        if notice:IsShown() then
+            notice:ClearAllPoints()
+            notice:SetPoint("TOPLEFT", top, "BOTTOMLEFT", 0, 0)
+            notice:SetPoint("TOPRIGHT", top, "BOTTOMRIGHT", 0, 0)
+            top = notice
+        end
+    end
     frame.scroll:ClearAllPoints()
     frame.scroll:SetPoint("TOPLEFT", top, "BOTTOMLEFT", 0, 0)
     frame.scroll:SetPoint("BOTTOMRIGHT", frame.body, "BOTTOMRIGHT", -SCROLLBAR_W, 0)
@@ -621,22 +647,25 @@ local function createFooter(parent)
     return footer
 end
 
-local function createNotice(body)
+-- A tinted strip under the tabs (anchorScroll places it); its text
+-- wraps to a second line where the strip is tall enough.
+local function createNotice(body, text, height)
     local notice = CreateFrame("Frame", nil, body)
-    notice:SetHeight(NOTICE_H)
-    notice:SetPoint("TOPLEFT", frame.tabRow, "BOTTOMLEFT", 0, 0)
-    notice:SetPoint("TOPRIGHT", frame.tabRow, "BOTTOMRIGHT", 0, 0)
+    notice:SetHeight(height)
     local tint = notice:CreateTexture(nil, "BACKGROUND")
     tint:SetAllPoints(notice)
     local a = Style.COLORS.accent
     tint:SetColorTexture(a[1], a[2], a[3], 0.12)
     local bar = line(notice, "accent")
     bar:SetPoint("TOPLEFT"); bar:SetPoint("BOTTOMLEFT"); bar:SetWidth(ACCENT_W)
-    local text = Style.Text(notice, 12, "accent")
-    text:SetPoint("LEFT", notice, "LEFT", INSET, 0)
-    text:SetText(L.COMBAT_LOCKED)
+    notice.text = Style.Text(notice, 12, "accent")
+    notice.text:SetPoint("LEFT", notice, "LEFT", INSET, 0)
+    notice.text:SetWidth(CONTENT_W - 2 * INSET)
+    notice.text:SetJustifyH("LEFT")
+    notice.text:SetWordWrap(true)
+    notice.text:SetText(text)
     notice:Hide()
-    RaidOptions.combatNotice = notice
+    return notice
 end
 
 local function createBody(parent, top, footer)
@@ -651,7 +680,8 @@ local function createBody(parent, top, footer)
     frame.tabRow = tabRow
     RaidOptions.tabButtons = {}
     menuTabs()
-    createNotice(body)
+    RaidOptions.combatNotice = createNotice(body, L.COMBAT_LOCKED, NOTICE_H)
+    RaidOptions.sizeNotice = createNotice(body, "", SIZE_NOTICE_H)
     createScroll(body)
     anchorScroll()
 end
@@ -744,6 +774,8 @@ function RaidOptions.SelectSize(size)
     if frame:IsShown() then ns.RaidTestMode.Preview(size) end
 end
 
+-- Without a size: the size edited while open, else the one the panel
+-- shows now (not the one edited last time).
 function RaidOptions.Open(size, tabId)
     if not RaidConfig.Profile() then return end
     ensureWindow()
@@ -751,6 +783,7 @@ function RaidOptions.Open(size, tabId)
     if not frame:IsShown() then
         restorePosition()
         frame:Show()
+        size = size or ns.RaidSize.Current()
     end
     RaidOptions.SelectSize(size or RaidOptions.Size())
     RaidOptions.SelectTab(tabId or RaidOptions.currentTab or Schema.TABS[1].id)
@@ -775,7 +808,14 @@ ns.Listen("RAID_SIZE_CHANGED", function()
     if RaidOptions.IsOpen() then renderSizeTabs() end
 end)
 ns.Listen("RAID_TEST_MODE", function()
-    if frame then paintFooter() end
+    if frame then
+        paintFooter()
+        renderSizeNotice()
+    end
+end)
+-- The unit frames' test mode shows the edited size as well.
+ns.Listen("TEST_MODE", function()
+    if RaidOptions.IsOpen() then renderSizeNotice() end
 end)
 -- The raid panel's mover locked or unlocked from anywhere: this window,
 -- /fuf lock, the start of combat.

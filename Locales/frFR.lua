@@ -743,6 +743,7 @@ L.RAID_ENUM_indicatorTime_NONE = "Non affiché"
 -- Cadres de raid : la fenêtre des options (Raid/Options/Window.lua).
 L.RAID_WINDOW_TITLE = "Cadres de raid"
 L.RAID_SIZE_SHOWN = "%s (affiché)"
+L.RAID_EDITING_NOT_SHOWN = "Vous modifiez la disposition à %d joueurs ; le panneau affiche celle à %d. Activez le mode test pour la voir."
 
 -- Cadres de raid : les polices de la cellule.
 L.RAID_SECTION_fonts = "Polices"

@@ -767,6 +767,7 @@ L.RAID_ENUM_indicatorTime_NONE = "Not shown"
 -- Raid frames: the options window (Raid/Options/Window.lua).
 L.RAID_WINDOW_TITLE = "Raid frames"
 L.RAID_SIZE_SHOWN = "%s (shown)"
+L.RAID_EDITING_NOT_SHOWN = "You are editing the %d-player layout — the panel shows %d. Turn on test mode to see it."
 
 -- Raid frames: the cell's fonts.
 L.RAID_SECTION_fonts = "Fonts"
