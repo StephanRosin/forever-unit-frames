@@ -87,19 +87,35 @@ ns.On("GROUP_ROSTER_UPDATE", function()
 end)
 
 -- Blizzard's raid frames (Blizzard_CompactRaidFrames): the container of
--- compact unit frames and the manager panel at the screen's left edge
--- that shows and hides it. Both go while our raid frames are on and set
--- to hide them; getting them back needs a /reload, as for the unit
--- frames. Concealing takes their events, so Blizzard's own code does not
--- bring them back; a roster change hides them again regardless.
+-- compact unit frames and the manager panel at the screen's left edge.
+-- Both go while our raid frames are on and set to hide them; getting them
+-- back needs a /reload, as for the unit frames. Taking their events is not
+-- enough: Blizzard's global roster handler (UpdateRaidAndPartyFrames ->
+-- CompactRaidFrameManager_UpdateShown -> ..._UpdateContainerVisibility),
+-- Edit Mode and the raid profile's "shown" option show both again, also in
+-- combat. So both move under our hidden parent, where a Show no longer
+-- makes them, or the compact unit buttons inside the container, visible
+-- or clickable. The container holds secure buttons, so that move is made
+-- out of combat; no Blizzard code reparents it again. Its state ("enabled",
+-- the "IsShown" setting) is left alone: written by addon code it would
+-- taint Blizzard's roster handler, whose Show/Hide of the container in
+-- combat would then be blocked.
 local function raidHidden()
     local RC = ns.RaidConfig
     return RC.Profile() ~= nil and RC.Get("general", "enabled") and RC.Get("general", "hideBlizzard")
 end
 
+-- Out of combat only: the container is protected through its children.
+local function concealContainer(container)
+    if not container then return end
+    container:UnregisterAllEvents()
+    hide(container)
+    container:SetParent(hiddenParent)
+end
+
 local function concealRaid()
     Blizzard.Conceal(_G.CompactRaidFrameManager)
-    Blizzard.Conceal(_G.CompactRaidFrameContainer)
+    concealContainer(_G.CompactRaidFrameContainer)
 end
 
 function Blizzard.HideRaid()
