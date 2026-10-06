@@ -877,3 +877,7 @@ L.RAID_NOTE_tools = "Werkzeuge, die nur Anführer und Assistenten nutzen dürfen
 L.RAID_SETTING_toolsReady = "Bereitschaftscheck"
 L.RAID_HINT_toolsReady = "Das letzte Ergebnis für alle; Anführer starten einen"
 L.RAID_TOOLS_READY_CHECK = "Bereitschaft"
+L.RAID_SETTING_toolsMarkers = "Bodenmarkierungen"
+L.RAID_HINT_toolsMarkers = "Erneut klicken nimmt die Markierung weg"
+L.RAID_TOOLS_WORLD_MARKER = "Bodenmarkierung"
+L.RAID_TOOLS_CLEAR_MARKERS = "Alle Bodenmarkierungen entfernen"

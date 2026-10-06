@@ -392,3 +392,5 @@ RaidSettings.Define({ key = "toolsY", code = "IY", scope = "general", type = "in
 RaidSettings.Define({ key = "toolsTargets", code = "IT", scope = "general", type = "bool", default = true })
 -- The ready check: the last result, and starting one (leader, assistants).
 RaidSettings.Define({ key = "toolsReady", code = "IR", scope = "general", type = "bool", default = true })
+-- The world markers (leader, assistants).
+RaidSettings.Define({ key = "toolsMarkers", code = "IW", scope = "general", type = "bool", default = true })

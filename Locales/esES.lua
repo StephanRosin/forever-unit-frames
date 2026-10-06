@@ -878,3 +878,7 @@ L.RAID_NOTE_tools = "Las herramientas que solo pueden usar el líder y los asist
 L.RAID_SETTING_toolsReady = "Comprobar disposición"
 L.RAID_HINT_toolsReady = "El último resultado para todos; los líderes inician una"
 L.RAID_TOOLS_READY_CHECK = "¿Listos?"
+L.RAID_SETTING_toolsMarkers = "Marcadores de mundo"
+L.RAID_HINT_toolsMarkers = "Otro clic en un marcador lo quita"
+L.RAID_TOOLS_WORLD_MARKER = "Marcador de mundo"
+L.RAID_TOOLS_CLEAR_MARKERS = "Quitar todos los marcadores de mundo"

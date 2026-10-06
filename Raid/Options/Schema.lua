@@ -82,7 +82,7 @@ Schema.TABS = {
     -- who sees which.
     { id = "tools", note = "tools", sections = {
         { id = "toolsBar", keys = { "toolsShow", "toolsMode", "toolsOpen", "toolsX", "toolsY" } },
-        { id = "toolsList", keys = { "toolsTargets", "toolsReady" } },
+        { id = "toolsList", keys = { "toolsTargets", "toolsReady", "toolsMarkers" } },
     } },
     -- The window's own page: export and import of the edited size
     -- (Raid/Options/Window.lua). No settings; the wiki has no page for it.

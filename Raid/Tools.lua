@@ -4,7 +4,8 @@ local _, ns = ...
 -- Blizzard's raid frames, Core/Blizzard.lua), in rows, each switched on
 -- its own: the raid target icons for your target; the ready check (the
 -- last result for everyone, starting one for the leader and assistants:
--- tools only they may use show for them only, and while test mode is on).
+-- tools only they may use show for them only, and while test mode is on);
+-- the world markers (leader and assistants).
 -- It shows in a raid
 -- and in a party while the raid frames are on, hidden when solo, and
 -- while test mode is on, so it can be placed. Docked, it hangs on the
@@ -14,13 +15,14 @@ local _, ns = ...
 -- top-left corner in the raid profile's General settings, the same for
 -- every size.
 --
--- Secure buttons (the raid target icons: SECURE_ACTIONS.raidtarget,
+-- Secure buttons (the raid target icons and the world markers:
+-- SECURE_ACTIONS.raidtarget and .worldmarker,
 -- Blizzard_FrameXML/SecureTemplates.lua) make the bar protected: it is
 -- built, shown, hidden, sized and moved only out of combat
 -- (ns.AfterCombat); a change of the group in combat waits for its end.
 -- No secure snippets: a secure button's action is the client's own
--- (it calls SetRaidTarget in secure code); the addon never calls a
--- restricted function itself.
+-- (it calls SetRaidTarget, PlaceRaidMarker or ClearRaidMarker in secure
+-- code); the addon never calls a restricted function itself.
 local Tools = {}
 ns.RaidTools = Tools
 
@@ -38,7 +40,8 @@ Tools.HANDLE_W, Tools.HANDLE_H, Tools.DOCK_GAP = 12, 32, 4
 Tools.MARKERS = 8
 Tools.POSITION_KEYS = { toolsX = "x", toolsY = "y" }
 -- The bar's own settings: the panels do not follow them.
-Tools.KEYS = { "toolsShow", "toolsMode", "toolsOpen", "toolsX", "toolsY", "toolsTargets", "toolsReady" }
+Tools.KEYS = { "toolsShow", "toolsMode", "toolsOpen", "toolsX", "toolsY", "toolsTargets", "toolsReady",
+    "toolsMarkers" }
 for _, key in ipairs(Tools.KEYS) do Panel.UNRELATED_KEYS[key] = true end
 -- Its position shows in the raid window like a panel's.
 Panel.others[#Panel.others + 1] = Tools
@@ -257,6 +260,50 @@ ns.On("READY_CHECK_FINISHED", function()
     countReady(true)
     renderReady()
 end)
+
+-- World markers ---------------------------------------------------------------------
+
+-- The world markers by index (1 blue square, 2 green triangle, 3 purple
+-- diamond, 4 red cross, 5 yellow star, 6 orange circle, 7 silver moon,
+-- 8 white skull) drawn with the raid target icon of the same sign.
+Tools.WORLD_MARKER_ICONS = { 6, 4, 3, 7, 1, 2, 5, 8 }
+
+-- Whether this client places world markers at all.
+local function worldMarkers()
+    if type(IsRaidMarkerSystemEnabled) ~= "function" then return true end
+    local ok, on = pcall(IsRaidMarkerSystemEnabled)
+    return not ok or ns.Secrets.IsSecret(on) or on == true
+end
+
+-- A click places the marker (the client's PlaceRaidMarker) or takes it
+-- away again (action "toggle"); the last button takes every world marker
+-- away (action "clear" without a marker). On a light square, so they do
+-- not pass for the raid target icons.
+Tools.AddRow({ id = "markers", key = "toolsMarkers", visible = function() return Tools.Leads() and worldMarkers() end,
+    build = function(bar)
+        local row = CreateFrame("Frame", nil, bar)
+        local buttons = {}
+        for i, icon in ipairs(Tools.WORLD_MARKER_ICONS) do
+            local b = secureButton(row, { type = "worldmarker", marker = i, action = "toggle" })
+            local bg = b:CreateTexture(nil, "BACKGROUND")
+            bg:SetAllPoints(b)
+            bg:SetColorTexture(1, 1, 1, 0.15)
+            b.icon = b:CreateTexture(nil, "ARTWORK")
+            b.icon:SetPoint("TOPLEFT", b, "TOPLEFT", 2, -2)
+            b.icon:SetPoint("BOTTOMRIGHT", b, "BOTTOMRIGHT", -2, 2)
+            b.icon:SetTexture(ns.RaidMarker.TEXTURE)
+            b.icon:SetSpriteSheetCell(icon, ns.RaidMarker.ROWS, ns.RaidMarker.COLUMNS)
+            tooltip(b, "RAID_TOOLS_WORLD_MARKER")
+            buttons[i] = b
+        end
+        local clear = secureButton(row, { type = "worldmarker", action = "clear" })
+        cross(clear)
+        tooltip(clear, "RAID_TOOLS_CLEAR_MARKERS")
+        buttons[#buttons + 1] = clear
+        lineUp(row, buttons)
+        row.buttons, row.clear = buttons, clear
+        return row
+    end })
 
 -- The bar ---------------------------------------------------------------------------
 

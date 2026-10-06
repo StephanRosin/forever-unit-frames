@@ -877,3 +877,7 @@ L.RAID_NOTE_tools = "Les outils réservés au chef et aux assistants ne s'affich
 L.RAID_SETTING_toolsReady = "Appel"
 L.RAID_HINT_toolsReady = "Le dernier résultat pour tous ; les chefs en lancent un"
 L.RAID_TOOLS_READY_CHECK = "Appel"
+L.RAID_SETTING_toolsMarkers = "Marqueurs au sol"
+L.RAID_HINT_toolsMarkers = "Un nouveau clic retire le marqueur"
+L.RAID_TOOLS_WORLD_MARKER = "Marqueur au sol"
+L.RAID_TOOLS_CLEAR_MARKERS = "Retirer tous les marqueurs au sol"

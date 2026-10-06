@@ -2067,6 +2067,23 @@ function M.Reset()
         table.insert(M.raidTargetCalls, { "all", 0 })
         for _, d in pairs(M.units) do d.raidTarget = nil end
     end
+    -- World markers (RaidMarkersDocumentation.lua; placing and clearing
+    -- HasRestrictions, and only secure code may in the mock):
+    -- M.worldMarkers[index] is true while one is placed;
+    -- M.worldMarkerSystem answers IsRaidMarkerSystemEnabled.
+    M.worldMarkers = {}
+    M.worldMarkerSystem = true
+    _G.IsRaidMarkerSystemEnabled = function() return M.worldMarkerSystem end
+    _G.IsRaidMarkerActive = function(index) return M.worldMarkers[index] == true end
+    _G.PlaceRaidMarker = function(index)
+        assert(M.secureDepth > 0, "mock: PlaceRaidMarker outside secure code")
+        assert(type(index) == "number", "PlaceRaidMarker: index")
+        M.worldMarkers[index] = true
+    end
+    _G.ClearRaidMarker = function(index)
+        assert(M.secureDepth > 0, "mock: ClearRaidMarker outside secure code")
+        if index == nil then M.worldMarkers = {} else M.worldMarkers[index] = nil end
+    end
     _G.UnitGetTotalAbsorbs = function(unit) local d = u(unit); return d and d.absorbs or 0 end
     _G.UnitGetIncomingHeals = function(unit, healer)
         local d = u(unit)
@@ -2658,6 +2675,19 @@ local SECURE_ACTIONS = {
             RemoveRaidTargets()
         elseif action == "toggle" then
             if GetRaidTargetIndex(unit) == marker then SetRaidTarget(unit, 0) else SetRaidTarget(unit, marker) end
+        end
+    end,
+    -- SECURE_ACTIONS.worldmarker.
+    worldmarker = function(_, attr)
+        local marker = tonumber(attr("marker"))
+        local action = attr("action") or "toggle"
+        if action == "set" then
+            PlaceRaidMarker(marker or 1)
+        elseif action == "clear" then
+            ClearRaidMarker(marker)
+        elseif action == "toggle" then
+            marker = marker or 1
+            if IsRaidMarkerActive(marker) then ClearRaidMarker(marker) else PlaceRaidMarker(marker) end
         end
     end,
 }

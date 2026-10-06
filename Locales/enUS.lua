@@ -901,3 +901,7 @@ L.RAID_NOTE_tools = "Tools only the leader and assistants may use show for them 
 L.RAID_SETTING_toolsReady = "Ready check"
 L.RAID_HINT_toolsReady = "The last result for everyone; leaders start one"
 L.RAID_TOOLS_READY_CHECK = "Ready check"
+L.RAID_SETTING_toolsMarkers = "World markers"
+L.RAID_HINT_toolsMarkers = "Click a marker again to take it away"
+L.RAID_TOOLS_WORLD_MARKER = "World marker"
+L.RAID_TOOLS_CLEAR_MARKERS = "Remove every world marker"
