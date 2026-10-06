@@ -55,8 +55,9 @@ function Indicators.Filter(key)
     return get(key .. "Own") and "HELPFUL|PLAYER" or "HELPFUL"
 end
 
--- Size, place, colour and time display of a position's frame.
-local function look(frame, button, ind)
+-- Size, place, colour and font of a position's frame (a slot's, or a
+-- pretend cell's plain one).
+local function place(frame, button, ind)
     local key = Indicators.Key(ind)
     local size = Pixel.Snap(get(key .. "Size"), nil, 1)
     local inset, edge = Pixel.Snap(Indicators.INSET), Pixel.Snap(Indicators.EDGE, nil, 1)
@@ -71,7 +72,12 @@ local function look(frame, button, ind)
     button.color:SetVertexColor(c[1], c[2], c[3], c[4])
     local font = ns.Media.Font(ns.Config.Get(frame.key, "fontFace"))
     ns.Texts.SetFont(button.time, font, math.max(6, size), "OUTLINE")
-    local time = get(key .. "Time")
+end
+
+-- The slot's frame: placed, and its time display handed to the client.
+local function look(frame, button, ind)
+    place(frame, button, ind)
+    local time = get(Indicators.Key(ind) .. "Time")
     if time == "SWIPE" then
         button:SetDurationCooldown(button.cooldown)
     else
@@ -87,10 +93,8 @@ local function look(frame, button, ind)
 end
 
 -- The frame's regions: a dark edge, the colour, a swipe that darkens as
--- the time runs out, a number. No mouse: the cell below takes it.
-local function init(frame, button, ind)
-    pcall(button.SetMouseClickEnabled, button, false)
-    pcall(button.SetMouseMotionEnabled, button, false)
+-- the time runs out, a number.
+local function regions(button)
     local e = Indicators.EDGE_COLOR
     button.edge = button:CreateTexture(nil, "BACKGROUND")
     button.edge:SetAllPoints(button)
@@ -104,8 +108,19 @@ local function init(frame, button, ind)
     button.cooldown:SetHideCountdownNumbers(true)
     button.time = button:CreateFontString(nil, "OVERLAY")
     button.time:SetPoint("CENTER", button, "CENTER", 0, 0)
+end
+
+-- A slot's frame. No mouse: the cell below takes it.
+local function init(frame, button, ind)
+    pcall(button.SetMouseClickEnabled, button, false)
+    pcall(button.SetMouseMotionEnabled, button, false)
+    regions(button)
     look(frame, button, ind)
 end
+
+-- Test mode: what a sample's time display shows.
+Indicators.SAMPLE_DURATION = 15
+Indicators.SAMPLE_LEFT = 12
 
 CellAuras.AddPart({
     Apply = function(frame, container)
@@ -118,5 +133,32 @@ CellAuras.AddPart({
             if slot and not pcall(look, frame, slot, ind) then refused = true end
         end
         return refused
+    end,
+    BuildSample = function(frame, samples)
+        samples.indicators = {}
+        for i in ipairs(Raid.INDICATORS) do
+            local button = CreateFrame("Frame", nil, frame)
+            regions(button)
+            button:Hide()
+            samples.indicators[i] = button
+        end
+    end,
+    -- Every position with spells, on a living member.
+    ShowSample = function(frame, samples, member, start)
+        for i, ind in ipairs(Raid.INDICATORS) do
+            local button, key = samples.indicators[i], Indicators.Key(ind)
+            local shown = member ~= nil and not member.status and Indicators.SpellSet(get(key .. "Spells")) ~= nil
+            button:SetFrameLevel(frame:GetFrameLevel() + CellAuras.LEVELS + 1)
+            place(frame, button, ind)
+            local time = get(key .. "Time")
+            local elapsed = Indicators.SAMPLE_DURATION - Indicators.SAMPLE_LEFT
+            if shown and time == "SWIPE" then
+                button.cooldown:SetCooldown(start - elapsed, Indicators.SAMPLE_DURATION)
+            else
+                button.cooldown:Clear()
+            end
+            button.time:SetText(shown and time == "NUMBER" and tostring(Indicators.SAMPLE_LEFT) or "")
+            button:SetShown(shown)
+        end
     end,
 })

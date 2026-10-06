@@ -31,8 +31,13 @@ local _, ns = ...
 -- The group header could hand every cell a container itself
 -- (auraContainerTemplate), in combat too, but slots can only be added out
 -- of combat anyway, and it would give one to every child it makes, the
--- empty one each header keeps for its size included. Test mode's pretend
--- cells have none (they show samples).
+-- empty one each header keeps for its size included.
+--
+-- Test mode's pretend cells have no container: each part draws a sample
+-- with plain frames of their own (part.BuildSample, part.ShowSample) from
+-- the cell's pretend member (frame.sample, Raid/TestMode.lua): its
+-- debuffs (indices into CellAuras.SAMPLES), and whether it is alive (the
+-- corner indicators show on the living).
 local CellAuras = { name = "RaidAuras" }
 ns.RaidAuras = CellAuras
 
@@ -56,8 +61,15 @@ CellAuras.METHODS = { "SetUnit", "GetUnit", "UpdateAllAuras", "SetEditModePrevie
     "SetAuraGroupEnabled", "SetAuraGroupFilterString", "SetAuraGroupMaxFrameCount", "SetAuraGroupLayout",
     "SetFlowLayoutAxis", "SetFlowLayoutAnchorPoint", "SetFlowLayoutGrowthDirection" }
 
+-- Test mode's debuffs: the unit frames' samples (dispel types Magic,
+-- Curse, Poison, Disease, then one without).
+CellAuras.SAMPLES = ns.Auras.SAMPLES.debuffs
+
 -- part.Apply(frame, container, auras) configures the part out of combat;
--- it returns true when a button refused to be restyled.
+-- it returns true when a button refused to be restyled. Optional, for
+-- pretend cells: part.BuildSample(frame, samples) makes plain frames,
+-- part.ShowSample(frame, samples, member, start) draws them (member nil:
+-- hidden).
 local parts = {}
 function CellAuras.AddPart(part)
     parts[#parts + 1] = part
@@ -123,12 +135,51 @@ local function initTint(frame, button)
         customDispelColorCurve = AuraButton.DispelCurve(CellAuras.TINT_ALPHA) })
 end
 
+-- A pretend member's debuffs, in its order.
+local function memberDebuffs(member)
+    local list = {}
+    for _, i in ipairs(member and member.debuffs or {}) do list[#list + 1] = CellAuras.SAMPLES[i] end
+    return list
+end
+
+-- A pretend member's debuffs: the one the centre icon shows (the first
+-- with a dispel type) and the rest.
+local function sampleDebuffs(member)
+    local centre, rest = nil, {}
+    for _, sample in ipairs(memberDebuffs(member)) do
+        if not centre and sample.dispel then centre = sample else rest[#rest + 1] = sample end
+    end
+    return centre, rest
+end
+CellAuras.SampleDebuffs = sampleDebuffs
+
 CellAuras.AddPart({
     Apply = function(frame, container)
         local filter = CellAuras.FILTERS[get("dispelFilter")]
         local icon = CellAuras.SetSlot(frame, container, "dispel", filter, get("dispelIcon"), initIcon)
         CellAuras.SetSlot(frame, container, "tint", filter, get("dispelTint"), initTint)
         return icon ~= nil and not pcall(AuraButton.StyleManaged, icon, frame.key, dispelSize(), false)
+    end,
+    BuildSample = function(frame, samples)
+        samples.icon = AuraButton.Create(frame, true)
+        samples.tint = CreateFrame("Frame", nil, frame)
+        samples.tint.texture = samples.tint:CreateTexture(nil, "ARTWORK")
+        samples.tint.texture:SetColorTexture(1, 1, 1, 1)
+        samples.tint.texture:SetAllPoints(frame.health)
+        samples.tint:Hide()
+    end,
+    ShowSample = function(frame, samples, member, start)
+        local centre = sampleDebuffs(member)
+        local icon, tint = samples.icon, samples.tint
+        icon:SetFrameLevel(frame:GetFrameLevel() + CellAuras.LEVELS)
+        icon:ClearAllPoints()
+        icon:SetPoint("CENTER", frame.health, "CENTER", 0, 0)
+        AuraButton.Style(icon, frame.key, dispelSize(), false)
+        if centre and get("dispelIcon") then AuraButton.ShowSample(icon, centre, start) else AuraButton.Clear(icon) end
+        tint:SetFrameLevel(frame:GetFrameLevel() + CellAuras.TINT_LEVELS)
+        local c = centre and AuraButton.DISPEL_COLORS[centre.dispel]
+        if c then tint.texture:SetVertexColor(c[1], c[2], c[3], CellAuras.TINT_ALPHA) end
+        tint:SetShown(c ~= nil and get("dispelTint") == true)
     end,
 })
 
@@ -178,6 +229,29 @@ CellAuras.AddPart({
             if not pcall(AuraButton.StyleManaged, button, frame.key, size, false) then refused = true end
         end
         return refused
+    end,
+    -- As many plain icons as the row can hold.
+    BuildSample = function(frame, samples)
+        samples.row = {}
+        for i = 1, ns.RaidSettings.Get("debuffCount").max do samples.row[i] = AuraButton.Create(frame, true) end
+    end,
+    -- Every debuff of the member, as the live row (the centre's one too).
+    ShowSample = function(frame, samples, member, start)
+        local debuffs = memberDebuffs(member)
+        local size, inset = rowSize(), Pixel.Snap(CellAuras.ROW_INSET)
+        local step = size + Pixel.Snap(CellAuras.ROW_SPACING)
+        local count = get("debuffRow") and get("debuffCount") or 0
+        for i, button in ipairs(samples.row) do
+            button:SetFrameLevel(frame:GetFrameLevel() + CellAuras.LEVELS)
+            button:ClearAllPoints()
+            button:SetPoint("BOTTOMLEFT", frame.health, "BOTTOMLEFT", inset + (i - 1) * step, inset)
+            AuraButton.Style(button, frame.key, size, false)
+            if i <= count and debuffs[i] then
+                AuraButton.ShowSample(button, debuffs[i], start)
+            else
+                AuraButton.Clear(button)
+            end
+        end
     end,
 })
 
@@ -266,16 +340,45 @@ end
 
 -- Element -------------------------------------------------------------------------------
 
+-- Pretend cells get the parts' sample frames instead of a container.
 function CellAuras.Build(frame)
     if frame.key ~= Cell.KEY then return end
     frame.raidAuras = { slots = {} }
+    if not frame.pretend then return end
+    local samples = {}
+    for _, part in ipairs(parts) do
+        if part.BuildSample then part.BuildSample(frame, samples) end
+    end
+    frame.raidAuras.samples = samples
 end
 
--- Settings changed: applied now, or after combat.
+-- The sample of a pretend cell, drawn from its member; nil member hides it.
+local function showSamples(frame, member)
+    local auras = frame.raidAuras
+    auras.sampleStart = member and (auras.sampleStart or GetTime()) or nil
+    for _, part in ipairs(parts) do
+        if part.ShowSample then part.ShowSample(frame, auras.samples, member, auras.sampleStart) end
+    end
+end
+
+-- Settings changed: applied now, or after combat; a pretend cell redraws
+-- its sample.
 function CellAuras.Style(frame)
     local auras = frame.raidAuras
+    if auras and auras.samples then
+        if auras.previewing then showSamples(frame, frame.sample) end
+        return
+    end
     if not (auras and auras.built) then return end
     if InCombatLockdown() then later(frame) else apply(frame) end
+end
+
+-- Test mode: a pretend cell shows its member's sample.
+function CellAuras.Preview(frame, on)
+    local auras = frame.raidAuras
+    if not (auras and auras.samples) then return end
+    auras.previewing = on and frame.sample ~= nil or nil
+    showSamples(frame, auras.previewing and frame.sample or nil)
 end
 
 -- A new unit, or the same raid unit after a roster change (it may be
