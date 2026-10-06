@@ -376,8 +376,14 @@ RaidSettings.Define({ key = "petsCellHeight", code = "OH", scope = "frame", type
 table.insert(pets.keys, 5, "petsCellHeight")
 
 -- The raid tools bar (Raid/Tools.lua), per character: shown in a group,
--- its top-left corner from the screen centre, and which tools it holds.
+-- docked or free, its top-left corner from the screen centre (free), and
+-- which tools it holds.
 RaidSettings.Define({ key = "toolsShow", code = "IO", scope = "general", type = "bool", default = true })
+-- Docked to the main panel's right edge (a handle folds it out; open:
+-- folded out) or free at its own position. Stored by index: append only.
+RaidSettings.Define({ key = "toolsMode", code = "IM", scope = "general", type = "enum", values = { "DOCKED", "FREE" },
+    default = "DOCKED" })
+RaidSettings.Define({ key = "toolsOpen", code = "IE", scope = "general", type = "bool", default = false })
 RaidSettings.Define({ key = "toolsX", code = "IX", scope = "general", type = "int", min = -4000, max = 4000,
     default = 300 })
 RaidSettings.Define({ key = "toolsY", code = "IY", scope = "general", type = "int", min = -4000, max = 4000,

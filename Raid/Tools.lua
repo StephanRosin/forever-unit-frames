@@ -4,9 +4,12 @@ local _, ns = ...
 -- Blizzard's raid frames, Core/Blizzard.lua), in rows, each switched on
 -- its own: the raid target icons for your target, ... It shows in a raid
 -- and in a party while the raid frames are on, hidden when solo, and
--- while test mode is on, so it can be placed. It has its own mover (the
--- raid window's lock); its top-left corner is in the raid profile's
--- General settings, the same for every size.
+-- while test mode is on, so it can be placed. Docked, it hangs on the
+-- main panel's right edge behind a handle that folds it out and in (out
+-- of combat; the panel's anchor never moves in combat) and follows the
+-- panel; free, it has its own mover (the raid window's lock) and its
+-- top-left corner in the raid profile's General settings, the same for
+-- every size.
 --
 -- Secure buttons (the raid target icons: SECURE_ACTIONS.raidtarget,
 -- Blizzard_FrameXML/SecureTemplates.lua) make the bar protected: it is
@@ -26,10 +29,13 @@ Tools.NAME = "ForeverUnitFramesRaidTools"
 Tools.ICON, Tools.GAP, Tools.PADDING = 18, 2, 4
 -- The mover's size while no row shows.
 Tools.EMPTY_SIZE = 40
+-- Docked: the handle's size, and the room between the panel, the handle
+-- and the bar.
+Tools.HANDLE_W, Tools.HANDLE_H, Tools.DOCK_GAP = 12, 32, 4
 Tools.MARKERS = 8
 Tools.POSITION_KEYS = { toolsX = "x", toolsY = "y" }
 -- The bar's own settings: the panels do not follow them.
-Tools.KEYS = { "toolsShow", "toolsX", "toolsY", "toolsTargets" }
+Tools.KEYS = { "toolsShow", "toolsMode", "toolsOpen", "toolsX", "toolsY", "toolsTargets" }
 for _, key in ipairs(Tools.KEYS) do Panel.UNRELATED_KEYS[key] = true end
 -- Its position shows in the raid window like a panel's.
 Panel.others[#Panel.others + 1] = Tools
@@ -44,6 +50,7 @@ end
 
 local function general(key) return ns.RaidConfig.Get("general", key) end
 local function testing() return ns.RaidTestMode ~= nil and ns.RaidTestMode.IsOn() end
+local function docked() return general("toolsMode") == "DOCKED" end
 
 -- Whether the bar shows now (with at least one row).
 function Tools.Shown()
@@ -63,9 +70,9 @@ function Tools.Reachable(axis, v)
     return Panel.Reach(w, h, axis, v)
 end
 
--- Its handle shows with the raid window's lock while the bar shows.
+-- Its mover shows with the raid window's lock while the bar shows free.
 function Tools.Movable()
-    return Tools.Shown()
+    return Tools.Shown() and not docked()
 end
 
 function Tools.MoverSpec()
@@ -147,11 +154,19 @@ end })
 
 -- The bar ---------------------------------------------------------------------------
 
--- Its own mover holds it; before the mover is there, its position.
+-- Docked: the handle beside the main panel, the bar beyond it, both
+-- hanging from the panel's anchor (out of combat: the bar is protected).
+-- Free: its own mover holds it; before the mover is there, its position.
 local function place()
     local bar = Tools.bar
     bar:ClearAllPoints()
-    if bar.mover then
+    if docked() then
+        local anchor = ns.RaidHeader.anchor or UIParent
+        local x = (ns.RaidHeader.width or 0) + Tools.DOCK_GAP
+        Tools.handle:ClearAllPoints()
+        Tools.handle:SetPoint("TOPLEFT", anchor, "TOPLEFT", x, 0)
+        bar:SetPoint("TOPLEFT", anchor, "TOPLEFT", x + Tools.HANDLE_W + Tools.DOCK_GAP, 0)
+    elseif bar.mover then
         ns.Movers.Sync(bar)
         bar:SetPoint("TOPLEFT", bar.mover, "TOPLEFT", 0, 0)
     else
@@ -159,8 +174,14 @@ local function place()
     end
 end
 
+-- The handle points the way the bar folds.
+local function paintHandle()
+    Tools.handle.text:SetText(general("toolsOpen") and "<" or ">")
+end
+
 -- Out of combat: the rows that show, one below the other, the bar around
--- them with the panel's ring, where it belongs; shown or hidden.
+-- them with the panel's ring, where it belongs; shown or hidden (docked,
+-- while folded out), the handle while docked.
 function Tools.Refresh()
     local bar = Tools.bar
     if not bar then return end
@@ -185,7 +206,33 @@ function Tools.Refresh()
     bar:SetSize(Tools.Size())
     place()
     ns.Border.Draw(bar, Panel.PANEL_SCOPE, bar, 0)
-    bar:SetShown(any and Tools.Shown())
+    local shown = any and Tools.Shown()
+    bar:SetShown(shown and (not docked() or general("toolsOpen")))
+    Tools.handle:SetShown(shown and docked())
+    paintHandle()
+end
+
+-- The handle's click: folds the bar out or in; refused in combat.
+function Tools.Fold()
+    if InCombatLockdown() then
+        ns.Print(L.RAID_TOOLS_COMBAT)
+        return false
+    end
+    return ns.RaidConfig.Set("general", "toolsOpen", not general("toolsOpen"))
+end
+
+local function createHandle()
+    local handle = CreateFrame("Button", Tools.NAME .. "Handle", UIParent)
+    handle:SetSize(Tools.HANDLE_W, Tools.HANDLE_H)
+    local bg = handle:CreateTexture(nil, "BACKGROUND")
+    bg:SetAllPoints(handle)
+    bg:SetColorTexture(0, 0, 0, 0.6)
+    handle.text = Style.Text(handle, 12, "text")
+    handle.text:SetPoint("CENTER")
+    handle:SetScript("OnClick", function() Tools.Fold() end)
+    tooltip(handle, "RAID_TOOLS_TITLE")
+    handle:Hide()
+    return handle
 end
 
 -- Built once, out of combat, after the raid profile is attached.
@@ -196,6 +243,7 @@ function Tools.Create()
     bg:SetAllPoints(bar)
     bg:SetColorTexture(0, 0, 0, 0.6)
     Tools.bar = bar
+    Tools.handle = createHandle()
     for _, row in ipairs(Tools.rows) do row.frame = row.build(bar) end
     ns.Movers.Attach(bar, Tools.MoverSpec())
     Tools.Refresh()
@@ -210,3 +258,7 @@ ns.On("GROUP_ROSTER_UPDATE", update)
 ns.Listen("RAID_CONFIG_CHANGED", update)
 ns.Listen("RAID_TEST_MODE", update)
 ns.Listen("TEST_MODE", update)
+-- Docked, it follows the main panel's size (placed out of combat).
+ns.Listen("RAID_PANEL_PLACED", function(P)
+    if P == ns.RaidHeader and Tools.bar and docked() then place() end
+end)

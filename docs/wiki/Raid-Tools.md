@@ -14,6 +14,8 @@ The **Tools** tab of the raid options window (`/fuf raid`). Each raid size (10, 
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
 <tr><td><b>Show the bar</b></td><td>In a raid or a party, in place of Blizzard's raid manager</td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Where</b></td><td>Docked: a handle on the main panel's right edge</td><td>Docked to the panel, Free</td><td>Docked to the panel</td></tr>
+<tr><td><b>Folded out</b></td><td>The handle folds it out and in</td><td>On, Off</td><td>Off</td></tr>
 <tr><td><b>Position X</b></td><td>Top left corner, from the screen centre</td><td>-4000 – 4000</td><td>300</td></tr>
 <tr><td><b>Position Y</b></td><td>Top left corner, from the screen centre</td><td>-4000 – 4000</td><td>300</td></tr>
 </tbody>

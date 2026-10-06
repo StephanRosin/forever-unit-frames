@@ -429,10 +429,14 @@ end
 
 local paintFooter
 
--- Rows that only mean something while another setting of the edited
--- size allows it: the class order, while it groups by class.
+-- Rows that only mean something while another setting allows it: the
+-- class order, while the edited size groups by class; the raid tools
+-- bar's fold while it is docked, its position while it is free.
+local function toolsDocked() return RaidConfig.Get("general", "toolsMode") == "DOCKED" end
+local function toolsFree() return not toolsDocked() end
 local ROW_ACTIVE = {
     classOrder = function() return RaidConfig.Get(Raid.Scope(RaidOptions.Size()), "groupBy") == "CLASS" end,
+    toolsOpen = toolsDocked, toolsX = toolsFree, toolsY = toolsFree,
 }
 
 -- Only a row whose state changes: SetEnabled repaints its buttons as

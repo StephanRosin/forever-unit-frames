@@ -255,6 +255,8 @@ function Panel.New(spec)
         else
             Border.Hide(P.panel)
         end
+        -- What hangs beside it follows (the raid tools bar, docked).
+        ns.Fire("RAID_PANEL_PLACED", P)
         return positions, s
     end
 

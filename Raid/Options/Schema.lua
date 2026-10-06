@@ -80,7 +80,7 @@ Schema.TABS = {
     } },
     -- The raid tools bar: where it is, which tools it holds.
     { id = "tools", sections = {
-        { id = "toolsBar", keys = { "toolsShow", "toolsX", "toolsY" } },
+        { id = "toolsBar", keys = { "toolsShow", "toolsMode", "toolsOpen", "toolsX", "toolsY" } },
         { id = "toolsList", keys = { "toolsTargets" } },
     } },
     -- The window's own page: export and import of the edited size

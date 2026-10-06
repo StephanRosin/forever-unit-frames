@@ -1,7 +1,8 @@
 -- The raid tools bar (Raid/Tools.lua): shown in a group while the raid
--- frames are on, at its own position with its own mover; the raid target
--- icons are secure buttons whose action is the client's. Built, shown and
--- moved out of combat only. The raid window's Tools tab.
+-- frames are on; free, at its own position with its own mover (docked:
+-- tests/test_raid_tools_docked.lua); the raid target icons are secure
+-- buttons whose action is the client's. Built, shown and moved out of
+-- combat only. The raid window's Tools tab.
 local M = H.M
 local ns = H.LoadAddon()
 M.units.player = { name = "Me", class = "MAGE", health = 1, healthMax = 1, isPlayer = true }
@@ -19,6 +20,7 @@ end
 H.check("shown", RC.Get("general", "toolsShow"), true)
 H.check("position", RC.Get("general", "toolsX") .. "," .. RC.Get("general", "toolsY"), "300,300")
 H.check("raid target icons", RC.Get("general", "toolsTargets"), true)
+RC.Set("general", "toolsMode", "FREE")
 
 -- Built at login; solo it hides.
 local bar = Tools.bar
@@ -111,7 +113,7 @@ H.check("test mode off: hidden", bar:IsShown(), false)
 -- at the screen's edge for the bar's size.
 local tab = ns.RaidSchema.TABS[9]
 H.check("Tools tab before Profile", tab.id, "tools")
-H.check("the bar's section", table.concat(tab.sections[1].keys, ","), "toolsShow,toolsX,toolsY")
+H.check("the bar's section", table.concat(tab.sections[1].keys, ","), "toolsShow,toolsMode,toolsOpen,toolsX,toolsY")
 H.check("the tools", table.concat(tab.sections[2].keys, ","), "toolsTargets")
 H.check("its position", ns.RaidPanel.ByPositionKey("toolsX"), Tools)
 local RO = ns.RaidOptions
