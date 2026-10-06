@@ -774,3 +774,11 @@ L.RAID_HINT_cellBorderColor = "Pour le style plat"
 L.RAID_HINT_cellCornerRadius = "0 = coins carrés"
 L.RAID_ENUM_cellBorderStyle_FLAT = "Plat"
 L.RAID_ENUM_cellBorderStyle_GOLD = "Or"
+
+-- Cadres de raid : soins, boucliers et chiffres sur la cellule.
+L.RAID_SECTION_heals = "Soins et boucliers"
+L.RAID_SETTING_healPrediction = "Soins entrants"
+L.RAID_SETTING_overheal = "Couloir des soins en excès"
+L.RAID_SETTING_absorbs = "Boucliers d'absorption"
+L.RAID_SETTING_combatText = "Chiffres de dégâts et de soins"
+L.RAID_HINT_overheal = "Soins au-delà de la santé max., en fin de barre"

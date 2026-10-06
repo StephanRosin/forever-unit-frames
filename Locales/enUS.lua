@@ -798,3 +798,11 @@ L.RAID_HINT_cellBorderColor = "For the flat style"
 L.RAID_HINT_cellCornerRadius = "0 = square corners"
 L.RAID_ENUM_cellBorderStyle_FLAT = "Flat"
 L.RAID_ENUM_cellBorderStyle_GOLD = "Gold"
+
+-- Raid frames: heals, shields and numbers on the cell.
+L.RAID_SECTION_heals = "Heals and shields"
+L.RAID_SETTING_healPrediction = "Incoming heals"
+L.RAID_SETTING_overheal = "Overheal lane"
+L.RAID_SETTING_absorbs = "Absorb shields"
+L.RAID_SETTING_combatText = "Damage and heal numbers"
+L.RAID_HINT_overheal = "Heals past full health at the bar's end"

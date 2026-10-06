@@ -37,17 +37,16 @@ function Cell.Get(key)
 end
 local get = Cell.Get
 
--- What a cell never shows, whatever the party frame does: no title row,
--- portrait, castbar, the unit frames' aura icons (a cell's are its own,
--- Raid/CellAuras.lua), combat numbers or threat glow, no overheal lane or
--- heals past the edge (the next cell sits there), no shadow (it would lie
--- on the neighbours), no power texts, a ring right around the cell (the
--- cell spacing keeps them apart). The rows: a thin power strip under the
--- health bar.
+-- What a cell never shows: no title row, portrait, castbar, the unit
+-- frames' aura icons (a cell's are its own, Raid/CellAuras.lua) or threat
+-- glow, no heals past the edge (the next cell sits there), no shadow (it
+-- would lie on the neighbours), no power texts, a ring right around the
+-- cell (the cell spacing keeps them apart). The rows: a thin power strip
+-- under the health bar.
 local FIXED = {
-    titlePercent = 0, portraitMode = "OFF", castbarEnabled = false, combatFeedback = false,
+    titlePercent = 0, portraitMode = "OFF", castbarEnabled = false,
     buffsEnabled = false, debuffsEnabled = false, threatGlow = false,
-    titleClassIcon = false, healOverflow = false, healBeyond = false, shadowEnabled = false, groupResurrect = false,
+    titleClassIcon = false, healBeyond = false, shadowEnabled = false, groupResurrect = false,
     textHealthLeft = "NAME", textPowerLeft = "NONE", textPowerRight = "NONE",
     healthPercent = 90, powerPercent = 10, borderPadding = 0,
 }
@@ -87,6 +86,10 @@ local MAPPED = {
     barTexture = function() return get("barTexture") end,
     backgroundColor = function() return get("backgroundColor") end,
     powerEnabled = function() return get("powerStrip") ~= "OFF" end,
+    healPrediction = function() return get("healPrediction") end,
+    healOverflow = function() return get("overheal") end,
+    absorbEnabled = function() return get("absorbs") end,
+    combatFeedback = function() return get("combatText") end,
     textHealthRight = function() return get("secondLine") end,
     barNameColorMode = function() return get("nameClassColor") and "CLASS" or "WHITE" end,
     fontFace = function() return get("fontFace") end,

@@ -775,3 +775,11 @@ L.RAID_HINT_cellBorderColor = "Para el estilo plano"
 L.RAID_HINT_cellCornerRadius = "0 = esquinas rectas"
 L.RAID_ENUM_cellBorderStyle_FLAT = "Plano"
 L.RAID_ENUM_cellBorderStyle_GOLD = "Dorado"
+
+-- Marcos de banda: sanaciones, escudos y números en la celda.
+L.RAID_SECTION_heals = "Sanaciones y escudos"
+L.RAID_SETTING_healPrediction = "Sanación entrante"
+L.RAID_SETTING_overheal = "Carril de sobrecuración"
+L.RAID_SETTING_absorbs = "Escudos de absorción"
+L.RAID_SETTING_combatText = "Números de daño y sanación"
+L.RAID_HINT_overheal = "Sanación por encima del máximo, al final"

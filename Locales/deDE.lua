@@ -774,3 +774,11 @@ L.RAID_HINT_cellBorderColor = "Für den flachen Stil"
 L.RAID_HINT_cellCornerRadius = "0 = eckig"
 L.RAID_ENUM_cellBorderStyle_FLAT = "Flach"
 L.RAID_ENUM_cellBorderStyle_GOLD = "Gold"
+
+-- Schlachtzugsrahmen: Heilungen, Schilde und Zahlen auf der Zelle.
+L.RAID_SECTION_heals = "Heilungen und Schilde"
+L.RAID_SETTING_healPrediction = "Eingehende Heilung"
+L.RAID_SETTING_overheal = "Überheilungsspur"
+L.RAID_SETTING_absorbs = "Absorptionsschilde"
+L.RAID_SETTING_combatText = "Schadens- und Heilzahlen"
+L.RAID_HINT_overheal = "Heilung über volle Gesundheit am Leistenende"

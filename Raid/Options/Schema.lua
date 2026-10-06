@@ -43,6 +43,7 @@ Schema.TABS = {
         { id = "bars", keys = { "healthColorMode", "healthColor", "barTexture", "backgroundColor", "powerStrip" } },
         { id = "cellShape", keys = { "cellBorder", "cellBorderStyle", "cellBorderSize", "cellBorderColor",
             "cellCornerRadius" } },
+        { id = "heals", keys = { "healPrediction", "overheal", "absorbs", "combatText" } },
     } },
     { id = "texts", sections = {
         { id = "texts", keys = { "nameClassColor", "nameColor", "secondLine", "secondLineColor" } },

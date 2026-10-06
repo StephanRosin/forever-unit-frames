@@ -162,6 +162,13 @@ RaidSettings.Define({ key = "barTexture", code = "TX", scope = "frame", type = "
     default = "Raid" })
 RaidSettings.Define({ key = "backgroundColor", code = "BG", scope = "frame", type = "color",
     default = { 0, 0, 0, 0.6 } })
+-- Incoming heals, the overheal lane at the end of the health bar (heals
+-- past full health; never past the cell's edge), absorb shields, and the
+-- damage and heal numbers in the cell.
+RaidSettings.Define({ key = "healPrediction", code = "IH", scope = "frame", type = "bool", default = true })
+RaidSettings.Define({ key = "overheal", code = "OV", scope = "frame", type = "bool", default = false })
+RaidSettings.Define({ key = "absorbs", code = "AS", scope = "frame", type = "bool", default = true })
+RaidSettings.Define({ key = "combatText", code = "CT", scope = "frame", type = "bool", default = false })
 -- The power strip at the bottom: everyone, mana users, healers, nobody.
 RaidSettings.Define({ key = "powerStrip", code = "PS", scope = "frame", type = "enum",
     values = { "ALL", "MANA", "HEALERS", "OFF" }, default = "MANA" })
