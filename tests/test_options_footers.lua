@@ -19,8 +19,19 @@ local function place(widget)
     return table.concat({ p, relName, relPoint, x, y }, " ") .. " w" .. widget:GetWidth()
 end
 
+-- One builder makes the left group of both (the same layout by
+-- construction).
+local built = {}
+local footerLeft = O.FooterLeft
+O.FooterLeft = function(footer, spec)
+    built[#built + 1] = spec.other.text
+    return footerLeft(footer, spec)
+end
 O.Open("player")
 RO.Open()
+O.FooterLeft = footerLeft
+H.check("both windows' left group from the shared builder", table.concat(built, ","),
+    L.RAID_FRAMES_BUTTON .. "," .. L.UNIT_FRAMES_BUTTON)
 local footer = O.unlockButton:GetParent()
 local raidFooter = RO.unlockButton:GetParent()
 H.check("raid window: footer", raidFooter, RO.frame.footer)

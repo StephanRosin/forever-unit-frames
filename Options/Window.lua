@@ -308,6 +308,22 @@ local function confirmButton(parent, text, action)
 end
 Options.ConfirmButton = confirmButton
 
+-- The left group of both windows' footers, so that they match by
+-- construction: [Unlock / Lock frames] [Test mode] [the other window…],
+-- from the footer's left edge. spec: unlock() and test() for the first
+-- two, testLeave() repaints the test button after a hover, other =
+-- { text, onClick }. Returns the three buttons.
+function Options.FooterLeft(footer, spec)
+    local unlock = Widgets.Button(footer, { text = L.UNLOCK_FRAMES, width = BUTTON_W, onClick = spec.unlock })
+    unlock:SetPoint("LEFT", footer, "LEFT", FOOTER_INSET, 0)
+    local test = Widgets.Button(footer, { text = L.TEST_MODE_ON, width = BUTTON_W, onClick = spec.test })
+    test:SetPoint("LEFT", unlock, "RIGHT", FOOTER_GAP, 0)
+    test:HookScript("OnLeave", spec.testLeave)
+    local other = Widgets.Button(footer, { text = spec.other.text, width = BUTTON_W, onClick = spec.other.onClick })
+    other:SetPoint("LEFT", test, "RIGHT", FOOTER_GAP, 0)
+    return unlock, test, other
+end
+
 -- Section actions: what the button does. Two clicks, like Reset.
 local ACTIONS = {
     applyFontToFrames = function() Config.ClearFrameOverrides(ns.Settings.TEXT_STYLE_KEYS) end,
@@ -682,18 +698,15 @@ end
 -- (Raid/Options/Window.lua): lock, test mode, the other window. The way
 -- across stays usable in combat.
 local function createFooterLeft(footer)
-    local unlock = Widgets.Button(footer, { text = L.UNLOCK_FRAMES, width = BUTTON_W, onClick = toggleMovers })
-    unlock:SetPoint("LEFT", footer, "LEFT", FOOTER_INSET, 0)
-    local test = Widgets.Button(footer, { text = L.TEST_MODE_ON, width = BUTTON_W,
-        onClick = function() ns.TestMode.Set(not ns.TestMode.IsOn()) end })
-    test:SetPoint("LEFT", unlock, "RIGHT", FOOTER_GAP, 0)
-    test:HookScript("OnLeave", refreshFooter)
-    local raid = Widgets.Button(footer, { text = L.RAID_FRAMES_BUTTON, width = BUTTON_W, onClick = function()
-        Options.Close()
-        ns.RaidOptions.Open()
-    end })
-    raid:SetPoint("LEFT", test, "RIGHT", FOOTER_GAP, 0)
-    Options.unlockButton, Options.testButton, Options.raidButton = unlock, test, raid
+    Options.unlockButton, Options.testButton, Options.raidButton = Options.FooterLeft(footer, {
+        unlock = toggleMovers,
+        test = function() ns.TestMode.Set(not ns.TestMode.IsOn()) end,
+        testLeave = refreshFooter,
+        other = { text = L.RAID_FRAMES_BUTTON, onClick = function()
+            Options.Close()
+            ns.RaidOptions.Open()
+        end },
+    })
 end
 
 local function createFooterRight(footer)

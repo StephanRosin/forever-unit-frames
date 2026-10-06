@@ -625,22 +625,18 @@ function paintFooter()
     Style.Paint(button.text, testOn and "accent" or idle)
 end
 
--- The same three places as in the unit frames' window's footer
--- (Options/Window.lua): lock, test mode, the other window. The way across
--- stays usable in combat.
+-- The unit frames' window's builder (Options/Window.lua): lock, test
+-- mode, the other window. The way across stays usable in combat.
 local function createFooterLeft(footer)
-    local unlock = Widgets.Button(footer, { text = L.UNLOCK_FRAMES, width = BUTTON_W, onClick = toggleMovers })
-    unlock:SetPoint("LEFT", footer, "LEFT", FOOTER_INSET, 0)
-    local test = Widgets.Button(footer, { text = L.TEST_MODE_ON, width = BUTTON_W,
-        onClick = function() ns.RaidTestMode.Set(not ns.RaidTestMode.IsOwnOn()) end })
-    test:SetPoint("LEFT", unlock, "RIGHT", GAP, 0)
-    test:HookScript("OnLeave", paintFooter)
-    local units = Widgets.Button(footer, { text = L.UNIT_FRAMES_BUTTON, width = BUTTON_W, onClick = function()
-        RaidOptions.Close()
-        ns.Options.Open()
-    end })
-    units:SetPoint("LEFT", test, "RIGHT", GAP, 0)
-    RaidOptions.unlockButton, RaidOptions.testButton, RaidOptions.unitButton = unlock, test, units
+    RaidOptions.unlockButton, RaidOptions.testButton, RaidOptions.unitButton = ns.Options.FooterLeft(footer, {
+        unlock = toggleMovers,
+        test = function() ns.RaidTestMode.Set(not ns.RaidTestMode.IsOwnOn()) end,
+        testLeave = paintFooter,
+        other = { text = L.UNIT_FRAMES_BUTTON, onClick = function()
+            RaidOptions.Close()
+            ns.Options.Open()
+        end },
+    })
 end
 
 local function createFooter(parent)
