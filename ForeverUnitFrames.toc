@@ -25,6 +25,7 @@ Core\MacroBackup.lua
 Core\Storage.lua
 Raid\Settings.lua
 Raid\Profiles.lua
+Raid\Size.lua
 Core\Media.lua
 Core\Layout.lua
 Core\Corners.lua
