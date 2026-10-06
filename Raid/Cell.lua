@@ -6,8 +6,9 @@ local _, ns = ...
 -- derived unit-frame scope, "raid", that answers every unit-frame setting
 -- itself: the cell's look from the raid profile of the active size,
 -- everything a cell never shows switched off, and the unit frames'
--- shipped defaults for the rest, so nothing set for the party frame or in
--- General changes a cell. Name and second line stand centred in the
+-- shipped defaults for the rest, so nothing set for the party frame and
+-- no unit-frame look setting reaches a cell (the language and the range
+-- mode in General still apply). Name and second line stand centred in the
 -- health bar (Elements/Texts.lua, frame.centerTexts); the power strip
 -- follows its own rule per unit (frame.showsPower).
 --

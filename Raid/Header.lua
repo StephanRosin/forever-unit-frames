@@ -346,3 +346,5 @@ ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
     end
 end)
 ns.Listen("PIXEL_GRID_CHANGED", function() if Header.anchor then refresh() end end)
+-- The cells' words (Dead, Offline, ...) follow the language at once.
+ns.Listen("LANGUAGE_CHANGED", function() if Header.anchor then refresh() end end)
