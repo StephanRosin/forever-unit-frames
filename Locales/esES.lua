@@ -819,3 +819,15 @@ L.RAID_IMPORT_HINT = "Pega aquí un tamaño de banda: sustituye el perfil de %s.
 -- Marcos de banda: los accesos entre las dos ventanas de opciones.
 L.RAID_FRAMES_BUTTON = "Marcos de banda…"
 L.UNIT_FRAMES_BUTTON = "Marcos de unidad…"
+
+-- Novedades (Core/News.lua, Options/News.lua).
+L.NEWS_TITLE = "Novedades de la versión %s"
+L.NEWS_OPEN_RAID = "Abrir opciones de banda"
+L.NEWS_CLOSE = "Cerrar"
+L.NEWS_0_22_0_RAID = "Marcos de banda para 10, 20 y 40 jugadores, con el estilo limpio de los marcos de unidad."
+L.NEWS_0_22_0_BLOCKS = "Bloques por grupo de banda, clase o rol, o uno para todos; uno al lado del otro o apilados; dentro de un bloque, por orden de banda, nombre o rol."
+L.NEWS_0_22_0_PROFILES = "Cada tamaño tiene un perfil propio por personaje, con un aspecto totalmente propio: tamaño de celda, textura, fuentes, colores, borde. Copia, restablece, exporta e importa un tamaño."
+L.NEWS_0_22_0_DEBUFFS = "Perjuicios que puedes disipar, como los muestran los addons de sanación: un icono en el centro o un cuadrado de color en una esquina. Hasta cinco indicadores de esquina para tus sanaciones en el tiempo y escudos."
+L.NEWS_0_22_0_ICONS = "Iconos de rol, líder, maestro despojador y comprobación de listos; los miembros fuera de alcance se atenúan; líneas dentro de la celda muestran la amenaza y tu objetivo."
+L.NEWS_0_22_0_WINDOW = "Una ventana de opciones propia (/fuf raid, o Marcos de banda… en /fuf), un botón propio en el minimapa y un modo de prueba que muestra una banda ficticia del tamaño que editas."
+L.NEWS_0_22_0_BLIZZARD = "Los marcos de banda de Blizzard se ocultan mientras los nuestros están activos; un grupo de 5 también puede mostrarse como banda."

@@ -842,3 +842,15 @@ L.RAID_IMPORT_HINT = "Paste a raid size here: it replaces the %s profile."
 -- Raid frames: the ways between the two options windows.
 L.RAID_FRAMES_BUTTON = "Raid frames…"
 L.UNIT_FRAMES_BUTTON = "Unit frames…"
+
+-- What's new (Core/News.lua, Options/News.lua).
+L.NEWS_TITLE = "What's new in %s"
+L.NEWS_OPEN_RAID = "Open raid options"
+L.NEWS_CLOSE = "Close"
+L.NEWS_0_22_0_RAID = "Raid frames for 10, 20 and 40 players, in the clean look of the unit frames."
+L.NEWS_0_22_0_BLOCKS = "Blocks by raid group, class or role, or one for everyone; side by side or stacked; within a block sorted by raid order, name or role."
+L.NEWS_0_22_0_PROFILES = "Each size has a profile of its own per character, with a look entirely its own: cell size, texture, fonts, colours, border. Copy, reset, export and import a size."
+L.NEWS_0_22_0_DEBUFFS = "Debuffs you can dispel, as healer addons show them: an icon in the centre or a coloured square in a corner. Up to five corner indicators for your heals over time and shields."
+L.NEWS_0_22_0_ICONS = "Role, leader, master looter and ready check icons; members out of range fade; lines inside the cell show aggro and your target."
+L.NEWS_0_22_0_WINDOW = "An options window of their own (/fuf raid, or Raid frames… in /fuf), a minimap button of their own, and a test mode that shows a pretend raid of the size you edit."
+L.NEWS_0_22_0_BLIZZARD = "Blizzard's raid frames hide while ours are on; a 5-player group can be shown as a raid too."

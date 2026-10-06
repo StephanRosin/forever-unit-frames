@@ -818,3 +818,15 @@ L.RAID_IMPORT_HINT = "Eine Schlachtzugsgröße hier einfügen: Sie ersetzt das P
 -- Schlachtzugsrahmen: die Wege zwischen den beiden Optionsfenstern.
 L.RAID_FRAMES_BUTTON = "Schlachtzugsrahmen…"
 L.UNIT_FRAMES_BUTTON = "Einheitenrahmen…"
+
+-- Neuigkeiten (Core/News.lua, Options/News.lua).
+L.NEWS_TITLE = "Neu in %s"
+L.NEWS_OPEN_RAID = "Schlachtzugsoptionen öffnen"
+L.NEWS_CLOSE = "Schließen"
+L.NEWS_0_22_0_RAID = "Schlachtzugsrahmen für 10, 20 und 40 Spieler, im schlichten Stil der Einheitenrahmen."
+L.NEWS_0_22_0_BLOCKS = "Blöcke nach Schlachtzuggruppe, Klasse oder Rolle oder einer für alle; nebeneinander oder untereinander; innerhalb eines Blocks nach Schlachtzugsreihenfolge, Name oder Rolle sortiert."
+L.NEWS_0_22_0_PROFILES = "Jede Größe hat pro Charakter ein eigenes Profil mit ganz eigenem Aussehen: Zellengröße, Textur, Schriften, Farben, Rahmen. Eine Größe kopieren, zurücksetzen, exportieren und importieren."
+L.NEWS_0_22_0_DEBUFFS = "Bannbare Debuffs wie in Heiler-Addons: als Symbol in der Mitte oder als farbiges Quadrat in einer Ecke. Bis zu fünf Eckindikatoren für deine Heilungen über Zeit und Schilde."
+L.NEWS_0_22_0_ICONS = "Symbole für Rolle, Anführer, Plündermeister und Bereitschaftscheck; Mitglieder außer Reichweite verblassen; Linien in der Zelle zeigen Aggro und dein Ziel."
+L.NEWS_0_22_0_WINDOW = "Ein eigenes Optionsfenster (/fuf raid oder Schlachtzugsrahmen… in /fuf), eine eigene Minikarten-Schaltfläche und ein Testmodus, der einen Probe-Schlachtzug der bearbeiteten Größe zeigt."
+L.NEWS_0_22_0_BLIZZARD = "Blizzards Schlachtzugsrahmen sind aus, solange unsere an sind; eine 5er-Gruppe lässt sich auch als Schlachtzug anzeigen."

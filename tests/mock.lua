@@ -2261,7 +2261,15 @@ function M.Reset()
 
     _G.SlashCmdList = {}
     _G.UISpecialFrames = {}
-    _G.C_AddOns = { GetAddOnMetadata = function() return "0.1.0" end }
+    -- C_AddOns.GetAddOnMetadata(name, field): a field of an addon's TOC.
+    -- The mock knows one: this addon's ## Version (M.addonVersion; tests
+    -- set another before PLAYER_LOGIN); any other field or addon is nil.
+    M.addonVersion = "0.1.0"
+    _G.C_AddOns = { GetAddOnMetadata = function(name, field)
+        assert(name ~= nil and type(field) == "string", "GetAddOnMetadata: name and field required")
+        if name == "ForeverUnitFrames" and field == "Version" then return M.addonVersion end
+        return nil
+    end }
     -- Post-hook: the original runs first, then fn with the same arguments.
     _G.hooksecurefunc = function(tbl, name, fn)
         if type(tbl) == "string" then tbl, name, fn = _G, tbl, name end

@@ -818,3 +818,15 @@ L.RAID_IMPORT_HINT = "Collez ici une taille de raid : elle remplace le profil %s
 -- Cadres de raid : les accès entre les deux fenêtres d'options.
 L.RAID_FRAMES_BUTTON = "Cadres de raid…"
 L.UNIT_FRAMES_BUTTON = "Cadres d'unité…"
+
+-- Nouveautés (Core/News.lua, Options/News.lua).
+L.NEWS_TITLE = "Nouveautés de la version %s"
+L.NEWS_OPEN_RAID = "Ouvrir les options de raid"
+L.NEWS_CLOSE = "Fermer"
+L.NEWS_0_22_0_RAID = "Des cadres de raid pour 10, 20 et 40 joueurs, dans le style épuré des cadres d'unité."
+L.NEWS_0_22_0_BLOCKS = "Des blocs par groupe de raid, classe ou rôle, ou un seul pour tous ; côte à côte ou empilés ; dans un bloc, triés par ordre de raid, nom ou rôle."
+L.NEWS_0_22_0_PROFILES = "Chaque taille a son propre profil par personnage, avec une apparence entièrement à elle : taille des cellules, texture, polices, couleurs, bordure. Copiez, réinitialisez, exportez et importez une taille."
+L.NEWS_0_22_0_DEBUFFS = "Les affaiblissements que vous pouvez dissiper, comme les montrent les addons de soin : une icône au centre ou un carré coloré dans un coin. Jusqu'à cinq indicateurs de coin pour vos soins sur la durée et vos boucliers."
+L.NEWS_0_22_0_ICONS = "Icônes de rôle, de chef, de maître du butin et d'appel ; les membres hors de portée s'estompent ; des lignes dans la cellule montrent l'aggro et votre cible."
+L.NEWS_0_22_0_WINDOW = "Une fenêtre d'options à eux (/fuf raid, ou Cadres de raid… dans /fuf), un bouton de minicarte à eux, et un mode test qui affiche un faux raid de la taille que vous modifiez."
+L.NEWS_0_22_0_BLIZZARD = "Les cadres de raid de Blizzard se masquent tant que les nôtres sont actifs ; un groupe de 5 peut aussi s'afficher comme un raid."
