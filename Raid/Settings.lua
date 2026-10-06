@@ -139,6 +139,15 @@ RaidSettings.Define({ key = "hideEmpty", code = "HE", scope = "frame", type = "b
 RaidSettings.Define({ key = "panelBorder", code = "PB", scope = "frame", type = "bool", default = true })
 RaidSettings.Define({ key = "blockBorder", code = "BB", scope = "frame", type = "bool", default = false })
 RaidSettings.Define({ key = "cellBorder", code = "CB", scope = "frame", type = "bool", default = false })
+-- The cell's ring (Core/Border.lua): the unit frames' styles, stored by
+-- index: append only; the colour is the flat style's. The corner radius
+-- rounds the cell's bars, with or without a ring.
+RaidSettings.Define({ key = "cellBorderStyle", code = "CY", scope = "frame", type = "enum",
+    values = ns.Settings.Get("borderStyle").values, default = "GOLD" })
+RaidSettings.Define({ key = "cellBorderSize", code = "CZ", scope = "frame", type = "int", min = 1, max = 8, default = 1 })
+RaidSettings.Define({ key = "cellBorderColor", code = "CK", scope = "frame", type = "color", default = { 0, 0, 0, 1 } })
+RaidSettings.Define({ key = "cellCornerRadius", code = "CR", scope = "frame", type = "int", min = 0, max = 12,
+    default = 0 })
 
 -- The cell (Raid/Cell.lua). Health in the class colour, a fixed colour
 -- (healthColor), or a gradient by health. Stored by index: append only.

@@ -41,14 +41,15 @@ local get = Cell.Get
 -- portrait, castbar, the unit frames' aura icons (a cell's are its own,
 -- Raid/CellAuras.lua), combat numbers or threat glow, no overheal lane or
 -- heals past the edge (the next cell sits there), no shadow (it would lie
--- on the neighbours), no power texts. The rows: a thin power strip under
--- the health bar.
+-- on the neighbours), no power texts, a ring right around the cell (the
+-- cell spacing keeps them apart). The rows: a thin power strip under the
+-- health bar.
 local FIXED = {
     titlePercent = 0, portraitMode = "OFF", castbarEnabled = false, combatFeedback = false,
     buffsEnabled = false, debuffsEnabled = false, threatGlow = false,
     titleClassIcon = false, healOverflow = false, healBeyond = false, shadowEnabled = false, groupResurrect = false,
     textHealthLeft = "NAME", textPowerLeft = "NONE", textPowerRight = "NONE",
-    healthPercent = 90, powerPercent = 10,
+    healthPercent = 90, powerPercent = 10, borderPadding = 0,
 }
 
 -- An icon at one of the cell's points sits just inside it: a pixel in
@@ -94,6 +95,10 @@ local MAPPED = {
     fontOutline = function() return get("fontOutline") end,
     fontShadow = function() return get("fontShadow") end,
     borderShow = function() return get("cellBorder") end,
+    borderStyle = function() return get("cellBorderStyle") end,
+    borderSize = function() return get("cellBorderSize") end,
+    borderColor = function() return get("cellBorderColor") end,
+    cornerRadius = function() return get("cellCornerRadius") end,
     raidMarker = function() return get("raidMarker") end,
     raidMarkerSize = function() return get("iconSize") end,
     raidMarkerFramePoint = function() return get("raidMarkerPoint") end,
