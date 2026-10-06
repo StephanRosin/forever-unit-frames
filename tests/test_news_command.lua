@@ -11,11 +11,13 @@ M.RunTimers()
 local run, NW, L = SlashCmdList.FOREVERUNITFRAMES, ns.NewsWindow, ns.L
 
 H.check("seen: not shown at login", NW.IsOpen(), false)
+-- A value neither the login nor the window would write: it must stay.
+ForeverUnitFramesDB.newsSeen = "0.0.1"
 run("news")
 H.checkTrue("/fuf news opens it", NW.IsOpen())
 H.check("the news of this version", NW.frame.titleBar.title:GetText(), "What's new in 0.22.0")
 H.check("the footer names the command", NW.hint:GetText(), "/fuf news shows this again.")
-H.check("newsSeen untouched", ForeverUnitFramesDB.newsSeen, "0.22.0")
+H.check("newsSeen untouched", ForeverUnitFramesDB.newsSeen, "0.0.1")
 run("NEWS")
 H.checkTrue("any case, open again", NW.IsOpen())
 NW.Close()
@@ -35,7 +37,7 @@ run("news")
 H.check("no news: no window", NW.IsOpen(), false)
 H.check("no news: one line", #M.chat, chatBefore + 1)
 H.check("no news: says so", M.chat[#M.chat]:find(L.NEWS_NONE, 1, true) ~= nil, true)
-H.check("no news: newsSeen untouched", ForeverUnitFramesDB.newsSeen, "0.22.0")
+H.check("no news: newsSeen untouched", ForeverUnitFramesDB.newsSeen, "0.0.1")
 
 -- The help names it, in every language.
 run("help")
