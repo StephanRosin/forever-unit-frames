@@ -1707,7 +1707,10 @@ function M.Reset()
             inRange = d.inRange ~= false
             if d.inRange == nil and d.distance then inRange = d.distance <= 40 end
             checked = d.rangeChecked
-            if checked == nil then checked = groupToken(unit) ~= nil or d.inParty == true end
+            -- Group members are checked: party and raid tokens.
+            if checked == nil then
+                checked = groupToken(unit) ~= nil or unit:match("^raid%d+$") ~= nil or d.inParty == true
+            end
         end
         if M.rangeSecret == "inRange" then return M.Secret(inRange), checked end
         if M.rangeSecret then return M.Secret(inRange), M.Secret(checked) end

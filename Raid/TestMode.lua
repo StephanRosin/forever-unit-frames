@@ -28,6 +28,8 @@ Test.STATUS = { [3] = "DEAD", [7] = "OFFLINE" }
 -- samples): a magic one and a curse, a poison, a disease, one without a
 -- type and magic again.
 Test.DEBUFFS = { [2] = { 1, 2 }, [5] = { 3 }, [9] = { 4, 5, 1 } }
+-- Out of range by place in the ten: the rogue.
+Test.OUT_OF_RANGE = { [4] = true }
 -- Raid target markers by raid index: a skull on the first tank, a star.
 Test.MARKERS = { [1] = 8, [6] = 1 }
 -- Group icons by raid index: you lead and loot, member 2 assists; a ready
@@ -44,8 +46,8 @@ function Test.IsOn()
 end
 
 -- The pretend raid of a size: { subgroup, class, assignedRole, name,
--- health, status, role, debuffs, marker, groupIcons } per member, in raid
--- order.
+-- health, status, role, debuffs, marker, groupIcons, outOfRange } per
+-- member, in raid order.
 function Test.Members(size)
     local list = {}
     for i = 1, size do
@@ -57,6 +59,7 @@ function Test.Members(size)
             health = Test.HEALTH[(i - 1) % #Test.HEALTH + 1], status = Test.STATUS[i] or false,
             debuffs = Test.DEBUFFS[(i - 1) % #Test.SAMPLES + 1] or {}, marker = Test.MARKERS[i],
             groupIcons = Test.GROUP_ICONS[i] or {},
+            outOfRange = Test.OUT_OF_RANGE[(i - 1) % #Test.SAMPLES + 1] == true,
         }
     end
     return list

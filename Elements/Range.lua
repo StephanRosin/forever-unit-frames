@@ -57,10 +57,13 @@ Range.INTERACT_INDEX = 4
 -- Test mode: pretend party member 4 is out of range.
 Range.PARTY_SAMPLES = { [4] = true }
 
--- Frames that may fade: the setting's frames, and the party pets, whose
--- derived scope follows the party's.
+-- Frames that may fade: the setting's frames, the party pets, whose
+-- derived scope follows the party's, and raid cells (frame.fadesOutOfRange,
+-- Raid/Cell.lua: their derived scope takes switch and opacity from the
+-- raid profile).
 local function applies(frame)
     return Settings.AppliesTo(Settings.Get("rangeFade"), frame.key) or frame.key == ns.Party.PET_KEY
+        or frame.fadesOutOfRange == true
 end
 
 local function enabled(frame)
@@ -507,12 +510,16 @@ end
 
 function Range.Build() end
 
--- Whether any frame has fading on (the party's setting covers its pets).
+-- Whether any frame has fading on (the party's setting covers its pets;
+-- raid cells count while one shows a unit).
 local SCOPES = { "party", "target", "targettarget", "focus", "pet" }
 local function anyEnabled()
     if not (Range.ReactionOn("friendly") or Range.ReactionOn("hostile")) then return false end
     for _, scope in ipairs(SCOPES) do
         if Config.Get(scope, "rangeFade") then return true end
+    end
+    for _, cell in ipairs(ns.RaidCell and ns.RaidCell.buttons or {}) do
+        if cell.unit and enabled(cell) then return true end
     end
     return false
 end
@@ -521,6 +528,9 @@ end
 local function syncDriver()
     Range.driver:SetShown(anyEnabled())
 end
+
+-- Raid cells got or lost units: the timer may be needed now, or no more.
+ns.Listen("RAID_CELLS_CHANGED", syncDriver)
 
 -- A mode switched off or on starts or stops the timer; the next check
 -- (the poll, or the restyle) redraws the frames.
@@ -540,10 +550,16 @@ function Range.Update(frame)
     if applies(frame) then check(frame) end
 end
 
--- In test mode rangeSample is true for a member shown out of range,
+-- In test mode rangeSample is true for a member shown out of range (a
+-- raid test cell's own, frame.sample.outOfRange, or the pretend party's),
 -- false for the others; nil outside test mode.
 function Range.Preview(frame, on)
     if not applies(frame) then return end
+    if on and frame.sample then
+        frame.rangeSample = frame.sample.outOfRange == true
+        check(frame)
+        return
+    end
     if on then
         frame.rangeSample = (frame.sampleIndex and Range.PARTY_SAMPLES[frame.sampleIndex]) and true or false
         check(frame)
