@@ -179,7 +179,8 @@ end
 -- are secret, and their size must change together with the layout.
 
 -- The groups a frame has containers for: those whose settings apply to
--- it (the dispels group only on the party).
+-- it (the dispels group only on the party). A frame may bring its own
+-- list in frame.auraGroupKeys (raid cells: none, Raid/Cell.lua).
 local function groupKeys(frame)
     if frame.auraGroupKeys then return frame.auraGroupKeys end
     local keys = {}

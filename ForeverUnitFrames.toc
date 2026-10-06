@@ -70,6 +70,8 @@ Units\Party.xml
 Units\PartyPets.lua
 Units\PartyPets.xml
 Units\PartyTargets.lua
+Raid\Cell.lua
+Raid\Cell.xml
 Core\Blizzard.lua
 Core\Movers.lua
 Core\Commands.lua

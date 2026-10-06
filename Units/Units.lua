@@ -66,13 +66,14 @@ function ns.RegisterElement(element)
 end
 
 -- Every unit frame that exists: the single frames, the party members and
--- pets the headers made, and the pretend ones of test mode. For events
--- that concern all of them at once (raid markers, the group's leader, a
--- ready check). fn(frame) runs for each, shown or not.
+-- pets and the raid cells the headers made, and the pretend ones of test
+-- mode. For events that concern all of them at once (raid markers, the
+-- group's leader, a ready check). fn(frame) runs for each, shown or not.
 function ns.Units.ForEachFrame(fn)
     for _, frame in pairs(ns.Frames or {}) do fn(frame) end
     for _, list in ipairs({ ns.Party and ns.Party.buttons, ns.Party and ns.Party.fakes,
-        ns.PartyPets and ns.PartyPets.buttons, ns.PartyPets and ns.PartyPets.fakes }) do
+        ns.PartyPets and ns.PartyPets.buttons, ns.PartyPets and ns.PartyPets.fakes,
+        ns.RaidCell and ns.RaidCell.buttons, ns.RaidCell and ns.RaidCell.fakes }) do
         for _, frame in ipairs(list or {}) do fn(frame) end
     end
 end

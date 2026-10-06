@@ -88,6 +88,17 @@ M.templates = {
         end
         ForeverUnitFrames.PartyButtonOnLoad(w)
     end,
+    -- Raid/Cell.xml
+    ForeverUnitFramesRaidButtonTemplate = function(w)
+        w._w, w._h = 80, 38
+        w._clicks = { "AnyUp" }
+        w._attr["*type1"] = "target"
+        w._attr["*type2"] = "togglemenu"
+        w._scripts.OnAttributeChanged = function(self, name, value)
+            ForeverUnitFrames.RaidButtonOnAttributeChanged(self, name, value)
+        end
+        ForeverUnitFrames.RaidButtonOnLoad(w)
+    end,
     -- Units/PartyPets.xml
     ForeverUnitFramesPartyPetButtonTemplate = function(w)
         w._w, w._h = 160, 20
