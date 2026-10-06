@@ -45,14 +45,15 @@ local function general(key) return ns.RaidConfig.Get("general", key) end
 
 -- The rings around the panel and around each block: the unit frames' gold
 -- border (Core/Border.lua) in derived scopes of their own, square and
--- without shadow, shown while switched on in the raid profile.
+-- without shadow, shown while switched on in the raid profile; the rest
+-- as a cell answers it, never as the party frame is set.
 local PANEL_RING = { borderStyle = "GOLD", borderSize = 3, borderPadding = 3, cornerRadius = 0, shadowEnabled = false }
 local BLOCK_RING = { borderStyle = "GOLD", borderSize = 2, borderPadding = 1, cornerRadius = 0, shadowEnabled = false }
-ns.Config.Derive(Header.PANEL_SCOPE, ns.Party.KEY, function(key)
+ns.Config.Derive(Header.PANEL_SCOPE, Cell.KEY, function(key)
     if key == "borderShow" then return get("panelBorder") end
     return PANEL_RING[key]
 end)
-ns.Config.Derive(Header.BLOCK_SCOPE, ns.Party.KEY, function(key)
+ns.Config.Derive(Header.BLOCK_SCOPE, Cell.KEY, function(key)
     if key == "borderShow" then return get("blockBorder") end
     return BLOCK_RING[key]
 end)
@@ -152,8 +153,8 @@ local function styleTitle(d, block, s)
         return
     end
     local C = ns.Config
-    ns.Texts.SetFont(title, ns.Media.Font(C.Get(ns.Party.KEY, "fontFace")), Header.TITLE_SIZE,
-        C.Get(ns.Party.KEY, "fontOutline"))
+    ns.Texts.SetFont(title, ns.Media.Font(C.Get(Cell.KEY, "fontFace")), Header.TITLE_SIZE,
+        C.Get(Cell.KEY, "fontOutline"))
     title:ClearAllPoints()
     title:SetPoint("TOPLEFT", d, "TOPLEFT", 0, 0)
     title:SetPoint("TOPRIGHT", d, "TOPRIGHT", 0, 0)
@@ -343,10 +344,5 @@ ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
     if scope == nil or (scope == "general" and (key == nil or key == "enabled" or key == "showInParty")) then
         ns.AfterCombat("partyStyle", ns.Party.StyleAll)
     end
-end)
--- The cells wear the party look.
-ns.Listen("CONFIG_CHANGED", function(scope)
-    if not Header.anchor then return end
-    if scope == nil or scope == "general" or scope == ns.Party.KEY then refresh() end
 end)
 ns.Listen("PIXEL_GRID_CHANGED", function() if Header.anchor then refresh() end end)

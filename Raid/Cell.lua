@@ -3,12 +3,13 @@ local _, ns = ...
 -- One raid cell: a unit button the block headers (Raid/Header.lua) make
 -- from the template in Raid/Cell.xml, running the unit-frame elements
 -- (ns.Elements) like a party member does. Its settings come through a
--- derived unit-frame scope, "raid": the party frame's look (fonts, bar
--- texture, colours, border style), with everything a cell never shows
--- switched off and the cell's own look taken from the raid profile of the
--- active size. Name and second line stand centred in the health bar
--- (Elements/Texts.lua, frame.centerTexts); the power strip follows its
--- own rule per unit (frame.showsPower).
+-- derived unit-frame scope, "raid", that answers every unit-frame setting
+-- itself: the cell's look from the raid profile of the active size,
+-- everything a cell never shows switched off, and the unit frames'
+-- shipped defaults for the rest, so nothing set for the party frame or in
+-- General changes a cell. Name and second line stand centred in the
+-- health bar (Elements/Texts.lua, frame.centerTexts); the power strip
+-- follows its own rule per unit (frame.showsPower).
 --
 -- No initialConfigFunction: secure snippets do not run on this client.
 -- The XML gives a cell its starting size and clicks; Lua sizes it when
@@ -98,12 +99,22 @@ local MAPPED = {
     rangeAlpha = function() return get("rangeAlpha") end,
 }
 
+-- Everything else is the unit frames' shipped default for a party frame
+-- (Core/Settings.lua with the look of Core/Preset.lua), whatever the party
+-- frame or General is set to: the heal, shield and power colours, the
+-- aura icons' border, and what a cell has no use for (title texts, the
+-- party's aura groups, castbar details ...). The party frame is the
+-- derived scope's base only in name: every key is answered here.
+local function shipped(key)
+    return ns.Settings.Default(ns.Settings.Get(key), ns.Party.KEY)
+end
+
 function Cell.Resolve(key)
     local fixed = FIXED[key]
     if fixed ~= nil then return fixed end
     local mapped = MAPPED[key]
     if mapped then return mapped() end
-    return nil
+    return shipped(key)
 end
 Config.Derive(Cell.KEY, ns.Party.KEY, Cell.Resolve)
 

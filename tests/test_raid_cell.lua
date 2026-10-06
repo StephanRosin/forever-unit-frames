@@ -1,7 +1,8 @@
 -- Raid cells (Raid/Cell.lua, Raid/Cell.xml): unit buttons made by a group
 -- header that run the unit-frame elements under the derived scope "raid":
--- the party look, a cell's fixed choices, the raid profile of the active
--- size. Clicks, click-casting, events per unit, the power strip's rule.
+-- a cell's fixed choices, the raid profile of the active size, the unit
+-- frames' shipped defaults for the rest. Clicks, click-casting, events
+-- per unit, the power strip's rule.
 local M = H.M
 local ns = H.LoadAddon()
 local RC, Cell = ns.RaidConfig, ns.RaidCell
@@ -48,7 +49,9 @@ H.check("class colour", C.Get("raid", "healthColorMode"), "CLASS")
 H.check("name white", C.Get("raid", "barNameColorMode"), "WHITE")
 H.check("no cell border", C.Get("raid", "borderShow"), false)
 H.check("power strip on", C.Get("raid", "powerEnabled"), true)
-H.check("party look otherwise", C.Get("raid", "barTexture"), C.Get("party", "barTexture"))
+C.Set("party", "barTexture", "Other")
+H.check("not the party frame's look", C.Get("raid", "barTexture") == "Other", false)
+C.Set("party", "barTexture", "Flat")
 RC.Set("r10", "secondLine", "PERCENT")
 RC.Set("r10", "nameClassColor", true)
 RC.Set("r10", "cellBorder", true)

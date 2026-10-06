@@ -116,7 +116,7 @@ RC.Set("r20", "cellBorder", true)
 H.check("cell border: cells further apart", Header.headers[1]:GetAttribute("yOffset"), -4)
 H.check("cell border: cells inside the block", point(Header.headers[1]), "TOPLEFT anchor TOPLEFT 1 -1")
 ns.Config.Set("general", "borderSize", 2)
-H.check("unit-frame border size counts", Header.headers[1]:GetAttribute("yOffset"), -6)
+H.check("the unit frames' border size does not count", Header.headers[1]:GetAttribute("yOffset"), -4)
 ns.Config.Set("general", "borderSize", 1)
 RC.Set("r20", "cellBorder", false)
 
