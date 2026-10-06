@@ -88,12 +88,14 @@ either domain.
 
 ### Storage
 
-`ForeverUnitFramesDB.raid[charKey][size]`, with `charKey = "Name-Realm"` and
-`size` one of `10`, `20`, `40`. As everywhere else only differences from the
-defaults are stored, in the existing short encoding. Character-wide raid
-settings (raid view in party, hide Blizzard raid frames, size switch) are stored
-under `ForeverUnitFramesDB.raid[charKey].general`. Storing per character inside
-the account-wide table is what makes copying from another character possible.
+`ForeverUnitFramesDB.raid[charKey]`, with `charKey = "Name-Realm"`, is one
+profile table with the scopes `general` (character-wide raid settings: raid
+view in party, hide Blizzard raid frames, size switch) and `r10`, `r20`, `r40`
+(one per size). As everywhere else it holds only differences from the
+defaults. The table in use is the saved one itself (cleaned at login), so a
+change is in SavedVariables at once; the short encoding is used only for
+export and import of one size. Storing per character inside the
+account-wide table is what makes copying from another character possible.
 The unit-frame profile stays account-wide and unchanged.
 
 ## 4. Panel, grouping and layout
