@@ -1272,7 +1272,8 @@ function M.Reset()
     _G.IsInGroup = function() return #M.group > 0 or M.inRaid end
     -- Raid: M.inRaid (M.SetRaid). Visibility drivers (SecureStateDriver.lua:
     -- RegisterStateDriver(frame, "visibility", values) sets state-visibility);
-    -- the mock knows the conditions the addon uses.
+    -- the mock knows the conditions the addon uses ([group] is a party or a
+    -- raid) and evaluates them again when the group changes.
     M.inRaid = false
     M.drivers = setmetatable({}, { __mode = "k" })
     _G.IsInRaid = function() return M.inRaid end
@@ -1281,9 +1282,15 @@ function M.Reset()
             local cond, action = clause:match("^%[(.-)%]%s*(%a+)$")
             if not cond then action = clause:match("^(%a+)$") end
             local match = cond == nil or (cond == "group:raid" and M.inRaid) or (cond == "nogroup:raid" and not M.inRaid)
-            assert(cond == nil or cond == "group:raid" or cond == "nogroup:raid", "mock: unknown condition " .. tostring(cond))
+                or (cond == "group" and IsInGroup())
+            assert(cond == nil or cond == "group:raid" or cond == "nogroup:raid" or cond == "group",
+                "mock: unknown condition " .. tostring(cond))
             if match then
+                -- The state driver is secure code: it may show and hide
+                -- protected frames in combat.
+                M.secureDepth = M.secureDepth + 1
                 if action == "show" then frame:Show() else frame:Hide() end
+                M.secureDepth = M.secureDepth - 1
                 return
             end
         end
@@ -2188,6 +2195,7 @@ end
 -- Joins or leaves a party: M.SetGroup({ "party1", "party2" }) or M.SetGroup({}).
 function M.SetGroup(units)
     M.group = units
+    M.SetRaid(M.inRaid)
     M.FireEvent("GROUP_ROSTER_UPDATE")
 end
 

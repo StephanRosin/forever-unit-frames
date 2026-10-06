@@ -94,14 +94,22 @@ end
 
 -- Shows a header (Hide + Show lays its buttons out again, OnShow). In a
 -- raid group it hides by a visibility driver when the party is set to;
--- out of combat only, like everything done to the header.
+-- out of combat only, like everything done to the header. With the raid
+-- view in party (Raid/Header.lua) the raid panel shows a 5-player group,
+-- so the party hides in any group, or in a party only when it is kept in
+-- raids.
 Party.RAID_DRIVER = "[group:raid] hide; show"
+Party.GROUP_DRIVER = "[group] hide; show"
+Party.PARTY_DRIVER = "[group:raid] show; [group] hide; show"
 function Party.ShowHeader(header, want)
     UnregisterStateDriver(header, "visibility")
     header:Hide()
     if not want then return end
+    local raidView = ns.RaidHeader ~= nil and ns.RaidHeader.ReplacesParty()
     if get("partyHideInRaid") then
-        RegisterStateDriver(header, "visibility", Party.RAID_DRIVER)
+        RegisterStateDriver(header, "visibility", raidView and Party.GROUP_DRIVER or Party.RAID_DRIVER)
+    elseif raidView then
+        RegisterStateDriver(header, "visibility", Party.PARTY_DRIVER)
     else
         header:Show()
     end

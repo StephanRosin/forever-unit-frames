@@ -62,6 +62,12 @@ function Header.Enabled()
     return ns.RaidConfig.Profile() ~= nil and general("enabled") == true
 end
 
+-- The raid view in party: a 5-player group shows here, the party frames
+-- hide (Units/Party.lua asks).
+function Header.ReplacesParty()
+    return Header.Enabled() and general("showInParty") == true
+end
+
 -- Whether the panel shows now: in a raid, or in a party with the raid
 -- view in party on.
 function Header.Active()
@@ -273,6 +279,9 @@ function Header.Create()
     Header.panel:SetPoint("TOPLEFT", Header.anchor, "TOPLEFT", 0, 0)
     Header.Refresh()
     ns.Movers.Attach(Header.anchor, Header.MoverSpec())
+    -- The party block may have been styled before the raid profile was
+    -- there to ask.
+    ns.AfterCombat("partyStyle", ns.Party.StyleAll)
     return Header.anchor
 end
 
@@ -303,9 +312,13 @@ ns.On("GROUP_ROSTER_UPDATE", Header.UpdateVisibility)
 ns.Listen("RAID_SIZE_CHANGED", function() if Header.anchor then refresh() end end)
 -- A setting of the active size or the character; another size's profile
 -- does not show.
-ns.Listen("RAID_CONFIG_CHANGED", function(scope)
+ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
     if not Header.anchor then return end
     if scope == nil or scope == "general" or scope == ns.Raid.Scope(Cell.Size()) then refresh() end
+    -- Raid view in party switched, or the raid frames: the party block.
+    if scope == nil or (scope == "general" and (key == nil or key == "enabled" or key == "showInParty")) then
+        ns.AfterCombat("partyStyle", ns.Party.StyleAll)
+    end
 end)
 -- The cells wear the party look.
 ns.Listen("CONFIG_CHANGED", function(scope)
