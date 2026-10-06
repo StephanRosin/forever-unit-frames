@@ -403,10 +403,16 @@ local ROW_ACTIVE = {
     classOrder = function() return RaidConfig.Get(Raid.Scope(RaidOptions.Size()), "groupBy") == "CLASS" end,
 }
 
+-- Only a row whose state changes: SetEnabled repaints its buttons as
+-- not hovered, which every change (a click on + / -) would otherwise do.
 local function setRowStates()
     forEachRow(function(row)
         local active = ROW_ACTIVE[row.key]
-        row:SetEnabled(not inCombat and (not active or active()))
+        local on = not inCombat and (not active or active())
+        if row.enabledState ~= on then
+            row.enabledState = on
+            row:SetEnabled(on)
+        end
     end)
 end
 

@@ -45,6 +45,15 @@ H.check("typed", RC.Get("r10", "x"), -480)
 H.check("typed: no relayout", count(ns.RaidCell, "Style", function() enter(x, "-470") end), 0)
 H.check("the panel moved", select(4, Header.anchor.mover:GetPoint(1)), -470)
 
+-- The hovered button keeps its hover look over repeated clicks (the
+-- window does not re-enable rows whose state did not change).
+local accent = ns.Style.COLORS.accent
+x.plus:GetScript("OnEnter")(x.plus)
+click(x.plus); click(x.plus)
+H.check("hover kept after clicks", x.plus.text._color[1], accent[1])
+H.check("hover border kept", x.plus.edges[1]._color[1], accent[1])
+x.plus:GetScript("OnLeave")(x.plus)
+
 -- Locked in combat like every row.
 M.combat = true
 M.FireEvent("PLAYER_REGEN_DISABLED")
