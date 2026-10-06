@@ -241,8 +241,9 @@ local function placeAnchor()
 end
 
 -- The mover (Core/Movers.lua): it holds the active size's x / y in the
--- raid profile, as the panel's top-left corner. Its label is Blizzard's
--- word for a raid and the size.
+-- raid profile, as the panel's top-left corner; while the raid window's
+-- test mode is on, those of the size it previews. Its label is
+-- Blizzard's word for a raid and the size.
 function Header.MoverSpec()
     return {
         scope = function() return ns.Raid.Scope(Cell.Size()) end, config = ns.RaidConfig, id = "raid",
