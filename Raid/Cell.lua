@@ -122,10 +122,11 @@ local function classOf(frame)
     return readable(ok, token)
 end
 
-local function roleOf(frame)
+function Cell.Role(frame)
     if frame.sample then return frame.sample.role end
     return readable(pcall(UnitGroupRolesAssigned, frame.unit))
 end
+local roleOf = Cell.Role
 
 -- The power strip's rule (powerStrip; OFF switches the bar off
 -- altogether): everyone, mana users by class, or healers by assigned
