@@ -48,7 +48,7 @@ local FIXED = {
     buffsEnabled = false, debuffsEnabled = false, threatGlow = false,
     titleClassIcon = false, healOverflow = false, healBeyond = false, shadowEnabled = false, groupResurrect = false,
     textHealthLeft = "NAME", textPowerLeft = "NONE", textPowerRight = "NONE",
-    healthPercent = 90, powerPercent = 10, fontSize = 11, valueFontSize = 10,
+    healthPercent = 90, powerPercent = 10,
 }
 
 -- An icon at one of the cell's points sits just inside it: a pixel in
@@ -85,6 +85,11 @@ local MAPPED = {
     powerEnabled = function() return get("powerStrip") ~= "OFF" end,
     textHealthRight = function() return get("secondLine") end,
     barNameColorMode = function() return get("nameClassColor") and "CLASS" or "WHITE" end,
+    fontFace = function() return get("fontFace") end,
+    fontSize = function() return get("nameFontSize") end,
+    valueFontSize = function() return get("secondFontSize") end,
+    fontOutline = function() return get("fontOutline") end,
+    fontShadow = function() return get("fontShadow") end,
     borderShow = function() return get("cellBorder") end,
     raidMarker = function() return get("raidMarker") end,
     raidMarkerSize = function() return get("iconSize") end,

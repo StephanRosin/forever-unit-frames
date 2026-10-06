@@ -742,3 +742,16 @@ L.RAID_ENUM_indicatorTime_NONE = "Nicht anzeigen"
 -- Schlachtzugsrahmen: das Optionsfenster (Raid/Options/Window.lua).
 L.RAID_WINDOW_TITLE = "Schlachtzugsrahmen"
 L.RAID_SIZE_SHOWN = "%s (angezeigt)"
+
+-- Schlachtzugsrahmen: die Schriften der Zelle.
+L.RAID_SECTION_fonts = "Schriften"
+L.RAID_SETTING_fontFace = "Schriftart"
+L.RAID_SETTING_nameFontSize = "Größe des Namens"
+L.RAID_SETTING_secondFontSize = "Größe der 2. Zeile"
+L.RAID_SETTING_fontOutline = "Schriftstil"
+L.RAID_SETTING_fontShadow = "Schriftschatten"
+L.RAID_ENUM_fontOutline_NONE = "Keine"
+L.RAID_ENUM_fontOutline_OUTLINE = "Kontur"
+L.RAID_ENUM_fontOutline_THICKOUTLINE = "Dicke Kontur"
+L.RAID_ENUM_fontOutline_MONOCHROME = "Monochrom"
+L.RAID_ENUM_fontOutline_SOFT = "Weiche Kontur"

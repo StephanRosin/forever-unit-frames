@@ -742,3 +742,16 @@ L.RAID_ENUM_indicatorTime_NONE = "Non affiché"
 -- Cadres de raid : la fenêtre des options (Raid/Options/Window.lua).
 L.RAID_WINDOW_TITLE = "Cadres de raid"
 L.RAID_SIZE_SHOWN = "%s (affiché)"
+
+-- Cadres de raid : les polices de la cellule.
+L.RAID_SECTION_fonts = "Polices"
+L.RAID_SETTING_fontFace = "Police"
+L.RAID_SETTING_nameFontSize = "Taille du nom"
+L.RAID_SETTING_secondFontSize = "Taille de la 2e ligne"
+L.RAID_SETTING_fontOutline = "Style de police"
+L.RAID_SETTING_fontShadow = "Ombre de police"
+L.RAID_ENUM_fontOutline_NONE = "Aucun"
+L.RAID_ENUM_fontOutline_OUTLINE = "Contour"
+L.RAID_ENUM_fontOutline_THICKOUTLINE = "Contour épais"
+L.RAID_ENUM_fontOutline_MONOCHROME = "Monochrome"
+L.RAID_ENUM_fontOutline_SOFT = "Contour doux"

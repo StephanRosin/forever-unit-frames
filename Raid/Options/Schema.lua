@@ -44,6 +44,7 @@ Schema.TABS = {
     } },
     { id = "texts", sections = {
         { id = "texts", keys = { "nameClassColor", "secondLine" } },
+        { id = "fonts", keys = { "fontFace", "nameFontSize", "secondFontSize", "fontOutline", "fontShadow" } },
     } },
     { id = "debuffs", sections = {
         { id = "dispel", keys = { "dispelIcon", "dispelFilter", "dispelIconSize", "dispelTint" } },

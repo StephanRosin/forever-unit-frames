@@ -743,3 +743,16 @@ L.RAID_ENUM_indicatorTime_NONE = "No mostrar"
 -- Marcos de banda: la ventana de opciones (Raid/Options/Window.lua).
 L.RAID_WINDOW_TITLE = "Marcos de banda"
 L.RAID_SIZE_SHOWN = "%s (mostrado)"
+
+-- Marcos de banda: las fuentes de la celda.
+L.RAID_SECTION_fonts = "Fuentes"
+L.RAID_SETTING_fontFace = "Fuente"
+L.RAID_SETTING_nameFontSize = "Tamaño del nombre"
+L.RAID_SETTING_secondFontSize = "Tamaño de la 2.ª línea"
+L.RAID_SETTING_fontOutline = "Estilo de fuente"
+L.RAID_SETTING_fontShadow = "Sombra de fuente"
+L.RAID_ENUM_fontOutline_NONE = "Ninguno"
+L.RAID_ENUM_fontOutline_OUTLINE = "Contorno"
+L.RAID_ENUM_fontOutline_THICKOUTLINE = "Contorno grueso"
+L.RAID_ENUM_fontOutline_MONOCHROME = "Monocromo"
+L.RAID_ENUM_fontOutline_SOFT = "Contorno suave"

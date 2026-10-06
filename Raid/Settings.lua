@@ -152,6 +152,18 @@ RaidSettings.Define({ key = "powerStrip", code = "PS", scope = "frame", type = "
 RaidSettings.Define({ key = "secondLine", code = "SL", scope = "frame", type = "enum",
     values = { "DEFICIT", "PERCENT", "CURRENT", "NONE" }, default = "DEFICIT" })
 RaidSettings.Define({ key = "nameClassColor", code = "NC", scope = "frame", type = "bool", default = false })
+-- The cell's texts: the font, the name's size and the second line's (the
+-- status words too), outline and shadow; the block titles take the font
+-- and the outline. The outlines are the unit frames' (Core/Settings.lua),
+-- stored by index: append only.
+RaidSettings.Define({ key = "fontFace", code = "FF", scope = "frame", type = "media", mediaKind = "font",
+    default = "Friz Quadrata" })
+RaidSettings.Define({ key = "nameFontSize", code = "NF", scope = "frame", type = "int", min = 6, max = 24, default = 11 })
+RaidSettings.Define({ key = "secondFontSize", code = "SF", scope = "frame", type = "int", min = 6, max = 24,
+    default = 10 })
+RaidSettings.Define({ key = "fontOutline", code = "FO", scope = "frame", type = "enum",
+    values = ns.Settings.Get("fontOutline").values, default = "OUTLINE" })
+RaidSettings.Define({ key = "fontShadow", code = "FH", scope = "frame", type = "bool", default = true })
 
 -- Debuffs (Raid/CellAuras.lua). The centre icon shows the most important
 -- debuff you can dispel (MINE, the client's RAID filter) or any

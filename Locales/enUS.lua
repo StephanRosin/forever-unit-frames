@@ -766,3 +766,16 @@ L.RAID_ENUM_indicatorTime_NONE = "Not shown"
 -- Raid frames: the options window (Raid/Options/Window.lua).
 L.RAID_WINDOW_TITLE = "Raid frames"
 L.RAID_SIZE_SHOWN = "%s (shown)"
+
+-- Raid frames: the cell's fonts.
+L.RAID_SECTION_fonts = "Fonts"
+L.RAID_SETTING_fontFace = "Font"
+L.RAID_SETTING_nameFontSize = "Name size"
+L.RAID_SETTING_secondFontSize = "Second line size"
+L.RAID_SETTING_fontOutline = "Font style"
+L.RAID_SETTING_fontShadow = "Font shadow"
+L.RAID_ENUM_fontOutline_NONE = "None"
+L.RAID_ENUM_fontOutline_OUTLINE = "Outline"
+L.RAID_ENUM_fontOutline_THICKOUTLINE = "Thick outline"
+L.RAID_ENUM_fontOutline_MONOCHROME = "Monochrome"
+L.RAID_ENUM_fontOutline_SOFT = "Soft outline"
