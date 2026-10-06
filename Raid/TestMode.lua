@@ -1,8 +1,12 @@
 local _, ns = ...
 
--- Test mode for the raid panel (Options/TestMode.lua fires TEST_MODE): a
--- pretend raid of the active size where the blocks are, laid out exactly
--- like the real ones (Raid/Layout.lua). The pretend cells are secure
+-- Test mode for the raid panel: a pretend raid where the blocks are,
+-- laid out exactly like the real ones (Raid/Layout.lua). On with the unit
+-- frames' test mode (Options/TestMode.lua fires TEST_MODE) or with the
+-- raid options window's own switch (Test.Set). While the raid window is
+-- open it shows the size the window edits, at that size's position
+-- (Test.Preview; Raid/Cell.lua asks Test.PreviewSize); otherwise the
+-- active size. The pretend cells are secure
 -- buttons on the player, so clicks target you, each with a sample of its
 -- own (Elements/Health.lua: Health.Sample): a class (name and colour; the
 -- name is Blizzard's class name), health, a role, and one dead, one
@@ -42,10 +46,55 @@ Test.GROUP_ICONS = {
     [4] = { ready = "notready" }, [5] = { ready = "waiting" },
 }
 
-local on = false
+local on = false     -- the unit frames' test mode
+local own = false    -- the raid window's switch
+local preview        -- the size the raid window edits, while it is open
 
 function Test.IsOn()
-    return on and Header.Enabled()
+    return (on or own) and Header.Enabled()
+end
+
+-- The raid window's switch is on.
+function Test.IsOwnOn()
+    return own
+end
+
+-- The size test mode shows instead of the active one: the raid window's,
+-- while test mode is on; else nil.
+function Test.PreviewSize()
+    if preview and Test.IsOn() then return preview end
+    return nil
+end
+
+-- The panel follows a change of test mode: the plain panel at once in
+-- combat, the cells with the next layout, after combat if it had already
+-- begun.
+local function relayout()
+    if not Header.anchor then return end
+    if InCombatLockdown() then Header.UpdateVisibility() end
+    ns.AfterCombat("raidLayout", Header.Refresh)
+end
+
+-- The raid window's switch (RAID_TEST_MODE tells the window). Turning it
+-- on is refused in combat; off always works.
+function Test.Set(state)
+    state = state and true or false
+    if state and InCombatLockdown() then
+        ns.Print(ns.L.TEST_MODE_COMBAT)
+        return false
+    end
+    if state == own then return true end
+    own = state
+    relayout()
+    ns.Fire("RAID_TEST_MODE", own)
+    return true
+end
+
+-- The raid window opened on a size or switched to another (nil: closed).
+function Test.Preview(size)
+    if size == preview then return end
+    preview = size
+    if Test.IsOn() then relayout() end
 end
 
 -- The pretend raid of a size: { subgroup, class, assignedRole, name,
@@ -163,9 +212,11 @@ end
 
 ns.Listen("TEST_MODE", function(state)
     on = state and true or false
-    if not Header.anchor then return end
-    -- The panel is a plain frame: in combat it follows at once, the
-    -- cells with the layout after combat.
-    if InCombatLockdown() then Header.UpdateVisibility() end
-    ns.AfterCombat("raidLayout", Header.Refresh)
+    relayout()
+end)
+
+-- Entering combat ends the raid window's test mode, as the unit frames'
+-- does its own.
+ns.On("PLAYER_REGEN_DISABLED", function()
+    if own then Test.Set(false) end
 end)

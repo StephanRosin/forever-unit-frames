@@ -26,9 +26,11 @@ Cell.buttons = {}
 -- Test mode's pretend cells (Raid/TestMode.lua).
 Cell.fakes = {}
 
--- The size whose profile the cells show; 10 until the size is known.
+-- The size whose profile the cells show: the active one, 10 until it is
+-- known; in test mode the one the raid options window edits.
 function Cell.Size()
-    return ns.RaidSize.Current() or 10
+    local test = ns.RaidTestMode
+    return test and test.PreviewSize() or ns.RaidSize.Current() or 10
 end
 
 -- A setting of the raid profile the cells show.

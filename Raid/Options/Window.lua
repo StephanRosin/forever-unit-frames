@@ -22,7 +22,7 @@ local SIZE_TAB_PADDING, TAB_PADDING, TAB_MIN_W, UNDERLINE_H, ACCENT_W = 24, 28, 
 local SCROLLBAR_W, WHEEL_STEP = 10, 40
 local CONTENT_W = WIDTH - SCROLLBAR_W
 local PAGE_TOP, PAGE_BOTTOM, SECTION_GAP, INSET, NOTE_H = 4, 16, 8, 16, 34
-local BUTTON_H, DROPDOWN_W, GAP, WIDE_BUTTON_W, SHARE_BUTTON_W = 24, 160, 8, 160, 140
+local BUTTON_H, BUTTON_W, DROPDOWN_W, GAP, WIDE_BUTTON_W, SHARE_BUTTON_W = 24, 120, 160, 8, 160, 140
 local TEXT_AREA_H, MESSAGE_H, CONFIRM_SECONDS = 70, 20, 3
 local DEFAULT_POSITION = { point = "TOPLEFT", relativePoint = "TOPLEFT", x = 90, y = -150 }
 
@@ -345,12 +345,15 @@ local function anchorScroll()
     frame.scroll:SetPoint("BOTTOMRIGHT", frame.body, "BOTTOMRIGHT", -SCROLLBAR_W, 0)
 end
 
+local paintTestButton
+
 local function applyLock()
     local on = not inCombat
     forEachRow(function(row) row:SetEnabled(on) end)
     for _, control in ipairs(frame.lockedControls) do control:SetEnabled(on) end
     RaidOptions.combatNotice:SetShown(inCombat)
     anchorScroll()
+    paintTestButton()
 end
 
 -- Title bar, footer, body ---------------------------------------------------------
@@ -541,12 +544,26 @@ function RaidOptions.ShowShare(on)
     RaidOptions.share:SetShown(on)
 end
 
+-- Test mode's button: outlined while the window's test mode is on.
+function paintTestButton()
+    local button = RaidOptions.testButton
+    local testOn = ns.RaidTestMode.IsOwnOn()
+    Style.SetBorderColor(button, testOn and "accent" or "border")
+    local idle = button:IsEnabled() and "text" or "muted"
+    Style.Paint(button.text, testOn and "accent" or idle)
+end
+
 local function createFooter(parent)
     local footer = CreateFrame("Frame", nil, parent)
     footer:SetHeight(FOOTER_H)
     footer:SetPoint("BOTTOMLEFT"); footer:SetPoint("BOTTOMRIGHT")
     Style.Fill(footer, "panel")
     horizontalLine(footer, "TOP")
+    local test = Widgets.Button(footer, { text = L.TEST_MODE_ON, width = BUTTON_W,
+        onClick = function() ns.RaidTestMode.Set(not ns.RaidTestMode.IsOwnOn()) end })
+    test:SetPoint("LEFT", footer, "LEFT", 12, 0)
+    test:HookScript("OnLeave", paintTestButton)
+    RaidOptions.testButton = test
     local reset = ns.Options.ConfirmButton(footer, L.RAID_RESET_SIZE,
         function() ns.RaidProfiles.ResetSize(RaidOptions.Size()) end)
     reset:SetPoint("RIGHT", footer, "RIGHT", -12, 0)
@@ -616,13 +633,16 @@ local function createWindow()
     createBody(frame, frame.sizeBar, footer)
     -- Locked in combat with the rows.
     frame.lockedControls = { RaidOptions.sizeModeRow, RaidOptions.copyRow, RaidOptions.resetButton,
-        RaidOptions.importButton, RaidOptions.importArea.edit }
+        RaidOptions.importButton, RaidOptions.importArea.edit, RaidOptions.testButton }
     -- Hiding the window (ESC, close button, /fuf raid) takes an open
-    -- dropdown list and armed confirmations with it.
+    -- dropdown list and armed confirmations with it, and ends its test
+    -- mode: the panel shows the active size again.
     frame:SetScript("OnHide", function()
         Widgets.CloseList()
         RaidOptions.resetButton.Disarm()
         RaidOptions.copyRow.Disarm()
+        ns.RaidTestMode.Set(false)
+        ns.RaidTestMode.Preview(nil)
     end)
     frame:Hide()
     for _, name in ipairs(UISpecialFrames) do
@@ -678,6 +698,7 @@ function RaidOptions.SelectSize(size)
     RaidOptions.copyRow.Disarm()
     RaidOptions.size = size
     refreshAll()
+    if frame:IsShown() then ns.RaidTestMode.Preview(size) end
 end
 
 function RaidOptions.Open(size, tabId)
@@ -709,6 +730,9 @@ ns.Listen("RAID_CONFIG_CHANGED", function()
 end)
 ns.Listen("RAID_SIZE_CHANGED", function()
     if RaidOptions.IsOpen() then renderSizeTabs() end
+end)
+ns.Listen("RAID_TEST_MODE", function()
+    if frame then paintTestButton() end
 end)
 
 -- Every label is set once, when its widget is built: a new language gets a
