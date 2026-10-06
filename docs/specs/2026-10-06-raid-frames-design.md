@@ -30,8 +30,10 @@ spell (part 5) is possible.
 - Raid sizes on Forever are 10, 20 and 40. Each **character** has **three
   profiles**, one per size. Profiles can be copied between sizes and from other
   characters, then adjusted.
-- The active size follows the instance (`maxPlayers`); outside an instance the
-  member count decides. A switch fixes it to 10, 20 or 40.
+- The active size follows the instance (`maxPlayers`); outside a raid instance
+  the member count decides, and in a raid the highest occupied group as well
+  (five to a group: someone in group 3 means at least 20), so nobody sits in a
+  group the profile does not show. A switch fixes it to 10, 20 or 40.
 - In a 5-player group the raid view can be shown as well (switch, default off);
   it then uses the 10-player profile and hides the party frames.
 - Cell layout default: VuhDo-classic (name and missing health centred, HoT

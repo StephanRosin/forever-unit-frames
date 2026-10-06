@@ -65,3 +65,38 @@ H.check("other settings: no recomputation", updates, 0)
 RC.Set("general", "sizeMode", "10")
 H.check("sizeMode: recomputation", updates, 1)
 Size.Update = update
+
+-- Outside a raid instance the highest occupied group counts too: nobody
+-- sits in a group the profile does not show. Inside one the instance
+-- decides; a fixed mode stays fixed.
+H.check("9 members, someone in group 3", Size.Detect("AUTO", "none", 0, 9, 3), 20)
+H.check("9 members, someone in group 5", Size.Detect("AUTO", "none", 0, 9, 5), 40)
+H.check("group 2 fits the 10 profile", Size.Detect("AUTO", "none", 0, 9, 2), 10)
+H.check("more members than groups say", Size.Detect("AUTO", "none", 0, 21, 3), 40)
+H.check("raid instance 10, someone in group 3", Size.Detect("AUTO", "raid", 10, 9, 3), 10)
+H.check("fixed 10, someone in group 5", Size.Detect("10", "none", 0, 9, 5), 10)
+H.check("group unknown: members only", Size.Detect("AUTO", "none", 0, 9, nil), 10)
+
+local function members(groups)
+    local list = {}
+    for i, g in ipairs(groups) do list[i] = { name = "R" .. i, class = "MAGE", subgroup = g } end
+    return list
+end
+RC.Set("general", "sizeMode", "AUTO")
+M.instance = { type = "none", maxPlayers = 0 }
+M.SetRaidRoster(members({ 1, 1, 1, 1, 1, 2, 2, 2, 2 }))
+H.check("roster: 9 in groups 1-2", Size.Current(), 10)
+M.SetRaidRoster(members({ 1, 1, 1, 1, 1, 2, 2, 2, 3 }))
+H.check("roster: someone moved to group 3", Size.Current(), 20)
+M.SetRaidRoster(members({ 1, 1, 1, 1, 1, 2, 2, 2, 5 }))
+H.check("roster: someone moved to group 5", Size.Current(), 40)
+local secret = members({ 1, 1, 1, 1, 1, 2, 2, 2, 2 })
+secret[9].subgroup = M.Secret(5)
+M.SetRaidRoster(secret)
+H.check("roster: a secret group is not counted", Size.Current(), 10)
+M.instance = { type = "raid", maxPlayers = 10 }
+M.SetRaidRoster(members({ 1, 1, 1, 1, 1, 2, 2, 2, 3 }))
+H.check("roster: a 10 raid instance wins", Size.Current(), 10)
+M.instance = { type = "none", maxPlayers = 0 }
+M.SetRaidRoster({})
+H.check("left the raid", Size.Current(), 10)
