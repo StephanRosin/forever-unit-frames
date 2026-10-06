@@ -30,9 +30,11 @@ function Cell.Size()
     return ns.RaidSize.Current() or 10
 end
 
-local function get(key)
+-- A setting of the raid profile the cells show.
+function Cell.Get(key)
     return ns.RaidConfig.Get(ns.Raid.Scope(Cell.Size()), key)
 end
+local get = Cell.Get
 
 -- What a cell never shows, whatever the party frame does: no title row,
 -- portrait, castbar, auras, combat numbers, threat glow or raid marker

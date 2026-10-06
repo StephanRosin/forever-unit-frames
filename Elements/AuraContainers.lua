@@ -142,12 +142,25 @@ end
 
 -- Debuff border: our white texture keeps its asset; the client colours it
 -- from the curve, for debuffs without a dispel type too (the NONE colour).
-local function dispelOptions()
+function AuraContainers.DispelOptions()
     return {
         style = Enum.CustomAuraButtonDispelTypeTextureStyle.PreserveAsset,
         showWithoutDispelType = true,
         customDispelColorCurve = ns.AuraButton.DispelCurve(),
     }
+end
+
+-- A decorated button's regions handed to the client: icon, swipe, count
+-- and, for a debuff, the border coloured by dispel type. Tooltips on
+-- hover, clicks through to the unit button below. In initializeFrame
+-- only (Raid/CellAuras.lua wires its debuff icons the same way).
+function AuraContainers.Wire(button, isDebuff)
+    button:SetIcon(button.icon)
+    button:SetDurationCooldown(button.cooldown)
+    button:SetApplicationCount(button.count)
+    if isDebuff then button:AddDispelTypeTexture(button.border, AuraContainers.DispelOptions()) end
+    button:SetTooltipAnchorPoint("ANCHOR_BOTTOMRIGHT")
+    pcall(button.SetMouseClickEnabled, button, false)
 end
 
 -- entry = { frame, key, isDebuff, buttons }; own: the button belongs to
@@ -161,13 +174,7 @@ function AuraContainers.InitButton(entry, own, button)
     -- Fonts before the count is registered: the client writes it at once.
     AuraButton.StyleManaged(button, entry.frame.key, size, group.showTime)
     entry.buttons[#entry.buttons + 1] = { button = button, own = own }
-    button:SetIcon(button.icon)
-    button:SetDurationCooldown(button.cooldown)
-    button:SetApplicationCount(button.count)
-    if entry.isDebuff then button:AddDispelTypeTexture(button.border, dispelOptions()) end
-    button:SetTooltipAnchorPoint("ANCHOR_BOTTOMRIGHT")
-    -- Tooltips on hover, clicks through to the unit button below.
-    pcall(button.SetMouseClickEnabled, button, false)
+    AuraContainers.Wire(button, entry.isDebuff)
 end
 
 -- Containers per frame ------------------------------------------------------------

@@ -83,18 +83,23 @@ local function paintBorder(button, c)
     button.border:SetVertexColor(c[1], c[2], c[3], 1)
 end
 
-local dispelCurve
-local function getDispelCurve()
-    if dispelCurve then return dispelCurve end
-    dispelCurve = C_CurveUtil.CreateColorCurve()
-    if Enum and Enum.LuaCurveType then dispelCurve:SetType(Enum.LuaCurveType.Step) end
+local dispelCurves = {}
+local function getDispelCurve(alpha)
+    alpha = alpha or 1
+    local curve = dispelCurves[alpha]
+    if curve then return curve end
+    curve = C_CurveUtil.CreateColorCurve()
+    if Enum and Enum.LuaCurveType then curve:SetType(Enum.LuaCurveType.Step) end
     for _, point in ipairs(DISPEL_POINTS) do
         local c = AuraButton.DISPEL_COLORS[point[2]]
-        dispelCurve:AddPoint(point[1], CreateColor(c[1], c[2], c[3], 1))
+        curve:AddPoint(point[1], CreateColor(c[1], c[2], c[3], alpha))
     end
-    return dispelCurve
+    dispelCurves[alpha] = curve
+    return curve
 end
--- The dispel colour curve (dispel type number -> border colour), made once.
+-- The dispel colour curve (dispel type number -> border colour), made once
+-- per opacity: opaque for borders (no argument), less for a tint
+-- (Raid/CellAuras.lua).
 AuraButton.DispelCurve = getDispelCurve
 
 -- Size, icon inset, countdown numbers and the buff border. Returns the

@@ -1,0 +1,239 @@
+local _, ns = ...
+
+-- The auras of a raid cell. The addon reads none itself (other members'
+-- auras are secret in combat): a cell gets one aura container
+-- (CustomAuraContainerTemplate) when it first shows a unit, and the
+-- client fills what this file configures on it, in combat too. Parts add
+-- their slots and groups to it:
+-- * the centre icon: one aura slot (AddAuraSlot) with the most important
+--   debuff you can dispel ("HARMFUL|RAID": RAID is "dispellable by the
+--   player", AuraUtil.AuraFilters) or any dispellable one
+--   ("HARMFUL|DISPELLABLE"), bordered in its type's colour through our
+--   colour curve, as the unit frames' debuff icons are;
+-- * the tint: a second slot with the same filter whose only region is a
+--   texture over the health bar, coloured by the client from a curve of
+--   the same colours at a lower opacity. Its own slot, so switching it is
+--   a container call (SetAuraSlotEnabled), never a touch of a button;
+-- * more parts register with CellAuras.AddPart (the debuff row, the corner
+--   indicators).
+-- A slot is made the first time it is switched on: cells that never use
+-- one never pay for its frame.
+--
+-- As for the unit frames' containers (Elements/AuraContainers.lua): made
+-- and configured out of combat only, a cell the header made in combat
+-- waits for the end of combat; buttons are given their regions in
+-- initializeFrame, restyled later only out of combat and, while auras are
+-- secret, refused (tried again after combat). No scripts on them.
+-- The group header could hand every cell a container itself
+-- (auraContainerTemplate), in combat too, but slots can only be added out
+-- of combat anyway, and it would give one to every child it makes, the
+-- empty one each header keeps for its size included. Test mode's pretend
+-- cells have none (they show samples).
+local CellAuras = { name = "RaidAuras" }
+ns.RaidAuras = CellAuras
+
+local Cell, AuraButton = ns.RaidCell, ns.AuraButton
+local get = Cell.Get
+
+CellAuras.FILTERS = { MINE = "HARMFUL|RAID", ALL = "HARMFUL|DISPELLABLE" }
+-- Above the bars' texts (+10), below the raid marker and icons (+18).
+CellAuras.LEVELS = 12
+-- The tint lies on the health bar, under its texts.
+CellAuras.TINT_LEVELS = 2
+CellAuras.TINT_ALPHA = 0.35
+-- Everything a container must take before a cell uses it.
+CellAuras.METHODS = { "SetUnit", "GetUnit", "UpdateAllAuras", "SetEditModePreviewEnabled", "AddAuraSlot",
+    "SetAuraSlotEnabled", "SetAuraSlotFilterString", "SetAuraSlotCandidateFilters", "AddAuraGroup",
+    "SetAuraGroupEnabled", "SetAuraGroupFilterString", "SetAuraGroupMaxFrameCount", "SetAuraGroupLayout",
+    "SetFlowLayoutAxis", "SetFlowLayoutAnchorPoint", "SetFlowLayoutGrowthDirection" }
+
+-- part.Apply(frame, container, auras) configures the part out of combat;
+-- it returns true when a button refused to be restyled.
+local parts = {}
+function CellAuras.AddPart(part)
+    parts[#parts + 1] = part
+end
+
+-- Cells waiting for the end of combat, cells whose buttons refused a
+-- restyle.
+local waiting = setmetatable({}, { __mode = "k" })
+local stale = setmetatable({}, { __mode = "k" })
+
+-- Slots -------------------------------------------------------------------------------
+
+-- A slot of the cell's container, made the first time it is wanted.
+-- auras.slots[key] is its frame.
+function CellAuras.Slot(frame, container, key, filter, init)
+    local auras = frame.raidAuras
+    if not auras.slots[key] then
+        auras.slots[key] = container:AddAuraSlot(key, filter, { initializeFrame = function(b) init(frame, b) end })
+    end
+    return auras.slots[key]
+end
+
+-- Switches a slot, making it when it is wanted for the first time; one
+-- that was never wanted is not made. Returns its frame, or nil.
+function CellAuras.SetSlot(frame, container, key, filter, wanted, init)
+    local slot = frame.raidAuras.slots[key]
+    if not slot and not wanted then return nil end
+    slot = CellAuras.Slot(frame, container, key, filter, init)
+    container:SetAuraSlotFilterString(key, filter)
+    container:SetAuraSlotEnabled(key, wanted == true)
+    return slot
+end
+
+-- The centre icon and the tint --------------------------------------------------------
+
+local function dispelSize()
+    return ns.Pixel.Snap(get("dispelIconSize"), nil, 1)
+end
+
+-- The icon: the unit frames' debuff icon look, centred on the health bar.
+local function initIcon(frame, button)
+    AuraButton.Decorate(button, true)
+    AuraButton.StyleManaged(button, frame.key, dispelSize(), false)
+    button:SetPoint("CENTER", frame.health, "CENTER", 0, 0)
+    ns.AuraContainers.Wire(button, true)
+end
+
+-- The tint: a slot frame of one pixel with no mouse; its texture covers
+-- the health bar.
+local function initTint(frame, button)
+    pcall(button.SetMouseClickEnabled, button, false)
+    pcall(button.SetMouseMotionEnabled, button, false)
+    button:SetSize(1, 1)
+    button:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, 0)
+    button:SetFrameLevel(frame:GetFrameLevel() + CellAuras.TINT_LEVELS)
+    local tint = button:CreateTexture(nil, "ARTWORK")
+    tint:SetColorTexture(1, 1, 1, 1)
+    tint:SetAllPoints(frame.health)
+    button.tint = tint
+    button:AddDispelTypeTexture(tint, { style = Enum.CustomAuraButtonDispelTypeTextureStyle.PreserveAsset,
+        customDispelColorCurve = AuraButton.DispelCurve(CellAuras.TINT_ALPHA) })
+end
+
+CellAuras.AddPart({
+    Apply = function(frame, container)
+        local filter = CellAuras.FILTERS[get("dispelFilter")]
+        local icon = CellAuras.SetSlot(frame, container, "dispel", filter, get("dispelIcon"), initIcon)
+        CellAuras.SetSlot(frame, container, "tint", filter, get("dispelTint"), initTint)
+        return icon ~= nil and not pcall(AuraButton.StyleManaged, icon, frame.key, dispelSize(), false)
+    end,
+})
+
+-- The container -----------------------------------------------------------------------
+
+local function usable(container)
+    for _, method in ipairs(CellAuras.METHODS) do
+        if type(container[method]) ~= "function" then return false end
+    end
+    return true
+end
+
+-- Every part onto the container; out of combat.
+local function apply(frame)
+    local container = frame.raidAuras.container
+    stale[frame] = nil
+    container:SetFrameLevel(frame:GetFrameLevel() + CellAuras.LEVELS)
+    for _, part in ipairs(parts) do
+        if part.Apply(frame, container, frame.raidAuras) then stale[frame] = true end
+    end
+end
+
+-- The container and its first configuration, out of combat. A client
+-- without the calls a cell needs, or a refusal, leaves the cell without
+-- auras for the session (a refusal is reported once).
+local function build(frame)
+    local auras = frame.raidAuras
+    local ok, err = pcall(function()
+        local container = CreateFrame("AuraContainer", nil, frame, ns.AuraContainers.TEMPLATE)
+        auras.container = container
+        if not usable(container) then
+            auras.failed = true
+            return
+        end
+        container:SetEditModePreviewEnabled(false)
+        apply(frame)
+        container:SetUnit(frame.unit or "none")
+    end)
+    if not ok then
+        auras.failed = true
+        geterrorhandler()(err)
+    end
+    if auras.failed then
+        if auras.container then auras.container:Hide() end
+        auras.container = nil
+        return false
+    end
+    auras.built = true
+    return true
+end
+
+local function flush()
+    local frames = {}
+    for frame in pairs(waiting) do frames[#frames + 1] = frame end
+    for _, frame in ipairs(frames) do
+        waiting[frame] = nil
+        local auras = frame.raidAuras
+        if auras.built then
+            apply(frame)
+        elseif not auras.failed then
+            build(frame)
+        end
+    end
+end
+
+local function later(frame)
+    waiting[frame] = true
+    ns.AfterCombat("raidAuras", flush)
+end
+
+-- Whether the cell's container is configured and can be told its unit.
+local function ready(frame)
+    local auras = frame.raidAuras
+    if not auras or auras.failed or frame.pretend then return false end
+    if auras.built then return true end
+    if not ns.AuraContainers.Supported() then
+        auras.failed = true
+        return false
+    end
+    if InCombatLockdown() then
+        later(frame)
+        return false
+    end
+    return build(frame)
+end
+
+-- Element -------------------------------------------------------------------------------
+
+function CellAuras.Build(frame)
+    if frame.key ~= Cell.KEY then return end
+    frame.raidAuras = { slots = {} }
+end
+
+-- Settings changed: applied now, or after combat.
+function CellAuras.Style(frame)
+    local auras = frame.raidAuras
+    if not (auras and auras.built) then return end
+    if InCombatLockdown() then later(frame) else apply(frame) end
+end
+
+-- A new unit, or the same raid unit after a roster change (it may be
+-- someone else now): the container looks again.
+function CellAuras.Update(frame)
+    if not ready(frame) then return end
+    local container, unit = frame.raidAuras.container, frame.unit or "none"
+    if container:GetUnit() ~= unit then
+        container:SetUnit(unit)
+    else
+        container:UpdateAllAuras()
+    end
+end
+
+ns.On("PLAYER_REGEN_ENABLED", function()
+    for frame in pairs(stale) do
+        if not waiting[frame] then apply(frame) end
+    end
+end)
+
+ns.RegisterElement(CellAuras)

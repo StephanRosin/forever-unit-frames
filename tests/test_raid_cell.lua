@@ -87,7 +87,10 @@ local onCells = 0
 for _, container in ipairs(M.auraContainers) do
     if container:GetParent() == tank or container:GetParent() == ann then onCells = onCells + 1 end
 end
-H.check("no aura containers on cells", onCells, 0)
+-- The unit frames' aura groups stay off (frame.auraGroupKeys); the one
+-- container per cell is the cell's own (Raid/CellAuras.lua).
+H.check("no unit-frame aura containers on cells", next(tank.auraContainers or {}), nil)
+H.check("one container of its own per cell", onCells, 2)
 H.check("no castbar", tank.castbar, nil)
 H.check("title row hidden", tank.title:IsShown(), false)
 local seen = {}

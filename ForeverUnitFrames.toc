@@ -72,6 +72,7 @@ Units\PartyPets.xml
 Units\PartyTargets.lua
 Raid\Cell.lua
 Raid\Cell.xml
+Raid\CellAuras.lua
 Raid\Header.lua
 Raid\TestMode.lua
 Core\Blizzard.lua
