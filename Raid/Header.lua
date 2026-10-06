@@ -336,10 +336,13 @@ end)
 ns.On("GROUP_ROSTER_UPDATE", Header.UpdateVisibility)
 ns.Listen("RAID_SIZE_CHANGED", function() if Header.anchor then refresh() end end)
 -- A setting of the active size or the character; another size's profile
--- does not show.
+-- does not show, nor does the raid minimap button (Raid/MinimapButton.lua).
+local BUTTON_KEYS = { minimapAngle = true, minimapShow = true }
 ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
     if not Header.anchor then return end
-    if scope == nil or scope == "general" or scope == ns.Raid.Scope(Cell.Size()) then refresh() end
+    local panel = scope == nil or scope == ns.Raid.Scope(Cell.Size())
+        or (scope == "general" and not BUTTON_KEYS[key])
+    if panel then refresh() end
     -- Raid view in party switched, or the raid frames: the party block.
     if scope == nil or (scope == "general" and (key == nil or key == "enabled" or key == "showInParty")) then
         ns.AfterCombat("partyStyle", ns.Party.StyleAll)
