@@ -484,11 +484,42 @@ local function checkCandidateFilters(filters)
     end
 end
 
+-- The client stores a securecopy of the filters: later edits of the
+-- caller's table have no effect. nil stays nil here (the client merges it
+-- into an empty table, which filters nothing either).
+local function copyCandidateFilters(filters)
+    checkCandidateFilters(filters)
+    local function deep(t)
+        if type(t) ~= "table" then return t end
+        local out = {}
+        for k, v in pairs(t) do out[k] = deep(v) end
+        return out
+    end
+    return deep(filters)
+end
+
+-- In an options table nil is allowed (the client merges the defaults in
+-- first); the setters validate their raw arguments, where nil is not.
 local function checkSort(options)
     assert(options.sortMethod == nil or isEnumValue(AuraContainerSortMethod, options.sortMethod),
         "sortMethod must be a valid AuraContainerSortMethod.")
     assert(options.sortDirection == nil or isEnumValue(AuraContainerSortDirection, options.sortDirection),
         "sortDirection must be a valid AuraContainerSortDirection.")
+end
+
+local function checkSortArguments(method, direction)
+    assert(isEnumValue(AuraContainerSortMethod, method), "sortMethod must be a valid AuraContainerSortMethod.")
+    assert(isEnumValue(AuraContainerSortDirection, direction),
+        "sortDirection must be a valid AuraContainerSortDirection.")
+end
+
+-- ValidateTemplateNames: a table of strings, or nil.
+local function checkTemplateNames(templateNames)
+    if templateNames == nil then return end
+    assert(type(templateNames) == "table", "templateNames must be a table or nil.")
+    for _, name in ipairs(templateNames) do
+        assert(type(name) == "string", "templateNames must contain only strings.")
+    end
 end
 
 local function validMax(n)
@@ -641,15 +672,13 @@ function M.NewAuraContainer(w, template)
         for k in pairs(options) do assert(GROUP_KEYS[k], "mock: unknown group option " .. tostring(k)) end
         assert(options.initializeFrame == nil or type(options.initializeFrame) == "function",
             "initializeFrame must be a function or nil.")
-        assert(options.templateNames == nil or type(options.templateNames) == "table",
-            "templateNames must be a table or nil.")
-        checkCandidateFilters(options.candidateFilters)
+        checkTemplateNames(options.templateNames)
         checkSort(options)
         local max = options.maxFrameCount
         if max == nil then max = math.huge end
         assert(validMax(max), "maxFrameCount must be a non-negative integer or infinity.")
         local group = { key = key, filter = filter, max = max, enabled = true, layout = copyLayout(options.layout),
-            candidateFilters = options.candidateFilters,
+            candidateFilters = copyCandidateFilters(options.candidateFilters),
             initializeFrame = options.initializeFrame, frames = {} }
         self._groups[key] = group
         table.insert(self._groupOrder, key)
@@ -677,8 +706,7 @@ function M.NewAuraContainer(w, template)
     function w:SetAuraGroupLayout(key, layout) required(self, key).layout = copyLayout(layout) end
     function w:SetAuraGroupCandidateFilters(key, filters)
         local group = required(self, key)
-        checkCandidateFilters(filters)
-        group.candidateFilters = filters
+        group.candidateFilters = copyCandidateFilters(filters)
     end
     -- Aura slots: one frame each, at a place the addon anchors.
     local function requiredSlot(self, key)
@@ -692,10 +720,11 @@ function M.NewAuraContainer(w, template)
         for k in pairs(options) do assert(SLOT_KEYS[k], "mock: unknown slot option " .. tostring(k)) end
         assert(options.initializeFrame == nil or type(options.initializeFrame) == "function",
             "initializeFrame must be a function or nil.")
-        checkCandidateFilters(options.candidateFilters)
+        checkTemplateNames(options.templateNames)
         checkSort(options)
-        local slot = { key = key, filter = filter, enabled = true, candidateFilters = options.candidateFilters,
-            sortMethod = options.sortMethod, initializeFrame = options.initializeFrame, frames = {} }
+        -- frames and initializeFrame: newAuraButton expects a group record.
+        local slot = { key = key, filter = filter, enabled = true,
+            candidateFilters = copyCandidateFilters(options.candidateFilters), sortMethod = options.sortMethod, initializeFrame = options.initializeFrame, frames = {} }
         self._slots[key] = slot
         table.insert(self._slotOrder, key)
         slot.frame = newAuraButton(self, slot)
@@ -719,12 +748,11 @@ function M.NewAuraContainer(w, template)
     end
     function w:SetAuraSlotCandidateFilters(key, filters)
         local slot = requiredSlot(self, key)
-        checkCandidateFilters(filters)
-        slot.candidateFilters = filters
+        slot.candidateFilters = copyCandidateFilters(filters)
     end
     function w:SetAuraSlotSortMethod(key, method, direction)
         local slot = requiredSlot(self, key)
-        checkSort({ sortMethod = method, sortDirection = direction })
+        checkSortArguments(method, direction)
         slot.sortMethod = method
     end
     function w:GetAuraGroupFrameCount(key)
