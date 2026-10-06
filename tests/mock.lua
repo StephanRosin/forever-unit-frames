@@ -1635,6 +1635,11 @@ function M.Reset()
     end
     _G.UnitIsGroupLeader = function(unit) local d = u(unit); return groupFlag(d and d.leader) end
     _G.UnitIsGroupAssistant = function(unit) local d = u(unit); return groupFlag(d and d.assistant) end
+    -- The loot method (PartyInfoDocumentation.lua, not secret): M.lootMethod
+    -- (an Enum.LootMethod value), the master looter by party index
+    -- (M.masterLootPartyID, 0 = you) and by raid index (M.masterLooterRaidID).
+    M.lootMethod, M.masterLootPartyID, M.masterLooterRaidID = 3, nil, nil
+    _G.C_PartyInfo = { GetLootMethod = function() return M.lootMethod, M.masterLootPartyID, M.masterLooterRaidID end }
     -- d.offline: the unit's player is disconnected. d.dead / d.ghost:
     -- dead, or a ghost (UnitIsDeadOrGhost is true for both). Any of them
     -- may be a secret proxy.
@@ -1944,6 +1949,7 @@ function M.Reset()
     }
 
     _G.Enum = {
+        LootMethod = { Freeforall = 0, Roundrobin = 1, Masterlooter = 2, Group = 3, Needbeforegreed = 4, Personal = 5 },
         StatusBarInterpolation = { Immediate = 0, ExponentialEaseOut = 1 },
         StatusBarTimerDirection = { ElapsedTime = 0, RemainingTime = 1 },
         UITextureSliceMode = { Stretched = 0, Tiled = 1 },

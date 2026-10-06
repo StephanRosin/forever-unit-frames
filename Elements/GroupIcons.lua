@@ -14,7 +14,12 @@ local _, ns = ...
 --   (CompactUnitFrame.lua, "IncomingResurrection").
 -- Master looter: the client has the loot method (C_PartyInfo.GetLootMethod,
 -- Enum.LootMethod.Masterlooter) but no art for it anywhere in its UI, so
--- it is not shown.
+-- the unit frames do not show it; raid cells show our own
+-- (Media/MasterLooter.tga, tools/make_master_looter.py).
+--
+-- Raid cells (Raid/Cell.lua) place each icon on its own:
+-- frame.iconPoint(frame, name) gives icon `name` ("leader", "looter",
+-- "ready") its point on the cell and offsets, nil while it is off.
 --
 -- UnitIsGroupLeader / UnitIsGroupAssistant are secret for units that are
 -- not player-controlled or in the group (SecretWhenUnitIdentityRestricted);
@@ -36,6 +41,9 @@ GroupIcons.LEADER = { leader = { atlas = "UI-HUD-UnitFrame-Player-Group-LeaderIc
 GroupIcons.READY = { ready = "UI-LFG-ReadyMark-Raid", notready = "UI-LFG-DeclineMark-Raid",
     waiting = "UI-LFG-PendingMark-Raid" }
 GroupIcons.REZ_ATLAS = "RaidFrame-Icon-Rez"
+GroupIcons.LOOTER_TEXTURE = "Interface\\AddOns\\ForeverUnitFrames\\Media\\MasterLooter.tga"
+-- The icons a raid cell places on their own.
+GroupIcons.OWN_POINTS = { "leader", "looter", "ready" }
 -- CUF_READY_CHECK_DECAY_TIME (CompactUnitFrame.lua).
 GroupIcons.READY_DECAY = 11
 -- Above the text overlay (+10) and the aura holders (+12), below the class
@@ -62,7 +70,7 @@ function GroupIcons.Applies(scope)
 end
 
 function GroupIcons.Build(frame)
-    if not GroupIcons.Applies(frame.key) then return end
+    if not (GroupIcons.Applies(frame.key) or frame.iconPoint) then return end
     local holder = CreateFrame("Frame", nil, frame)
     local g = { holder = holder }
     for _, name in ipairs({ "leader", "ready", "rez" }) do
@@ -70,6 +78,11 @@ function GroupIcons.Build(frame)
         g[name]:Hide()
     end
     g.rez:SetAtlas(GroupIcons.REZ_ATLAS)
+    if frame.iconPoint then
+        g.looter = holder:CreateTexture(nil, "OVERLAY")
+        g.looter:SetTexture(GroupIcons.LOOTER_TEXTURE)
+        g.looter:Hide()
+    end
     frame.groupIcons = g
 end
 
@@ -102,11 +115,12 @@ local function drawLeader(icon, kind)
 end
 
 -- Any time, combat included: which icons show, from what the frame knows
--- (g.leaderKind, g.readyStatus, g.hasRez) or its test mode sample.
+-- (g.leaderKind, g.readyStatus, g.hasRez, g.isLooter) or its test mode
+-- sample. A raid cell's icons keep their own places.
 function GroupIcons.Refresh(frame)
     local g = frame.groupIcons
     if not g then return end
-    local live = { leader = g.leaderKind, ready = g.readyStatus, rez = g.hasRez }
+    local live = { leader = g.leaderKind, ready = g.readyStatus, rez = g.hasRez, looter = g.isLooter }
     local data = g.preview or live
     local kind = want(frame, "groupLeader") and data.leader or nil
     local status = want(frame, "groupReadyCheck") and data.ready or nil
@@ -116,11 +130,26 @@ function GroupIcons.Refresh(frame)
     g.leader:SetShown(kind ~= nil)
     g.ready:SetShown(status ~= nil)
     g.rez:SetShown(rez)
+    if g.looter then g.looter:SetShown(data.looter == true and frame.iconPoint(frame, "looter") ~= nil) end
+    if frame.iconPoint then return end
     local shown = {}
     for _, icon in ipairs({ g.leader, g.ready, g.rez }) do
         if icon:IsShown() then shown[#shown + 1] = icon end
     end
     arrange(g, shown)
+end
+
+-- A raid cell: each icon at its own point on the cell.
+local function placeOwn(frame, g)
+    for _, name in ipairs(GroupIcons.OWN_POINTS) do
+        local icon = g[name]
+        local point, x, y = frame.iconPoint(frame, name)
+        if icon and point then
+            icon:ClearAllPoints()
+            icon:SetPoint(point, frame, point, Pixel.Snap(x), Pixel.Snap(y))
+            icon:SetSize(g.size, g.size)
+        end
+    end
 end
 
 -- Plain frames only: allowed in combat (party buttons restyle then too).
@@ -129,6 +158,15 @@ function GroupIcons.Style(frame)
     if not g then return end
     local size = Pixel.Snap(Config.Get(scope, "groupIconSize"), nil, 1)
     g.size, g.gap, g.point = size, Pixel.Snap(GAP), Config.Get(scope, "groupIconPoint")
+    if frame.iconPoint then
+        g.holder:SetFrameLevel(frame:GetFrameLevel() + GroupIcons.LEVELS)
+        g.holder:ClearAllPoints()
+        g.holder:SetAllPoints(frame)
+        g.holder:Show()
+        placeOwn(frame, g)
+        GroupIcons.Refresh(frame)
+        return
+    end
     local n = #slots(frame)
     g.holder:SetFrameLevel(frame:GetFrameLevel() + GroupIcons.LEVELS)
     g.holder:SetSize(math.max(1, Layout.IconRowWidth(n, size, g.gap)), size)
@@ -147,6 +185,23 @@ local function leaderKind(unit)
     end
     if Secrets.Bool(UnitIsGroupAssistant, unit) then return "assistant" end
     return nil
+end
+
+-- Whether unit is the master looter. C_PartyInfo.GetLootMethod (not
+-- secret) names them by raid index in a raid, by party index in a party
+-- (0: you, as the old GetLootMethod did; not documented in this build).
+local function isLooter(unit)
+    local info = C_PartyInfo
+    if not (info and info.GetLootMethod and Enum.LootMethod) then return false end
+    local ok, method, partyID, raidID = pcall(info.GetLootMethod)
+    if not ok or method ~= Enum.LootMethod.Masterlooter then return false end
+    local token
+    if IsInRaid() then
+        token = type(raidID) == "number" and ("raid" .. raidID) or nil
+    elseif type(partyID) == "number" then
+        token = partyID == 0 and "player" or ("party" .. partyID)
+    end
+    return token ~= nil and Secrets.Bool(UnitIsUnit, unit, token) == true
 end
 
 -- "ready", "notready", "waiting" or nil. Offline members show none, as
@@ -171,10 +226,14 @@ function GroupIcons.Update(frame)
     -- While a finished check decays its result stays as it was.
     if not decay then g.readyStatus = readyStatus(unit) end
     g.hasRez = Secrets.Bool(UnitHasIncomingResurrection, unit) == true
+    if g.looter then g.isLooter = isLooter(unit) end
     GroupIcons.Refresh(frame)
 end
 
+-- A raid test cell's own (frame.sample.groupIcons), the pretend party's,
+-- or the frame's.
 local function sample(frame)
+    if frame.sample then return frame.sample.groupIcons end
     if frame.sampleIndex then return GroupIcons.PARTY_SAMPLES[frame.sampleIndex] end
     return GroupIcons.SAMPLES[frame.key]
 end
@@ -194,6 +253,7 @@ local function updateAll(event) ns.Units.UpdateElement(GroupIcons, event) end
 
 ns.On("PARTY_LEADER_CHANGED", updateAll)
 ns.On("GROUP_ROSTER_UPDATE", updateAll)
+ns.On("PARTY_LOOT_METHOD_CHANGED", updateAll)
 -- The confirming unit may be named by another token than the frame's
 -- (a raid token): every frame looks again.
 ns.On("READY_CHECK_CONFIRM", updateAll)

@@ -45,7 +45,7 @@ local get = Cell.Get
 local FIXED = {
     titlePercent = 0, portraitMode = "OFF", castbarEnabled = false, combatFeedback = false,
     buffsEnabled = false, debuffsEnabled = false, threatGlow = false,
-    titleClassIcon = false, healOverflow = false, healBeyond = false, shadowEnabled = false,
+    titleClassIcon = false, healOverflow = false, healBeyond = false, shadowEnabled = false, groupResurrect = false,
     textHealthLeft = "NAME", textPowerLeft = "NONE", textPowerRight = "NONE",
     healthPercent = 90, powerPercent = 10, fontSize = 11, valueFontSize = 10,
 }
@@ -58,12 +58,24 @@ function Cell.Inset(point)
     return x, y
 end
 
+-- The icons a cell places on their own (Elements/GroupIcons.lua asks):
+-- point and offsets, nil while the icon is off.
+Cell.ICON_KEYS = { leader = "leaderIcon", looter = "looterIcon", ready = "readyCheckIcon", role = "roleIcon" }
+function Cell.IconPoint(_, name)
+    local key = Cell.ICON_KEYS[name]
+    if not key or not get(key) then return nil end
+    local point = get(key .. "Point")
+    local x, y = Cell.Inset(point)
+    return point, x, y
+end
+
 local function insetX(key) return function() return (Cell.Inset(get(key))) end end
 local function insetY(key) return function() return select(2, Cell.Inset(get(key))) end end
 
 -- The raid profile's look, in unit-frame settings. The second line's
 -- values are the text tags of the same name. The raid marker
--- (Elements/RaidMarker.lua) at its point, centred on it.
+-- (Elements/RaidMarker.lua) at its point, centred on it; the group icons
+-- (Elements/GroupIcons.lua) switched and sized from the profile.
 local MAPPED = {
     width = function() return get("cellWidth") end,
     height = function() return get("cellHeight") end,
@@ -78,6 +90,9 @@ local MAPPED = {
     raidMarkerPoint = function() return get("raidMarkerPoint") end,
     raidMarkerX = insetX("raidMarkerPoint"),
     raidMarkerY = insetY("raidMarkerPoint"),
+    groupLeader = function() return get("leaderIcon") end,
+    groupReadyCheck = function() return get("readyCheckIcon") end,
+    groupIconSize = function() return get("iconSize") end,
 }
 
 function Cell.Resolve(key)
@@ -133,6 +148,7 @@ function Cell.Setup(button)
     button.key = Cell.KEY
     button.centerTexts = true
     button.showsPower = Cell.ShowsPower
+    button.iconPoint = Cell.IconPoint
     -- No aura groups at all: no aura containers are made for a cell
     -- (Elements/AuraContainers.lua).
     button.auraGroupKeys = {}
