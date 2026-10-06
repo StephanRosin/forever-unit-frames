@@ -204,6 +204,15 @@ RaidSettings.Define({ key = "dispelFilter", code = "DF", scope = "frame", type =
     values = { "MINE", "ALL" }, default = "MINE" })
 RaidSettings.Define({ key = "dispelIconSize", code = "DZ", scope = "frame", type = "int", min = 8, max = 40,
     default = { r10 = 20, r20 = 18, _ = 16 } })
+-- How it shows: the centre icon, or a small square in the type's colour
+-- in one of the cell's corners (from a single pixel). Stored by index:
+-- append only.
+RaidSettings.Define({ key = "dispelStyle", code = "DM", scope = "frame", type = "enum",
+    values = { "ICON", "SQUARE" }, default = "ICON" })
+RaidSettings.Define({ key = "dispelSquarePoint", code = "DP", scope = "frame", type = "enum",
+    values = { "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT" }, default = "TOPRIGHT" })
+RaidSettings.Define({ key = "dispelSquareSize", code = "DQ", scope = "frame", type = "int", min = 1, max = 16,
+    default = 6 })
 -- The whole cell tinted in the debuff type's colour.
 RaidSettings.Define({ key = "dispelTint", code = "DT", scope = "frame", type = "bool", default = false })
 -- A row along the bottom of the cell with every debuff ("HARMFUL"); the

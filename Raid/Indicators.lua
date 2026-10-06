@@ -51,6 +51,19 @@ function Indicators.SpellSet(text)
     return set
 end
 
+-- The size of the indicator at a point while it has spells, on the
+-- pixel grid; nil while it is off (the dispel square, Raid/CellAuras.lua,
+-- moves in beside it).
+function Indicators.SizeAt(point)
+    for _, ind in ipairs(Raid.INDICATORS) do
+        local key = Indicators.Key(ind)
+        if ind.point == point and Indicators.SpellSet(get(key .. "Spells")) then
+            return Pixel.Snap(get(key .. "Size"), nil, 1)
+        end
+    end
+    return nil
+end
+
 function Indicators.Filter(key)
     return get(key .. "Own") and "HELPFUL|PLAYER" or "HELPFUL"
 end

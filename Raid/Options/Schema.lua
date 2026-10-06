@@ -50,7 +50,8 @@ Schema.TABS = {
         { id = "fonts", keys = { "fontFace", "nameFontSize", "secondFontSize", "fontOutline", "fontShadow" } },
     } },
     { id = "debuffs", sections = {
-        { id = "dispel", keys = { "dispelIcon", "dispelFilter", "dispelIconSize", "dispelTint" } },
+        { id = "dispel", keys = { "dispelIcon", "dispelFilter", "dispelStyle", "dispelIconSize", "dispelSquarePoint",
+            "dispelSquareSize", "dispelTint" } },
         { id = "debuffRow", keys = { "debuffRow", "debuffCount", "debuffSize" } },
     } },
     { id = "indicators", sections = {

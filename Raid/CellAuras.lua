@@ -10,7 +10,12 @@ local _, ns = ...
 --   player", AuraUtil.AuraFilters) or any dispellable one
 --   ("HARMFUL|DISPELLABLE"), bordered in its type's colour through our
 --   colour curve, as the unit frames' debuff icons are;
--- * the tint: a second slot with the same filter whose only region is a
+-- * or, in its place, the square: a slot with the same filter whose only
+--   region is a texture filling a small frame in one of the cell's
+--   corners, coloured by the client from the borders' curve; beside a
+--   corner indicator in the same corner (Raid/Indicators.lua), not under
+--   it;
+-- * the tint: a further slot with the same filter whose only region is a
 --   texture over the health bar, coloured by the client from a curve of
 --   the same colours at a lower opacity. Its own slot, so switching it is
 --   a container call (SetAuraSlotEnabled), never a touch of a button;
@@ -126,7 +131,7 @@ local function decorate(frame, button, size)
     ns.AuraContainers.Wire(button, true)
 end
 
--- The centre icon and the tint --------------------------------------------------------
+-- The centre icon, the square and the tint --------------------------------------------
 
 local function dispelSize()
     return Pixel.Snap(get("dispelIconSize"), nil, 1)
@@ -136,6 +141,37 @@ end
 local function initIcon(frame, button)
     decorate(frame, button, dispelSize())
     button:SetPoint("CENTER", frame.health, "CENTER", 0, 0)
+end
+
+-- The square: just inside its corner; with a corner indicator there, that
+-- far further in along the edge and a gap more.
+CellAuras.SQUARE_GAP = 1
+
+local function placeSquare(frame, square)
+    local point = get("dispelSquarePoint")
+    local size = Pixel.Snap(get("dispelSquareSize"), nil, 1)
+    local inset = Pixel.Snap(ns.RaidIndicators.INSET)
+    local dx, dy = Cell.Inset(point)
+    local x, y = dx * inset, dy * inset
+    local beside = ns.RaidIndicators.SizeAt(point)
+    if beside then x = x + dx * (beside + Pixel.Snap(CellAuras.SQUARE_GAP)) end
+    square:SetSize(size, size)
+    square:ClearAllPoints()
+    square:SetPoint(point, frame, point, x, y)
+end
+
+-- A slot frame with no mouse whose texture the client colours by the
+-- debuff's type.
+local function initSquare(frame, button)
+    pcall(button.SetMouseClickEnabled, button, false)
+    pcall(button.SetMouseMotionEnabled, button, false)
+    local square = button:CreateTexture(nil, "ARTWORK")
+    square:SetColorTexture(1, 1, 1, 1)
+    square:SetAllPoints(button)
+    button.square = square
+    button:AddDispelTypeTexture(square, { style = Enum.CustomAuraButtonDispelTypeTextureStyle.PreserveAsset,
+        customDispelColorCurve = AuraButton.DispelCurve() })
+    placeSquare(frame, button)
 end
 
 -- The tint: a slot frame of one pixel with no mouse; its texture covers
@@ -172,15 +208,29 @@ local function sampleDebuffs(member)
 end
 CellAuras.SampleDebuffs = sampleDebuffs
 
+-- Which of the two shows the debuff: "ICON", "SQUARE", or nil (off).
+local function dispelShows()
+    if not get("dispelIcon") then return nil end
+    return get("dispelStyle")
+end
+
 CellAuras.AddPart({
     Apply = function(frame, container)
-        local filter = CellAuras.FILTERS[get("dispelFilter")]
-        local icon = CellAuras.SetSlot(frame, container, "dispel", filter, get("dispelIcon"), initIcon)
+        local filter, shows = CellAuras.FILTERS[get("dispelFilter")], dispelShows()
+        local icon = CellAuras.SetSlot(frame, container, "dispel", filter, shows == "ICON", initIcon)
+        local square = CellAuras.SetSlot(frame, container, "square", filter, shows == "SQUARE", initSquare)
         CellAuras.SetSlot(frame, container, "tint", filter, get("dispelTint"), initTint)
-        return icon ~= nil and not pcall(AuraButton.StyleManaged, icon, frame.key, dispelSize(), false)
+        local refused = icon ~= nil and not pcall(AuraButton.StyleManaged, icon, frame.key, dispelSize(), false)
+        if square ~= nil and not pcall(placeSquare, frame, square) then refused = true end
+        return refused
     end,
     BuildSample = function(frame, samples)
         samples.icon = AuraButton.Create(frame, true)
+        samples.square = CreateFrame("Frame", nil, frame)
+        samples.square.texture = samples.square:CreateTexture(nil, "ARTWORK")
+        samples.square.texture:SetColorTexture(1, 1, 1, 1)
+        samples.square.texture:SetAllPoints(samples.square)
+        samples.square:Hide()
         -- A frame needs a rect of its own for its texture to be drawn.
         samples.tint = CreateFrame("Frame", nil, frame)
         samples.tint:SetAllPoints(frame.health)
@@ -190,15 +240,19 @@ CellAuras.AddPart({
         samples.tint:Hide()
     end,
     ShowSample = function(frame, samples, member, start)
-        local centre = sampleDebuffs(member)
-        local icon, tint = samples.icon, samples.tint
+        local centre, shows = sampleDebuffs(member), dispelShows()
+        local icon, square, tint = samples.icon, samples.square, samples.tint
         icon:SetFrameLevel(frame:GetFrameLevel() + CellAuras.LEVELS)
         icon:ClearAllPoints()
         icon:SetPoint("CENTER", frame.health, "CENTER", 0, 0)
         AuraButton.Style(icon, frame.key, dispelSize(), false)
-        if centre and get("dispelIcon") then AuraButton.ShowSample(icon, centre, start) else AuraButton.Clear(icon) end
-        tint:SetFrameLevel(frame:GetFrameLevel() + CellAuras.TINT_LEVELS)
+        if centre and shows == "ICON" then AuraButton.ShowSample(icon, centre, start) else AuraButton.Clear(icon) end
         local c = centre and AuraButton.DISPEL_COLORS[centre.dispel]
+        square:SetFrameLevel(frame:GetFrameLevel() + CellAuras.LEVELS)
+        placeSquare(frame, square)
+        if c then square.texture:SetVertexColor(c[1], c[2], c[3], 1) end
+        square:SetShown(c ~= nil and shows == "SQUARE")
+        tint:SetFrameLevel(frame:GetFrameLevel() + CellAuras.TINT_LEVELS)
         if c then tint.texture:SetVertexColor(c[1], c[2], c[3], CellAuras.TINT_ALPHA) end
         tint:SetShown(c ~= nil and get("dispelTint") == true)
     end,
