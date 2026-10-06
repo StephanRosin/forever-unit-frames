@@ -90,7 +90,8 @@ end
 local function showTarget(s, shown, answer)
     s.target:SetShown(shown)
     if not shown then return end
-    if answer == nil then s.target:SetAlpha(1) else s.target:SetAlphaFromBoolean(answer, 1, 0) end
+    -- answer may be secret: its presence is asked with type(), not ==.
+    if type(answer) == "nil" then s.target:SetAlpha(1) else s.target:SetAlphaFromBoolean(answer, 1, 0) end
 end
 
 local function updateTarget(frame)
@@ -133,7 +134,10 @@ end
 function States.Update(frame)
     local s = frame.raidStates
     if not s or s.preview then return end
-    showAggro(s, frame.unit and threat(frame.unit) or 0)
+    -- threat() may return a secret: never truth-tested, only passed on.
+    local value = 0
+    if frame.unit then value = threat(frame.unit) end
+    showAggro(s, value)
     updateTarget(frame)
 end
 
@@ -149,7 +153,8 @@ function States.Preview(frame, on)
     end
 end
 
--- A new target: every cell looks again; after combat, threat too.
+-- A new target: every cell looks again. After combat, threat and target
+-- answers that were secret during combat are readable again: look again.
 local function updateAll(event) ns.Units.UpdateElement(States, event) end
 ns.On("PLAYER_TARGET_CHANGED", updateAll)
 ns.On("PLAYER_REGEN_ENABLED", updateAll)

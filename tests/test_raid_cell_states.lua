@@ -26,11 +26,13 @@ H.check("tanking: status 3", bar:GetValue(), 3)
 H.check("not tanking: status 1", ann.aggro.bars[1]:GetValue(), 1)
 H.check("no threat: 0", bob.aggro.bars[1]:GetValue(), 0)
 H.checkTrue("shown", tank.aggro:IsShown())
-local p, rel, relPoint, x, y = bar:GetPoint(1)
+local p, rel, _, x, y = bar:GetPoint(1)
 H.checkTrue("top edge along the inside", p == "TOPLEFT" and rel == cell(1) and x == 0 and y == 0)
 H.check("two pixels", bar:GetHeight(), 2)
 H.check("above the texts", tank.aggro:GetFrameLevel(), cell(1):GetFrameLevel() + States.LEVELS)
 
+-- The mock's secret is a truthy table: a truth test on a secret (x and y
+-- or z) cannot be caught offline, only in the client.
 M.units.raid2.threat = M.Secret(2)
 M.FireEvent("UNIT_THREAT_SITUATION_UPDATE", "raid2")
 H.checkTrue("secret status: passed on as it is", M.IsSecret(ann.aggro.bars[1]:GetValue()))
@@ -50,7 +52,7 @@ H.checkTrue("target: shown", ann.target:IsShown())
 H.check("target: opaque", ann.target:GetAlpha(), 1)
 H.check("others: none", tank.target:IsShown(), false)
 local edge = ann.target.edges[1]
-p, rel, relPoint, x, y = edge:GetPoint(1)
+p, rel, _, x, y = edge:GetPoint(1)
 H.check("inside the red line", x .. "," .. y, "2,-2")
 H.check("light", edge._color[1] .. "," .. edge._color[4], "1,0.9")
 RC.Set("r10", "targetBorder", false)
