@@ -223,9 +223,6 @@ CellAuras.AddPart({
         container:SetAuraGroupMaxFrameCount(key, get("debuffCount"))
         container:SetAuraGroupLayout(key, layout)
         container:SetAuraGroupEnabled(key, wanted)
-        local inset = Pixel.Snap(CellAuras.ROW_INSET)
-        container:ClearAllPoints()
-        container:SetPoint("BOTTOMLEFT", frame.health, "BOTTOMLEFT", inset, inset)
         local refused = false
         for _, button in ipairs(auras.row) do
             if not pcall(AuraButton.StyleManaged, button, frame.key, size, false) then refused = true end
@@ -266,11 +263,15 @@ local function usable(container)
     return true
 end
 
--- Every part onto the container; out of combat.
+-- Every part onto the container; out of combat. The container sits where
+-- the debuff row starts, row or not, so it always has a place.
 local function apply(frame)
     local container = frame.raidAuras.container
     stale[frame] = nil
     container:SetFrameLevel(frame:GetFrameLevel() + CellAuras.LEVELS)
+    local inset = Pixel.Snap(CellAuras.ROW_INSET)
+    container:ClearAllPoints()
+    container:SetPoint("BOTTOMLEFT", frame.health, "BOTTOMLEFT", inset, inset)
     for _, part in ipairs(parts) do
         if part.Apply(frame, container, frame.raidAuras) then stale[frame] = true end
     end

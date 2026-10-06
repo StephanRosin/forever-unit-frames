@@ -14,6 +14,9 @@ M.RunTimers()
 local cell = Header.headers[1]:GetAttribute("child1")
 local c = cell.raidAuras.container
 H.check("off by default: no group", #c._groupOrder, 0)
+local p0, rel0, relPoint0 = c:GetPoint(1)
+H.checkTrue("off: the container anchored all the same",
+    p0 == "BOTTOMLEFT" and rel0 == cell.health and relPoint0 == "BOTTOMLEFT")
 
 RC.Set("r10", "debuffRow", true)
 local group = c._groups[CellAuras.ROW_GROUP]
