@@ -59,5 +59,20 @@ M.RunTimers()
 -- Another size's x does nothing to the panel.
 H.check("other size: nothing", count(Header, "Refresh", function() RC.Set("r20", "x", 300) end), 0)
 H.check("other size: not moved", corner(), "64,40")
+-- A drag stores where the panel stopped: snapped to the grid, but never
+-- beyond the screen (the stored value is what is shown).
+UIParent._w, UIParent._h = 1000, 600
+local w, h = Header.Size()
+ns.Movers.Unlock("raid")
+mover._cx, mover._cy = 499 - w / 2 + 3, 299 - h / 2 + 3
+ns.Movers.OnDragStop(mover)
+H.check("drag to the corner: x inside", RC.Get("r10", "x"), 500 - w)
+H.check("drag to the corner: y inside", RC.Get("r10", "y"), 300)
+mover._cx, mover._cy = 101 + w / 2, -51 - h / 2
+ns.Movers.OnDragStop(mover)
+H.check("inside: snapped as before", corner(), "104,-48")
+ns.Movers.Lock("raid")
+UIParent._w, UIParent._h = 1920, 1080
+
 H.check("nothing blocked", #M.blocked, 0)
 H.check("no error", #M.errors, 0)

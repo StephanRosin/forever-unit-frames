@@ -116,11 +116,8 @@ end
 
 -- The panel's position: a number with - / + buttons (a slider across
 -- the whole range would move the panel ~40 units per pixel); Shift steps
--- by the movers' grid.
-local POSITION_KEYS = { x = true, y = true }
-
--- A value beyond the screen is stored as the edge the panel stops at
--- (ns.RaidHeader.Reachable).
+-- by the movers' grid. A value beyond the screen is stored as the edge
+-- the panel stops at (ns.RaidHeader.Reachable).
 local function positionRow(parent, def, opts)
     opts.min, opts.max, opts.step, opts.bigStep = def.min, def.max, 1, ns.Movers.GRID
     local set = opts.set
@@ -150,7 +147,7 @@ local function settingRow(parent, key)
         end,
     }
     local row
-    if POSITION_KEYS[key] then row = positionRow(parent, def, opts) else row = ns.Options.Control(parent, def, opts) end
+    if ns.RaidHeader.POSITION_KEYS[key] then row = positionRow(parent, def, opts) else row = ns.Options.Control(parent, def, opts) end
     row.key = key
     return row
 end

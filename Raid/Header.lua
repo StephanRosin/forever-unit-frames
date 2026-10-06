@@ -227,6 +227,10 @@ function Header.Size()
     return ns.Single.Size(Cell.KEY)
 end
 
+-- The settings that hold the panel's position (the raid window shows
+-- them as - / + numbers).
+Header.POSITION_KEYS = { x = true, y = true }
+
 -- A position value (key "x" or "y": the panel's top-left corner from
 -- the screen centre) moved to where the panel can be: the mover is
 -- clamped to the screen, so a value beyond would be stored but not shown.
@@ -267,6 +271,7 @@ function Header.MoverSpec()
     return {
         scope = function() return ns.Raid.Scope(Cell.Size()) end, config = ns.RaidConfig, id = "raid", group = "raid",
         point = "TOPLEFT", origin = "TOPLEFT", size = Header.Size, active = Header.Enabled,
+        clamp = function(axis, v) return Header.Reachable(axis, v, true) end,
         label = function() return ("%s %d"):format(Layout.Title({ kind = "NONE" }), Cell.Size()) end,
     }
 end
@@ -363,11 +368,10 @@ ns.Listen("RAID_SIZE_CHANGED", function() if Header.anchor then refresh() end en
 -- does not show, nor does the raid minimap button (Raid/MinimapButton.lua).
 -- The shown size's x / y only move the panel.
 local BUTTON_KEYS = { minimapAngle = true, minimapShow = true }
-local POSITION_KEYS = { x = true, y = true }
 ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
     if not Header.anchor then return end
     local shown = scope == ns.Raid.Scope(Cell.Size())
-    if shown and POSITION_KEYS[key] then
+    if shown and Header.POSITION_KEYS[key] then
         move()
     elseif shown or scope == nil or (scope == "general" and not BUTTON_KEYS[key]) then
         refresh()

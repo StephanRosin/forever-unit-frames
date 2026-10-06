@@ -27,6 +27,9 @@ local _, ns = ...
 --                  scope is a function)
 --   group          "units" (default) or "raid": which windows' unlock
 --                  shows the handle
+--   clamp(axis, v) optional: a dragged position ("x" / "y", snapped)
+--                  moved to where the target can be (the raid panel:
+--                  inside the screen)
 --
 -- Each group is unlocked on its own: the unit frames' (the unit window,
 -- /fuf unlock, the minimap button) and the raid panel's (the raid
@@ -116,9 +119,11 @@ function Movers.OnDragStop(mover)
     local spec = mover.spec
     local x, y = mx - ux, my - uy
     if spec.origin == "TOPLEFT" then x, y = x - mover:GetWidth() / 2, y + mover:GetHeight() / 2 end
+    x, y = Movers.Snap(x), Movers.Snap(y)
+    if spec.clamp then x, y = spec.clamp("x", x), spec.clamp("y", y) end
     local scope = scopeOf(spec)
-    spec.config.Set(scope, spec.xKey, Movers.Snap(x))
-    spec.config.Set(scope, spec.yKey, Movers.Snap(y))
+    spec.config.Set(scope, spec.xKey, x)
+    spec.config.Set(scope, spec.yKey, y)
 end
 
 local function isActive(mover)
