@@ -27,10 +27,21 @@ end
 
 local function joined(list) return table.concat(list, ",") end
 
--- Blizzard's class order for this game type (CLASS_SORT_ORDER).
-local function classes()
-    return CLASS_SORT_ORDER or { "WARRIOR", "PALADIN", "PRIEST", "SHAMAN", "DRUID", "ROGUE", "MAGE", "WARLOCK",
-        "HUNTER" }
+-- Blizzard's class order for this game type (Raid/Settings.lua).
+local function classes() return ns.Raid.Classes() end
+
+-- The class blocks' order: the classes a class order (the setting, as
+-- stored) names, then the others in Blizzard's order.
+function Layout.Classes(order)
+    local list, named = {}, {}
+    for token in (order or ""):gmatch("[^,%s]+") do
+        list[#list + 1] = token
+        named[token] = true
+    end
+    for _, token in ipairs(classes()) do
+        if not named[token] then list[#list + 1] = token end
+    end
+    return list
 end
 
 -- Sorted by role: the header groups its members by assigned role (a role
@@ -48,8 +59,9 @@ end
 -- Each block keeps to the size's groups. A class or role block filters
 -- strictly: group and class (and role) must all match. Members without
 -- an assigned role count as damage. sortBy (the setting, optional):
--- ROLE sorts by role within each block.
-function Layout.Blocks(groupBy, size, sortBy)
+-- ROLE sorts by role within each block; classOrder (the setting,
+-- optional): the class blocks' order.
+function Layout.Blocks(groupBy, size, sortBy, classOrder)
     local groups = joined(Layout.Groups(size))
     local blocks = {}
     if groupBy == "GROUP" then
@@ -57,7 +69,7 @@ function Layout.Blocks(groupBy, size, sortBy)
             blocks[g] = { kind = "GROUP", id = g, capacity = Layout.GROUP_SIZE, filter = { groupFilter = tostring(g) } }
         end
     elseif groupBy == "CLASS" then
-        for i, token in ipairs(classes()) do
+        for i, token in ipairs(Layout.Classes(classOrder)) do
             blocks[i] = { kind = "CLASS", id = token,
                 filter = { groupFilter = groups .. "," .. token, strictFiltering = true } }
         end

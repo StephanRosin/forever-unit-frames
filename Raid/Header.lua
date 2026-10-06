@@ -268,7 +268,7 @@ end
 function Header.Refresh()
     if not Header.anchor then return end
     local size = Cell.Size()
-    Header.blocks = Layout.Blocks(get("groupBy"), size, get("sortBy"))
+    Header.blocks = Layout.Blocks(get("groupBy"), size, get("sortBy"), get("classOrder"))
     local s = Header.Shape()
     for i, block in ipairs(Header.blocks) do
         setAttributes(header(i), headerAttributes(s, size), block.filter)

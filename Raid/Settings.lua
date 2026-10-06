@@ -17,6 +17,64 @@ function Raid.Scope(size)
     return "r" .. size
 end
 
+-- Blizzard's class order for this game type (CLASS_SORT_ORDER), read
+-- when asked: the class tokens a class order may name.
+function Raid.Classes()
+    return CLASS_SORT_ORDER or { "WARRIOR", "PALADIN", "PRIEST", "SHAMAN", "DRUID", "ROGUE", "MAGE", "WARLOCK",
+        "HUNTER" }
+end
+
+local function isClass(token)
+    for _, class in ipairs(Raid.Classes()) do
+        if class == token then return true end
+    end
+    return false
+end
+
+-- A class order as stored: class tokens separated by commas or spaces,
+-- each once.
+local function isClassOrder(text)
+    local seen = {}
+    for token in text:gmatch("[^,%s]+") do
+        if seen[token] or not isClass(token) then return false end
+        seen[token] = true
+    end
+    return true
+end
+-- Every class with a separator.
+Raid.CLASS_ORDER_LETTERS = 100
+
+-- What the options window stores for a typed class order: the tokens,
+-- comma-separated. It takes tokens in any case and the game's class
+-- names (commas between them, a name may hold a space); nil when a
+-- class is unknown or named twice.
+local function tokenOf(word)
+    local upper = word:upper()
+    if isClass(upper) then return upper end
+    for _, names in ipairs({ LOCALIZED_CLASS_NAMES_MALE, LOCALIZED_CLASS_NAMES_FEMALE }) do
+        if type(names) == "table" then
+            for token, name in pairs(names) do
+                if type(name) == "string" and name:lower() == word:lower() and isClass(token) then return token end
+            end
+        end
+    end
+    return nil
+end
+
+function Raid.ParseClassOrder(text)
+    local tokens, seen = {}, {}
+    for piece in text:gmatch("[^,]+") do
+        local word = piece:match("^%s*(.-)%s*$")
+        if word ~= "" then
+            local token = tokenOf(word)
+            if not token or seen[token] then return nil end
+            seen[token] = true
+            tokens[#tokens + 1] = token
+        end
+    end
+    return table.concat(tokens, ",")
+end
+
 local RaidSettings = ns.NewRegistry(
     { "general", "r10", "r20", "r40" },
     { general = "g", r10 = "a", r20 = "b", r40 = "c" })
@@ -48,6 +106,11 @@ RaidSettings.Define({ key = "groupBy", code = "GB", scope = "frame", type = "enu
 -- damage, the rest; each in raid order).
 RaidSettings.Define({ key = "sortBy", code = "SO", scope = "frame", type = "enum",
     values = { "INDEX", "NAME", "ROLE" }, default = "INDEX" })
+-- The class blocks' order: class tokens (commas or spaces), each once;
+-- the classes not named follow in Blizzard's order. Empty: Blizzard's
+-- order.
+RaidSettings.Define({ key = "classOrder", code = "CO", scope = "frame", type = "text",
+    maxLetters = Raid.CLASS_ORDER_LETTERS, check = isClassOrder, default = "" })
 -- Blocks side by side (a row of blocks) or stacked (a column), wrapping
 -- after blocksPerLine.
 RaidSettings.Define({ key = "blockDirection", code = "BD", scope = "frame", type = "enum",
