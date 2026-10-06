@@ -11,7 +11,9 @@ local _, ns = ...
 -- loading screen, and its OnShow closes every UISpecialFrames window
 -- (Blizzard_UIParent/UIParent.lua "UI.TopLevelParentShown" ->
 -- Blizzard_Game/Shared/Game.lua CloseAllWindows), ours included; the
--- delay lets that OnShow run first. ForeverUnitFramesDB.newsSeen is the newest
+-- delay lets that OnShow run first. If UIParent is still hidden when the
+-- delay ran out, the news waits for its next OnShow (once) and the delay
+-- again. ForeverUnitFramesDB.newsSeen is the newest
 -- version this account has had news for. The news of the TOC version
 -- shows when that version has an entry and
 --   * newsSeen is an older version, or
@@ -20,7 +22,8 @@ local _, ns = ...
 --     this login: an update from a version before the news.
 -- A fresh install (neither) shows nothing and records the version at once
 -- (News.Begin), so a logout before the deferred check still counts. A
--- login that shows the news records its version as newsSeen (a downgrade
+-- login that shows the news records its version as newsSeen once the
+-- window is visible (a downgrade
 -- shows nothing and keeps the newer one). A version without news shows
 -- and records nothing.
 local News = {}
@@ -90,11 +93,30 @@ function News.Due()
     return hadSettings
 end
 
+local function later() C_Timer.After(SHOW_DELAY, function() ns.AfterCombat("news", News.AtLogin) end) end
+
+-- UIParent's next OnShow, once (a hooked script stays: a flag turns it
+-- off).
+local hooked, waitingForUIParent = false, false
+local function afterUIParentShows()
+    waitingForUIParent = true
+    if hooked then return end
+    hooked = true
+    UIParent:HookScript("OnShow", function()
+        if not waitingForUIParent then return end
+        waitingForUIParent = false
+        later()
+    end)
+end
+
 -- Out of combat, after the loading screen: shows the news if due and
--- records the version it showed.
+-- records the version once the window is visible. With UIParent hidden
+-- it would not be (and its OnShow would close it): it waits for it.
 function News.AtLogin()
+    if not News.Due() then return end
+    if not UIParent:IsShown() then return afterUIParentShows() end
     local current = News.Current()
-    if News.Due() and ns.NewsWindow.Open(current) then db.newsSeen = current end
+    if ns.NewsWindow.Open(current) and ns.NewsWindow.frame:IsVisible() then db.newsSeen = current end
 end
 
 -- The first loading screen after login only; later ones (zone changes)
@@ -102,5 +124,5 @@ end
 ns.On("LOADING_SCREEN_DISABLED", function()
     if not waiting then return end
     waiting = false
-    C_Timer.After(SHOW_DELAY, function() ns.AfterCombat("news", News.AtLogin) end)
+    later()
 end)

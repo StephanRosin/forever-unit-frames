@@ -148,3 +148,46 @@ H.check("combat after the loading screen: not recorded", ForeverUnitFramesDB.new
 M.SetCombat(false)
 H.checkTrue("after combat: shown", ns.NewsWindow.IsOpen())
 H.check("after combat: recorded", ForeverUnitFramesDB.newsSeen, "0.22.0")
+
+-- UIParent shown late, more than the delay after the loading screen: the
+-- news waits for it (its OnShow, once, then the delay) and is recorded
+-- only once it is visible.
+ns = H.LoadAddon()
+M.units.player = { name = "Me", class = "MAGE", health = 1, healthMax = 1 }
+M.addonVersion = "0.22.0"
+_G.ForeverUnitFramesDB = { profile = {} }
+M.LoadingScreenStarts()
+M.FireEvent("PLAYER_LOGIN")
+M.FireEvent("LOADING_SCREEN_DISABLED")
+M.RunTimers()
+H.check("UIParent still hidden: not shown", ns.NewsWindow.IsOpen(), false)
+H.check("UIParent still hidden: not recorded", ForeverUnitFramesDB.newsSeen, nil)
+UIParent:Show()
+H.check("UIParent shown: not before the delay", ns.NewsWindow.IsOpen(), false)
+M.RunTimers()
+H.checkTrue("after the delay: shown", ns.NewsWindow.IsOpen())
+H.checkTrue("and visible", ns.NewsWindow.frame:IsVisible())
+H.check("recorded once visible", ForeverUnitFramesDB.newsSeen, "0.22.0")
+-- The hook is once only: UIParent shown again later opens nothing.
+ns.NewsWindow.Close()
+UIParent:Hide(); UIParent:Show()
+M.RunTimers()
+H.check("later UIParent shows: nothing", ns.NewsWindow.IsOpen(), false)
+
+-- Hidden again by the time the delay ran out (UIParent hidden after it
+-- showed): not recorded, it waits for the next show.
+ns = H.LoadAddon()
+M.units.player = { name = "Me", class = "MAGE", health = 1, healthMax = 1 }
+M.addonVersion = "0.22.0"
+_G.ForeverUnitFramesDB = { profile = {} }
+M.LoadingScreenStarts()
+M.FireEvent("PLAYER_LOGIN")
+M.LoadingScreenEnds()
+UIParent:Hide()
+M.RunTimers()
+H.check("hidden when due: not recorded", ForeverUnitFramesDB.newsSeen, nil)
+UIParent:Show()
+M.RunTimers()
+H.checkTrue("next show: shown", ns.NewsWindow.frame:IsVisible())
+H.check("next show: recorded", ForeverUnitFramesDB.newsSeen, "0.22.0")
+H.check("no error", #M.errors, 0)
