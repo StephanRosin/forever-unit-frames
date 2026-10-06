@@ -1,7 +1,7 @@
 -- What the raid options window does with the edited size as a whole
 -- (Raid/Options/Window.lua): copy from another size or another
 -- character after a second click, reset after a second click, export and
--- import as a string, locked in combat.
+-- import as a string on the Profile tab, locked in combat.
 local M = H.M
 local ns = H.LoadAddon()
 M.units.player = { name = "Me", class = "MAGE", health = 1, healthMax = 1 }
@@ -24,7 +24,7 @@ RO.Open(40)
 list = ns.Widgets.list
 H.check("copy button", RO.copyRow.button.text:GetText(), "Copy from…")
 H.check("reset button", RO.resetButton.text:GetText(), "Reset this size")
-H.check("share button", RO.shareButton.text:GetText(), "Export / Import")
+H.check("no share button in the footer", RO.shareButton, nil)
 
 -- Copy from: the other sizes, then every size of the other characters.
 click(RO.copyRow.button)
@@ -73,10 +73,14 @@ click(RO.resetButton)
 H.check("reset", RC.Get("r40", "cellWidth"), 80)
 H.check("other sizes kept", RC.Get("r20", "cellHeight"), 50)
 
--- Export and import, in place of the tab's page.
+-- Export and import, on the Profile tab.
 RC.Set("r40", "cellWidth", 90)
-click(RO.shareButton)
-H.checkTrue("panel shown", RO.share:IsShown())
+H.check("profile tab button", RO.tabButtons[8].text:GetText(), "Profile")
+click(RO.tabButtons[8])
+H.check("profile tab selected", RO.currentTab, "profile")
+H.checkTrue("its page shown", RO.page:IsShown())
+H.checkTrue("export on it", RO.exportArea:IsVisible())
+H.checkTrue("import on it", RO.importButton:IsVisible())
 H.check("export of the edited size", RO.exportArea:GetText(), ns.RaidProfiles.Export(40))
 H.check("export hint names it", RO.exportHint:GetText(), "Copy this text to share or back up the 40 players profile.")
 RO.SelectSize(20)
@@ -102,21 +106,20 @@ H.check("readable part imported", RC.Get("r20", "cellWidth"), 100)
 RO.importArea:SetText("")
 click(RO.importButton)
 H.check("empty", RO.importMessage:GetText(), L.IMPORT_CODEC_EMPTY)
-click(RO.shareButton)
-H.check("button hides it again", RO.share:IsShown(), false)
-click(RO.shareButton)
 RO.SelectTab("layout")
-H.check("a tab hides it", RO.share:IsShown(), false)
+H.check("another tab hides it", RO.importButton:IsVisible(), false)
+RO.SelectTab("profile")
+H.check("back on it: the message cleared", RO.importMessage:GetText(), "")
+H.check("back on it: the current export", RO.exportArea:GetText(), ns.RaidProfiles.Export(20))
 
 -- Combat locks what changes the profile.
-click(RO.shareButton)
 M.combat = true
 M.FireEvent("PLAYER_REGEN_DISABLED")
 H.check("copy locked", RO.copyRow.button:IsEnabled(), false)
 H.check("reset locked", RO.resetButton:IsEnabled(), false)
 H.check("import locked", RO.importButton:IsEnabled(), false)
 H.check("import area locked", RO.importArea.edit:IsEnabled(), false)
-H.check("export still readable", RO.shareButton:IsEnabled(), true)
+H.check("profile tab still reachable", RO.tabButtons[8]:IsEnabled(), true)
 M.SetCombat(false)
 H.check("copy unlocked", RO.copyRow.button:IsEnabled(), true)
 H.check("import unlocked", RO.importButton:IsEnabled(), true)

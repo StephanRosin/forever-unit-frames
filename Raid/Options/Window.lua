@@ -3,9 +3,12 @@ local _, ns = ...
 -- The raid options window, in the style of the unit frames' (the same
 -- widgets and colours): a header bar with the raid size whose profile is
 -- edited (the one shown now is marked) and which size the panel shows,
--- the tabs of the raid menu (Raid/Options/Schema.lua) and their rows; a
--- footer with what acts on the edited size as a whole: copy from another
--- size or character, export and import it, reset it. A plain
+-- the tabs of the raid menu (Raid/Options/Schema.lua) and their rows, the
+-- last one (Profile) the export and import of the edited size; a footer
+-- laid out like the unit frames' window's: on the left the raid panel's
+-- lock, test mode and the way to the unit frames' window, on the right
+-- what acts on the edited size as a whole: copy from another size or
+-- character, reset it. A plain
 -- (non-secure) frame: every change goes through ns.RaidConfig, whose
 -- RAID_CONFIG_CHANGED listeners restyle the raid panel out of combat. In
 -- combat the window stays open but its controls lock.
@@ -22,8 +25,8 @@ local SIZE_TAB_PADDING, TAB_PADDING, TAB_MIN_W, UNDERLINE_H, ACCENT_W = 24, 28, 
 local SCROLLBAR_W, WHEEL_STEP = 10, 40
 local CONTENT_W = WIDTH - SCROLLBAR_W
 local PAGE_TOP, PAGE_BOTTOM, SECTION_GAP, INSET, NOTE_H = 4, 16, 8, 16, 34
-local BUTTON_H, BUTTON_W, DROPDOWN_W, GAP, WIDE_BUTTON_W, SHARE_BUTTON_W = 24, 120, 160, 8, 160, 140
-local TEXT_AREA_H, CONFIRM_SECONDS = 70, 3
+local BUTTON_H, BUTTON_W, DROPDOWN_W, GAP, WIDE_BUTTON_W, FOOTER_INSET = 24, 120, 160, 8, 160, 12
+local TEXT_AREA_H, MESSAGE_H, CONFIRM_SECONDS = 70, 20, 3
 local DEFAULT_POSITION = { point = "TOPLEFT", relativePoint = "TOPLEFT", x = 90, y = -150 }
 
 local frame
@@ -178,13 +181,15 @@ local function buildPage(page, tab)
     stack.finish()
 end
 
+local buildProfilePage
+
 -- One page per tab: the rows read the edited size when they refresh.
 local function pageFor(tab)
     if pages[tab.id] then return pages[tab.id] end
     local page = CreateFrame("Frame", nil, frame.scrollChild)
     page:SetPoint("TOPLEFT", frame.scrollChild, "TOPLEFT", 0, 0)
     page:SetWidth(CONTENT_W)
-    buildPage(page, tab)
+    if tab.custom == "profile" then buildProfilePage(page, newStack(page)) else buildPage(page, tab) end
     page:SetHeight(page.height)
     page:Hide()
     pages[tab.id] = page
@@ -345,7 +350,7 @@ local function anchorScroll()
     frame.scroll:SetPoint("BOTTOMRIGHT", frame.body, "BOTTOMRIGHT", -SCROLLBAR_W, 0)
 end
 
-local paintTestButton
+local paintFooter
 
 local function applyLock()
     local on = not inCombat
@@ -353,7 +358,7 @@ local function applyLock()
     for _, control in ipairs(frame.lockedControls) do control:SetEnabled(on) end
     RaidOptions.combatNotice:SetShown(inCombat)
     anchorScroll()
-    paintTestButton()
+    paintFooter()
 end
 
 -- Title bar, footer, body ---------------------------------------------------------
@@ -475,7 +480,9 @@ local function copyFromRow(footer)
     return row
 end
 
--- Export and import of the edited size, over the tabs' pages.
+-- The Profile tab: export and import of the edited size. Its blocks are
+-- rows of the page: they refresh with the edited size and lock in combat
+-- like the setting rows.
 local function showImportMessage(text, colorKey)
     RaidOptions.importMessage:SetText(text)
     Style.Paint(RaidOptions.importMessage, colorKey)
@@ -492,65 +499,90 @@ local function runImport()
     showImportMessage(result > 0 and L.IMPORT_SKIPPED:format(result) or L.IMPORT_DONE, "accent")
 end
 
-local function refreshShare()
-    local size = sizeText(RaidOptions.Size())
-    RaidOptions.exportHint:SetText(L.RAID_EXPORT_HINT:format(size))
-    RaidOptions.importHint:SetText(L.RAID_IMPORT_HINT:format(size))
-    RaidOptions.exportArea:SetText(ns.RaidProfiles.Export(RaidOptions.Size()))
+local function newBlock(page)
+    local block = CreateFrame("Frame", nil, page)
+    function block:Refresh() end
+    function block:SetEnabled() end
+    return block
 end
 
-local function textArea(panel, readOnly, anchor, y)
-    local area = Widgets.TextArea(panel, { width = CONTENT_W - 2 * INSET, height = TEXT_AREA_H, readOnly = readOnly })
-    area:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 0, -y)
-    return area
+local function hintAndArea(block, readOnly)
+    local hint = Style.Text(block, 11, "muted")
+    hint:SetPoint("TOPLEFT", block, "TOPLEFT", INSET, -4)
+    local area = Widgets.TextArea(block, { width = CONTENT_W - 2 * INSET, height = TEXT_AREA_H, readOnly = readOnly })
+    area:SetPoint("TOPLEFT", block, "TOPLEFT", INSET, -(MESSAGE_H + 2))
+    return hint, area
 end
 
-local function createShare(body)
-    local panel = CreateFrame("Frame", nil, body)
-    panel:SetAllPoints(body)
-    panel:SetFrameLevel(body:GetFrameLevel() + 10)
-    panel:EnableMouse(true)
-    Style.Fill(panel, "bg")
-    local export = Widgets.Header(panel, L.EXPORT)
-    export:SetPoint("TOPLEFT", panel, "TOPLEFT", 0, -PAGE_TOP)
-    export:SetPoint("TOPRIGHT", panel, "TOPRIGHT", 0, -PAGE_TOP)
-    local exportHint = Style.Text(panel, 11, "muted")
-    exportHint:SetPoint("TOPLEFT", export, "BOTTOMLEFT", INSET, -4)
-    local exportArea = textArea(panel, true, exportHint, 6)
-    local import = Widgets.Header(panel, L.IMPORT)
-    import:SetPoint("TOPLEFT", exportArea, "BOTTOMLEFT", -INSET, -SECTION_GAP)
-    import:SetPoint("RIGHT", panel, "RIGHT", 0, 0)
-    local importHint = Style.Text(panel, 11, "muted")
-    importHint:SetPoint("TOPLEFT", import, "BOTTOMLEFT", INSET, -4)
-    local importArea = textArea(panel, false, importHint, 6)
-    local button = Widgets.Button(panel, { text = L.IMPORT, width = 120, onClick = runImport })
-    button:SetPoint("TOPLEFT", importArea, "BOTTOMLEFT", 0, -GAP)
-    local message = Style.Text(panel, 11, "muted")
+local function exportBlock(page)
+    local block = newBlock(page)
+    local hint, area = hintAndArea(block, true)
+    function block:Refresh()
+        hint:SetText(L.RAID_EXPORT_HINT:format(sizeText(RaidOptions.Size())))
+        area:SetText(ns.RaidProfiles.Export(RaidOptions.Size()))
+    end
+    RaidOptions.exportHint, RaidOptions.exportArea = hint, area
+    return block, MESSAGE_H + TEXT_AREA_H + 10
+end
+
+local function importBlock(page)
+    local block = newBlock(page)
+    local hint, area = hintAndArea(block, false)
+    local button = Widgets.Button(block, { text = L.IMPORT, width = BUTTON_W, onClick = runImport })
+    button:SetPoint("TOPLEFT", area, "BOTTOMLEFT", 0, -GAP)
+    local message = Style.Text(block, 11, "muted")
     message:SetPoint("TOPLEFT", button, "BOTTOMLEFT", 0, -6)
     message:SetJustifyH("LEFT")
-    panel:Hide()
-    RaidOptions.share, RaidOptions.exportHint, RaidOptions.exportArea = panel, exportHint, exportArea
-    RaidOptions.importHint, RaidOptions.importArea = importHint, importArea
+    function block:Refresh() hint:SetText(L.RAID_IMPORT_HINT:format(sizeText(RaidOptions.Size()))) end
+    function block:SetEnabled(on) button:SetEnabled(on); area.edit:SetEnabled(on) end
+    RaidOptions.importHint, RaidOptions.importArea = hint, area
     RaidOptions.importButton, RaidOptions.importMessage = button, message
+    return block, MESSAGE_H + 2 + TEXT_AREA_H + GAP + BUTTON_H + 6 + MESSAGE_H
 end
 
--- Shows or hides export and import in place of the tab's page.
-function RaidOptions.ShowShare(on)
-    Widgets.CloseList()
-    if on then
-        refreshShare()
-        showImportMessage("", "muted")
+function buildProfilePage(page, stack)
+    for _, entry in ipairs({ { L.EXPORT, exportBlock }, { L.IMPORT, importBlock } }) do
+        local header = Widgets.Header(page, entry[1])
+        header.isSection = true
+        stack.add(header)
+        stack.add(entry[2](page))
     end
-    RaidOptions.share:SetShown(on)
+    stack.finish()
 end
 
--- Test mode's button: outlined while the window's test mode is on.
-function paintTestButton()
+-- The raid panel's movers only (Core/Movers.lua, group "raid"); the unit
+-- frames' window has its own button.
+local function toggleMovers()
+    if ns.Movers.IsUnlocked("raid") then ns.Movers.Lock("raid") else ns.Movers.Unlock("raid") end
+end
+
+-- The lock button names what a click does; test mode's is outlined while
+-- the window's test mode is on.
+function paintFooter()
+    RaidOptions.unlockButton.text:SetText(ns.Movers.IsUnlocked("raid") and L.LOCK_FRAMES or L.UNLOCK_FRAMES)
     local button = RaidOptions.testButton
     local testOn = ns.RaidTestMode.IsOwnOn()
     Style.SetBorderColor(button, testOn and "accent" or "border")
     local idle = button:IsEnabled() and "text" or "muted"
     Style.Paint(button.text, testOn and "accent" or idle)
+end
+
+-- The same three places as in the unit frames' window's footer
+-- (Options/Window.lua): lock, test mode, the other window. The way across
+-- stays usable in combat.
+local function createFooterLeft(footer)
+    local unlock = Widgets.Button(footer, { text = L.UNLOCK_FRAMES, width = BUTTON_W, onClick = toggleMovers })
+    unlock:SetPoint("LEFT", footer, "LEFT", FOOTER_INSET, 0)
+    local test = Widgets.Button(footer, { text = L.TEST_MODE_ON, width = BUTTON_W,
+        onClick = function() ns.RaidTestMode.Set(not ns.RaidTestMode.IsOwnOn()) end })
+    test:SetPoint("LEFT", unlock, "RIGHT", GAP, 0)
+    test:HookScript("OnLeave", paintFooter)
+    local units = Widgets.Button(footer, { text = L.UNIT_FRAMES_BUTTON, width = BUTTON_W, onClick = function()
+        RaidOptions.Close()
+        ns.Options.Open()
+    end })
+    units:SetPoint("LEFT", test, "RIGHT", GAP, 0)
+    RaidOptions.unlockButton, RaidOptions.testButton, RaidOptions.unitButton = unlock, test, units
 end
 
 local function createFooter(parent)
@@ -559,25 +591,13 @@ local function createFooter(parent)
     footer:SetPoint("BOTTOMLEFT"); footer:SetPoint("BOTTOMRIGHT")
     Style.Fill(footer, "panel")
     horizontalLine(footer, "TOP")
-    local test = Widgets.Button(footer, { text = L.TEST_MODE_ON, width = BUTTON_W,
-        onClick = function() ns.RaidTestMode.Set(not ns.RaidTestMode.IsOwnOn()) end })
-    test:SetPoint("LEFT", footer, "LEFT", 12, 0)
-    test:HookScript("OnLeave", paintTestButton)
-    local units = Widgets.Button(footer, { text = L.UNIT_FRAMES_BUTTON, width = BUTTON_W, onClick = function()
-        RaidOptions.Close()
-        ns.Options.Open()
-    end })
-    units:SetPoint("LEFT", test, "RIGHT", GAP, 0)
-    RaidOptions.testButton, RaidOptions.unitButton = test, units
+    createFooterLeft(footer)
     local reset = ns.Options.ConfirmButton(footer, L.RAID_RESET_SIZE,
         function() ns.RaidProfiles.ResetSize(RaidOptions.Size()) end)
-    reset:SetPoint("RIGHT", footer, "RIGHT", -12, 0)
+    reset:SetPoint("RIGHT", footer, "RIGHT", -FOOTER_INSET, 0)
     local copy = copyFromRow(footer)
     copy:SetPoint("RIGHT", reset, "LEFT", -GAP, 0)
-    local share = Widgets.Button(footer, { text = L.RAID_SHARE, width = SHARE_BUTTON_W,
-        onClick = function() RaidOptions.ShowShare(not RaidOptions.share:IsShown()) end })
-    share:SetPoint("RIGHT", copy, "LEFT", -GAP, 0)
-    RaidOptions.resetButton, RaidOptions.copyRow, RaidOptions.shareButton = reset, copy, share
+    RaidOptions.resetButton, RaidOptions.copyRow = reset, copy
     frame.footer = footer
     return footer
 end
@@ -615,7 +635,6 @@ local function createBody(parent, top, footer)
     createNotice(body)
     createScroll(body)
     anchorScroll()
-    createShare(body)
 end
 
 -- Window ------------------------------------------------------------------------
@@ -638,7 +657,7 @@ local function createWindow()
     createBody(frame, frame.sizeBar, footer)
     -- Locked in combat with the rows.
     frame.lockedControls = { RaidOptions.sizeModeRow, RaidOptions.copyRow, RaidOptions.resetButton,
-        RaidOptions.importButton, RaidOptions.importArea.edit, RaidOptions.testButton }
+        RaidOptions.unlockButton, RaidOptions.testButton }
     -- Hiding the window (ESC, close button, /fuf raid) takes an open
     -- dropdown list and armed confirmations with it, and ends its test
     -- mode: the panel shows the active size again.
@@ -664,7 +683,6 @@ local function refreshAll()
     forEachRow(function(row) row:Refresh() end)
     RaidOptions.sizeModeRow:Refresh()
     renderSizeTabs()
-    if RaidOptions.share:IsShown() then refreshShare() end
 end
 
 -- Public API ----------------------------------------------------------------------
@@ -677,9 +695,10 @@ function RaidOptions.SelectTab(id)
     ensureWindow()
     for _, tab in ipairs(Schema.TABS) do
         if tab.id == id then
-            RaidOptions.ShowShare(false)
+            Widgets.CloseList()
             if RaidOptions.page then RaidOptions.page:Hide() end
             local page = pageFor(tab)
+            if tab.custom == "profile" then showImportMessage("", "muted") end
             RaidOptions.page, RaidOptions.currentTab, RaidOptions.rows = page, id, page.rows
             frame.scrollChild:SetHeight(page.height)
             frame.scroll:SetVerticalScroll(0)
@@ -693,8 +712,8 @@ function RaidOptions.SelectTab(id)
     end
 end
 
--- Edits another size's profile: the rows (and export) read it from now
--- on; a copy or reset armed for the size before is not.
+-- Edits another size's profile: the rows (and the export) read it from
+-- now on; a copy or reset armed for the size before is not.
 function RaidOptions.SelectSize(size)
     ensureWindow()
     Raid.Scope(size)
@@ -737,7 +756,12 @@ ns.Listen("RAID_SIZE_CHANGED", function()
     if RaidOptions.IsOpen() then renderSizeTabs() end
 end)
 ns.Listen("RAID_TEST_MODE", function()
-    if frame then paintTestButton() end
+    if frame then paintFooter() end
+end)
+-- The raid panel's mover locked or unlocked from anywhere: this window,
+-- /fuf lock, the start of combat.
+ns.Listen("MOVERS_UNLOCKED", function(_, group)
+    if frame and group == "raid" then paintFooter() end
 end)
 
 -- Every label is set once, when its widget is built: a new language gets a

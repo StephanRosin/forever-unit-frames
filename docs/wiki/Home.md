@@ -19,22 +19,25 @@ Source: [GitHub](https://github.com/StephanRosin/forever-unit-frames)
   casts, a full party, and every indicator you have switched on, so you can set everything up
   without a target or a group.
 - **Moving frames:** *Unlock frames* at the bottom of the window (or `/fuf unlock`), drag them,
-  then *Lock frames* (or `/fuf lock`). Exact positions are on each frame's **Layout** tab.
+  then *Lock frames* (or `/fuf lock`). Exact positions are on each frame's **Layout** tab. This
+  moves the unit frames; the raid panel has its own *Unlock frames* in the raid window.
 - **Scrolling:** the mouse wheel scrolls the page. To change a slider with the wheel, hold **Shift**.
   You can also drag a slider or type a value into the box next to it.
 
 ## Raid frames
 
-- **`/fuf raid`** opens the raid options window (also: the **Raid frames…** button in `/fuf`, the raid
+- **`/fuf raid`** opens the raid options window (also: the **Raid frames…** button at the bottom of `/fuf`, the raid
   frames' own minimap button, or their entry in the addon compartment).
 - Each character has **three raid profiles**, one per raid size: 10, 20 and 40. The size tabs at the
   top of the window choose the profile you edit; the one shown right now is marked *(shown)*.
   **Raid size shown** next to them follows the raid instance (outside one the group's size), or fixes
   one size.
-- **Test mode** in the raid window shows a pretend raid of the size you edit, at that size's place,
+- **Unlock frames** in the raid window lets you drag the raid panel (only the panel; `/fuf lock`
+  locks it too). **Test mode** in the raid window shows a pretend raid of the size you edit, at that size's place,
   with every option you switched on; closing the window or entering combat ends it.
 - **Copy from…** takes another size, or a size of another of your characters (two clicks).
-  **Export / Import** shares one size as a text; **Reset this size** goes back to its defaults.
+  **Reset this size** goes back to its defaults. The **Profile** tab exports and imports the size you
+  edit as a text.
 - Corner indicators take spell IDs or spell names from your spell book; a name stands for every rank
   you know. A name or class the window cannot use is named in the chat.
 - The cells have a look of their own per raid size (texture, colors, fonts, border): changing the party
@@ -52,7 +55,7 @@ Source: [GitHub](https://github.com/StephanRosin/forever-unit-frames)
 | `/fuf` | Opens the options |
 | `/fuf raid` | Opens the raid frames' options |
 | `/fuf news` | Shows what's new in this version (shown once by itself after an update) |
-| `/fuf unlock`, `/fuf lock` | Lets you drag the frames, and locks them again |
+| `/fuf unlock`, `/fuf lock` | Lets you drag the unit frames, and locks them (and the raid panel) again |
 | `/fuf status` | Prints the client version and where the settings came from |
 | `/fuf reset <frame\|all>` | Resets one frame (player, target, targettarget, pet, focus, party) or everything |
 | `/fuf set <scope> <setting> <value>` | Sets one setting by name (for macros) |

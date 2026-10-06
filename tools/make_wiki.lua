@@ -289,7 +289,7 @@ local function raidSection(lines, title, keys)
 end
 
 local raidPages = {}
-for _, tab in ipairs(RaidSchema.TABS) do
+local function raidPage(tab)
     local title = RaidSchema.TabTitle(tab.id)
     local lines = { GENERATED, "", "# Raid frames: " .. title, "", RAID_TAB_INTRO[tab.id] or "", "",
         ("The **%s** tab of the raid options window (`/fuf raid`). Each raid size (10, 20, 40) has a profile of"
@@ -316,6 +316,11 @@ for _, tab in ipairs(RaidSchema.TABS) do
     local name = "Raid-" .. title:gsub("&", "and"):gsub("%s+", "-")
     write(name .. ".md", lines)
     raidPages[#raidPages + 1] = { name, title }
+end
+-- A custom tab (Profile: export and import) holds no settings: no page;
+-- the Home page explains it.
+for _, tab in ipairs(RaidSchema.TABS) do
+    if not tab.custom then raidPage(tab) end
 end
 
 -- Sidebar ---------------------------------------------------------------------------

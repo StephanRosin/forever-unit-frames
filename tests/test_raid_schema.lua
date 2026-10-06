@@ -10,7 +10,11 @@ local function ids(list)
     for i, t in ipairs(list) do out[i] = t.id end
     return table.concat(out, ",")
 end
-H.check("tabs", ids(Schema.TABS), "general,layout,cell,texts,debuffs,indicators,icons")
+H.check("tabs", ids(Schema.TABS), "general,layout,cell,texts,debuffs,indicators,icons,profile")
+-- Profile: export and import of the edited size, no settings.
+H.check("profile tab is the window's own", Schema.TABS[8].custom, "profile")
+H.check("profile tab: no sections", #Schema.TABS[8].sections, 0)
+H.check("profile tab title", Schema.TabTitle("profile"), "Profile")
 
 -- Every setting once: in a section, or in the header bar.
 local seen = {}

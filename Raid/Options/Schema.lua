@@ -3,7 +3,7 @@ local _, ns = ...
 -- The raid options window's menu (Raid/Options/Window.lua) and the raid
 -- pages of the wiki (tools/make_wiki.lua): tabs, their sections and the
 -- raid settings in them, and the words for all of it. Every raid setting
--- is in exactly one section, except sizeMode, which the window's header
+-- is in exactly one section of a settings tab (a custom tab has none), except sizeMode, which the window's header
 -- bar holds. The words are the raid's own (RAID_SETTING_<key>, ...): a
 -- raid key may share its name with a unit-frame setting of another
 -- meaning.
@@ -68,6 +68,9 @@ Schema.TABS = {
         icon("readyCheck", "readyCheckIcon"),
         { id = "states", keys = { "rangeFade", "rangeAlpha", "aggroBorder", "targetBorder" } },
     } },
+    -- The window's own page: export and import of the edited size
+    -- (Raid/Options/Window.lua). No settings; the wiki has no page for it.
+    { id = "profile", custom = "profile", sections = {} },
 }
 
 -- Held by the header bar, not by a tab.

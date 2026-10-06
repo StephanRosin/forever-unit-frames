@@ -623,6 +623,7 @@ L.RAID_TAB_texts = "Texte"
 L.RAID_TAB_debuffs = "Debuffs"
 L.RAID_TAB_indicators = "Indikatoren"
 L.RAID_TAB_icons = "Symbole & Zustände"
+L.RAID_TAB_profile = L.TAB_profile
 L.RAID_NOTE_cell = "Heilungen, Schilde und der Ressourcenstreifen behalten die Standardfarben der Einheitenrahmen."
 L.RAID_SECTION_raidFrames = "Schlachtzugsrahmen"
 L.RAID_SECTION_grouping = "Gruppierung"
@@ -810,13 +811,12 @@ L.RAID_TYPED_CLASS_TWICE = "Klasse doppelt genannt: %s"
 L.RAID_TYPED_SPELL_UNKNOWN = "Kein Zauber aus deinem Zauberbuch: %s"
 L.RAID_TYPED_TOO_LONG = "Zu viele Zauber: Die Liste fasst %d Zeichen."
 L.RAID_RESET_SIZE = "Größe zurücksetzen"
-L.RAID_SHARE = "Export / Import"
 L.RAID_COPY_CHARACTER = "%s: %s"
 L.RAID_EXPORT_HINT = "Diesen Text kopieren, um das Profil %s zu teilen oder zu sichern."
 L.RAID_IMPORT_HINT = "Eine Schlachtzugsgröße hier einfügen: Sie ersetzt das Profil %s."
 
 -- Schlachtzugsrahmen: die Wege zwischen den beiden Optionsfenstern.
-L.RAID_FRAMES_BUTTON = "Schlachtzugsrahmen…"
+L.RAID_FRAMES_BUTTON = "Schlachtzug…"
 L.UNIT_FRAMES_BUTTON = "Einheitenrahmen…"
 
 -- Neuigkeiten (Core/News.lua, Options/News.lua).
@@ -828,7 +828,7 @@ L.NEWS_0_22_0_BLOCKS = "Blöcke nach Schlachtzuggruppe, Klasse oder Rolle oder e
 L.NEWS_0_22_0_PROFILES = "Jede Größe hat pro Charakter ein eigenes Profil mit ganz eigenem Aussehen: Zellengröße, Textur, Schriften, Farben, Rahmen. Eine Größe kopieren, zurücksetzen, exportieren und importieren."
 L.NEWS_0_22_0_DEBUFFS = "Bannbare Debuffs wie in Heiler-Addons: als Symbol in der Mitte oder als farbiges Quadrat in einer Ecke. Bis zu fünf Eckindikatoren für deine Heilungen über Zeit und Schilde."
 L.NEWS_0_22_0_ICONS = "Symbole für Rolle, Anführer, Plündermeister und Bereitschaftscheck; Mitglieder außer Reichweite verblassen; Linien in der Zelle zeigen Aggro und dein Ziel."
-L.NEWS_0_22_0_WINDOW = "Ein eigenes Optionsfenster (/fuf raid oder Schlachtzugsrahmen… in /fuf), eine eigene Minikarten-Schaltfläche und ein Testmodus, der einen Probe-Schlachtzug der bearbeiteten Größe zeigt."
+L.NEWS_0_22_0_WINDOW = "Ein eigenes Optionsfenster (/fuf raid oder Schlachtzug… in /fuf), eine eigene Minikarten-Schaltfläche und ein Testmodus, der einen Probe-Schlachtzug der bearbeiteten Größe zeigt."
 L.NEWS_0_22_0_BLIZZARD = "Blizzards Schlachtzugsrahmen sind aus, solange unsere an sind; eine 5er-Gruppe lässt sich auch als Schlachtzug anzeigen."
 L.NEWS_AGAIN = "/fuf news zeigt dies erneut."
 L.NEWS_NONE = "Diese Version hat keine Neuigkeiten."

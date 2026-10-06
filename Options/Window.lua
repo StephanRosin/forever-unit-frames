@@ -18,7 +18,7 @@ local SCROLLBAR_W, WHEEL_STEP = 10, 40
 local CONTENT_W = WIDTH - NAV_W - SCROLLBAR_W
 local PAGE_TOP, PAGE_BOTTOM, SECTION_GAP, INSET = 4, 16, 8, 16
 local TEXT_AREA_H, MESSAGE_H = 70, 20
-local BUTTON_H, BUTTON_W, WIDE_BUTTON_W, FOOTER_GAP = 24, 120, 160, 8
+local BUTTON_H, BUTTON_W, WIDE_BUTTON_W, FOOTER_GAP, FOOTER_INSET = 24, 120, 160, 8, 12
 local CONFIRM_SECONDS = 3
 local HIGHLIGHT_HOLD, HIGHLIGHT_STEPS, HIGHLIGHT_STEP_SECONDS, HIGHLIGHT_W = 0.9, 6, 0.1, 2
 local DEFAULT_POSITION = { point = "TOPLEFT", relativePoint = "TOPLEFT", x = 60, y = -120 }
@@ -476,7 +476,7 @@ local function anchorScroll()
 end
 
 local function refreshFooter()
-    local unlocked = ns.Movers.IsUnlocked()
+    local unlocked = ns.Movers.IsUnlocked("units")
     Options.unlockButton.text:SetText(unlocked and L.LOCK_FRAMES or L.UNLOCK_FRAMES)
     local testOn = ns.TestMode.IsOn()
     Style.SetBorderColor(Options.testButton, testOn and "accent" or "border")
@@ -574,20 +574,6 @@ local function languageRow(nav)
     return row
 end
 
--- The raid frames have a window of their own: a button above the
--- language opens it in place of this one.
-local RAID_BUTTON_GAP = 10
-
-local function raidButton(nav)
-    local button = Widgets.Button(nav, { text = L.RAID_FRAMES_BUTTON, width = NAV_W - 2 * INSET, onClick = function()
-        Options.Close()
-        ns.RaidOptions.Open()
-    end })
-    button:SetPoint("BOTTOMLEFT", Options.languageRow, "TOPLEFT", 0, RAID_BUTTON_GAP)
-    Options.raidButton = button
-    return button
-end
-
 local function createNav(parent)
     local nav = CreateFrame("Frame", nil, parent)
     nav:SetWidth(NAV_W)
@@ -608,7 +594,6 @@ local function createNav(parent)
         y = y + NAV_ROW_H
     end
     languageRow(nav)
-    raidButton(nav)
     return nav
 end
 
@@ -660,8 +645,9 @@ end
 
 -- Footer ------------------------------------------------------------------------
 
+-- The unit frames' movers only; the raid window has its own button.
 local function toggleMovers()
-    if ns.Movers.IsUnlocked() then ns.Movers.Lock() else ns.Movers.Unlock() end
+    if ns.Movers.IsUnlocked("units") then ns.Movers.Lock("units") else ns.Movers.Unlock("units") end
     refreshFooter()
 end
 
@@ -692,19 +678,27 @@ local function copyFromRow(footer)
     return row
 end
 
+-- The same three places as in the raid window's footer
+-- (Raid/Options/Window.lua): lock, test mode, the other window. The way
+-- across stays usable in combat.
 local function createFooterLeft(footer)
     local unlock = Widgets.Button(footer, { text = L.UNLOCK_FRAMES, width = BUTTON_W, onClick = toggleMovers })
-    unlock:SetPoint("LEFT", footer, "LEFT", 12, 0)
+    unlock:SetPoint("LEFT", footer, "LEFT", FOOTER_INSET, 0)
     local test = Widgets.Button(footer, { text = L.TEST_MODE_ON, width = BUTTON_W,
         onClick = function() ns.TestMode.Set(not ns.TestMode.IsOn()) end })
     test:SetPoint("LEFT", unlock, "RIGHT", FOOTER_GAP, 0)
     test:HookScript("OnLeave", refreshFooter)
-    Options.unlockButton, Options.testButton = unlock, test
+    local raid = Widgets.Button(footer, { text = L.RAID_FRAMES_BUTTON, width = BUTTON_W, onClick = function()
+        Options.Close()
+        ns.RaidOptions.Open()
+    end })
+    raid:SetPoint("LEFT", test, "RIGHT", FOOTER_GAP, 0)
+    Options.unlockButton, Options.testButton, Options.raidButton = unlock, test, raid
 end
 
 local function createFooterRight(footer)
     local reset = confirmButton(footer, L.RESET_FRAME, function() Config.ResetScope(Options.currentScope) end)
-    reset:SetPoint("RIGHT", footer, "RIGHT", -12, 0)
+    reset:SetPoint("RIGHT", footer, "RIGHT", -FOOTER_INSET, 0)
     local copy = copyFromRow(footer)
     copy:SetPoint("RIGHT", reset, "LEFT", -FOOTER_GAP, 0)
     Options.resetFrameButton, Options.copyRow = reset, copy

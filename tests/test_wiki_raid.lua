@@ -1,5 +1,5 @@
 -- The wiki's raid pages (tools/make_wiki.lua): one per tab of the raid
--- options window, every raid setting on the page of its tab, the size
+-- options window that holds settings, every raid setting on the page of its tab, the size
 -- switch with the General tab, defaults per size, listed in the sidebar.
 local dir = os.tmpname()
 os.remove(dir)
@@ -23,10 +23,17 @@ end
 H.check("raid pages", table.concat(raid, ","),
     "Raid-General,Raid-Layout,Raid-Cell,Raid-Texts,Raid-Debuffs,Raid-Indicators,Raid-Icons-and-states")
 
--- Every setting on its tab's page, by its label.
+-- Every setting on its tab's page, by its label. The Profile tab (export
+-- and import, no settings) has no page.
 local ns = H.LoadShipped()
 local Schema, RS = ns.RaidSchema, ns.RaidSettings
-for i, tab in ipairs(Schema.TABS) do
+local settingTabs = {}
+for _, tab in ipairs(Schema.TABS) do
+    if not tab.custom then settingTabs[#settingTabs + 1] = tab end
+end
+H.check("custom tabs: the Profile tab", #Schema.TABS - #settingTabs, 1)
+H.check("one page per settings tab", #raid, #settingTabs)
+for i, tab in ipairs(settingTabs) do
     local text = read(raid[i] .. ".md")
     H.checkTrue(tab.id .. ": title", text:find("# Raid frames: " .. Schema.TabTitle(tab.id), 1, true))
     for _, sec in ipairs(tab.sections) do
