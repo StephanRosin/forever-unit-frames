@@ -25,3 +25,4 @@
 - [[Debuffs|Raid-Debuffs]]
 - [[Indicators|Raid-Indicators]]
 - [[Icons & states|Raid-Icons-and-states]]
+- [[Tools|Raid-Tools]]

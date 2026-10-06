@@ -374,3 +374,13 @@ local pets = Raid.DefinePanel({ id = "pets", letter = "O", show = false, perLine
 RaidSettings.Define({ key = "petsCellHeight", code = "OH", scope = "frame", type = "int", min = 12, max = 100,
     default = 24 })
 table.insert(pets.keys, 5, "petsCellHeight")
+
+-- The raid tools bar (Raid/Tools.lua), per character: shown in a group,
+-- its top-left corner from the screen centre, and which tools it holds.
+RaidSettings.Define({ key = "toolsShow", code = "IO", scope = "general", type = "bool", default = true })
+RaidSettings.Define({ key = "toolsX", code = "IX", scope = "general", type = "int", min = -4000, max = 4000,
+    default = 300 })
+RaidSettings.Define({ key = "toolsY", code = "IY", scope = "general", type = "int", min = -4000, max = 4000,
+    default = 300 })
+-- The raid target icons for your target.
+RaidSettings.Define({ key = "toolsTargets", code = "IT", scope = "general", type = "bool", default = true })

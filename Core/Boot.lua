@@ -40,6 +40,7 @@ ns.On("PLAYER_LOGIN", function()
     ns.RaidMinimapButton.Create()
     ns.RaidSize.Update()
     ns.AfterCombat("raidCreate", ns.RaidHeader.Create)
+    ns.AfterCombat("raidToolsCreate", ns.RaidTools.Create)
     ns.Blizzard.HideRaid()
     -- What's new follows once the loading screen is gone (Core/News.lua).
 end)

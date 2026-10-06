@@ -95,6 +95,7 @@ Options\MinimapButton.lua
 Raid\Options\Schema.lua
 Raid\Options\Window.lua
 Raid\MinimapButton.lua
+Raid\Tools.lua
 Core\News.lua
 Options\News.lua
 Core\Debug.lua

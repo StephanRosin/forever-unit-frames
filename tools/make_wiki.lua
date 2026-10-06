@@ -251,6 +251,7 @@ local RAID_TAB_INTRO = {
         .. " and the main assists of the raid, your own lists of tanks and of favourites, and the raid's pets in"
         .. " smaller cells. Their players stay in their groups as well.",
     cell = "The size of a cell, its bars and colors, its border and corners, heals and shields.",
+    tools = "The raid tools bar, in place of Blizzard's raid manager: where it is and which tools it holds.",
     texts = "The name and the second line in the middle of each cell: their colors and fonts.",
     debuffs = "The most important dispellable debuff, as an icon in the centre or a square in a corner, and a"
         .. " row that shows every debuff (the one in the centre may appear there too).",

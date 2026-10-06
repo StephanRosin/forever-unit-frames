@@ -91,6 +91,20 @@ local function testing()
     return ns.RaidTestMode ~= nil and ns.RaidTestMode.IsOn()
 end
 
+-- A top-left corner (axis "x" or "y", from the screen centre) moved to
+-- where something of size w x h stays inside the screen.
+function Panel.Reach(w, h, axis, v)
+    local lo, hi
+    if axis == "x" then
+        local half = UIParent:GetWidth() / 2
+        lo, hi = math.ceil(-half), math.floor(half - w)
+    else
+        local half = UIParent:GetHeight() / 2
+        lo, hi = math.ceil(-half + h), math.floor(half)
+    end
+    return math.max(lo, math.min(hi, v))
+end
+
 -- Header attributes are set in one go; one relayout follows (Show). The
 -- filter keys a block does not use are cleared.
 local function setAttributes(header, attributes, filter)
@@ -259,15 +273,7 @@ function Panel.New(spec)
     function P.Reachable(axis, v, shown)
         local w, h = 0, 0
         if shown then w, h = P.Size() end
-        local lo, hi
-        if axis == "x" then
-            local half = UIParent:GetWidth() / 2
-            lo, hi = math.ceil(-half), math.floor(half - w)
-        else
-            local half = UIParent:GetHeight() / 2
-            lo, hi = math.ceil(-half + h), math.floor(half)
-        end
-        return math.max(lo, math.min(hi, v))
+        return Panel.Reach(w, h, axis, v)
     end
 
     -- The panel's top-left corner from the screen centre, on the pixel
@@ -354,12 +360,19 @@ function Panel.New(spec)
     return P
 end
 
--- The panel whose position a setting holds and its axis ("x" or "y"), or
--- nil.
+-- Other things with a position the raid window shows as - / + numbers
+-- (the raid tools bar, Raid/Tools.lua): POSITION_KEYS and Reachable as a
+-- panel has them.
+Panel.others = {}
+
+-- The panel (or other thing) whose position a setting holds and its axis
+-- ("x" or "y"), or nil.
 function Panel.ByPositionKey(key)
-    for _, P in ipairs(Panel.list) do
-        local axis = P.POSITION_KEYS[key]
-        if axis then return P, axis end
+    for _, list in ipairs({ Panel.list, Panel.others }) do
+        for _, P in ipairs(list) do
+            local axis = P.POSITION_KEYS[key]
+            if axis then return P, axis end
+        end
     end
     return nil
 end
@@ -415,17 +428,28 @@ ns.On("GROUP_ROSTER_UPDATE", function()
     for _, P in ipairs(Panel.list) do P.UpdateVisibility() end
 end)
 ns.Listen("RAID_SIZE_CHANGED", function() if built() then refresh() end end)
+-- Character-wide settings that change nothing on the panels: the raid
+-- minimap button's (Raid/MinimapButton.lua); others add theirs (the raid
+-- tools bar, Raid/Tools.lua).
+Panel.UNRELATED_KEYS = { minimapAngle = true, minimapShow = true }
+
+local function panelAt(key)
+    for _, P in ipairs(Panel.list) do
+        if P.POSITION_KEYS[key] then return P end
+    end
+    return nil
+end
+
 -- A setting of the active size or the character; another size's profile
--- does not show, nor does the raid minimap button (Raid/MinimapButton.lua).
--- The shown size's x / y of a panel only move that panel.
-local BUTTON_KEYS = { minimapAngle = true, minimapShow = true }
+-- does not show, nor do the unrelated ones. The shown size's x / y of a
+-- panel only move that panel.
 ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
     if not built() then return end
     local shown = scope == ns.Raid.Scope(Cell.Size())
-    local moved = shown and Panel.ByPositionKey(key)
+    local moved = shown and panelAt(key)
     if moved then
         move(moved)
-    elseif shown or scope == nil or (scope == "general" and not BUTTON_KEYS[key]) then
+    elseif shown or scope == nil or (scope == "general" and not Panel.UNRELATED_KEYS[key]) then
         refresh()
     end
 end)

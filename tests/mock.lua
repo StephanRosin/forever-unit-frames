@@ -2041,6 +2041,22 @@ function M.Reset()
         if index ~= nil and M.raidTargetsSecret then return M.Secret(index) end
         return index
     end
+    -- Setting them (HasRestrictions). Stricter than the client: only secure
+    -- code (a secure button's action) may; M.raidTargetCalls records
+    -- { unit, index } (index 0 takes the marker off; unit "all":
+    -- RemoveRaidTargets).
+    M.raidTargetCalls = {}
+    _G.SetRaidTarget = function(unit, index)
+        assert(M.secureDepth > 0, "mock: SetRaidTarget outside secure code")
+        table.insert(M.raidTargetCalls, { unit, index })
+        local d = u(unit)
+        if d then d.raidTarget = index ~= 0 and index or nil end
+    end
+    _G.RemoveRaidTargets = function()
+        assert(M.secureDepth > 0, "mock: RemoveRaidTargets outside secure code")
+        table.insert(M.raidTargetCalls, { "all", 0 })
+        for _, d in pairs(M.units) do d.raidTarget = nil end
+    end
     _G.UnitGetTotalAbsorbs = function(unit) local d = u(unit); return d and d.absorbs or 0 end
     _G.UnitGetIncomingHeals = function(unit, healer)
         local d = u(unit)
@@ -2616,6 +2632,24 @@ end
 local SECURE_ACTIONS = {
     destroytotem = function(button, attr) DestroyTotem(attr("totem-slot")) end,
     togglemenu = toggleMenu,
+    -- SECURE_ACTIONS.raidtarget.
+    raidtarget = function(_, attr)
+        local marker = tonumber(attr("marker"))
+        local action = attr("action") or "toggle"
+        local unit = attr("unit") or "target"
+        marker = marker or 1
+        if action == "set" and GetRaidTargetIndex(unit) ~= marker then
+            SetRaidTarget(unit, marker)
+        elseif action == "set-unmarked" and GetRaidTargetIndex(unit) == nil then
+            SetRaidTarget(unit, marker)
+        elseif action == "clear" then
+            SetRaidTarget(unit, 0)
+        elseif action == "clear-all" then
+            RemoveRaidTargets()
+        elseif action == "toggle" then
+            if GetRaidTargetIndex(unit) == marker then SetRaidTarget(unit, 0) else SetRaidTarget(unit, marker) end
+        end
+    end,
 }
 function M.SecureClick(button, mouseButton)
     local registered = false
@@ -2629,6 +2663,7 @@ function M.SecureClick(button, mouseButton)
             local v = button._attr[k]
             if v ~= nil then return v end
         end
+        return nil
     end
     local kind = attr("type")
     local action = kind and SECURE_ACTIONS[kind]

@@ -78,6 +78,11 @@ Schema.TABS = {
         icon("readyCheck", "readyCheckIcon"),
         { id = "states", keys = { "rangeFade", "rangeAlpha", "aggroBorder", "targetBorder" } },
     } },
+    -- The raid tools bar: where it is, which tools it holds.
+    { id = "tools", sections = {
+        { id = "toolsBar", keys = { "toolsShow", "toolsX", "toolsY" } },
+        { id = "toolsList", keys = { "toolsTargets" } },
+    } },
     -- The window's own page: export and import of the edited size
     -- (Raid/Options/Window.lua). No settings; the wiki has no page for it.
     { id = "profile", custom = "profile", sections = {} },
@@ -106,6 +111,7 @@ for _, p in ipairs(ns.Raid.PANELS) do
     if p.names then SHARED[p.names] = "nameList" end
 end
 SHARED.petsCellHeight = "cellHeight"
+SHARED.toolsX, SHARED.toolsY = "x", "y"
 
 -- The name a setting's words go by.
 function Schema.WordKey(key)
