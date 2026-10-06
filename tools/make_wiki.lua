@@ -250,7 +250,7 @@ local RAID_TAB_INTRO = {
     cell = "The size of a cell, its bars and colors, its border and corners, heals and shields.",
     texts = "The name and the second line in the middle of each cell: their colors and fonts.",
     debuffs = "The most important dispellable debuff, as an icon in the centre or a square in a corner, and a"
-        .. " row of further debuffs.",
+        .. " row that shows every debuff (the one in the centre may appear there too).",
     indicators = "Up to five small squares at the corners and the top edge, each for spells of your choice"
         .. " (heals over time, shields).",
     icons = "Role, raid target marker, leader, master looter and ready check icons, and the states: range,"

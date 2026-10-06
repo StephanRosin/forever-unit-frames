@@ -2,7 +2,7 @@
 
 # Raid frames: Debuffs
 
-The most important dispellable debuff, as an icon in the centre or a square in a corner, and a row of further debuffs.
+The most important dispellable debuff, as an icon in the centre or a square in a corner, and a row that shows every debuff (the one in the centre may appear there too).
 
 The **Debuffs** tab of the raid options window (`/fuf raid`). Each raid size (10, 20, 40) has a profile of its own: the size tabs at the top choose which one you edit; a default that differs per size is listed per size.
 
