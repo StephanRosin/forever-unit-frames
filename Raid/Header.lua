@@ -227,6 +227,25 @@ function Header.Size()
     return ns.Single.Size(Cell.KEY)
 end
 
+-- A position value (key "x" or "y": the panel's top-left corner from
+-- the screen centre) moved to where the panel can be: the mover is
+-- clamped to the screen, so a value beyond would be stored but not shown.
+-- With shown, the panel's size stays inside the screen too; else (a size
+-- not shown, whose panel size is not known) the corner alone.
+function Header.Reachable(key, v, shown)
+    local w, h = 0, 0
+    if shown then w, h = Header.Size() end
+    local lo, hi
+    if key == "x" then
+        local half = UIParent:GetWidth() / 2
+        lo, hi = math.ceil(-half), math.floor(half - w)
+    else
+        local half = UIParent:GetHeight() / 2
+        lo, hi = math.ceil(-half + h), math.floor(half)
+    end
+    return math.max(lo, math.min(hi, v))
+end
+
 -- The panel's top-left corner from the screen centre, on the pixel grid;
 -- with a mover the anchor follows the mover.
 local function placeAnchor()

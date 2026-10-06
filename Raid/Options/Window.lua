@@ -119,8 +119,15 @@ end
 -- by the movers' grid.
 local POSITION_KEYS = { x = true, y = true }
 
+-- A value beyond the screen is stored as the edge the panel stops at
+-- (ns.RaidHeader.Reachable).
 local function positionRow(parent, def, opts)
     opts.min, opts.max, opts.step, opts.bigStep = def.min, def.max, 1, ns.Movers.GRID
+    local set = opts.set
+    opts.set = function(v)
+        local shown = RaidOptions.Size() == ns.RaidCell.Size()
+        return set(ns.RaidHeader.Reachable(def.key, v, shown))
+    end
     return Widgets.Stepper(parent, opts)
 end
 

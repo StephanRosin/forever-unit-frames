@@ -52,5 +52,33 @@ H.check("combat: + locked", x.plus:IsEnabled(), false)
 H.check("combat: box locked", x.edit:IsEnabled(), false)
 M.SetCombat(false)
 H.checkTrue("after combat: back", x.plus:IsEnabled())
+-- Typed beyond the screen: the mover is clamped to the screen, so the
+-- stored value is clamped to where the panel can be (its top-left corner
+-- from the centre, the panel's size inside the screen).
+local w, h = Header.Size()
+UIParent._w, UIParent._h = 1000, 600
+enter(x, "4000")
+H.check("x: right edge", RC.Get("r10", "x"), 500 - w)
+H.check("x: the box shows it", x.edit:GetText(), tostring(500 - w))
+enter(x, "-4000")
+H.check("x: left edge", RC.Get("r10", "x"), -500)
+enter(y, "4000")
+H.check("y: top edge", RC.Get("r10", "y"), 300)
+enter(y, "-4000")
+H.check("y: bottom edge", RC.Get("r10", "y"), -300 + h)
+H.check("the panel where the value says", select(5, Header.anchor.mover:GetPoint(1)), -300 + h)
+M.shiftDown = true
+click(y.minus)
+M.shiftDown = false
+H.check("- at the edge: stays", RC.Get("r10", "y"), -300 + h)
+enter(x, "12")
+H.check("inside: as typed", RC.Get("r10", "x"), 12)
+-- A size not shown: the screen alone.
+RO.SelectSize(20)
+enter(rowFor("x"), "4000")
+H.check("size not shown: the screen's edge", RC.Get("r20", "x"), 500)
+RO.SelectSize(10)
+UIParent._w, UIParent._h = 1920, 1080
+
 H.check("nothing blocked", #M.blocked, 0)
 H.check("no error", #M.errors, 0)
