@@ -115,16 +115,17 @@ local function typedValue(key)
     return nil
 end
 
--- The panel's position: a number with - / + buttons (a slider across
--- the whole range would move the panel ~40 units per pixel); Shift steps
--- by the movers' grid. A value beyond the screen is stored as the edge
--- the panel stops at (ns.RaidHeader.Reachable).
-local function positionRow(parent, def, opts)
+-- A panel's position (the main panel's or a special panel's): a number
+-- with - / + buttons (a slider across the whole range would move the
+-- panel ~40 units per pixel); Shift steps by the movers' grid. A value
+-- beyond the screen is stored as the edge that panel stops at
+-- (Raid/Panel.lua: Reachable).
+local function positionRow(parent, def, opts, panel, axis)
     opts.min, opts.max, opts.step, opts.bigStep = def.min, def.max, 1, ns.Movers.GRID
     local set = opts.set
     opts.set = function(v)
         local shown = RaidOptions.Size() == ns.RaidCell.Size()
-        return set(ns.RaidHeader.Reachable(def.key, v, shown))
+        return set(panel.Reachable(axis, v, shown))
     end
     return Widgets.Stepper(parent, opts)
 end
@@ -148,7 +149,8 @@ local function settingRow(parent, key)
         end,
     }
     local row
-    if ns.RaidHeader.POSITION_KEYS[key] then row = positionRow(parent, def, opts) else row = ns.Options.Control(parent, def, opts) end
+    local panel, axis = ns.RaidPanel.ByPositionKey(key)
+    if panel then row = positionRow(parent, def, opts, panel, axis) else row = ns.Options.Control(parent, def, opts) end
     row.key = key
     return row
 end

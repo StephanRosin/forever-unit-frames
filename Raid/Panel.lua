@@ -354,6 +354,16 @@ function Panel.New(spec)
     return P
 end
 
+-- The panel whose position a setting holds and its axis ("x" or "y"), or
+-- nil.
+function Panel.ByPositionKey(key)
+    for _, P in ipairs(Panel.list) do
+        local axis = P.POSITION_KEYS[key]
+        if axis then return P, axis end
+    end
+    return nil
+end
+
 -- Out of combat: every panel built, the main one first.
 function Panel.CreateAll()
     for _, P in ipairs(Panel.list) do P.Build() end
@@ -412,12 +422,7 @@ local BUTTON_KEYS = { minimapAngle = true, minimapShow = true }
 ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
     if not built() then return end
     local shown = scope == ns.Raid.Scope(Cell.Size())
-    local moved
-    if shown then
-        for _, P in ipairs(Panel.list) do
-            if P.POSITION_KEYS[key] then moved = P end
-        end
-    end
+    local moved = shown and Panel.ByPositionKey(key)
     if moved then
         move(moved)
     elseif shown or scope == nil or (scope == "general" and not BUTTON_KEYS[key]) then
