@@ -162,7 +162,9 @@ CellAuras.AddPart({
     end,
     BuildSample = function(frame, samples)
         samples.icon = AuraButton.Create(frame, true)
+        -- A frame needs a rect of its own for its texture to be drawn.
         samples.tint = CreateFrame("Frame", nil, frame)
+        samples.tint:SetAllPoints(frame.health)
         samples.tint.texture = samples.tint:CreateTexture(nil, "ARTWORK")
         samples.tint.texture:SetColorTexture(1, 1, 1, 1)
         samples.tint.texture:SetAllPoints(frame.health)

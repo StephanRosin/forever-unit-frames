@@ -31,6 +31,7 @@ local p, rel = s2.icon:GetPoint(1)
 H.checkTrue("centre of the health bar", p == "CENTER" and rel == f2.health)
 H.check("member 1: no icon", f1.raidAuras.samples.icon:IsShown(), false)
 H.check("tint off by default", s2.tint:IsShown(), false)
+H.check("tint frame covers the health bar", s2.tint._allPoints, f2.health)
 H.check("row off by default", s2.row[1]:IsShown(), false)
 H.check("no indicators without spells", s2.indicators[1]:IsShown(), false)
 local onFakes = 0
