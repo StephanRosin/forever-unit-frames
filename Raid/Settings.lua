@@ -100,7 +100,8 @@ RaidSettings.Define({ key = "dispelIconSize", code = "DZ", scope = "frame", type
     default = { r10 = 20, r20 = 18, _ = 16 } })
 -- The whole cell tinted in the debuff type's colour.
 RaidSettings.Define({ key = "dispelTint", code = "DT", scope = "frame", type = "bool", default = false })
--- A row of further debuffs along the bottom of the cell.
+-- A row along the bottom of the cell with every debuff ("HARMFUL"); the
+-- one in the centre may show in it as well.
 RaidSettings.Define({ key = "debuffRow", code = "DR", scope = "frame", type = "bool", default = false })
 RaidSettings.Define({ key = "debuffCount", code = "DC", scope = "frame", type = "int", min = 1, max = 6, default = 3 })
 RaidSettings.Define({ key = "debuffSize", code = "DS", scope = "frame", type = "int", min = 8, max = 32,

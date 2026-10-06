@@ -12,6 +12,8 @@ Spec: `docs/specs/2026-10-06-raid-frames-design.md` (part 1; §5 the cell: Debuf
 
 Base: `main` at `70a891e` ("Raid panel: parked headers each get a spot of their own"); `tests/run` there: `19388 passed, 0 failed`. Every task below was replayed in order on a scratch worktree of that commit; the totals under "Expected" are what `tests/run` printed there. A full `tests/run` takes about a minute and a half and several GB of memory (as before).
 
+> **Review change:** Task 4's row filter was changed in review to `"HARMFUL"` (every debuff, the centre icon's one may show twice) by maintainer decision: the negated filters (`CellAuras.ROW_FILTERS`, `"HARMFUL|!RAID"` / `"HARMFUL|!DISPELLABLE"`) hid every dispellable debuff after the first, the centre icon showing one only; the branch has `CellAuras.ROW_FILTER = "HARMFUL"`. The code blocks below still show the original filters.
+
 ## Global Constraints
 
 - Everything in English: file names, identifiers, comments. No new user-facing string: the settings get their labels with R4's options window and locales; test mode reuses the unit frames' sample icons.

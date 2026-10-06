@@ -74,9 +74,9 @@ local function insetY(key) return function() return select(2, Cell.Inset(get(key
 
 -- The raid profile's look, in unit-frame settings. The second line's
 -- values are the text tags of the same name. The raid marker
--- (Elements/RaidMarker.lua) at its point, centred on it; the group icons
--- (Elements/GroupIcons.lua) switched and sized from the profile; range
--- fading (Elements/Range.lua) from the profile.
+-- (Elements/RaidMarker.lua) at its point, just inside the cell; the group
+-- icons (Elements/GroupIcons.lua) switched and sized from the profile;
+-- range fading (Elements/Range.lua) from the profile.
 local MAPPED = {
     width = function() return get("cellWidth") end,
     height = function() return get("cellHeight") end,
