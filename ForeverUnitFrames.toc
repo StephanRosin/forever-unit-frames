@@ -23,6 +23,8 @@ Core\Locale.lua
 Core\Codec.lua
 Core\MacroBackup.lua
 Core\Storage.lua
+Raid\Settings.lua
+Raid\Profiles.lua
 Core\Media.lua
 Core\Layout.lua
 Core\Corners.lua

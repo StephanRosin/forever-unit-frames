@@ -1109,6 +1109,27 @@ function M.Reset()
         M.inRaid = on
         for frame, values in pairs(M.drivers) do evaluate(frame, values) end
     end
+    -- Instance and group size (Raid/Size.lua). M.instance holds what
+    -- GetInstanceInfo reports as instanceType and maxPlayers; in a raid
+    -- GetNumGroupMembers is M.raidMembers, in a party the party plus you.
+    M.instance = { type = "none", maxPlayers = 0 }
+    M.raidMembers = 0
+    _G.GetInstanceInfo = function()
+        return "Instance", M.instance.type, 0, "", M.instance.maxPlayers, 0, false, 0, 0, nil, false
+    end
+    _G.GetNumGroupMembers = function()
+        if M.inRaid then return M.raidMembers end
+        if #M.group > 0 then return #M.group + 1 end
+        return 0
+    end
+    -- The player's name and realm (Raid/Profiles.lua: one raid profile per
+    -- character). UnitFullName may leave the realm out early in the login.
+    M.playerName, M.realm, M.fullNameRealm = "Tester", "Testrealm", true
+    _G.UnitFullName = function(unit)
+        if unit ~= "player" then return nil end
+        return M.playerName, M.fullNameRealm and M.realm or nil
+    end
+    _G.GetNormalizedRealmName = function() return M.realm end
     _G.geterrorhandler = function()
         return function(err) table.insert(M.errors, err) end
     end
