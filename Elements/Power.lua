@@ -55,6 +55,9 @@ local function checkEmpty(frame)
     -- Config.Get answers every scope; the setting exists for some only.
     local applies = ns.Settings.AppliesTo(ns.Settings.Get("powerHideEmpty"), frame.key)
     local empty = applies and Config.Get(frame.key, "powerHideEmpty") == true and Power.IsEmpty(frame.unit)
+    -- A rule of the frame's own (raid cells: the power strip setting,
+    -- Raid/Cell.lua); no unit frame has one.
+    if not empty and frame.showsPower then empty = not frame.showsPower(frame) end
     if empty == (frame.powerEmpty == true) then return end
     frame.powerEmpty = empty
     -- The rows only: the health bar takes the power bar's row. Auras hung

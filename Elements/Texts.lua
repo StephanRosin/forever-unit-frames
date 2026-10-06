@@ -181,8 +181,11 @@ local function sampleHealth(frame)
     if not frame.health.preview then return nil end
     local max = Secrets.Number(UnitHealthMax(frame.unit))
     if not max or max <= 0 then max = Texts.SAMPLE_MAX end
-    local current = math.floor(max * ns.Health.SAMPLE + 0.5)
-    return { current = current, max = max, missing = max - current, percent = ns.Health.SAMPLE * 100 }
+    -- A raid test cell's own share (Health.Sample), else the shared one.
+    local own = ns.Health.Sample(frame)
+    local share = own and own.health or ns.Health.SAMPLE
+    local current = math.floor(max * share + 0.5)
+    return { current = current, max = max, missing = max - current, percent = share * 100 }
 end
 
 -- The value tags drawn from sample numbers.
@@ -203,7 +206,8 @@ local SAMPLE_TAGS = { CURRENT = true, CURRENT_MAX = true, PERCENT = true, DEFICI
 -- sample (optional): plain health numbers that replace the unit's for
 -- the value tags of health texts (test mode).
 -- opts (optional): levelColored (the level in its difficulty colour),
--- compact ("1234/1234"), infoColor (INFO's class part coloured), scope.
+-- compact ("1234/1234"), infoColor (INFO's class part coloured), scope,
+-- sampleName (a test-mode name that NAME shows instead of the unit's).
 local NO_OPTS = {}
 function Texts.Apply(fs, tag, unit, kind, showSurname, sample, opts)
     opts = opts or NO_OPTS
@@ -211,6 +215,8 @@ function Texts.Apply(fs, tag, unit, kind, showSurname, sample, opts)
         applySample(fs, tag, sample, opts.compact)
     elseif tag == "NONE" then
         fs:SetText("")
+    elseif tag == "NAME" and opts.sampleName then
+        fs:SetText(opts.sampleName)
     elseif tag == "NAME" then
         Texts.SetName(fs, unit, showSurname)
     elseif tag == "NAME_LEVEL" then
@@ -587,6 +593,26 @@ end
 -- The power texts' layer above the power bar and anything on it.
 Texts.POWER_TEXT_LEVELS = 5
 
+-- Raid cells (Raid/Cell.lua) set frame.centerTexts: the health bar's two
+-- texts stand in its middle, the left one (the name) above the right one
+-- (the second line, or a status word), each as wide as the bar less a
+-- small inset on either side and cut off with "...". The two lines are
+-- half the other's font size away from the middle. No unit frame sets it.
+Texts.CENTRE_INSET = 2
+
+local function placeCentred(frame, nameSize, secondSize)
+    local Pixel, inset = ns.Pixel, Texts.CENTRE_INSET
+    for field, y in pairs({ healthLeft = secondSize / 2, healthRight = -nameSize / 2 }) do
+        local fs = frame.texts[field]
+        local dy = Pixel.Snap(y, fs)
+        fs:ClearAllPoints()
+        fs:SetPoint("LEFT", frame.health, "LEFT", Pixel.Snap(inset, fs), dy)
+        fs:SetPoint("RIGHT", frame.health, "RIGHT", Pixel.Snap(-inset, fs), dy)
+        fs:SetJustifyH("CENTER")
+        fs:SetWordWrap(false)
+    end
+end
+
 function Texts.Style(frame)
     local scope = frame.key
     frame.powerTextLayer:SetFrameLevel(frame.power:GetFrameLevel() + Texts.POWER_TEXT_LEVELS)
@@ -611,6 +637,10 @@ function Texts.Style(frame)
             fs:SetWordWrap(false)
         end
         fs:SetJustifyH(slot.point)
+    end
+    if frame.centerTexts then
+        local secondTag = Config.Get(scope, "textHealthRight")
+        placeCentred(frame, size, (SAMPLE_TAGS[secondTag] and valueSize > 0) and valueSize or size)
     end
     local title = frame.texts.title
     title:SetWordWrap(false)
@@ -648,7 +678,7 @@ Texts.NAME_TAGS = { NAME = true, NAME_LEVEL = true, INFO = true }
 local function paintBars(frame, wordSlot)
     local mode = Config.Get(frame.key, "barNameColorMode")
     local r, g, b = 1, 1, 1
-    if mode ~= "WHITE" then r, g, b = ns.Health.UnitColor(frame.unit, mode, frame.key) end
+    if mode ~= "WHITE" then r, g, b = ns.Health.FrameColor(frame, mode) end
     for _, slot in ipairs(SLOTS) do
         if slot.bar ~= "title" then
             local named = slot.field ~= wordSlot and Texts.NAME_TAGS[Config.Get(frame.key, slot.setting)]
@@ -688,9 +718,13 @@ function Texts.Update(frame)
         compact = Config.Get(frame.key, "textCompact"),
         infoColor = Config.Get(frame.key, "infoClassColor"),
         scope = frame.key,
+        sampleName = ns.Health.Sample(frame) and ns.Health.Sample(frame).name,
     }
     local sample = sampleHealth(frame)
     local word = ns.UnitStatus.Word(ns.UnitStatus.Of(frame))
+    -- A cell's second line also says AFK (the badge's word; the badge
+    -- itself needs a unit frame's title row).
+    if not word and frame.centerTexts and Texts.AwayState(frame.unit) == "AFK" then word = "AFK" end
     local wordSlot = word and statusSlot(frame)
     for _, slot in ipairs(SLOTS) do
         local fs = frame.texts[slot.field]

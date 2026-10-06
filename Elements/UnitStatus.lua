@@ -62,9 +62,12 @@ function UnitStatus.Update(frame)
     redraw(frame, status)
 end
 
--- In test mode statusSample holds the frame's sample, false for none.
+-- In test mode statusSample holds the frame's sample, false for none: a
+-- raid test cell's own (frame.sample.status), else the pretend party's.
 function UnitStatus.Preview(frame, on)
-    if on then
+    if on and frame.sample then
+        frame.statusSample = frame.sample.status or false
+    elseif on then
         frame.statusSample = frame.sampleIndex and UnitStatus.PARTY_SAMPLES[frame.sampleIndex] or false
     else
         frame.statusSample = nil

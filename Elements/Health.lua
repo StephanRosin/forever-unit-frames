@@ -80,6 +80,23 @@ function Health.UnitColor(unit, mode, scope)
     return c[1], c[2], c[3]
 end
 
+-- A frame's own test-mode sample while it shows samples: { class (token),
+-- name, health (share), status (UnitStatus, or false) }. Only raid test
+-- cells have one (Raid/TestMode.lua); unit frames share Health.SAMPLE.
+function Health.Sample(frame)
+    return frame.health.preview and frame.sample or nil
+end
+
+-- UnitColor of the frame's unit, or of its sample's class.
+function Health.FrameColor(frame, mode)
+    local sample = Health.Sample(frame)
+    if sample and mode == "CLASS" then
+        local c = RAID_CLASS_COLORS and RAID_CLASS_COLORS[sample.class]
+        if c then return c.r, c.g, c.b end
+    end
+    return Health.UnitColor(frame.unit, mode, frame.key)
+end
+
 -- Tapped by someone else: a creature (not player-controlled) another
 -- player or group has claimed. Blizzard's grey. A secret answer counts as
 -- not tapped (the bar keeps its colour).
@@ -101,9 +118,11 @@ function Health.ColorFor(frame)
     end
     local mode = Config.Get(scope, "healthColorMode")
     if mode == "CLASS" or mode == "REACTION" then
-        return Health.UnitColor(unit, mode, scope)
+        return Health.FrameColor(frame, mode)
     end
     if mode == "GRADIENT" then
+        local sample = Health.Sample(frame)
+        if sample then return gradient():Evaluate(sample.health):GetRGB() end
         return UnitHealthPercent(unit, true, gradient()):GetRGB()
     end
     local c = Config.Get(scope, "healthColor")
@@ -171,7 +190,7 @@ function Health.Preview(frame, on)
     bar.preview = on or nil
     if not on then return end
     bar:SetMinMaxValues(0, 1)
-    bar:SetValue(Health.SAMPLE)
+    bar:SetValue(frame.sample and frame.sample.health or Health.SAMPLE)
 end
 
 ns.RegisterElement(Health)
