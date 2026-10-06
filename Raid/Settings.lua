@@ -88,3 +88,63 @@ RaidSettings.Define({ key = "powerStrip", code = "PS", scope = "frame", type = "
 RaidSettings.Define({ key = "secondLine", code = "SL", scope = "frame", type = "enum",
     values = { "DEFICIT", "PERCENT", "CURRENT", "NONE" }, default = "DEFICIT" })
 RaidSettings.Define({ key = "nameClassColor", code = "NC", scope = "frame", type = "bool", default = false })
+
+-- Debuffs (Raid/CellAuras.lua). The centre icon shows the most important
+-- debuff you can dispel (MINE, the client's RAID filter) or any
+-- dispellable one (ALL), bordered in its type's colour. Stored by index:
+-- append only.
+RaidSettings.Define({ key = "dispelIcon", code = "DI", scope = "frame", type = "bool", default = true })
+RaidSettings.Define({ key = "dispelFilter", code = "DF", scope = "frame", type = "enum",
+    values = { "MINE", "ALL" }, default = "MINE" })
+RaidSettings.Define({ key = "dispelIconSize", code = "DZ", scope = "frame", type = "int", min = 8, max = 40,
+    default = { r10 = 20, r20 = 18, _ = 16 } })
+-- The whole cell tinted in the debuff type's colour.
+RaidSettings.Define({ key = "dispelTint", code = "DT", scope = "frame", type = "bool", default = false })
+-- A row of further debuffs along the bottom of the cell.
+RaidSettings.Define({ key = "debuffRow", code = "DR", scope = "frame", type = "bool", default = false })
+RaidSettings.Define({ key = "debuffCount", code = "DC", scope = "frame", type = "int", min = 1, max = 6, default = 3 })
+RaidSettings.Define({ key = "debuffSize", code = "DS", scope = "frame", type = "int", min = 8, max = 32,
+    default = { r10 = 14, r20 = 13, _ = 12 } })
+
+-- A spell list: spell IDs separated by commas or spaces. Returns the IDs,
+-- or nil when anything else is in it (a name, a sign, a fraction).
+function Raid.SpellList(text)
+    local ids = {}
+    for token in text:gmatch("[^,%s]+") do
+        if not token:match("^%d+$") then return nil end
+        local id = tonumber(token)
+        if id < 1 then return nil end
+        ids[#ids + 1] = id
+    end
+    return ids
+end
+
+local function isSpellList(text) return Raid.SpellList(text) ~= nil end
+
+-- Corner indicators (Raid/Indicators.lua): five positions, each showing
+-- one of its spells while it is on the unit. Empty spells: off. The
+-- letter starts every code of the position.
+Raid.INDICATORS = {
+    { point = "TOPLEFT", name = "TopLeft", letter = "J", color = { 0.2, 0.9, 0.2, 1 } },
+    { point = "TOPRIGHT", name = "TopRight", letter = "K", color = { 1, 0.85, 0.1, 1 } },
+    { point = "BOTTOMLEFT", name = "BottomLeft", letter = "U", color = { 0.3, 0.6, 1, 1 } },
+    { point = "BOTTOMRIGHT", name = "BottomRight", letter = "V", color = { 1, 0.3, 0.3, 1 } },
+    { point = "TOP", name = "Top", letter = "T", color = { 1, 1, 1, 1 } },
+}
+-- Room for every rank of a few spells.
+Raid.SPELL_LIST_LETTERS = 200
+for _, ind in ipairs(Raid.INDICATORS) do
+    local key, l = "indicator" .. ind.name, ind.letter
+    RaidSettings.Define({ key = key .. "Spells", code = l .. "S", scope = "frame", type = "text",
+        maxLetters = Raid.SPELL_LIST_LETTERS, check = isSpellList, default = "" })
+    RaidSettings.Define({ key = key .. "Color", code = l .. "C", scope = "frame", type = "color",
+        default = ind.color })
+    RaidSettings.Define({ key = key .. "Size", code = l .. "Z", scope = "frame", type = "int", min = 4, max = 24,
+        default = 8 })
+    -- Only your own casts of the spells.
+    RaidSettings.Define({ key = key .. "Own", code = l .. "O", scope = "frame", type = "bool", default = true })
+    -- The time left: darkening (a swipe), a number, or not shown. Stored
+    -- by index: append only.
+    RaidSettings.Define({ key = key .. "Time", code = l .. "M", scope = "frame", type = "enum",
+        values = { "SWIPE", "NUMBER", "NONE" }, default = "SWIPE" })
+end

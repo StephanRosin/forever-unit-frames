@@ -40,10 +40,12 @@ local function validate(def, v)
         if type(v) ~= "string" or v == "" then return nil end
         return v
     elseif t == "text" then
-        -- Free text, trimmed; empty is allowed. def.maxLetters caps it.
+        -- Free text, trimmed; empty is allowed. def.maxLetters caps it;
+        -- def.check (optional) refuses what does not parse.
         if type(v) ~= "string" then return nil end
         v = v:match("^%s*(.-)%s*$")
         if #v > (def.maxLetters or TEXT_MAX) then return nil end
+        if def.check and not def.check(v) then return nil end
         return v
     end
     return nil
