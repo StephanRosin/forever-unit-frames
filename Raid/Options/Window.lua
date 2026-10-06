@@ -93,9 +93,11 @@ end
 -- Setting rows ------------------------------------------------------------------
 
 -- What a typed text becomes before it is stored: class names to tokens,
--- spell names to the IDs of their ranks. nil and why (for the chat)
--- refuses it: an unknown class or one named twice, a spell name the
--- spell book does not know, more spell IDs than the setting can hold.
+-- spell names to the IDs of their ranks, a name list to "Ann, Bob". nil
+-- and why (for the chat) refuses it: an unknown class or one named twice,
+-- a spell name the spell book does not know, more spell IDs than the
+-- setting can hold, something that is no name, a name given twice, more
+-- names than the list can hold.
 local function classOrder(text)
     local tokens, problem, word = Raid.ParseClassOrder(text)
     if tokens then return tokens end
@@ -109,9 +111,20 @@ local function spellList(text)
     return ids
 end
 
+local function nameList(text)
+    local names, problem, word = Raid.ParseNameList(text)
+    if not names then
+        return nil, (problem == "TWICE" and L.RAID_TYPED_NAME_TWICE or L.RAID_TYPED_NAME_INVALID):format(word)
+    end
+    local stored = table.concat(names, ", ")
+    if #stored > Raid.NAME_LIST_LETTERS then return nil, L.RAID_TYPED_NAMES_TOO_LONG:format(Raid.NAME_LIST_LETTERS) end
+    return stored
+end
+
 local function typedValue(key)
     if key == "classOrder" then return classOrder end
     if key:match("^indicator%a+Spells$") then return spellList end
+    if ns.RaidSettings.Get(key).names then return nameList end
     return nil
 end
 

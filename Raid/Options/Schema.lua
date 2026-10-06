@@ -103,6 +103,7 @@ local PANEL_WORDS = { Show = "panelShow", Title = "panelTitle", PerLine = "cells
     X = "x", Y = "y" }
 for _, p in ipairs(ns.Raid.PANELS) do
     for part, wordKey in pairs(PANEL_WORDS) do SHARED[p.id .. part] = wordKey end
+    if p.names then SHARED[p.names] = "nameList" end
 end
 
 -- The name a setting's words go by.

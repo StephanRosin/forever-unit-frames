@@ -28,6 +28,7 @@ Raid\Spellbook.lua
 Raid\Profiles.lua
 Raid\Size.lua
 Raid\Layout.lua
+Raid\Lists.lua
 Core\Media.lua
 Core\Layout.lua
 Core\Corners.lua

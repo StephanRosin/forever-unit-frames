@@ -39,7 +39,7 @@ local all = L.Blocks("NONE", 40)[1].filter
 H.check("one block: every group of the size", all.groupFilter, "1,2,3,4,5,6,7,8")
 H.check("one block: ordered by group", all.groupBy, "GROUP")
 H.check("one block: group order", all.groupingOrder, "1,2,3,4,5,6,7,8")
-H.check("filter keys", table.concat(L.FILTER_KEYS, ","), "groupFilter,roleFilter,strictFiltering,groupBy,groupingOrder")
+H.check("filter keys", table.concat(L.FILTER_KEYS, ","), "groupFilter,roleFilter,strictFiltering,groupBy,groupingOrder,nameList")
 
 -- Who belongs to a block (test mode's pretend members), as the filters.
 local function member(subgroup, class, role) return { subgroup = subgroup, class = class, assignedRole = role } end

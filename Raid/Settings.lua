@@ -304,16 +304,45 @@ RaidSettings.Define({ key = "rangeAlpha", code = "RA", scope = "frame", type = "
 RaidSettings.Define({ key = "aggroBorder", code = "AB", scope = "frame", type = "bool", default = true })
 RaidSettings.Define({ key = "targetBorder", code = "TB", scope = "frame", type = "bool", default = true })
 
+-- A name list (Raid/Lists.lua): player names separated by commas, each
+-- once; a name may hold a space (a surname), an apostrophe or the realm
+-- (Name-Realm), never a digit or a sign no name holds. Returns the
+-- names, or nil, why ("INVALID" or "TWICE") and the name in question.
+Raid.NAME_LIST_LETTERS = 250
+local NOT_IN_A_NAME = "[%d%c%%;|\\/\"<>%[%]{}()=+*!?@#$^&~_:.]"
+function Raid.ParseNameList(text)
+    local names, seen = {}, {}
+    for piece in text:gmatch("[^,]+") do
+        local name = piece:match("^%s*(.-)%s*$")
+        if name ~= "" then
+            if name:find(NOT_IN_A_NAME) then return nil, "INVALID", name end
+            if seen[name] then return nil, "TWICE", name end
+            seen[name] = true
+            names[#names + 1] = name
+        end
+    end
+    return names
+end
+
+local function isNameList(text) return Raid.ParseNameList(text) ~= nil end
+
 -- Special panels (Raid/SpecialPanels.lua): panels of their own beside the
 -- main one, each with its own mover; per size: shown, a title above it,
 -- cells per line, which way they grow, the panel's top-left corner from
 -- the screen centre. The letter starts every code of the panel; keys
 -- lists its settings in the raid window's order. The growth is stored by
--- index like cellGrowth, whose list it is.
+-- index like cellGrowth, whose list it is. A panel of a name list (names:
+-- the setting's key) keeps the list per character (general), first in
+-- its section.
 Raid.PANELS = {}
 function Raid.DefinePanel(p)
     local id, l = p.id, p.letter
     p.keys = { id .. "Show", id .. "Title", id .. "PerLine", id .. "Growth", id .. "X", id .. "Y" }
+    if p.names then
+        RaidSettings.Define({ key = p.names, code = l .. "N", scope = "general", type = "text",
+            maxLetters = Raid.NAME_LIST_LETTERS, check = isNameList, names = true, default = "" })
+        table.insert(p.keys, 1, p.names)
+    end
     RaidSettings.Define({ key = id .. "Show", code = l .. "S", scope = "frame", type = "bool", default = p.show })
     RaidSettings.Define({ key = id .. "Title", code = l .. "T", scope = "frame", type = "bool", default = true })
     RaidSettings.Define({ key = id .. "PerLine", code = l .. "L", scope = "frame", type = "int", min = 1, max = 40,
@@ -332,3 +361,6 @@ end
 Raid.DefinePanel({ id = "mainTanks", letter = "Q", show = true, perLine = 5, growth = "RIGHT", x = -600, y = 260 })
 -- Main assists (the raid assignment): off, a row above the main tanks.
 Raid.DefinePanel({ id = "mainAssists", letter = "W", show = false, perLine = 5, growth = "RIGHT", x = -600, y = 340 })
+-- My tanks (your own list): off, a column right of the main panel.
+Raid.DefinePanel({ id = "myTanks", letter = "Z", show = false, perLine = 5, growth = "DOWN", x = 120, y = 150,
+    names = "myTankNames" })

@@ -13,8 +13,10 @@ Layout.ROLES = { "TANK", "HEALER", "DAMAGER" }
 -- Sorted by role within a block: the assigned roles in this order, those
 -- without one last.
 Layout.ROLE_ORDER = "TANK,HEALER,DAMAGER,NONE"
--- Every filter attribute a block may set; the others are cleared.
-Layout.FILTER_KEYS = { "groupFilter", "roleFilter", "strictFiltering", "groupBy", "groupingOrder" }
+-- Every filter attribute a block may set; the others are cleared. A
+-- nameList counts only without a group or role filter (the special
+-- panels' lists).
+Layout.FILTER_KEYS = { "groupFilter", "roleFilter", "strictFiltering", "groupBy", "groupingOrder", "nameList" }
 -- A group never holds more than five.
 Layout.GROUP_SIZE = 5
 

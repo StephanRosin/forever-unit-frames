@@ -11,7 +11,9 @@ local _, ns = ...
 --
 -- Main tanks and main assists come from the raid assignment (MAINTANK,
 -- MAINASSIST: /maintank, the raid leader's menu), which the headers
--- follow by themselves, in combat too.
+-- follow by themselves, in combat too. My tanks are your own list
+-- (Raid/Lists.lua) in the list's order; a changed list is a header filter,
+-- set after combat.
 local Special = {}
 ns.RaidSpecialPanels = Special
 
@@ -72,3 +74,11 @@ end
 
 Special.New("mainTanks", { filter = function() return { roleFilter = "MAINTANK" } end })
 Special.New("mainAssists", { filter = function() return { roleFilter = "MAINASSIST" } end })
+
+local function nameList(id)
+    return {
+        filter = function() return { nameList = ns.RaidLists.Attribute(id) } end,
+        attributes = function(a) a.sortMethod = "NAMELIST" end,
+    }
+end
+Special.New("myTanks", nameList("myTanks"))
