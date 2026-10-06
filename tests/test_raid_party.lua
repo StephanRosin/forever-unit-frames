@@ -11,10 +11,17 @@ M.units.party1 = { name = "Ann", class = "PRIEST", isPlayer = true, health = 1, 
 
 -- Before the raid profile is attached the party block does not ask it;
 -- building the raid panel at login restyles the party block.
+local styleAll, restyled = Party.StyleAll, 0
+Party.StyleAll = function()
+    if ns.RaidHeader.anchor then restyled = restyled + 1 end
+    return styleAll()
+end
 M.FireEvent("ADDON_LOADED", "ForeverUnitFrames")
 M.FireEvent("PLAYER_LOGIN")
 M.RunTimers()
+Party.StyleAll = styleAll
 local header = Party.header
+H.checkTrue("login: raid panel restyles the party block", restyled > 0)
 H.check("login: party hides in any group", M.drivers[header], "[group] hide; show")
 H.checkTrue("solo: party header shown", header:IsShown())
 M.SetGroup({ "party1" })

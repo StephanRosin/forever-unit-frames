@@ -295,8 +295,8 @@ function Header.Create()
     Header.Refresh()
     ns.Movers.Attach(Header.anchor, Header.MoverSpec())
     -- The party block may have been styled before the raid profile was
-    -- there to ask.
-    ns.AfterCombat("partyStyle", ns.Party.StyleAll)
+    -- there to ask; only the raid view in party changes its answer.
+    if Header.ReplacesParty() then ns.AfterCombat("partyStyle", ns.Party.StyleAll) end
     return Header.anchor
 end
 

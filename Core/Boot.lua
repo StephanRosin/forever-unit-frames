@@ -31,8 +31,8 @@ ns.On("PLAYER_LOGIN", function()
     -- The raid frames last: their profile, the active size, then the
     -- panel built from both (out of combat, like the unit frames). The
     -- party block asks the raid profile whether the raid view takes a
-    -- 5-player group: no until it is attached; building the panel styles
-    -- the party block again.
+    -- 5-player group: no until it is attached; with the raid view in
+    -- party on, building the panel styles the party block again.
     ns.RaidProfiles.Attach(ForeverUnitFramesDB)
     ns.RaidSize.Update()
     ns.AfterCombat("raidCreate", ns.RaidHeader.Create)
