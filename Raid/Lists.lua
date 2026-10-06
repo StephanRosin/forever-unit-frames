@@ -63,3 +63,23 @@ end
 function Lists.Attribute(id)
     return table.concat(Lists.Names(id), ",")
 end
+
+-- The name a group header compares for a unit (SecureGroupHeaders.lua,
+-- GetGroupRosterInfo): a raid member's from the raid roster, anyone
+-- else's UnitName with its second value joined by "-" when there is one.
+-- nil when it cannot be read (secret while the unit's identity is
+-- restricted, or unknown).
+function Lists.UnitName(unit)
+    if type(unit) ~= "string" then return nil end
+    local name, second, ok
+    local index = tonumber(unit:match("^raid(%d+)$"))
+    if index then
+        ok, name = pcall(GetRaidRosterInfo, index)
+    else
+        ok, name, second = pcall(UnitName, unit)
+    end
+    if not ok or ns.Secrets.IsSecret(name) or ns.Secrets.IsSecret(second) then return nil end
+    if type(name) ~= "string" or name == "" then return nil end
+    if type(second) == "string" and second ~= "" then name = name .. "-" .. second end
+    return name
+end

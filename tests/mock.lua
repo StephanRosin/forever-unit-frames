@@ -2371,6 +2371,33 @@ function M.Reset()
     -- The mock knows one: this addon's ## Version (M.addonVersion; tests
     -- set another before PLAYER_LOGIN); any other field or addon is nil.
     M.addonVersion = "0.1.0"
+    -- Blizzard_Menu (Menu.lua): Menu.ModifyMenu(tag, callback) adds to
+    -- every menu opened with that tag; M.menuMods[tag] lists the callbacks.
+    -- M.menu is the last unit menu opened (M.OpenUnitMenu, or a click on a
+    -- button whose type is togglemenu).
+    M.menuMods = {}
+    M.menu = nil
+    _G.Menu = {
+        ModifyMenu = function(tag, callback)
+            assert(type(tag) == "string", "Menu.ModifyMenu: tag must be a string")
+            assert(type(callback) == "function", "Menu.ModifyMenu: callback must be a function")
+            M.menuMods[tag] = M.menuMods[tag] or {}
+            table.insert(M.menuMods[tag], callback)
+            return {}
+        end,
+    }
+    -- UnitInRaid: the raid index of a raid member (d.raidIndex, or the
+    -- number of a raid token), else nil.
+    _G.UnitInRaid = function(unit)
+        local d = u(unit)
+        if not d then return nil end
+        if d.raidIndex then return d.raidIndex end
+        local index = tonumber(tostring(unit):match("^raid(%d+)$"))
+        if index and M.raid[index] then return index end
+        return nil
+    end
+    _G.UnitIsOtherPlayersPet = function(unit) local d = u(unit); return d ~= nil and d.otherPet == true end
+    _G.UnitIsOtherPlayersBattlePet = function() return false end
     _G.C_AddOns = { GetAddOnMetadata = function(name, field)
         assert(name ~= nil and type(field) == "string", "GetAddOnMetadata: name and field required")
         if name == "ForeverUnitFrames" and field == "Version" then return M.addonVersion end
@@ -2504,8 +2531,91 @@ end
 -- as name..suffix, *name..suffix, name*, *name*, name; no modifier held),
 -- run as secure code. Returns the action type, or nil.
 local BUTTON_SUFFIX = { LeftButton = "1", RightButton = "2", MiddleButton = "3" }
+
+-- A menu's root description (Blizzard_Menu): the elements added to it,
+-- in order, as { kind = "button" | "title" | "divider", text =,
+-- callback =, data = }. Stricter than the client: no other method.
+local function menuDescription(tag, contextData)
+    local root = { tag = tag, contextData = contextData, elements = {} }
+    local methods = {
+        CreateButton = function(self, text, callback, data)
+            assert(type(text) == "string", "CreateButton: text")
+            local e = { kind = "button", text = text, callback = callback, data = data }
+            table.insert(self.elements, e)
+            return e
+        end,
+        CreateTitle = function(self, text)
+            local e = { kind = "title", text = text }
+            table.insert(self.elements, e)
+            return e
+        end,
+        CreateDivider = function(self)
+            local e = { kind = "divider" }
+            table.insert(self.elements, e)
+            return e
+        end,
+    }
+    return setmetatable(root, { __index = function(_, k)
+        return methods[k] or error("mock: menu description has no " .. tostring(k), 2)
+    end })
+end
+
+-- UnitPopup_OpenMenu (Blizzard_UnitPopupShared/UnitPopupShared.lua): the
+-- unit menu "which", tagged MENU_UNIT_<which>; the mock holds none of
+-- Blizzard's own entries, only what Menu.ModifyMenu callbacks add. An
+-- addon's callback is the addon's own (insecure) code, also when the menu
+-- was opened from a secure click.
+function M.OpenUnitMenu(which, contextData)
+    local tag = "MENU_UNIT_" .. which
+    local root = menuDescription(tag, contextData)
+    local depth = M.secureDepth
+    M.secureDepth = 0
+    for _, callback in ipairs(M.menuMods[tag] or {}) do
+        local ok, err = pcall(callback, contextData.ownerFrame, root, contextData)
+        if not ok then
+            M.secureDepth = depth
+            error(err, 0)
+        end
+    end
+    M.secureDepth = depth
+    M.menu = root
+    return root
+end
+
+-- A click on a menu button: its callback with its data.
+function M.ClickMenu(element)
+    assert(element and element.kind == "button", "mock: not a menu button")
+    return element.callback(element.data)
+end
+
+-- SECURE_ACTIONS.togglemenu (Blizzard_FrameXML/SecureTemplates.lua): the
+-- menu for the button's unit, chosen as the client does.
+local function toggleMenu(button, attr)
+    local unit = attr("unit")
+    if not unit then return end
+    unit = unit:lower()
+    local unitType = unit:match("^([a-z]+)[0-9]+$") or unit
+    local which
+    if unitType == "party" then which = "PARTY"
+    elseif unitType == "boss" then which = "BOSS"
+    elseif unitType == "focus" then which = "FOCUS"
+    elseif unitType == "arenapet" or unitType == "arena" then which = "ARENAENEMY"
+    elseif UnitIsUnit(unit, "player") then which = "SELF"
+    elseif UnitIsUnit(unit, "vehicle") then which = "VEHICLE"
+    elseif UnitIsUnit(unit, "pet") then which = "PET"
+    elseif UnitIsOtherPlayersBattlePet(unit) then which = "OTHERBATTLEPET"
+    elseif UnitIsOtherPlayersPet(unit) then which = "OTHERPET"
+    elseif UnitIsPlayer(unit) then
+        if UnitInRaid(unit) then which = "RAID_PLAYER"
+        elseif UnitInParty(unit) then which = "PARTY"
+        else which = "PLAYER" end
+    elseif UnitIsUnit(unit, "target") then which = "TARGET" end
+    if which then M.OpenUnitMenu(which, { ownerFrame = button, unit = unit }) end
+end
+
 local SECURE_ACTIONS = {
     destroytotem = function(button, attr) DestroyTotem(attr("totem-slot")) end,
+    togglemenu = toggleMenu,
 }
 function M.SecureClick(button, mouseButton)
     local registered = false

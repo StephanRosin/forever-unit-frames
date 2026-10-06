@@ -6,7 +6,7 @@ Panels of their own beside the main panel, each with its own position per raid s
 
 The **Panels** tab of the raid options window (`/fuf raid`). Each raid size (10, 20, 40) has a profile of its own: the size tabs at the top choose which one you edit; a default that differs per size is listed per size.
 
-Players in a special panel stay in their group as well. The raid leader sets main tanks and main assists.
+Players in a special panel stay in their group as well. The raid leader sets main tanks and main assists; right-click a cell for my tanks and favourites.
 
 **On this page:** [Main tanks](#main-tanks) · [Main assists](#main-assists) · [My tanks](#my-tanks) · [Favourites](#favourites) · [Pets](#pets)
 

@@ -81,6 +81,7 @@ Raid\CellStates.lua
 Raid\Panel.lua
 Raid\Header.lua
 Raid\SpecialPanels.lua
+Raid\Menu.lua
 Raid\TestMode.lua
 Core\Blizzard.lua
 Core\Movers.lua
