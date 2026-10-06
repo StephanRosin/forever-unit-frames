@@ -72,7 +72,7 @@ end
 local function relayout()
     if not Header.anchor then return end
     if InCombatLockdown() then Header.UpdateVisibility() end
-    ns.AfterCombat("raidLayout", Header.Refresh)
+    ns.AfterCombat("raidLayout", ns.RaidPanel.RefreshAll)
 end
 
 -- The raid window's switch (RAID_TEST_MODE tells the window). Turning it
