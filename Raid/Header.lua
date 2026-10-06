@@ -168,9 +168,11 @@ end
 -- Out of combat: blocks to their places for the given number of cells
 -- per block (the headers' own, or test mode's), titles and borders, the
 -- panel over the occupied area. A block without room parks its empty
--- header below the panel: someone joining it in combat shows there
--- instead of on top of another block. Returns each block's place (nil
--- without room) and the numbers it used (Raid/TestMode.lua).
+-- header below the panel, each in a spot of its own a group block wide
+-- (in a row, by block order): someone joining it in combat shows there
+-- instead of on top of another block or another parked one. Returns
+-- each block's place (nil without room) and the numbers it used
+-- (Raid/TestMode.lua).
 function Header.Place(counts)
     local s = Header.Shape()
     local hideEmpty = get("hideEmpty")
@@ -181,7 +183,8 @@ function Header.Place(counts)
     end
     local positions, width, height = Layout.Arrange(s, sizes)
     local hx, hy = Layout.HeaderOffset(s)
-    local parked = { x = 0, y = -(height + s.blockGap) }
+    local parkedY, parkedStep = -(height + s.blockGap), Layout.BlockSize(s, Layout.GROUP_SIZE) + s.blockGap
+    local parked = 0
     for i, block in ipairs(Header.blocks) do
         local pos, d = positions[i], decor(i)
         if pos then
@@ -195,8 +198,12 @@ function Header.Place(counts)
             d:Hide()
         end
         local h = Header.headers[i]
+        local at = pos
+        if not at then
+            at = { x = parked * parkedStep, y = parkedY }
+            parked = parked + 1
+        end
         if h then
-            local at = pos or parked
             h:ClearAllPoints()
             h:SetPoint("TOPLEFT", Header.anchor, "TOPLEFT", at.x + hx, at.y + hy)
         end
