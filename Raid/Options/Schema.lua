@@ -36,14 +36,14 @@ Schema.TABS = {
         { id = "position", keys = { "x", "y" } },
         { id = "borders", keys = { "panelBorder", "blockBorder", "cellBorder" } },
     } },
-    -- The cells wear the party frame's look (bar texture, font, heal and
-    -- shield colours): the note says so.
+    -- Heals, shields and the power strip keep the unit frames' shipped
+    -- colours (Raid/Cell.lua): the note says so.
     { id = "cell", note = "cell", sections = {
         { id = "size", keys = { "cellWidth", "cellHeight" } },
-        { id = "bars", keys = { "healthColorMode", "powerStrip" } },
+        { id = "bars", keys = { "healthColorMode", "healthColor", "barTexture", "backgroundColor", "powerStrip" } },
     } },
     { id = "texts", sections = {
-        { id = "texts", keys = { "nameClassColor", "secondLine" } },
+        { id = "texts", keys = { "nameClassColor", "nameColor", "secondLine", "secondLineColor" } },
         { id = "fonts", keys = { "fontFace", "nameFontSize", "secondFontSize", "fontOutline", "fontShadow" } },
     } },
     { id = "debuffs", sections = {

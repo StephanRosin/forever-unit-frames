@@ -140,10 +140,17 @@ RaidSettings.Define({ key = "panelBorder", code = "PB", scope = "frame", type = 
 RaidSettings.Define({ key = "blockBorder", code = "BB", scope = "frame", type = "bool", default = false })
 RaidSettings.Define({ key = "cellBorder", code = "CB", scope = "frame", type = "bool", default = false })
 
--- The cell (Raid/Cell.lua). Health in the class colour, the unit-frame
--- health colour, or a gradient by health. Stored by index: append only.
+-- The cell (Raid/Cell.lua). Health in the class colour, a fixed colour
+-- (healthColor), or a gradient by health. Stored by index: append only.
 RaidSettings.Define({ key = "healthColorMode", code = "HM", scope = "frame", type = "enum",
     values = { "CLASS", "STATIC", "GRADIENT" }, default = "CLASS" })
+RaidSettings.Define({ key = "healthColor", code = "HC", scope = "frame", type = "color",
+    default = { 0.2, 0.75, 0.3, 1 } })
+-- The bars' texture and the colour behind them.
+RaidSettings.Define({ key = "barTexture", code = "TX", scope = "frame", type = "media", mediaKind = "statusbar",
+    default = "Raid" })
+RaidSettings.Define({ key = "backgroundColor", code = "BG", scope = "frame", type = "color",
+    default = { 0, 0, 0, 0.6 } })
 -- The power strip at the bottom: everyone, mana users, healers, nobody.
 RaidSettings.Define({ key = "powerStrip", code = "PS", scope = "frame", type = "enum",
     values = { "ALL", "MANA", "HEALERS", "OFF" }, default = "MANA" })
@@ -152,6 +159,11 @@ RaidSettings.Define({ key = "powerStrip", code = "PS", scope = "frame", type = "
 RaidSettings.Define({ key = "secondLine", code = "SL", scope = "frame", type = "enum",
     values = { "DEFICIT", "PERCENT", "CURRENT", "NONE" }, default = "DEFICIT" })
 RaidSettings.Define({ key = "nameClassColor", code = "NC", scope = "frame", type = "bool", default = false })
+-- The name's colour when it is not in the class colour, and the second
+-- line's (the status words too).
+RaidSettings.Define({ key = "nameColor", code = "NA", scope = "frame", type = "color", default = { 1, 1, 1, 1 } })
+RaidSettings.Define({ key = "secondLineColor", code = "SC", scope = "frame", type = "color",
+    default = { 1, 1, 1, 1 } })
 -- The cell's texts: the font, the name's size and the second line's (the
 -- status words too), outline and shadow; the block titles take the font
 -- and the outline. The outlines are the unit frames' (Core/Settings.lua),

@@ -675,17 +675,31 @@ end
 -- texts and the status word stay white.
 Texts.NAME_TAGS = { NAME = true, NAME_LEVEL = true, INFO = true }
 
+-- Raid cells (Raid/Cell.lua) set frame.textColors: it returns the colours
+-- of a name and of the other texts in place of white (a name in the class
+-- or reaction colour keeps that). No unit frame sets it.
+local WHITE = { 1, 1, 1, 1 }
+
+local function plainColors(frame)
+    if frame.textColors then return frame.textColors(frame) end
+    return WHITE, WHITE
+end
+
 local function paintBars(frame, wordSlot)
     local mode = Config.Get(frame.key, "barNameColorMode")
-    local r, g, b = 1, 1, 1
-    if mode ~= "WHITE" then r, g, b = ns.Health.FrameColor(frame, mode) end
+    local name, other = plainColors(frame)
+    local r, g, b, a = name[1], name[2], name[3], name[4]
+    if mode ~= "WHITE" then
+        r, g, b = ns.Health.FrameColor(frame, mode)
+        a = 1
+    end
     for _, slot in ipairs(SLOTS) do
         if slot.bar ~= "title" then
             local named = slot.field ~= wordSlot and Texts.NAME_TAGS[Config.Get(frame.key, slot.setting)]
             if named then
-                frame.texts[slot.field]:SetTextColor(r, g, b, 1)
+                frame.texts[slot.field]:SetTextColor(r, g, b, a)
             else
-                frame.texts[slot.field]:SetTextColor(1, 1, 1, 1)
+                frame.texts[slot.field]:SetTextColor(other[1], other[2], other[3], other[4])
             end
         end
     end

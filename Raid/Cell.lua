@@ -82,6 +82,9 @@ local MAPPED = {
     width = function() return get("cellWidth") end,
     height = function() return get("cellHeight") end,
     healthColorMode = function() return get("healthColorMode") end,
+    healthColor = function() return get("healthColor") end,
+    barTexture = function() return get("barTexture") end,
+    backgroundColor = function() return get("backgroundColor") end,
     powerEnabled = function() return get("powerStrip") ~= "OFF" end,
     textHealthRight = function() return get("secondLine") end,
     barNameColorMode = function() return get("nameClassColor") and "CLASS" or "WHITE" end,
@@ -163,10 +166,17 @@ function Cell.ShowsPower(frame)
     return true
 end
 
+-- The colours of the name and of the second line (Elements/Texts.lua
+-- asks): the name's gives way to the class colour when that is on.
+function Cell.TextColors()
+    return get("nameColor"), get("secondLineColor")
+end
+
 -- What every cell is, real or pretend.
 function Cell.Setup(button)
     button.key = Cell.KEY
     button.centerTexts = true
+    button.textColors = Cell.TextColors
     button.showsPower = Cell.ShowsPower
     button.iconPoint = Cell.IconPoint
     button.fadesOutOfRange = true
