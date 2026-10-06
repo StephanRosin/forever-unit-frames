@@ -116,18 +116,22 @@ M.templates = {
 -- (Blizzard_RestrictedAddOnEnvironment/SecureGroupHeaders.lua), ported
 -- from the client source: which units a header shows (GetGroupHeaderType:
 -- a raid with showRaid, a party with showParty, else showSolo; showPlayer),
--- the filters groupFilter, roleFilter and strictFiltering, groupBy with
--- groupingOrder, sortMethod INDEX or NAME, sortDir, startingIndex, the
--- columns (unitsPerColumn, maxColumns, columnSpacing, columnAnchorPoint),
--- child creation from the template attribute, unit assignment through
+-- the filters groupFilter, roleFilter and strictFiltering, or a nameList
+-- (only without either filter), groupBy with groupingOrder, sortMethod
+-- INDEX, NAME or NAMELIST, sortDir, startingIndex, the columns
+-- (unitsPerColumn, maxColumns, columnSpacing, columnAnchorPoint), child
+-- creation from the template attribute, unit assignment through
 -- SetAttribute("unit"), the header's own size, and updates on show,
 -- attribute change and roster change while visible. Party members are
 -- M.group's tokens in order; raid members M.raid (M.SetRaidRoster), read
--- through GetRaidRosterInfo as the client does. The pet header lists the
--- pets of the units the party rule picks, packed.
+-- through GetRaidRosterInfo as the client does; a party member's name is
+-- UnitName's two values joined by "-" when the second is not empty. The
+-- pet header (SecureGroupPetHeader_Update) lists the pets that exist of
+-- the members its groupFilter or nameList picks (no roleFilter; strict:
+-- group and class), groupBy GROUP, CLASS or ROLE, sortMethod NAME; with
+-- useOwnerUnit the owner's unit, with filterOnPet the pet's name.
 -- Stricter than the client: an initialConfigFunction or refreshUnitChange
--- snippet raises (snippets do not run on this client), and so does a
--- nameList (not modelled).
+-- snippet raises (snippets do not run on this client).
 -- Like the client, shown buttons are only SetPoint'ed (never cleared): a
 -- button keeps an anchor from an earlier layout on another point. Only
 -- unused buttons lose their anchors. The header sizes itself from child1
@@ -165,7 +169,9 @@ local function rosterInfo(kind, slot)
     -- it no unit data.
     if unit == "player" and not UnitExists(unit) then return unit, "player", 1, nil, nil, "NONE" end
     if UnitExists(unit) then
-        name = UnitName(unit)
+        local server
+        name, server = UnitName(unit)
+        if server and server ~= "" then name = name .. "-" .. server end
         className = select(2, UnitClass(unit))
         if GetPartyAssignment("MAINTANK", unit) then
             role = "MAINTANK"
@@ -196,82 +202,157 @@ local function doubleFill(t, keys)
     return t
 end
 
-local function sortedUnits(header)
-    local a = header._attr
-    assert(not a.nameList, "mock: nameList is not modelled")
-    local kind, start, stop = headerKind(a)
-    local units = {}
-    if not kind then return units end
-    if header._pets then
-        -- SecureGroupPetHeaderTemplate: the owners' pets that exist, packed.
-        for slot = start, stop do
-            local unit = rosterInfo(kind, slot)
-            local pet = unit == "player" and "pet" or unit:gsub("^party", "partypet"):gsub("^raid", "raidpet")
-            if M.units[pet] then units[#units + 1] = pet end
+-- The client's IDs: the number in the token ("player" is -1).
+local function unitId(unit) return tonumber(unit:match("%d+") or -1) end
+
+-- The groupBy sort (sortOnGroupWithNames / sortOnGroupWithIDs): by the
+-- rank of each unit's grouping, unranked ones last, then by name or ID.
+local function sortByGroup(units, grouping, rank, within)
+    table.sort(units, function(x, y)
+        local o1, o2 = rank[grouping[x]], rank[grouping[y]]
+        if o1 then
+            if not o2 then return true end
+            if o1 == o2 then return within(x, y) end
+            return o1 < o2
         end
-        return units
-    end
-    local groupFilter, roleFilter = a.groupFilter, a.roleFilter
-    if not groupFilter and not roleFilter then groupFilter = "1,2,3,4,5,6,7,8" end
-    local strict = a.strictFiltering
-    local tokens = {}
-    if groupFilter and not roleFilter then
-        fill(tokens, split(groupFilter))
-        if strict then fill(tokens, { "MAINTANK", "MAINASSIST", "TANK", "HEALER", "DAMAGER", "NONE" }) end
-    elseif roleFilter and not groupFilter then
-        fill(tokens, split(roleFilter))
-        if strict then
-            local keys = { 1, 2, 3, 4, 5, 6, 7, 8 }
-            for _, class in ipairs(CLASS_SORT_ORDER) do keys[#keys + 1] = class end
-            fill(tokens, keys)
+        if o2 then return false end
+        return within(x, y)
+    end)
+end
+
+-- SecureGroupHeader_Update's choice and order of units.
+local function groupUnits(a, kind, start, stop)
+    local units, names, grouping = {}, {}, {}
+    local nameList, groupFilter, roleFilter = a.nameList, a.groupFilter, a.roleFilter
+    local function byName(x, y) return names[x] < names[y] end
+    if not groupFilter and not roleFilter and not nameList then groupFilter = "1,2,3,4,5,6,7,8" end
+    if groupFilter or roleFilter then
+        local strict = a.strictFiltering
+        local tokens = {}
+        if groupFilter and not roleFilter then
+            fill(tokens, split(groupFilter))
+            if strict then fill(tokens, { "MAINTANK", "MAINASSIST", "TANK", "HEALER", "DAMAGER", "NONE" }) end
+        elseif roleFilter and not groupFilter then
+            fill(tokens, split(roleFilter))
+            if strict then
+                local keys = { 1, 2, 3, 4, 5, 6, 7, 8 }
+                for _, class in ipairs(CLASS_SORT_ORDER) do keys[#keys + 1] = class end
+                fill(tokens, keys)
+            end
+        else
+            fill(tokens, split(groupFilter))
+            fill(tokens, split(roleFilter))
+        end
+        for slot = start, stop do
+            local unit, name, subgroup, className, role, assignedRole = rosterInfo(kind, slot)
+            -- As the client writes it: (name and loose) or strict.
+            if (name and (not strict and (tokens[subgroup] or tokens[className] or (role and tokens[role])
+                    or tokens[assignedRole])))
+                or (tokens[subgroup] and tokens[className] and ((role and tokens[role]) or tokens[assignedRole])) then
+                units[#units + 1] = unit
+                names[unit] = name
+                if a.groupBy == "GROUP" then grouping[unit] = subgroup
+                elseif a.groupBy == "CLASS" then grouping[unit] = className
+                elseif a.groupBy == "ROLE" then grouping[unit] = role
+                elseif a.groupBy == "ASSIGNEDROLE" then grouping[unit] = assignedRole end
+            end
+        end
+        if a.groupBy then
+            -- As the client: groupingOrder is required (nil raises), and the
+            -- order is built with doubleFillTable, which then also stores each
+            -- key as a string in the array part. Numeric group keys collide
+            -- with those: "3,1,2" sorts groups 2,3,1, and "3,1" compares a
+            -- number with a string and raises.
+            local rank = doubleFill({}, split(a.groupingOrder:gsub("%s+", "")))
+            local within = function(x, y) return unitId(x) < unitId(y) end
+            if a.sortMethod == "NAME" then within = byName end
+            sortByGroup(units, grouping, rank, within)
+        elseif a.sortMethod == "NAME" then
+            table.sort(units, byName)
         end
     else
-        fill(tokens, split(groupFilter))
-        fill(tokens, split(roleFilter))
-    end
-    local names, grouping, order = {}, {}, {}
-    for slot = start, stop do
-        local unit, name, subgroup, className, role, assignedRole = rosterInfo(kind, slot)
-        local loose = not strict and (tokens[subgroup] or tokens[className] or (role and tokens[role])
-            or tokens[assignedRole])
-        local tight = tokens[subgroup] and tokens[className] and ((role and tokens[role]) or tokens[assignedRole])
-        if name and (loose or tight) then
-            units[#units + 1] = unit
-            names[unit] = name
-            order[unit] = slot
-            if a.groupBy == "GROUP" then grouping[unit] = subgroup
-            elseif a.groupBy == "CLASS" then grouping[unit] = className
-            elseif a.groupBy == "ROLE" then grouping[unit] = role
-            elseif a.groupBy == "ASSIGNEDROLE" then grouping[unit] = assignedRole end
+        -- A list of names; NAMELIST sorts in the list's order.
+        local rank = doubleFill({}, split(nameList))
+        for slot = start, stop do
+            local unit, name = rosterInfo(kind, slot)
+            if rank[name] then
+                units[#units + 1] = unit
+                names[unit] = name
+            end
+        end
+        if a.sortMethod == "NAME" then
+            table.sort(units, byName)
+        elseif a.sortMethod == "NAMELIST" then
+            table.sort(units, function(x, y) return rank[names[x]] < rank[names[y]] end)
         end
     end
-    -- The client's IDs: the number in the token ("player" is -1).
-    local function id(unit) return tonumber(unit:match("%d+") or -1) end
-    local function within(x, y)
-        if a.sortMethod == "NAME" then return names[x] < names[y] end
-        return id(x) < id(y)
-    end
-    if a.groupBy then
-        -- As the client: groupingOrder is required (nil raises), and the
-        -- order is built with doubleFillTable, which then also stores each
-        -- key as a string in the array part. Numeric group keys collide
-        -- with those: "3,1,2" sorts groups 2,3,1, and "3,1" compares a
-        -- number with a string and raises.
-        local rank = doubleFill({}, split(a.groupingOrder:gsub("%s+", "")))
-        table.sort(units, function(x, y)
-            local o1, o2 = rank[grouping[x]], rank[grouping[y]]
-            if o1 then
-                if not o2 then return true end
-                if o1 == o2 then return within(x, y) end
-                return o1 < o2
+    return units
+end
+
+-- GetPetUnit: a raid member's pet, a party member's, your own.
+local function petUnit(kind, slot)
+    if kind == "RAID" then return "raidpet" .. slot end
+    if slot > 1 then return "partypet" .. (slot - 1) end
+    return "pet"
+end
+
+-- SecureGroupPetHeader_Update's choice and order of units.
+local function petUnits(a, kind, start, stop)
+    local units, names, grouping = {}, {}, {}
+    local nameList, groupFilter = a.nameList, a.groupFilter
+    local function byName(x, y) return names[x] < names[y] end
+    if not groupFilter and not nameList then groupFilter = "1,2,3,4,5,6,7,8" end
+    if groupFilter then
+        local tokens = fill({}, split(groupFilter))
+        local strict = a.strictFiltering
+        for slot = start, stop do
+            local unit, name, subgroup, className, role = rosterInfo(kind, slot)
+            local pet = petUnit(kind, slot)
+            if a.filterOnPet then name = UnitName(pet) end
+            if not a.useOwnerUnit then unit = pet end
+            if UnitExists(pet) then
+                if (name and (not strict and (tokens[subgroup] or tokens[className] or (role and tokens[role]))))
+                    or (tokens[subgroup] and tokens[className]) then
+                    units[#units + 1] = unit
+                    names[unit] = name
+                    if a.groupBy == "GROUP" then grouping[unit] = subgroup
+                    elseif a.groupBy == "CLASS" then grouping[unit] = className
+                    elseif a.groupBy == "ROLE" then grouping[unit] = role end
+                end
             end
-            if o2 then return false end
-            return within(x, y)
-        end)
-    elseif a.sortMethod == "NAME" then
-        table.sort(units, function(x, y) return names[x] < names[y] end)
+        end
+        if a.groupBy then
+            -- No whitespace removed here, unlike the member header.
+            local rank = doubleFill({}, split(a.groupingOrder))
+            local within = function(x, y) return unitId(x) < unitId(y) end
+            if a.sortMethod == "NAME" then within = byName end
+            sortByGroup(units, grouping, rank, within)
+        elseif a.sortMethod == "NAME" then
+            table.sort(units, byName)
+        end
+    else
+        local rank = doubleFill({}, split(nameList))
+        for slot = start, stop do
+            local unit, name = rosterInfo(kind, slot)
+            local pet = petUnit(kind, slot)
+            if a.filterOnPet then name = UnitName(pet) end
+            if not a.useOwnerUnit then unit = pet end
+            if rank[name] and UnitExists(pet) then
+                units[#units + 1] = unit
+                names[unit] = name
+            end
+        end
+        if a.sortMethod == "NAME" then table.sort(units, byName) end
     end
     return units
+end
+
+local function sortedUnits(header)
+    local a = header._attr
+    local kind, start, stop = headerKind(a)
+    if not kind then return {} end
+    if header._pets then return petUnits(a, kind, start, stop) end
+    return groupUnits(a, kind, start, stop)
 end
 
 -- configureChildren.
