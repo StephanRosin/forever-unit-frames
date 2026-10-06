@@ -897,3 +897,7 @@ L.RAID_LOOT_Roundrobin = "Chacun son tour"
 L.RAID_LOOT_Masterlooter = "Maître du butin"
 L.RAID_LOOT_Group = "Butin de groupe"
 L.RAID_LOOT_Needbeforegreed = "Le besoin avant la cupidité"
+
+-- Cadres de raid : les familiers du mode test (Raid/TestMode.lua).
+L.RAID_TEST_PET_HUNTER = "Loup"
+L.RAID_TEST_PET_WARLOCK = "Diablotin"

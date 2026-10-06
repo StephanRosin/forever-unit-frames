@@ -921,3 +921,7 @@ L.RAID_LOOT_Roundrobin = "Round robin"
 L.RAID_LOOT_Masterlooter = "Master looter"
 L.RAID_LOOT_Group = "Group loot"
 L.RAID_LOOT_Needbeforegreed = "Need before greed"
+
+-- Raid frames: test mode's pretend pets (Raid/TestMode.lua).
+L.RAID_TEST_PET_HUNTER = "Wolf"
+L.RAID_TEST_PET_WARLOCK = "Imp"

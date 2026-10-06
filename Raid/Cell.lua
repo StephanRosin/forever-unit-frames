@@ -27,8 +27,10 @@ Cell.PET_KEY = "raidpet"
 Cell.TEMPLATE = "ForeverUnitFramesRaidButtonTemplate"
 -- Every cell a header made, in creation order.
 Cell.buttons = {}
--- Test mode's pretend cells (Raid/TestMode.lua).
+-- Test mode's pretend cells (Raid/TestMode.lua): the main panel's, and
+-- the special panels' (each panel keeps its own as well).
 Cell.fakes = {}
+Cell.panelFakes = {}
 
 -- The size whose profile the cells show: the active one, 10 until it is
 -- known; in test mode the one the raid options window edits.

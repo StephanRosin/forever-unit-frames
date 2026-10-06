@@ -39,8 +39,8 @@ Header = Panel.New({
     hideEmpty = function() return get("hideEmpty") end,
     -- Blizzard's word for a raid and the size.
     label = function() return ("%s %d"):format(Layout.Title({ kind = "NONE" }), Cell.Size()) end,
-    showTest = function() ns.RaidTestMode.Show() end,
-    hideTest = function() if ns.RaidTestMode then ns.RaidTestMode.Hide() end end,
+    showTest = function(P) ns.RaidTestMode.Show(P) end,
+    hideTest = function(P) if ns.RaidTestMode then ns.RaidTestMode.Hide(P) end end,
 })
 ns.RaidHeader = Header
 

@@ -1,7 +1,9 @@
 local _, ns = ...
 
--- Test mode for the raid panel: a pretend raid where the blocks are,
--- laid out exactly like the real ones (Raid/Layout.lua). On with the unit
+-- Test mode for the raid panels: a pretend raid where the blocks are,
+-- laid out exactly like the real ones (Raid/Layout.lua), and in each
+-- special panel that is switched on its own pretend members (main tanks,
+-- main assists, your tanks and favourites, pets). On with the unit
 -- frames' test mode (Options/TestMode.lua fires TEST_MODE) or with the
 -- raid options window's own switch (Test.Set). While the raid window is
 -- open it shows the size the window edits, at that size's position
@@ -97,6 +99,14 @@ function Test.Preview(size)
     if Test.IsOn() then relayout() end
 end
 
+-- The special panels' pretend members, by place in the raid: two main
+-- tanks (the first tank and the last warrior), a main assist (the
+-- paladin), your tanks (the warriors, the last one first), your
+-- favourites (the priest and the druid). Every hunter and warlock has a
+-- pet, named by the words below.
+Test.PANELS = { mainTanks = { 1, 10 }, mainAssists = { 6 }, myTanks = { 10, 1 }, favourites = { 2, 7 } }
+Test.PETS = { HUNTER = "RAID_TEST_PET_HUNTER", WARLOCK = "RAID_TEST_PET_WARLOCK" }
+
 -- The pretend raid of a size: { subgroup, class, assignedRole, name,
 -- health, status, role, debuffs, marker, groupIcons, outOfRange, aggro,
 -- target } per member, in raid order.
@@ -114,6 +124,27 @@ function Test.Members(size)
             outOfRange = Test.OUT_OF_RANGE[(i - 1) % #Test.SAMPLES + 1] == true,
             aggro = Test.AGGRO[i] == true, target = i == Test.TARGET,
         }
+    end
+    return list
+end
+
+-- A special panel's pretend members, in its order; the pets: one per
+-- hunter and warlock, in raid order, alive and well, coloured as their
+-- owner.
+function Test.PanelMembers(id, size)
+    local all, list = Test.Members(size), {}
+    if id == "pets" then
+        for _, m in ipairs(all) do
+            local word = Test.PETS[m.class]
+            if word then
+                list[#list + 1] = { subgroup = m.subgroup, class = m.class, name = ns.L[word], health = m.health,
+                    status = false, debuffs = {}, groupIcons = {}, outOfRange = false, aggro = false, target = false }
+            end
+        end
+        return list
+    end
+    for _, i in ipairs(Test.PANELS[id] or {}) do
+        if all[i] then list[#list + 1] = all[i] end
     end
     return list
 end
@@ -154,17 +185,31 @@ function Test.Distribute(blocks, members, size, sortBy)
     return lists
 end
 
-local function fakeButton(i)
-    local button = Cell.fakes[i]
+-- The pretend cells of a panel: the main panel's are Raid/Cell.lua's
+-- fakes; a special panel's are its own (P.fakes), every one of them also
+-- in Cell.panelFakes, so the elements reach them (Units/Units.lua).
+local function pool(P)
+    if P == Header then return Cell.fakes end
+    P.fakes = P.fakes or {}
+    return P.fakes
+end
+
+local function fakeButton(P, i)
+    local list = pool(P)
+    local button = list[i]
     if button then return button end
-    button = CreateFrame("Button", "ForeverUnitFramesRaidTest" .. i, UIParent, "SecureUnitButtonTemplate")
+    local name = P == Header and "ForeverUnitFramesRaidTest" or (P.spec.name .. "Test")
+    button = CreateFrame("Button", name .. i, UIParent, "SecureUnitButtonTemplate")
     -- Shows samples only; never gets live aura containers.
     button.pretend = true
+    -- A pet's cell when the panel makes those.
+    if P.cellKey ~= Cell.KEY then button.key = P.cellKey end
     Cell.Setup(button)
     button:SetAttribute("*type1", "target")
     button:SetAttribute("*type2", "togglemenu")
     button:RegisterForClicks("AnyUp")
-    Cell.fakes[i] = button
+    list[i] = button
+    if P ~= Header then Cell.panelFakes[#Cell.panelFakes + 1] = button end
     return button
 end
 
@@ -174,38 +219,48 @@ local function release(button)
     button.sample = nil
 end
 
--- Out of combat (Raid/Header.lua's layout): the pretend raid in place of
--- the headers' cells.
-function Test.Show()
+-- Out of combat (Raid/Panel.lua's layout): the pretend raid in place of
+-- a panel's headers' cells, the main panel's without one. A special
+-- panel shows its own pretend members (Test.PanelMembers), in their
+-- order, while it is switched on.
+function Test.Show(P)
+    P = P or Header
     local size = Cell.Size()
-    local sortBy = ns.RaidConfig.Get(ns.Raid.Scope(size), "sortBy")
-    local lists = Test.Distribute(Header.blocks, Test.Members(size), size, sortBy)
+    local members, sortBy
+    if P == Header then
+        members, sortBy = Test.Members(size), ns.RaidConfig.Get(ns.Raid.Scope(size), "sortBy")
+    else
+        members = P.Enabled() and Test.PanelMembers(P.id, size) or {}
+    end
+    local lists = Test.Distribute(P.blocks, members, size, sortBy)
     local counts = {}
     for b, list in ipairs(lists) do counts[b] = #list end
-    local positions, s = Header.Place(counts)
+    local positions, s = P.Place(counts)
     local hx, hy = Layout.HeaderOffset(s)
     local used = 0
     for b, list in ipairs(lists) do
         local pos = positions[b]
         for slot, entry in ipairs(list) do
             used = used + 1
-            local button = fakeButton(used)
+            local button = fakeButton(P, used)
             button.sample = entry.member
             ns.Single.SetUnit(button, "player")
             local x, y = Layout.CellOffset(s, slot)
             button:ClearAllPoints()
-            button:SetPoint("TOPLEFT", Header.anchor, "TOPLEFT", pos.x + hx + x, pos.y + hy + y)
+            button:SetPoint("TOPLEFT", P.anchor, "TOPLEFT", pos.x + hx + x, pos.y + hy + y)
             Cell.Style(button)
             ns.Single.Preview(button, true)
             button:Show()
         end
     end
-    for i = used + 1, #Cell.fakes do release(Cell.fakes[i]) end
+    local list = pool(P)
+    for i = used + 1, #list do release(list[i]) end
 end
 
--- Out of combat: every pretend cell hidden and quiet.
-function Test.Hide()
-    for _, button in ipairs(Cell.fakes) do
+-- Out of combat: every pretend cell of a panel (the main one without)
+-- hidden and quiet.
+function Test.Hide(P)
+    for _, button in ipairs(pool(P or Header)) do
         if button.unit or button:IsShown() or button.sample then release(button) end
     end
 end

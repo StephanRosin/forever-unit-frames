@@ -897,3 +897,7 @@ L.RAID_LOOT_Roundrobin = "Reihum"
 L.RAID_LOOT_Masterlooter = "Plündermeister"
 L.RAID_LOOT_Group = "Als Gruppe plündern"
 L.RAID_LOOT_Needbeforegreed = "Bedarf vor Gier"
+
+-- Schlachtzugsrahmen: die Begleiter des Testmodus (Raid/TestMode.lua).
+L.RAID_TEST_PET_HUNTER = "Wolf"
+L.RAID_TEST_PET_WARLOCK = "Wichtel"

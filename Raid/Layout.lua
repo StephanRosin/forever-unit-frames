@@ -95,6 +95,8 @@ end
 -- Whether a member { subgroup, class, assignedRole } belongs to a block,
 -- as its filter decides (test mode's pretend members).
 function Layout.Matches(block, member, size)
+    -- A special panel's pretend members are chosen for it already.
+    if block.kind == "PANEL" then return true end
     local inGroups = member.subgroup >= 1 and member.subgroup <= size / Layout.GROUP_SIZE
     if block.kind == "GROUP" then return member.subgroup == block.id end
     if not inGroups then return false end

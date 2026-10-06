@@ -68,6 +68,9 @@ function Special.New(id, how)
         hideEmpty = function() return true end,
         blockRing = false,
         label = function() return ("%s %d"):format(Special.Title(id), Cell.Size()) end,
+        -- Test mode: its pretend members (Raid/TestMode.lua).
+        showTest = function(P) ns.RaidTestMode.Show(P) end,
+        hideTest = function(P) if ns.RaidTestMode then ns.RaidTestMode.Hide(P) end end,
     })
     Special.panels[id] = P
     return P

@@ -898,3 +898,7 @@ L.RAID_LOOT_Roundrobin = "Por turnos"
 L.RAID_LOOT_Masterlooter = "Maestro despojador"
 L.RAID_LOOT_Group = "Botín de grupo"
 L.RAID_LOOT_Needbeforegreed = "Necesidad antes que codicia"
+
+-- Marcos de banda: las mascotas del modo de prueba (Raid/TestMode.lua).
+L.RAID_TEST_PET_HUNTER = "Lobo"
+L.RAID_TEST_PET_WARLOCK = "Diablillo"

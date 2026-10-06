@@ -73,7 +73,8 @@ function ns.Units.ForEachFrame(fn)
     for _, frame in pairs(ns.Frames or {}) do fn(frame) end
     for _, list in ipairs({ ns.Party and ns.Party.buttons, ns.Party and ns.Party.fakes,
         ns.PartyPets and ns.PartyPets.buttons, ns.PartyPets and ns.PartyPets.fakes,
-        ns.RaidCell and ns.RaidCell.buttons, ns.RaidCell and ns.RaidCell.fakes }) do
+        ns.RaidCell and ns.RaidCell.buttons, ns.RaidCell and ns.RaidCell.fakes,
+        ns.RaidCell and ns.RaidCell.panelFakes }) do
         for _, frame in ipairs(list or {}) do fn(frame) end
     end
 end
