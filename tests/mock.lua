@@ -1884,6 +1884,42 @@ function M.Reset()
     -- The old globals come from Blizzard_DeprecatedSpellBook (only with
     -- the loadDeprecationFallbacks CVar); a test may remove either side.
     _G.C_SpellBook = { IsSpellKnown = function(id) return M.known[id] == true end }
+    -- The spell book (SpellBookDocumentation.lua): skill line 1 holds the
+    -- learned spells (M.known) by ID, line 2 those still to learn
+    -- (M.futureSpells[id] = true) as FutureSpell items. Every rank is an
+    -- item of its own: the client's spell book window only hides the low
+    -- ranks. Only the player's bank is modelled; the pet's is empty.
+    M.futureSpells = {}
+    local function bookLines()
+        local learned, future = {}, {}
+        for id in pairs(M.known) do if M.spells[id] then learned[#learned + 1] = id end end
+        for id in pairs(M.futureSpells) do if M.spells[id] then future[#future + 1] = id end end
+        table.sort(learned)
+        table.sort(future)
+        return { learned, future }
+    end
+    C_SpellBook.GetNumSpellBookSkillLines = function() return 2 end
+    C_SpellBook.GetSpellBookSkillLineInfo = function(index)
+        local lines, offset = bookLines(), 0
+        if not lines[index] then return nil end
+        for i = 1, index - 1 do offset = offset + #lines[i] end
+        return { name = index == 1 and "General" or "Class", iconID = 1, itemIndexOffset = offset,
+            numSpellBookItems = #lines[index], isGuild = false, shouldHide = false }
+    end
+    C_SpellBook.GetSpellBookItemInfo = function(slot, bank)
+        assert(type(slot) == "number" and type(bank) == "number", "GetSpellBookItemInfo(slot, bank)")
+        if bank ~= Enum.SpellBookSpellBank.Player then return nil end
+        for i, line in ipairs(bookLines()) do
+            local id = line[slot]
+            if id then
+                return { actionID = id, spellID = id, name = M.spells[id].name, subName = "", iconID = 1,
+                    itemType = i == 1 and Enum.SpellBookItemType.Spell or Enum.SpellBookItemType.FutureSpell,
+                    isPassive = false, isOffSpec = false, skillLineIndex = i }
+            end
+            slot = slot - #line
+        end
+        return nil
+    end
     _G.IsPlayerSpell = function(id) return M.known[id] == true end
     _G.IsSpellKnown = function(id) return M.known[id] == true end
     _G.GetReadyCheckStatus = function(unit) local d = u(unit); return d and d.readyCheck end
@@ -1953,6 +1989,8 @@ function M.Reset()
 
     _G.Enum = {
         LootMethod = { Freeforall = 0, Roundrobin = 1, Masterlooter = 2, Group = 3, Needbeforegreed = 4, Personal = 5 },
+        SpellBookSpellBank = { Player = 0, Pet = 1 },
+        SpellBookItemType = { None = 0, Spell = 1, FutureSpell = 2, PetAction = 3, Flyout = 4 },
         StatusBarInterpolation = { Immediate = 0, ExponentialEaseOut = 1 },
         StatusBarTimerDirection = { ElapsedTime = 0, RemainingTime = 1 },
         UITextureSliceMode = { Stretched = 0, Tiled = 1 },
