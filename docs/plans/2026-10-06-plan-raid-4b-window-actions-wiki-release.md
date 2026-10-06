@@ -2,15 +2,15 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** The raid options window does everything spec §6 asks for: copy the edited size from another size or another character (after a second click), reset it (after a second click), export and import it as a text with clear messages, and switch a test mode that shows a pretend raid of the edited size at that size's position — ended by closing the window or by combat. The window is reached from the unit frames' window, from the minimap button (Shift-click) and the addon compartment, and leads back. The wiki gets a page per raid tab, the CurseForge description a raid section, and the version becomes 0.22.0 (no upload).
+**Goal:** The raid options window does everything spec §6 asks for: copy the edited size from another size or another character (after a second click), reset it (after a second click), export and import it as a text with clear messages, and switch a test mode that shows a pretend raid of the edited size at that size's position — ended by closing the window or by combat. The unit frames' window leads to it and the raid window back (the raid frames' own minimap button and addon compartment entry came with R4c). The wiki gets a page per raid tab, the CurseForge description a raid section, and the version becomes 0.22.0 (no upload).
 
 **Architecture:** The raid window's footer (`Raid/Options/Window.lua`) gets Test mode, Unit frames…, Export / Import, Copy from… and Reset this size; export and import show in a panel over the tab's page. `Raid/TestMode.lua` gets a switch of its own beside the unit frames' test mode and a preview size: while the window is open the pretend raid shows the edited size (`Raid/Cell.lua`'s `Cell.Size()` asks `RaidTestMode.PreviewSize()`), so the panel's layout, cells and mover all use that size's profile. `tools/make_wiki.lua` writes `docs/wiki/Raid-*.md` from `Raid/Options/Schema.lua`.
 
 **Tech Stack:** Lua 5.1, WoW: Forever API (Interface 16001, build 1.60.1.70205), offline tests with `lua5.1` + `tests/mock.lua` (`tests/run`).
 
-Spec: `docs/specs/2026-10-06-raid-frames-design.md` (part 1; §6 Options window, §7 Test mode, §10 Release). Raid plan order: R1 … R3b (all done) → R4a Options menu and window (`docs/plans/2026-10-06-plan-raid-4a-options-menu-and-window.md`) → **R4b Window actions, test mode, wiki and release (this plan)**.
+Spec: `docs/specs/2026-10-06-raid-frames-design.md` (part 1; §6 Options window, §7 Test mode, §10 Release). Raid plan order: R1 … R3b, R4a Options menu and window (all done) → R4c Cells of their own, dispel square, raid minimap button (`docs/plans/2026-10-06-plan-raid-4c-cells-dispel-square-minimap.md`) → **R4b Window actions, test mode, wiki and release (this plan)**.
 
-Base: the last commit of R4a ("Raid options window: sizes, tabs and rows, /fuf raid"); `tests/run` there: `22459 passed, 0 failed`. Every task below was replayed in order on a scratch worktree after R4a; the outputs under "Expected" are what `tests/run` printed there.
+Base: the last commit of R4c ("Raid: damage block sorted by role, clearer words, a unit frames' string refused"); `tests/run` there: `23614 passed, 0 failed`. Every task below was replayed in order on a scratch worktree after R4c; the outputs under "Expected" are what `tests/run` printed there.
 
 ## Global Constraints
 
@@ -26,14 +26,14 @@ Base: the last commit of R4a ("Raid options window: sizes, tabs and rows, /fuf r
   `Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>`
 - Do not push. Every task ends with `tests/run` green and one commit (`git add` only the files the task lists).
 - A full `tests/run` takes about a minute and a half and several GB of memory (as before).
-- No new setting. New locale keys (8): `RAID_RESET_SIZE`, `RAID_SHARE`, `RAID_COPY_CHARACTER`, `RAID_EXPORT_HINT`, `RAID_IMPORT_HINT` (Task 1); `RAID_FRAMES_BUTTON`, `UNIT_FRAMES_BUTTON`, `MINIMAP_SHIFT_CLICK` (Task 3).
-- One existing test is edited: `tests/test_minimap_button.lua`'s two tooltip checks (Task 3: the tooltip gains the Shift-click line). The unit window gains one button in its navigation column; nothing else of it changes.
+- No new setting. New locale keys (7): `RAID_RESET_SIZE`, `RAID_SHARE`, `RAID_COPY_CHARACTER`, `RAID_EXPORT_HINT`, `RAID_IMPORT_HINT` (Task 1); `RAID_FRAMES_BUTTON`, `UNIT_FRAMES_BUTTON` (Task 3).
+- No existing test is edited. The unit window gains one button in its navigation column; nothing else of it changes. The unit frames' minimap button stays as it is (no Shift-click: the raid frames have their own button since R4c).
 - Game events in use, none new: `PLAYER_REGEN_DISABLED`, `PLAYER_REGEN_ENABLED`. New internal event: `RAID_TEST_MODE (state)` (Task 2).
 - Do not run `tools/release`, `tools/publish_wiki` or anything that uploads, tags or pushes: the maintainer releases separately.
 
 ## Client facts this plan relies on (build 1.60.1.70205)
 
-Nothing beyond R4a's and the earlier plans'. `IsShiftKeyDown()` is a plain global, true while Shift is held (already used by `Options/Widgets.lua`); Blizzard's addon compartment calls the TOC's `AddonCompartmentFunc` with the mouse button, and the addon reads Shift itself.
+Nothing beyond R4a's, R4c's and the earlier plans'. `IsShiftKeyDown()` is a plain global, true while Shift is held (already used by `Options/Widgets.lua`); Task 3's test holds it to show that the unit frames' minimap button and addon compartment entry ignore it.
 
 ## Design decisions
 
@@ -41,8 +41,8 @@ Nothing beyond R4a's and the earlier plans'. `IsShiftKeyDown()` is a plain globa
 - **Copy from:** the other sizes, then every size of every other character with a raid profile (`RaidProfiles.Characters()`), as "Name-Realm: 20 players". Picking one arms the button (it reads "Click again to confirm" in red for three seconds); the second click copies. Selecting another size or closing the window disarms. Reset is the unit window's two-click button.
 - **Export / Import:** one panel over the tab's page with the edited size's export (read-only) and an import field; the import trims the text and puts it on the edited size; messages: the codec's errors (`IMPORT_CODEC_*`), `IMPORT_RAID_NO_SIZE`, `IMPORT_DONE`, or `IMPORT_SKIPPED` with the count of entries left out. Choosing a tab hides the panel; another size updates it.
 - **Test mode:** the raid window's switch is separate from the unit frames' test mode (which shows every unit frame too); the pretend raid shows while either is on. While the window is open the pretend raid shows the edited size at that size's position (`Cell.Size()`), also with the unit frames' test mode. Closing the window ends its switch and the preview; entering combat ends the switch (combat already ends the unit frames' test mode); turning it on in combat is refused with the unit frames' message. Pretend cells are secure buttons on the player: as before they change only out of combat (`ns.AfterCombat("raidLayout")`).
-- **Entry points:** `/fuf raid` (R4a); a *Raid frames…* button above the language in the unit window's navigation (closes it, opens the raid window); Shift + left-click on the minimap button, its LibDataBroker launcher and the addon compartment (the minimap button has no menu: its clicks are left, right and drag); *Unit frames…* in the raid window leads back.
-- **Wiki:** one generated page per raid tab, `Raid-<Tab>.md` (`&` written as "and"), four columns (option, what it does, choices, default; a default that differs per size listed per size), the size switch as "Header bar" on the General page, the Cell tab's note; the sidebar lists them under **Raid frames**. `Home.md` is written by hand.
+- **Entry points:** `/fuf raid` (R4a); the raid frames' own minimap button and their addon compartment entry (R4c); a *Raid frames…* button above the language in the unit window's navigation (closes it, opens the raid window); *Unit frames…* in the raid window leads back. Shift-click on the unit frames' minimap button is not added: it would be a second way to do what the raid button does.
+- **Wiki:** one generated page per raid tab, `Raid-<Tab>.md` (`&` written as "and"), four columns (option, what it does, choices, default; a default that differs per size listed per size), the size switch as "Header bar" on the General page, the Cell tab's note; the sidebar lists them under **Raid frames**. The pages are made from the raid menu, so R4c's settings (fonts, colours, border, heals, dispel square, minimap button) are on them; the test checks every setting by its label. `Home.md` is written by hand.
 - **Release prep:** `## Version: 0.22.0` and a raid section in `docs/curseforge/description.md`; the upload stays with the maintainer, after the in-game check (spec §10).
 
 ---
@@ -659,7 +659,7 @@ L.RAID_IMPORT_HINT = "Collez ici une taille de raid : elle remplace le profil %s
 - [ ] **Step 8: Run the tests**
 
 Run: `tests/run test_raid_window_actions.lua` → `46 passed, 0 failed`
-Run: `tests/run` → Expected: `22550 passed, 0 failed`
+Run: `tests/run` → Expected: `23705 passed, 0 failed`
 
 - [ ] **Step 9: Commit**
 
@@ -1191,7 +1191,7 @@ end)
 - [ ] **Step 6: Run the tests**
 
 Run: `tests/run test_raid_window_testmode.lua` → `42 passed, 0 failed`
-Run: `tests/run` → Expected: `22592 passed, 0 failed`
+Run: `tests/run` → Expected: `23747 passed, 0 failed`
 
 - [ ] **Step 7: Commit**
 
@@ -1204,85 +1204,32 @@ Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
 
 ---
 
-### Task 3: Raid options window: from the unit frames' window, the minimap button and back
+### Task 3: Raid options window: from the unit frames' window and back
+
+The raid frames' own minimap button, their addon compartment entry and `Commands.ToggleRaidOptions` came with R4c; this task adds the way from the unit frames' window and back.
 
 **Files:**
 - Modify: `Options/Window.lua`
 - Modify: `Raid/Options/Window.lua`
-- Modify: `Core/Commands.lua`
-- Modify: `Options/MinimapButton.lua`
-- Modify: `Locales/enUS.lua`
 - Modify: `Locales/deDE.lua`
+- Modify: `Locales/enUS.lua`
 - Modify: `Locales/esES.lua`
 - Modify: `Locales/frFR.lua`
-- Test: `tests/test_minimap_button.lua` (existing; its two tooltip checks list every line, and the tooltip gains the Shift-click line)
 - Test: `tests/test_raid_window_entry.lua`
 
 **Interfaces:**
-- Consumes: `ns.RaidOptions.Open` / `Close` / `Toggle`, `ns.Options.Open` / `Close`, `ns.Commands.IsReady`, `IsShiftKeyDown`, the unit window's `Options.languageRow`.
-- Produces: `ns.Options.raidButton`, `ns.RaidOptions.unitButton`, `ns.Commands.ToggleRaidOptions()`; the minimap button, its launcher and the addon compartment open the raid window on Shift + left-click; tooltip line `MINIMAP_SHIFT_CLICK`; locale keys `RAID_FRAMES_BUTTON`, `UNIT_FRAMES_BUTTON`, `MINIMAP_SHIFT_CLICK`.
+- Consumes: `ns.RaidOptions.Open` / `Close` / `IsOpen`, `ns.Options.Open` / `Close` / `IsOpen`, the unit window's `Options.languageRow` and `Options.navButtons`, `ns.Widgets.Button`, the raid window's footer (Task 2's `testButton`, `BUTTON_W`, `GAP`).
+- Produces: `ns.Options.raidButton`, `ns.RaidOptions.unitButton`; locale keys `RAID_FRAMES_BUTTON`, `UNIT_FRAMES_BUTTON`.
 
-- [ ] **Step 1: Write the failing tests**
-
-In `tests/test_minimap_button.lua`:
-
-Replace
-
-```lua
-    button:GetScript("OnEnter")(button)
-    H.check("tooltip owner", GameTooltip._owner, button)
-    H.check("tooltip lines", table.concat(M.tooltipLines, "|"),
-        "Forever Unit Frames|Left-click: options|Right-click: unlock/lock frames|Drag: move button")
-    button:GetScript("OnLeave")(button)
-    H.check("tooltip hidden", GameTooltip._owner, nil)
-
-```
-
-with
-
-```lua
-    button:GetScript("OnEnter")(button)
-    H.check("tooltip owner", GameTooltip._owner, button)
-    H.check("tooltip lines", table.concat(M.tooltipLines, "|"),
-        "Forever Unit Frames|Left-click: options|Shift-click: raid frames|Right-click: unlock/lock frames"
-            .. "|Drag: move button")
-    button:GetScript("OnLeave")(button)
-    H.check("tooltip hidden", GameTooltip._owner, nil)
-
-```
-
-In `tests/test_minimap_button.lua`:
-
-Replace
-
-```lua
-    local lines = {}
-    obj.OnTooltipShow({ AddLine = function(_, text) lines[#lines + 1] = text end })
-    H.check("LDB tooltip", table.concat(lines, "|"),
-        "Forever Unit Frames|Left-click: options|Right-click: unlock/lock frames")
-
-    -- Without LibStub (the mock's default) nothing is registered and
-    -- nothing fails.
-```
-
-with
-
-```lua
-    local lines = {}
-    obj.OnTooltipShow({ AddLine = function(_, text) lines[#lines + 1] = text end })
-    H.check("LDB tooltip", table.concat(lines, "|"),
-        "Forever Unit Frames|Left-click: options|Shift-click: raid frames|Right-click: unlock/lock frames")
-
-    -- Without LibStub (the mock's default) nothing is registered and
-    -- nothing fails.
-```
+- [ ] **Step 1: Write the failing test**
 
 Create `tests/test_raid_window_entry.lua`:
 
 ```lua
--- The ways into the raid options window and back: the unit frames'
--- window, the minimap button and the addon compartment with Shift, and
--- the raid window's own way back.
+-- The ways between the unit frames' options window and the raid one: a
+-- button in the unit window's navigation, one in the raid window's
+-- footer. (The raid frames' own minimap button and addon compartment
+-- entry: tests/test_raid_minimap_button.lua.)
 local M = H.M
 local ns = H.LoadAddon()
 M.units.player = { name = "Me", class = "MAGE", health = 1, healthMax = 1 }
@@ -1310,61 +1257,32 @@ H.check("raid window closed", RO.IsOpen(), false)
 H.checkTrue("unit window open", O.IsOpen())
 O.Close()
 
--- The minimap button: Shift and a left click.
-local button = ns.MinimapButton.button
+-- The unit frames' minimap button stays theirs: Shift does not lead to
+-- the raid window (the raid frames have a button of their own).
 M.shiftDown = true
-click(button, "LeftButton")
-H.checkTrue("shift-click opens the raid window", RO.IsOpen())
-H.check("not the unit window", O.IsOpen(), false)
-click(button, "LeftButton")
-H.check("again: closed", RO.IsOpen(), false)
-click(button, "RightButton")
-H.check("shift with the right button still unlocks", ns.Movers.IsUnlocked(), true)
-click(button, "RightButton")
-M.shiftDown = false
-click(button, "LeftButton")
-H.checkTrue("without Shift: the unit window", O.IsOpen())
-H.check("raid window stays closed", RO.IsOpen(), false)
+click(ns.MinimapButton.button, "LeftButton")
+H.checkTrue("shift-click: still the unit window", O.IsOpen())
+H.check("not the raid window", RO.IsOpen(), false)
 O.Close()
-
--- The addon compartment calls the same.
-M.shiftDown = true
 ForeverUnitFrames_OnAddonCompartmentClick("ForeverUnitFrames", "LeftButton")
-H.checkTrue("compartment shift-click opens the raid window", RO.IsOpen())
-ForeverUnitFrames_OnAddonCompartmentClick("ForeverUnitFrames", "LeftButton")
-H.check("compartment again: closed", RO.IsOpen(), false)
+H.checkTrue("compartment shift-click: still the unit window", O.IsOpen())
+H.check("compartment: not the raid window", RO.IsOpen(), false)
+O.Close()
 M.shiftDown = false
 
--- In combat it opens as well, locked.
+-- In combat the way across works too; the raid window opens locked.
 M.combat = true
 M.FireEvent("PLAYER_REGEN_DISABLED")
-M.shiftDown = true
-click(button, "LeftButton")
+O.Open()
+click(O.raidButton)
 H.checkTrue("combat: opens", RO.IsOpen())
 H.checkTrue("combat: locked", RO.combatNotice:IsShown())
-M.shiftDown = false
 RO.Close()
 M.SetCombat(false)
-
--- The tooltip says so.
-button:GetScript("OnEnter")(button)
-H.checkTrue("tooltip names it", table.concat(M.tooltipLines, "|"):find("Shift-click: raid frames", 1, true))
-button:GetScript("OnLeave")(button)
 H.check("nothing blocked", #M.blocked, 0)
 ```
 
-- [ ] **Step 2: Run the tests to verify they fail**
-
-Run: `tests/run test_minimap_button.lua`
-
-Expected:
-
-```text
-test_minimap_button.lua
-  FAIL tooltip lines -> Forever Unit Frames|Left-click: options|Right-click: unlock/lock frames|Drag: move button (want Forever Unit Frames|Left-click: options|Shift-click: raid frames|Right-click: unlock/lock frames|Drag: move button)
-  FAIL LDB tooltip -> Forever Unit Frames|Left-click: options|Right-click: unlock/lock frames (want Forever Unit Frames|Left-click: options|Shift-click: raid frames|Right-click: unlock/lock frames)
-63 passed, 2 failed
-```
+- [ ] **Step 2: Run the test to verify it fails**
 
 Run: `tests/run test_raid_window_entry.lua`
 
@@ -1372,7 +1290,7 @@ Expected:
 
 ```text
 test_raid_window_entry.lua
-  ERROR test_raid_window_entry.lua:15: attempt to index field 'raidButton' (a nil value)
+  ERROR test_raid_window_entry.lua:16: attempt to index field 'raidButton' (a nil value)
 0 passed, 1 failed
 ```
 
@@ -1474,211 +1392,65 @@ with
     reset:SetPoint("RIGHT", footer, "RIGHT", -12, 0)
 ```
 
-- [ ] **Step 5: One toggle for the slash command and the minimap button**
-
-In `Core/Commands.lua`:
-
-Replace
-
-```lua
-    if Commands.IsReady() then ns.Options.Toggle() end
-end
-
--- Unlocking is refused in combat (Movers.Unlock says so).
-function Commands.ToggleLock()
-    if not Commands.IsReady() then return end
-```
-
-with
-
-```lua
-    if Commands.IsReady() then ns.Options.Toggle() end
-end
-
-function Commands.ToggleRaidOptions()
-    if Commands.IsReady() then ns.RaidOptions.Toggle() end
-end
-
--- Unlocking is refused in combat (Movers.Unlock says so).
-function Commands.ToggleLock()
-    if not Commands.IsReady() then return end
-```
-
-In `Core/Commands.lua`:
-
-Replace
-
-```lua
-    elseif cmd == "help" then
-        ns.Print(L.HELP)
-    elseif cmd == "raid" then
-        ns.RaidOptions.Toggle()
-    elseif cmd == "unlock" then
-        ns.Movers.Unlock()
-    elseif cmd == "lock" then
-```
-
-with
-
-```lua
-    elseif cmd == "help" then
-        ns.Print(L.HELP)
-    elseif cmd == "raid" then
-        Commands.ToggleRaidOptions()
-    elseif cmd == "unlock" then
-        ns.Movers.Unlock()
-    elseif cmd == "lock" then
-```
-
-- [ ] **Step 6: Shift-click**
-
-In `Options/MinimapButton.lua`:
-
-Replace
-
-```lua
-local _, ns = ...
-
--- The minimap button: left-click opens or closes the options window,
--- right-click unlocks or locks the frames (the same as /fuf, /fuf unlock
--- and /fuf lock, with their combat rules), dragging moves it around the
--- minimap's edge. A plain button, not secure.
---
--- Built here rather than with LibDBIcon (not embedded), but placed the
--- way LibDBIcon places its buttons, so it sits with other addons'
-```
-
-with
-
-```lua
-local _, ns = ...
-
--- The minimap button: left-click opens or closes the options window,
--- with Shift the raid frames' window, right-click unlocks or locks the
--- frames (the same as /fuf, /fuf raid, /fuf unlock and /fuf lock, with
--- their combat rules), dragging moves it around the minimap's edge. A
--- plain button, not secure.
---
--- Built here rather than with LibDBIcon (not embedded), but placed the
--- way LibDBIcon places its buttons, so it sits with other addons'
-```
-
-In `Options/MinimapButton.lua`:
-
-Replace
-
-```lua
-local function onClick(_, mouseButton)
-    if mouseButton == "RightButton" then
-        ns.Commands.ToggleLock()
-    else
-        ns.Commands.ToggleOptions()
-    end
-```
-
-with
-
-```lua
-local function onClick(_, mouseButton)
-    if mouseButton == "RightButton" then
-        ns.Commands.ToggleLock()
-    elseif IsShiftKeyDown() then
-        ns.Commands.ToggleRaidOptions()
-    else
-        ns.Commands.ToggleOptions()
-    end
-```
-
-In `Options/MinimapButton.lua`:
-
-Replace
-
-```lua
--- The tooltip's lines; the minimap button adds the drag hint.
-local function tooltipLines(tooltip)
-    tooltip:AddLine(L.MINIMAP_LEFT_CLICK, 1, 1, 1)
-    tooltip:AddLine(L.MINIMAP_RIGHT_CLICK, 1, 1, 1)
-end
-
-```
-
-with
-
-```lua
--- The tooltip's lines; the minimap button adds the drag hint.
-local function tooltipLines(tooltip)
-    tooltip:AddLine(L.MINIMAP_LEFT_CLICK, 1, 1, 1)
-    tooltip:AddLine(L.MINIMAP_SHIFT_CLICK, 1, 1, 1)
-    tooltip:AddLine(L.MINIMAP_RIGHT_CLICK, 1, 1, 1)
-end
-
-```
-
-- [ ] **Step 7: The words in English**
+- [ ] **Step 5: The words in English**
 
 Append to the end of `Locales/enUS.lua`:
 
 ```lua
 
--- Raid frames: the ways into the raid window.
+-- Raid frames: the ways between the two options windows.
 L.RAID_FRAMES_BUTTON = "Raid frames…"
 L.UNIT_FRAMES_BUTTON = "Unit frames…"
-L.MINIMAP_SHIFT_CLICK = "Shift-click: raid frames"
 ```
 
-- [ ] **Step 8: German**
+- [ ] **Step 6: German**
 
 Append to the end of `Locales/deDE.lua`:
 
 ```lua
 
--- Schlachtzugsrahmen: die Wege ins Schlachtzugsfenster.
+-- Schlachtzugsrahmen: die Wege zwischen den beiden Optionsfenstern.
 L.RAID_FRAMES_BUTTON = "Schlachtzugsrahmen…"
 L.UNIT_FRAMES_BUTTON = "Einheitenrahmen…"
-L.MINIMAP_SHIFT_CLICK = "Umschalt-Klick: Schlachtzugsrahmen"
 ```
 
-- [ ] **Step 9: Spanish**
+- [ ] **Step 7: Spanish**
 
 Append to the end of `Locales/esES.lua`:
 
 ```lua
 
--- Marcos de banda: los accesos a la ventana de banda.
+-- Marcos de banda: los accesos entre las dos ventanas de opciones.
 L.RAID_FRAMES_BUTTON = "Marcos de banda…"
 L.UNIT_FRAMES_BUTTON = "Marcos de unidad…"
-L.MINIMAP_SHIFT_CLICK = "Mayús-clic: marcos de banda"
 ```
 
-- [ ] **Step 10: French**
+- [ ] **Step 8: French**
 
 Append to the end of `Locales/frFR.lua`:
 
 ```lua
 
--- Cadres de raid : les accès à la fenêtre de raid.
+-- Cadres de raid : les accès entre les deux fenêtres d'options.
 L.RAID_FRAMES_BUTTON = "Cadres de raid…"
 L.UNIT_FRAMES_BUTTON = "Cadres d'unité…"
-L.MINIMAP_SHIFT_CLICK = "Maj-clic : cadres de raid"
 ```
 
-- [ ] **Step 11: Run the tests**
+- [ ] **Step 9: Run the tests**
 
-Run: `tests/run test_minimap_button.lua` → `65 passed, 0 failed`
-Run: `tests/run test_raid_window_entry.lua` → `20 passed, 0 failed`
-Run: `tests/run` → Expected: `22639 passed, 0 failed`
+Run: `tests/run test_raid_window_entry.lua` → `15 passed, 0 failed`
+Run: `tests/run` → Expected: `23780 passed, 0 failed`
 
-- [ ] **Step 12: Commit**
+- [ ] **Step 10: Commit**
 
 ```bash
-git add Core/Commands.lua Locales/deDE.lua Locales/enUS.lua Locales/esES.lua Locales/frFR.lua Options/MinimapButton.lua Options/Window.lua Raid/Options/Window.lua tests/test_minimap_button.lua tests/test_raid_window_entry.lua
-git commit -m "Raid options window: from the unit frames' window, the minimap button and back
+git add Locales/deDE.lua Locales/enUS.lua Locales/esES.lua Locales/frFR.lua Options/Window.lua Raid/Options/Window.lua tests/test_raid_window_entry.lua
+git commit -m "Raid options window: from the unit frames' window and back
 
 Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
-
 ### Task 4: Wiki: a page per raid options tab
 
 **Files:**
@@ -1747,6 +1519,9 @@ H.checkTrue("its choices", general:find("Automatic, 10 players, 20 players, 40 p
 H.checkTrue("defaults per size", read("Raid-Cell.md"):find("10 players: 96; 20 players: 88; 40 players: 80", 1, true))
 H.checkTrue("the cell's note", read("Raid-Cell.md"):find(ns.L.RAID_NOTE_cell, 1, true))
 H.checkTrue("raid words for choices", read("Raid-Texts.md"):find("Missing health", 1, true))
+H.checkTrue("the cell's own fonts", read("Raid-Texts.md"):find("<b>Second line size</b>", 1, true))
+H.checkTrue("the dispel square", read("Raid-Debuffs.md"):find("Icon in the center, Square in a corner", 1, true))
+H.checkTrue("the raid minimap button", general:find("<b>Show the button</b>", 1, true))
 
 local sidebar = read("_Sidebar.md")
 H.checkTrue("sidebar: raid heading", sidebar:find("**Raid frames**", 1, true))
@@ -2027,11 +1802,13 @@ end
 
 -- What each raid tab is for (the page's first line).
 local RAID_TAB_INTRO = {
-    general = "The raid frames as a whole: on or off, the raid view in a 5-player group, Blizzard's raid frames.",
+    general = "The raid frames as a whole: on or off, the raid view in a 5-player group, Blizzard's raid frames,"
+        .. " the raid frames' minimap button.",
     layout = "How the panel is made of blocks, how cells and blocks are arranged, the panel's position and borders.",
-    cell = "The size of a cell and what its bars show.",
-    texts = "The name and the second line in the middle of each cell.",
-    debuffs = "The most important dispellable debuff in the centre, and a row of further debuffs.",
+    cell = "The size of a cell, its bars and colors, its border and corners, heals and shields.",
+    texts = "The name and the second line in the middle of each cell: their colors and fonts.",
+    debuffs = "The most important dispellable debuff, as an icon in the centre or a square in a corner, and a"
+        .. " row of further debuffs.",
     indicators = "Up to five small squares at the corners and the top edge, each for spells of your choice"
         .. " (heals over time, shields).",
     icons = "Role, raid target marker, leader, master looter and ready check icons, and the states: range,"
@@ -2169,8 +1946,8 @@ with
 
 ## Raid frames
 
-- **`/fuf raid`** opens the raid options window (also: the **Raid frames…** button in `/fuf`, or
-  Shift-click on the minimap button).
+- **`/fuf raid`** opens the raid options window (also: the **Raid frames…** button in `/fuf`, the raid
+  frames' own minimap button, or their entry in the addon compartment).
 - Each character has **three raid profiles**, one per raid size: 10, 20 and 40. The size tabs at the
   top of the window choose the profile you edit; the one shown right now is marked *(shown)*.
   **Raid size shown** next to them follows the raid instance (outside one the group's size), or fixes
@@ -2180,7 +1957,9 @@ with
 - **Copy from…** takes another size, or a size of another of your characters (two clicks).
   **Export / Import** shares one size as a text; **Reset this size** goes back to its defaults.
 - Corner indicators take spell IDs or spell names from your spell book; a name stands for every rank
-  you know.
+  you know. A name or class the window cannot use is named in the chat.
+- The cells have a look of their own per raid size (texture, colors, fonts, border): changing the party
+  frame does not change them.
 
 ## Profiles
 
@@ -2234,12 +2013,14 @@ with
 The raid frames have pages of their own, one per tab of the raid window:
 
 - [[General|Raid-General]] – raid frames on or off, the raid view in a party, Blizzard's raid frames,
-  the raid size shown
+  the raid size shown, the raid minimap button
 - [[Layout|Raid-Layout]] – grouping, sorting, class order, how blocks and cells are arranged, position,
   borders
-- [[Cell|Raid-Cell]] – cell size, health color, power strip
-- [[Texts|Raid-Texts]] – the name and the second line
-- [[Debuffs|Raid-Debuffs]] – the dispellable debuff in the centre, the debuff row
+- [[Cell|Raid-Cell]] – cell size, bar texture and colors, power strip, border and corners, heals and
+  shields
+- [[Texts|Raid-Texts]] – the name and the second line, their colors and fonts
+- [[Debuffs|Raid-Debuffs]] – the dispellable debuff in the centre or as a square in a corner, the debuff
+  row
 - [[Indicators|Raid-Indicators]] – the five corner indicators
 - [[Icons & states|Raid-Icons-and-states]] – role, raid marker, leader, master looter, ready check,
   range, aggro, your target
@@ -2258,8 +2039,8 @@ It writes `docs/wiki/Raid-Cell.md`, `docs/wiki/Raid-Debuffs.md`, `docs/wiki/Raid
 
 - [ ] **Step 6: Run the tests**
 
-Run: `tests/run test_wiki_raid.lua` → `112 passed, 0 failed`
-Run: `tests/run` → Expected: `22758 passed, 0 failed`
+Run: `tests/run test_wiki_raid.lua` → `142 passed, 0 failed`
+Run: `tests/run` → Expected: `23929 passed, 0 failed`
 
 - [ ] **Step 7: Commit**
 
@@ -2282,7 +2063,7 @@ No test: text only. Do not run `tools/release` or `tools/publish_wiki`.
 
 **Interfaces:**
 - Consumes: —
-- Produces: `## Version: 0.22.0`; a **Raid frames** section, the summary, the minimap line and the commands of `docs/curseforge/description.md` (English).
+- Produces: `## Version: 0.22.0`; a **Raid frames** section, the summary and the commands of `docs/curseforge/description.md` (English).
 
 - [ ] **Step 1: The version**
 
@@ -2361,13 +2142,14 @@ with
 ## Raid frames
 - Raid frames for 10, 20 and 40 players in the look of the unit frames: a panel of blocks (raid groups, classes, roles, or one block for everyone), side by side or stacked, wrapping after a number of your choice, with a gold border around the panel (borders around each block and each cell can be switched on).
 - Three profiles per character, one per raid size. The size follows the raid instance (outside one, the size of the group), or is fixed. Copy a size from another size or from another of your characters, reset it, or export and import one size as a text.
-- Cells: health in the class colour, the party frame's colour or a gradient; name and missing health (or percent, or current health) in the middle; Dead, Ghost, Offline and AFK in place of the number; a thin power strip for everyone, mana users or healers; incoming heals and shields.
-- The most important debuff you can dispel as an icon in the centre, bordered in its type's colour (or any dispellable debuff); the whole cell can take that colour, and a row of further debuffs can be switched on.
-- Up to five corner indicators for spells of your choice (heals over time, shields): spell IDs, or spell names from your spell book (a name stands for every rank you know). Each with its colour, size, your own casts only, and the time left as a darkening or a number. The game's aura containers fill them, so they keep updating in combat.
+- Cells with a look of their own per raid size, independent of the party frame: bar texture, background, font, name and second-line sizes, outline and shadow, the colours of the name and the second line, a border in its own style, thickness and colour, rounded corners.
+- Health in the class colour, a fixed colour or a gradient; name and missing health (or percent, or current health) in the middle; Dead, Ghost, Offline and AFK in place of the number; a thin power strip for everyone, mana users or healers; incoming heals, an overheal lane, shields and damage and heal numbers, each switched on or off.
+- The most important debuff you can dispel (or any dispellable debuff) as an icon in the centre, bordered in its type's colour, or as a small square in a corner (from a single pixel) in that colour, beside a corner indicator in the same corner; the whole cell can take that colour, and a row of further debuffs can be switched on.
+- Up to five corner indicators for spells of your choice (heals over time, shields): spell IDs, or spell names from your spell book (a name stands for every rank you know; a name it does not know is named in the chat). Each with its colour, size, your own casts only, and the time left as a darkening or a number. The game's aura containers fill them, so they keep updating in combat.
 - Icons for the role, the raid target marker, the leader and assistants, the master looter and the ready check, each at a point of your choice. Members out of range fade; a red line inside the cell shows aggro, a light one your target.
 - Within a block: raid order, name or role; class blocks in an order of your choice.
 - A 5-player group can be shown as a raid as well; Blizzard's raid frames hide while ours are on.
-- `/fuf raid` opens the raid options window (also a button in `/fuf`, or Shift-click on the minimap button). Its test mode shows a pretend raid of the size you edit, at that size's place: mixed classes and roles, one member dead, one offline, one out of range, debuffs and indicators.
+- `/fuf raid` opens the raid options window; so do a button in `/fuf`, the raid frames' own minimap button (drag it, or hide it) and their entry in Blizzard's addon compartment. Its test mode shows a pretend raid of the size you edit, at that size's place: mixed classes and roles, one member dead, one offline, one out of range, debuffs and indicators.
 
 ## Status
 In a "Status" tab per frame.
@@ -2399,7 +2181,7 @@ with
 - General > Frames: every frame with an on/off switch in one list.
 - Works with click-casting addons such as Clique: every unit frame registers itself through the common ClickCastFrames table.
 - Long option descriptions show in full in a tooltip when you hover the row.
-- A minimap button: left-click opens the options, Shift-click the raid frames' options, right-click unlocks or locks the frames, drag it around the minimap (round or square). It can be hidden; with a LibDataBroker display it also appears there, and it is listed in Blizzard's addon compartment.
+- A minimap button: left-click opens the options, right-click unlocks or locks the frames, drag it around the minimap (round or square). It can be hidden; with a LibDataBroker display it also appears there, and it is listed in Blizzard's addon compartment.
 - Every position can be set by dragging (`/fuf unlock`) or as exact X/Y values.
 - Test mode shows every enabled indicator on every frame: sample auras, casts, totems, the combat, resting and PvP icons, raid markers, the group and ready check icons, a threat glow on the player, and a full party with one member dead, one offline, one out of range, a threat glow and a dispel highlight, so you can set everything up without a group.
 - Settings are stored compactly. They can be exported and imported as a string. Importing a profile keeps your own language.
@@ -2413,7 +2195,7 @@ with
 
 - [ ] **Step 3: Run the tests**
 
-Run: `tests/run` → Expected: `22758 passed, 0 failed`
+Run: `tests/run` → Expected: `23929 passed, 0 failed`
 
 - [ ] **Step 4: Commit**
 
@@ -2429,7 +2211,7 @@ Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>"
 ## After the last task
 
 - `./install "<AddOns folder of _classic_beta_>"`, then `/reload`. No Lua error at login. UI only: no moving, casting or fighting.
-- Ways in: `/fuf raid`; `/fuf` → *Raid frames…* (the unit window closes); Shift-click the minimap button and the addon compartment entry; *Unit frames…* leads back. The minimap tooltip shows the Shift-click line.
+- Ways in: `/fuf raid`; `/fuf` → *Raid frames…* (the unit window closes); the raid frames' minimap button and their addon compartment entry (R4c); *Unit frames…* leads back. Shift-click on the unit frames' minimap button still opens the unit window.
 - Test mode in the raid window, solo: a pretend raid of the edited size where that size's panel sits; switch between 10, 20 and 40 — the pretend raid follows; drag it with `/fuf unlock` and check that only the edited size's position changed (Layout tab, Position); close the window: the pretend raid goes, the unit frames' test mode (if on) stays. Ending by combat is covered by the offline tests (no fighting in game).
 - Copy from: another size (first click arms, red "Click again to confirm", second copies); a second character with a raid profile appears as "Name-Realm: 20 players" (log in with it once first).
 - Export / Import: export 20, import the text on 40, the message says "Profile imported."; paste a unit-frame profile text: "This text holds no raid size."
