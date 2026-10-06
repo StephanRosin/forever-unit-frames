@@ -21,6 +21,11 @@ H.check("shown", RC.Get("general", "toolsShow"), true)
 H.check("position", RC.Get("general", "toolsX") .. "," .. RC.Get("general", "toolsY"), "300,300")
 H.check("raid target icons", RC.Get("general", "toolsTargets"), true)
 RC.Set("general", "toolsMode", "FREE")
+-- The raid target icons alone: every other row off (they have tests of
+-- their own).
+for _, row in ipairs(Tools.rows) do
+    if row.key ~= "toolsTargets" then RC.Set("general", row.key, false) end
+end
 
 -- Built at login; solo it hides.
 local bar = Tools.bar
@@ -114,7 +119,7 @@ H.check("test mode off: hidden", bar:IsShown(), false)
 local tab = ns.RaidSchema.TABS[9]
 H.check("Tools tab before Profile", tab.id, "tools")
 H.check("the bar's section", table.concat(tab.sections[1].keys, ","), "toolsShow,toolsMode,toolsOpen,toolsX,toolsY")
-H.check("the tools", table.concat(tab.sections[2].keys, ","), "toolsTargets")
+H.check("the tools: the icons first", tab.sections[2].keys[1], "toolsTargets")
 H.check("its position", ns.RaidPanel.ByPositionKey("toolsX"), Tools)
 local RO = ns.RaidOptions
 RO.Open(10, "tools")

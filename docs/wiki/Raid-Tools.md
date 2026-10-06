@@ -6,6 +6,8 @@ The raid tools bar, in place of Blizzard's raid manager: where it is and which t
 
 The **Tools** tab of the raid options window (`/fuf raid`). Each raid size (10, 20, 40) has a profile of its own: the size tabs at the top choose which one you edit; a default that differs per size is listed per size.
 
+Tools only the leader and assistants may use show for them only (in test mode for everyone).
+
 **On this page:** [The bar](#the-bar) · [Tools on it](#tools-on-it)
 
 ## The bar
@@ -27,6 +29,7 @@ The **Tools** tab of the raid options window (`/fuf raid`). Each raid size (10, 
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
 <tr><td><b>Raid target icons</b></td><td>Put an icon on your target</td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Ready check</b></td><td>The last result for everyone; leaders start one</td><td>On, Off</td><td>On</td></tr>
 </tbody>
 </table>
 

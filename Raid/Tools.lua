@@ -2,7 +2,10 @@ local _, ns = ...
 
 -- The raid tools bar: what Blizzard's raid manager offered (hidden with
 -- Blizzard's raid frames, Core/Blizzard.lua), in rows, each switched on
--- its own: the raid target icons for your target, ... It shows in a raid
+-- its own: the raid target icons for your target; the ready check (the
+-- last result for everyone, starting one for the leader and assistants:
+-- tools only they may use show for them only, and while test mode is on).
+-- It shows in a raid
 -- and in a party while the raid frames are on, hidden when solo, and
 -- while test mode is on, so it can be placed. Docked, it hangs on the
 -- main panel's right edge behind a handle that folds it out and in (out
@@ -35,13 +38,15 @@ Tools.HANDLE_W, Tools.HANDLE_H, Tools.DOCK_GAP = 12, 32, 4
 Tools.MARKERS = 8
 Tools.POSITION_KEYS = { toolsX = "x", toolsY = "y" }
 -- The bar's own settings: the panels do not follow them.
-Tools.KEYS = { "toolsShow", "toolsMode", "toolsOpen", "toolsX", "toolsY", "toolsTargets" }
+Tools.KEYS = { "toolsShow", "toolsMode", "toolsOpen", "toolsX", "toolsY", "toolsTargets", "toolsReady" }
 for _, key in ipairs(Tools.KEYS) do Panel.UNRELATED_KEYS[key] = true end
 -- Its position shows in the raid window like a panel's.
 Panel.others[#Panel.others + 1] = Tools
 
 -- The rows, top to bottom: { id, key (its switch), build(bar) -> a plain
--- frame of its size, visible() (optional: whether it shows now) }.
+-- frame of its size, visible() (optional: whether it shows now),
+-- layout(frame) (optional: out of combat, its buttons for who you are and
+-- its size) }.
 Tools.rows = {}
 function Tools.AddRow(row)
     Tools.rows[#Tools.rows + 1] = row
@@ -152,6 +157,107 @@ Tools.AddRow({ id = "targets", key = "toolsTargets", build = function(bar)
     return row
 end })
 
+-- Ready check -----------------------------------------------------------------------
+
+-- Whether you lead the group or assist (secret while your identity is
+-- restricted: then not); in test mode yes, so every tool shows.
+function Tools.Leads()
+    if testing() then return true end
+    local Secrets = ns.Secrets
+    return Secrets.Bool(UnitIsGroupLeader, "player") == true or Secrets.Bool(UnitIsGroupAssistant, "player") == true
+end
+
+Tools.READY_W, Tools.COUNT_W = 90, 22
+-- The answers, as Blizzard's raid frames mark them (Elements/GroupIcons.lua).
+Tools.READY_ORDER = { "ready", "notready", "waiting" }
+-- The last ready check's answers counted per status; nil before the first.
+Tools.readyCounts = nil
+
+-- The group's units: the raid's, or you and your party.
+local function groupUnits()
+    local list, n = {}, GetNumGroupMembers()
+    if IsInRaid() then
+        for i = 1, n do list[i] = "raid" .. i end
+    elseif n > 0 then
+        list[1] = "player"
+        for i = 1, n - 1 do list[#list + 1] = "party" .. i end
+    end
+    return list
+end
+
+-- Counts every readable answer (a secret one is left out); when the
+-- check is over, whoever did not answer is not ready (as Blizzard's raid
+-- frames, CompactUnitFrame_FinishReadyCheck).
+local function countReady(finished)
+    local counts = { ready = 0, notready = 0, waiting = 0 }
+    for _, unit in ipairs(groupUnits()) do
+        local ok, status = pcall(GetReadyCheckStatus, unit)
+        if ok and not ns.Secrets.IsSecret(status) and type(status) == "string" and counts[status] then
+            if finished and status == "waiting" then status = "notready" end
+            counts[status] = counts[status] + 1
+        end
+    end
+    Tools.readyCounts = counts
+end
+
+local readyRow
+
+-- Any time: the counts, or nothing before the first check.
+local function renderReady()
+    if not readyRow then return end
+    local counts = Tools.readyCounts
+    for _, status in ipairs(Tools.READY_ORDER) do
+        local c = readyRow.counts[status]
+        c.icon:SetShown(counts ~= nil)
+        c.text:SetText(counts and tostring(counts[status]) or "")
+    end
+end
+
+Tools.AddRow({ id = "ready", key = "toolsReady", build = function(bar)
+    local row = CreateFrame("Frame", nil, bar)
+    row.start = ns.Widgets.Button(row, { text = L.RAID_TOOLS_READY_CHECK, width = Tools.READY_W,
+        onClick = function() C_PartyInfo.DoReadyCheck() end })
+    row.start:SetHeight(Tools.ICON)
+    row.counts = {}
+    for _, status in ipairs(Tools.READY_ORDER) do
+        local icon = row:CreateTexture(nil, "ARTWORK")
+        icon:SetSize(Tools.ICON - 4, Tools.ICON - 4)
+        icon:SetAtlas(ns.GroupIcons.READY[status])
+        local text = Style.Text(row, 11, "text")
+        text:SetPoint("LEFT", icon, "RIGHT", 1, 0)
+        row.counts[status] = { icon = icon, text = text }
+    end
+    readyRow = row
+    renderReady()
+    return row
+end, layout = function(row)
+    local leads = Tools.Leads()
+    row.start:SetShown(leads)
+    row.start:ClearAllPoints()
+    row.start:SetPoint("LEFT", row, "LEFT", 0, 0)
+    local x = leads and (Tools.READY_W + 2 * Tools.GAP) or 0
+    for _, status in ipairs(Tools.READY_ORDER) do
+        local icon = row.counts[status].icon
+        icon:ClearAllPoints()
+        icon:SetPoint("LEFT", row, "LEFT", x, 0)
+        x = x + Tools.ICON + Tools.COUNT_W
+    end
+    row:SetSize(x, Tools.ICON)
+end })
+
+ns.On("READY_CHECK", function()
+    countReady(false)
+    renderReady()
+end)
+ns.On("READY_CHECK_CONFIRM", function()
+    countReady(false)
+    renderReady()
+end)
+ns.On("READY_CHECK_FINISHED", function()
+    countReady(true)
+    renderReady()
+end)
+
 -- The bar ---------------------------------------------------------------------------
 
 -- Docked: the handle beside the main panel, the bar beyond it, both
@@ -191,6 +297,7 @@ function Tools.Refresh()
         local on = general(row.key) == true and (not row.visible or row.visible())
         f:SetShown(on)
         if on then
+            if row.layout then row.layout(f) end
             f:ClearAllPoints()
             f:SetPoint("TOPLEFT", bar, "TOPLEFT", Tools.PADDING, -y)
             y = y + f:GetHeight() + Tools.GAP
@@ -255,6 +362,8 @@ local function update()
 end
 
 ns.On("GROUP_ROSTER_UPDATE", update)
+-- Who leads changes which tools show.
+ns.On("PARTY_LEADER_CHANGED", update)
 ns.Listen("RAID_CONFIG_CHANGED", update)
 ns.Listen("RAID_TEST_MODE", update)
 ns.Listen("TEST_MODE", update)

@@ -390,3 +390,5 @@ RaidSettings.Define({ key = "toolsY", code = "IY", scope = "general", type = "in
     default = 300 })
 -- The raid target icons for your target.
 RaidSettings.Define({ key = "toolsTargets", code = "IT", scope = "general", type = "bool", default = true })
+-- The ready check: the last result, and starting one (leader, assistants).
+RaidSettings.Define({ key = "toolsReady", code = "IR", scope = "general", type = "bool", default = true })

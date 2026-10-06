@@ -78,10 +78,11 @@ Schema.TABS = {
         icon("readyCheck", "readyCheckIcon"),
         { id = "states", keys = { "rangeFade", "rangeAlpha", "aggroBorder", "targetBorder" } },
     } },
-    -- The raid tools bar: where it is, which tools it holds.
-    { id = "tools", sections = {
+    -- The raid tools bar: where it is, which tools it holds; the note says
+    -- who sees which.
+    { id = "tools", note = "tools", sections = {
         { id = "toolsBar", keys = { "toolsShow", "toolsMode", "toolsOpen", "toolsX", "toolsY" } },
-        { id = "toolsList", keys = { "toolsTargets" } },
+        { id = "toolsList", keys = { "toolsTargets", "toolsReady" } },
     } },
     -- The window's own page: export and import of the edited size
     -- (Raid/Options/Window.lua). No settings; the wiki has no page for it.

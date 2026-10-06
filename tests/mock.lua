@@ -1745,7 +1745,17 @@ function M.Reset()
     -- (an Enum.LootMethod value), the master looter by party index
     -- (M.masterLootPartyID, 0 = you) and by raid index (M.masterLooterRaidID).
     M.lootMethod, M.masterLootPartyID, M.masterLooterRaidID = 3, nil, nil
-    _G.C_PartyInfo = { GetLootMethod = function() return M.lootMethod, M.masterLootPartyID, M.masterLooterRaidID end }
+    -- What the addon asks of the group (PartyInfoDocumentation.lua):
+    -- M.partyCalls records each call as { name, arguments... }.
+    M.partyCalls = {}
+    local function record(name)
+        return function(...)
+            table.insert(M.partyCalls, { name, ... })
+            return true
+        end
+    end
+    _G.C_PartyInfo = { GetLootMethod = function() return M.lootMethod, M.masterLootPartyID, M.masterLooterRaidID end,
+        DoReadyCheck = record("DoReadyCheck") }
     -- d.offline: the unit's player is disconnected. d.dead / d.ghost:
     -- dead, or a ghost (UnitIsDeadOrGhost is true for both). Any of them
     -- may be a secret proxy.
