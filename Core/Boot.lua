@@ -36,6 +36,7 @@ ns.On("PLAYER_LOGIN", function()
     ns.RaidProfiles.Attach(ForeverUnitFramesDB)
     ns.RaidSize.Update()
     ns.AfterCombat("raidCreate", ns.RaidHeader.Create)
+    ns.Blizzard.HideRaid()
 end)
 
 ns.Listen("CONFIG_CHANGED", function()

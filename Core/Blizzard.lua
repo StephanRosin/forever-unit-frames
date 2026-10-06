@@ -85,3 +85,30 @@ ns.On("GROUP_ROSTER_UPDATE", function()
         ns.AfterCombat("hideBlizzardParty", concealParty)
     end
 end)
+
+-- Blizzard's raid frames (Blizzard_CompactRaidFrames): the container of
+-- compact unit frames and the manager panel at the screen's left edge
+-- that shows and hides it. Both go while our raid frames are on and set
+-- to hide them; getting them back needs a /reload, as for the unit
+-- frames. Concealing takes their events, so Blizzard's own code does not
+-- bring them back; a roster change hides them again regardless.
+local function raidHidden()
+    local RC = ns.RaidConfig
+    return RC.Profile() ~= nil and RC.Get("general", "enabled") and RC.Get("general", "hideBlizzard")
+end
+
+local function concealRaid()
+    Blizzard.Conceal(_G.CompactRaidFrameManager)
+    Blizzard.Conceal(_G.CompactRaidFrameContainer)
+end
+
+function Blizzard.HideRaid()
+    if raidHidden() then ns.AfterCombat("hideBlizzardRaid", concealRaid) end
+end
+
+ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
+    if scope == nil or (scope == "general" and (key == nil or key == "enabled" or key == "hideBlizzard")) then
+        Blizzard.HideRaid()
+    end
+end)
+ns.On("GROUP_ROSTER_UPDATE", Blizzard.HideRaid)
