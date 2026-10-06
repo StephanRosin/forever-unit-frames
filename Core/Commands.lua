@@ -73,6 +73,8 @@ SlashCmdList.FOREVERUNITFRAMES = function(msg)
         ns.Options.Toggle()
     elseif cmd == "help" then
         ns.Print(L.HELP)
+    elseif cmd == "raid" then
+        ns.RaidOptions.Toggle()
     elseif cmd == "unlock" then
         ns.Movers.Unlock()
     elseif cmd == "lock" then

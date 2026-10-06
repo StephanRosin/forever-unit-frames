@@ -136,10 +136,13 @@ end
 
 -- Setting rows ------------------------------------------------------------------
 
-local function enumItems(def)
+-- enumText (optional): the words of the choices; the unit frames' by
+-- default (the raid window has its own).
+local function enumItems(def, enumText)
+    enumText = enumText or Schema.EnumText
     return function()
         local items = {}
-        for _, v in ipairs(def.values) do items[#items + 1] = { value = v, text = Schema.EnumText(def, v) } end
+        for _, v in ipairs(def.values) do items[#items + 1] = { value = v, text = enumText(def, v) } end
         return items
     end
 end
@@ -163,7 +166,7 @@ local ROW_BUILDERS = {
     end,
     bool = function(parent, _, opts) return Widgets.Checkbox(parent, opts) end,
     enum = function(parent, def, opts)
-        opts.items = enumItems(def)
+        opts.items = enumItems(def, opts.enumText)
         return Widgets.Dropdown(parent, opts)
     end,
     media = function(parent, def, opts)
@@ -176,6 +179,13 @@ local ROW_BUILDERS = {
         return Widgets.TextInput(parent, opts)
     end,
 }
+
+-- The control row for a setting definition of any registry (the raid
+-- window builds its rows with it): opts as for the widgets, plus
+-- opts.enumText for an enum's words.
+function Options.Control(parent, def, opts)
+    return ROW_BUILDERS[def.type](parent, def, opts)
+end
 
 local function inheritOpts(scope, key)
     return {
@@ -296,6 +306,7 @@ local function confirmButton(parent, text, action)
     button.Disarm = disarm
     return button
 end
+Options.ConfirmButton = confirmButton
 
 -- Section actions: what the button does. Two clicks, like Reset.
 local ACTIONS = {
