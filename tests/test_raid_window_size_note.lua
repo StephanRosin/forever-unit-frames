@@ -44,9 +44,13 @@ H.check("editing 20: note",
 H.check("the page under the note", scrollTop(), RO.sizeNotice)
 click(RO.testButton)
 H.check("test mode shows 20: no note", note(), nil)
+H.check("test mode: 20 marked shown", RO.sizeTabs[20].text:GetText(), "20 players (shown)")
+H.check("test mode: 10 not", RO.sizeTabs[10].text:GetText(), "10 players")
 H.check("test mode: the page under the tabs", scrollTop(), RO.frame.tabRow)
 click(RO.testButton)
 H.check("test mode off: the note again", note() ~= nil, true)
+H.check("test mode off: 10 marked again", RO.sizeTabs[10].text:GetText(), "10 players (shown)")
+H.check("test mode off: 20 not", RO.sizeTabs[20].text:GetText(), "20 players")
 RC.Set("general", "sizeMode", "20")
 H.check("20 now shown: no note", note(), nil)
 click(RO.sizeTabs[40])
@@ -56,6 +60,7 @@ H.check("follows the size shown", note(), "You are editing the 40-player layout 
 -- The unit frames' test mode shows the edited size too.
 ns.TestMode.Set(true)
 H.check("unit test mode: no note", note(), nil)
+H.check("unit test mode: 40 marked shown", RO.sizeTabs[40].text:GetText(), "40 players (shown)")
 ns.TestMode.Set(false)
 H.checkTrue("unit test mode off: the note", note() ~= nil)
 

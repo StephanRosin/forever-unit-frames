@@ -289,10 +289,10 @@ local function renderSizeNotice()
     anchorScroll()
 end
 
--- The sizes: the edited one underlined, the one shown now says so; the
--- note on a size not shown.
+-- The sizes: the edited one underlined, the one the panel shows now
+-- (test mode's preview included) says so; the note on a size not shown.
 local function renderSizeTabs()
-    local shown = ns.RaidSize.Current()
+    local shown = ns.RaidCell.Size()
     for _, size in ipairs(Raid.SIZES) do
         local b = RaidOptions.sizeTabs[size]
         local text = sizeText(size)
@@ -823,12 +823,12 @@ end)
 ns.Listen("RAID_TEST_MODE", function()
     if frame then
         paintFooter()
-        renderSizeNotice()
+        renderSizeTabs()
     end
 end)
 -- The unit frames' test mode shows the edited size as well.
 ns.Listen("TEST_MODE", function()
-    if RaidOptions.IsOpen() then renderSizeNotice() end
+    if RaidOptions.IsOpen() then renderSizeTabs() end
 end)
 -- The raid panel's mover locked or unlocked from anywhere: this window,
 -- /fuf lock, the start of combat.
