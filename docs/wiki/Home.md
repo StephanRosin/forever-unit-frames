@@ -32,9 +32,19 @@ Source: [GitHub](https://github.com/StephanRosin/forever-unit-frames)
   top of the window choose the profile you edit; the one shown right now is marked *(shown)*.
   **Raid size shown** next to them follows the raid instance (outside one the group's size), or fixes
   one size.
-- **Unlock frames** in the raid window lets you drag the raid panel (only the panel; `/fuf lock`
-  locks it too). **Test mode** in the raid window shows a pretend raid of the size you edit, at that size's place,
-  with every option you switched on; closing the window or entering combat ends it.
+- **Unlock frames** in the raid window lets you drag the raid panels and the raid tools bar (only these;
+  `/fuf lock` locks them too). **Test mode** in the raid window shows a pretend raid of the size you edit, at
+  that size's place, with every option you switched on, and pretend players in the special panels you switched
+  on; closing the window or entering combat ends it.
+- **Special panels** (the **Panels** tab) show the raid's main tanks (on by default) and main assists, your own
+  lists of tanks and of favourites, and the raid's pets, each in a panel of its own with its own place per
+  raid size. Players stay in their group as well. Right-click a cell to put a player on your tanks or your
+  favourites, or type the names on the **Panels** tab; in combat the panel follows after the fight.
+- The **raid tools bar** (the **Tools** tab) takes the place of Blizzard's raid manager: raid target icons and
+  the last ready check for everyone; starting a ready check, a role poll and world markers for the leader and
+  assistants; everyone an assistant, party to raid and back and the loot method for the leader. It sits behind
+  a handle on the right edge of the raid panel (click it to fold the bar out), or free where you drag it. It
+  folds out and in, and follows changes of who leads, only out of combat.
 - **Copy from…** takes another size, or a size of another of your characters (two clicks).
   **Reset this size** goes back to its defaults. The **Profile** tab exports and imports the size you
   edit as a text.
@@ -81,6 +91,7 @@ The raid frames have pages of their own, one per tab of the raid window:
   the raid size shown, the raid minimap button
 - [[Layout|Raid-Layout]] – grouping, sorting, class order, how blocks and cells are arranged, position,
   borders
+- [[Panels|Raid-Panels]] – the special panels: main tanks, main assists, my tanks, favourites, pets
 - [[Cell|Raid-Cell]] – cell size, bar texture and colors, power strip, border and corners, heals and
   shields
 - [[Texts|Raid-Texts]] – the name and the second line, their colors and fonts
@@ -89,6 +100,7 @@ The raid frames have pages of their own, one per tab of the raid window:
 - [[Indicators|Raid-Indicators]] – the five corner indicators
 - [[Icons & states|Raid-Icons-and-states]] – role, raid marker, leader, master looter, ready check,
   range, aggro, your target
+- [[Tools|Raid-Tools]] – the raid tools bar: docked or free, which tools it holds
 
 Questions that come up often: [[FAQ]].
 

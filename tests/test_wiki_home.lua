@@ -1,0 +1,23 @@
+-- The wiki's hand-written pages (docs/wiki/Home.md, FAQ.md): Home links
+-- every raid page the generator writes (tools/make_wiki.lua), and tells
+-- of the special panels and the raid tools bar; the FAQ answers where
+-- Blizzard's raid manager went.
+local dir = os.tmpname()
+os.remove(dir)
+os.execute("mkdir -p '" .. dir .. "'")
+_G.WIKI_OUT = dir
+local ok = pcall(dofile, ADDONDIR .. "/tools/make_wiki.lua")
+_G.WIKI_OUT = nil
+os.execute("rm -rf '" .. dir .. "'")
+H.checkTrue("generator runs", ok)
+local home = H.ReadFile("docs/wiki/Home.md")
+for _, page in ipairs(WIKI_PAGES or {}) do
+    if page[1]:match("^Raid%-") then
+        H.checkTrue("Home links " .. page[1], home:find("[[" .. page[2] .. "|" .. page[1] .. "]]", 1, true))
+    end
+end
+H.checkTrue("Home: the special panels", home:find("**Special panels**", 1, true))
+H.checkTrue("Home: the raid tools bar", home:find("**raid tools bar**", 1, true))
+local faq = H.ReadFile("docs/wiki/FAQ.md")
+H.checkTrue("FAQ: Blizzard's raid manager", faq:find("### Where is Blizzard's raid manager?", 1, true))
+H.checkTrue("FAQ: a list in combat", faq:find("### A player I put on my tanks or favourites does not show", 1, true))

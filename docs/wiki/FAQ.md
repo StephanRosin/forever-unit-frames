@@ -43,6 +43,19 @@ a copy.
 Blizzard's player, target, focus, pet and party frames are hidden while ours are on. To use
 Blizzard's frame for one of them, switch ours off on its **Layout** tab (*Enabled*) and `/reload`.
 
+### A player I put on my tanks or favourites does not show
+
+The panels change their lists only out of combat: someone added during a fight shows after it. The
+name has to be written as the game writes it in your group: a player from another realm as
+*Name-Realm*. Right-clicking the player's cell puts the name there for you. And the panel itself has
+to be switched on for the raid size you are in (**Panels** tab).
+
+### Where is Blizzard's raid manager?
+
+It is hidden with Blizzard's raid frames. The raid tools bar (**Tools** tab of `/fuf raid`) does its
+work: the handle on the right edge of the raid panel folds it out. Tools only the leader and
+assistants may use show for them only.
+
 ### I found a bug or have an idea
 
 Comments on CurseForge or an issue on GitHub. The more exact the better: which frame, which tab and
