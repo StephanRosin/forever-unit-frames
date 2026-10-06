@@ -401,6 +401,10 @@ end
 -- while M.aurasSecret is set, as in an instance out of combat).
 -- Once it has a group, only frames with the UntrustedLayoutScriptExecution
 -- aspect may anchor to the container.
+-- Aura slots (AddAuraSlot, Blizzard_AuraContainerSlots.lua) hold one frame
+-- each, made at once and handed to initializeFrame like a group's; they
+-- take no part in the layout (anchored by the addon) and record what they
+-- are told in _slots[key].
 M.AURA_BATCH = 10
 local AURA_FILTERS = { HELPFUL = true, HARMFUL = true, PLAYER = true, RAID = true, CANCELABLE = true,
     INCLUDE_NAME_PLATE_ONLY = true, MAW = true, EXTERNAL_DEFENSIVE = true, CROWD_CONTROL = true,
@@ -413,6 +417,8 @@ local LAYOUT_DEFAULTS = { elementSpacing = 0, lineSpacing = 0, groupSpacing = 0,
     forceNewLine = false }
 local GROUP_KEYS = { maxFrameCount = true, templateNames = true, initializeFrame = true, candidateFilters = true,
     sortMethod = true, sortDirection = true, layout = true }
+local SLOT_KEYS = { templateNames = true, initializeFrame = true, candidateFilters = true, sortMethod = true,
+    sortDirection = true }
 local TOOLTIP_ANCHORS = { ANCHOR_LEFT = true, ANCHOR_RIGHT = true, ANCHOR_BOTTOMLEFT = true, ANCHOR_BOTTOM = true,
     ANCHOR_BOTTOMRIGHT = true, ANCHOR_TOPLEFT = true, ANCHOR_TOP = true, ANCHOR_TOPRIGHT = true,
     ANCHOR_CURSOR = true, ANCHOR_NONE = true, ANCHOR_PRESERVE = true, ANCHOR_CURSOR_LEFT = true,
@@ -453,6 +459,36 @@ local function copyLayout(layout)
         out[k] = v
     end
     return out
+end
+
+-- candidateFilters (Blizzard_CustomAuraContainer.lua ValidateCandidateFilters):
+-- a table or nil; maxDuration a non-negative number (hides permanent
+-- auras). includeSpellIDs / excludeSpellIDs are maps, spell ID -> true:
+-- the container looks up includeSpellIDs[aura.spellId]. A list would hold
+-- the IDs as values and match nothing.
+local function checkCandidateFilters(filters)
+    assert(filters == nil or type(filters) == "table", "candidateFilters must be a table or nil.")
+    for _, field in ipairs({ "includeSpellIDs", "excludeSpellIDs" }) do
+        local ids = filters and filters[field]
+        if ids ~= nil then
+            assert(type(ids) == "table", field .. " must be a table or nil")
+            for k, v in pairs(ids) do
+                assert(type(k) == "number" and k > 0 and k == math.floor(k) and v == true,
+                    field .. " must map spell IDs to true, not list them")
+            end
+        end
+    end
+    if filters and filters.maxDuration ~= nil then
+        assert(type(filters.maxDuration) == "number" and filters.maxDuration >= 0,
+            "maxDuration must be a non-negative number or nil.")
+    end
+end
+
+local function checkSort(options)
+    assert(options.sortMethod == nil or isEnumValue(AuraContainerSortMethod, options.sortMethod),
+        "sortMethod must be a valid AuraContainerSortMethod.")
+    assert(options.sortDirection == nil or isEnumValue(AuraContainerSortDirection, options.sortDirection),
+        "sortDirection must be a valid AuraContainerSortDirection.")
 end
 
 local function validMax(n)
@@ -528,6 +564,8 @@ local function newAuraButton(container, group)
         fontString:SetText("")
     end
     function b:SetDurationText(fontString) inbound(self, fontString, "FontString"); self._durationText = fontString end
+    function b:ClearDurationCooldown() self._durationCooldown = nil end
+    function b:ClearDurationText() self._durationText = nil end
     function b:AddDispelTypeTexture(texture, options)
         inbound(self, texture, "Texture")
         for _, entry in ipairs(self._dispelTextures) do
@@ -574,6 +612,8 @@ function M.NewAuraContainer(w, template)
     w._updates = 0
     w._groups = {}
     w._groupOrder = {}
+    w._slots = {}
+    w._slotOrder = {}
     w._flow = { axis = AnchorUtil.FlowLayoutAxis.Horizontal, anchor = "TOPLEFT",
         horizontal = AnchorUtil.FlowDirection.Right, vertical = AnchorUtil.FlowDirection.Down,
         padding = { 0, 0, 0, 0 }, lineSize = math.huge }
@@ -603,12 +643,8 @@ function M.NewAuraContainer(w, template)
             "initializeFrame must be a function or nil.")
         assert(options.templateNames == nil or type(options.templateNames) == "table",
             "templateNames must be a table or nil.")
-        assert(options.candidateFilters == nil or type(options.candidateFilters) == "table",
-            "candidateFilters must be a table or nil.")
-        assert(options.sortMethod == nil or isEnumValue(AuraContainerSortMethod, options.sortMethod),
-            "sortMethod must be a valid AuraContainerSortMethod.")
-        assert(options.sortDirection == nil or isEnumValue(AuraContainerSortDirection, options.sortDirection),
-            "sortDirection must be a valid AuraContainerSortDirection.")
+        checkCandidateFilters(options.candidateFilters)
+        checkSort(options)
         local max = options.maxFrameCount
         if max == nil then max = math.huge end
         assert(validMax(max), "maxFrameCount must be a non-negative integer or infinity.")
@@ -639,28 +675,57 @@ function M.NewAuraContainer(w, template)
     end
     -- Replaces the whole layout (merged with the defaults), like the source.
     function w:SetAuraGroupLayout(key, layout) required(self, key).layout = copyLayout(layout) end
-    -- candidateFilters (Blizzard_CustomAuraContainer.lua ValidateCandidateFilters):
-    -- a table or nil; maxDuration a non-negative number (hides permanent auras).
     function w:SetAuraGroupCandidateFilters(key, filters)
-        assert(filters == nil or type(filters) == "table", "candidateFilters must be a table or nil.")
-        -- includeSpellIDs / excludeSpellIDs are maps, spell ID -> true: the
-        -- container looks up excludeSpellIDs[aura.spellId]. A list would
-        -- hold the IDs as values and match nothing.
-        for _, field in ipairs({ "includeSpellIDs", "excludeSpellIDs" }) do
-            local ids = filters and filters[field]
-            if ids ~= nil then
-                assert(type(ids) == "table", field .. " must be a table or nil")
-                for k, v in pairs(ids) do
-                    assert(type(k) == "number" and k > 1000 and v == true,
-                        field .. " must map spell IDs to true, not list them")
-                end
-            end
-        end
-        if filters and filters.maxDuration ~= nil then
-            assert(type(filters.maxDuration) == "number" and filters.maxDuration >= 0,
-                "maxDuration must be a non-negative number or nil.")
-        end
-        required(self, key).candidateFilters = filters
+        local group = required(self, key)
+        checkCandidateFilters(filters)
+        group.candidateFilters = filters
+    end
+    -- Aura slots: one frame each, at a place the addon anchors.
+    local function requiredSlot(self, key)
+        return assert(self._slots[key], "aura slot '" .. tostring(key) .. "' was not found with this key.")
+    end
+    function w:AddAuraSlot(key, filter, options)
+        assert(type(key) == "string" and key ~= "", "slotKey must be a non-empty string.")
+        assert(validFilter(filter), "invalid filter string")
+        assert(not self._slots[key], "aura slot '" .. key .. "' already exists with this key.")
+        options = options or {}
+        for k in pairs(options) do assert(SLOT_KEYS[k], "mock: unknown slot option " .. tostring(k)) end
+        assert(options.initializeFrame == nil or type(options.initializeFrame) == "function",
+            "initializeFrame must be a function or nil.")
+        checkCandidateFilters(options.candidateFilters)
+        checkSort(options)
+        local slot = { key = key, filter = filter, enabled = true, candidateFilters = options.candidateFilters,
+            sortMethod = options.sortMethod, initializeFrame = options.initializeFrame, frames = {} }
+        self._slots[key] = slot
+        table.insert(self._slotOrder, key)
+        slot.frame = newAuraButton(self, slot)
+        self._updates = self._updates + 1
+        return slot.frame
+    end
+    function w:HasAuraSlot(key) return self._slots[key] ~= nil end
+    function w:GetAuraSlotFrame(key)
+        local slot = self._slots[key]
+        return slot and slot.frame
+    end
+    function w:IsAuraSlotEnabled(key) return requiredSlot(self, key).enabled end
+    function w:SetAuraSlotEnabled(key, enabled)
+        assert(type(enabled) == "boolean", "enabled must be a boolean.")
+        requiredSlot(self, key).enabled = enabled
+    end
+    function w:SetAuraSlotFilterString(key, filter)
+        local slot = requiredSlot(self, key)
+        assert(validFilter(filter), "invalid filter string")
+        slot.filter = filter
+    end
+    function w:SetAuraSlotCandidateFilters(key, filters)
+        local slot = requiredSlot(self, key)
+        checkCandidateFilters(filters)
+        slot.candidateFilters = filters
+    end
+    function w:SetAuraSlotSortMethod(key, method, direction)
+        local slot = requiredSlot(self, key)
+        checkSort({ sortMethod = method, sortDirection = direction })
+        slot.sortMethod = method
     end
     function w:GetAuraGroupFrameCount(key)
         local group = self._groups[key]
