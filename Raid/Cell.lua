@@ -154,8 +154,9 @@ function Cell.Setup(button)
     button.showsPower = Cell.ShowsPower
     button.iconPoint = Cell.IconPoint
     button.fadesOutOfRange = true
-    -- No aura groups at all: no aura containers are made for a cell
-    -- (Elements/AuraContainers.lua).
+    -- None of the unit frames' aura groups (Elements/AuraContainers.lua
+    -- makes no container for them); a cell's own auras are one container
+    -- of its own (Raid/CellAuras.lua).
     button.auraGroupKeys = {}
     for _, el in ipairs(ns.Elements) do el.Build(button) end
     ns.Units.EnableTooltip(button)
