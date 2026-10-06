@@ -1324,6 +1324,13 @@ function M.Reset()
     end
     -- Blizzard_FrameXMLBase/Camelot/Constants.lua (this game type).
     _G.CLASS_SORT_ORDER = { "WARRIOR", "PALADIN", "PRIEST", "SHAMAN", "DRUID", "ROGUE", "MAGE", "WARLOCK", "HUNTER" }
+    -- Blizzard's strings for raid block titles (GlobalStrings; the class
+    -- names from LocalizedClassList, Blizzard_FrameXMLBase/Constants.lua).
+    _G.GROUP_NUMBER = "Group %d"
+    _G.RAID = "Raid"
+    _G.TANK, _G.HEALER, _G.DAMAGER = "Tank", "Healer", "Damage"
+    _G.LOCALIZED_CLASS_NAMES_MALE = { WARRIOR = "Warrior", PALADIN = "Paladin", PRIEST = "Priest",
+        SHAMAN = "Shaman", DRUID = "Druid", ROGUE = "Rogue", MAGE = "Mage", WARLOCK = "Warlock", HUNTER = "Hunter" }
     -- The player's name and realm (Raid/Profiles.lua: one raid profile per
     -- character). UnitFullName may leave the realm out early in the login.
     M.playerName, M.realm, M.fullNameRealm = "Tester", "Testrealm", true

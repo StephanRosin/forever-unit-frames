@@ -26,6 +26,7 @@ Core\Storage.lua
 Raid\Settings.lua
 Raid\Profiles.lua
 Raid\Size.lua
+Raid\Layout.lua
 Core\Media.lua
 Core\Layout.lua
 Core\Corners.lua
