@@ -169,7 +169,8 @@ end
 -- per block (the headers' own, or test mode's), titles and borders, the
 -- panel over the occupied area. A block without room parks its empty
 -- header below the panel: someone joining it in combat shows there
--- instead of on top of another block.
+-- instead of on top of another block. Returns each block's place (nil
+-- without room) and the numbers it used (Raid/TestMode.lua).
 function Header.Place(counts)
     local s = Header.Shape()
     local hideEmpty = get("hideEmpty")
@@ -208,6 +209,7 @@ function Header.Place(counts)
     else
         Border.Hide(Header.panel)
     end
+    return positions, s
 end
 
 -- The panel's size, or a cell's while it is empty (the mover's handle).
@@ -240,14 +242,21 @@ function Header.MoverSpec()
     }
 end
 
--- Any time, combat included: the panel's plain frames follow the group.
+local function testing()
+    return ns.RaidTestMode ~= nil and ns.RaidTestMode.IsOn()
+end
+
+-- Any time, combat included: the panel's plain frames follow the group,
+-- or show the pretend raid of test mode.
 function Header.UpdateVisibility()
-    if Header.panel then Header.panel:SetShown(Header.Active()) end
+    if Header.panel then Header.panel:SetShown(Header.Active() or testing()) end
 end
 
 -- Out of combat only: the whole layout for the active size. Every header
 -- shows again (Hide + Show lays its cells out anew, OnShow); the cells it
 -- does not use lose their anchors (it only SetPoints the ones it shows).
+-- In test mode the headers stay hidden and the pretend raid takes their
+-- place.
 function Header.Refresh()
     if not Header.anchor then return end
     local size = Cell.Size()
@@ -260,12 +269,18 @@ function Header.Refresh()
         Cell.Style(button)
         button:ClearAllPoints()
     end
-    local on = Header.Enabled()
+    local test = testing()
+    local on = Header.Enabled() and not test
     for i, h in ipairs(Header.headers) do
         h:Hide()
         if on and i <= #Header.blocks then h:Show() end
     end
-    Header.Place(liveCounts())
+    if test then
+        ns.RaidTestMode.Show()
+    else
+        if ns.RaidTestMode then ns.RaidTestMode.Hide() end
+        Header.Place(liveCounts())
+    end
     placeAnchor()
     Header.UpdateVisibility()
 end
@@ -302,6 +317,7 @@ ns.Listen("RAID_CELLS_CHANGED", function()
     C_Timer.After(0, function()
         placing = false
         ns.AfterCombat("raidPlace", function()
+            if testing() then return end
             Header.Place(liveCounts())
             placeAnchor()
         end)

@@ -73,6 +73,7 @@ Units\PartyTargets.lua
 Raid\Cell.lua
 Raid\Cell.xml
 Raid\Header.lua
+Raid\TestMode.lua
 Core\Blizzard.lua
 Core\Movers.lua
 Core\Commands.lua
