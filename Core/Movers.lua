@@ -4,11 +4,17 @@ local _, ns = ...
 -- themselves; moving happens only out of combat.
 --
 -- Anything can have a mover: a unit frame, the party block, a detached
--- castbar. A spec says which settings hold the position and how big the
--- handle is:
---   scope          settings scope ("player", "party", ...)
+-- castbar, the raid panel. A spec says which settings hold the position
+-- and how big the handle is:
+--   scope          settings scope ("player", "party", ...), or a function
+--                  returning it (the raid panel: the active size's)
+--   config         the settings it is in (default ns.Config; the raid
+--                  panel: ns.RaidConfig)
 --   xKey, yKey     position settings, offsets of the handle's centre from
 --                  the screen centre (default "x" / "y")
+--   origin         "TOPLEFT": xKey / yKey hold the handle's top-left
+--                  corner instead of its centre (the raid panel, whose
+--                  size changes with the group)
 --   size()         -> width, height of the handle
 --   point          anchor point shared by target and handle (default
 --                  "CENTER"); the party block hangs from "TOPLEFT"
@@ -17,7 +23,8 @@ local _, ns = ...
 --   active()       optional: false keeps the handle hidden when unlocked
 --   label          text on the handle, or a function returning it (asked
 --                  again when the language changes)
---   id             combat-queue key suffix (default scope)
+--   id             combat-queue key suffix (default scope; required when
+--                  scope is a function)
 local Movers = {}
 ns.Movers = Movers
 
@@ -47,11 +54,18 @@ local function labelOf(spec)
 end
 
 local function complete(spec)
+    spec.config = spec.config or ns.Config
     spec.xKey = spec.xKey or "x"
     spec.yKey = spec.yKey or "y"
     spec.point = spec.point or "CENTER"
+    spec.origin = spec.origin or "CENTER"
     spec.id = spec.id or spec.scope
     return spec
+end
+
+local function scopeOf(spec)
+    if type(spec.scope) == "function" then return spec.scope() end
+    return spec.scope
 end
 
 -- Sizes and positions the mover from config alone, never from the
@@ -69,8 +83,14 @@ function Movers.Sync(target)
     mover:ClearAllPoints()
     -- On the pixel grid: the handle's edges, and so its target's, land on
     -- whole pixels.
-    mover:SetPoint("CENTER", UIParent, "CENTER",
-        Pixel.Centre(ns.Config.Get(spec.scope, spec.xKey), w), Pixel.Centre(ns.Config.Get(spec.scope, spec.yKey), h))
+    local scope = scopeOf(spec)
+    local x, y = spec.config.Get(scope, spec.xKey), spec.config.Get(scope, spec.yKey)
+    if spec.origin == "TOPLEFT" then
+        mover:SetPoint("TOPLEFT", UIParent, "CENTER", Pixel.Snap(x), Pixel.Snap(y))
+    else
+        mover:SetPoint("CENTER", UIParent, "CENTER", Pixel.Centre(x, w), Pixel.Centre(y, h))
+    end
+    mover.label:SetText(labelOf(spec))
 end
 
 function Movers.OnDragStop(mover)
@@ -79,8 +99,11 @@ function Movers.OnDragStop(mover)
     local mx, my = mover:GetCenter()
     local ux, uy = UIParent:GetCenter()
     local spec = mover.spec
-    ns.Config.Set(spec.scope, spec.xKey, Movers.Snap(mx - ux))
-    ns.Config.Set(spec.scope, spec.yKey, Movers.Snap(my - uy))
+    local x, y = mx - ux, my - uy
+    if spec.origin == "TOPLEFT" then x, y = x - mover:GetWidth() / 2, y + mover:GetHeight() / 2 end
+    local scope = scopeOf(spec)
+    spec.config.Set(scope, spec.xKey, Movers.Snap(x))
+    spec.config.Set(scope, spec.yKey, Movers.Snap(y))
 end
 
 local function isActive(mover)
@@ -182,9 +205,13 @@ ns.On("PLAYER_REGEN_DISABLED", function()
     if unlocked then Movers.Lock() end
 end)
 
--- A castbar switched to detached (or back) while unlocked gains or loses
--- its handle at once. Unlocked implies out of combat.
+-- A castbar switched to detached (or back), or the raid frames switched
+-- on or off, while unlocked: the handle comes or goes at once. Unlocked
+-- implies out of combat.
 ns.Listen("CONFIG_CHANGED", function()
+    if unlocked then showActive() end
+end)
+ns.Listen("RAID_CONFIG_CHANGED", function()
     if unlocked then showActive() end
 end)
 
