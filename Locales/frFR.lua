@@ -833,3 +833,10 @@ L.NEWS_0_22_0_WINDOW = "Une fenêtre d'options à eux (/fuf raid, ou Cadres de r
 L.NEWS_0_22_0_BLIZZARD = "Les cadres de raid de Blizzard se masquent tant que les nôtres sont actifs ; un groupe de 5 peut aussi s'afficher comme un raid."
 L.NEWS_AGAIN = "/fuf news affiche ceci à nouveau."
 L.NEWS_NONE = "Cette version n'a pas de nouveautés."
+
+-- Cadres de raid : panneaux spéciaux (Raid/SpecialPanels.lua).
+L.RAID_TAB_panels = "Panneaux"
+L.RAID_NOTE_panels = "Les joueurs d'un panneau spécial restent aussi dans leur groupe. Le chef de raid désigne les tanks et assistants principaux."
+L.RAID_SECTION_mainTanks = "Tanks principaux"
+L.RAID_SETTING_panelShow = "Afficher le panneau"
+L.RAID_SETTING_panelTitle = "Titre au-dessus"

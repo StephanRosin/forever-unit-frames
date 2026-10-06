@@ -834,3 +834,10 @@ L.NEWS_0_22_0_WINDOW = "Una ventana de opciones propia (/fuf raid, o Marcos de b
 L.NEWS_0_22_0_BLIZZARD = "Los marcos de banda de Blizzard se ocultan mientras los nuestros están activos; un grupo de 5 también puede mostrarse como banda."
 L.NEWS_AGAIN = "/fuf news vuelve a mostrar esto."
 L.NEWS_NONE = "Esta versión no tiene novedades."
+
+-- Marcos de banda: paneles especiales (Raid/SpecialPanels.lua).
+L.RAID_TAB_panels = "Paneles"
+L.RAID_NOTE_panels = "Los jugadores de un panel especial siguen también en su grupo. El líder de banda asigna los tanques y asistentes principales."
+L.RAID_SECTION_mainTanks = "Tanques principales"
+L.RAID_SETTING_panelShow = "Mostrar el panel"
+L.RAID_SETTING_panelTitle = "Título encima"

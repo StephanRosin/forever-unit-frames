@@ -21,7 +21,7 @@ for _, page in ipairs(WIKI_PAGES or {}) do
     if page[1]:match("^Raid%-") then raid[#raid + 1] = page[1] end
 end
 H.check("raid pages", table.concat(raid, ","),
-    "Raid-General,Raid-Layout,Raid-Cell,Raid-Texts,Raid-Debuffs,Raid-Indicators,Raid-Icons-and-states")
+    "Raid-General,Raid-Layout,Raid-Panels,Raid-Cell,Raid-Texts,Raid-Debuffs,Raid-Indicators,Raid-Icons-and-states")
 
 -- Every setting on its tab's page, by its label. The Profile tab (export
 -- and import, no settings) has no page.

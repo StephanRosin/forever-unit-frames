@@ -107,6 +107,7 @@ end
 
 -- A block's title in Blizzard's own words (GROUP_NUMBER, the localised
 -- class names, the role names, RAID); the token where the client has none.
+-- A special panel's block (kind PANEL) is titled with the panel's word.
 local function global(name)
     local v = _G[name]
     if type(v) == "string" then return v end
@@ -122,6 +123,8 @@ function Layout.Title(block)
         return type(names) == "table" and names[block.id] or block.id
     elseif block.kind == "ROLE" then
         return global(block.id) or block.id
+    elseif block.kind == "PANEL" then
+        return ns.L["RAID_SECTION_" .. block.id]
     end
     return global("RAID") or ""
 end

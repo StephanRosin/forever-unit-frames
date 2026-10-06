@@ -857,3 +857,10 @@ L.NEWS_0_22_0_WINDOW = "An options window of their own (/fuf raid, or Raid frame
 L.NEWS_0_22_0_BLIZZARD = "Blizzard's raid frames hide while ours are on; a 5-player group can be shown as a raid too."
 L.NEWS_AGAIN = "/fuf news shows this again."
 L.NEWS_NONE = "This version has no news."
+
+-- Raid frames: special panels (Raid/SpecialPanels.lua).
+L.RAID_TAB_panels = "Panels"
+L.RAID_NOTE_panels = "Players in a special panel stay in their group as well. The raid leader sets main tanks and main assists."
+L.RAID_SECTION_mainTanks = "Main tanks"
+L.RAID_SETTING_panelShow = "Show the panel"
+L.RAID_SETTING_panelTitle = "Title above it"

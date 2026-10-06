@@ -833,3 +833,10 @@ L.NEWS_0_22_0_WINDOW = "Ein eigenes Optionsfenster (/fuf raid oder Schlachtzug�
 L.NEWS_0_22_0_BLIZZARD = "Blizzards Schlachtzugsrahmen sind aus, solange unsere an sind; eine 5er-Gruppe lässt sich auch als Schlachtzug anzeigen."
 L.NEWS_AGAIN = "/fuf news zeigt dies erneut."
 L.NEWS_NONE = "Diese Version hat keine Neuigkeiten."
+
+-- Schlachtzugsrahmen: Sonderfelder (Raid/SpecialPanels.lua).
+L.RAID_TAB_panels = "Felder"
+L.RAID_NOTE_panels = "Spieler in einem Sonderfeld bleiben auch in ihrer Gruppe. Haupttanks und Hauptassistenten legt die Schlachtzugsleitung fest."
+L.RAID_SECTION_mainTanks = "Haupttanks"
+L.RAID_SETTING_panelShow = "Feld anzeigen"
+L.RAID_SETTING_panelTitle = "Titel darüber"

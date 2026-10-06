@@ -25,6 +25,14 @@ local function icon(id, key, extra)
     return { id = id, keys = keys }
 end
 
+-- One section per special panel (Raid.PANELS), its settings in their
+-- order.
+local function panelSections()
+    local list = {}
+    for _, p in ipairs(ns.Raid.PANELS) do list[#list + 1] = { id = p.id, keys = p.keys } end
+    return list
+end
+
 Schema.TABS = {
     { id = "general", sections = {
         { id = "raidFrames", keys = { "enabled", "showInParty", "hideBlizzard" } },
@@ -37,6 +45,8 @@ Schema.TABS = {
         { id = "position", keys = { "x", "y" } },
         { id = "borders", keys = { "panelBorder", "blockBorder" } },
     } },
+    -- The special panels; the note says who is in them.
+    { id = "panels", note = "panels", sections = panelSections() },
     -- Heals, shields and the power strip keep the unit frames' shipped
     -- colours (Raid/Cell.lua): the note says so.
     { id = "cell", note = "cell", sections = {
@@ -78,7 +88,8 @@ Schema.HEADER_KEYS = { "sizeMode" }
 
 -- Settings that share their words: the five indicator positions (the
 -- section names the position), the icons' switches and points (the
--- section names the icon).
+-- section names the icon), the special panels' settings (the section
+-- names the panel; their layout has the main panel's words).
 local SHARED = {}
 for _, ind in ipairs(ns.Raid.INDICATORS) do
     for _, part in ipairs({ "Spells", "Color", "Size", "Own", "Time" }) do
@@ -87,6 +98,11 @@ for _, ind in ipairs(ns.Raid.INDICATORS) do
 end
 for _, key in ipairs({ "roleIcon", "raidMarker", "leaderIcon", "looterIcon", "readyCheckIcon" }) do
     SHARED[key], SHARED[key .. "Point"] = "iconShow", "iconPoint"
+end
+local PANEL_WORDS = { Show = "panelShow", Title = "panelTitle", PerLine = "cellsPerLine", Growth = "cellGrowth",
+    X = "x", Y = "y" }
+for _, p in ipairs(ns.Raid.PANELS) do
+    for part, wordKey in pairs(PANEL_WORDS) do SHARED[p.id .. part] = wordKey end
 end
 
 -- The name a setting's words go by.

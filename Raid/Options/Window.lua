@@ -22,6 +22,7 @@ local WINDOW_NAME = "ForeverUnitFramesRaidOptions"
 local WIDTH, HEIGHT = 780, 560
 local TITLE_H, SIZE_BAR_H, TAB_H, FOOTER_H, NOTICE_H, SIZE_NOTICE_H = 32, 40, 30, 40, 26, 36
 local SIZE_TAB_PADDING, TAB_PADDING, TAB_MIN_W, UNDERLINE_H, ACCENT_W = 24, 28, 70, 2, 3
+local TAB_ROW_INSET, TAB_MIN_PADDING = 8, 12
 local SCROLLBAR_W, WHEEL_STEP = 10, 40
 local CONTENT_W = WIDTH - SCROLLBAR_W
 local PAGE_TOP, PAGE_BOTTOM, SECTION_GAP, INSET, NOTE_H = 4, 16, 8, 16, 34
@@ -305,21 +306,40 @@ local function renderSizeTabs()
     renderSizeNotice()
 end
 
+-- The tabs share the row: each as wide as its word and the padding, at
+-- least TAB_MIN_W; when that does not fit (more tabs, longer words), every
+-- tab gets its word and an equal share of what is left, at least
+-- TAB_MIN_PADDING.
+local function fitTabs()
+    local buttons, words, total, letters = RaidOptions.tabButtons, {}, 0, 0
+    for i, b in ipairs(buttons) do
+        words[i] = b.text:GetStringWidth() or 0
+        total = total + math.max(TAB_MIN_W, words[i] + TAB_PADDING)
+        letters = letters + words[i]
+    end
+    local room = WIDTH - 2 * TAB_ROW_INSET
+    local padding
+    if total > room then padding = math.max(TAB_MIN_PADDING, math.floor((room - letters) / #buttons)) end
+    for i, b in ipairs(buttons) do
+        b:SetWidth(padding and (words[i] + padding) or math.max(TAB_MIN_W, words[i] + TAB_PADDING))
+    end
+end
+
 local function menuTabs()
     for i, tab in ipairs(Schema.TABS) do
         local b = tabButton(frame.tabRow, TAB_H)
         b.tabId = tab.id
         b.text:SetText(Schema.TabTitle(tab.id))
-        b:SetWidth(math.max(TAB_MIN_W, (b.text:GetStringWidth() or 0) + TAB_PADDING))
         b:SetScript("OnClick", function(self) RaidOptions.SelectTab(self.tabId) end)
         local previous = RaidOptions.tabButtons[i - 1]
         if previous then
             b:SetPoint("LEFT", previous, "RIGHT", 0, 0)
         else
-            b:SetPoint("LEFT", frame.tabRow, "LEFT", 8, 0)
+            b:SetPoint("LEFT", frame.tabRow, "LEFT", TAB_ROW_INSET, 0)
         end
         RaidOptions.tabButtons[i] = b
     end
+    fitTabs()
 end
 
 local function paintTabs()

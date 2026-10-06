@@ -303,3 +303,30 @@ RaidSettings.Define({ key = "rangeAlpha", code = "RA", scope = "frame", type = "
     default = 40 })
 RaidSettings.Define({ key = "aggroBorder", code = "AB", scope = "frame", type = "bool", default = true })
 RaidSettings.Define({ key = "targetBorder", code = "TB", scope = "frame", type = "bool", default = true })
+
+-- Special panels (Raid/SpecialPanels.lua): panels of their own beside the
+-- main one, each with its own mover; per size: shown, a title above it,
+-- cells per line, which way they grow, the panel's top-left corner from
+-- the screen centre. The letter starts every code of the panel; keys
+-- lists its settings in the raid window's order. The growth is stored by
+-- index like cellGrowth, whose list it is.
+Raid.PANELS = {}
+function Raid.DefinePanel(p)
+    local id, l = p.id, p.letter
+    p.keys = { id .. "Show", id .. "Title", id .. "PerLine", id .. "Growth", id .. "X", id .. "Y" }
+    RaidSettings.Define({ key = id .. "Show", code = l .. "S", scope = "frame", type = "bool", default = p.show })
+    RaidSettings.Define({ key = id .. "Title", code = l .. "T", scope = "frame", type = "bool", default = true })
+    RaidSettings.Define({ key = id .. "PerLine", code = l .. "L", scope = "frame", type = "int", min = 1, max = 40,
+        default = p.perLine })
+    RaidSettings.Define({ key = id .. "Growth", code = l .. "G", scope = "frame", type = "enum",
+        values = RaidSettings.Get("cellGrowth").values, default = p.growth })
+    RaidSettings.Define({ key = id .. "X", code = l .. "X", scope = "frame", type = "int", min = -4000, max = 4000,
+        default = p.x })
+    RaidSettings.Define({ key = id .. "Y", code = l .. "Y", scope = "frame", type = "int", min = -4000, max = 4000,
+        default = p.y })
+    Raid.PANELS[#Raid.PANELS + 1] = p
+    return p
+end
+
+-- Main tanks (the raid assignment): on, a row above the main panel.
+Raid.DefinePanel({ id = "mainTanks", letter = "Q", show = true, perLine = 5, growth = "RIGHT", x = -600, y = 260 })

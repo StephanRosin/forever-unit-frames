@@ -247,6 +247,8 @@ local RAID_TAB_INTRO = {
     general = "The raid frames as a whole: on or off, the raid view in a 5-player group, Blizzard's raid frames,"
         .. " the raid frames' minimap button.",
     layout = "How the panel is made of blocks, how cells and blocks are arranged, the panel's position and borders.",
+    panels = "Panels of their own beside the main panel, each with its own position per raid size: the main tanks."
+        .. " Their players stay in their groups as well.",
     cell = "The size of a cell, its bars and colors, its border and corners, heals and shields.",
     texts = "The name and the second line in the middle of each cell: their colors and fonts.",
     debuffs = "The most important dispellable debuff, as an icon in the centre or a square in a corner, and a"
