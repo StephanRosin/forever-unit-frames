@@ -35,6 +35,8 @@ local Movers = {}
 ns.Movers = Movers
 
 local GRID = 8
+-- Drags snap to it; the raid window's position steps by it with Shift.
+Movers.GRID = GRID
 Movers.GROUPS = { "units", "raid" }
 local unlocked = { units = false, raid = false }
 local L = ns.L

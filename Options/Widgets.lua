@@ -175,10 +175,10 @@ function Widgets.PassWheel(frame, delta)
     end
 end
 
-local function newNumberBox(row, anchor)
+local function newNumberBox(row, anchor, gap)
     local e = CreateFrame("EditBox", nil, row)
     e:SetSize(60, 20)
-    e:SetPoint("LEFT", anchor, "RIGHT", 10, 0)
+    e:SetPoint("LEFT", anchor, "RIGHT", gap or 10, 0)
     e:SetAutoFocus(false)
     -- An edit box refuses SetText until it has a font.
     e:SetFont(fontPath(), 12, "")
@@ -200,6 +200,29 @@ local function flashError(box)
     C_Timer.After(ERROR_FLASH_SECONDS, function()
         if box.flashToken == token then Style.SetBorderColor(box, "border") end
     end)
+end
+
+-- A typed number: Enter or leaving the box commits it, rounded to the
+-- step; out of range or not a number flashes the border. Either way the
+-- box then shows the stored value. ESC puts it back. b: step, show(v),
+-- commit(v), parse(text), display(v).
+local function bindNumberBox(e, opts, b)
+    local function editCommit(self)
+        local n = b.parse(self:GetText())
+        if n and n == n and n >= opts.min and n <= opts.max then
+            b.commit(round(n, b.step))
+        else
+            flashError(self)
+        end
+        b.show(opts.get())
+        self:ClearFocus()
+    end
+    e:SetScript("OnEnterPressed", editCommit)
+    e:SetScript("OnEditFocusLost", function(self)
+        if self:GetText() ~= b.display(opts.get()) then editCommit(self) end
+        self:HighlightText(0, 0)
+    end)
+    e:SetScript("OnEscapePressed", function(self) b.show(opts.get()); self:ClearFocus() end)
 end
 
 -- opts.zeroText (optional): what the box shows for 0, e.g. "Auto"; typing
@@ -248,26 +271,64 @@ function Widgets.Slider(parent, opts)
         local v = math.max(opts.min, math.min(opts.max, opts.get() + delta * step))
         commit(v); show(opts.get())
     end)
-    local function editCommit(self)
-        local n = parse(self:GetText())
-        if n and n == n and n >= opts.min and n <= opts.max then
-            commit(round(n, step))
-            show(opts.get())
-        else
-            show(opts.get())
-            flashError(self)
-        end
-        self:ClearFocus()
-    end
-    e:SetScript("OnEnterPressed", editCommit)
-    e:SetScript("OnEditFocusLost", function(self)
-        if self:GetText() ~= display(opts.get()) then editCommit(self) end
-        self:HighlightText(0, 0)
-    end)
-    e:SetScript("OnEscapePressed", function(self) show(opts.get()); self:ClearFocus() end)
+    bindNumberBox(e, opts, { step = step, show = show, commit = commit, parse = parse, display = display })
 
     function row:Refresh() show(opts.get(), true); row:RefreshInherit() end
     function row:SetEnabled(on) s:SetEnabled(on); e:SetEnabled(on); dimRow(row, on) end
+    return row
+end
+
+-- Stepper ---------------------------------------------------------------------
+-- A number box between a - and a + button, for a range far too wide for a
+-- slider (the raid panel's position: a slider pixel would be ~40 units).
+-- A click moves by opts.step (default 1), with Shift by opts.bigStep
+-- (default the step), within opts.min .. opts.max; the box takes any
+-- number in range. Every change goes through opts.set; the box then shows
+-- what was stored (opts.set may adjust it).
+
+local STEP_BUTTON_W, STEP_GAP = 22, 4
+
+local function stepButton(row, text, anchor)
+    local b = Widgets.Button(row, { text = text, width = STEP_BUTTON_W, onClick = function() end })
+    b:SetHeight(20)
+    if anchor then
+        b:SetPoint("LEFT", anchor, "RIGHT", STEP_GAP, 0)
+    else
+        b:SetPoint("LEFT", row, "LEFT", Widgets.CONTROL_X, 0)
+    end
+    trackHover(row, b)
+    return b
+end
+
+function Widgets.Stepper(parent, opts)
+    local row = newRow(parent, opts)
+    local step = opts.step or 1
+    local bigStep = opts.bigStep or step
+    local minus = stepButton(row, "-")
+    local e = newNumberBox(row, minus, STEP_GAP)
+    local plus = stepButton(row, "+", e)
+    row.minus, row.edit, row.plus = minus, e, plus
+
+    local function show(v, keepTyping)
+        if not (keepTyping and e:HasFocus()) then e:SetText(tostring(v)) end
+    end
+    local function commit(v)
+        if v ~= opts.get() then opts.set(v) end
+    end
+    local function nudge(sign)
+        local by = IsShiftKeyDown() and bigStep or step
+        commit(math.max(opts.min, math.min(opts.max, opts.get() + sign * by)))
+        show(opts.get())
+    end
+    minus:SetScript("OnClick", function() nudge(-1) end)
+    plus:SetScript("OnClick", function() nudge(1) end)
+    bindNumberBox(e, opts, { step = step, show = show, commit = commit, parse = tonumber, display = tostring })
+
+    function row:Refresh() show(opts.get(), true); row:RefreshInherit() end
+    function row:SetEnabled(on)
+        if not on then e:ClearFocus() end
+        minus:SetEnabled(on); plus:SetEnabled(on); e:SetEnabled(on); dimRow(row, on)
+    end
     return row
 end
 

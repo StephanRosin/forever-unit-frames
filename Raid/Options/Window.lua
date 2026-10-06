@@ -114,10 +114,20 @@ local function typedValue(key)
     return nil
 end
 
+-- The panel's position: a number with - / + buttons (a slider across
+-- the whole range would move the panel ~40 units per pixel); Shift steps
+-- by the movers' grid.
+local POSITION_KEYS = { x = true, y = true }
+
+local function positionRow(parent, def, opts)
+    opts.min, opts.max, opts.step, opts.bigStep = def.min, def.max, 1, ns.Movers.GRID
+    return Widgets.Stepper(parent, opts)
+end
+
 local function settingRow(parent, key)
     local def = ns.RaidSettings.Get(key)
     local convert = typedValue(key)
-    local row = ns.Options.Control(parent, def, {
+    local opts = {
         label = Schema.Label(key), hint = Schema.Hint(key), enumText = Schema.EnumText,
         get = function() return RaidConfig.Get(scopeOf(def), key) end,
         set = function(v)
@@ -131,7 +141,9 @@ local function settingRow(parent, key)
             end
             return RaidConfig.Set(scopeOf(def), key, v)
         end,
-    })
+    }
+    local row
+    if POSITION_KEYS[key] then row = positionRow(parent, def, opts) else row = ns.Options.Control(parent, def, opts) end
     row.key = key
     return row
 end
