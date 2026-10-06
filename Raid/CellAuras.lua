@@ -18,7 +18,8 @@ local _, ns = ...
 --   with every debuff ("HARMFUL"). The centre slot shows one aura only, so
 --   a negated filter would hide every dispellable debuff after the first;
 --   the one in the centre may show in the row as well;
--- * more parts register with CellAuras.AddPart (the corner indicators).
+-- * more parts register with CellAuras.AddPart (the corner indicators,
+--   Raid/Indicators.lua).
 -- A slot is made the first time it is switched on: cells that never use
 -- one never pay for its frame.
 --
@@ -69,25 +70,22 @@ local stale = setmetatable({}, { __mode = "k" })
 
 -- Slots -------------------------------------------------------------------------------
 
--- A slot of the cell's container, made the first time it is wanted.
--- auras.slots[key] is its frame.
-function CellAuras.Slot(frame, container, key, filter, init)
-    local auras = frame.raidAuras
-    if not auras.slots[key] then
-        auras.slots[key] = container:AddAuraSlot(key, filter, { initializeFrame = function(b) init(frame, b) end })
+-- Switches a slot of the cell's container, making it when it is wanted
+-- for the first time (init(frame, button) gives its frame regions); one
+-- that was never wanted is not made. candidateFilters (optional) are the
+-- container's own filters for it. Returns its frame, or nil.
+-- auras.slots[key] is the frame.
+function CellAuras.SetSlot(frame, container, key, filter, wanted, init, candidateFilters)
+    local slots = frame.raidAuras.slots
+    if not slots[key] and not wanted then return nil end
+    if not slots[key] then
+        slots[key] = container:AddAuraSlot(key, filter, { candidateFilters = candidateFilters,
+            initializeFrame = function(b) init(frame, b) end })
     end
-    return auras.slots[key]
-end
-
--- Switches a slot, making it when it is wanted for the first time; one
--- that was never wanted is not made. Returns its frame, or nil.
-function CellAuras.SetSlot(frame, container, key, filter, wanted, init)
-    local slot = frame.raidAuras.slots[key]
-    if not slot and not wanted then return nil end
-    slot = CellAuras.Slot(frame, container, key, filter, init)
     container:SetAuraSlotFilterString(key, filter)
+    if candidateFilters then container:SetAuraSlotCandidateFilters(key, candidateFilters) end
     container:SetAuraSlotEnabled(key, wanted == true)
-    return slot
+    return slots[key]
 end
 
 -- The unit frames' debuff icon look, for the centre icon and the row.

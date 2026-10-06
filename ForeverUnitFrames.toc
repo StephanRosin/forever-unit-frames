@@ -73,6 +73,7 @@ Units\PartyTargets.lua
 Raid\Cell.lua
 Raid\Cell.xml
 Raid\CellAuras.lua
+Raid\Indicators.lua
 Raid\Header.lua
 Raid\TestMode.lua
 Core\Blizzard.lua
