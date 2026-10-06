@@ -28,8 +28,8 @@ for _, key in ipairs(Schema.HEADER_KEYS) do
     seen[key] = "header"
 end
 for _, def in ipairs(RS.All()) do H.checkTrue("reachable: " .. def.key, seen[def.key]) end
-H.check("character-wide ones on General", seen.showInParty .. seen.hideBlizzard .. seen.enabled,
-    "generalgeneralgeneral")
+H.check("character-wide ones on General", tostring(seen.showInParty) .. tostring(seen.hideBlizzard)
+    .. tostring(seen.enabled), "generalgeneralgeneral")
 H.check("class order beside the grouping", seen.classOrder, "layout")
 H.check("position on Layout", seen.x, "layout")
 H.check("states with the icons", seen.aggroBorder, "icons")

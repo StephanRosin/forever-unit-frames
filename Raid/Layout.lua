@@ -44,12 +44,13 @@ function Layout.Classes(order)
     return list
 end
 
--- Sorted by role: the header groups its members by assigned role (a role
--- block holds one role already). In the single block this replaces the
--- order by group.
+-- Sorted by role: the header groups its members by assigned role. A tank
+-- or healer block holds one role already; the damage block holds damage
+-- and the members without a role, damage first. In the single block this
+-- replaces the order by group.
 local function sortByRole(blocks)
     for _, block in ipairs(blocks) do
-        if block.kind ~= "ROLE" then
+        if block.kind ~= "ROLE" or block.id == "DAMAGER" then
             block.filter.groupBy, block.filter.groupingOrder = "ASSIGNEDROLE", Layout.ROLE_ORDER
         end
     end
@@ -75,6 +76,8 @@ function Layout.Blocks(groupBy, size, sortBy, classOrder)
         end
     elseif groupBy == "ROLE" then
         local everyClass = groups .. "," .. joined(classes())
+        -- The damage block takes the members without a role as well, so
+        -- nobody is left out of the role blocks.
         for i, role in ipairs(Layout.ROLES) do
             blocks[i] = { kind = "ROLE", id = role, filter = { groupFilter = everyClass,
                 roleFilter = role == "DAMAGER" and "DAMAGER,NONE" or role, strictFiltering = true } }

@@ -70,7 +70,8 @@ function Test.Members(size)
 end
 
 -- What a block's header groups its members by (its filter's groupBy),
--- as a rank: the group, or the place of the assigned role; 0 without.
+-- as a rank: the group, or the place of the assigned role (a role not in
+-- the order ranks with no role); 0 without.
 local ROLE_RANK, rank = {}, 0
 for role in Layout.ROLE_ORDER:gmatch("[^,]+") do
     rank = rank + 1
@@ -79,7 +80,7 @@ end
 local function groupRank(block, member)
     local by = block.filter.groupBy
     if by == "GROUP" then return member.subgroup end
-    if by == "ASSIGNEDROLE" then return ROLE_RANK[member.assignedRole or "NONE"] end
+    if by == "ASSIGNEDROLE" then return ROLE_RANK[member.assignedRole or "NONE"] or ROLE_RANK.NONE end
     return 0
 end
 
