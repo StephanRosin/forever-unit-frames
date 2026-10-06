@@ -125,3 +125,26 @@ H.check("combat join: xml width", cid:GetWidth(), 80)
 H.check("combat join: data shown", cid.texts.healthLeft:GetText(), "Cid")
 H.check("combat join: nothing blocked", #M.blocked, 0)
 M.combat = false
+
+-- A roster update that keeps a cell's unit: no new event binding and no
+-- RAID_CELLS_CHANGED, but the cell still shows the person now behind it.
+-- A cell whose unit changes binds anew.
+local binds, cellsChanged = {}, 0
+local bind = ns.UnitEvents.Bind
+ns.UnitEvents.Bind = function(frame)
+    binds[frame] = (binds[frame] or 0) + 1
+    return bind(frame)
+end
+ns.Listen("RAID_CELLS_CHANGED", function() cellsChanged = cellsChanged + 1 end)
+M.SetRaidRoster({ member("Tank", "WARRIOR", 1, "TANK"), member("Bea", "PRIEST", 1, "HEALER"),
+    member("Cid", "MAGE", 1, "DAMAGER") })
+H.check("same unit: no rebind", binds[ann], nil)
+H.check("same unit: events kept", ann.eventListener._events.UNIT_HEALTH[1], "raid2")
+H.check("same units: no cells-changed", cellsChanged, 0)
+H.check("same unit: new person shown", ann.texts.healthLeft:GetText(), "Bea")
+M.SetRaidRoster({ member("Tank", "WARRIOR", 1, "TANK"), member("Bea", "PRIEST", 1, "HEALER") })
+H.check("cleared unit: rebound", binds[cid], 1)
+H.check("cleared unit: no events", cid.eventListener._events.UNIT_HEALTH, nil)
+H.check("cleared unit: cells-changed", cellsChanged, 1)
+H.check("kept units: still no rebind", binds[tank], nil)
+ns.UnitEvents.Bind = bind

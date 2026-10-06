@@ -132,7 +132,14 @@ end
 
 -- The header assigns or clears a unit, in or out of combat. The panel
 -- hears of it (RAID_CELLS_CHANGED): blocks may have grown or emptied.
+-- The header sets every cell's unit on each roster update; a cell that
+-- keeps its unit keeps its events and the panel its layout, but the
+-- person behind the same raid unit may have changed, so it shows anew.
 function Cell.OnUnitChanged(button, unit)
+    if button.unit == unit then
+        if unit then ns.Single.UpdateAll(button) end
+        return
+    end
     button.unit = unit
     ns.UnitEvents.Bind(button)
     ns.Fire("RAID_CELLS_CHANGED")
