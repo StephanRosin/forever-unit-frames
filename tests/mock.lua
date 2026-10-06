@@ -1054,6 +1054,17 @@ local function newWidget(kind, name, parent)
         local size = self._font and self._font[2] or 12
         return #(self._text or "") * size / 2
     end
+    -- Rough text height: one font size per line; a set width wraps the
+    -- text (when word wrap is on) into as many lines as it needs.
+    function w:GetStringHeight()
+        if (self._text or "") == "" then return 0 end
+        local size = self._font and self._font[2] or 12
+        local width, lines = self._w or 0, 1
+        if width > 0 and self:GetWordWrap() then
+            lines = math.max(1, math.ceil(self:GetStringWidth() / width))
+        end
+        return lines * size
+    end
     -- Cut off when the natural width exceeds a set width (0 = natural).
     function w:IsTruncated()
         local width = self._w or 0

@@ -12,9 +12,12 @@ ns.NewsWindow = NewsWindow
 local Style, Widgets, L = ns.Style, ns.Widgets, ns.L
 
 local WINDOW_NAME = "ForeverUnitFramesNews"
-local WIDTH, HEIGHT = 560, 440
+local WIDTH, MIN_HEIGHT, MAX_HEIGHT = 560, 440, 600
 local TITLE_H, FOOTER_H, INSET, LINE_GAP, BULLET_W = 32, 40, 16, 8, 12
-local BUTTON_W, WIDE_BUTTON_W, GAP = 120, 160, 8
+local FONT_SIZE = 13
+local BUTTON_W, WIDE_BUTTON_W, GAP, FOOTER_INSET, BUTTON_PADDING = 120, 160, 8, 12, 16
+-- The action button may take the footer up to the Close button.
+local MAX_ACTION_W = WIDTH - 2 * FOOTER_INSET - BUTTON_W - GAP
 local CROSS_SIZE, CROSS_ANGLE = 14, math.pi / 4
 
 local frame
@@ -87,7 +90,7 @@ local function createFooter(parent)
     Style.Fill(footer, "panel")
     horizontalLine(footer, "TOP")
     local close = Widgets.Button(footer, { text = "", width = BUTTON_W, onClick = function() NewsWindow.Close() end })
-    close:SetPoint("RIGHT", footer, "RIGHT", -12, 0)
+    close:SetPoint("RIGHT", footer, "RIGHT", -FOOTER_INSET, 0)
     local action = Widgets.Button(footer, { text = "", width = WIDE_BUTTON_W, onClick = runAction })
     action:SetPoint("RIGHT", close, "LEFT", -GAP, 0)
     NewsWindow.closeButton, NewsWindow.actionButton = close, action
@@ -97,7 +100,7 @@ end
 local function createWindow()
     frame = CreateFrame("Frame", WINDOW_NAME, UIParent)
     NewsWindow.frame = frame
-    frame:SetSize(WIDTH, HEIGHT)
+    frame:SetSize(WIDTH, MIN_HEIGHT)
     frame:SetPoint("CENTER", UIParent, "CENTER", 0, 60)
     frame:SetFrameStrata("HIGH")
     frame:SetToplevel(true)
@@ -118,9 +121,9 @@ end
 local function listLine(i)
     local entry = NewsWindow.lines[i]
     if entry then return entry end
-    local bullet = Style.Text(frame, 13, "accent")
+    local bullet = Style.Text(frame, FONT_SIZE, "accent")
     bullet:SetText("•")
-    local text = Style.Text(frame, 13, "text")
+    local text = Style.Text(frame, FONT_SIZE, "text")
     text:SetWidth(WIDTH - 2 * INSET - BULLET_W)
     text:SetJustifyH("LEFT")
     text:SetWordWrap(true)
@@ -135,8 +138,35 @@ local function listLine(i)
     return entry
 end
 
+-- The action button as wide as its label (at least the wide button, at
+-- most up to the Close button).
+local function fitActionButton()
+    local button = NewsWindow.actionButton
+    local textWidth = button.text:GetStringWidth() or 0
+    local width = WIDE_BUTTON_W
+    if textWidth > 0 then
+        width = math.min(MAX_ACTION_W, math.max(WIDE_BUTTON_W, textWidth + 2 * BUTTON_PADDING))
+    end
+    button:SetWidth(width)
+end
+
+-- The window as tall as its list (between MIN_HEIGHT and MAX_HEIGHT). A
+-- line the client has not measured counts as one line of text.
+local function fitHeight(count)
+    local listHeight = 0
+    for i = 1, count do
+        local h = NewsWindow.lines[i].text:GetStringHeight()
+        if not h or h <= 0 then h = FONT_SIZE end
+        listHeight = listHeight + h
+    end
+    listHeight = listHeight + math.max(0, count - 1) * LINE_GAP
+    local height = TITLE_H + INSET + listHeight + INSET + FOOTER_H
+    frame:SetHeight(math.min(MAX_HEIGHT, math.max(MIN_HEIGHT, height)))
+end
+
 local function render()
     local entry = ns.News.Entry(shownVersion)
+    if not entry then return end
     frame.titleBar.title:SetText(L.NEWS_TITLE:format(shownVersion))
     frame.titleBar.addon:SetText(L.ADDON_NAME)
     for i, key in ipairs(entry.lines) do
@@ -150,7 +180,11 @@ local function render()
     NewsWindow.closeButton.text:SetText(L.NEWS_CLOSE)
     local action = entry.action
     NewsWindow.actionButton:SetShown(action ~= nil)
-    if action then NewsWindow.actionButton.text:SetText(L[action.text]) end
+    if action then
+        NewsWindow.actionButton.text:SetText(L[action.text])
+        fitActionButton()
+    end
+    fitHeight(#entry.lines)
 end
 
 -- Public API ----------------------------------------------------------------------
