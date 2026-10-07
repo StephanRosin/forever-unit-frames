@@ -56,16 +56,20 @@ AuraContainers.ANY_DURATION = 10 * 365 * 86400
 AuraContainers.TRACKING_SET = {}
 for _, id in ipairs(ns.Settings.TRACKING_SPELLS) do AuraContainers.TRACKING_SET[id] = true end
 
--- The container's own filters for "hide permanent" and "hide tracking";
--- nil when neither is on.
+-- The container's own filters for "hide permanent", "hide tracking" and
+-- the hidden auras (group.blockSet: the account's and the frame's lists,
+-- Core/AuraBlocklist.lua); nil when none is on. The excluded spells are
+-- one set: tracking and the lists merged. The client applies them where
+-- it allows filtering by spell (CanApplyIdentityCandidateFilters).
 -- "Hide longer" is maxDuration itself: the client leaves out auras whose
 -- full duration exceeds it, and auras without one.
 function AuraContainers.CandidateFilters(group)
-    if not (group.hidePermanent or group.hideTracking or group.hideLonger) then return nil end
+    local exclude = ns.AuraBlocklist.Merge(group.hideTracking and AuraContainers.TRACKING_SET or nil, group.blockSet)
+    if not (group.hidePermanent or exclude or group.hideLonger) then return nil end
     local filters = {}
     if group.hidePermanent then filters.maxDuration = AuraContainers.ANY_DURATION end
     if group.hideLonger then filters.maxDuration = group.hideLonger end
-    if group.hideTracking then filters.excludeSpellIDs = AuraContainers.TRACKING_SET end
+    if exclude then filters.excludeSpellIDs = exclude end
     return filters
 end
 

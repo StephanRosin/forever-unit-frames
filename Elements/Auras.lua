@@ -233,6 +233,8 @@ local function readSettings(frame, group)
     local longer = not group.isDebuff and get(frame, group, "HideLonger") or 0
     group.hideLonger = longer > 0 and longer * 60 or nil
     group.hideTracking = not group.isDebuff and get(frame, group, "HideTracking") or false
+    -- Hidden auras: the account's list and the frame's (Core/AuraBlocklist.lua).
+    group.blockSet = ns.AuraBlocklist.ForFrame(frame.key)
     group.enabled = get(frame, group, "Enabled")
     -- Only dispellable debuffs, and those moved out: nothing is left.
     if moved and dispellableOnly then group.enabled = false end
@@ -333,6 +335,12 @@ local function fill(frame, group, list, count, mine)
         end
         if aura and group.hideTracking and not Secrets.IsSecret(aura) and type(aura) == "table"
             and Auras.IS_TRACKING[Secrets.Number(aura.spellId) or false] then
+            aura = nil
+        end
+        -- Hidden auras: a readable spell ID on the lists is skipped; a
+        -- secret one cannot be looked up and stays.
+        if aura and group.blockSet and not Secrets.IsSecret(aura) and type(aura) == "table"
+            and group.blockSet[Secrets.Number(aura.spellId) or false] then
             aura = nil
         end
         local button = aura ~= nil and not Secrets.IsSecret(aura) and type(aura) == "table"
