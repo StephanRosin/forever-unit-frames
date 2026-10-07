@@ -90,13 +90,29 @@ function ClickKeys.Update()
     end
 end
 
--- What the player has bound the key to otherwise (the raid window warns:
--- the key does that no longer while the raid frames show), or nil.
-function ClickKeys.Taken(key)
-    if key == "" then return nil end
+-- The key without its modifiers (Raid.ParseKey's spelling).
+local function bareKey(key)
+    local rest = key
+    while true do
+        local after = rest:match("^ALT%-(.+)$") or rest:match("^CTRL%-(.+)$") or rest:match("^SHIFT%-(.+)$")
+        if not after then return rest end
+        rest = after
+    end
+end
+
+local function bound(key)
     local action = GetBindingAction(key)
     if type(action) ~= "string" or action == "" then return nil end
     return action
+end
+
+-- What the player has bound the key to otherwise (the raid window warns:
+-- the key does that no longer while the raid frames show), or nil. A
+-- chord bound to nothing does what its key alone does (the client falls
+-- back), so that is what it takes.
+function ClickKeys.Taken(key)
+    if key == "" then return nil end
+    return bound(key) or bound(bareKey(key))
 end
 
 update = function() ns.AfterCombat("clickKeys", ClickKeys.Update) end

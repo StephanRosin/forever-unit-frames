@@ -77,6 +77,15 @@ H.check("party switched off: none", GetBindingAction("T", true), "")
 H.check("W is taken", Keys.Taken("W"), "MOVEFORWARD")
 H.check("T is free", Keys.Taken("T"), nil)
 H.check("nothing", Keys.Taken(""), nil)
+-- An unbound chord does what its key alone does (the client falls back):
+-- taking it takes that.
+H.check("SHIFT-W falls back to W", Keys.Taken("SHIFT-W"), "MOVEFORWARD")
+H.check("ALT-CTRL-W too", Keys.Taken("ALT-CTRL-W"), "MOVEFORWARD")
+M.bindings["CTRL-W"] = "TOGGLEWORLDMAP"
+H.check("a bound chord: its own", Keys.Taken("CTRL-W"), "TOGGLEWORLDMAP")
+M.bindings["CTRL-W"] = nil
+H.check("SHIFT-T: free", Keys.Taken("SHIFT-T"), nil)
+H.check("a sign after a modifier", Keys.Taken("CTRL--"), nil)
 H.check("nothing blocked at all", #M.blocked, 0)
 
 -- Keys only while our frames show: the raid frames, or the party frames
