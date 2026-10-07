@@ -155,10 +155,12 @@ function Own.Columns(size)
     return columns
 end
 
--- The blocks of its grouping a slot does not take yet, at a size.
+-- The blocks of its grouping a slot does not take yet, at a size: a block
+-- a lower-numbered panel keeps (named in both by an import) it offers, as
+-- its column (Own.Columns) does not show it.
 function Own.Addable(size, slot)
     local taken = {}
-    for _, token in ipairs(tokensOf(slot, Raid.Scope(size))) do taken[token] = true end
+    for _, token in ipairs(keptTokens(slot, Raid.Scope(size))) do taken[token] = true end
     return Layout.Without(groupingBlocks(setting(slot, "GroupBy", Raid.Scope(size)), size), taken)
 end
 
