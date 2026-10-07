@@ -103,7 +103,7 @@ The raid frames have pages of their own, one per tab of the raid window:
   drag-and-drop, and each panel's layout
 - [[Cell|Raid-Cell]] – cell size, bar texture and colors, power strip, border and corners, heals and
   shields
-- [[Texts|Raid-Texts]] – the name and the second line, their colors and fonts
+- [[Text|Raid-Text]] – the name and the second line, their colors and fonts
 - [[Debuffs|Raid-Debuffs]] – the dispellable debuff in the centre or as a square in a corner, the debuff
   row
 - [[Indicators|Raid-Indicators]] – the five corner indicators

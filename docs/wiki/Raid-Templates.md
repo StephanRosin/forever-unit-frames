@@ -59,8 +59,8 @@ Small cells by group, every group in one line, no second line, no heal predictio
 <table>
 <thead><tr><th align="left" width="300">Setting</th><th align="left" width="596">Value</th></tr></thead>
 <tbody>
-<tr><td><b>Arrangement: Blocks</b></td><td>Side by side</td></tr>
-<tr><td><b>Arrangement: Blocks per line</b></td><td>8</td></tr>
+<tr><td><b>Blocks and cells: Blocks</b></td><td>Side by side</td></tr>
+<tr><td><b>Blocks and cells: Blocks per line</b></td><td>8</td></tr>
 <tr><td><b>Debuff row: Show the row</b></td><td>Off</td></tr>
 <tr><td><b>Dispellable debuff: Show the debuff</b></td><td>On</td></tr>
 <tr><td><b>Dispellable debuff: Shown as</b></td><td>Icon in the center</td></tr>
@@ -81,8 +81,8 @@ The DPS template, with the dispel icon large and the cell tinted in the debuff's
 <table>
 <thead><tr><th align="left" width="300">Setting</th><th align="left" width="596">Value</th></tr></thead>
 <tbody>
-<tr><td><b>Arrangement: Blocks</b></td><td>Side by side</td></tr>
-<tr><td><b>Arrangement: Blocks per line</b></td><td>8</td></tr>
+<tr><td><b>Blocks and cells: Blocks</b></td><td>Side by side</td></tr>
+<tr><td><b>Blocks and cells: Blocks per line</b></td><td>8</td></tr>
 <tr><td><b>Debuff row: Show the row</b></td><td>Off</td></tr>
 <tr><td><b>Dispellable debuff: Icon size</b></td><td>10 players: 28; 20 players: 24; 40 players: 22</td></tr>
 <tr><td><b>Dispellable debuff: Show the debuff</b></td><td>On</td></tr>
@@ -116,11 +116,11 @@ A look sets only how the cells look; a role template never touches these, so a r
 <tr><td><b>Border and corners: Corner radius</b></td><td>10 players: 4; 20 players: 3; 40 players: 2</td><td>0</td><td>0</td></tr>
 <tr><td><b>Borders: Around each block</b></td><td>Off</td><td>Off</td><td>On</td></tr>
 <tr><td><b>Borders: Around the panel</b></td><td>On</td><td>Off</td><td>Off</td></tr>
-<tr><td><b>Fonts: Font</b></td><td>Friz Quadrata</td><td>Arial Narrow</td><td>Friz Quadrata</td></tr>
-<tr><td><b>Fonts: Font shadow</b></td><td>On</td><td>Off</td><td>On</td></tr>
-<tr><td><b>Fonts: Font style</b></td><td>Outline</td><td>Outline</td><td>None</td></tr>
-<tr><td><b>Fonts: Name size</b></td><td>11</td><td>11</td><td>10</td></tr>
-<tr><td><b>Fonts: Second line size</b></td><td>10</td><td>10</td><td>9</td></tr>
+<tr><td><b>Font: Font</b></td><td>Friz Quadrata</td><td>Arial Narrow</td><td>Friz Quadrata</td></tr>
+<tr><td><b>Font: Font shadow</b></td><td>On</td><td>Off</td><td>On</td></tr>
+<tr><td><b>Font: Font style</b></td><td>Outline</td><td>Outline</td><td>None</td></tr>
+<tr><td><b>Font: Name size</b></td><td>11</td><td>11</td><td>10</td></tr>
+<tr><td><b>Font: Second line size</b></td><td>10</td><td>10</td><td>9</td></tr>
 <tr><td><b>Texts: Name color</b></td><td><code>#ffffff</code></td><td><code>#ffffff</code></td><td><code>#ffffff</code></td></tr>
 <tr><td><b>Texts: Name in class color</b></td><td>Off</td><td>Off</td><td>Off</td></tr>
 <tr><td><b>Texts: Second line color</b></td><td><code>#ffffff</code></td><td><code>#ffffff</code></td><td><code>#b3b3b3</code></td></tr>

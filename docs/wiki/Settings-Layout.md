@@ -6,9 +6,9 @@ Size, position, the rows of the frame, portrait, markers, border, shadow and cor
 
 The **Layout** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
 
-**On this page:** [Frame](#frame) · [Size](#size) · [Position](#position) · [Bar heights](#bar-heights) · [Portrait](#portrait) · [Indicators](#indicators) · [Border](#border) · [Shadow](#shadow) · [Shape](#shape)
+**On this page:** [Display](#display) · [Size](#size) · [Position](#position) · [Bar heights](#bar-heights) · [Portrait](#portrait) · [Indicators](#indicators) · [Border](#border) · [Shadow](#shadow) · [Shape](#shape)
 
-## Frame
+## Display
 
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>

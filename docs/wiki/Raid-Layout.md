@@ -6,7 +6,7 @@ How the panel is made of blocks, how cells and blocks are arranged, the panel's 
 
 The **Layout** tab of the raid options window (`/fuf raid`). Each raid size (10, 20, 40) has a profile of its own: the size tabs at the top choose which one you edit; a default that differs per size is listed per size.
 
-**On this page:** [Grouping](#grouping) · [Arrangement](#arrangement) · [Position](#position) · [Borders](#borders)
+**On this page:** [Grouping](#grouping) · [Blocks and cells](#blocks-and-cells) · [Position](#position) · [Borders](#borders)
 
 ## Grouping
 
@@ -21,7 +21,7 @@ The **Layout** tab of the raid options window (`/fuf raid`). Each raid size (10,
 </tbody>
 </table>
 
-## Arrangement
+## Blocks and cells
 
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>

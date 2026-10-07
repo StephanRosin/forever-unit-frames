@@ -22,7 +22,7 @@
 - [[Panels|Raid-Panels]]
 - [[Arrangement|Raid-Arrangement]]
 - [[Cell|Raid-Cell]]
-- [[Texts|Raid-Texts]]
+- [[Text|Raid-Text]]
 - [[Debuffs|Raid-Debuffs]]
 - [[Indicators|Raid-Indicators]]
 - [[Icons & states|Raid-Icons-and-states]]

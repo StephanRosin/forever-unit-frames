@@ -6,7 +6,7 @@ Icons and markers on the frame, combo points, threat, highlights and fading.
 
 The **Status** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
 
-**On this page:** [Status icons](#status-icons) · [Combat icon](#combat-icon) · [PvP icon](#pvp-icon) · [Raid target marker](#raid-target-marker) · [Pet happiness](#pet-happiness) · [Group icons](#group-icons) · [Combo points](#combo-points) · [Threat](#threat) · [Target highlight](#target-highlight) · [Dispellable debuffs](#dispellable-debuffs) · [Range](#range) · [Out of combat](#out-of-combat)
+**On this page:** [Status icons](#status-icons) · [Combat icon](#combat-icon) · [PvP icon](#pvp-icon) · [Raid target marker](#raid-target-marker) · [Pet happiness](#pet-happiness) · [Group icons](#group-icons) · [Combo points](#combo-points) · [Threat](#threat) · [Target highlight](#target-highlight) · [Dispel alert](#dispel-alert) · [Range](#range) · [Out of combat](#out-of-combat)
 
 ## Status icons
 
@@ -137,12 +137,12 @@ The **Status** tab on each frame's page in `/fuf`. The last column says which fr
 </tbody>
 </table>
 
-## Dispellable debuffs
+## Dispel alert
 
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Tint the border</b></td><td>In the debuff's color while it carries one you can dispel</td><td>On, Off</td><td>On</td><td>Player, Party</td></tr>
+<tr><td><b>Tint border on dispellable debuff</b></td><td>In the debuff's color while it carries one you can dispel</td><td>On, Off</td><td>On</td><td>Player, Party</td></tr>
 </tbody>
 </table>
 

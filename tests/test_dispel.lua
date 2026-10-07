@@ -36,7 +36,11 @@ do
         end
     end
     H.check("dispel section on the status tab", found, "status")
-    H.check("section label", ns.L.SECTION_dispel, "Dispellable debuffs")
+    H.check("section label", ns.L.SECTION_dispel, "Dispel alert")
+    -- Named apart from the auras' section of dispellable debuffs.
+    for code, t in pairs(ns.Locales) do
+        H.checkTrue(code .. ": not the auras' section's name", t.SECTION_dispel ~= t.SECTION_dispels)
+    end
     H.checkTrue("label", ns.L.SETTING_dispelHighlight ~= "SETTING_dispelHighlight")
 end
 

@@ -68,7 +68,7 @@ end
 H.check("fonts section", texts.sections[2].id, "fonts")
 H.check("fonts section keys", table.concat(texts.sections[2].keys, ","),
     "fontFace,nameFontSize,secondFontSize,fontOutline,fontShadow")
-H.check("section title", ns.RaidSchema.SectionTitle("fonts"), "Fonts")
+H.check("section title", ns.RaidSchema.SectionTitle("fonts"), "Font")
 H.check("label", ns.RaidSchema.Label("secondFontSize"), "Second line size")
 H.check("outline word", ns.RaidSchema.EnumText(RS.Get("fontOutline"), "SOFT"), "Soft outline")
 H.check("nothing blocked", #M.blocked, 0)

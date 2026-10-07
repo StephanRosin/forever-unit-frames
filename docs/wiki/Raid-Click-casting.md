@@ -8,9 +8,9 @@ The **Click-casting** tab of the raid options window (`/fuf raid`). Its settings
 
 For this character, at every raid size; changes apply out of combat. A modified click with nothing bound does what the plain click does, but never targets or opens the menu. Blizzard's own click bindings win.
 
-**On this page:** [Click-casting](#click-casting) · [Left button](#left-button) · [Right button](#right-button) · [Middle button](#middle-button) · [Mouse button 4](#mouse-button-4) · [Mouse button 5](#mouse-button-5) · [Keys on mouse-over](#keys-on-mouse-over)
+**On this page:** [General](#general) · [Left button](#left-button) · [Right button](#right-button) · [Middle button](#middle-button) · [Mouse button 4](#mouse-button-4) · [Mouse button 5](#mouse-button-5) · [Keys on mouse-over](#keys-on-mouse-over)
 
-## Click-casting
+## General
 
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
