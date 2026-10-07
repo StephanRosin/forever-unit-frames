@@ -71,7 +71,14 @@ H.check("pets grouped by group", units(pets({ showRaid = true, groupBy = "GROUP"
 H.check("the owners' units", units(pets({ showRaid = true, useOwnerUnit = true })), "raid2,raid4,raid5")
 H.check("pets of named owners", units(pets({ showRaid = true, nameList = "Bob,Zed,Tank" })), "raidpet4,raidpet5")
 H.check("named pets", units(pets({ showRaid = true, nameList = "Wolf", filterOnPet = true })), "raidpet4")
-H.check("no role filter for pets", units(pets({ showRaid = true, groupFilter = "MAINTANK" })), "")
+-- The pet header has no roleFilter: the attribute is ignored, every pet
+-- shows. A role in its groupFilter picks the pets of members with that
+-- raid role (non-strict).
+H.check("no role filter for pets", units(pets({ showRaid = true, roleFilter = "MAINTANK" })),
+    "raidpet2,raidpet4,raidpet5")
+M.units.raidpet1 = { name = "Bear" }
+H.check("a role in the pets' group filter", units(pets({ showRaid = true, groupFilter = "MAINTANK" })), "raidpet1")
+M.units.raidpet1 = nil
 
 -- A party: "pet" is yours, "partypet1" your first member's. A member's
 -- name is UnitName's two values joined, as the client does.

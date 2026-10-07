@@ -15,6 +15,7 @@ local function read(path)
     fh:close()
     return text
 end
+H.checkTrue("the generator lists its pages", type(WIKI_PAGES) == "table" and #WIKI_PAGES > 0)
 local names = { "_Sidebar.md" }
 for _, page in ipairs(WIKI_PAGES or {}) do names[#names + 1] = page[1] .. ".md" end
 for _, name in ipairs(names) do

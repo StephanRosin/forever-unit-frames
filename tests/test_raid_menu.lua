@@ -22,9 +22,10 @@ M.SetRaidRoster({ member("Me", 1), member("Bob", 1), member("Cid", 2) })
 M.units.player = M.units.raid1
 M.RunTimers()
 local function cell(unit)
-    for _, b in ipairs(ns.RaidCell.buttons) do
-        if b.unit == unit and b:IsVisible() and b:GetParent() == Header.headers[1] then return b end
-        if b.unit == unit and b:IsVisible() and b:GetParent() == Header.headers[2] then return b end
+    for _, h in ipairs(Header.headers) do
+        for _, b in ipairs(ns.RaidCell.buttons) do
+            if b.unit == unit and b:IsVisible() and b:GetParent() == h then return b end
+        end
     end
 end
 local function texts(menu)

@@ -17,6 +17,7 @@ local function read(name)
 end
 
 local raid = {}
+H.checkTrue("the generator lists its pages", type(WIKI_PAGES) == "table" and #WIKI_PAGES > 0)
 for _, page in ipairs(WIKI_PAGES or {}) do
     if page[1]:match("^Raid%-") then raid[#raid + 1] = page[1] end
 end

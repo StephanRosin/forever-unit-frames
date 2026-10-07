@@ -154,7 +154,11 @@ for _, code in ipairs({ "enUS", "deDE", "esES", "frFR" }) do
 end
 ns.Config.Set("general", "language", "AUTO")
 RO.Open()
-H.check("English: tabs as before", RO.tabButtons[1]:GetWidth(), 70)
+-- English fits without squeezing: every tab its word and the padding,
+-- at least 70, as before the tabs were fitted to the row.
+for _, b in ipairs(RO.tabButtons) do
+    H.check("English: tab " .. b.tabId .. " as before", b:GetWidth(), math.max(70, b.text:GetStringWidth() + 28))
+end
 RO.Close()
 H.check("nothing blocked", #M.blocked, 0)
 H.check("no error", #M.errors, 0)

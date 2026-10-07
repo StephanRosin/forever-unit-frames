@@ -11,6 +11,7 @@ _G.WIKI_OUT = nil
 os.execute("rm -rf '" .. dir .. "'")
 H.checkTrue("generator runs", ok)
 local home = H.ReadFile("docs/wiki/Home.md")
+H.checkTrue("the generator lists its pages", type(WIKI_PAGES) == "table" and #WIKI_PAGES > 0)
 for _, page in ipairs(WIKI_PAGES or {}) do
     if page[1]:match("^Raid%-") then
         H.checkTrue("Home links " .. page[1], home:find("[[" .. page[2] .. "|" .. page[1] .. "]]", 1, true))
