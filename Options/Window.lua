@@ -284,8 +284,9 @@ local function textArea(block, readOnly, y)
 end
 
 -- Two-click action: the first click arms the button for a few seconds, the
--- second runs it.
-local function confirmButton(parent, text, action)
+-- second runs it. armedText (optional): the armed button's word, for a
+-- button narrower than L.CONFIRM needs.
+local function confirmButton(parent, text, action, armedText)
     local button, armed
     local function paintArmed() if armed then Style.Paint(button.text, "error") end end
     local function disarm()
@@ -297,7 +298,7 @@ local function confirmButton(parent, text, action)
         if armed then disarm(); action(); return end
         local token = {}
         armed = token
-        button.text:SetText(L.CONFIRM)
+        button.text:SetText(armedText or L.CONFIRM)
         paintArmed()
         C_Timer.After(CONFIRM_SECONDS, function() if armed == token then disarm() end end)
     end })

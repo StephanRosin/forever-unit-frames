@@ -37,18 +37,22 @@ local function columnName(data)
 end
 
 local function groupingText(groupBy)
-    return ("%s: %s"):format(Schema.Label("groupBy"), Schema.EnumText(ns.RaidSettings.Get("groupBy"), groupBy))
+    return L.RAID_GROUPING_LINE:format(Schema.Label("groupBy"), Schema.EnumText(ns.RaidSettings.Get("groupBy"), groupBy))
 end
 
 -- A dropdown that is only its button (as the window's Copy from…), its
--- text set by text().
+-- text set by text(). A refresh (every render of the board) closes its
+-- open list: the chip may stand for another block now, its items are old.
 local function menuButton(parent, opts, text)
     local row = Widgets.Dropdown(parent, opts)
     row:EnableMouse(false)
     row.hover:SetAlpha(0)
     row.button:ClearAllPoints()
     row.button:SetAllPoints(row)
-    function row:Refresh() self.button.text:SetText(text(self)) end
+    function row:Refresh()
+        if self.list.owner == self then Widgets.CloseList() end
+        self.button.text:SetText(text(self))
+    end
     return row
 end
 
@@ -84,10 +88,14 @@ local function chipItems(chip)
     return items
 end
 
--- The column under the cursor, among those shown.
+-- The column under the cursor, among those visible, while the cursor is
+-- over the window's scroll area (a column scrolled out of view still
+-- reports the mouse over it).
 local function columnUnderCursor(board)
+    local frame = RaidOptions.frame
+    if not (frame and frame.scroll:IsMouseOver()) then return nil end
     for _, column in ipairs(board.columns) do
-        if column:IsShown() and column:IsMouseOver() then return column end
+        if column:IsVisible() and column:IsMouseOver() then return column end
     end
     return nil
 end
@@ -156,7 +164,7 @@ local function ownControls(column)
     }, function() return L.RAID_ADD_BLOCK end)
     column.addBlock:SetSize(width, BUTTON_H)
     column.remove = ns.Options.ConfirmButton(column, L.RAID_REMOVE_PANEL,
-        function() Own.Remove(editedSize(), column.data.slot) end)
+        function() Own.Remove(editedSize(), column.data.slot) end, L.RAID_REMOVE_CONFIRM)
     column.remove:SetWidth(width)
 end
 
@@ -173,7 +181,9 @@ local function newColumn(board)
     column.name:SetWordWrap(false)
     column.grouping = Style.Text(column, 10, "muted")
     column.grouping:SetPoint("TOPLEFT", column.name, "BOTTOMLEFT", 0, -4)
+    column.grouping:SetPoint("TOPRIGHT", column.name, "BOTTOMRIGHT", 0, -4)
     column.grouping:SetJustifyH("LEFT")
+    column.grouping:SetWordWrap(false)
     ownControls(column)
     return column
 end
@@ -218,13 +228,22 @@ end
 
 -- Board ---------------------------------------------------------------------------
 
+-- A control's enabled state, set only when it changes: setting it
+-- repaints (a hovered or armed button would lose its look on every
+-- render).
+local function setEnabled(control, on)
+    if control.boardEnabled == on then return end
+    control.boardEnabled = on
+    control:SetEnabled(on)
+end
+
 local function applyEnabled(board)
     local on = board.enabled
-    board.addButton:SetEnabled(on and #board.data <= #ns.Raid.OWN_PANELS)
+    setEnabled(board.addButton, on and #board.data <= #ns.Raid.OWN_PANELS)
     for _, column in ipairs(board.columns) do
-        for _, chip in ipairs(column.chips) do chip:SetEnabled(on) end
-        column.addBlock:SetEnabled(on)
-        column.remove:SetEnabled(on)
+        for _, chip in ipairs(column.chips) do setEnabled(chip, on) end
+        setEnabled(column.addBlock, on)
+        setEnabled(column.remove, on)
     end
 end
 

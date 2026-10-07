@@ -44,12 +44,19 @@ local function pick(text)
     end
     error("no item " .. text)
 end
--- A drag from a chip to a column (nil: let go over nothing).
-local function drag(chip, column)
-    chip.button:GetScript("OnDragStart")(chip.button)
+-- A drag from a chip to a column (nil: let go over nothing), the cursor
+-- over the window's scroll area unless outside is set.
+local function startDrag(chip) chip.button:GetScript("OnDragStart")(chip.button) end
+local function stopDrag(chip, column, outside)
     if column then column._mouseOver = true end
+    RO.frame.scroll._mouseOver = not outside
     chip.button:GetScript("OnDragStop")(chip.button)
     if column then column._mouseOver = false end
+    RO.frame.scroll._mouseOver = false
+end
+local function drag(chip, column, outside)
+    startDrag(chip)
+    stopDrag(chip, column, outside)
 end
 local function chip(column, text)
     for _, c in ipairs(column.chips) do
@@ -61,6 +68,17 @@ RO.Open(10, "arrangement")
 local b = Arrangement.board
 H.check("the main panel alone", board(), "Main panel[Group 1,Group 2]")
 H.check("its grouping", shownColumns()[1].grouping:GetText(), "Group by: Group")
+-- The grouping line: one line across the column.
+local function points(region)
+    local list = {}
+    for i = 1, 2 do
+        local p, _, relPoint = region:GetPoint(i)
+        list[i] = table.concat({ tostring(p), tostring(relPoint) }, " ")
+    end
+    return table.concat(list, ", ")
+end
+H.check("grouping line: across", points(shownColumns()[1].grouping), "TOPLEFT BOTTOMLEFT, TOPRIGHT BOTTOMRIGHT")
+H.check("grouping line: one line", shownColumns()[1].grouping:GetWordWrap(), false)
 H.checkTrue("chips drag", shownColumns()[1].chips[1].button._drag)
 H.check("add panel", b.addButton.text:GetText(), L.RAID_ADD_PANEL)
 
@@ -83,6 +101,14 @@ H.check("moved", RC.Get("r10", "panel2Blocks"), "2")
 H.check("the board follows", board(), "Main panel[Group 1] Panel 2[Group 2]")
 
 -- Drag and drop: onto another column of its grouping.
+-- A drag shows on the dragged chip's border.
+local dragged = chip(main, "Group 1")
+startDrag(dragged)
+H.check("dragging: its border lit", dragged.button.edges[1]._color[1], ns.Style.COLORS.accent[1])
+-- Let go over the column but outside the scroll area (the column scrolled
+-- out of view): nothing.
+stopDrag(dragged, own, true)
+H.check("outside the scroll area: nothing", RC.Get("r10", "panel2Blocks"), "2")
 drag(chip(main, "Group 1"), own)
 H.check("dropped", RC.Get("r10", "panel2Blocks"), "2,1")
 H.check("the main panel empty, its blocks in group order", board(), "Main panel[] Panel 2[Group 1,Group 2]")
@@ -90,9 +116,36 @@ drag(chip(own, "Group 1"), own)
 H.check("onto its own column: nothing", RC.Get("r10", "panel2Blocks"), "2,1")
 drag(chip(own, "Group 1"), nil)
 H.check("onto nothing: nothing", RC.Get("r10", "panel2Blocks"), "2,1")
-drag(chip(own, "Group 1"), main)
+dragged = chip(own, "Group 1")
+drag(dragged, main)
 H.check("back to the main panel", board(), "Main panel[Group 1] Panel 2[Group 2]")
-H.check("the chip's border back", chip(own, "Group 2").button.edges[1]._color[1], ns.Style.COLORS.border[1])
+H.check("the dragged chip's border back", dragged.button.edges[1]._color[1], ns.Style.COLORS.border[1])
+-- A column that is not visible (its page hidden) takes nothing.
+b:Hide()
+drag(chip(main, "Group 1"), own)
+b:Show()
+H.check("not visible: nothing", RC.Get("r10", "panel2Blocks"), "2")
+
+-- A change while a chip's menu is open closes the menu (its chip may now
+-- stand for another block).
+click(chip(main, "Group 1").button)
+H.checkTrue("menu open", ns.Widgets.list:IsShown())
+RC.Set("r10", "panel2Title", "X")
+H.check("a change closes it", ns.Widgets.list:IsShown(), false)
+RC.Set("r10", "panel2Title", "")
+
+-- A render leaves the buttons' looks alone: an armed remove stays armed
+-- and red, a hovered add stays lit.
+click(own.remove)
+b.addButton:GetScript("OnEnter")(b.addButton)
+RC.Set("r10", "panel2Title", "Y")
+H.check("still armed", own.remove.text:GetText(), L.RAID_REMOVE_CONFIRM)
+local function rgb(c) return table.concat({ c[1], c[2], c[3] }, ",") end
+H.check("still red", rgb(own.remove.text._color), rgb(ns.Style.COLORS.error))
+H.check("still lit", rgb(b.addButton.text._color), rgb(ns.Style.COLORS.accent))
+b.addButton:GetScript("OnLeave")(b.addButton)
+own.remove.Disarm()
+RC.Set("r10", "panel2Title", "")
 
 -- Another grouping: its blocks come from the add menu; taken out, gone.
 ns.RaidOwnPanels.SetGrouping(10, ns.Raid.OwnPanel("panel2"), "ROLE")
@@ -156,6 +209,15 @@ drag(main.chips[1], first)
 H.check("combat: no drop", RC.Get("r10", "panel2Blocks"), "")
 M.SetCombat(false)
 M.FireEvent("PLAYER_REGEN_ENABLED")
+-- A drag under way when combat starts is dropped nowhere.
+startDrag(main.chips[1])
+M.combat = true
+M.FireEvent("PLAYER_REGEN_DISABLED")
+stopDrag(main.chips[1], first)
+H.check("combat came: no drop", RC.Get("r10", "panel2Blocks"), "")
+H.check("combat came: the border back", main.chips[1].button.edges[1]._color[1], ns.Style.COLORS.border[1])
+M.SetCombat(false)
+M.FireEvent("PLAYER_REGEN_ENABLED")
 H.checkTrue("a chip unlocked", main.chips[1].button:IsEnabled())
 H.check("still full", b.addButton:IsEnabled(), false)
 H.check("no error", #M.errors, 0)
@@ -169,24 +231,33 @@ local function width(text, size)
     fs:SetText(text)
     return fs:GetStringWidth()
 end
--- The chip itself: its button covers it (SetAllPoints).
+-- A chip's list is the chip's width (its button covers it, SetAllPoints); a
+-- list row sits 1 and 4 inside it, its text 8 inside the row on each side.
 local chipWidth = main.chips[1]:GetWidth()
+local listTextWidth = chipWidth - 1 - 4 - 2 * 8
+local removeWidth = shownColumns()[2].remove:GetWidth()
 for _, code in ipairs({ "enUS", "deDE", "esES", "frFR" }) do
     local words = ns.Locales[code]
     for _, key in ipairs({ "RAID_MAIN_PANEL", "RAID_ADD_PANEL", "RAID_REMOVE_PANEL", "RAID_ADD_BLOCK", "RAID_MOVE_TO",
-        "RAID_TAKE_OUT", "RAID_NOWHERE", "RAID_NONE_LEFT", "RAID_BOARD_HINT", "RAID_OWN_PANEL" }) do
+        "RAID_TAKE_OUT", "RAID_NOWHERE", "RAID_NONE_LEFT", "RAID_BOARD_HINT", "RAID_OWN_PANEL", "RAID_REMOVE_CONFIRM",
+        "RAID_GROUPING_LINE" }) do
         H.checkTrue(code .. " has " .. key, type(words[key]) == "string")
     end
     local panel10 = words.RAID_OWN_PANEL:format(10)
     for _, text in ipairs({ words.RAID_MOVE_TO:format(panel10), words.RAID_MOVE_TO:format(words.RAID_MAIN_PANEL),
         words.RAID_TAKE_OUT, words.RAID_NOWHERE, words.RAID_NONE_LEFT, words.RAID_ADD_BLOCK, words.RAID_REMOVE_PANEL }) do
-        H.checkTrue(code .. " fits a chip: " .. text, width(text, 12) <= chipWidth - 16)
+        H.checkTrue(code .. " fits a chip's list: " .. text, width(text, 12) <= listTextWidth)
     end
     H.checkTrue(code .. " fits its button: add panel", width(words.RAID_ADD_PANEL, 12) <= b.addButton:GetWidth() - 16)
+    for _, key in ipairs({ "RAID_REMOVE_PANEL", "RAID_REMOVE_CONFIRM" }) do
+        H.checkTrue(code .. " fits its button: " .. key, width(words[key], 12) <= removeWidth - 16)
+    end
 end
 
 -- A new language: the board in its words.
 ns.Config.Set("general", "language", "deDE")
 H.check("German board", shownColumns()[1].name:GetText(), "Hauptfeld")
+ns.Config.Set("general", "language", "frFR")
+H.checkTrue("French grouping line", shownColumns()[1].grouping:GetText():find(" : ", 1, true) ~= nil)
 ns.Config.Set("general", "language", "AUTO")
 H.check("no error after the language changes", #M.errors, 0)

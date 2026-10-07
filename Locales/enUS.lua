@@ -892,12 +892,16 @@ L.RAID_HINT_ownTitle = "Shown above the panel; empty: none"
 L.RAID_MAIN_PANEL = "Main panel"
 L.RAID_ADD_PANEL = "Add a panel"
 L.RAID_REMOVE_PANEL = "Remove panel"
+-- The remove button armed (it is narrow): a second click removes the panel.
+L.RAID_REMOVE_CONFIRM = "Click again to remove"
 L.RAID_ADD_BLOCK = "Add a block…"
 L.RAID_MOVE_TO = "Move to %s"
 L.RAID_TAKE_OUT = "Take out"
 L.RAID_NOWHERE = "No panel to move to"
 L.RAID_NONE_LEFT = "It has every block"
 L.RAID_BOARD_HINT = "Drag a block onto another panel, or click it."
+-- A column's grouping: the setting's label and its value.
+L.RAID_GROUPING_LINE = "%s: %s"
 
 -- Raid frames: the raid tools bar (Raid/Tools.lua).
 L.RAID_TAB_tools = "Tools"

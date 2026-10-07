@@ -868,12 +868,16 @@ L.RAID_HINT_ownTitle = "Über dem Feld; leer: keiner"
 L.RAID_MAIN_PANEL = "Hauptfeld"
 L.RAID_ADD_PANEL = "Feld hinzufügen"
 L.RAID_REMOVE_PANEL = "Feld entfernen"
+-- The remove button armed (it is narrow): a second click removes the panel.
+L.RAID_REMOVE_CONFIRM = "Zum Entfernen klicken"
 L.RAID_ADD_BLOCK = "Block hinzufügen…"
 L.RAID_MOVE_TO = "Nach %s"
 L.RAID_TAKE_OUT = "Herausnehmen"
 L.RAID_NOWHERE = "Kein Zielfeld"
 L.RAID_NONE_LEFT = "Es hat jeden Block"
 L.RAID_BOARD_HINT = "Ziehe einen Block auf ein anderes Feld oder klicke ihn an."
+-- A column's grouping: the setting's label and its value.
+L.RAID_GROUPING_LINE = "%s: %s"
 
 -- Schlachtzugsrahmen: die Werkzeugleiste (Raid/Tools.lua).
 L.RAID_TAB_tools = "Werkzeuge"

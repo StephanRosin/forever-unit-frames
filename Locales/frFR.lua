@@ -865,15 +865,19 @@ L.RAID_SETTING_ownBlocks = "Blocs affichés"
 L.RAID_HINT_ownBlocks = "Déplacés sur le tableau de cet onglet"
 L.RAID_SETTING_ownTitle = "Titre"
 L.RAID_HINT_ownTitle = "Au-dessus du panneau ; vide : aucun"
-L.RAID_MAIN_PANEL = "Panneau principal"
+L.RAID_MAIN_PANEL = "Principal"
 L.RAID_ADD_PANEL = "Ajouter un panneau"
 L.RAID_REMOVE_PANEL = "Retirer le panneau"
+-- The remove button armed (it is narrow): a second click removes the panel.
+L.RAID_REMOVE_CONFIRM = "Cliquez pour retirer"
 L.RAID_ADD_BLOCK = "Ajouter un bloc…"
 L.RAID_MOVE_TO = "Vers %s"
 L.RAID_TAKE_OUT = "Retirer"
 L.RAID_NOWHERE = "Aucun panneau cible"
 L.RAID_NONE_LEFT = "Il a tous les blocs"
 L.RAID_BOARD_HINT = "Glissez un bloc sur un autre panneau ou cliquez dessus."
+-- A column's grouping: the setting's label and its value.
+L.RAID_GROUPING_LINE = "%s : %s"
 
 -- Cadres de raid : la barre d'outils (Raid/Tools.lua).
 L.RAID_TAB_tools = "Outils"
