@@ -54,7 +54,7 @@ Heals, shields and the power strip keep the unit frames' standard colors.
 <tr><td><b>Incoming heals</b></td><td></td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Overheal lane</b></td><td>Heals past full health at the bar's end</td><td>On, Off</td><td>Off</td></tr>
 <tr><td><b>Absorb shields</b></td><td></td><td>On, Off</td><td>On</td></tr>
-<tr><td><b>Damage and heal numbers</b></td><td></td><td>On, Off</td><td>Off</td></tr>
+<tr><td><b>Damage and heal numbers</b></td><td>Shown briefly inside the cell</td><td>On, Off</td><td>Off</td></tr>
 </tbody>
 </table>
 

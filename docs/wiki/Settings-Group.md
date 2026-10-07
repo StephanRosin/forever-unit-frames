@@ -6,6 +6,8 @@ The party only: how the members are arranged, their pets and their targets.
 
 The **Group** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
 
+The raid window's click-casting can act on the party frames too: /fuf raid > Click-casting, On the party frames too.
+
 **On this page:** [Party layout](#party-layout) · [Pets](#pets) · [Pet auras](#pet-auras) · [Targets](#targets)
 
 ## Party layout
@@ -15,7 +17,7 @@ The **Group** tab on each frame's page in `/fuf`. The last column says which fra
 <tbody>
 <tr><td><b>Orientation</b></td><td></td><td>Vertical, Horizontal</td><td>Vertical</td><td>Party</td></tr>
 <tr><td><b>Spacing</b></td><td></td><td>0 – 60</td><td>25</td><td>Party</td></tr>
-<tr><td><b>Show player</b></td><td></td><td>On, Off</td><td>Off</td><td>Party</td></tr>
+<tr><td><b>Show yourself</b></td><td></td><td>On, Off</td><td>Off</td><td>Party</td></tr>
 <tr><td><b>Show when solo</b></td><td>Shows your own frame outside a group</td><td>On, Off</td><td>Off</td><td>Party</td></tr>
 <tr><td><b>Hide in raid</b></td><td>While you are in a raid group</td><td>On, Off</td><td>On</td><td>Party</td></tr>
 </tbody>

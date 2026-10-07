@@ -17,7 +17,7 @@ The **Layout** tab of the raid options window (`/fuf raid`). Each raid size (10,
 <tr><td><b>Sort within a block</b></td><td>Role: tanks, healers, damage, then the rest</td><td>Raid order, Name, Role</td><td>Raid order</td></tr>
 <tr><td><b>Class order</b></td><td>Only with Group by: Class; e.g. Warrior, Priest, Paladin, Druid</td><td>Text</td><td>(none)</td></tr>
 <tr><td><b>Hide empty blocks</b></td><td>Blocks without members take no room</td><td>On, Off</td><td>On</td></tr>
-<tr><td><b>Block titles</b></td><td></td><td>On, Off</td><td>Off</td></tr>
+<tr><td><b>Block titles</b></td><td>Group number, class or role above each block</td><td>On, Off</td><td>Off</td></tr>
 </tbody>
 </table>
 
@@ -50,7 +50,7 @@ The **Layout** tab of the raid options window (`/fuf raid`). Each raid size (10,
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
-<tr><td><b>Around the panel</b></td><td></td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Around the panel</b></td><td>A gold border around the whole panel</td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Around each block</b></td><td></td><td>On, Off</td><td>Off</td></tr>
 </tbody>
 </table>

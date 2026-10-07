@@ -16,8 +16,8 @@ The **Indicators** tab of the raid options window (`/fuf raid`). Each raid size 
 <tr><td><b>Spells</b></td><td>Spell IDs, or names from your spell book</td><td>Text</td><td>(none)</td></tr>
 <tr><td><b>Color</b></td><td></td><td>Color</td><td><code>#33e633</code></td></tr>
 <tr><td><b>Size</b></td><td></td><td>4 – 24</td><td>8</td></tr>
-<tr><td><b>Your own casts only</b></td><td></td><td>On, Off</td><td>On</td></tr>
-<tr><td><b>Time left</b></td><td></td><td>Darkening, Number, Not shown</td><td>Darkening</td></tr>
+<tr><td><b>Your own casts only</b></td><td>Off: the listed spells count whoever cast them</td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Time left</b></td><td>Darkening: a sweep over the indicator; Number: the seconds left</td><td>Darkening, Number, Not shown</td><td>Darkening</td></tr>
 </tbody>
 </table>
 
@@ -29,8 +29,8 @@ The **Indicators** tab of the raid options window (`/fuf raid`). Each raid size 
 <tr><td><b>Spells</b></td><td>Spell IDs, or names from your spell book</td><td>Text</td><td>(none)</td></tr>
 <tr><td><b>Color</b></td><td></td><td>Color</td><td><code>#ffd91a</code></td></tr>
 <tr><td><b>Size</b></td><td></td><td>4 – 24</td><td>8</td></tr>
-<tr><td><b>Your own casts only</b></td><td></td><td>On, Off</td><td>On</td></tr>
-<tr><td><b>Time left</b></td><td></td><td>Darkening, Number, Not shown</td><td>Darkening</td></tr>
+<tr><td><b>Your own casts only</b></td><td>Off: the listed spells count whoever cast them</td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Time left</b></td><td>Darkening: a sweep over the indicator; Number: the seconds left</td><td>Darkening, Number, Not shown</td><td>Darkening</td></tr>
 </tbody>
 </table>
 
@@ -42,8 +42,8 @@ The **Indicators** tab of the raid options window (`/fuf raid`). Each raid size 
 <tr><td><b>Spells</b></td><td>Spell IDs, or names from your spell book</td><td>Text</td><td>(none)</td></tr>
 <tr><td><b>Color</b></td><td></td><td>Color</td><td><code>#4d99ff</code></td></tr>
 <tr><td><b>Size</b></td><td></td><td>4 – 24</td><td>8</td></tr>
-<tr><td><b>Your own casts only</b></td><td></td><td>On, Off</td><td>On</td></tr>
-<tr><td><b>Time left</b></td><td></td><td>Darkening, Number, Not shown</td><td>Darkening</td></tr>
+<tr><td><b>Your own casts only</b></td><td>Off: the listed spells count whoever cast them</td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Time left</b></td><td>Darkening: a sweep over the indicator; Number: the seconds left</td><td>Darkening, Number, Not shown</td><td>Darkening</td></tr>
 </tbody>
 </table>
 
@@ -55,8 +55,8 @@ The **Indicators** tab of the raid options window (`/fuf raid`). Each raid size 
 <tr><td><b>Spells</b></td><td>Spell IDs, or names from your spell book</td><td>Text</td><td>(none)</td></tr>
 <tr><td><b>Color</b></td><td></td><td>Color</td><td><code>#ff4d4d</code></td></tr>
 <tr><td><b>Size</b></td><td></td><td>4 – 24</td><td>8</td></tr>
-<tr><td><b>Your own casts only</b></td><td></td><td>On, Off</td><td>On</td></tr>
-<tr><td><b>Time left</b></td><td></td><td>Darkening, Number, Not shown</td><td>Darkening</td></tr>
+<tr><td><b>Your own casts only</b></td><td>Off: the listed spells count whoever cast them</td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Time left</b></td><td>Darkening: a sweep over the indicator; Number: the seconds left</td><td>Darkening, Number, Not shown</td><td>Darkening</td></tr>
 </tbody>
 </table>
 
@@ -68,8 +68,8 @@ The **Indicators** tab of the raid options window (`/fuf raid`). Each raid size 
 <tr><td><b>Spells</b></td><td>Spell IDs, or names from your spell book</td><td>Text</td><td>(none)</td></tr>
 <tr><td><b>Color</b></td><td></td><td>Color</td><td><code>#ffffff</code></td></tr>
 <tr><td><b>Size</b></td><td></td><td>4 – 24</td><td>8</td></tr>
-<tr><td><b>Your own casts only</b></td><td></td><td>On, Off</td><td>On</td></tr>
-<tr><td><b>Time left</b></td><td></td><td>Darkening, Number, Not shown</td><td>Darkening</td></tr>
+<tr><td><b>Your own casts only</b></td><td>Off: the listed spells count whoever cast them</td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Time left</b></td><td>Darkening: a sweep over the indicator; Number: the seconds left</td><td>Darkening, Number, Not shown</td><td>Darkening</td></tr>
 </tbody>
 </table>
 

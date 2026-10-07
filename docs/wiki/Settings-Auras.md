@@ -58,7 +58,7 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <tr><td><b>Show debuffs</b></td><td></td><td>On, Off</td><td>Player, Target, Focus, Pet, Party: On; Target of Target: Off</td><td>all</td></tr>
 <tr><td><b>Only mine</b></td><td>Cast by you or your pet</td><td>On, Off</td><td>Off</td><td>all</td></tr>
 <tr><td><b>Only dispellable</b></td><td>Debuffs you can remove</td><td>On, Off</td><td>Player, Target, Target of Target, Focus, Pet: Off; Party: On</td><td>all</td></tr>
-<tr><td><b>Hide permanent</b></td><td>Everything without a duration, e.g. paladin auras, stances</td><td>On, Off</td><td>Off</td><td>all</td></tr>
+<tr><td><b>Hide permanent</b></td><td>Everything without a duration, e.g. an enemy's aura on you</td><td>On, Off</td><td>Off</td><td>all</td></tr>
 <tr><td><b>Show time left</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
 <tr><td><b>Anchor to</b></td><td>Buffs: next to the buff icons</td><td>Frame, Health bar, Power bar, Castbar, Buffs</td><td>Player, Target: Castbar; Target of Target, Focus, Pet, Party: Frame</td><td>all</td></tr>
 <tr><td><b>Point on the anchor</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Player, Target, Party: Bottom left; Target of Target, Focus, Pet: Top left</td><td>all</td></tr>

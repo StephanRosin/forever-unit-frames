@@ -14,7 +14,7 @@ The **Debuffs** tab of the raid options window (`/fuf raid`). Each raid size (10
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
 <tr><td><b>Show the debuff</b></td><td></td><td>On, Off</td><td>On</td></tr>
-<tr><td><b>Which debuffs</b></td><td></td><td>Dispellable by me, Any dispellable</td><td>Dispellable by me</td></tr>
+<tr><td><b>Which debuffs</b></td><td>Dispellable by me: only what your class can remove</td><td>Dispellable by me, Any dispellable</td><td>Dispellable by me</td></tr>
 <tr><td><b>Shown as</b></td><td></td><td>Icon in the center, Square in a corner</td><td>Icon in the center</td></tr>
 <tr><td><b>Icon size</b></td><td></td><td>8 – 40</td><td>10 players: 20; 20 players: 18; 40 players: 16</td></tr>
 <tr><td><b>Corner of the square</b></td><td>Beside a corner indicator in the same corner</td><td>Top left, Top right, Bottom left, Bottom right</td><td>Top right</td></tr>

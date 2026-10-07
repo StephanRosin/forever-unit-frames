@@ -23,9 +23,9 @@ Up to nine panels of your own. A block of the main panel's grouping moves to the
 <tr><td><b>Blocks per line</b></td><td>Then a new row (or column) of blocks</td><td>1 – 9</td><td>8</td></tr>
 <tr><td><b>Cells grow</b></td><td></td><td>Down, Right</td><td>Down</td></tr>
 <tr><td><b>Cells per line</b></td><td>Then a new column (or row) of cells</td><td>1 – 40</td><td>5</td></tr>
-<tr><td><b>Block titles</b></td><td></td><td>On, Off</td><td>Off</td></tr>
+<tr><td><b>Block titles</b></td><td>Group number, class or role above each block</td><td>On, Off</td><td>Off</td></tr>
 <tr><td><b>Hide empty blocks</b></td><td>Blocks without members take no room</td><td>On, Off</td><td>On</td></tr>
-<tr><td><b>Around the panel</b></td><td></td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Around the panel</b></td><td>A gold border around the whole panel</td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Around each block</b></td><td></td><td>On, Off</td><td>Off</td></tr>
 <tr><td><b>Position X</b></td><td>Top left corner, from the screen center</td><td>-4000 – 4000</td><td>360</td></tr>
 <tr><td><b>Position Y</b></td><td>Top left corner, from the screen center</td><td>-4000 – 4000</td><td>300</td></tr>

@@ -6,6 +6,8 @@ What the texts on the title row and the bars show, how they read, and the font.
 
 The **Text** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
 
+Level, class and race reads e.g. 60 Mage Gnome, or 60 Humanoid for a creature.
+
 **On this page:** [Title row](#title-row) · [Health bar text](#health-bar-text) · [Power bar text](#power-bar-text) · [Display](#display) · [Font](#font)
 
 ## Title row
@@ -13,10 +15,10 @@ The **Text** tab on each frame's page in `/fuf`. The last column says which fram
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Title row, left text</b></td><td>Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>Player, Target, Party: Level and name; Target of Target, Focus, Pet: Name</td><td>all</td></tr>
+<tr><td><b>Title row, left text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>Player, Target, Party: Level and name; Target of Target, Focus, Pet: Name</td><td>all</td></tr>
 <tr><td><b>Title row, center text</b></td><td>Left and right then keep to a third each</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>None</td><td>all</td></tr>
 <tr><td><b>Title row, right text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>None</td><td>all</td></tr>
-<tr><td><b>Title text color</b></td><td></td><td>Class (players), Reaction, White</td><td>Class (players)</td><td>all</td></tr>
+<tr><td><b>Title text color</b></td><td>Class: players in their class color, NPCs in reaction color</td><td>Class (players), Reaction, White</td><td>Class (players)</td><td>all</td></tr>
 <tr><td><b>AFK/DND badge</b></td><td>Gold AFK or red DND badge after the name</td><td>On, Off</td><td>On</td><td>all</td></tr>
 <tr><td><b>Show class icon</b></td><td>Players only, as a round badge on the frame's top right corner</td><td>On, Off</td><td>On</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
 <tr><td><b>Class icon size</b></td><td>Diameter of the badge, ring included</td><td>10 – 48</td><td>30</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
@@ -34,9 +36,9 @@ Each row (title, health and power) can have a centre text as well. While one is 
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Health bar, left text</b></td><td>Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>Player, Target, Party: Current / max; Target of Target, Pet: Name; Focus: None</td><td>all</td></tr>
+<tr><td><b>Health bar, left text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>Player, Target, Party: Current / max; Target of Target, Pet: Name; Focus: None</td><td>all</td></tr>
 <tr><td><b>Health bar, center text</b></td><td>Left and right then keep to a third each</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>None</td><td>all</td></tr>
-<tr><td><b>Health bar, right text</b></td><td>Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>Player, Target, Focus, Party: Percent; Target of Target, Pet: None</td><td>all</td></tr>
+<tr><td><b>Health bar, right text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>Player, Target, Focus, Party: Percent; Target of Target, Pet: None</td><td>all</td></tr>
 </tbody>
 </table>
 
@@ -45,9 +47,9 @@ Each row (title, health and power) can have a centre text as well. While one is 
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Power bar, left text</b></td><td>Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>Player, Target, Party: Current / max; Target of Target, Focus, Pet: None</td><td>all</td></tr>
+<tr><td><b>Power bar, left text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>Player, Target, Party: Current / max; Target of Target, Focus, Pet: None</td><td>all</td></tr>
 <tr><td><b>Power bar, center text</b></td><td>Left and right then keep to a third each</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>None</td><td>all</td></tr>
-<tr><td><b>Power bar, right text</b></td><td>Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>Player, Target, Party: Percent; Target of Target, Focus, Pet: None</td><td>all</td></tr>
+<tr><td><b>Power bar, right text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>Player, Target, Party: Percent; Target of Target, Focus, Pet: None</td><td>all</td></tr>
 </tbody>
 </table>
 

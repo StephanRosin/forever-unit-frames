@@ -17,7 +17,9 @@ local NOTICE_H = 26
 local SCROLLBAR_W, WHEEL_STEP = 10, 40
 local CONTENT_W = WIDTH - NAV_W - SCROLLBAR_W
 local PAGE_TOP, PAGE_BOTTOM, SECTION_GAP, INSET = 4, 16, 8, 16
-local TEXT_AREA_H, MESSAGE_H = 70, 20
+local TEXT_AREA_H, MESSAGE_H, NOTE_H = 70, 20, 34
+-- A tab note's room for text (tests: two lines must hold it).
+Options.NOTE_W = CONTENT_W - 2 * INSET
 local BUTTON_H, BUTTON_W, WIDE_BUTTON_W, FOOTER_GAP, FOOTER_INSET = 24, 120, 160, 8, 12
 local CONFIRM_SECONDS = 3
 local HIGHLIGHT_HOLD, HIGHLIGHT_STEPS, HIGHLIGHT_STEP_SECONDS, HIGHLIGHT_W = 0.9, 6, 0.1, 2
@@ -250,11 +252,13 @@ local function sectionHeader(page, id)
     return header
 end
 
--- Defined with the other blocks below; a section's action button.
-local actionBlock
+-- Defined with the other blocks below; a section's action button, a
+-- tab's note.
+local actionBlock, noteBlock
 
 local function buildSettingsPage(page, scope, tab)
     local stack = newStack(page)
+    if tab.note then stack.add(noteBlock(page, L["NOTE_" .. tab.note])) end
     for _, section in ipairs(tab.sections) do
         local keys = {}
         for _, key in ipairs(section.keys) do
@@ -351,6 +355,21 @@ function actionBlock(page, id)
     Options.actionButtons[id] = button
     function block:SetEnabled(on) button:SetEnabled(on) end
     block:SetHeight(BUTTON_H + 12)
+    return block
+end
+
+-- A muted text above a tab's sections, as wide as the page (two lines at
+-- most).
+function noteBlock(page, text)
+    local block = newBlock(page)
+    block.text = Style.Text(block, 11, "muted")
+    block.text:SetPoint("TOPLEFT", block, "TOPLEFT", INSET, -4)
+    block.text:SetPoint("TOPRIGHT", block, "TOPRIGHT", -INSET, -4)
+    block.text:SetJustifyH("LEFT")
+    block.text:SetWordWrap(true)
+    block.text:SetText(text)
+    block.isNote = true
+    block:SetHeight(NOTE_H)
     return block
 end
 

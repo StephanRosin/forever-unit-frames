@@ -73,7 +73,7 @@ The **Icons & states** tab of the raid options window (`/fuf raid`). Each raid s
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
-<tr><td><b>Fade out of range</b></td><td></td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Fade out of range</b></td><td>Measured as in the unit frames: General &gt; Status &gt; Range</td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Opacity out of range (%)</b></td><td></td><td>0 – 100</td><td>40</td></tr>
 <tr><td><b>Red line on aggro</b></td><td>Along the inside of the cell</td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Light line on your target</b></td><td></td><td>On, Off</td><td>On</td></tr>

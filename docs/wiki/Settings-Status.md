@@ -6,6 +6,8 @@ Icons and markers on the frame, combo points, threat, highlights and fading.
 
 The **Status** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
 
+Point on the frame and point of the icon: the icon's own point sits on that point of the frame; the offset X and Y moves it from there.
+
 **On this page:** [Status icons](#status-icons) · [Combat icon](#combat-icon) · [PvP icon](#pvp-icon) · [Raid target marker](#raid-target-marker) · [Pet happiness](#pet-happiness) · [Group icons](#group-icons) · [Combo points](#combo-points) · [Threat](#threat) · [Target highlight](#target-highlight) · [Dispel alert](#dispel-alert) · [Range](#range) · [Out of combat](#out-of-combat)
 
 ## Status icons
@@ -152,7 +154,7 @@ The **Status** tab on each frame's page in `/fuf`. The last column says which fr
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
 <tr><td><b>Fade when out of range</b></td><td>Measured as set in General &gt; Status &gt; Range</td><td>On, Off</td><td>On</td><td>Target, Target of Target, Focus, Pet, Party</td></tr>
-<tr><td><b>Opacity out of range (%)</b></td><td></td><td>0 – 100</td><td>70</td><td>Target, Target of Target, Focus, Pet, Party</td></tr>
+<tr><td><b>Opacity out of range (%)</b></td><td>General sets it for every frame; a frame's page can override it</td><td>0 – 100</td><td>70</td><td>Target, Target of Target, Focus, Pet, Party</td></tr>
 </tbody>
 </table>
 
@@ -164,7 +166,7 @@ With **Pet frame fades too** the pet frame takes the player frame's opacity when
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
 <tr><td><b>Fade out of combat</b></td><td>While idle: no combat, no cast, full health</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
-<tr><td><b>Opacity when faded (%)</b></td><td></td><td>0 – 100</td><td>0</td><td>Player</td></tr>
+<tr><td><b>Opacity when faded (%)</b></td><td>0 = invisible</td><td>0 – 100</td><td>0</td><td>Player</td></tr>
 <tr><td><b>Show in full with a target</b></td><td>Fades back in when you select a target</td><td>On, Off</td><td>On</td><td>Player</td></tr>
 <tr><td><b>Pet frame fades too</b></td><td>Your pet's frame takes the same opacity</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
 </tbody>

@@ -138,7 +138,7 @@ Button: **Apply to all frames**.
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
-<tr><td><b>Health color</b></td><td></td><td>Class, Reaction, Static color, Gradient by health</td><td>Static color</td></tr>
+<tr><td><b>Health color</b></td><td>Class: players in their class color, NPCs in reaction color</td><td>Class, Reaction, Static color, Gradient by health</td><td>Static color</td></tr>
 <tr><td><b>Static health color</b></td><td></td><td>Color</td><td><code>#33bf4d</code></td></tr>
 <tr><td><b>Friendly color</b></td><td>For health and title colors by reaction</td><td>Color</td><td><code>#33bf4d</code></td></tr>
 <tr><td><b>Neutral color</b></td><td></td><td>Color</td><td><code>#e6cc40</code></td></tr>
@@ -202,7 +202,7 @@ Button: **Apply to all frames**.
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
-<tr><td><b>Opacity out of range (%)</b></td><td></td><td>0 – 100</td><td>70</td></tr>
+<tr><td><b>Opacity out of range (%)</b></td><td>General sets it for every frame; a frame's page can override it</td><td>0 – 100</td><td>70</td></tr>
 <tr><td><b>Friends: measure by</b></td><td></td><td>Automatic (spell), Spell, Yards, Off</td><td>Yards</td></tr>
 <tr><td><b>Spell for friends</b></td><td></td><td>Text (a spell name or ID)</td><td>(none)</td></tr>
 <tr><td><b>Friendly range (yards)</b></td><td></td><td>5 – 40</td><td>40</td></tr>

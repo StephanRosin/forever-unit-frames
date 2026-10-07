@@ -239,6 +239,11 @@ for _, tab in ipairs(Schema.FRAME) do
         "",
         ("The **%s** tab on each frame's page in `/fuf`. The last column says which frames have the option;"
             .. " a default that differs per frame is listed per frame."):format(title), "" }
+    -- The tab's note, as the window shows it above the sections.
+    if tab.note then
+        lines[#lines + 1] = label("NOTE_" .. tab.note, "")
+        lines[#lines + 1] = ""
+    end
     local body, names = {}, {}
     local any = false
     for _, sec in ipairs(tab.sections) do

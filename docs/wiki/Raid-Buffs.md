@@ -59,7 +59,7 @@ Out of combat, a click on a row of the buff window or the smart buff key casts t
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
 <tr><td><b>Show the buff window</b></td><td>In a group, while a buff is watched</td><td>On, Off</td><td>On</td></tr>
-<tr><td><b>Only when a buff is missing</b></td><td></td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Only when a buff is missing</b></td><td>Or running out; off, it shows in a group all the time</td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Position X</b></td><td>Top left corner, from the screen center</td><td>-4000 – 4000</td><td>300</td></tr>
 <tr><td><b>Position Y</b></td><td>Top left corner, from the screen center</td><td>-4000 – 4000</td><td>120</td></tr>
 </tbody>

@@ -60,7 +60,8 @@ Schema.FRAME = {
         { id = "shape", keys = { "cornerRadius" } },
     } },
     -- The party's arrangement and what hangs beside its members.
-    { id = "group", sections = {
+    -- The note: the raid window's click-casting may act on the party too.
+    { id = "group", note = "partyClickCast", sections = {
         { id = "group", keys = { "partyOrientation", "partySpacing", "partyShowPlayer", "partyShowSolo", "partyHideInRaid" } },
         { id = "pets", keys = { "partyShowPets", "partyPetLayout", "partyPetSide", "partyPetWidth", "partyPetHeight",
             "partyPetGap", "partyPetsX", "partyPetsY" } },
@@ -79,7 +80,8 @@ Schema.FRAME = {
         { id = "powerCost", keys = { "powerCostPrediction", "powerCostColor" } },
         { id = "druidMana", keys = { "druidMana", "druidManaHeight" } },
     } },
-    { id = "text", sections = {
+    -- The note: what "Info" shows, said once for every text.
+    { id = "text", note = "texts", sections = {
         { id = "titleText", keys = { "titleText", "titleTextCenter", "titleTextRight", "titleColorMode", "awayBadge", "titleClassIcon", "classIconSize",
             "classIconX", "classIconY", "classIconRing", "classIconRingColor" } },
         { id = "healthText", keys = { "textHealthLeft", "textHealthCenter", "textHealthRight" } },
@@ -107,7 +109,8 @@ Schema.FRAME = {
             "totemsX", "totemsY" } },
     } },
     -- What the unit is doing or what state it is in, drawn on the frame.
-    { id = "status", sections = {
+    -- The note: how a point on the frame and an own point place things.
+    { id = "status", note = "points", sections = {
         { id = "statusIcons", keys = { "statusCombat", "statusResting", "statusSize", "statusFramePoint",
             "statusPoint", "statusX", "statusY" } },
         { id = "combatIcon", keys = { "combatIcon", "combatAnimation", "combatIconSize", "combatIconFramePoint", "combatIconPoint",
