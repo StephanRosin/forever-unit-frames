@@ -269,7 +269,10 @@ local RAID_TAB_INTRO = {
         .. " the highest rank you know is cast. Per character, the same at every raid size; a key or binding"
         .. " shows once for all sixteen. A key is taken from what it is bound to otherwise while the raid frames"
         .. " show (the window warns), so pick keys you do not use. With Clique loaded, click-casting is off until"
-        .. " switched on. A cell that joins in combat gets the bindings once combat ends.",
+        .. " switched on. A cell that joins in combat gets the bindings once combat ends. Blizzard's own click"
+        .. " bindings (its click-casting window) win over these on the same click; and since this client lets"
+        .. " target and the unit menu act only on clicks bound there (by default the plain left and right"
+        .. " clicks), Target on any other click is done by a macro and the menu is offered on those two only.",
     icons = "Role, raid target marker, leader, master looter and ready check icons, and the states: range,"
         .. " aggro, your target.",
 }

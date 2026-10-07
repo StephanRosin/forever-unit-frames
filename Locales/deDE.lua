@@ -931,7 +931,7 @@ L.RAID_TEST_PET_WARLOCK = "Wichtel"
 -- Schlachtzugsrahmen: Klickzauber (Raid/ClickCast.lua, Raid/ClickKeys.lua,
 -- Raid/Options/ClickCast.lua).
 L.RAID_TAB_clickCast = "Klickzauber"
-L.RAID_NOTE_clickCast = "Für diesen Charakter, bei jeder Schlachtzugsgröße. Ein Klick mit Zusatztaste ohne Belegung wirkt wie der einfache Klick. Änderungen greifen außerhalb des Kampfes."
+L.RAID_NOTE_clickCast = "Für diesen Charakter, bei jeder Schlachtzugsgröße; Änderungen greifen außerhalb des Kampfes. Ein Klick mit Zusatztaste ohne Belegung wirkt wie der einfache Klick, aber nie als Ziel oder Menü. Blizzards eigene Klickbelegungen gehen vor."
 L.RAID_SECTION_clickCastGeneral = "Klickzauber"
 L.RAID_SECTION_clickLeft = "Linke Maustaste"
 L.RAID_SECTION_clickRight = "Rechte Maustaste"

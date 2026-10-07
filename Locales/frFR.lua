@@ -931,7 +931,7 @@ L.RAID_TEST_PET_WARLOCK = "Diablotin"
 -- Cadres de raid : sorts au clic (Raid/ClickCast.lua, Raid/ClickKeys.lua,
 -- Raid/Options/ClickCast.lua).
 L.RAID_TAB_clickCast = "Sorts au clic"
-L.RAID_NOTE_clickCast = "Pour ce personnage, à toutes les tailles de raid. Un clic avec modificateur non attribué agit comme le clic simple. Les changements s'appliquent hors combat."
+L.RAID_NOTE_clickCast = "Pour ce personnage, à toutes les tailles de raid ; changements appliqués hors combat. Un clic avec modificateur non attribué agit comme le clic simple, sauf pour cibler ou ouvrir le menu. Les raccourcis de clic de Blizzard passent avant."
 L.RAID_SECTION_clickCastGeneral = "Sorts au clic"
 L.RAID_SECTION_clickLeft = "Bouton gauche"
 L.RAID_SECTION_clickRight = "Bouton droit"

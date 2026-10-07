@@ -932,7 +932,7 @@ L.RAID_TEST_PET_WARLOCK = "Diablillo"
 -- Marcos de banda: lanzar con clic (Raid/ClickCast.lua, Raid/ClickKeys.lua,
 -- Raid/Options/ClickCast.lua).
 L.RAID_TAB_clickCast = "Lanzar con clic"
-L.RAID_NOTE_clickCast = "Para este personaje, en todos los tamaños de banda. Un clic con modificador sin asignar hace lo mismo que el clic simple. Los cambios se aplican fuera de combate."
+L.RAID_NOTE_clickCast = "Para este personaje, en todos los tamaños de banda; los cambios se aplican fuera de combate. Un clic con modificador sin asignar hace lo mismo que el clic simple, salvo seleccionar o abrir el menú. Las asignaciones de clic de Blizzard tienen prioridad."
 L.RAID_SECTION_clickCastGeneral = "Lanzar con clic"
 L.RAID_SECTION_clickLeft = "Botón izquierdo"
 L.RAID_SECTION_clickRight = "Botón derecho"

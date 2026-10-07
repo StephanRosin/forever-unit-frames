@@ -955,7 +955,7 @@ L.RAID_TEST_PET_WARLOCK = "Imp"
 -- Raid frames: click-casting (Raid/ClickCast.lua, Raid/ClickKeys.lua,
 -- Raid/Options/ClickCast.lua).
 L.RAID_TAB_clickCast = "Click-casting"
-L.RAID_NOTE_clickCast = "For this character, at every raid size. A modified click with nothing bound does what the plain click does. Changes apply out of combat."
+L.RAID_NOTE_clickCast = "For this character, at every raid size; changes apply out of combat. A modified click with nothing bound does what the plain click does, but never targets or opens the menu. Blizzard's own click bindings win."
 L.RAID_SECTION_clickCastGeneral = "Click-casting"
 L.RAID_SECTION_clickLeft = "Left button"
 L.RAID_SECTION_clickRight = "Right button"

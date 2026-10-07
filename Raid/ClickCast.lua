@@ -65,11 +65,18 @@ function ClickCast.DefaultValues()
     return values
 end
 
+-- Target where Blizzard's click bindings would stop it (Raid/Settings.lua:
+-- a slot's interaction): the clicked cell is the one under the mouse.
+ClickCast.TARGET_MACRO = "/target [@mouseover]"
+
 -- One slot's attribute values: { attribute = value } (nothing for a
 -- binding that does nothing, a kind without its value included).
-local function slotAttributes(binding)
+local function slotAttributes(slot, binding)
     local kind, value = Raid.ParseBinding(binding or "")
     if not kind or kind == "" then return {} end
+    if kind == "target" and not slot.interaction then
+        return { type = ACTION_TYPE.macro, macrotext = ClickCast.TARGET_MACRO }
+    end
     local attr = VALUE_ATTRIBUTE[kind]
     if attr then
         if value == "" then return {} end
@@ -88,7 +95,7 @@ function ClickCast.Plan(values)
     for _, slot in ipairs(Raid.CLICK_SLOTS) do
         local binding = values[slot.key]
         if binding == nil then binding = defaults[slot.key] end
-        local set = slotAttributes(binding)
+        local set = slotAttributes(slot, binding)
         for _, attr in ipairs(ATTRIBUTES) do
             plan[#plan + 1] = { slot.prefix .. attr .. slot.button, set[attr] }
         end

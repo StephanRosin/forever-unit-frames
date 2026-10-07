@@ -1364,6 +1364,7 @@ function M.Reset()
     M.widgets = {}         -- every widget created, in creation order
     M.chat = {}
     M.combat = false
+    M.shiftDown, M.ctrlDown, M.altDown = false, false, false
     M.form = nil
     M.blocked = {}         -- protected-frame calls refused in combat
     M.secureDepth = 0      -- > 0 while mock secure code runs
@@ -1622,8 +1623,50 @@ function M.Reset()
         for part in (str .. delim):gmatch("(.-)" .. delim:gsub("%p", "%%%0")) do parts[#parts + 1] = part end
         return unpack(parts)
     end
-    -- Modifier keys: M.shiftDown.
+    -- Modifier keys: M.shiftDown, M.ctrlDown, M.altDown.
     _G.IsShiftKeyDown = function() return M.shiftDown or false end
+    _G.IsControlKeyDown = function() return M.ctrlDown or false end
+    _G.IsAltKeyDown = function() return M.altDown or false end
+    -- MakeModifiers (InputDocumentation.lua): the held modifiers as a
+    -- number. The client's bits are its own; the mock's are Shift 1, Ctrl
+    -- 2, Alt 4 (an addon must not read them).
+    _G.MakeModifiers = function()
+        return (M.shiftDown and 1 or 0) + (M.ctrlDown and 2 or 0) + (M.altDown and 4 or 0)
+    end
+    -- Blizzard's click bindings (C_ClickBindings, ClickBindingsDocumentation
+    -- .lua): the player's profile, M.clickBindings = list of { button =,
+    -- modifiers = (MakeModifiers' number), type = Enum.ClickBindingType,
+    -- interaction = Enum.ClickBindingInteraction }. The default profile
+    -- binds only the plain left click (Target) and the plain right click
+    -- (OpenContextMenu). M.clickBindingRuns: the bindings the client ran
+    -- itself (ExecuteBinding).
+    M.clickBindings = {
+        { button = "LeftButton", modifiers = 0, type = 3, interaction = 1 },
+        { button = "RightButton", modifiers = 0, type = 3, interaction = 2 },
+    }
+    M.clickBindingRuns = {}
+    local function clickBinding(button, modifiers)
+        assert(type(button) == "string" and type(modifiers) == "number", "C_ClickBindings: button, modifiers")
+        for _, b in ipairs(M.clickBindings) do
+            if b.button == button and b.modifiers == modifiers then return b end
+        end
+    end
+    -- GetEffectiveInteractionButton: the button the interaction stands
+    -- for by default (Target the left, the menu the right).
+    local INTERACTION_BUTTON = { "LeftButton", "RightButton" }
+    _G.C_ClickBindings = {
+        GetBindingType = function(button, modifiers)
+            local b = clickBinding(button, modifiers)
+            return b and b.type or 0
+        end,
+        GetEffectiveInteractionButton = function(button, modifiers)
+            local b = clickBinding(button, modifiers)
+            return b and b.interaction and INTERACTION_BUTTON[b.interaction] or button
+        end,
+        ExecuteBinding = function(unit, button, modifiers)
+            M.clickBindingRuns[#M.clickBindingRuns + 1] = { unit = unit, button = button, modifiers = modifiers }
+        end,
+    }
     _G.UnitRace = function(unit) local d = u(unit); if d then return d.race, d.race end end
     _G.UnitCreatureType = function(unit) local d = u(unit); if d then return d.creatureType end end
     -- Takes secret class tokens (SecretArguments = AllowedWhenTainted); a
@@ -2151,6 +2194,8 @@ function M.Reset()
     }
 
     _G.Enum = {
+        ClickBindingType = { None = 0, Spell = 1, Macro = 2, Interaction = 3, PetAction = 4 },
+        ClickBindingInteraction = { Target = 1, OpenContextMenu = 2 },
         LootMethod = { Freeforall = 0, Roundrobin = 1, Masterlooter = 2, Group = 3, Needbeforegreed = 4, Personal = 5 },
         SpellBookSpellBank = { Player = 0, Pet = 1 },
         SpellBookItemType = { None = 0, Spell = 1, FutureSpell = 2, PetAction = 3, Flyout = 4 },
@@ -2642,12 +2687,13 @@ function M.FinishAnimations()
     end
 end
 
--- A mouse click on a SecureActionButtonTemplate button, reduced to what
--- the addon uses (Blizzard_FrameXML/SecureTemplates.lua): a mouse press
--- acts on the up stroke, and only when the button registered it; the
--- action is the modified attribute "type" for the mouse button (looked up
--- as name..suffix, *name..suffix, name*, *name*, name; no modifier held),
--- run as secure code. Returns the action type, or nil.
+-- A mouse click on a secure button, reduced to what the addon uses
+-- (Blizzard_FrameXML/SecureTemplates.lua): a mouse press acts on the
+-- stroke the button registered; the action is the modified attribute
+-- "type" for the held modifiers and the mouse button (looked up as
+-- prefix..name..suffix, *name..suffix, prefix..name*, *name*, name), run
+-- as secure code; a unit button asks Blizzard's click bindings first
+-- (SecureUnitButton_OnClick). Returns the action type, or nil.
 local BUTTON_SUFFIX = { LeftButton = "1", RightButton = "2", MiddleButton = "3" }
 
 -- A menu's root description (Blizzard_Menu): the elements added to it,
@@ -2797,15 +2843,58 @@ local function useOnKeyDown(button)
     if v == nil then v = GetCVarBool("ActionButtonUseKeyDown") end
     return v or button._attr.pressAndHoldAction ~= nil
 end
+-- SecureButton_GetModifierPrefix: the held modifiers, alt- before ctrl-
+-- before shift- (the "modifiers" attribute is not modelled).
+local function modifierPrefix()
+    local prefix = ""
+    if IsShiftKeyDown() then prefix = "shift-" .. prefix end
+    if IsControlKeyDown() then prefix = "ctrl-" .. prefix end
+    if IsAltKeyDown() then prefix = "alt-" .. prefix end
+    return prefix
+end
+-- The templates that inherit SecureUnitButtonTemplate in the addon's XML
+-- (test_raid_click_gate.lua checks the XML says so).
+M.UNIT_BUTTON_TEMPLATES = { SecureUnitButtonTemplate = true, ForeverUnitFramesRaidButtonTemplate = true,
+    ForeverUnitFramesPartyButtonTemplate = true, ForeverUnitFramesPartyPetButtonTemplate = true }
 -- One stroke's OnClick: the type it ran, or nil.
 local function secureStroke(button, mouseButton, down)
-    local suffix = BUTTON_SUFFIX[mouseButton] or ""
+    local prefix = modifierPrefix()
+    local suffix
+    -- Frame:GetAttribute(prefix, name, suffix) as SecureButton_
+    -- GetModifiedAttribute uses it.
     local function attr(name)
-        for _, k in ipairs({ name .. suffix, "*" .. name .. suffix, name .. "*", "*" .. name .. "*", name }) do
+        for _, k in ipairs({ prefix .. name .. suffix, "*" .. name .. suffix, prefix .. name .. "*",
+            "*" .. name .. "*", name }) do
             local v = button._attr[k]
             if v ~= nil then return v end
         end
         return nil
+    end
+    -- SecureButton_GetButtonSuffix.
+    local function suffixOf(b)
+        return BUTTON_SUFFIX[b] or (b:match("^Button(%d+)$")) or (b ~= "" and "-" .. b) or ""
+    end
+    suffix = suffixOf(mouseButton)
+    if M.UNIT_BUTTON_TEMPLATES[button._template] then
+        -- SecureUnitButton_OnClick: Blizzard's click bindings first. A
+        -- spell, macro or pet action bound there runs instead; target and
+        -- the menu need the click to be bound to an interaction (the
+        -- default profile: plain left and right only), else nothing.
+        local modifiers = MakeModifiers()
+        local bindingType = C_ClickBindings.GetBindingType(mouseButton, modifiers)
+        if bindingType == Enum.ClickBindingType.Spell or bindingType == Enum.ClickBindingType.Macro
+            or bindingType == Enum.ClickBindingType.PetAction then
+            C_ClickBindings.ExecuteBinding(attr("unit") or "", mouseButton, modifiers)
+            return "clickbinding"
+        end
+        if bindingType == Enum.ClickBindingType.Interaction then
+            suffix = suffixOf(C_ClickBindings.GetEffectiveInteractionButton(mouseButton, modifiers))
+        end
+        local kind = attr("type")
+        if (kind == "target" or kind == "menu" or kind == "togglemenu")
+            and bindingType == Enum.ClickBindingType.None then
+            return nil
+        end
     end
     if button._template == "SecureActionButtonTemplate" then
         -- SecureActionButton_OnClick: an addon's button never gets

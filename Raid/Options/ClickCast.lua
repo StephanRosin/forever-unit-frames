@@ -35,7 +35,7 @@ end
 -- A binding's two controls in a row: the kind's dropdown (the row's own
 -- button, moved to x) and the value's box after it. A new kind starts
 -- without a value; a typed value is checked (ClickCast.TypedValue).
-local function bindingControls(row, key, kinds, x, valueWidth)
+local function bindingControls(row, key, x, valueWidth)
     local button = row.button
     button:ClearAllPoints()
     button:SetPoint("LEFT", row, "LEFT", x, 0)
@@ -82,8 +82,8 @@ end
 
 -- A mouse slot's row.
 local function slotRow(page, slot)
-    local row = bindingDropdown(page, slot.key, Raid.CLICK_KINDS, Schema.Label(slot.key))
-    bindingControls(row, slot.key, Raid.CLICK_KINDS, Widgets.CONTROL_X, VALUE_W)
+    local row = bindingDropdown(page, slot.key, Raid.SlotKinds(slot), Schema.Label(slot.key))
+    bindingControls(row, slot.key, Widgets.CONTROL_X, VALUE_W)
     row.key = slot.key
     return row
 end
@@ -122,7 +122,7 @@ local function keyRow(page, slot)
         get = function() return get(slot.key) end,
         set = function(text) return storeKey(slot, text) end,
     })
-    bindingControls(row, slot.bind, Raid.CLICK_KEY_KINDS, Widgets.CONTROL_X + KEY_W + GAP,
+    bindingControls(row, slot.bind, Widgets.CONTROL_X + KEY_W + GAP,
         VALUE_W - KEY_W - GAP)
     local refresh, setEnabled = row.Refresh, row.SetEnabled
     function row:Refresh()

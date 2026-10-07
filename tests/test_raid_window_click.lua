@@ -68,6 +68,13 @@ H.check("macro stored", RC.Get("general", "click1Shift"), "macro:/cast [@mouseov
 pick(shift, "focus")
 H.check("focus: no value", RC.Get("general", "click1Shift"), "focus")
 H.check("box empty and locked", shift.value:GetText() .. tostring(shift.value:IsEnabled()), "false")
+-- The menu only on the plain left and right clicks (Blizzard's click
+-- bindings stop it elsewhere).
+H.check("shift-left: no menu to pick", pick(shift, "menu"), false)
+H.check("still focus", RC.Get("general", "click1Shift"), "focus")
+H.check("plain left: the menu offered", pick(plain, "menu"), true)
+H.check("left: menu", RC.Get("general", "click1"), "menu")
+pick(plain, "target")
 
 -- Keys: the key, what it casts, a warning for a key bound otherwise.
 local key1 = rowFor("clickKey1")

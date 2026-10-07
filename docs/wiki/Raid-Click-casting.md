@@ -2,11 +2,11 @@
 
 # Raid frames: Click-casting
 
-Heal, decurse, target, assist or focus raid members with one click: up to 40 mouse combinations (five buttons, with and without Shift, Ctrl and Alt) on the cells of every panel and on the party frames, and up to 16 keys that cast on the raid member under the mouse. Spells are kept by name, so the highest rank you know is cast. Per character, the same at every raid size; a key or binding shows once for all sixteen. A key is taken from what it is bound to otherwise while the raid frames show (the window warns), so pick keys you do not use. With Clique loaded, click-casting is off until switched on. A cell that joins in combat gets the bindings once combat ends.
+Heal, decurse, target, assist or focus raid members with one click: up to 40 mouse combinations (five buttons, with and without Shift, Ctrl and Alt) on the cells of every panel and on the party frames, and up to 16 keys that cast on the raid member under the mouse. Spells are kept by name, so the highest rank you know is cast. Per character, the same at every raid size; a key or binding shows once for all sixteen. A key is taken from what it is bound to otherwise while the raid frames show (the window warns), so pick keys you do not use. With Clique loaded, click-casting is off until switched on. A cell that joins in combat gets the bindings once combat ends. Blizzard's own click bindings (its click-casting window) win over these on the same click; and since this client lets target and the unit menu act only on clicks bound there (by default the plain left and right clicks), Target on any other click is done by a macro and the menu is offered on those two only.
 
 The **Click-casting** tab of the raid options window (`/fuf raid`). Each raid size (10, 20, 40) has a profile of its own: the size tabs at the top choose which one you edit; a default that differs per size is listed per size.
 
-For this character, at every raid size. A modified click with nothing bound does what the plain click does. Changes apply out of combat.
+For this character, at every raid size; changes apply out of combat. A modified click with nothing bound does what the plain click does, but never targets or opens the menu. Blizzard's own click bindings win.
 
 **On this page:** [Click-casting](#click-casting) · [Left button](#left-button) · [Right button](#right-button) · [Middle button](#middle-button) · [Mouse button 4](#mouse-button-4) · [Mouse button 5](#mouse-button-5) · [Keys on mouse-over](#keys-on-mouse-over)
 
@@ -26,13 +26,13 @@ For this character, at every raid size. A modified click with nothing bound does
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
 <tr><td><b>Click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Target</td></tr>
-<tr><td><b>Shift-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Shift-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Shift-Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Shift-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Shift-Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
 </tbody>
 </table>
 
@@ -42,13 +42,13 @@ For this character, at every raid size. A modified click with nothing bound does
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
 <tr><td><b>Click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Open the menu</td></tr>
-<tr><td><b>Shift-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Shift-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Shift-Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Shift-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Shift-Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
 </tbody>
 </table>
 
@@ -57,14 +57,14 @@ For this character, at every raid size. A modified click with nothing bound does
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
-<tr><td><b>Click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Shift-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Shift-Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Shift-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Shift-Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
 </tbody>
 </table>
 
@@ -73,14 +73,14 @@ For this character, at every raid size. A modified click with nothing bound does
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
-<tr><td><b>Click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Shift-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Shift-Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Shift-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Shift-Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
 </tbody>
 </table>
 
@@ -89,14 +89,14 @@ For this character, at every raid size. A modified click with nothing bound does
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
-<tr><td><b>Click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Shift-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Shift-Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Shift-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Shift-Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
 </tbody>
 </table>
 
