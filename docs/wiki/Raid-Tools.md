@@ -6,9 +6,9 @@ The raid tools bar, in place of Blizzard's raid manager: where it is and which t
 
 The **Tools** tab of the raid options window (`/fuf raid`), under **General** in the top bar (General | 10 | 20 | 40 | Profiles). Its settings belong to the character, not to a raid size: they are the same at every size.
 
-Tools only the leader and assistants may use show for them only (in test mode for everyone).
+A tool shows only to those who may use it (in test mode to everyone).
 
-**On this page:** [The bar](#the-bar) · [Tools on it](#tools-on-it)
+**On this page:** [The bar](#the-bar) · [Tools on it](#tools-on-it) · [Who may use which tool](#who-may-use-which-tool)
 
 ## The bar
 
@@ -35,6 +35,24 @@ Tools only the leader and assistants may use show for them only (in test mode fo
 <tr><td><b>Everyone an assistant</b></td><td>In a raid; outlined while it is on</td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Party and raid</b></td><td>Makes the party a raid, and a small raid a party</td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Loot method</b></td><td>Master looter: yourself</td><td>On, Off</td><td>On</td></tr>
+</tbody>
+</table>
+
+## Who may use which tool
+
+Each tool shows only to those who may use it, as Blizzard's raid manager decides; in test mode everything shows. In a raid, while everyone is an assistant, everyone counts as an assistant.
+
+<table>
+<thead><tr><th align="left" width="190">Tool</th><th align="left" width="350">In a party</th><th align="left" width="350">In a raid</th></tr></thead>
+<tbody>
+<tr><td><b>Raid target icons</b></td><td>Everyone</td><td>Leader, assistants</td></tr>
+<tr><td><b>Ready check</b>: the result</td><td>Everyone</td><td>Everyone</td></tr>
+<tr><td><b>Ready check</b>: start one</td><td>Leader</td><td>Leader, assistants</td></tr>
+<tr><td><b>World markers</b></td><td>Leader</td><td>Leader, assistants</td></tr>
+<tr><td><b>Role poll</b></td><td>Leader</td><td>Leader, assistants</td></tr>
+<tr><td><b>Everyone an assistant</b></td><td>–</td><td>Leader</td></tr>
+<tr><td><b>Party and raid</b></td><td>Leader (to a raid)</td><td>Leader (to a party, up to 5 players)</td></tr>
+<tr><td><b>Loot method</b></td><td>Leader</td><td>Leader</td></tr>
 </tbody>
 </table>
 

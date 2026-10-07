@@ -434,6 +434,31 @@ local PER_CHARACTER = "The **%s** tab of the raid options window (`/fuf raid`), 
     .. " the same at every size."
 local perCharacter = RaidSchema.PerCharacter
 
+-- More after a raid tab's settings: { title, lines }.
+local RAID_TAB_EXTRA = {
+    -- Raid/Tools.lua: Tools.Marks, Tools.Leads, Tools.IsLeader.
+    tools = { "Who may use which tool", {
+        "Each tool shows only to those who may use it, as Blizzard's raid manager decides; in test mode everything"
+            .. " shows. In a raid, while everyone is an assistant, everyone counts as an assistant.",
+        "",
+        "<table>",
+        "<thead><tr><th align=\"left\" width=\"190\">Tool</th><th align=\"left\" width=\"350\">In a party</th>"
+            .. "<th align=\"left\" width=\"350\">In a raid</th></tr></thead>",
+        "<tbody>",
+        "<tr><td><b>Raid target icons</b></td><td>Everyone</td><td>Leader, assistants</td></tr>",
+        "<tr><td><b>Ready check</b>: the result</td><td>Everyone</td><td>Everyone</td></tr>",
+        "<tr><td><b>Ready check</b>: start one</td><td>Leader</td><td>Leader, assistants</td></tr>",
+        "<tr><td><b>World markers</b></td><td>Leader</td><td>Leader, assistants</td></tr>",
+        "<tr><td><b>Role poll</b></td><td>Leader</td><td>Leader, assistants</td></tr>",
+        "<tr><td><b>Everyone an assistant</b></td><td>–</td><td>Leader</td></tr>",
+        "<tr><td><b>Party and raid</b></td><td>Leader (to a raid)</td><td>Leader (to a party, up to 5 players)</td></tr>",
+        "<tr><td><b>Loot method</b></td><td>Leader</td><td>Leader</td></tr>",
+        "</tbody>",
+        "</table>",
+        "",
+    } },
+}
+
 local raidPages = {}
 local function raidPage(tab)
     local title = RaidSchema.TabTitle(tab.id)
@@ -452,6 +477,13 @@ local function raidPage(tab)
     for _, sec in ipairs(raidSections(tab)) do
         raidSection(body, sec.title, sec.keys)
         names[#names + 1] = ("[%s](#%s)"):format(sec.title, anchor(sec.title))
+    end
+    local extra = RAID_TAB_EXTRA[tab.id]
+    if extra then
+        body[#body + 1] = "## " .. extra[1]
+        body[#body + 1] = ""
+        for _, l in ipairs(extra[2]) do body[#body + 1] = l end
+        names[#names + 1] = ("[%s](#%s)"):format(extra[1], anchor(extra[1]))
     end
     lines[#lines + 1] = "**On this page:** " .. table.concat(names, " · ")
     lines[#lines + 1] = ""

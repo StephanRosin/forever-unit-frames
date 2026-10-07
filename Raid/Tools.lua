@@ -2,12 +2,13 @@ local _, ns = ...
 
 -- The raid tools bar: what Blizzard's raid manager offered (hidden with
 -- Blizzard's raid frames, Core/Blizzard.lua), in rows, each switched on
--- its own: the raid target icons for your target; the ready check (the
--- last result for everyone, starting one for the leader and assistants:
--- tools only they may use show for them only, and while test mode is on);
--- the world markers (leader and assistants); a role poll (leader and
--- assistants), everyone an assistant, party to raid and back, the loot
--- method (the leader). It shows in a raid and in a party while the raid
+-- its own: the raid target icons for your target (anyone in a party; in
+-- a raid the leader and assistants); the ready check (the last result
+-- for everyone, starting one for the leader and assistants); the world
+-- markers (leader and assistants); a role poll (leader and assistants),
+-- everyone an assistant, party to raid and back, the loot method (the
+-- leader). A tool shows only to whom may use it (in a raid, everyone an
+-- assistant counts as an assistant), and while test mode is on. It shows in a raid and in a party while the raid
 -- frames are on, hidden when solo, and while test mode is on, so it can
 -- be placed. Docked, it hangs on the main panel's right edge behind a
 -- handle that folds it out and in (out of combat; the panel's anchor
@@ -152,35 +153,51 @@ end
 -- The raid target icons, as Blizzard's TargetFrame draws them
 -- (Elements/RaidMarker.lua's sheet): a click puts the icon on your
 -- target or takes it off again (action "toggle"); the last button takes
--- your target's icon off.
-Tools.AddRow({ id = "targets", key = "toolsTargets", build = function(bar)
-    local row = CreateFrame("Frame", nil, bar)
-    local buttons = {}
-    for i = 1, Tools.MARKERS do
-        local b = secureButton(row, "raidtarget", { unit = "target", marker = i, action = "toggle" })
-        b.icon = b:CreateTexture(nil, "ARTWORK")
-        b.icon:SetAllPoints(b)
-        b.icon:SetTexture(ns.RaidMarker.TEXTURE)
-        b.icon:SetSpriteSheetCell(i, ns.RaidMarker.ROWS, ns.RaidMarker.COLUMNS)
-        buttons[i] = b
-    end
-    local clear = secureButton(row, "raidtarget", { unit = "target", action = "clear" })
-    cross(clear)
-    tooltip(clear, "RAID_TOOLS_CLEAR_TARGET")
-    buttons[#buttons + 1] = clear
-    lineUp(row, buttons)
-    row.buttons, row.clear = buttons, clear
-    return row
-end })
+-- your target's icon off. Only while you may (Tools.Marks).
+Tools.AddRow({ id = "targets", key = "toolsTargets", visible = function() return Tools.Marks() end,
+    build = function(bar)
+        local row = CreateFrame("Frame", nil, bar)
+        local buttons = {}
+        for i = 1, Tools.MARKERS do
+            local b = secureButton(row, "raidtarget", { unit = "target", marker = i, action = "toggle" })
+            b.icon = b:CreateTexture(nil, "ARTWORK")
+            b.icon:SetAllPoints(b)
+            b.icon:SetTexture(ns.RaidMarker.TEXTURE)
+            b.icon:SetSpriteSheetCell(i, ns.RaidMarker.ROWS, ns.RaidMarker.COLUMNS)
+            buttons[i] = b
+        end
+        local clear = secureButton(row, "raidtarget", { unit = "target", action = "clear" })
+        cross(clear)
+        tooltip(clear, "RAID_TOOLS_CLEAR_TARGET")
+        buttons[#buttons + 1] = clear
+        lineUp(row, buttons)
+        row.buttons, row.clear = buttons, clear
+        return row
+    end })
 
 -- Ready check -----------------------------------------------------------------------
 
--- Whether you lead the group or assist (secret while your identity is
--- restricted: then not); in test mode yes, so every tool shows.
+-- Everyone an assistant (the raid's leader): IsEveryoneAssistant, as
+-- Blizzard's raid manager reads it (secret: not).
+local function everyoneAssists()
+    return ns.Secrets.Call(IsEveryoneAssistant) == true
+end
+
+-- Whether you lead the group or assist, in a raid also while everyone is
+-- an assistant (secret while your identity is restricted: then not); in
+-- test mode yes, so every tool shows.
 function Tools.Leads()
     if testing() then return true end
     local Secrets = ns.Secrets
     return Secrets.Bool(UnitIsGroupLeader, "player") == true or Secrets.Bool(UnitIsGroupAssistant, "player") == true
+        or (IsInRaid() and everyoneAssists())
+end
+
+-- Whether you may set raid target icons: anyone in a party, in a raid
+-- those who lead (Blizzard's raid manager,
+-- CompactRaidFrameManager_UpdateOptionsFlowContainer).
+function Tools.Marks()
+    return not IsInRaid() or Tools.Leads()
 end
 
 Tools.READY_W, Tools.COUNT_W = 90, 22
@@ -351,12 +368,6 @@ end
 -- in this order, with their words.
 Tools.LOOT_METHODS = { "Freeforall", "Roundrobin", "Masterlooter", "Group", "Needbeforegreed", "Personal" }
 Tools.GROUP_BUTTON_W, Tools.BUTTON_PADDING = 60, 16
-
--- Everyone an assistant (the raid's leader): IsEveryoneAssistant, as
--- Blizzard's raid manager reads it.
-local function everyoneAssists()
-    return ns.Secrets.Call(IsEveryoneAssistant) == true
-end
 
 -- Master looter is the player himself, as Blizzard's unit menu sets it.
 local function setLoot(name)
@@ -561,8 +572,10 @@ local function update()
     if Tools.bar then ns.AfterCombat("raidTools", Tools.Refresh) end
 end
 
+-- Who leads or assists changes which tools show. Everyone an assistant
+-- has no event of its own: the roster's (as Blizzard's raid manager's
+-- checkbox listens, Blizzard_CompactRaidFrameManager.xml).
 ns.On("GROUP_ROSTER_UPDATE", update)
--- Who leads changes which tools show.
 ns.On("PARTY_LEADER_CHANGED", update)
 ns.Listen("RAID_CONFIG_CHANGED", update)
 ns.Listen("RAID_TEST_MODE", update)
