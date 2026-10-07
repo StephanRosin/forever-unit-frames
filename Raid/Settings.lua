@@ -8,6 +8,13 @@ local Raid = {}
 ns.Raid = Raid
 
 Raid.SIZES = { 10, 20, 40 }
+-- A raid group holds five; the largest size has GROUP_COUNT groups.
+-- Defined here once, Raid/Layout.lua uses them.
+Raid.GROUP_SIZE = 5
+Raid.GROUP_COUNT = Raid.SIZES[#Raid.SIZES] / Raid.GROUP_SIZE
+-- The assigned roles in Blizzard's order: the role blocks and their
+-- tokens.
+Raid.ROLES = { "TANK", "HEALER", "DAMAGER" }
 local IS_SIZE = { [10] = true, [20] = true, [40] = true }
 
 -- The scope that holds the profile of a raid size; anything but 10, 20
@@ -400,12 +407,16 @@ table.insert(pets.keys, 5, "petsCellHeight")
 -- Arrangement tab. Per size: shown, the grouping and which of its blocks
 -- the panel takes (Raid.ParseBlockList), a title above it, its own layout
 -- (the main panel's settings of the same name: their ranges, lists and
--- defaults), the panel's top-left corner from the screen centre. A code
--- is the slot's letter and the setting's.
+-- defaults), the panel's top-left corner from the screen centre.
+--
+-- A code is "slot letter + part letter" (OWN_PANEL_LETTERS, the parts'
+-- letters below). The scheme is nearly full: of the part letters only J
+-- still makes no code that is taken for any of the nine slots. A part
+-- added later needs explicit codes, one per slot, checked against the
+-- whole raid registry.
 Raid.OWN_TITLE_LETTERS = 40
-Raid.ROLES = { "TANK", "HEALER", "DAMAGER" }
--- The groups of the largest size.
-Raid.GROUP_COUNT = 8
+-- A block list as stored: its longest, every class with a separator.
+Raid.BLOCK_LIST_LETTERS = 100
 
 -- A block's token: a group number, a class token or a role.
 local function isBlockToken(token)
@@ -441,7 +452,7 @@ local OWN_PANEL_PARTS = {
     { part = "Show", letter = "E", def = { type = "bool", default = false } },
     -- Stored by index: append only.
     { part = "GroupBy", letter = "G", def = { type = "enum", values = { "GROUP", "CLASS", "ROLE" }, default = "GROUP" } },
-    { part = "Blocks", letter = "K", def = { type = "text", maxLetters = Raid.CLASS_ORDER_LETTERS, check = isBlockList,
+    { part = "Blocks", letter = "K", def = { type = "text", maxLetters = Raid.BLOCK_LIST_LETTERS, check = isBlockList,
         default = "" } },
     { part = "Title", letter = "T", def = { type = "text", maxLetters = Raid.OWN_TITLE_LETTERS, default = "" } },
     { part = "BlockDirection", letter = "D", like = "blockDirection" },

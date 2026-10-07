@@ -9,7 +9,8 @@ local _, ns = ...
 local Layout = {}
 ns.RaidLayout = Layout
 
-Layout.ROLES = { "TANK", "HEALER", "DAMAGER" }
+-- The roles in Blizzard's order and a group's size (Raid/Settings.lua).
+Layout.ROLES = ns.Raid.ROLES
 -- Sorted by role within a block: the assigned roles in this order, those
 -- without one last.
 Layout.ROLE_ORDER = "TANK,HEALER,DAMAGER,NONE"
@@ -18,7 +19,7 @@ Layout.ROLE_ORDER = "TANK,HEALER,DAMAGER,NONE"
 -- panels' lists).
 Layout.FILTER_KEYS = { "groupFilter", "roleFilter", "strictFiltering", "groupBy", "groupingOrder", "nameList" }
 -- A group never holds more than five.
-Layout.GROUP_SIZE = 5
+Layout.GROUP_SIZE = ns.Raid.GROUP_SIZE
 
 -- The raid groups a size shows: 10 -> 1-2, 20 -> 1-4, 40 -> 1-8.
 function Layout.Groups(size)
