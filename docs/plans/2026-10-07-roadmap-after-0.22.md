@@ -1,6 +1,6 @@
 # Roadmap after 0.22.0
 
-Date: 2026-10-07 · Status: proposal, to be confirmed by the maintainer package by package.
+Date: 2026-10-07 · Status: confirmed 2026-10-07 — A and B prepared (designs in docs/specs), C deferred far back, D dropped.
 
 0.22.0 shipped the raid frames (parts 1–6), the unit frame requests and the menu rework. This plan covers what was
 deferred. Each package gets its own short design note and its own branch; the order below is the recommended one.
@@ -8,10 +8,10 @@ deferred. Each package gets its own short design note and its own branch; the or
 | # | Package | Kind | Size | Release |
 |---|---|---|---|---|
 | 0 | Hotfix readiness for 0.22 feedback | reactive | — | 0.22.x |
-| A | Clean-up: shared window parts + review leftovers | internal | S–M | 0.23.0 |
-| B | Aura blocklist (hide single auras) | user request | M | 0.23.0 |
-| C | Border and rounding per bar | CurseForge request | L | 0.24.0 |
-| D | HoTs in heal prediction | research first | ? | after a spike |
+| A | Clean-up: shared window parts + review leftovers | internal | S–M | 0.23.0 (design: docs/specs/2026-10-07-cleanup-design.md) |
+| B | Aura blocklist (hide single auras) | user request | M | 0.23.0 (design: docs/specs/2026-10-07-aura-blocklist-design.md) |
+| C | Border and rounding per bar | CurseForge request | L | deferred, far back |
+| D | ~~HoTs in heal prediction~~ | dropped (maintainer) | — | — |
 
 ## 0 — Hotfix readiness (first, ongoing)
 
@@ -45,7 +45,7 @@ Goal: smaller code and fewer copies before new features build on it. Default loo
 
 Goal: hide single auras by spell, e.g. campfire or food buffs, on the unit frames and the raid cells.
 
-1. **Spike first, in the client:** does the aura container's `excludeSpellIDs` filter work for debuffs and on hostile
+1. **Settled from the client source** (no in-game spike needed, see the design): exclusions work for buffs on you/your group/pets, debuffs on enemies, and never-secret spells anywhere; not for debuffs on friendly units or buffs on enemies. Original question: does the aura container's `excludeSpellIDs` filter work for debuffs and on hostile
    units, and in combat? (Party buffs are known to work.) Is `aura.spellId` readable outside combat for the
    right-click route? The answers decide which of steps 2–4 work where.
 2. **Settings:** one account-wide list plus one list per frame (unit frames: General + each frame; raid: per size),
@@ -59,7 +59,7 @@ Goal: hide single auras by spell, e.g. campfire or food buffs, on the unit frame
      with an undo message.
 5. Tests: filter applied in and out of combat, list validation, the secret spell-ID case (no entry, no error).
 
-## C — Border and rounding per bar (CurseForge request, 2026-09-27)
+## C — Border and rounding per bar (CurseForge request, 2026-09-27) — deferred far back
 
 Goal: the health and the power bar each get their own border and slightly rounded corners, independent of the
 frame's border, like the pet bar.
@@ -78,17 +78,9 @@ frame's border, like the pet bar.
 4. Biggest risk: heal prediction and absorb bars are clipped by the frame mask today; they must follow the bar's
    rounding instead.
 
-## D — HoTs in heal prediction (research first)
+## D — HoTs in heal prediction (dropped)
 
-`UnitGetIncomingHeals` and the heal prediction calculator only know direct heals being cast, as in Blizzard's frames.
-
-1. **Spike (time-boxed, about 1 hour):**
-   - Do the calculator's `GetIncomingHeals` amounts include HoT ticks on Forever?
-   - Does the aura data of a HoT carry readable points or tick values outside combat and inside it?
-2. If HoT amounts can only be estimated from aura data that is secret in combat, the feature cannot be built honestly.
-   The result is then written into the FAQ and the item is closed.
-3. If they are readable, add a third prediction bar in its own colour for the HoT amount until the next tick (or the
-   remaining total, as a setting), through the same secret-safe status bar path as today.
+Dropped by the maintainer on 2026-10-07. The FAQ says that heal prediction shows heals being cast, as Blizzard's frames do.
 
 ## Way of working (as for 0.22)
 
