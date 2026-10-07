@@ -97,9 +97,11 @@ end
 
 -- Boots the addon with a player, a pet, an elite target with a target of
 -- its own, a focus and two party members, faded out of combat or not.
+-- opts.shipped: with the shipped look (Core/Preset.lua); opts.db: the
+-- SavedVariables the boot finds (default none, a fresh install).
 function Look.Record(opts)
     opts = opts or {}
-    local ns = H.LoadAddon()
+    local ns = opts.shipped and H.LoadShipped() or H.LoadAddon()
     M.units.player = { name = "Me", class = "SHAMAN", className = "SHAMAN", isPlayer = true, health = 100,
         healthMax = 100, power = 50, powerMax = 100, level = 60, leader = true }
     M.units.pet = { name = "Wolf", health = 40, healthMax = 50, power = 10, powerMax = 100, level = 58 }
@@ -111,7 +113,7 @@ function Look.Record(opts)
         healthMax = 10, role = "HEALER" }
     M.units.party2 = { name = "Bob", class = "WARRIOR", className = "WARRIOR", isPlayer = true, health = 9,
         healthMax = 10, role = "TANK" }
-    _G.ForeverUnitFramesDB = nil
+    _G.ForeverUnitFramesDB = opts.db
     M.FireEvent("PLAYER_LOGIN")
     M.RunTimers()
     M.SetGroup({ "party1", "party2" })
@@ -136,6 +138,24 @@ function Look.Record(opts)
     if opts.test then ns.TestMode.Set(false) end
     return lines
 end
+
+-- The record of every scene as the source of a record file (see
+-- tools/look-record.lua).
+function Look.Source(opts, header)
+    local out = { header, "return {" }
+    for _, scene in ipairs(Look.ORDER) do
+        local o = {}
+        for k, v in pairs(Look.SCENES[scene]) do o[k] = v end
+        for k, v in pairs(opts or {}) do o[k] = v end
+        out[#out + 1] = "    " .. scene .. " = {"
+        for _, line in ipairs(Look.Record(o)) do out[#out + 1] = "        " .. ("%q"):format(line) .. "," end
+        out[#out + 1] = "    },"
+    end
+    out[#out + 1] = "}"
+    return table.concat(out, "\n")
+end
+
+Look.ORDER = { "live", "portrait", "faded", "test" }
 
 Look.SCENES = {
     live = {},
