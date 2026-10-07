@@ -1808,10 +1808,13 @@ function M.Reset()
     -- (M.masterLootPartyID, 0 = you) and by raid index (M.masterLooterRaidID).
     M.lootMethod, M.masterLootPartyID, M.masterLooterRaidID = 3, nil, nil
     -- What the addon asks of the group (PartyInfoDocumentation.lua):
-    -- M.partyCalls records each call as { name, arguments... }.
-    M.partyCalls = {}
+    -- M.partyCalls records each call as { name, arguments... }. These
+    -- calls have restrictions (HasRestrictions): a name set in
+    -- M.partyRefused raises instead, as a restricted call may.
+    M.partyCalls, M.partyRefused = {}, {}
     local function record(name)
         return function(...)
+            if M.partyRefused[name] then error(name .. ": not allowed") end
             table.insert(M.partyCalls, { name, ... })
             return true
         end

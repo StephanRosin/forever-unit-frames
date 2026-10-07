@@ -110,6 +110,33 @@ H.check("party: no everyone-assistant", b.assist:IsShown(), false)
 click(b.convert)
 H.check("converted", last()[1], "ConvertToRaid")
 
+-- Refused by the client: a line in the chat per click, no Lua error.
+local function refused(name, button, word)
+    M.partyRefused[name] = true
+    local lines = #M.chat
+    H.checkTrue(name .. " refused: no error", pcall(button:GetScript("OnClick"), button))
+    H.check(name .. " refused: said", M.chat[lines + 1],
+        "|cff4fc3f7Forever Unit Frames:|r " .. word .. ": not allowed right now.")
+    M.partyRefused[name] = nil
+end
+refused("ConvertToRaid", b.convert, "To raid")
+refused("InitiateRolePoll", b.rolePoll, "Role poll")
+M.partyRefused.SetLootMethod = true
+click(b.loot)
+local lines = #M.chat
+H.checkTrue("SetLootMethod refused: no error", pcall(M.ClickMenu, M.menu.elements[2]))
+H.check("SetLootMethod refused: said", M.chat[lines + 1], "|cff4fc3f7Forever Unit Frames:|r Loot: not allowed right now.")
+M.partyRefused.SetLootMethod = nil
+M.SetRaidRoster({ member("Me", 1), member("Ann", 1) })
+M.units.player = M.units.raid1
+M.units.raid1.leader = true
+M.FireEvent("PARTY_LEADER_CHANGED")
+refused("SetEveryoneIsAssistant", b.assist, "All assist")
+refused("ConvertToParty", b.convert, "To party")
+M.SetRaidRoster({})
+M.units.player = { name = "Me", class = "MAGE", isPlayer = true, leader = true }
+M.SetGroup({ "party1" })
+
 -- Switched off one by one.
 RC.Set("general", "toolsLoot", false)
 H.check("loot off", b.loot:IsShown(), false)

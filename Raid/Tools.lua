@@ -236,10 +236,17 @@ local function renderReady()
     end
 end
 
+-- A group call the client may refuse (HasRestrictions: ready check,
+-- convert, everyone assistant, loot method, role poll) goes through
+-- pcall; refused, a line in the chat names the tool (`word`), no Lua error.
+function Tools.Ask(word, fn, ...)
+    if not pcall(fn, ...) then ns.Print(L.RAID_TOOLS_REFUSED:format(word)) end
+end
+
 Tools.AddRow({ id = "ready", key = "toolsReady", build = function(bar)
     local row = CreateFrame("Frame", nil, bar)
     row.start = ns.Widgets.Button(row, { text = "", width = Tools.READY_W,
-        onClick = function() C_PartyInfo.DoReadyCheck() end })
+        onClick = function() Tools.Ask(L.RAID_TOOLS_READY_CHECK, C_PartyInfo.DoReadyCheck) end })
     row.start:SetHeight(Tools.ICON)
     row.counts = {}
     for _, status in ipairs(Tools.READY_ORDER) do
@@ -356,7 +363,7 @@ local function setLoot(name)
         local ok, me = pcall(UnitName, "player")
         if ok and not ns.Secrets.IsSecret(me) and type(me) == "string" then looter = me end
     end
-    C_PartyInfo.SetLootMethod(method, looter)
+    Tools.Ask(L.RAID_TOOLS_LOOT, C_PartyInfo.SetLootMethod, method, looter)
 end
 
 -- The current method marked (never secret, PartyInfoDocumentation.lua;
@@ -377,14 +384,21 @@ end
 -- its words (a function: party or raid).
 local GROUP_BUTTONS = {
     { id = "rolePoll", key = "toolsRolePoll", who = Tools.Leads,
-        click = function() InitiateRolePoll() end, text = function() return L.RAID_TOOLS_ROLE_POLL end },
+        click = function() Tools.Ask(L.RAID_TOOLS_ROLE_POLL, InitiateRolePoll) end,
+        text = function() return L.RAID_TOOLS_ROLE_POLL end },
     { id = "assist", key = "toolsAssist", who = Tools.IsLeader, applies = function() return IsInRaid() or testing() end,
-        click = function() C_PartyInfo.SetEveryoneIsAssistant(not everyoneAssists()) end,
+        click = function()
+            Tools.Ask(L.RAID_TOOLS_ASSIST, C_PartyInfo.SetEveryoneIsAssistant, not everyoneAssists())
+        end,
         text = function() return L.RAID_TOOLS_ASSIST end },
     { id = "convert", key = "toolsConvert", who = Tools.IsLeader,
         applies = function() return not IsInRaid() or GetNumGroupMembers() <= 5 end,
         click = function()
-            if IsInRaid() then C_PartyInfo.ConvertToParty() else C_PartyInfo.ConvertToRaid() end
+            if IsInRaid() then
+                Tools.Ask(L.RAID_TOOLS_TO_PARTY, C_PartyInfo.ConvertToParty)
+            else
+                Tools.Ask(L.RAID_TOOLS_TO_RAID, C_PartyInfo.ConvertToRaid)
+            end
         end,
         text = function() return IsInRaid() and L.RAID_TOOLS_TO_PARTY or L.RAID_TOOLS_TO_RAID end },
     { id = "loot", key = "toolsLoot", who = Tools.IsLeader, click = openLootMenu,

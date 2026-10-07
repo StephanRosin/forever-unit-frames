@@ -39,6 +39,13 @@ H.check("its words", f.start.text:GetText(), "Ready check")
 H.check("the row: button and result", f:GetWidth(), 90 + 4 + 3 * (18 + 22))
 f.start:GetScript("OnClick")(f.start)
 H.check("started", M.partyCalls[#M.partyCalls][1], "DoReadyCheck")
+-- Refused by the client: a line in the chat, no Lua error.
+M.partyRefused.DoReadyCheck = true
+local calls, lines = #M.partyCalls, #M.chat
+H.checkTrue("refused: no error", pcall(f.start:GetScript("OnClick"), f.start))
+H.check("refused: nothing asked", #M.partyCalls, calls)
+H.check("refused: said", M.chat[lines + 1], "|cff4fc3f7Forever Unit Frames:|r Ready check: not allowed right now.")
+M.partyRefused.DoReadyCheck = nil
 
 -- The answers come in.
 M.units.raid1.readyCheck = "ready"

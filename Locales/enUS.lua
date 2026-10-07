@@ -947,6 +947,8 @@ L.RAID_TOOLS_ASSIST = "All assist"
 L.RAID_TOOLS_TO_RAID = "To raid"
 L.RAID_TOOLS_TO_PARTY = "To party"
 L.RAID_TOOLS_LOOT = "Loot"
+-- A group call the client refused (ready check, convert, loot ...): the tool's word.
+L.RAID_TOOLS_REFUSED = "%s: not allowed right now."
 L.RAID_LOOT_Freeforall = "Free for all"
 L.RAID_LOOT_Roundrobin = "Round robin"
 L.RAID_LOOT_Masterlooter = "Master looter"
