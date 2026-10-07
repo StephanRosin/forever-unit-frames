@@ -101,3 +101,24 @@ H.check("off: left", all("*type1", "target"), "target")
 RC.Set("general", "clickCast", "ON")
 H.check("on again", all("*type3", "assist"), "assist")
 H.check("nothing blocked at all", #M.blocked, 0)
+
+-- Another addon's attributes on a name we never wrote stay, on a change
+-- and when click-casting goes off; the names we did write go back to the
+-- XML's.
+local c = Cell.buttons[1]
+c:SetAttribute("ctrl-type2", "spell")
+c:SetAttribute("ctrl-spell2", "Renew")
+RC.Set("general", "click3", "focus")
+H.check("a change: the other addon's type stays", c:GetAttribute("ctrl-type2"), "spell")
+H.check("a change: its spell stays", c:GetAttribute("ctrl-spell2"), "Renew")
+RC.Set("general", "click1", "")
+H.check("left cleared", c:GetAttribute("*type1"), nil)
+RC.Set("general", "clickCast", "OFF")
+H.check("off: the other addon's type stays", c:GetAttribute("ctrl-type2"), "spell")
+H.check("off: its spell stays", c:GetAttribute("ctrl-spell2"), "Renew")
+H.check("off: middle (ours) reset", c:GetAttribute("*type3"), nil)
+H.check("off: left back to the XML's", c:GetAttribute("*type1"), "target")
+H.check("off: shift-left (ours) reset", c:GetAttribute("shift-type1"), nil)
+RC.Set("general", "clickCast", "ON")
+H.check("on: ours again", c:GetAttribute("*type3"), "focus")
+H.check("on: the other's still there", c:GetAttribute("ctrl-type2"), "spell")

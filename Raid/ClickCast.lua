@@ -130,20 +130,50 @@ local function takes(frame)
     return frame.key == ns.Party.KEY and ns.RaidConfig.Get("general", "clickCastParty") == true
 end
 
-local function write(frame, plan)
-    for _, attr in ipairs(plan) do frame:SetAttribute(attr[1], attr[2]) end
+-- The names a frame holds a value for in a plan, and their values.
+local function valuesOf(plan)
+    local values = {}
+    for _, attr in ipairs(plan) do
+        if attr[2] ~= nil then values[attr[1]] = attr[2] end
+    end
+    return values
+end
+
+-- Writes a plan, touching only names it sets, names the XML sets
+-- (defaults) and names written before (frame.clickCastNames): an
+-- attribute another addon (Clique) put on a name we never wrote stays.
+local function write(frame, values, defaults)
+    local touched = frame.clickCastNames or {}
+    for name in pairs(touched) do
+        if values[name] == nil then frame:SetAttribute(name, nil) end
+    end
+    for name in pairs(defaults) do
+        if values[name] == nil and not touched[name] then
+            frame:SetAttribute(name, nil)
+            touched[name] = true
+        end
+    end
+    for name, value in pairs(values) do
+        frame:SetAttribute(name, value)
+        touched[name] = true
+    end
+    frame.clickCastNames = touched
+end
+
+-- Every name we wrote back to the XML's value (or none): nothing else.
+local function reset(frame, defaults)
+    for name in pairs(frame.clickCastNames) do frame:SetAttribute(name, defaults[name]) end
+    frame.clickCastNames = nil
 end
 
 -- Out of combat only. A frame that takes them gets the bindings; one
 -- that no longer does (off, the party switched off) gets the XML's
--- attributes back, but only if it had ours: Clique's are left alone.
-local function apply(frame, plan, defaultPlan)
+-- attributes back on the names we wrote, if it had ours at all.
+local function apply(frame, values, defaults)
     if ClickCast.On() and takes(frame) then
-        write(frame, plan)
-        frame.clickCastWritten = true
-    elseif frame.clickCastWritten then
-        write(frame, defaultPlan)
-        frame.clickCastWritten = nil
+        write(frame, values, defaults)
+    elseif frame.clickCastNames then
+        reset(frame, defaults)
     end
 end
 
@@ -156,10 +186,15 @@ local function frames()
     return list
 end
 
+-- The bindings' and the XML's attribute values, by name.
+local function planned()
+    return valuesOf(ClickCast.Plan(ClickCast.Values())), valuesOf(ClickCast.Plan(ClickCast.DefaultValues()))
+end
+
 function ClickCast.ApplyAll()
     if InCombatLockdown() or not ns.RaidConfig.Profile() then return end
-    local plan, defaultPlan = ClickCast.Plan(ClickCast.Values()), ClickCast.Plan(ClickCast.DefaultValues())
-    for _, frame in ipairs(frames()) do apply(frame, plan, defaultPlan) end
+    local values, defaults = planned()
+    for _, frame in ipairs(frames()) do apply(frame, values, defaults) end
 end
 
 local function applyAfterCombat() ns.AfterCombat("clickCast", ClickCast.ApplyAll) end
@@ -172,7 +207,7 @@ function ClickCast.Added(frame)
         return
     end
     if not ns.RaidConfig.Profile() then return end
-    apply(frame, ClickCast.Plan(ClickCast.Values()), ClickCast.Plan(ClickCast.DefaultValues()))
+    apply(frame, planned())
 end
 
 -- The settings that change the attributes; the panels have nothing to
