@@ -88,4 +88,4 @@ end
 H.check("name colour with the text display options", sectionOf("party", "barNameColorMode"), "text:display")
 H.check("shield position with the shields", sectionOf("party", "absorbMode"), "bars:absorbs")
 H.check("power colours on the bars tab", sectionOf("party", "powerColorMana"), "bars:powerColors")
-H.check("power colours in General", sectionOf("general", "powerColorMana"), "colors:powerColors")
+H.check("power colours in General", sectionOf("general", "powerColorMana"), "bars:powerColors")

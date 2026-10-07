@@ -256,10 +256,25 @@ end
 -- tab's note.
 local actionBlock, noteBlock
 
-local function buildSettingsPage(page, scope, tab)
-    local stack = newStack(page)
-    if tab.note then stack.add(noteBlock(page, L["NOTE_" .. tab.note])) end
-    for _, section in ipairs(tab.sections) do
+-- General > Frames: after the master switch, one switch per frame, the
+-- frame's own "enabled".
+local function frameSwitches(page, stack)
+    for _, def in ipairs(ns.Units.List) do
+        if not def.available or def.available() then
+            local row = Widgets.Checkbox(page, {
+                label = L["FRAME_" .. def.key], hint = localized("HINT_frameEnabled"),
+                get = function() return Config.Get(def.key, "enabled") end,
+                set = function(v) return Config.Set(def.key, "enabled", v) end,
+            })
+            row.key = "enabled"
+            stack.add(row)
+        end
+    end
+end
+
+-- A tab's sections onto the stack: those with a setting of the page.
+local function addSections(page, stack, scope, tab)
+    for _, section in ipairs(tab.sections or {}) do
         local keys = {}
         for _, key in ipairs(section.keys) do
             if ns.Settings.AppliesTo(ns.Settings.Get(key), scope) then keys[#keys + 1] = key end
@@ -267,9 +282,16 @@ local function buildSettingsPage(page, scope, tab)
         if #keys > 0 then
             stack.add(sectionHeader(page, section.id))
             for _, key in ipairs(keys) do stack.add(settingRow(page, scope, key)) end
+            if section.frames then frameSwitches(page, stack) end
             if section.action then stack.add(actionBlock(page, section.action)) end
         end
     end
+end
+
+local function buildSettingsPage(page, scope, tab)
+    local stack = newStack(page)
+    if tab.note then stack.add(noteBlock(page, L["NOTE_" .. tab.note])) end
+    addSections(page, stack, scope, tab)
     stack.finish()
 end
 
@@ -429,7 +451,8 @@ local CUSTOM_BLOCKS = {
     { header = "RESET", build = resetBlock },
 }
 
-local function buildProfilePage(page)
+-- Export, import, reset, then the tab's sections (the minimap button).
+local function buildProfilePage(page, scope, tab)
     local stack = newStack(page)
     for _, entry in ipairs(CUSTOM_BLOCKS) do
         local header = Widgets.Header(page, L[entry.header])
@@ -437,24 +460,7 @@ local function buildProfilePage(page)
         stack.add(header)
         stack.add(entry.build(page))
     end
-    stack.finish()
-end
-
--- General > Frames: one switch per frame, the frame's own "enabled".
-local function buildFramesPage(page)
-    local stack = newStack(page)
-    stack.add(sectionHeader(page, "frames"))
-    for _, def in ipairs(ns.Units.List) do
-        if not def.available or def.available() then
-            local row = Widgets.Checkbox(page, {
-                label = L["FRAME_" .. def.key], hint = localized("HINT_frameEnabled"),
-                get = function() return Config.Get(def.key, "enabled") end,
-                set = function(v) return Config.Set(def.key, "enabled", v) end,
-            })
-            row.key = "enabled"
-            stack.add(row)
-        end
-    end
+    addSections(page, stack, scope, tab)
     stack.finish()
 end
 
@@ -465,9 +471,7 @@ local function pageFor(scope, tab)
     page:SetPoint("TOPLEFT", frame.scrollChild, "TOPLEFT", 0, 0)
     page:SetWidth(CONTENT_W)
     if tab.custom == "profile" then
-        buildProfilePage(page)
-    elseif tab.custom == "frames" then
-        buildFramesPage(page)
+        buildProfilePage(page, scope, tab)
     else
         buildSettingsPage(page, scope, tab)
     end

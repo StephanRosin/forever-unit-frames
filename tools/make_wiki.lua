@@ -148,8 +148,9 @@ end
 
 -- A section's first paragraph, where its table alone does not say enough.
 local SECTION_NOTE = {
-    unitFrames = "Off, every unit frame counts as off and none of Blizzard's frames is hidden any more (they come"
-        .. " back after a `/reload`). Each frame's own switch (the **Frames** tab, or the frame's page) keeps its"
+    frames = "Below **Use unit frames**, one switch per frame: the frame's own, as on its page (Layout tab). Off,"
+        .. " **Use unit frames** makes every unit frame count as off and none of Blizzard's frames is hidden any"
+        .. " more (they come back after a `/reload`). Each frame's own switch keeps its"
         .. " value and is grayed meanwhile; switched on again, every frame is as its own switch says. The raid"
         .. " frames do not depend on it: they have their own switch in `/fuf raid`.",
     healthText = "Each row (title, health and power) can have a center text as well. While one is set, the"
@@ -202,10 +203,10 @@ do
     local lines = { GENERATED, "", "# Settings: General", "",
         "The **General** page (top of the list on the left in `/fuf`) sets the look for every frame at once.",
         "Most of these can be overridden on a frame's own page; the frame then keeps its own value.",
-        "The **Profile** tab (export, import, reset) is explained on the [[Home]] page.", "" }
+        "The **Profile** tab's export, import and reset are explained on the [[Home]] page.", "" }
     local body, toc = {}, { "**On this page:**", "" }
     for _, tab in ipairs(Schema.Tabs("general")) do
-        if not tab.custom then
+        if tab.sections then
             local title = label("TAB_" .. tab.id, tab.id)
             body[#body + 1] = "## " .. title
             body[#body + 1] = ""

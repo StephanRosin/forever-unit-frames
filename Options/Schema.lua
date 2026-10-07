@@ -7,10 +7,16 @@ ns.Schema = Schema
 local BORDER_KEYS = { "borderShow", "borderStyle", "borderSize", "borderPadding", "borderColor" }
 local SHADOW_KEYS = { "shadowEnabled", "shadowAlpha", "shadowSize" }
 
+-- Structured like a frame's page: the switches, the look, the bars, the
+-- status, then the profile.
 Schema.GENERAL = {
+    -- The master switch (Core/Settings.lua: unitFrames), then one switch
+    -- per frame (section.frames): the same "enabled" as on each frame's
+    -- Layout tab (Options/Window.lua builds them).
+    { id = "frames", sections = {
+        { id = "frames", keys = { "unitFrames" }, frames = true },
+    } },
     { id = "appearance", sections = {
-        -- The master switch first (Core/Settings.lua: unitFrames).
-        { id = "unitFrames", keys = { "unitFrames" } },
         -- action: a two-click button under the rows (Options/Window.lua).
         { id = "font", keys = { "fontFace", "fontSize", "valueFontSize", "fontOutline", "fontShadow" },
             action = "applyFontToFrames" },
@@ -18,17 +24,17 @@ Schema.GENERAL = {
         { id = "display", keys = { "infoClassColor", "textCompact", "showSurname" } },
         { id = "titleText", keys = { "awayBadge", "titleClassIcon", "classIconSize", "classIconX", "classIconY",
             "classIconRing", "classIconRingColor" } },
-        { id = "bars", keys = { "barTexture", "backgroundColor", "titleBackground" } },
         { id = "auraIcons", keys = { "auraBorder", "auraBorderSize" } },
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },
         { id = "shape", keys = { "cornerRadius" } },
-        { id = "minimap", keys = { "minimapShow", "minimapAngle" } },
     } },
-    { id = "colors", sections = {
+    -- The bars as on a frame's Bars tab: health colours, textures, the
+    -- shield beside its colour, heals, power colours.
+    { id = "bars", sections = {
         { id = "health", keys = { "healthColorMode", "healthColor", "reactionFriendlyColor", "reactionNeutralColor",
             "reactionHostileColor" } },
-        -- The shield's place beside its colour, as on a frame's page.
+        { id = "textures", keys = { "barTexture", "backgroundColor", "titleBackground" } },
         { id = "absorbs", keys = { "absorbMode", "absorbColor" } },
         { id = "healPrediction", keys = { "healMyColor", "healOtherColor" } },
         { id = "powerColors", keys = { "powerColorMana", "powerColorRage", "powerColorFocus", "powerColorEnergy" } },
@@ -43,10 +49,10 @@ Schema.GENERAL = {
         { id = "range", keys = { "rangeAlpha", "rangeFriendlyMode", "rangeFriendlySpell", "rangeFriendlyYards",
             "rangeHostileMode", "rangeHostileSpell", "rangeHostileYards" } },
     } },
-    { id = "profile", custom = "profile" },
-    -- Every frame on or off at a glance: the same "enabled" as on each
-    -- frame's Layout tab (Options/Window.lua builds it).
-    { id = "frames", custom = "frames" },
+    -- Export, import, reset (Options/Window.lua), then the minimap button.
+    { id = "profile", custom = "profile", sections = {
+        { id = "minimap", keys = { "minimapShow", "minimapAngle" } },
+    } },
 }
 
 Schema.FRAME = {

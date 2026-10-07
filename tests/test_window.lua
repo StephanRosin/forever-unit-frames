@@ -9,13 +9,18 @@ local found = false
 for _, name in ipairs(UISpecialFrames) do if name == "ForeverUnitFramesOptions" then found = true end end
 H.checkTrue("ESC closes window", found)
 
--- General page, Appearance tab shows font settings
+-- General page: the Frames tab first, the master switch at its top;
+-- Appearance starts with the font.
 ns.Options.Select("general")
-ns.Options.SelectTab("appearance")
+H.check("general opens on Frames", ns.Options.currentTab, "frames")
 local keys = {}
 for _, row in ipairs(ns.Options.rows) do if row.key then keys[#keys + 1] = row.key end end
 H.check("first general row: the master switch", keys[1], "unitFrames")
-H.check("then the font", keys[2], "fontFace")
+H.check("then a frame's own switch", keys[2], "enabled")
+ns.Options.SelectTab("appearance")
+keys = {}
+for _, row in ipairs(ns.Options.rows) do if row.key then keys[#keys + 1] = row.key end end
+H.check("appearance: the font first", keys[1], "fontFace")
 
 -- Frame page, Layout tab; slider edits config
 ns.Options.Select("player")
@@ -64,7 +69,7 @@ for _, row in ipairs(ns.Options.rows) do if row.key == "enabled" then switches[#
 local frameCount = 0
 for _, def in ipairs(ns.Units.List) do if not def.available or def.available() then frameCount = frameCount + 1 end end
 H.check("frames tab: a switch per frame", #switches, frameCount)
-H.check("frames tab: last of the general tabs", ns.Schema.Tabs("general")[#ns.Schema.Tabs("general")].id, "frames")
+H.check("frames tab: first of the general tabs", ns.Schema.Tabs("general")[1].id, "frames")
 local targetSwitch
 for i, def in ipairs(ns.Units.List) do if def.key == "target" then targetSwitch = switches[i] end end
 targetSwitch.box:GetScript("OnClick")(targetSwitch.box)
@@ -129,9 +134,13 @@ H.check("nav bar hidden on others", O.navButtons.general.bar:IsShown(), false)
 H.checkTrue("selected tab underline", O.tabButtons[2].underline:IsShown())
 H.check("other tab no underline", O.tabButtons[1].underline:IsShown(), false)
 
--- Tab falls back to the first one when the new scope lacks it
+-- Tab kept where the new scope has it (General has Bars too), else falls
+-- back to the first one.
 O.Select("general")
-H.check("tab falls back", O.currentTab, "appearance")
+H.check("tab kept: General has Bars", O.currentTab, "bars")
+O.Open("target", "text")
+O.Select("general")
+H.check("tab falls back", O.currentTab, "frames")
 
 -- Frame-only footer buttons
 H.check("copy hidden on general", O.copyRow:IsShown(), false)

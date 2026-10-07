@@ -36,7 +36,7 @@ do
         end
     end
     H.checkTrue("minimap section", found)
-    H.check("in Appearance", tab, "appearance")
+    H.check("in Profile", tab, "profile")
     H.check("section keys", found and table.concat(found.keys, ","), "minimapShow,minimapAngle")
     H.check("section title", ns.L.SECTION_minimap, "Minimap button")
 end

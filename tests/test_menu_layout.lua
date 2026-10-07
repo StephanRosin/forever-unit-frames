@@ -35,6 +35,30 @@ local function keysOf(scope, tabId, secId)
 end
 H.check("General > Display in the frame page's order", keysOf("general", "appearance", "display"),
     "infoClassColor,textCompact,showSurname")
-H.check("General: shield place beside its color", keysOf("general", "colors", "absorbs"), "absorbMode,absorbColor")
+H.check("General: shield place beside its color", keysOf("general", "bars", "absorbs"), "absorbMode,absorbColor")
 H.check("General: highlight color in Status", where("general", "targetHighlightColor"), "status:targetHighlight")
-H.check("General: no highlight section in Colors", keysOf("general", "colors", "highlight"), nil)
+
+-- The restructure (decision 65): General like a frame's page. The
+-- switches first (master and per frame), the look, the bars (Colors
+-- folded in, with the textures), the status, the profile with the
+-- minimap button.
+local function tabIds(scope)
+    local ids = {}
+    for _, tab in ipairs(ns.Schema.Tabs(scope)) do ids[#ids + 1] = tab.id end
+    return table.concat(ids, ",")
+end
+H.check("General tabs", tabIds("general"), "frames,appearance,bars,status,profile")
+H.check("General: master switch in Frames", where("general", "unitFrames"), "frames:frames")
+H.check("General: textures on Bars", keysOf("general", "bars", "textures"), "barTexture,backgroundColor,titleBackground")
+H.check("General: Bars in a frame page's order", (function()
+    for _, tab in ipairs(ns.Schema.Tabs("general")) do
+        if tab.id == "bars" then
+            local ids = {}
+            for _, sec in ipairs(tab.sections) do ids[#ids + 1] = sec.id end
+            return table.concat(ids, ",")
+        end
+    end
+end)(), "health,textures,absorbs,healPrediction,powerColors")
+H.check("General: health colors on Bars", where("general", "healthColorMode"), "bars:health")
+H.check("General: minimap button with the profile", where("general", "minimapShow"), "profile:minimap")
+H.check("General: no textures left in Appearance", keysOf("general", "appearance", "bars"), nil)

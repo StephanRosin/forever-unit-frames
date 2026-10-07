@@ -4,19 +4,21 @@
 
 The **General** page (top of the list on the left in `/fuf`) sets the look for every frame at once.
 Most of these can be overridden on a frame's own page; the frame then keeps its own value.
-The **Profile** tab (export, import, reset) is explained on the [[Home]] page.
+The **Profile** tab's export, import and reset are explained on the [[Home]] page.
 
 **On this page:**
 
-- **[Appearance](#appearance):** [Unit frames](#unit-frames) · [Font](#font) · [Display](#display) · [Title row](#title-row) · [Bars](#bars) · [Aura icons](#aura-icons) · [Border](#border) · [Shadow](#shadow) · [Shape](#shape) · [Minimap button](#minimap-button)
-- **[Colors](#colors):** [Health bar](#health-bar) · [Absorb shields](#absorb-shields) · [Incoming heals](#incoming-heals) · [Power colors](#power-colors)
+- **[Frames](#frames):** [Which frames are shown](#which-frames-are-shown)
+- **[Appearance](#appearance):** [Font](#font) · [Display](#display) · [Title row](#title-row) · [Aura icons](#aura-icons) · [Border](#border) · [Shadow](#shadow) · [Shape](#shape)
+- **[Bars](#bars):** [Health bar](#health-bar) · [Textures](#textures) · [Absorb shields](#absorb-shields) · [Incoming heals](#incoming-heals) · [Power colors](#power-colors)
 - **[Status](#status):** [Combat icon](#combat-icon) · [Target highlight](#target-highlight) · [Range](#range)
+- **[Profile](#profile):** [Minimap button](#minimap-button)
 
-## Appearance
+## Frames
 
-### Unit frames
+### Which frames are shown
 
-Off, every unit frame counts as off and none of Blizzard's frames is hidden any more (they come back after a `/reload`). Each frame's own switch (the **Frames** tab, or the frame's page) keeps its value and is grayed meanwhile; switched on again, every frame is as its own switch says. The raid frames do not depend on it: they have their own switch in `/fuf raid`.
+Below **Use unit frames**, one switch per frame: the frame's own, as on its page (Layout tab). Off, **Use unit frames** makes every unit frame count as off and none of Blizzard's frames is hidden any more (they come back after a `/reload`). Each frame's own switch keeps its value and is grayed meanwhile; switched on again, every frame is as its own switch says. The raid frames do not depend on it: they have their own switch in `/fuf raid`.
 
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
@@ -24,6 +26,8 @@ Off, every unit frame counts as off and none of Blizzard's frames is hidden any 
 <tr><td><b>Use unit frames</b></td><td>Off: none shown; /reload brings back Blizzard's</td><td>On, Off</td><td>On</td></tr>
 </tbody>
 </table>
+
+## Appearance
 
 ### Font
 
@@ -63,17 +67,6 @@ Button: **Apply to all frames**.
 <tr><td><b>Class icon Y</b></td><td>Badge center from the frame's top edge; positive moves it up</td><td>-64 – 64</td><td>-9</td></tr>
 <tr><td><b>Badge ring</b></td><td>Ring thickness around the icon; 0 = no ring</td><td>0 – 4</td><td>2</td></tr>
 <tr><td><b>Badge ring color</b></td><td>Color of the badge's ring</td><td>Color</td><td><code>#c7c7cc</code></td></tr>
-</tbody>
-</table>
-
-### Bars
-
-<table>
-<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
-<tbody>
-<tr><td><b>Bar texture</b></td><td></td><td>Texture</td><td>Raid</td></tr>
-<tr><td><b>Background color</b></td><td></td><td>Color</td><td><code>#000000</code>, 60 % opaque</td></tr>
-<tr><td><b>Background behind the name</b></td><td>Off: only the bars keep a background</td><td>On, Off</td><td>On</td></tr>
 </tbody>
 </table>
 
@@ -120,17 +113,7 @@ Button: **Apply to all frames**.
 </tbody>
 </table>
 
-### Minimap button
-
-<table>
-<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
-<tbody>
-<tr><td><b>Show the button</b></td><td></td><td>On, Off</td><td>On</td></tr>
-<tr><td><b>Button position</b></td><td>Degrees around the minimap; or drag it</td><td>0 – 359</td><td>282</td></tr>
-</tbody>
-</table>
-
-## Colors
+## Bars
 
 ### Health bar
 
@@ -142,6 +125,17 @@ Button: **Apply to all frames**.
 <tr><td><b>Friendly color</b></td><td>For health and title colors by reaction</td><td>Color</td><td><code>#33bf4d</code></td></tr>
 <tr><td><b>Neutral color</b></td><td></td><td>Color</td><td><code>#e6cc40</code></td></tr>
 <tr><td><b>Hostile color</b></td><td></td><td>Color</td><td><code>#d93333</code></td></tr>
+</tbody>
+</table>
+
+### Textures
+
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Bar texture</b></td><td></td><td>Texture</td><td>Raid</td></tr>
+<tr><td><b>Background color</b></td><td></td><td>Color</td><td><code>#000000</code>, 60 % opaque</td></tr>
+<tr><td><b>Background behind the name</b></td><td>Off: only the bars keep a background</td><td>On, Off</td><td>On</td></tr>
 </tbody>
 </table>
 
@@ -209,6 +203,18 @@ Button: **Apply to all frames**.
 <tr><td><b>Enemies: measure by</b></td><td></td><td>Automatic (spell), Spell, Yards, Off</td><td>Automatic (spell)</td></tr>
 <tr><td><b>Spell for enemies</b></td><td></td><td>Text (a spell name or ID)</td><td>(none)</td></tr>
 <tr><td><b>Hostile range (yards)</b></td><td></td><td>5 – 40</td><td>40</td></tr>
+</tbody>
+</table>
+
+## Profile
+
+### Minimap button
+
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Show the button</b></td><td></td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Button position</b></td><td>Degrees around the minimap; or drag it</td><td>0 – 359</td><td>282</td></tr>
 </tbody>
 </table>
 
