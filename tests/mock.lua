@@ -2031,6 +2031,22 @@ function M.Reset()
         -- Not in any class list: a user's own pick.
         [5019] = { name = "Shoot", maxRange = 30, harmful = true },
         [2061] = { name = "Flash Heal", maxRange = 40 },
+        -- Heals, heals over time and dispels the raid templates suggest
+        -- (Raid/TemplateData.lua).
+        [139] = { name = "Renew", maxRange = 40 }, [6074] = { name = "Renew", maxRange = 40 },
+        [17] = { name = "Power Word: Shield", maxRange = 40 }, [2060] = { name = "Greater Heal", maxRange = 40 },
+        [527] = { name = "Dispel Magic", maxRange = 30 }, [528] = { name = "Cure Disease", maxRange = 30 },
+        [552] = { name = "Abolish Disease", maxRange = 30 },
+        [774] = { name = "Rejuvenation", maxRange = 40 }, [1058] = { name = "Rejuvenation", maxRange = 40 },
+        [8936] = { name = "Regrowth", maxRange = 40 }, [33763] = { name = "Lifebloom", maxRange = 40 },
+        [5185] = { name = "Healing Touch", maxRange = 40 }, [2782] = { name = "Remove Curse", maxRange = 40 },
+        [8946] = { name = "Cure Poison", maxRange = 40 }, [2893] = { name = "Abolish Poison", maxRange = 40 },
+        [19750] = { name = "Flash of Light", maxRange = 40 }, [4987] = { name = "Cleanse", maxRange = 40 },
+        [1152] = { name = "Purify", maxRange = 40 },
+        [8004] = { name = "Lesser Healing Wave", maxRange = 40 }, [331] = { name = "Healing Wave", maxRange = 40 },
+        [1064] = { name = "Chain Heal", maxRange = 40 }, [974] = { name = "Earth Shield", maxRange = 40 },
+        [526] = { name = "Cure Poison", maxRange = 30 }, [2870] = { name = "Cure Disease", maxRange = 30 },
+        [475] = { name = "Remove Lesser Curse", maxRange = 40 },
     }
     M.known = {}
     -- M.spellRangeError makes IsSpellInRange raise; M.spellRangeSecret
