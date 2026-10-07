@@ -159,3 +159,34 @@ M.FireEvent("PLAYER_REGEN_ENABLED")
 H.checkTrue("a chip unlocked", main.chips[1].button:IsEnabled())
 H.check("still full", b.addButton:IsEnabled(), false)
 H.check("no error", #M.errors, 0)
+
+-- Every word of the board in every language, fitting its place (mock:
+-- half the font size per character): menu items in a chip's list, the
+-- buttons' words on the buttons.
+local function width(text, size)
+    local fs = M.newWidget("FontString")
+    fs:SetFont("x", size, "")
+    fs:SetText(text)
+    return fs:GetStringWidth()
+end
+-- The chip itself: its button covers it (SetAllPoints).
+local chipWidth = main.chips[1]:GetWidth()
+for _, code in ipairs({ "enUS", "deDE", "esES", "frFR" }) do
+    local words = ns.Locales[code]
+    for _, key in ipairs({ "RAID_MAIN_PANEL", "RAID_ADD_PANEL", "RAID_REMOVE_PANEL", "RAID_ADD_BLOCK", "RAID_MOVE_TO",
+        "RAID_TAKE_OUT", "RAID_NOWHERE", "RAID_NONE_LEFT", "RAID_BOARD_HINT", "RAID_OWN_PANEL" }) do
+        H.checkTrue(code .. " has " .. key, type(words[key]) == "string")
+    end
+    local panel10 = words.RAID_OWN_PANEL:format(10)
+    for _, text in ipairs({ words.RAID_MOVE_TO:format(panel10), words.RAID_MOVE_TO:format(words.RAID_MAIN_PANEL),
+        words.RAID_TAKE_OUT, words.RAID_NOWHERE, words.RAID_NONE_LEFT, words.RAID_ADD_BLOCK, words.RAID_REMOVE_PANEL }) do
+        H.checkTrue(code .. " fits a chip: " .. text, width(text, 12) <= chipWidth - 16)
+    end
+    H.checkTrue(code .. " fits its button: add panel", width(words.RAID_ADD_PANEL, 12) <= b.addButton:GetWidth() - 16)
+end
+
+-- A new language: the board in its words.
+ns.Config.Set("general", "language", "deDE")
+H.check("German board", shownColumns()[1].name:GetText(), "Hauptfeld")
+ns.Config.Set("general", "language", "AUTO")
+H.check("no error after the language changes", #M.errors, 0)

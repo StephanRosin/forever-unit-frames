@@ -895,7 +895,7 @@ L.RAID_REMOVE_PANEL = "Remove panel"
 L.RAID_ADD_BLOCK = "Add a block…"
 L.RAID_MOVE_TO = "Move to %s"
 L.RAID_TAKE_OUT = "Take out"
-L.RAID_NOWHERE = "No other panel groups this way"
+L.RAID_NOWHERE = "No panel to move to"
 L.RAID_NONE_LEFT = "It has every block"
 L.RAID_BOARD_HINT = "Drag a block onto another panel, or click it."
 

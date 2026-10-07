@@ -871,7 +871,7 @@ L.RAID_REMOVE_PANEL = "Feld entfernen"
 L.RAID_ADD_BLOCK = "Block hinzufügen…"
 L.RAID_MOVE_TO = "Nach %s"
 L.RAID_TAKE_OUT = "Herausnehmen"
-L.RAID_NOWHERE = "Kein anderes Feld gruppiert so"
+L.RAID_NOWHERE = "Kein Zielfeld"
 L.RAID_NONE_LEFT = "Es hat jeden Block"
 L.RAID_BOARD_HINT = "Ziehe einen Block auf ein anderes Feld oder klicke ihn an."
 
