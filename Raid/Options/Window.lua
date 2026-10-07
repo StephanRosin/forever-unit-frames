@@ -121,7 +121,11 @@ local function nameList(text)
     return stored
 end
 
+-- More conversions by key, from the files of other tabs (Raid/Options/Buffs.lua).
+RaidOptions.TYPED_VALUES = {}
+
 local function typedValue(key)
+    if RaidOptions.TYPED_VALUES[key] then return RaidOptions.TYPED_VALUES[key] end
     if key == "classOrder" then return classOrder end
     if key:match("^indicator%a+Spells$") then return spellList end
     if ns.RaidSettings.Get(key).names then return nameList end
@@ -460,10 +464,12 @@ local paintFooter
 -- bar's fold while it is docked, its position while it is free.
 local function toolsDocked() return RaidConfig.Get("general", "toolsMode") == "DOCKED" end
 local function toolsFree() return not toolsDocked() end
+-- Other tabs' files add theirs (Raid/Options/Buffs.lua).
 local ROW_ACTIVE = {
     classOrder = function() return RaidConfig.Get(Raid.Scope(RaidOptions.Size()), "groupBy") == "CLASS" end,
     toolsOpen = toolsDocked, toolsX = toolsFree, toolsY = toolsFree,
 }
+RaidOptions.ROW_ACTIVE = ROW_ACTIVE
 
 -- Only a row whose state changes: SetEnabled repaints its buttons as
 -- not hovered, which every change (a click on + / -) would otherwise do.

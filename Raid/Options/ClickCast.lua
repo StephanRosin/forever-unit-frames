@@ -88,7 +88,8 @@ local function slotRow(page, slot)
     return row
 end
 
--- A typed key: the client's spelling, not taken by another slot.
+-- A typed key: the client's spelling, not taken by another slot or the
+-- smart buff key (Raid/SmartBuff.lua).
 local function storeKey(slot, text)
     local key = Raid.ParseKey(text)
     if key == nil then
@@ -96,7 +97,7 @@ local function storeKey(slot, text)
         return false
     end
     for _, other in ipairs(Raid.CLICK_KEYS) do
-        if other ~= slot and key ~= "" and get(other.key) == key then
+        if key ~= "" and ((other ~= slot and get(other.key) == key) or get("buffKey") == key) then
             ns.Print(L.RAID_TYPED_KEY_TWICE:format(key))
             return false
         end

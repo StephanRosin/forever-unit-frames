@@ -38,7 +38,8 @@ local function plain(fn, ...)
     return v
 end
 
-local function playerClass()
+-- Your class token, nil while it is unknown.
+function BuffWatch.PlayerClass()
     local ok, _, token = pcall(UnitClass, "player")
     if ok and not Secrets.IsSecret(token) and type(token) == "string" then return token end
     return nil
@@ -61,7 +62,7 @@ end
 -- in the table's order; a paladin's: one per blessing chosen for some
 -- class.
 function BuffWatch.Watched()
-    local list, class = {}, playerClass()
+    local list, class = {}, BuffWatch.PlayerClass()
     if not class or not ns.RaidConfig.Profile() then return list end
     for _, buff in ipairs(Data.BUFFS) do
         if buff.class == class and general(buff.key) == true then
