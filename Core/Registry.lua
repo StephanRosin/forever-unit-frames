@@ -94,17 +94,55 @@ function ns.NewRegistry(scopes, prefix)
     -- A shipped look on top of the plain defaults: preset[scope][key] =
     -- value. A general value becomes the setting's base default, a frame
     -- value that frame's own default.
+    local plainOf = {}   -- def -> { its plain default }, before any preset
+    -- d with the preset's values of key (d itself when it has none).
+    local function withPreset(d, preset, key)
+        for scope, values in pairs(preset) do
+            local value = values[key]
+            if value ~= nil then
+                if type(d) ~= "table" or d._ == nil then d = { _ = d } end
+                if scope == "general" then d._ = value else d[scope] = value end
+            end
+        end
+        return d
+    end
+
     function R.ApplyPreset(preset)
         for scope, values in pairs(preset) do
             for key, value in pairs(values) do
                 local def = assert(byKey[key], "preset: unknown setting " .. key)
                 assert(R.AppliesTo(def, scope), "preset: " .. key .. " does not apply to " .. scope)
                 assert(validate(def, value) == value or def.type == "color", "preset: invalid " .. key)
-                local d = def.default
-                if type(d) ~= "table" or d._ == nil then d = { _ = d } end
-                if scope == "general" then d._ = value else d[scope] = value end
-                def.default = d
             end
+        end
+        for _, def in ipairs(list) do
+            local d = def.default
+            if not plainOf[def] then
+                local plain = d
+                if type(d) == "table" and d._ ~= nil then
+                    plain = {}
+                    for k, v in pairs(d) do plain[k] = v end
+                end
+                plainOf[def] = { plain }
+            end
+            def.default = withPreset(d, preset, def.key)
+        end
+        R.presetApplied = true
+    end
+
+    -- The defaults as another preset would make them (an earlier version's
+    -- shipped look, Core/PresetUpgrade.lua): a function (def, scope) like
+    -- R.Default.
+    function R.DefaultsUnder(preset)
+        return function(def, scope)
+            local d = def.default
+            if plainOf[def] then d = plainOf[def][1] end
+            if type(d) == "table" and d._ ~= nil then
+                local c = {}
+                for k, v in pairs(d) do c[k] = v end
+                d = c
+            end
+            return R.Default({ default = withPreset(d, preset, def.key) }, scope)
         end
     end
 

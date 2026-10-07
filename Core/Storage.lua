@@ -41,9 +41,12 @@ local function fromString(str)
 end
 
 -- The old macro backup as a profile. Entries that cannot be parsed are
--- dropped: no version of the addon could read them.
+-- dropped: no version of the addon could read them. It is from before the
+-- revised look of 0.23.0: it keeps the look it had (Core/PresetUpgrade.lua).
 local function fromMacro()
-    return fromString(ns.MacroBackup.Read())
+    local profile = fromString(ns.MacroBackup.Read())
+    if profile then ns.PresetUpgrade.Apply(profile) end
+    return profile
 end
 
 function Storage.Attach(db)
@@ -57,7 +60,10 @@ end
 
 function Storage.Load(db)
     if type(db) == "table" and type(db.profile) == "table" then
-        return from("SavedVariables", false, ns.Settings.Sanitise(db.profile))
+        local profile = ns.Settings.Sanitise(db.profile)
+        -- Saved before the revised look of 0.23.0: it keeps the look it had.
+        if ns.PresetUpgrade.Due(db) then ns.PresetUpgrade.Apply(profile) end
+        return from("SavedVariables", false, profile)
     end
     for _, p in ipairs(providers) do
         local ok, str = pcall(p.load)
@@ -116,6 +122,8 @@ function Storage.Save()
     if attached then
         attached.version = ns.Codec.VERSION
         attached.profile = copy(profile)
+        -- The shipped look this profile is relative to (PresetUpgrade).
+        if ns.PresetUpgrade.Active() then attached.presetVersion = ns.PresetUpgrade.VERSION end
     end
     for _, p in ipairs(providers) do pcall(p.save, encoded) end
 end

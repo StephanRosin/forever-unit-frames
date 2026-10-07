@@ -20,6 +20,7 @@ Core\Registry.lua
 Core\Settings.lua
 Core\Preset.lua
 Core\Config.lua
+Core\PresetUpgrade.lua
 Core\Locale.lua
 Core\Codec.lua
 Core\MacroBackup.lua

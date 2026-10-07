@@ -49,20 +49,29 @@ function ns.NewConfig(Settings, event, notCopied)
     end
 
     -- What a scope of profile p gets when it has no override of its own.
-    local function fallbackIn(p, scope, def)
+    -- default (optional): the defaults to use, a function like
+    -- Settings.Default (Settings.DefaultsUnder: another preset's).
+    local function fallbackIn(p, scope, def, default)
+        default = default or Settings.Default
         if scope ~= "general" and def.scope == "inherit" then
             local g = p.general and p.general[def.key]
             if g ~= nil then return g end
             -- The frame's own default, if it has one (preset), else the base.
-            return Settings.Default(def, scope)
+            return default(def, scope)
         end
-        return Settings.Default(def, scope)
+        return default(def, scope)
     end
 
-    local function valueIn(p, scope, def)
+    local function valueIn(p, scope, def, default)
         local own = p[scope] and p[scope][def.key]
         if own ~= nil then return own end
-        return fallbackIn(p, scope, def)
+        return fallbackIn(p, scope, def, default)
+    end
+
+    -- A value of profile p (any profile, not only the one in use), with
+    -- the current defaults or the given ones (see fallbackIn).
+    function Config.ValueIn(p, scope, key, default)
+        return valueIn(p, scope, assert(Settings.Get(key), "unknown setting " .. tostring(key)), default)
     end
 
     -- Derived scopes have no profile and no options page of their own: a
