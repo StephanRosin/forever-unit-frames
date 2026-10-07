@@ -15,14 +15,14 @@ local _, ns = ...
 local RaidOptions = {}
 ns.RaidOptions = RaidOptions
 
-local Style, Widgets, Schema, L = ns.Style, ns.Widgets, ns.RaidSchema, ns.L
+local Style, Widgets, Schema, Chrome, L = ns.Style, ns.Widgets, ns.RaidSchema, ns.Chrome, ns.L
 local RaidConfig, Raid = ns.RaidConfig, ns.Raid
 
 local WINDOW_NAME = "ForeverUnitFramesRaidOptions"
 -- At most 900 wide: a 960-wide screen (the smallest UIParent) keeps a
 -- margin; tabs that do not fit one row wrap into two (fitTabs).
 local WIDTH, HEIGHT = 880, 560
-local TITLE_H, SIZE_BAR_H, TAB_H, FOOTER_H, NOTICE_H, SIZE_NOTICE_H = 32, 40, 30, 40, 26, 36
+local SIZE_BAR_H, TAB_H, NOTICE_H, SIZE_NOTICE_H = 40, 30, 26, 36
 local SIZE_TAB_PADDING, TAB_PADDING, TAB_MIN_W, UNDERLINE_H, ACCENT_W = 24, 28, 70, 2, 3
 local TAB_ROW_INSET, TAB_MIN_PADDING = 8, 12
 local SCROLLBAR_W, WHEEL_STEP = 10, 40
@@ -39,18 +39,7 @@ local lastTab = {}
 
 -- Helpers ---------------------------------------------------------------------
 
-local function line(parent, colorKey)
-    local t = parent:CreateTexture(nil, "BORDER")
-    t:SetColorTexture(unpack(Style.COLORS[colorKey]))
-    return t
-end
-
-local function horizontalLine(parent, anchor)
-    local t = line(parent, "border")
-    t:SetHeight(1)
-    t:SetPoint(anchor .. "LEFT"); t:SetPoint(anchor .. "RIGHT")
-    return t
-end
+local line, horizontalLine = Chrome.Line, Chrome.HorizontalLine
 
 local function forEachRow(fn)
     for _, row in ipairs(RaidOptions.rows or {}) do fn(row) end
@@ -302,19 +291,7 @@ end
 
 -- Tabs: the raid sizes and the menu ------------------------------------------------
 
-local function paintSelection(entry, selected, idleColor)
-    Style.Paint(entry.text, selected and "accent" or idleColor)
-    entry.selected = selected
-end
-
-local function hoverable(button, idleColor)
-    button:SetScript("OnEnter", function(self)
-        if not self.selected then Style.Paint(self.text, "text") end
-    end)
-    button:SetScript("OnLeave", function(self)
-        if not self.selected then Style.Paint(self.text, idleColor) end
-    end)
-end
+local paintSelection, hoverable = Chrome.PaintSelection, Chrome.Hoverable
 
 local function tabButton(parent, height)
     local b = CreateFrame("Button", nil, parent)
@@ -587,50 +564,13 @@ end
 
 -- Title bar, footer, body ---------------------------------------------------------
 
-local CROSS_SIZE, CROSS_ANGLE = 14, math.pi / 4
-
-local function closeButton(titleBar)
-    local b = CreateFrame("Button", nil, titleBar)
-    b:SetSize(TITLE_H, TITLE_H)
-    b:SetPoint("RIGHT", titleBar, "RIGHT", 0, 0)
-    b.lines = {}
-    for i, angle in ipairs({ CROSS_ANGLE, -CROSS_ANGLE }) do
-        local t = line(b, "muted")
-        t:SetSize(CROSS_SIZE, 2)
-        t:SetPoint("CENTER")
-        t:SetRotation(angle)
-        b.lines[i] = t
-    end
-    local function paint(colorKey)
-        for _, t in ipairs(b.lines) do t:SetColorTexture(unpack(Style.COLORS[colorKey])) end
-    end
-    b:SetScript("OnEnter", function() paint("accent") end)
-    b:SetScript("OnLeave", function() paint("muted") end)
-    b:SetScript("OnClick", function() RaidOptions.Close() end)
-    return b
-end
-
 local function createTitleBar(parent)
-    local bar = CreateFrame("Frame", nil, parent)
-    bar:SetHeight(TITLE_H)
-    bar:SetPoint("TOPLEFT"); bar:SetPoint("TOPRIGHT")
-    Style.Fill(bar, "panel")
-    horizontalLine(bar, "BOTTOM")
-    bar:EnableMouse(true)
-    bar:RegisterForDrag("LeftButton")
-    bar:SetScript("OnDragStart", function() frame:StartMoving() end)
-    bar:SetScript("OnDragStop", function()
-        frame:StopMovingOrSizing()
-        savePosition()
-    end)
-    local title = Style.Text(bar, 16, "text")
-    title:SetPoint("LEFT", bar, "LEFT", INSET, 0)
-    title:SetText(L.RAID_WINDOW_TITLE)
-    local addon = Style.Text(bar, 11, "muted")
-    addon:SetPoint("BOTTOMLEFT", title, "BOTTOMRIGHT", 8, 1)
-    addon:SetText(L.ADDON_NAME)
-    bar.title, bar.close = title, closeButton(bar)
-    return bar
+    return Chrome.TitleBar(parent, {
+        title = L.RAID_WINDOW_TITLE,
+        sub = L.ADDON_NAME,
+        onDragStop = savePosition,
+        onClose = function() RaidOptions.Close() end,
+    })
 end
 
 -- What disarms the armed buttons of the window's pages (a second click
@@ -674,11 +614,7 @@ local function createFooterLeft(footer)
 end
 
 local function createFooter(parent)
-    local footer = CreateFrame("Frame", nil, parent)
-    footer:SetHeight(FOOTER_H)
-    footer:SetPoint("BOTTOMLEFT"); footer:SetPoint("BOTTOMRIGHT")
-    Style.Fill(footer, "panel")
-    horizontalLine(footer, "TOP")
+    local footer = Chrome.Footer(parent)
     createFooterLeft(footer)
     frame.footer = footer
     return footer

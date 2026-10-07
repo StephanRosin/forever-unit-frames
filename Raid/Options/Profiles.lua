@@ -91,7 +91,7 @@ local function button(row, text, onClick, anchor)
 end
 
 local function confirmButton(row, text, action, anchor, needed)
-    local b = ns.Options.ConfirmButton(row, text, action, nil, needed)
+    local b = ns.Chrome.ConfirmButton(row, text, action, nil, needed)
     if anchor then b:SetPoint("LEFT", anchor, "RIGHT", GAP, 0) else b:SetPoint("LEFT", row, "LEFT", Widgets.CONTROL_X, 0) end
     return b
 end
@@ -452,7 +452,7 @@ local function importSection(page, stack)
     local hint, area = hintAndArea(block, false)
     -- Its question goes when it disarms; another text disarms it (the
     -- question was about the text before).
-    local b = ns.Options.ConfirmButton(block, L.IMPORT, runImport, nil, importNeedsConfirm,
+    local b = ns.Chrome.ConfirmButton(block, L.IMPORT, runImport, nil, importNeedsConfirm,
         function() say(Page.importMessage, "") end)
     area.edit:HookScript("OnTextChanged", function(_, userInput) if userInput then b.Disarm() end end)
     b:SetPoint("TOPLEFT", area, "BOTTOMLEFT", 0, -GAP)

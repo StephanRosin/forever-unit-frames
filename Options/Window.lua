@@ -295,8 +295,6 @@ local function textArea(block, readOnly, y)
 end
 
 local confirmButton = Chrome.ConfirmButton
--- Kept for the raid window's pages until they use Chrome.ConfirmButton.
-Options.ConfirmButton = confirmButton
 
 -- The left group of both windows' footers, so that they match by
 -- construction: [Unlock / Lock frames] [Test mode] [the other window…],

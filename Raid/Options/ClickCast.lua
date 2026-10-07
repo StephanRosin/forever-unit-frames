@@ -179,7 +179,7 @@ local function actionsRow(page)
     end })
     copy:SetPoint("LEFT", row.button, "RIGHT", GAP, 0)
     copy:SetEnabled(false)
-    clear = ns.Options.ConfirmButton(row, L.RAID_CLICK_CLEAR,
+    clear = ns.Chrome.ConfirmButton(row, L.RAID_CLICK_CLEAR,
         function() RaidConfig.ResetKeys("general", ns.RaidProfiles.ClickKeys()) end)
     clear:SetPoint("LEFT", copy, "RIGHT", GAP * 3, 0)
     local setEnabled = row.SetEnabled

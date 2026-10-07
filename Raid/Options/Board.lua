@@ -163,7 +163,7 @@ local function ownControls(column)
         set = function(token) addBlock(column, token) end,
     }, function() return L.RAID_ADD_BLOCK end)
     column.addBlock:SetSize(width, BUTTON_H)
-    column.remove = ns.Options.ConfirmButton(column, L.RAID_REMOVE_PANEL,
+    column.remove = ns.Chrome.ConfirmButton(column, L.RAID_REMOVE_PANEL,
         function() Own.Remove(editedSize(), column.data.slot) end, L.RAID_REMOVE_CONFIRM)
     column.remove:SetWidth(width)
 end
