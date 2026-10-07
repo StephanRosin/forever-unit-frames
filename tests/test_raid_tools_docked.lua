@@ -79,6 +79,32 @@ H.checkTrue("free: its mover", bar.mover:IsShown())
 ns.Movers.Lock("raid")
 RC.Set("general", "toolsMode", "DOCKED")
 
+-- A party without the raid view in party: the main panel is hidden, so
+-- the docked bar falls back to its free position (no handle); with the
+-- raid view on, it docks again.
+M.SetRaidRoster({})
+RC.Set("general", "showInParty", false)
+M.units.party1 = { name = "Ann", class = "PRIEST", isPlayer = true }
+M.SetGroup({ "party1" })
+M.RunTimers()
+H.check("party, no raid view: the panel hidden", ns.RaidPanel.Active(), false)
+H.check("party, no raid view: no handle", handle:IsShown(), false)
+H.checkTrue("party, no raid view: bar shown", bar:IsShown())
+H.check("party, no raid view: at its free place", point(bar), "TOPLEFT mover TOPLEFT 0 0")
+ns.Movers.Unlock("raid")
+H.checkTrue("party, no raid view: its mover", bar.mover:IsShown())
+ns.Movers.Lock("raid")
+RC.Set("general", "showInParty", true)
+M.RunTimers()
+H.checkTrue("raid view on: docked again", handle:IsShown())
+H.check("raid view on: folded in", bar:IsShown(), false)
+-- Test mode shows the panel: docked.
+RC.Set("general", "showInParty", false)
+ns.RaidTestMode.Set(true)
+H.checkTrue("test mode: docked", handle:IsShown())
+ns.RaidTestMode.Set(false)
+M.SetGroup({})
+
 -- Solo: neither.
 M.SetRaidRoster({})
 H.check("solo: no handle", handle:IsShown(), false)

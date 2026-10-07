@@ -11,7 +11,8 @@ local _, ns = ...
 -- frames are on, hidden when solo, and while test mode is on, so it can
 -- be placed. Docked, it hangs on the main panel's right edge behind a
 -- handle that folds it out and in (out of combat; the panel's anchor
--- never moves in combat) and follows the panel; free, it has its own
+-- never moves in combat) and follows the panel (while the panel is
+-- hidden, it stands at its free position instead); free, it has its own
 -- mover (the raid window's lock) and its top-left corner in the raid
 -- profile's General settings, the same for every size.
 --
@@ -60,7 +61,12 @@ end
 
 local function general(key) return ns.RaidConfig.Get("general", key) end
 local function testing() return ns.RaidTestMode ~= nil and ns.RaidTestMode.IsOn() end
-local function docked() return general("toolsMode") == "DOCKED" end
+-- Docked, while the main panel shows (in test mode too); docked while
+-- it is hidden (a party without the raid view in party), the bar falls
+-- back to its free position rather than hang beside nothing.
+local function docked()
+    return general("toolsMode") == "DOCKED" and (Panel.Active() or testing())
+end
 
 -- Whether the bar shows now (with at least one row).
 function Tools.Shown()
