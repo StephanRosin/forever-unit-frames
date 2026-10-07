@@ -38,26 +38,38 @@ the special panels are further panels of the same kind. This prepares part 3 (up
 Cells in special panels look like the main panel's cells of the same size. Per special panel and
 size: on/off, title on/off, cells per line, growth direction, position; pets additionally a cell
 height. The lists of my tanks and favourites are stored per character (raid `general` scope), as
-text validated by a `check` (names, optionally `Name-Realm`).
+text validated by a `check` (names, optionally `Name-Realm`, only for players from other realms).
+Typed names take WoW's spelling (first letter upper case, the rest of the name lower case; realm kept
+as typed) and are compared without case (amended 2026-10-07, decision 4).
 
 Right-click menu entries are added with `Menu.ModifyMenu` on the unit menus raid cells use; they
 change the lists (out of combat the panels update at once, in combat after combat).
 
 ## 3. Raid tools bar
 
-- For everyone: raid target icons (the 8 icons on the current target; `SetRaidTarget`), the result
-  of the last ready check.
+- For everyone: raid target icons (the 8 icons on the current target; secure buttons with
+  `type = "raidtarget"`, the client's `SetRaidTarget`), the result of the last ready check.
 - For leader and assistants only: start a ready check (`C_PartyInfo.DoReadyCheck`), role poll
   (`InitiateRolePoll`), world markers (secure buttons with `type = "worldmarker"`) and "clear all",
   everyone assistant (`C_PartyInfo.SetEveryoneIsAssistant`), party ↔ raid
-  (`C_PartyInfo.ConfirmConvertToRaid` / `ConvertToParty`), loot method (`C_PartyInfo.SetLootMethod`).
-- Docked or free (setting); shown in a raid and in a party, hidden when solo. Secure buttons
-  are created and moved only out of combat.
+  (`C_PartyInfo.ConvertToRaid` / `ConvertToParty`, as Blizzard's own raid manager — not
+  `ConfirmConvertToRaid`, which converts "with no regard for potentially destructive actions";
+  amended 2026-10-07, decision 5), loot method (`C_PartyInfo.SetLootMethod`; free for all, round
+  robin, master looter — yourself —, group, need before greed and personal, `Enum.LootMethod.Personal`;
+  amended, decision 7).
+- The secure buttons (raid target icons, world markers) act on the **left mouse button only** and
+  are registered for both strokes (`AnyUp`, `AnyDown`): an addon's `SecureActionButtonTemplate`
+  acts on the down stroke while `ActionButtonUseKeyDown` is on, else on the up stroke (amended,
+  decision 8).
+- Docked or free (setting); shown in a raid and in a party, hidden when solo. Docked while the main
+  panel is hidden (a party without the raid view in party), the bar falls back to its free position
+  (amended, decision 6). Secure buttons are created and moved only out of combat.
 
 ## 4. Options window and test mode
 
-New raid window tabs: "Special panels" (per panel on/off and layout, the two name lists) and "Raid
-tools" (docked/free, which tools). All words in enUS/deDE/esES/frFR; the wiki generator includes the
+New raid window tabs: "Panels" (per panel on/off and layout, the two name lists) and "Tools"
+(docked/free, which tools); de "Felder"/"Werkzeuge" — short names, clear inside the raid window
+(amended, decision 2). All words in enUS/deDE/esES/frFR; the wiki generator includes the
 new tabs. Test mode shows pretend main tanks, favourites and pets in their panels.
 
 ## 5. Limits
@@ -65,6 +77,8 @@ new tabs. Test mode shows pretend main tanks, favourites and pets in their panel
 - Name lists cannot change in combat: a player added in combat appears after combat.
 - World markers are placed only by clicking their secure button.
 - Special panels add cells: performance at 40 with all panels on is part of the in-game check.
+- How the raid roster (`GetRaidRosterInfo`) writes a player's surname is unknown: name lists accept
+  both `Name-Surname` (a party member's form) and `Name Surname`; part of the in-game check.
 
 ## 6. Out of scope
 
