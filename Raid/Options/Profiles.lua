@@ -21,6 +21,7 @@ local NONE = "NONE"
 
 local state = {}
 local enabled = true
+local exportFor   -- the export choice the export box's text was made for; nil: to make
 
 local function sizeText(size) return ns.RaidTemplatesPage.SizeText(size) end
 
@@ -49,21 +50,18 @@ end
 
 -- Rows ----------------------------------------------------------------------------
 
--- A row of the page's own: refreshes and locks through fns.
-local function ownRow(row, refresh, setEnabled)
-    function row:Refresh() if refresh then refresh() end end
-    function row:SetEnabled(on)
-        enabled = on
-        if setEnabled then setEnabled(on) end
-        Page.Refresh()
-    end
+-- A row of the page's own. The lock only notes the state: the window
+-- then refreshes the page once (page.afterLock).
+local function ownRow(row)
+    function row:Refresh() end
+    function row:SetEnabled(on) enabled = on end
     return row
 end
 
 local function dropdown(page, opts)
     local row = Widgets.Dropdown(page, opts)
     local setEnabled = row.SetEnabled
-    function row:SetEnabled(on) setEnabled(self, on); enabled = on; Page.Refresh() end
+    function row:SetEnabled(on) setEnabled(self, on); enabled = on end
     return row
 end
 
@@ -386,15 +384,14 @@ local function exportSection(page, stack)
     stack.add(Page.exportWhat)
     local block = newBlock(page)
     local hint, area = hintAndArea(block, true)
+    -- The text is made only while the box shows, and again only for
+    -- another choice or a changed profile (exportFor: what it was made for).
     function block:Refresh()
         local what = exportWhat()
-        if what == "ALL" then
-            hint:SetText(L.RAID_EXPORT_ALL_HINT)
-            area:SetText(Profiles.ExportAll())
-        else
-            hint:SetText(L.RAID_EXPORT_HINT:format(sizeText(what)))
-            area:SetText(Profiles.Export(what))
-        end
+        hint:SetText(what == "ALL" and L.RAID_EXPORT_ALL_HINT or L.RAID_EXPORT_HINT:format(sizeText(what)))
+        if exportFor == what or not block:IsVisible() then return end
+        exportFor = what
+        area:SetText(what == "ALL" and Profiles.ExportAll() or Profiles.Export(what))
     end
     Page.exportHint, Page.exportArea, Page.exportBlock = hint, area, block
     stack.add(block, MESSAGE_H + TEXT_AREA_H + 10)
@@ -503,6 +500,8 @@ RaidOptions.CUSTOM_PAGES.profiles = function(page)
     exportSection(page, stack)
     importSection(page, stack)
     stack.finish()
+    exportFor = nil
+    page.afterLock = function() Page.Refresh() end
     -- Shown again: what it said before is gone.
     page.onShow = function()
         for _, message in ipairs({ Page.ownMessage, Page.copyMessage, Page.characterMessage, Page.resetMessage,
@@ -515,3 +514,8 @@ end
 
 ns.Listen("RAID_TEMPLATE_UNDO", function() Page.Refresh() end)
 ns.Listen("RAID_TEMPLATES_CHANGED", function() Page.Refresh() end)
+-- The profile changed: the export text is made again (now if it shows).
+ns.Listen("RAID_CONFIG_CHANGED", function()
+    exportFor = nil
+    if Page.exportBlock then Page.exportBlock:Refresh() end
+end)

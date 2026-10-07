@@ -115,6 +115,27 @@ H.check("export hint names it", P.exportHint:GetText(), "Copy this text to share
 RC.Set("r40", "cellWidth", 95)
 H.check("export follows changes", P.exportArea:GetText(), ns.RaidProfiles.Export(40))
 
+-- The export text is made only when its box shows or the profile changes.
+local encoded, exportAll, export = 0, ns.RaidProfiles.ExportAll, ns.RaidProfiles.Export
+ns.RaidProfiles.ExportAll = function() encoded = encoded + 1; return exportAll() end
+ns.RaidProfiles.Export = function(size) encoded = encoded + 1; return export(size) end
+pick(P.exportWhat, L.RAID_PROFILES_ALL_SIZES)
+encoded = 0
+P.Refresh(); P.Refresh()
+H.check("no new text without a change", encoded, 0)
+RC.Set("r40", "cellWidth", 96)
+H.check("a change: made once", encoded, 1)
+H.check("and up to date", P.exportArea:GetText(), exportAll())
+RO.SelectTab("layout")
+encoded = 0
+RC.Set("r40", "cellWidth", 95)
+H.check("not shown: not made", encoded, 0)
+click(RO.profilesTab)
+H.check("shown again: made", encoded, 1)
+H.check("shown again: up to date", P.exportArea:GetText(), exportAll())
+ns.RaidProfiles.ExportAll, ns.RaidProfiles.Export = exportAll, export
+pick(P.exportWhat, "40 players")
+
 -- Import one size into the size picked.
 pick(P.importTo, "20 players")
 H.check("import hint names the size", P.importHint:GetText(), L.RAID_IMPORT_ANY_HINT:format("20 players"))
@@ -182,8 +203,12 @@ click(RO.profilesTab)
 H.check("back on it: the message cleared", P.importMessage:GetText(), "")
 
 -- Combat locks what changes the profile; the tab stays reachable.
+local refreshes, refresh = 0, P.Refresh
+P.Refresh = function() refreshes = refreshes + 1; return refresh() end
 M.combat = true
 M.FireEvent("PLAYER_REGEN_DISABLED")
+P.Refresh = refresh
+H.check("the lock refreshes the page once", refreshes, 1)
 H.check("character copy locked", P.characterButton:IsEnabled(), false)
 H.check("reset locked", P.resetButton:IsEnabled(), false)
 H.check("import locked", P.importButton:IsEnabled(), false)

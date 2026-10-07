@@ -534,6 +534,8 @@ local function applyLock()
     setRowStates()
     for _, control in ipairs(frame.lockedControls) do control:SetEnabled(on) end
     RaidOptions.combatNotice:SetShown(inCombat)
+    -- A custom page that keeps its own state of the lock refreshes once.
+    if RaidOptions.page and RaidOptions.page.afterLock then RaidOptions.page.afterLock() end
     anchorScroll()
     paintFooter()
 end
