@@ -109,133 +109,139 @@ RaidSettings.Define({ key = "minimapAngle", code = "MA", scope = "general", type
     default = 260 })
 
 -- Per size ------------------------------------------------------------------------
+-- Every per-size setting has a class (Copy between sizes may leave the
+-- layout out, Raid/Profiles.lua): "layout" (cell size, spacing,
+-- arrangement and panel structure, positions, icon, aura and text sizes
+-- and their places in the cell) or "behaviour" (sorting, grouping, which
+-- auras, icons and indicators show, heals, colours, textures, fonts,
+-- borders, special panels on or off).
 -- Position of the panel's top left corner, relative to the screen centre.
-RaidSettings.Define({ key = "x", code = "X", scope = "frame", type = "int", min = -4000, max = 4000, default = -600 })
-RaidSettings.Define({ key = "y", code = "Y", scope = "frame", type = "int", min = -4000, max = 4000, default = 150 })
+RaidSettings.Define({ key = "x", code = "X", scope = "frame", class = "layout", type = "int", min = -4000, max = 4000, default = -600 })
+RaidSettings.Define({ key = "y", code = "Y", scope = "frame", class = "layout", type = "int", min = -4000, max = 4000, default = 150 })
 
 -- Layout (Raid/Layout.lua). The panel is made of blocks, one group header
 -- each: raid groups (only those of the size), classes, roles, or a single
 -- block for everyone. Stored by index: append only.
-RaidSettings.Define({ key = "groupBy", code = "GB", scope = "frame", type = "enum",
+RaidSettings.Define({ key = "groupBy", code = "GB", scope = "frame", class = "behaviour", type = "enum",
     values = { "GROUP", "CLASS", "ROLE", "NONE" }, default = "GROUP" })
 -- Order within a block: raid order, name, or role (tanks, healers,
 -- damage, the rest; each in raid order).
-RaidSettings.Define({ key = "sortBy", code = "SO", scope = "frame", type = "enum",
+RaidSettings.Define({ key = "sortBy", code = "SO", scope = "frame", class = "behaviour", type = "enum",
     values = { "INDEX", "NAME", "ROLE" }, default = "INDEX" })
 -- The class blocks' order: class tokens (commas or spaces), each once;
 -- the classes not named follow in Blizzard's order. Empty: Blizzard's
 -- order.
-RaidSettings.Define({ key = "classOrder", code = "CO", scope = "frame", type = "text",
+RaidSettings.Define({ key = "classOrder", code = "CO", scope = "frame", class = "behaviour", type = "text",
     maxLetters = Raid.CLASS_ORDER_LETTERS, check = isClassOrder, default = "" })
 -- Blocks side by side (a row of blocks) or stacked (a column), wrapping
 -- after blocksPerLine.
-RaidSettings.Define({ key = "blockDirection", code = "BD", scope = "frame", type = "enum",
+RaidSettings.Define({ key = "blockDirection", code = "BD", scope = "frame", class = "layout", type = "enum",
     values = { "HORIZONTAL", "VERTICAL" }, default = "HORIZONTAL" })
-RaidSettings.Define({ key = "blocksPerLine", code = "BL", scope = "frame", type = "int", min = 1, max = 9,
+RaidSettings.Define({ key = "blocksPerLine", code = "BL", scope = "frame", class = "layout", type = "int", min = 1, max = 9,
     default = 8 })
 -- Cells within a block: a column growing down, or a row growing right,
 -- with a new column (row) after cellsPerLine cells.
-RaidSettings.Define({ key = "cellGrowth", code = "CG", scope = "frame", type = "enum",
+RaidSettings.Define({ key = "cellGrowth", code = "CG", scope = "frame", class = "layout", type = "enum",
     values = { "DOWN", "RIGHT" }, default = "DOWN" })
-RaidSettings.Define({ key = "cellsPerLine", code = "CL", scope = "frame", type = "int", min = 1, max = 40,
+RaidSettings.Define({ key = "cellsPerLine", code = "CL", scope = "frame", class = "layout", type = "int", min = 1, max = 40,
     default = 5 })
-RaidSettings.Define({ key = "cellWidth", code = "CW", scope = "frame", type = "int", min = 30, max = 200,
+RaidSettings.Define({ key = "cellWidth", code = "CW", scope = "frame", class = "layout", type = "int", min = 30, max = 200,
     default = { r10 = 96, r20 = 88, _ = 80 } })
-RaidSettings.Define({ key = "cellHeight", code = "CH", scope = "frame", type = "int", min = 16, max = 100,
+RaidSettings.Define({ key = "cellHeight", code = "CH", scope = "frame", class = "layout", type = "int", min = 16, max = 100,
     default = { r10 = 44, r20 = 40, _ = 38 } })
 -- Room between two cells, and between two blocks (border to border).
-RaidSettings.Define({ key = "cellSpacing", code = "CS", scope = "frame", type = "int", min = 0, max = 20, default = 2 })
-RaidSettings.Define({ key = "blockSpacing", code = "BS", scope = "frame", type = "int", min = 0, max = 40,
+RaidSettings.Define({ key = "cellSpacing", code = "CS", scope = "frame", class = "layout", type = "int", min = 0, max = 20, default = 2 })
+RaidSettings.Define({ key = "blockSpacing", code = "BS", scope = "frame", class = "layout", type = "int", min = 0, max = 40,
     default = 6 })
 -- A title row above each block (group number, class, role).
-RaidSettings.Define({ key = "blockTitles", code = "BT", scope = "frame", type = "bool", default = false })
+RaidSettings.Define({ key = "blockTitles", code = "BT", scope = "frame", class = "layout", type = "bool", default = false })
 -- Blocks without members take no room.
-RaidSettings.Define({ key = "hideEmpty", code = "HE", scope = "frame", type = "bool", default = true })
+RaidSettings.Define({ key = "hideEmpty", code = "HE", scope = "frame", class = "layout", type = "bool", default = true })
 -- Borders: around the panel (gold), around each block, around each cell.
-RaidSettings.Define({ key = "panelBorder", code = "PB", scope = "frame", type = "bool", default = true })
-RaidSettings.Define({ key = "blockBorder", code = "BB", scope = "frame", type = "bool", default = false })
-RaidSettings.Define({ key = "cellBorder", code = "CB", scope = "frame", type = "bool", default = false })
+RaidSettings.Define({ key = "panelBorder", code = "PB", scope = "frame", class = "behaviour", type = "bool", default = true })
+RaidSettings.Define({ key = "blockBorder", code = "BB", scope = "frame", class = "behaviour", type = "bool", default = false })
+RaidSettings.Define({ key = "cellBorder", code = "CB", scope = "frame", class = "behaviour", type = "bool", default = false })
 -- The cell's ring (Core/Border.lua): the unit frames' styles, stored by
 -- index: append only; the colour is the flat style's. The corner radius
 -- rounds the cell's bars, with or without a ring: slightly round by
 -- default, less so as the cells shrink with the raid.
-RaidSettings.Define({ key = "cellBorderStyle", code = "CY", scope = "frame", type = "enum",
+RaidSettings.Define({ key = "cellBorderStyle", code = "CY", scope = "frame", class = "behaviour", type = "enum",
     -- The unit frames' list itself: append-only there, so here too.
     values = ns.Settings.Get("borderStyle").values, default = "GOLD" })
-RaidSettings.Define({ key = "cellBorderSize", code = "CZ", scope = "frame", type = "int", min = 1, max = 8, default = 1 })
-RaidSettings.Define({ key = "cellBorderColor", code = "CK", scope = "frame", type = "color", default = { 0, 0, 0, 1 } })
-RaidSettings.Define({ key = "cellCornerRadius", code = "CR", scope = "frame", type = "int", min = 0, max = 12,
+RaidSettings.Define({ key = "cellBorderSize", code = "CZ", scope = "frame", class = "layout", type = "int", min = 1, max = 8, default = 1 })
+RaidSettings.Define({ key = "cellBorderColor", code = "CK", scope = "frame", class = "behaviour", type = "color", default = { 0, 0, 0, 1 } })
+RaidSettings.Define({ key = "cellCornerRadius", code = "CR", scope = "frame", class = "layout", type = "int", min = 0, max = 12,
     default = { r10 = 4, r20 = 3, _ = 2 } })
 
 -- The cell (Raid/Cell.lua). Health in the class colour, a fixed colour
 -- (healthColor), or a gradient by health. Stored by index: append only.
-RaidSettings.Define({ key = "healthColorMode", code = "HM", scope = "frame", type = "enum",
+RaidSettings.Define({ key = "healthColorMode", code = "HM", scope = "frame", class = "behaviour", type = "enum",
     values = { "CLASS", "STATIC", "GRADIENT" }, default = "CLASS" })
-RaidSettings.Define({ key = "healthColor", code = "HC", scope = "frame", type = "color",
+RaidSettings.Define({ key = "healthColor", code = "HC", scope = "frame", class = "behaviour", type = "color",
     default = { 0.2, 0.75, 0.3, 1 } })
 -- The bars' texture and the colour behind them.
-RaidSettings.Define({ key = "barTexture", code = "TX", scope = "frame", type = "media", mediaKind = "statusbar",
+RaidSettings.Define({ key = "barTexture", code = "TX", scope = "frame", class = "behaviour", type = "media", mediaKind = "statusbar",
     default = "Raid" })
-RaidSettings.Define({ key = "backgroundColor", code = "BG", scope = "frame", type = "color",
+RaidSettings.Define({ key = "backgroundColor", code = "BG", scope = "frame", class = "behaviour", type = "color",
     default = { 0, 0, 0, 0.6 } })
 -- Incoming heals, the overheal lane at the end of the health bar (heals
 -- past full health; never past the cell's edge), absorb shields, and the
 -- damage and heal numbers in the cell.
-RaidSettings.Define({ key = "healPrediction", code = "IH", scope = "frame", type = "bool", default = true })
-RaidSettings.Define({ key = "overheal", code = "OV", scope = "frame", type = "bool", default = false })
-RaidSettings.Define({ key = "absorbs", code = "AS", scope = "frame", type = "bool", default = true })
-RaidSettings.Define({ key = "combatText", code = "CT", scope = "frame", type = "bool", default = false })
+RaidSettings.Define({ key = "healPrediction", code = "IH", scope = "frame", class = "behaviour", type = "bool", default = true })
+RaidSettings.Define({ key = "overheal", code = "OV", scope = "frame", class = "behaviour", type = "bool", default = false })
+RaidSettings.Define({ key = "absorbs", code = "AS", scope = "frame", class = "behaviour", type = "bool", default = true })
+RaidSettings.Define({ key = "combatText", code = "CT", scope = "frame", class = "behaviour", type = "bool", default = false })
 -- The power strip at the bottom: everyone, mana users, healers, nobody.
-RaidSettings.Define({ key = "powerStrip", code = "PS", scope = "frame", type = "enum",
+RaidSettings.Define({ key = "powerStrip", code = "PS", scope = "frame", class = "behaviour", type = "enum",
     values = { "ALL", "MANA", "HEALERS", "OFF" }, default = "MANA" })
 -- The line under the name: missing health, percent, current health, none.
 -- Dead, ghost, offline and AFK replace it.
-RaidSettings.Define({ key = "secondLine", code = "SL", scope = "frame", type = "enum",
+RaidSettings.Define({ key = "secondLine", code = "SL", scope = "frame", class = "behaviour", type = "enum",
     values = { "DEFICIT", "PERCENT", "CURRENT", "NONE" }, default = "DEFICIT" })
-RaidSettings.Define({ key = "nameClassColor", code = "NC", scope = "frame", type = "bool", default = false })
+RaidSettings.Define({ key = "nameClassColor", code = "NC", scope = "frame", class = "behaviour", type = "bool", default = false })
 -- The name's colour when it is not in the class colour, and the second
 -- line's (the status words too).
-RaidSettings.Define({ key = "nameColor", code = "NA", scope = "frame", type = "color", default = { 1, 1, 1, 1 } })
-RaidSettings.Define({ key = "secondLineColor", code = "SC", scope = "frame", type = "color",
+RaidSettings.Define({ key = "nameColor", code = "NA", scope = "frame", class = "behaviour", type = "color", default = { 1, 1, 1, 1 } })
+RaidSettings.Define({ key = "secondLineColor", code = "SC", scope = "frame", class = "behaviour", type = "color",
     default = { 1, 1, 1, 1 } })
 -- The cell's texts: the font, the name's size and the second line's (the
 -- status words too), outline and shadow; the block titles take the font
 -- and the outline. The outlines are the unit frames' (Core/Settings.lua),
 -- stored by index: append only.
-RaidSettings.Define({ key = "fontFace", code = "FF", scope = "frame", type = "media", mediaKind = "font",
+RaidSettings.Define({ key = "fontFace", code = "FF", scope = "frame", class = "behaviour", type = "media", mediaKind = "font",
     default = "Friz Quadrata" })
-RaidSettings.Define({ key = "nameFontSize", code = "NF", scope = "frame", type = "int", min = 6, max = 24, default = 11 })
-RaidSettings.Define({ key = "secondFontSize", code = "SF", scope = "frame", type = "int", min = 6, max = 24,
+RaidSettings.Define({ key = "nameFontSize", code = "NF", scope = "frame", class = "layout", type = "int", min = 6, max = 24, default = 11 })
+RaidSettings.Define({ key = "secondFontSize", code = "SF", scope = "frame", class = "layout", type = "int", min = 6, max = 24,
     default = 10 })
-RaidSettings.Define({ key = "fontOutline", code = "FO", scope = "frame", type = "enum",
+RaidSettings.Define({ key = "fontOutline", code = "FO", scope = "frame", class = "behaviour", type = "enum",
     values = ns.Settings.Get("fontOutline").values, default = "OUTLINE" })
-RaidSettings.Define({ key = "fontShadow", code = "FH", scope = "frame", type = "bool", default = true })
+RaidSettings.Define({ key = "fontShadow", code = "FH", scope = "frame", class = "behaviour", type = "bool", default = true })
 
 -- Debuffs (Raid/CellAuras.lua). The centre icon shows the most important
 -- debuff you can dispel (MINE, the client's RAID filter) or any
 -- dispellable one (ALL), bordered in its type's colour. Stored by index:
 -- append only.
-RaidSettings.Define({ key = "dispelIcon", code = "DI", scope = "frame", type = "bool", default = true })
-RaidSettings.Define({ key = "dispelFilter", code = "DF", scope = "frame", type = "enum",
+RaidSettings.Define({ key = "dispelIcon", code = "DI", scope = "frame", class = "behaviour", type = "bool", default = true })
+RaidSettings.Define({ key = "dispelFilter", code = "DF", scope = "frame", class = "behaviour", type = "enum",
     values = { "MINE", "ALL" }, default = "MINE" })
-RaidSettings.Define({ key = "dispelIconSize", code = "DZ", scope = "frame", type = "int", min = 8, max = 40,
+RaidSettings.Define({ key = "dispelIconSize", code = "DZ", scope = "frame", class = "layout", type = "int", min = 8, max = 40,
     default = { r10 = 20, r20 = 18, _ = 16 } })
 -- How it shows: the centre icon, or a small square in the type's colour
 -- in one of the cell's corners (from a single pixel). Stored by index:
 -- append only.
-RaidSettings.Define({ key = "dispelStyle", code = "DM", scope = "frame", type = "enum",
+RaidSettings.Define({ key = "dispelStyle", code = "DM", scope = "frame", class = "behaviour", type = "enum",
     values = { "ICON", "SQUARE" }, default = "ICON" })
-RaidSettings.Define({ key = "dispelSquarePoint", code = "DP", scope = "frame", type = "enum",
+RaidSettings.Define({ key = "dispelSquarePoint", code = "DP", scope = "frame", class = "layout", type = "enum",
     values = { "TOPLEFT", "TOPRIGHT", "BOTTOMLEFT", "BOTTOMRIGHT" }, default = "TOPRIGHT" })
-RaidSettings.Define({ key = "dispelSquareSize", code = "DQ", scope = "frame", type = "int", min = 1, max = 16,
+RaidSettings.Define({ key = "dispelSquareSize", code = "DQ", scope = "frame", class = "layout", type = "int", min = 1, max = 16,
     default = 6 })
 -- The whole cell tinted in the debuff type's colour.
-RaidSettings.Define({ key = "dispelTint", code = "DT", scope = "frame", type = "bool", default = false })
+RaidSettings.Define({ key = "dispelTint", code = "DT", scope = "frame", class = "behaviour", type = "bool", default = false })
 -- A row along the bottom of the cell with every debuff ("HARMFUL"); the
 -- one in the centre may show in it as well.
-RaidSettings.Define({ key = "debuffRow", code = "DR", scope = "frame", type = "bool", default = false })
-RaidSettings.Define({ key = "debuffCount", code = "DC", scope = "frame", type = "int", min = 1, max = 6, default = 3 })
-RaidSettings.Define({ key = "debuffSize", code = "DS", scope = "frame", type = "int", min = 8, max = 32,
+RaidSettings.Define({ key = "debuffRow", code = "DR", scope = "frame", class = "behaviour", type = "bool", default = false })
+RaidSettings.Define({ key = "debuffCount", code = "DC", scope = "frame", class = "behaviour", type = "int", min = 1, max = 6, default = 3 })
+RaidSettings.Define({ key = "debuffSize", code = "DS", scope = "frame", class = "layout", type = "int", min = 8, max = 32,
     default = { r10 = 14, r20 = 13, _ = 12 } })
 
 -- A spell list: spell IDs separated by commas or spaces. Returns the IDs,
@@ -267,17 +273,17 @@ Raid.INDICATORS = {
 Raid.SPELL_LIST_LETTERS = 200
 for _, ind in ipairs(Raid.INDICATORS) do
     local key, l = "indicator" .. ind.name, ind.letter
-    RaidSettings.Define({ key = key .. "Spells", code = l .. "S", scope = "frame", type = "text",
+    RaidSettings.Define({ key = key .. "Spells", code = l .. "S", scope = "frame", class = "behaviour", type = "text",
         maxLetters = Raid.SPELL_LIST_LETTERS, check = isSpellList, default = "" })
-    RaidSettings.Define({ key = key .. "Color", code = l .. "C", scope = "frame", type = "color",
+    RaidSettings.Define({ key = key .. "Color", code = l .. "C", scope = "frame", class = "behaviour", type = "color",
         default = ind.color })
-    RaidSettings.Define({ key = key .. "Size", code = l .. "Z", scope = "frame", type = "int", min = 4, max = 24,
+    RaidSettings.Define({ key = key .. "Size", code = l .. "Z", scope = "frame", class = "layout", type = "int", min = 4, max = 24,
         default = 8 })
     -- Only your own casts of the spells.
-    RaidSettings.Define({ key = key .. "Own", code = l .. "O", scope = "frame", type = "bool", default = true })
+    RaidSettings.Define({ key = key .. "Own", code = l .. "O", scope = "frame", class = "behaviour", type = "bool", default = true })
     -- The time left: darkening (a swipe), a number, or not shown. Stored
     -- by index: append only.
-    RaidSettings.Define({ key = key .. "Time", code = l .. "M", scope = "frame", type = "enum",
+    RaidSettings.Define({ key = key .. "Time", code = l .. "M", scope = "frame", class = "behaviour", type = "enum",
         values = { "SWIPE", "NUMBER", "NONE" }, default = "SWIPE" })
 end
 
@@ -294,22 +300,22 @@ for _, icon in ipairs({
     { key = "looterIcon", code = "MI", pointCode = "MP", point = "TOPRIGHT" },
     { key = "readyCheckIcon", code = "YI", pointCode = "YP", point = "CENTER" },
 }) do
-    RaidSettings.Define({ key = icon.key, code = icon.code, scope = "frame", type = "bool", default = true })
-    RaidSettings.Define({ key = icon.key .. "Point", code = icon.pointCode, scope = "frame", type = "enum",
+    RaidSettings.Define({ key = icon.key, code = icon.code, scope = "frame", class = "behaviour", type = "bool", default = true })
+    RaidSettings.Define({ key = icon.key .. "Point", code = icon.pointCode, scope = "frame", class = "layout", type = "enum",
         values = POINTS, default = icon.point })
 end
-RaidSettings.Define({ key = "roleIconDamager", code = "RD", scope = "frame", type = "bool", default = false })
-RaidSettings.Define({ key = "iconSize", code = "IZ", scope = "frame", type = "int", min = 8, max = 32,
+RaidSettings.Define({ key = "roleIconDamager", code = "RD", scope = "frame", class = "behaviour", type = "bool", default = false })
+RaidSettings.Define({ key = "iconSize", code = "IZ", scope = "frame", class = "layout", type = "int", min = 8, max = 32,
     default = { r10 = 14, r20 = 13, _ = 12 } })
 
 -- States (Raid/CellStates.lua, Elements/Range.lua): out of range faded
 -- to rangeAlpha percent; a red inner border while the unit has aggro, a
 -- light one on your current target.
-RaidSettings.Define({ key = "rangeFade", code = "RF", scope = "frame", type = "bool", default = true })
-RaidSettings.Define({ key = "rangeAlpha", code = "RA", scope = "frame", type = "int", min = 0, max = 100,
+RaidSettings.Define({ key = "rangeFade", code = "RF", scope = "frame", class = "behaviour", type = "bool", default = true })
+RaidSettings.Define({ key = "rangeAlpha", code = "RA", scope = "frame", class = "behaviour", type = "int", min = 0, max = 100,
     default = 40 })
-RaidSettings.Define({ key = "aggroBorder", code = "AB", scope = "frame", type = "bool", default = true })
-RaidSettings.Define({ key = "targetBorder", code = "TB", scope = "frame", type = "bool", default = true })
+RaidSettings.Define({ key = "aggroBorder", code = "AB", scope = "frame", class = "behaviour", type = "bool", default = true })
+RaidSettings.Define({ key = "targetBorder", code = "TB", scope = "frame", class = "behaviour", type = "bool", default = true })
 
 -- A name list (Raid/Lists.lua): player names separated by commas, each
 -- once; never a digit or a sign no name holds. A name may hold an
@@ -370,15 +376,15 @@ function Raid.DefinePanel(p)
             maxLetters = Raid.NAME_LIST_LETTERS, check = isNameList, names = true, default = "" })
         table.insert(p.keys, 1, p.names)
     end
-    RaidSettings.Define({ key = id .. "Show", code = l .. "S", scope = "frame", type = "bool", default = p.show })
-    RaidSettings.Define({ key = id .. "Title", code = l .. "T", scope = "frame", type = "bool", default = true })
-    RaidSettings.Define({ key = id .. "PerLine", code = l .. "L", scope = "frame", type = "int", min = 1, max = 40,
+    RaidSettings.Define({ key = id .. "Show", code = l .. "S", scope = "frame", class = "behaviour", type = "bool", default = p.show })
+    RaidSettings.Define({ key = id .. "Title", code = l .. "T", scope = "frame", class = "layout", type = "bool", default = true })
+    RaidSettings.Define({ key = id .. "PerLine", code = l .. "L", scope = "frame", class = "layout", type = "int", min = 1, max = 40,
         default = p.perLine })
-    RaidSettings.Define({ key = id .. "Growth", code = l .. "G", scope = "frame", type = "enum",
+    RaidSettings.Define({ key = id .. "Growth", code = l .. "G", scope = "frame", class = "layout", type = "enum",
         values = RaidSettings.Get("cellGrowth").values, default = p.growth })
-    RaidSettings.Define({ key = id .. "X", code = l .. "X", scope = "frame", type = "int", min = -4000, max = 4000,
+    RaidSettings.Define({ key = id .. "X", code = l .. "X", scope = "frame", class = "layout", type = "int", min = -4000, max = 4000,
         default = p.x })
-    RaidSettings.Define({ key = id .. "Y", code = l .. "Y", scope = "frame", type = "int", min = -4000, max = 4000,
+    RaidSettings.Define({ key = id .. "Y", code = l .. "Y", scope = "frame", class = "layout", type = "int", min = -4000, max = 4000,
         default = p.y })
     Raid.PANELS[#Raid.PANELS + 1] = p
     return p
@@ -398,7 +404,7 @@ Raid.DefinePanel({ id = "favourites", letter = "G", show = false, perLine = 5, g
 -- cells are as wide as the main panel's, with a height of their own.
 local pets = Raid.DefinePanel({ id = "pets", letter = "O", show = false, perLine = 8, growth = "RIGHT", x = -600,
     y = -100 })
-RaidSettings.Define({ key = "petsCellHeight", code = "OH", scope = "frame", type = "int", min = 12, max = 100,
+RaidSettings.Define({ key = "petsCellHeight", code = "OH", scope = "frame", class = "layout", type = "int", min = 12, max = 100,
     default = 24 })
 table.insert(pets.keys, 5, "petsCellHeight")
 
@@ -488,7 +494,8 @@ for i, letter in ipairs(OWN_PANEL_LETTERS) do
     local p = { id = "panel" .. (i + 1), number = i + 1, letter = letter, keys = {} }
     for _, entry in ipairs(OWN_PANEL_PARTS) do
         local def = ownPanelDef(entry)
-        def.key, def.code, def.scope = p.id .. entry.part, letter .. entry.letter, "frame"
+        -- Own panels are the arrangement itself: layout, every part.
+        def.key, def.code, def.scope, def.class = p.id .. entry.part, letter .. entry.letter, "frame", "layout"
         if entry.part == "X" then def.default = OWN_SPOT_X + ((i - 1) % OWN_SPOTS_PER_ROW) * OWN_SPOT_STEP_X end
         if entry.part == "Y" then
             def.default = OWN_SPOT_Y - math.floor((i - 1) / OWN_SPOTS_PER_ROW) * OWN_SPOT_STEP_Y

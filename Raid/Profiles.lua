@@ -16,6 +16,12 @@ local RaidCodec = ns.NewCodec(RaidSettings)
 ns.RaidCodec = RaidCodec
 
 local store     -- ForeverUnitFramesDB.raid
+
+-- A value of its own (a colour is a table: never share one).
+local function copied(v)
+    if type(v) == "table" then return { v[1], v[2], v[3], v[4] } end
+    return v
+end
 local charKey   -- this character's key in it
 
 -- "Name-Realm". UnitFullName can leave the realm out early in the login;
@@ -49,6 +55,24 @@ end
 
 function Profiles.CopySize(fromSize, toSize)
     RaidConfig.CopyScope(Raid.Scope(fromSize), Raid.Scope(toSize))
+end
+
+-- Copy between sizes as one change that Undo takes back (Raid/Templates
+-- .lua): mode "ALL" copies every per-size setting as the source size
+-- shows it, "BEHAVIOUR" leaves the layout and sizes (class "layout") of
+-- the target as they are. False for the same size, in combat, or when
+-- refused.
+Profiles.COPY_MODES = { "ALL", "BEHAVIOUR" }
+function Profiles.CopySizeMode(fromSize, toSize, mode)
+    if fromSize == toSize then return false end
+    local from, to = Raid.Scope(fromSize), Raid.Scope(toSize)
+    local values = {}
+    for _, def in ipairs(RaidSettings.All()) do
+        if RaidSettings.AppliesTo(def, to) and (mode == "ALL" or def.class == "behaviour") then
+            values[#values + 1] = { def.key, copied(RaidConfig.Get(from, def.key)) }
+        end
+    end
+    return ns.RaidTemplates.ApplyChanges({ { scope = to, values = values } })
 end
 
 -- Another character's size onto one of ours. False if there is no such
@@ -186,7 +210,7 @@ local function sizeValues(decoded, scope)
         if RaidSettings.AppliesTo(def, scope) then
             local v = decoded[scope][def.key]
             if v == nil then v = RaidSettings.Default(def, scope) end
-            values[#values + 1] = { def.key, v }
+            values[#values + 1] = { def.key, copied(v) }
         end
     end
     return values
