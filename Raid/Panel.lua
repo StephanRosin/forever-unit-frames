@@ -379,12 +379,17 @@ function Panel.New(spec)
             button:ClearAllPoints()
         end
         local test = testing()
-        local on = P.Enabled() and not test
+        local enabled = P.Enabled()
+        local on = enabled and not test
         for i, h in ipairs(P.headers) do
             h:Hide()
             if on and i <= #P.blocks then h:Show() end
         end
-        if test and spec.showTest then
+        if not enabled then
+            -- Off: nothing to lay out (its plain frames hide below); laid
+            -- out again when switched on (a setting change refreshes).
+            if spec.hideTest then spec.hideTest(P) end
+        elseif test and spec.showTest then
             spec.showTest(P)
         else
             if spec.hideTest then spec.hideTest(P) end
@@ -467,7 +472,7 @@ ns.Listen("RAID_CELLS_CHANGED", function()
         ns.AfterCombat("raidPlace", function()
             if testing() then return end
             for _, P in ipairs(Panel.list) do
-                if P.anchor then
+                if P.anchor and P.Enabled() then
                     P.Place(P.LiveCounts())
                     P.PlaceAnchor()
                 end
