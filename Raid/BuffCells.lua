@@ -8,8 +8,9 @@ local _, ns = ...
 -- nobody. Every cell's icon is made and placed out of combat (the cells
 -- are secure frames); in combat, when cells change hands, an icon only
 -- shows or hides by its new member in the last state (by GUID; one whose
--- GUID the client does not give plainly keeps what it showed). Test
--- mode's pretend cells show none.
+-- GUID the client does not give plainly, after the roster changed, hides:
+-- what it showed may be another member's). Test mode's pretend cells show
+-- none.
 local Cells = {}
 ns.RaidBuffCells = Cells
 
@@ -41,26 +42,24 @@ local function place(cell)
     return holder
 end
 
--- The watched buff the cell's member misses (nil: none), and whether
--- that is known: by GUID; else by unit while the state is current (after
--- a roster change the units may name other members); else unknown.
+-- The watched buff the cell's member misses, by GUID; else by unit while
+-- the state is current (after a roster change the units may name other
+-- members). nil: none, or not known.
 local function missingOf(cell)
-    if not cell.unit then return nil, true end
+    if not cell.unit then return nil end
     local state = Watch.state
     local guid = Watch.GUID(cell.unit)
-    if guid then return state.missingGUIDs[guid], true end
-    if Watch.armed then return state.missingUnits[cell.unit], true end
-    return nil, false
+    if guid then return state.missingGUIDs[guid] end
+    if Watch.armed then return state.missingUnits[cell.unit] end
+    return nil
 end
 
 -- The icon of a placed cell shown or hidden (allowed in combat). Not
--- known in combat: it stays as it is.
+-- known: hidden (what it showed may be another member's).
 local function paint(cell, on)
     local holder = cell.buffIcon
     if not holder then return end
-    local entry, known = nil, true
-    if on then entry, known = missingOf(cell) end
-    if not known and InCombatLockdown() then return end
+    local entry = on and missingOf(cell)
     if entry then
         holder.icon:SetTexture(entry.single.icon)
         holder.icon:Show()

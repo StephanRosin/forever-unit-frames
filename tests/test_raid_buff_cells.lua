@@ -1,7 +1,8 @@
 -- The missing-buff icon on the cells (Raid/BuffCells.lua): off by default;
 -- on, a cell whose member misses a watched buff shows that buff's icon at
 -- the chosen point, at the profile's icon size. Changed out of combat
--- only; in combat it keeps its last state.
+-- only; in combat it keeps its last state (a member without a plain GUID:
+-- tests/test_raid_buff_cells_unknown.lua).
 local M = H.M
 local ns = H.LoadAddon()
 local RC, Cell, Cells, Watch = ns.RaidConfig, ns.RaidCell, ns.RaidBuffCells, ns.RaidBuffWatch
