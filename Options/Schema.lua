@@ -26,6 +26,8 @@ Schema.GENERAL = {
         { id = "titleText", keys = { "awayBadge", "titleClassIcon", "classIconSize", "classIconX", "classIconY",
             "classIconRing", "classIconRingColor" } },
         { id = "auraIcons", keys = { "auraBorder", "auraBorderSize" } },
+        -- The spells hidden on every frame and raid cell.
+        { id = "auraBlock", keys = { "auraBlockAccount" } },
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },
     } },
@@ -114,6 +116,8 @@ Schema.FRAME = {
         { id = "dispels", keys = { "dispelsEnabled", "dispelsShowTime", "dispelsAnchor", "dispelsFramePoint",
             "dispelsPoint", "dispelsX", "dispelsY", "dispelsGrowth", "dispelsRowGrowth", "dispelsSize",
             "dispelsSpacing", "dispelsPerRow", "dispelsMax" } },
+        -- The spells this frame hides (with the account's list).
+        { id = "auraBlock", keys = { "auraBlock" } },
         { id = "totems", keys = { "totemsEnabled", "totemsSize", "totemsSpacing", "totemsDirection", "totemsFramePoint", "totemsPoint",
             "totemsX", "totemsY" } },
     } },

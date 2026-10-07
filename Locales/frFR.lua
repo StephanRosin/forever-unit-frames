@@ -1174,3 +1174,10 @@ L.SECTION_highlights = "Surbrillances"
 L.SECTION_eliteMarker = "Marque élite / rare"
 L.SECTION_combatFeedback = "Chiffres de combat"
 -- The raid window's size bar on a tab of the character's settings.
+
+-- Hidden auras (Core/AuraBlocklist.lua)
+L.SETTING_auraBlock = "Auras masquées"
+L.SETTING_auraBlockAccount = "Auras masquées (partout)"
+L.SECTION_auraBlock = "Auras masquées"
+L.RAID_SETTING_auraBlock = "Auras masquées"
+L.RAID_SECTION_auraBlock = "Auras masquées"

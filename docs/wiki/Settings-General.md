@@ -9,7 +9,7 @@ The **Profile** tab's export, import and reset are explained on the [[Home]] pag
 **On this page:**
 
 - **[Frames](#frames):** [Which frames are shown](#which-frames-are-shown)
-- **[Appearance](#appearance):** [Font](#font) · [Presentation](#presentation) · [Title row](#title-row) · [Aura icons](#aura-icons) · [Border and corners](#border-and-corners) · [Shadow](#shadow)
+- **[Appearance](#appearance):** [Font](#font) · [Presentation](#presentation) · [Title row](#title-row) · [Aura icons](#aura-icons) · [Hidden auras](#hidden-auras) · [Border and corners](#border-and-corners) · [Shadow](#shadow)
 - **[Bars](#bars):** [Health bar](#health-bar) · [Textures](#textures) · [Absorb shields](#absorb-shields) · [Incoming heals](#incoming-heals) · [Power colors](#power-colors)
 - **[Status](#status):** [Combat icon](#combat-icon) · [Highlights](#highlights) · [Range](#range)
 - **[Profile](#profile):** [Minimap button](#minimap-button)
@@ -77,6 +77,15 @@ Button: **Apply to all frames**.
 <tbody>
 <tr><td><b>Border around the icons</b></td><td>Debuffs: shows the dispel type (magic, curse, poison, disease)</td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Border thickness</b></td><td></td><td>1 – 6</td><td>1</td></tr>
+</tbody>
+</table>
+
+### Hidden auras
+
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Hidden auras (everywhere)</b></td><td></td><td>Text (a spell name or ID)</td><td>(none)</td></tr>
 </tbody>
 </table>
 

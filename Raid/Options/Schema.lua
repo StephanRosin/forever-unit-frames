@@ -95,6 +95,8 @@ Schema.TABS = {
         { id = "dispel", keys = { "dispelIcon", "dispelFilter", "dispelStyle", "dispelIconSize", "dispelSquarePoint",
             "dispelSquareSize", "dispelTint" } },
         { id = "debuffRow", keys = { "debuffRow", "debuffCount", "debuffSize" } },
+        -- The spells this size hides (with the unit frames' account list).
+        { id = "auraBlock", keys = { "auraBlock" } },
     } },
     { id = "indicators", sections = {
         indicator("TopLeft"), indicator("TopRight"), indicator("BottomLeft"), indicator("BottomRight"),

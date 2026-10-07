@@ -6,7 +6,7 @@ The most important dispellable debuff, as an icon in the center or a square in a
 
 The **Debuffs** tab of the raid options window (`/fuf raid`), under a raid size in the top bar (General | 10 | 20 | 40 | Profiles). Each raid size (10, 20, 40) has a profile of its own: the size picked at the top is the one you edit; a default that differs per size is listed per size.
 
-**On this page:** [Dispellable debuff](#dispellable-debuff) · [Debuff row](#debuff-row)
+**On this page:** [Dispellable debuff](#dispellable-debuff) · [Debuff row](#debuff-row) · [Hidden auras](#hidden-auras)
 
 ## Dispellable debuff
 
@@ -31,6 +31,15 @@ The **Debuffs** tab of the raid options window (`/fuf raid`), under a raid size 
 <tr><td><b>Show the row</b></td><td>Every debuff, along the bottom of the cell</td><td>On, Off</td><td>Off</td></tr>
 <tr><td><b>Number of icons</b></td><td></td><td>1 – 6</td><td>3</td></tr>
 <tr><td><b>Icon size</b></td><td></td><td>8 – 32</td><td>10 players: 14; 20 players: 13; 40 players: 12</td></tr>
+</tbody>
+</table>
+
+## Hidden auras
+
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Hidden auras</b></td><td></td><td>Text</td><td>(none)</td></tr>
 </tbody>
 </table>
 

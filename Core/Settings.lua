@@ -482,6 +482,20 @@ Settings.Define({ key = "buffsOwnBorderColor", code = "JQ", scope = "frame", typ
 Settings.Define({ key = "buffsOtherBorderColor", code = "JU", scope = "frame", type = "color",
     default = { 0.85, 0.2, 0.2, 1 } })
 
+-- Hidden auras (Core/AuraBlocklist.lua): spell IDs, "1234, 5678". The
+-- account's list in General hides an aura on every frame and raid cell,
+-- each frame's own list on that frame; both apply. Not inherited: a
+-- frame's list adds to the account's rather than replacing it.
+local BLOCKLIST = { type = "text", maxLetters = ns.AuraBlocklist.LETTERS, check = ns.AuraBlocklist.Check,
+    blocklist = true, default = "" }
+local function blocklist(key, code, scope)
+    local def = { key = key, code = code, scope = scope }
+    for k, v in pairs(BLOCKLIST) do def[k] = v end
+    Settings.Define(def)
+end
+blocklist("auraBlockAccount", "BA", "general")
+blocklist("auraBlock", "BL", "frame")
+
 -- Totems (player only, Elements/Totems.lua): one icon per totem slot in a
 -- row that hangs from the player's block (the frame and a docked castbar)
 -- like an aura group. Right of the block by default: the shipped buffs

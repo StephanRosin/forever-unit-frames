@@ -244,6 +244,12 @@ RaidSettings.Define({ key = "debuffCount", code = "DC", scope = "frame", class =
 RaidSettings.Define({ key = "debuffSize", code = "DS", scope = "frame", class = "layout", type = "int", min = 8, max = 32,
     default = { r10 = 14, r20 = 13, _ = 12 } })
 
+-- Hidden auras of this size (Core/AuraBlocklist.lua): with the unit
+-- frames' account list, the buff indicators and the debuff row leave
+-- these spells out.
+RaidSettings.Define({ key = "auraBlock", code = "XL", scope = "frame", class = "behaviour", type = "text",
+    maxLetters = ns.AuraBlocklist.LETTERS, check = ns.AuraBlocklist.Check, blocklist = true, default = "" })
+
 -- A spell list: spell IDs separated by commas or spaces. Returns the IDs,
 -- or nil when anything else is in it (a name, a sign, a fraction).
 function Raid.SpellList(text)

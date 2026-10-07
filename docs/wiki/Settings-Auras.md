@@ -6,7 +6,7 @@ Buffs, debuffs, the party's dispellable debuffs and the player's totems.
 
 The **Auras** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
 
-**On this page:** [Aura icons](#aura-icons) · [Buffs](#buffs) · [Debuffs](#debuffs) · [Dispellable debuffs](#dispellable-debuffs) · [Totems](#totems)
+**On this page:** [Aura icons](#aura-icons) · [Buffs](#buffs) · [Debuffs](#debuffs) · [Dispellable debuffs](#dispellable-debuffs) · [Hidden auras](#hidden-auras) · [Totems](#totems)
 
 ## Aura icons
 
@@ -95,6 +95,15 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <tr><td><b>Spacing</b></td><td></td><td>0 – 20</td><td>2</td><td>Party</td></tr>
 <tr><td><b>Icons per row</b></td><td>Auto: as many as fit the frame</td><td>0 – 40 (0: Auto)</td><td>Auto</td><td>Party</td></tr>
 <tr><td><b>Maximum icons</b></td><td></td><td>1 – 40</td><td>3</td><td>Party</td></tr>
+</tbody>
+</table>
+
+## Hidden auras
+
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Hidden auras</b></td><td></td><td>Text (a spell name or ID)</td><td>(none)</td><td>all</td></tr>
 </tbody>
 </table>
 
