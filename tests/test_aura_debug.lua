@@ -3,7 +3,9 @@ local ns = H.LoadAddon()
 ns.Config.Use({})
 
 -- Client calls the mock does not have; the debug command must also work
--- without them (checked first).
+-- without them (checked first). The mock has C_Secrets (the buff watch
+-- reads it): taken away here.
+_G.C_Secrets = nil
 local function run()
     M.chat = {}
     local ok, err = pcall(SlashCmdList.FOREVERUNITFRAMES, "auradebug")

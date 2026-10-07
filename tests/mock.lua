@@ -1944,6 +1944,7 @@ function M.Reset()
         [18662] = { range = 40, friendly = true }, [11562] = { range = 40, friendly = true },
     }
     M.itemCached = {}
+    M.bagItems = {}
     M.itemLoadStalls = false
     M.itemCombatRestricted = true
     M.itemQueries = 0
@@ -1962,6 +1963,11 @@ function M.Reset()
             local list = {}
             for i, e in ipairs(M.weaponEnchants[slot] or {}) do list[i] = e end
             return list
+        end,
+        -- ItemDocumentation.lua: the count in the bags (M.bagItems[id]).
+        GetItemCount = function(item)
+            assert(item ~= nil and not M.IsSecret(item), "GetItemCount: itemInfo")
+            return M.bagItems[item] or 0
         end,
         IsItemDataCachedByID = function(id) return M.itemCached[id] == true end,
         RequestLoadItemDataByID = function(id)
@@ -2281,6 +2287,18 @@ function M.Reset()
     M.lastAuraQuery = nil  -- { unit, filter, maxCount, sortRule } of the last one
     M.auraQueryLog = {}    -- the filter of every GetUnitAuras call, in order
     M.auraLookups = 0      -- GetAuraDataByAuraInstanceID calls
+    M.auraNameQueries = 0  -- GetAuraDataBySpellName calls
+    -- C_Secrets (SecretPredicateAPIDocumentation.lua): auras are secret in
+    -- combat or while M.aurasSecret; a spell's aura while
+    -- M.secretSpellAuras[id].
+    M.secretSpellAuras = {}
+    _G.C_Secrets = {
+        ShouldAurasBeSecret = function() return M.AurasSecret() == true end,
+        ShouldSpellAuraBeSecret = function(id)
+            assert(type(id) == "number" or type(id) == "string", "ShouldSpellAuraBeSecret: spellIdentifier")
+            return M.AurasSecret() == true or M.secretSpellAuras[id] == true
+        end,
+    }
     _G.C_UnitAuras = {
         GetAuraDataByAuraInstanceID = function(unit, id)
             refuseAuras()
@@ -2302,6 +2320,22 @@ function M.Reset()
                 if auraMatches(a, filter) and (not maxCount or #list < maxCount) then list[#list + 1] = a end
             end
             return list
+        end,
+        -- The first aura of that name (d.auras[i].name; filter as
+        -- GetUnitAuras'). RequiresNonSecretAura: nothing while auras are
+        -- secret or the aura's spell is (M.secretSpellAuras[spellId]).
+        GetAuraDataBySpellName = function(unit, name, filter)
+            refuseAuras()
+            assert(type(name) == "string" and not M.IsSecret(name), "GetAuraDataBySpellName: spellName")
+            M.auraNameQueries = M.auraNameQueries + 1
+            local d = u(unit)
+            for _, a in ipairs(d and d.auras or {}) do
+                if M.Reveal(a.name) == name and auraMatches(a, filter or "HELPFUL") then
+                    if M.AurasSecret() or M.secretSpellAuras[M.Reveal(a.spellId)] then return nil end
+                    return a
+                end
+            end
+            return nil
         end,
         GetAuraDuration = function(unit, id)
             refuseAuras()

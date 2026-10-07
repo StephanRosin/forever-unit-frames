@@ -87,6 +87,7 @@ Raid\Menu.lua
 Raid\TestMode.lua
 Raid\ClickCast.lua
 Raid\ClickKeys.lua
+Raid\BuffWatch.lua
 Core\Blizzard.lua
 Core\Movers.lua
 Core\Commands.lua
