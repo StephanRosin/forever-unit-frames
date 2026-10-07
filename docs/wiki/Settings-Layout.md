@@ -81,7 +81,7 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 <tbody>
 <tr><td><b>Drop shadow</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
 <tr><td><b>Shadow strength</b></td><td>Opacity in percent</td><td>0 – 100</td><td>16</td><td>all</td></tr>
-<tr><td><b>Shadow size</b></td><td>Width of the soft edge in pixels</td><td>1 – 16</td><td>Player: 1; Target, Target of Target, Focus, Pet, Party: 9</td><td>all</td></tr>
+<tr><td><b>Shadow size</b></td><td>Width of the soft edge in pixels</td><td>1 – 16</td><td>9</td><td>all</td></tr>
 </tbody>
 </table>
 

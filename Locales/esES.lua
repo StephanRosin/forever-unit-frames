@@ -837,6 +837,7 @@ L.NEWS_0_22_0_DEBUFFS = "Perjuicios que puedes disipar, como los muestran los ad
 L.NEWS_0_22_0_ICONS = "Iconos de rol, líder, maestro despojador y comprobación de listos; los miembros fuera de alcance se atenúan; líneas dentro de la celda muestran la amenaza y tu objetivo."
 L.NEWS_0_22_0_WINDOW = "Una ventana de opciones propia (/fuf raid, o Marcos de banda… en /fuf), un botón propio en el minimapa y un modo de prueba que muestra una banda ficticia del tamaño que editas."
 L.NEWS_0_22_0_BLIZZARD = "Los marcos de banda de Blizzard se ocultan mientras los nuestros están activos; un grupo de 5 también puede mostrarse como banda."
+L.NEWS_0_22_0_LOOK = "Marcos de unidad, el aspecto de serie: fuera de combate el marco del jugador ahora se atenúa al 25 por ciento de opacidad (antes era invisible) y tiene la misma sombra que los demás marcos. Los valores que hayas fijado tú se mantienen."
 L.NEWS_AGAIN = "/fuf news vuelve a mostrar esto."
 L.NEWS_NONE = "Esta versión no tiene novedades."
 

@@ -21,6 +21,12 @@ H.check("general value wins over a frame default", C.Get("party", "showSurname")
 C.Set("general", "showSurname", false)
 H.check("general off", C.Get("target", "showSurname"), false)
 
+-- Decision 70: the player fades to a quarter out of combat (no longer
+-- invisible) and has the others' shadow.
+H.check("player faded opacity", C.Get("player", "playerFadeAlpha"), 25)
+H.check("player shadow like the others", C.Get("player", "shadowSize"), C.Get("target", "shadowSize"))
+H.check("the shadow's size", C.Get("player", "shadowSize"), 9)
+
 -- A value equal to the shipped default is not stored.
 local p = {}
 C.Use(p)

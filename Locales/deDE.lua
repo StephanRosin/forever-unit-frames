@@ -836,6 +836,7 @@ L.NEWS_0_22_0_DEBUFFS = "Bannbare Debuffs wie in Heiler-Addons: als Symbol in de
 L.NEWS_0_22_0_ICONS = "Symbole für Rolle, Anführer, Plündermeister und Bereitschaftscheck; Mitglieder außer Reichweite verblassen; Linien in der Zelle zeigen Aggro und dein Ziel."
 L.NEWS_0_22_0_WINDOW = "Ein eigenes Optionsfenster (/fuf raid oder Schlachtzug… in /fuf), eine eigene Minikarten-Schaltfläche und ein Testmodus, der einen Probe-Schlachtzug der bearbeiteten Größe zeigt."
 L.NEWS_0_22_0_BLIZZARD = "Blizzards Schlachtzugsrahmen sind aus, solange unsere an sind; eine 5er-Gruppe lässt sich auch als Schlachtzug anzeigen."
+L.NEWS_0_22_0_LOOK = "Einheitenrahmen, der mitgelieferte Look: Außerhalb des Kampfes blendet der Spielerrahmen jetzt auf 25 Prozent Deckkraft ab (bisher unsichtbar) und hat denselben Schatten wie die anderen Rahmen. Selbst gesetzte Werte bleiben."
 L.NEWS_AGAIN = "/fuf news zeigt dies erneut."
 L.NEWS_NONE = "Diese Version hat keine Neuigkeiten."
 

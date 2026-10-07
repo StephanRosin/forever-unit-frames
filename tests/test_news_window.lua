@@ -52,9 +52,12 @@ H.check("not protected", f:IsProtected(), false)
 local escCount = 0
 for _, name in ipairs(UISpecialFrames) do if name == "ForeverUnitFramesNews" then escCount = escCount + 1 end end
 H.check("ESC closes it", escCount, 1)
-H.check("seven lines", shownLines(), 7)
+H.check("eight lines", shownLines(), 8)
 H.check("raid frames first", NW.lines[1].text:GetText(), L.NEWS_0_22_0_RAID)
-H.check("the last line", NW.lines[7].text:GetText(), L.NEWS_0_22_0_BLIZZARD)
+H.check("the raid's last line", NW.lines[7].text:GetText(), L.NEWS_0_22_0_BLIZZARD)
+-- The shipped look's changes (decision 70), last.
+H.check("the last line: the unit frames' look", NW.lines[8].text:GetText(), L.NEWS_0_22_0_LOOK)
+H.checkTrue("it names the faded opacity", L.NEWS_0_22_0_LOOK:find("25", 1, true))
 H.check("a bullet each", NW.lines[3].bullet:GetText(), "•")
 local _, below = NW.lines[2].text:GetPoint(1)
 H.check("one below the other", below, NW.lines[1].text)
@@ -96,7 +99,7 @@ H.check("its lines only", shownLines(), 2)
 H.check("its title", f.titleBar.title:GetText(), "What's new in 9.9.9")
 H.check("no action button", NW.actionButton:IsShown(), false)
 NW.Open("0.22.0")
-H.check("all lines again", shownLines(), 7)
+H.check("all lines again", shownLines(), 8)
 H.checkTrue("action button again", NW.actionButton:IsShown())
 News.ENTRIES["9.9.9"] = nil
 NW.Close()
@@ -133,7 +136,7 @@ H.check("the wide button again", NW.actionButton:GetWidth(), 160)
 -- The window grows with its list, between 440 and 600.
 local function listFits()
     local need = 32 + 16 + 16 + 40
-    for i = 1, 7 do need = need + NW.lines[i].text:GetStringHeight() end
+    for i = 1, 8 do need = need + NW.lines[i].text:GetStringHeight() end
     return f:GetHeight() >= math.min(600, need + 6 * 8)
 end
 for _, code in ipairs({ "enUS", "deDE", "frFR", "esES" }) do

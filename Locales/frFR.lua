@@ -836,6 +836,7 @@ L.NEWS_0_22_0_DEBUFFS = "Les affaiblissements que vous pouvez dissiper, comme le
 L.NEWS_0_22_0_ICONS = "Icônes de rôle, de chef, de maître du butin et d'appel ; les membres hors de portée s'estompent ; des lignes dans la cellule montrent l'aggro et votre cible."
 L.NEWS_0_22_0_WINDOW = "Une fenêtre d'options à eux (/fuf raid, ou Cadres de raid… dans /fuf), un bouton de minicarte à eux, et un mode test qui affiche un faux raid de la taille que vous modifiez."
 L.NEWS_0_22_0_BLIZZARD = "Les cadres de raid de Blizzard se masquent tant que les nôtres sont actifs ; un groupe de 5 peut aussi s'afficher comme un raid."
+L.NEWS_0_22_0_LOOK = "Cadres d'unité, l'apparence fournie : hors combat, le cadre du joueur s'estompe désormais à 25 pour cent d'opacité (il était invisible) et a la même ombre que les autres cadres. Les valeurs que vous avez réglées vous-même restent."
 L.NEWS_AGAIN = "/fuf news affiche ceci à nouveau."
 L.NEWS_NONE = "Cette version n'a pas de nouveautés."
 

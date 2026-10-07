@@ -168,7 +168,7 @@ With **Pet frame fades too** the pet frame takes the player frame's opacity when
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
 <tr><td><b>Fade out of combat</b></td><td>While idle: no combat, no cast, full health</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
-<tr><td><b>Opacity when faded (%)</b></td><td>0 = invisible</td><td>0 – 100</td><td>0</td><td>Player</td></tr>
+<tr><td><b>Opacity when faded (%)</b></td><td>0 = invisible</td><td>0 – 100</td><td>25</td><td>Player</td></tr>
 <tr><td><b>Show in full with a target</b></td><td>Fades back in when you select a target</td><td>On, Off</td><td>On</td><td>Player</td></tr>
 <tr><td><b>Pet frame fades too</b></td><td>Your pet's frame takes the same opacity</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
 </tbody>
