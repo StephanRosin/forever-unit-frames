@@ -296,7 +296,10 @@ function Panel.New(spec)
     end
 
     -- The panel's title row (spec.title) above the blocks, while any block
-    -- has room: the blocks move below it. Returns the panel's height.
+    -- has room: the blocks move below it. It spans the panel on one line,
+    -- so a title wider than the panel is cut short with the client's
+    -- ellipsis; the panel keeps the width of its blocks. Returns the
+    -- panel's height.
     function P.PlaceTitle(positions, width, height)
         local text = spec.title and spec.title() or ""
         if text == "" or width == 0 then

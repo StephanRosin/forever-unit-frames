@@ -130,6 +130,24 @@ H.checkTrue("title shown", P.title:IsShown())
 H.check("a row for it", P.height, plain + 14)
 H.check("the block below it", point(P.headers[1], P.anchor), "TOPLEFT anchor TOPLEFT 0 -14")
 H.check("named on the mover", P.anchor.mover.label:GetText(), "Healers 10")
+-- A title longer than the panel is cut short (the client's ellipsis): it
+-- spans the panel's width on one line; the panel keeps its width.
+local titledWidth = P.width
+RC.Set("r10", "panel2Title", ("W"):rep(ns.Raid.OWN_TITLE_LETTERS))
+M.RunTimers()
+local function titlePoints()
+    local list = {}
+    for i = 1, 2 do
+        local p, rel, relPoint = P.title:GetPoint(i)
+        list[i] = table.concat({ p, rel == P.panel and "panel" or "?", relPoint }, " ")
+    end
+    return table.concat(list, ", ")
+end
+H.check("long title: the panel's width kept", P.width, titledWidth)
+H.check("long title: edge to edge", titlePoints(), "TOPLEFT panel TOPLEFT, TOPRIGHT panel TOPRIGHT")
+H.check("long title: one line", P.title:GetWordWrap(), false)
+RC.Set("r10", "panel2Title", "Healers")
+M.RunTimers()
 RC.Set("r10", "panel2Title", "")
 M.RunTimers()
 H.check("no title: hidden", P.title:IsShown(), false)
