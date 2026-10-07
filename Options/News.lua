@@ -14,11 +14,12 @@ local _, ns = ...
 local NewsWindow = {}
 ns.NewsWindow = NewsWindow
 
-local Style, Widgets, L = ns.Style, ns.Widgets, ns.L
+local Style, Widgets, Chrome, L = ns.Style, ns.Widgets, ns.Chrome, ns.L
 
 local WINDOW_NAME = "ForeverUnitFramesNews"
 local WIDTH, MIN_HEIGHT, MAX_HEIGHT = 560, 440, 600
-local TITLE_H, FOOTER_H, INSET, LINE_GAP, BULLET_W = 32, 40, 16, 8, 12
+local TITLE_H, FOOTER_H = Chrome.TITLE_H, Chrome.FOOTER_H
+local INSET, LINE_GAP, BULLET_W = 16, 8, 12
 -- The bug report area: its hint on top, the address box below.
 local REPORT_H, REPORT_TOP, ADDRESS_W, ADDRESS_H = 52, 8, 260, 20
 local WHEEL_STEP, THUMB_W = 20, 2
@@ -29,64 +30,9 @@ local BUTTON_W, WIDE_BUTTON_W, GAP, FOOTER_INSET, BUTTON_PADDING = 120, 160, 8, 
 -- button, the footer hint's least width (HINT_MIN_W) and the gaps.
 local HINT_MIN_W = 140
 local MAX_ACTION_W = WIDTH - FOOTER_INSET - BUTTON_W - GAP - GAP - HINT_MIN_W - INSET
-local CROSS_SIZE, CROSS_ANGLE = 14, math.pi / 4
 
 local frame
 local shownVersion
-
-local function line(parent, colorKey)
-    local t = parent:CreateTexture(nil, "BORDER")
-    t:SetColorTexture(unpack(Style.COLORS[colorKey]))
-    return t
-end
-
-local function horizontalLine(parent, anchor)
-    local t = line(parent, "border")
-    t:SetHeight(1)
-    t:SetPoint(anchor .. "LEFT"); t:SetPoint(anchor .. "RIGHT")
-    return t
-end
-
--- The × glyph is not in every game font, so it is drawn from two lines
--- (as in the options windows).
-local function closeCross(titleBar)
-    local b = CreateFrame("Button", nil, titleBar)
-    b:SetSize(TITLE_H, TITLE_H)
-    b:SetPoint("RIGHT", titleBar, "RIGHT", 0, 0)
-    b.lines = {}
-    for i, angle in ipairs({ CROSS_ANGLE, -CROSS_ANGLE }) do
-        local t = line(b, "muted")
-        t:SetSize(CROSS_SIZE, 2)
-        t:SetPoint("CENTER")
-        t:SetRotation(angle)
-        b.lines[i] = t
-    end
-    local function paint(colorKey)
-        for _, t in ipairs(b.lines) do t:SetColorTexture(unpack(Style.COLORS[colorKey])) end
-    end
-    b:SetScript("OnEnter", function() paint("accent") end)
-    b:SetScript("OnLeave", function() paint("muted") end)
-    b:SetScript("OnClick", function() NewsWindow.Close() end)
-    return b
-end
-
-local function createTitleBar(parent)
-    local bar = CreateFrame("Frame", nil, parent)
-    bar:SetHeight(TITLE_H)
-    bar:SetPoint("TOPLEFT"); bar:SetPoint("TOPRIGHT")
-    Style.Fill(bar, "panel")
-    horizontalLine(bar, "BOTTOM")
-    bar:EnableMouse(true)
-    bar:RegisterForDrag("LeftButton")
-    bar:SetScript("OnDragStart", function() frame:StartMoving() end)
-    bar:SetScript("OnDragStop", function() frame:StopMovingOrSizing() end)
-    bar.title = Style.Text(bar, 16, "text")
-    bar.title:SetPoint("LEFT", bar, "LEFT", INSET, 0)
-    bar.addon = Style.Text(bar, 11, "muted")
-    bar.addon:SetPoint("BOTTOMLEFT", bar.title, "BOTTOMRIGHT", 8, 1)
-    bar.close = closeCross(bar)
-    return bar
-end
 
 local function runAction()
     local entry = ns.News.Entry(shownVersion)
@@ -95,11 +41,7 @@ local function runAction()
 end
 
 local function createFooter(parent)
-    local footer = CreateFrame("Frame", nil, parent)
-    footer:SetHeight(FOOTER_H)
-    footer:SetPoint("BOTTOMLEFT"); footer:SetPoint("BOTTOMRIGHT")
-    Style.Fill(footer, "panel")
-    horizontalLine(footer, "TOP")
+    local footer = Chrome.Footer(parent)
     local close = Widgets.Button(footer, { text = "", width = BUTTON_W, onClick = function() NewsWindow.Close() end })
     close:SetPoint("RIGHT", footer, "RIGHT", -FOOTER_INSET, 0)
     local action = Widgets.Button(footer, { text = "", width = WIDE_BUTTON_W, onClick = runAction })
@@ -144,7 +86,7 @@ local function createReport(parent)
     report:SetHeight(REPORT_H)
     report:SetPoint("BOTTOMLEFT", parent.footer, "TOPLEFT")
     report:SetPoint("BOTTOMRIGHT", parent.footer, "TOPRIGHT")
-    horizontalLine(report, "TOP")
+    Chrome.HorizontalLine(report, "TOP")
     local hint = Style.Text(report, 11, "muted")
     hint:SetPoint("TOPLEFT", report, "TOPLEFT", INSET, -REPORT_TOP)
     hint:SetJustifyH("LEFT")
@@ -202,7 +144,7 @@ local function createWindow()
     frame:EnableMouse(true)
     Style.Fill(frame, "bg")
     Style.Border(frame)
-    frame.titleBar = createTitleBar(frame)
+    frame.titleBar = Chrome.TitleBar(frame, { sub = true, onClose = function() NewsWindow.Close() end })
     frame.footer = createFooter(frame)
     frame.report = createReport(frame)
     createList(frame)
@@ -272,7 +214,7 @@ local function render()
     local entry = ns.News.Entry(shownVersion)
     if not entry then return end
     frame.titleBar.title:SetText(L.NEWS_TITLE:format(shownVersion))
-    frame.titleBar.addon:SetText(L.ADDON_NAME)
+    frame.titleBar.sub:SetText(L.ADDON_NAME)
     for i, key in ipairs(entry.lines) do
         local item = listLine(i)
         item.text:SetText(L[key])

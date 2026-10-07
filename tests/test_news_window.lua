@@ -47,7 +47,7 @@ H.check("opens", NW.Open("0.22.0"), true)
 H.checkTrue("open", NW.IsOpen())
 local f = NW.frame
 H.check("title", f.titleBar.title:GetText(), "What's new in 0.22.0")
-H.check("addon name", f.titleBar.addon:GetText(), "Forever Unit Frames")
+H.check("addon name", f.titleBar.sub:GetText(), "Forever Unit Frames")
 H.check("strata of the options windows", f:GetFrameStrata(), "HIGH")
 H.check("bordered like them", f.edges[1]._color[1], ns.Style.COLORS.border[1])
 H.check("not protected", f:IsProtected(), false)
