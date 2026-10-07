@@ -90,6 +90,7 @@ Raid\ClickKeys.lua
 Raid\BuffWatch.lua
 Raid\SmartBuff.lua
 Raid\BuffCells.lua
+Raid\Templates.lua
 Core\Blizzard.lua
 Core\Movers.lua
 Core\Commands.lua

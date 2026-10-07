@@ -133,6 +133,22 @@ function ns.NewConfig(Settings, event, notCopied)
         return true
     end
 
+    -- One scope's overrides as they are stored (pairs { key, value }, the
+    -- value nil where there is none), and back: what Restore puts back
+    -- was read by Snapshot, so it is stored as it was. One event (scope,
+    -- nil).
+    function Config.Snapshot(scope, keys)
+        local saved = {}
+        for i, key in ipairs(keys) do saved[i] = { key, copyValue(profile[scope][key]) } end
+        return saved
+    end
+
+    function Config.Restore(scope, saved)
+        if not profile[scope] then return end
+        for _, pair in ipairs(saved) do profile[scope][pair[1]] = copyValue(pair[2]) end
+        ns.Fire(event, scope, nil)
+    end
+
     function Config.ResetScope(scope)
         profile[scope] = {}
         ns.Fire(event, scope, nil)
