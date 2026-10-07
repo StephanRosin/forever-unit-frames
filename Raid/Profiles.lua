@@ -16,13 +16,13 @@ local RaidCodec = ns.NewCodec(RaidSettings)
 ns.RaidCodec = RaidCodec
 
 local store     -- ForeverUnitFramesDB.raid
+local charKey   -- this character's key in it
 
 -- A value of its own (a colour is a table: never share one).
 local function copied(v)
     if type(v) == "table" then return { v[1], v[2], v[3], v[4] } end
     return v
 end
-local charKey   -- this character's key in it
 
 -- "Name-Realm". UnitFullName can leave the realm out early in the login;
 -- the normalised realm name stands in.

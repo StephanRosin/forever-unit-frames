@@ -150,6 +150,10 @@ for _, code in ipairs({ "enUS", "deDE", "esES", "frFR" }) do
             H.checkTrue(code .. " label fits: " .. tostring(row.label:GetText()),
                 row.label:GetStringWidth() <= ns.Widgets.LABEL_MAX_W)
         end
+        if row.hintText then
+            H.checkTrue(code .. " hint fits: " .. tostring(row.hintText:GetText()),
+                row.hintText:GetStringWidth() <= ns.Widgets.LABEL_MAX_W)
+        end
     end
     for _, b in ipairs({ P.applyButton, P.undoButton, P.deleteButton, P.saveButton, P.copyButton, P.copyUndoButton,
         P.characterButton, P.resetButton, P.importButton }) do
@@ -216,6 +220,8 @@ for _, code in ipairs({ "enUS", "deDE", "esES", "frFR" }) do
     ns.RaidCell.Size = sizeOf
     RO.Close()
 end
+-- The copy mode's hint names what it means (decision 53's "without layout").
+H.check("mode hint", ns.Locales.enUS.RAID_PROFILES_MODE_HINT, "Without layout: positions and sizes stay")
 ns.Config.Set("general", "language", "AUTO")
 H.check("nothing blocked", #M.blocked, 0)
 H.check("no error", #M.errors, 0)
