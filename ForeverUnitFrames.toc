@@ -108,6 +108,7 @@ Raid\Options\Board.lua
 Raid\Options\Arrangement.lua
 Raid\Options\ClickCast.lua
 Raid\Options\Buffs.lua
+Raid\Options\Templates.lua
 Raid\Tools.lua
 Raid\BuffWatchWindow.lua
 Core\News.lua

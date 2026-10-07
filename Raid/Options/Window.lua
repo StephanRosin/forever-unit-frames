@@ -215,6 +215,10 @@ RaidOptions.NoteBlock = noteBlock
 RaidOptions.PAGE = { width = CONTENT_W, inset = INSET, top = PAGE_TOP, bottom = PAGE_BOTTOM,
     sectionGap = SECTION_GAP, noteHeight = NOTE_H, gap = GAP }
 
+-- Sections of the window's own after a tab's settings, by tab.extra:
+-- (page, stack) adds their rows (Raid/Options/Templates.lua).
+RaidOptions.EXTRA_SECTIONS = {}
+
 local function buildPage(page, tab)
     local stack = newStack(page)
     if tab.note then stack.add(noteBlock(page, Schema.Note(tab.note)), NOTE_H) end
@@ -224,6 +228,7 @@ local function buildPage(page, tab)
         stack.add(header)
         for _, key in ipairs(section.keys) do stack.add(settingRow(page, key)) end
     end
+    if tab.extra then RaidOptions.EXTRA_SECTIONS[tab.extra](page, stack) end
     stack.finish()
 end
 

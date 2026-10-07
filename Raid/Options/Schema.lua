@@ -70,7 +70,9 @@ local function buffKeys()
 end
 
 Schema.TABS = {
-    { id = "general", sections = {
+    -- After its settings the window's section Templates
+    -- (Raid/Options/Templates.lua): no settings of its own.
+    { id = "general", extra = "templates", sections = {
         { id = "raidFrames", keys = { "enabled", "showInParty", "hideBlizzard" } },
         { id = "minimap", keys = { "minimapShow", "minimapAngle" } },
     } },
