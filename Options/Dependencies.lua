@@ -1,0 +1,141 @@
+local _, ns = ...
+
+-- Which rows of the unit frames' window mean something now
+-- (Options/Window.lua greys the others; they stay in place, their values
+-- kept): a row whose switch is off, or whose mode leaves it without
+-- effect. Each rule names what the code reads: a row greys only where
+-- its setting truly does nothing. A parent the page does not have (the
+-- General page holds no frame switches) leaves its rows alone.
+local Config = ns.Config
+local ACTIVE = ns.Options.ROW_ACTIVE
+
+local function applies(scope, key) return ns.Settings.AppliesTo(ns.Settings.Get(key), scope) end
+
+-- Tests: (scope) -> whether the rows mean something on that page.
+local function on(key)
+    return function(scope) return not applies(scope, key) or Config.Get(scope, key) == true end
+end
+local function is(key, value)
+    return function(scope) return not applies(scope, key) or Config.Get(scope, key) == value end
+end
+local function isNot(key, value)
+    return function(scope) return not applies(scope, key) or Config.Get(scope, key) ~= value end
+end
+-- Any of the switches the page has on (none on the page: alone).
+local function anyOn(keys)
+    return function(scope)
+        local present = false
+        for _, key in ipairs(keys) do
+            if applies(scope, key) then
+                present = true
+                if Config.Get(scope, key) == true then return true end
+            end
+        end
+        return not present
+    end
+end
+
+local function auraRows(group, except)
+    local keys = {}
+    for _, def in ipairs(ns.Settings.All()) do
+        local rest = def.key:match("^" .. group .. "(%u%a*)$")
+        if rest and rest ~= "Enabled" and not except[rest] then keys[#keys + 1] = def.key end
+    end
+    return keys
+end
+
+local function iconRows(prefix, extra)
+    local keys = { prefix .. "Size", prefix .. "FramePoint", prefix .. "Point", prefix .. "X", prefix .. "Y" }
+    for _, key in ipairs(extra or {}) do keys[#keys + 1] = key end
+    return keys
+end
+
+-- { test, rows }: every test of a row must pass.
+local RULES = {
+    -- Elements/Border.lua: a hidden border has no size (Border.Size 0),
+    -- and the gold style paints its own shades.
+    { on("borderShow"), { "borderStyle", "borderSize", "borderPadding", "borderColor" } },
+    { isNot("borderStyle", "GOLD"), { "borderColor" } },
+    { on("shadowEnabled"), { "shadowAlpha", "shadowSize" } },
+    { on("titleClassIcon"), { "classIconSize", "classIconX", "classIconY", "classIconRing", "classIconRingColor" } },
+    { isNot("classIconRing", 0), { "classIconRingColor" } },
+    -- Elements/Health.lua: the fixed colour only for STATIC.
+    { is("healthColorMode", "STATIC"), { "healthColor" } },
+    { on("absorbEnabled"), { "absorbMode", "absorbColor" } },
+    { on("healPrediction"), { "healOverflow", "healBeyond", "healMyColor", "healOtherColor", "powerMatchesHealth" } },
+    -- Units/Single.lua: the lane only with heal prediction and overflow.
+    { on("healOverflow"), { "powerMatchesHealth" } },
+    -- Everything on the power bar goes with it.
+    { on("powerEnabled"), { "powerPercent", "powerHideEmpty", "powerCostPrediction", "powerCostColor", "druidMana",
+        "druidManaHeight", "textPowerLeft", "textPowerCenter", "textPowerRight" } },
+    { on("powerCostPrediction"), { "powerCostColor" } },
+    { on("druidMana"), { "druidManaHeight" } },
+    { isNot("portraitMode", "OFF"), { "portraitStyle" } },
+    -- Elements/Classification.lua: the ring has a size, the marker a
+    -- place; its own point only at a point of the frame.
+    { on("eliteMarker"), { "eliteMarkerStyle", "eliteBorderSize", "eliteMarkerFramePoint", "eliteMarkerPoint",
+        "eliteMarkerX", "eliteMarkerY" } },
+    { is("eliteMarkerStyle", "BORDER"), { "eliteBorderSize" } },
+    { is("eliteMarkerStyle", "MARKER"), { "eliteMarkerFramePoint", "eliteMarkerPoint", "eliteMarkerX", "eliteMarkerY" } },
+    { isNot("eliteMarkerFramePoint", "AUTO"), { "eliteMarkerPoint" } },
+    -- Units/PartyPets.lua: the side only beside the owners. Show when
+    -- solo needs no "show player": a solo header lists you anyway.
+    { on("partyShowPets"), { "partyPetLayout", "partyPetSide", "partyPetWidth", "partyPetHeight", "partyPetGap",
+        "partyPetsX", "partyPetsY", "partyPetAuras", "partyPetAuraSize", "partyPetAuraMax", "partyPetAuraSide",
+        "partyPetAuraX", "partyPetAuraY" } },
+    { is("partyPetLayout", "BESIDE"), { "partyPetSide" } },
+    { on("partyPetAuras"), { "partyPetAuraSize", "partyPetAuraMax", "partyPetAuraSide", "partyPetAuraX",
+        "partyPetAuraY" } },
+    { on("partyTargets"), { "partyTargetSide", "partyTargetWidth", "partyTargetHeight", "partyTargetX",
+        "partyTargetY" } },
+    { on("buffsEnabled"), auraRows("buffs", {}) },
+    { on("buffsEnabled"), { "weaponEnchants" } },
+    { on("debuffsEnabled"), auraRows("debuffs", {}) },
+    { on("dispelsEnabled"), auraRows("dispels", {}) },
+    { on("buffsHighlightOwn"), { "buffsOwnSize", "buffsOwnSameRow" } },
+    { on("debuffsHighlightOwn"), { "debuffsOwnSize", "debuffsOwnSameRow" } },
+    -- Elements/AuraButton.lua: without a border it is not seen.
+    { on("auraBorder"), { "auraBorderSize", "buffsCasterBorder", "buffsOwnBorderColor", "buffsOtherBorderColor" } },
+    { on("buffsCasterBorder"), { "buffsOwnBorderColor", "buffsOtherBorderColor" } },
+    -- Hiding Blizzard's castbar does not depend on ours.
+    { on("castbarEnabled"), { "castbarAlwaysShow", "castbarPosition", "castbarDock", "castbarHeight", "castbarIcon",
+        "castbarName", "castbarTime", "castbarX", "castbarY" } },
+    { is("castbarPosition", "DETACHED"), { "castbarX", "castbarY" } },
+    { on("threatBar"), { "threatBarHeight", "threatBarWarn", "threatBarRole", "threatBarSolo" } },
+    { on("combatIcon"), iconRows("combatIcon") },
+    { on("pvpIcon"), iconRows("pvpIcon", { "pvpIconNPC" }) },
+    { on("raidMarker"), iconRows("raidMarker") },
+    { on("petHappiness"), iconRows("petHappiness", { "petHappinessHideHappy" }) },
+    { on("comboPoints"), { "comboHideEmpty", "comboShape", "comboSize", "comboSpacing", "comboColor",
+        "comboFramePoint", "comboPoint", "comboX", "comboY" } },
+    { on("totemsEnabled"), { "totemsSize", "totemsSpacing", "totemsDirection", "totemsFramePoint", "totemsPoint",
+        "totemsX", "totemsY" } },
+    { anyOn({ "statusCombat", "statusResting" }), iconRows("status") },
+    -- The swords: the combat icon's (other frames), the status icon's
+    -- (the player's).
+    { anyOn({ "combatIcon", "statusCombat" }), { "combatAnimation" } },
+    { anyOn({ "groupLeader", "groupReadyCheck", "groupResurrect", "groupRole" }), iconRows("groupIcon") },
+    { on("rangeFade"), { "rangeAlpha" } },
+    { on("targetHighlight"), { "targetHighlightColor", "targetHighlightSize" } },
+    { on("playerFadeOOC"), { "playerFadeAlpha", "playerFadeTarget", "playerFadePet" } },
+    { on("minimapShow"), { "minimapAngle" } },
+}
+
+local tests = {}
+for _, rule in ipairs(RULES) do
+    for _, key in ipairs(rule[2]) do
+        assert(ns.Settings.Get(key), "dependency: unknown setting " .. key)
+        tests[key] = tests[key] or {}
+        table.insert(tests[key], rule[1])
+    end
+end
+for key, list in pairs(tests) do
+    local before = ACTIVE[key]
+    ACTIVE[key] = function(scope)
+        if before and not before(scope) then return false end
+        for _, test in ipairs(list) do
+            if not test(scope) then return false end
+        end
+        return true
+    end
+end

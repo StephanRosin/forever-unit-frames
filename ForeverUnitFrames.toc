@@ -100,6 +100,7 @@ Options\Widgets.lua
 Options\Schema.lua
 Options\TestMode.lua
 Options\Window.lua
+Options\Dependencies.lua
 Options\MinimapButton.lua
 Raid\Options\Schema.lua
 Raid\Options\Window.lua

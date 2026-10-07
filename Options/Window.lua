@@ -510,9 +510,11 @@ local function refreshFooter()
     Style.Paint(Options.testButton.text, testOn and "accent" or idle)
 end
 
--- Rows that only mean something while another setting allows it: the
--- range spell and yards of a reaction whose fading is off; each frame's
--- own switch while "Use unit frames" is off (its value is kept).
+-- Rows that only mean something while another setting allows it, by key:
+-- (scope) -> whether it does on that page. The range spell and yards of a
+-- reaction whose fading is off; each frame's own switch while "Use unit
+-- frames" is off (its value is kept); Options/Dependencies.lua adds the
+-- switches and modes of the pages.
 local ROW_ACTIVE = {
     enabled = function() return ns.Config.Get("general", "unitFrames") end,
     rangeFriendlySpell = function() return ns.Range.ReactionOn("friendly") end,
@@ -520,11 +522,16 @@ local ROW_ACTIVE = {
     rangeHostileSpell = function() return ns.Range.ReactionOn("hostile") end,
     rangeHostileYards = function() return ns.Range.ReactionOn("hostile") end,
 }
+Options.ROW_ACTIVE = ROW_ACTIVE
 
+-- row.enabledState: what the row was last set to (the tests read it).
 local function setRowStates()
+    local scope = Options.currentScope
     forEachRow(function(row)
         local active = ROW_ACTIVE[row.key]
-        row:SetEnabled(not inCombat and (not active or active()))
+        local on = not inCombat and (not active or active(scope))
+        row.enabledState = on
+        row:SetEnabled(on)
     end)
 end
 
