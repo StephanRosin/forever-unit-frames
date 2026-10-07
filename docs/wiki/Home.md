@@ -38,9 +38,9 @@ Source: [GitHub](https://github.com/StephanRosin/forever-unit-frames)
   that size's place, with every option you switched on, and pretend players in the special panels you switched
   on; closing the window or entering combat ends it.
 - **Special panels** (the **Special panels** tab) show the raid's main tanks (on by default) and main assists, your own
-  lists of tanks and of favourites, and the raid's pets, each in a panel of its own with its own place per
+  lists of tanks and of favorites, and the raid's pets, each in a panel of its own with its own place per
   raid size. Players stay in their group as well. Right-click a cell to put a player on your tanks or your
-  favourites, or type the names on the **Special panels** tab; in combat the panel follows after the fight.
+  favorites, or type the names on the **Special panels** tab; in combat the panel follows after the fight.
 - **Own panels** (the **Own panels** tab): up to nine panels of your own beside the main panel, per raid size,
   each with its grouping (group, class or role), the blocks it shows, a title and a layout of its own. Drag a
   block from one panel's column to another's, or click it and pick **Move to …**. A block of the main panel's
@@ -51,8 +51,9 @@ Source: [GitHub](https://github.com/StephanRosin/forever-unit-frames)
   assistants; everyone an assistant, party to raid and back and the loot method for the leader. It sits behind
   a handle on the right edge of the raid panel (click it to fold the bar out), or free where you drag it. It
   folds out and in, and follows changes of who leads, only out of combat.
-- The **Profiles** tab (beside the sizes) keeps your own profiles (all three sizes or one, under a name, for
-  every character of your account), copies one size onto another (everything, or without layout and sizes)
+- The **Profiles** tab (beside the sizes) starts with the role templates, the looks and the setup wizard's
+  button (see [[Templates|Raid-Templates]]). Below them it keeps your own profiles (all three sizes or one, under a
+  name, for every character of your account), copies one size onto another (everything, or without layout and sizes)
   or a size of another of your characters, resets a size, and exports all sizes or one as a text and imports
   it again. Applying, copying between sizes and importing several sizes can be undone once.
 - Corner indicators take spell IDs or spell names from your spell book; a name stands for every rank
@@ -88,8 +89,8 @@ have it. They are generated from the addon itself, so they always match the curr
 - [[Bars|Settings-Bars]] – colors, textures, shields, incoming heals, power colors, druid mana
 - [[Text|Settings-Text]] – what the texts show and how they read, fonts
 - [[Auras|Settings-Auras]] – buffs, debuffs, dispellable debuffs, totems
-- [[Status|Settings-Status]] – combat, PvP and status icons, raid markers, combo points, threat,
-  highlights, range and out-of-combat fading
+- [[Status|Settings-Status]] – combat, PvP and status icons, raid markers, the elite marker, combo points,
+  threat, highlights, range and out-of-combat fading
 - [[Castbar|Settings-Castbar]] – castbars and the threat bar
 
 The raid frames have pages of their own, one per tab of the raid window:
@@ -99,14 +100,14 @@ The raid frames have pages of their own, one per tab of the raid window:
 - [[Cell|Raid-Cell]] – cell size, bar texture and colors, power strip, border and corners, heals and
   shields
 - [[Text|Raid-Text]] – the name and the second line, their colors and fonts
-- [[Debuffs|Raid-Debuffs]] – the dispellable debuff in the centre or as a square in a corner, the debuff
+- [[Debuffs|Raid-Debuffs]] – the dispellable debuff in the center or as a square in a corner, the debuff
   row
 - [[Indicators|Raid-Indicators]] – the five corner indicators
 - [[Icons & states|Raid-Icons-and-states]] – role, raid marker, leader, master looter, ready check,
   range, aggro, your target
 - [[Layout|Raid-Layout]] – grouping, sorting, class order, how blocks and cells are arranged, position,
   borders
-- [[Special panels|Raid-Special-panels]] – the special panels: main tanks, main assists, my tanks, favourites, pets
+- [[Special panels|Raid-Special-panels]] – the special panels: main tanks, main assists, my tanks, favorites, pets
 - [[Own panels|Raid-Own-panels]] – up to nine panels of your own: which blocks each one shows, moved by
   drag-and-drop, and each panel's layout
 - [[Click-casting|Raid-Click-casting]] – spells, items, macros, target, focus, assist and the menu on

@@ -21,4 +21,16 @@ H.checkTrue("Home: the special panels", home:find("**Special panels**", 1, true)
 H.checkTrue("Home: the raid tools bar", home:find("**raid tools bar**", 1, true))
 local faq = H.ReadFile("docs/wiki/FAQ.md")
 H.checkTrue("FAQ: Blizzard's raid manager", faq:find("### Where is Blizzard's raid manager?", 1, true))
-H.checkTrue("FAQ: a list in combat", faq:find("### A player I put on my tanks or favourites does not show", 1, true))
+H.checkTrue("FAQ: a list in combat", faq:find("### A player I put on my tanks or favorites does not show", 1, true))
+-- Section names as the window shows them; American spelling like the UI;
+-- the elite marker lives on Status; the Profiles tab starts with templates.
+H.checkTrue("FAQ: the Text tab's Presentation section", faq:find("[[Text|Settings-Text]] > *Presentation*", 1, true))
+H.checkTrue("Presentation is the section's name",
+    H.ReadFile("Locales/enUS.lua"):find('L.SECTION_display = "Presentation"', 1, true))
+for _, word in ipairs({ "favourite", "centre", "colour" }) do
+    H.checkTrue("Home: American spelling, no " .. word, not home:find(word, 1, true))
+    H.checkTrue("FAQ: American spelling, no " .. word, not faq:find(word, 1, true))
+end
+H.checkTrue("Home: the elite marker under Status", home:find("[[Status|Settings-Status]] – combat, PvP and status icons, raid markers, the elite marker", 1, true))
+H.checkTrue("Home: the Profiles tab starts with templates",
+    home:find("The **Profiles** tab (beside the sizes) starts with the role templates", 1, true))

@@ -29,7 +29,7 @@ time. Blizzard's own frames have the same limit.
 ### Where did an option go?
 
 Each settings page lists every option with its place: tab, then section. For example *Name color in
-bar texts* is on [[Text|Settings-Text]] > *Display*. The page names match the tabs in `/fuf`, and the
+bar texts* is on [[Text|Settings-Text]] > *Presentation*. The page names match the tabs in `/fuf`, and the
 sidebar on the right lists them all.
 
 ### How do I get my frames back in place after a mistake?
@@ -43,7 +43,7 @@ a copy.
 Blizzard's player, target, focus, pet and party frames are hidden while ours are on. To use
 Blizzard's frame for one of them, switch ours off on its **Layout** tab (*Enabled*) and `/reload`.
 
-### A player I put on my tanks or favourites does not show
+### A player I put on my tanks or favorites does not show
 
 The panels change their lists only out of combat: someone added during a fight shows after it. The
 name has to be written as the game writes it in your group (upper and lower case of the name do not
