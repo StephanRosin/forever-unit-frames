@@ -37,6 +37,8 @@ ns.On("PLAYER_LOGIN", function()
     -- 5-player group: no until it is attached; with the raid view in
     -- party on, building the panel styles the party block again.
     ns.RaidProfiles.Attach(ForeverUnitFramesDB)
+    -- The own raid templates, per account (Raid/Templates.lua).
+    ns.RaidTemplates.AttachOwn(ForeverUnitFramesDB)
     ns.RaidMinimapButton.Create()
     ns.RaidSize.Update()
     ns.AfterCombat("raidCreate", ns.RaidHeader.Create)

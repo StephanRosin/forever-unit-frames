@@ -162,3 +162,112 @@ function Templates.Undo()
     ns.Fire("RAID_TEMPLATE_UNDO")
     return true
 end
+
+-- Own templates ------------------------------------------------------------------
+-- Per account: ForeverUnitFramesDB.raidTemplates = { { name =, values = {
+-- key = value } }, ... }, in the order saved. A template holds every
+-- per-size setting of the size it was saved from, as shown then (its own
+-- values and the defaults it kept), so applying it makes a size look the
+-- same. Cleaned at login like an import: names trimmed and once (case
+-- ignored), only known per-size settings, values as the registry takes
+-- them.
+Templates.OWN_NAME_LETTERS = 32
+Templates.OWN_MAX = 20
+local OWN_PREFIX = "own:"
+
+local own = {}   -- the saved list itself
+
+local function trimmed(name)
+    if type(name) ~= "string" then return nil end
+    return name:match("^%s*(.-)%s*$")
+end
+
+local function nameKey(name) return name:lower() end
+
+local function withId(t)
+    t.id = OWN_PREFIX .. t.name
+    return t
+end
+
+local function cleanValues(values)
+    local clean = {}
+    if type(values) ~= "table" then return clean end
+    for key, v in pairs(values) do
+        local def = type(key) == "string" and RaidSettings.Get(key)
+        if def and def.scope ~= "general" then clean[key] = RaidSettings.Validate(def, v) end
+    end
+    return clean
+end
+
+-- At PLAYER_LOGIN.
+function Templates.AttachOwn(db)
+    local list, seen = {}, {}
+    for _, t in ipairs(type(db.raidTemplates) == "table" and db.raidTemplates or {}) do
+        local name = type(t) == "table" and trimmed(t.name)
+        if name and name ~= "" and #name <= Templates.OWN_NAME_LETTERS and not seen[nameKey(name)]
+            and #list < Templates.OWN_MAX then
+            seen[nameKey(name)] = true
+            list[#list + 1] = withId({ name = name, values = cleanValues(t.values) })
+        end
+    end
+    db.raidTemplates = list
+    own = list
+end
+
+function Templates.Own()
+    return own
+end
+
+local function ownIndex(name)
+    local key = nameKey(name)
+    for i, t in ipairs(own) do
+        if nameKey(t.name) == key then return i end
+    end
+    return nil
+end
+
+-- A template by id: a shipped one's, or "own:" and an own one's name.
+function Templates.Find(id)
+    if type(id) ~= "string" then return nil end
+    local name = id:sub(1, #OWN_PREFIX) == OWN_PREFIX and id:sub(#OWN_PREFIX + 1)
+    if name then
+        local i = ownIndex(name)
+        return i and own[i] or nil
+    end
+    return Templates.Get(id)
+end
+
+-- Saves the size's settings under a name (the same name, any case,
+-- replaces that template). nil and why: EMPTY, TOO_LONG, FULL.
+function Templates.SaveOwn(name, size)
+    name = trimmed(name) or ""
+    if name == "" then return nil, "EMPTY" end
+    if #name > Templates.OWN_NAME_LETTERS then return nil, "TOO_LONG" end
+    local scope, values = Raid.Scope(size), {}
+    for _, def in ipairs(RaidSettings.All()) do
+        if def.scope ~= "general" then
+            local v = RaidConfig.Get(scope, def.key)
+            if type(v) == "table" then v = { v[1], v[2], v[3], v[4] } end
+            values[def.key] = v
+        end
+    end
+    local t = withId({ name = name, values = values })
+    local i = ownIndex(name)
+    if i then
+        own[i] = t
+    else
+        if #own >= Templates.OWN_MAX then return nil, "FULL" end
+        own[#own + 1] = t
+    end
+    ns.Fire("RAID_TEMPLATES_CHANGED")
+    return true
+end
+
+-- Deletes an own template by id; false for a shipped or unknown one.
+function Templates.DeleteOwn(id)
+    local t = Templates.Find(id)
+    if not t or t.id ~= id or id:sub(1, #OWN_PREFIX) ~= OWN_PREFIX then return false end
+    table.remove(own, ownIndex(t.name))
+    ns.Fire("RAID_TEMPLATES_CHANGED")
+    return true
+end
