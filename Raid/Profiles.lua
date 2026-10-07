@@ -148,33 +148,40 @@ function Profiles.Export(size)
     return RaidCodec.Encode(RaidConfig.Profile(), { Raid.Scope(size) })
 end
 
--- Every size in one string: the sizes' entries behind a mark that says
--- the string holds all three (a size left at the defaults has none). The
--- mark reads as an entry of an unknown scope: a reader that does not know
--- it skips it without counting it.
-local ALL_MARK = "zALL"
+-- Every size in one string, under its own format version (decision 56):
+-- version 2 is "every size", entries as version 1 writes them (a size left
+-- at the defaults has none). A build that reads only version 1 refuses it
+-- (CODEC_VERSION) instead of setting only the sizes with entries.
+Profiles.ALL_VERSION = 2
 function Profiles.ExportAll()
     local scopes = {}
     for i, size in ipairs(Raid.SIZES) do scopes[i] = Raid.Scope(size) end
     local str = RaidCodec.Encode(RaidConfig.Profile(), scopes)
-    return (str:gsub("^(%d+)", "%1;" .. ALL_MARK, 1))
+    return (str:gsub("^%d+", tostring(Profiles.ALL_VERSION), 1))
 end
 
-local function hasMark(str)
-    for entry in (str .. ";"):gmatch("([^;]*);") do
-        if entry == ALL_MARK then return true end
+-- A string as the codec reads it, and whether it is one of every size.
+-- Version 2: the version alone or followed by ";", the rest read as
+-- version 1; glued to anything else it is malformed (CODEC_FORMAT).
+local function decode(str)
+    if type(str) == "string" and str:match("^%d+") == tostring(Profiles.ALL_VERSION) then
+        local rest = str:sub(#tostring(Profiles.ALL_VERSION) + 1)
+        if rest ~= "" and rest:sub(1, 1) ~= ";" then return nil, "CODEC_FORMAT" end
+        local decoded, err, rejected = RaidCodec.Decode(RaidCodec.VERSION .. rest)
+        return decoded, err, rejected, true
     end
-    return false
+    local decoded, err, rejected = RaidCodec.Decode(str)
+    return decoded, err, rejected, false
 end
 
--- The sizes a string holds (in order): all three behind the mark, else
--- each that has an entry. nil and an error key for a string the codec
--- refuses; also the decoded profile and how many entries it left out.
+-- The sizes a string holds (in order): all three for a string of every
+-- size, else each that has an entry. nil and an error key for a string
+-- the codec refuses; also the decoded profile and how many entries it
+-- left out.
 function Profiles.ImportSizes(str)
-    local decoded, err, rejected = RaidCodec.Decode(str)
+    local decoded, err, rejected, all = decode(str)
     if not decoded then return nil, err end
     local sizes = {}
-    local all = hasMark(str)
     for _, size in ipairs(Raid.SIZES) do
         if all or next(decoded[Raid.Scope(size)]) then sizes[#sizes + 1] = size end
     end
