@@ -22,8 +22,8 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Width</b></td><td></td><td>40 – 600</td><td>Player, Target: 300; Target of Target: 120; Focus: 160; Pet: 115; Party: 200</td><td>all</td></tr>
-<tr><td><b>Height</b></td><td></td><td>8 – 200</td><td>Player, Target: 70; Target of Target, Pet: 28; Focus: 36; Party: 53</td><td>all</td></tr>
+<tr><td><b>Width</b></td><td></td><td>40 – 600</td><td>Player, Target: 300; Target of Target: 120; Focus: 160; Pet: 115; Party: 198</td><td>all</td></tr>
+<tr><td><b>Height</b></td><td></td><td>8 – 200</td><td>Player: 67; Target: 70; Target of Target, Pet: 28; Focus: 36; Party: 53</td><td>all</td></tr>
 </tbody>
 </table>
 
@@ -33,7 +33,7 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
 <tr><td><b>Position X</b></td><td>Offset from the screen center</td><td>-4000 – 4000</td><td>Player: -400; Target: 400; Target of Target: 536; Focus: 520; Pet: -624; Party: -709</td><td>all</td></tr>
-<tr><td><b>Position Y</b></td><td>Offset from the screen center</td><td>-4000 – 4000</td><td>Player, Target: -220; Target of Target: -304; Focus: 232; Pet: -324; Party: 150</td><td>all</td></tr>
+<tr><td><b>Position Y</b></td><td>Offset from the screen center</td><td>-4000 – 4000</td><td>Player, Target: -220; Target of Target: -304; Focus: 232; Pet: -328; Party: 150</td><td>all</td></tr>
 </tbody>
 </table>
 
@@ -42,11 +42,11 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Title row height (%)</b></td><td>0 = no title row</td><td>0 – 60</td><td>Player: 24; Target, Focus: 30; Target of Target, Pet: 0; Party: 26</td><td>all</td></tr>
-<tr><td><b>Health bar height (%)</b></td><td>Share of the frame height</td><td>10 – 100</td><td>Player: 79; Target: 68; Target of Target, Pet: 75; Focus: 45; Party: 17</td><td>all</td></tr>
-<tr><td><b>Power bar height (%)</b></td><td>Share of the frame height; room left over goes to health and power</td><td>0 – 90</td><td>Player: 20; Target, Target of Target, Pet: 25; Focus: 21; Party: 9</td><td>all</td></tr>
+<tr><td><b>Title row height (%)</b></td><td>0 = no title row</td><td>0 – 60</td><td>Player, Target, Focus: 30; Target of Target, Pet: 0; Party: 26</td><td>all</td></tr>
+<tr><td><b>Health bar height (%)</b></td><td>Share of the frame height</td><td>10 – 100</td><td>Player, Target: 68; Target of Target, Pet: 75; Focus: 45; Party: 17</td><td>all</td></tr>
+<tr><td><b>Power bar height (%)</b></td><td>Share of the frame height; room left over goes to health and power</td><td>0 – 90</td><td>Player, Target, Target of Target, Pet: 25; Focus: 21; Party: 7</td><td>all</td></tr>
 <tr><td><b>Show power bar</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
-<tr><td><b>Hide without power</b></td><td>NPCs without mana, rage or energy: no empty bar</td><td>On, Off</td><td>Off</td><td>Target, Target of Target, Focus</td></tr>
+<tr><td><b>Hide without power</b></td><td>NPCs without mana, rage or energy: no empty bar</td><td>On, Off</td><td>Target: On; Target of Target, Focus: Off</td><td>Target, Target of Target, Focus</td></tr>
 </tbody>
 </table>
 

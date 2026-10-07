@@ -16,7 +16,7 @@ Click-casting on the party: Layout tab (or General > Frames); the bindings are i
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
 <tr><td><b>Orientation</b></td><td></td><td>Vertical, Horizontal</td><td>Vertical</td><td>Party</td></tr>
-<tr><td><b>Spacing</b></td><td></td><td>0 – 60</td><td>25</td><td>Party</td></tr>
+<tr><td><b>Spacing</b></td><td></td><td>0 – 60</td><td>27</td><td>Party</td></tr>
 <tr><td><b>Show yourself</b></td><td></td><td>On, Off</td><td>Off</td><td>Party</td></tr>
 <tr><td><b>Show when solo</b></td><td>Shows your own frame outside a group</td><td>On, Off</td><td>Off</td><td>Party</td></tr>
 <tr><td><b>Hide in raid</b></td><td>While you are in a raid group</td><td>On, Off</td><td>On</td><td>Party</td></tr>
@@ -30,10 +30,10 @@ Click-casting on the party: Layout tab (or General > Frames); the bindings are i
 <tbody>
 <tr><td><b>Show pets</b></td><td>A small frame for each member's pet</td><td>On, Off</td><td>On</td><td>Party</td></tr>
 <tr><td><b>Pet layout</b></td><td>Beside: each pet next to its member (not your own pet)</td><td>List below the group, Beside the owner</td><td>List below the group</td><td>Party</td></tr>
-<tr><td><b>Side</b></td><td>Beside the owner: the side the pet sits on</td><td>Right, Left</td><td>Right</td><td>Party</td></tr>
-<tr><td><b>Pet width</b></td><td>Auto: as wide as the members</td><td>0 – 300 (0: Auto)</td><td>Auto</td><td>Party</td></tr>
-<tr><td><b>Pet frame height</b></td><td></td><td>10 – 60</td><td>23</td><td>Party</td></tr>
-<tr><td><b>Pet spacing</b></td><td>Between the pets, and to the group or owner</td><td>0 – 40</td><td>2</td><td>Party</td></tr>
+<tr><td><b>Side</b></td><td>Beside the owner: the side the pet sits on</td><td>Right, Left</td><td>Left</td><td>Party</td></tr>
+<tr><td><b>Pet width</b></td><td>Auto: as wide as the members</td><td>0 – 300 (0: Auto)</td><td>200</td><td>Party</td></tr>
+<tr><td><b>Pet frame height</b></td><td></td><td>10 – 60</td><td>22</td><td>Party</td></tr>
+<tr><td><b>Pet spacing</b></td><td>Between the pets, and to the group or owner</td><td>0 – 40</td><td>3</td><td>Party</td></tr>
 <tr><td><b>Pets offset X</b></td><td>Moves the pets: the list, or each pet beside its owner</td><td>-400 – 400</td><td>0</td><td>Party</td></tr>
 <tr><td><b>Pets offset Y</b></td><td>Moves the pets: the list, or each pet beside its owner</td><td>-400 – 400</td><td>0</td><td>Party</td></tr>
 </tbody>
@@ -45,11 +45,11 @@ Click-casting on the party: Layout tab (or General > Frames); the bindings are i
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
 <tr><td><b>Buffs and debuffs</b></td><td>Uses the party frame's buff and debuff settings</td><td>On, Off</td><td>On</td><td>Party</td></tr>
-<tr><td><b>Aura icon size</b></td><td></td><td>8 – 40</td><td>14</td><td>Party</td></tr>
+<tr><td><b>Aura icon size</b></td><td></td><td>8 – 40</td><td>17</td><td>Party</td></tr>
 <tr><td><b>Pet auras shown</b></td><td>Buffs and debuffs each; Auto: as the party</td><td>0 – 16 (0: Auto)</td><td>Auto</td><td>Party</td></tr>
-<tr><td><b>Aura side</b></td><td></td><td>Right, Left</td><td>Right</td><td>Party</td></tr>
-<tr><td><b>Aura offset X</b></td><td></td><td>-200 – 200</td><td>2</td><td>Party</td></tr>
-<tr><td><b>Aura offset Y</b></td><td></td><td>-200 – 200</td><td>0</td><td>Party</td></tr>
+<tr><td><b>Aura side</b></td><td></td><td>Right, Left</td><td>Left</td><td>Party</td></tr>
+<tr><td><b>Aura offset X</b></td><td></td><td>-200 – 200</td><td>-6</td><td>Party</td></tr>
+<tr><td><b>Aura offset Y</b></td><td></td><td>-200 – 200</td><td>-4</td><td>Party</td></tr>
 </tbody>
 </table>
 
@@ -63,7 +63,7 @@ Click-casting on the party: Layout tab (or General > Frames); the bindings are i
 <tr><td><b>Width</b></td><td></td><td>40 – 300</td><td>100</td><td>Party</td></tr>
 <tr><td><b>Height</b></td><td></td><td>10 – 60</td><td>22</td><td>Party</td></tr>
 <tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>4</td><td>Party</td></tr>
-<tr><td><b>Offset Y</b></td><td></td><td>-200 – 200</td><td>-28</td><td>Party</td></tr>
+<tr><td><b>Offset Y</b></td><td></td><td>-200 – 200</td><td>-43</td><td>Party</td></tr>
 </tbody>
 </table>
 

@@ -48,11 +48,11 @@ The **Castbar** tab on each frame's page in `/fuf`. The last column says which f
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Threat bar below the castbar</b></td><td>Your threat on your target. Keeps a docked castbar's place</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
+<tr><td><b>Threat bar below the castbar</b></td><td>Your threat on your target. Keeps a docked castbar's place</td><td>On, Off</td><td>On</td><td>Player</td></tr>
 <tr><td><b>Height</b></td><td></td><td>6 – 30</td><td>12</td><td>Player</td></tr>
 <tr><td><b>Yellow from (%)</b></td><td>Tank: someone reaches this share of your threat. Others: of the pull</td><td>50 – 99</td><td>80</td><td>Player</td></tr>
 <tr><td><b>Role</b></td><td>Automatic: by role, form or aura. Tanks see their lead, others their share</td><td>Automatic, Tank, Damage or healer</td><td>Automatic</td><td>Player</td></tr>
-<tr><td><b>Also without a group</b></td><td>Also when alone; a pet out counts as a group</td><td>On, Off</td><td>On</td><td>Player</td></tr>
+<tr><td><b>Also without a group</b></td><td>Also when alone; a pet out counts as a group</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
 </tbody>
 </table>
 

@@ -23,23 +23,23 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Show buffs</b></td><td></td><td>On, Off</td><td>Player, Target, Focus, Party: On; Target of Target, Pet: Off</td><td>all</td></tr>
+<tr><td><b>Show buffs</b></td><td></td><td>On, Off</td><td>Player, Target of Target, Pet: Off; Target, Focus, Party: On</td><td>all</td></tr>
 <tr><td><b>Weapon enchants</b></td><td>Poisons, stones, Rockbiter Weapon and the like, before the buffs</td><td>On, Off</td><td>On</td><td>Player</td></tr>
 <tr><td><b>Only mine</b></td><td>Cast by you or your pet</td><td>On, Off</td><td>Player, Target, Target of Target, Focus, Pet: Off; Party: On</td><td>all</td></tr>
 <tr><td><b>Hide tracking</b></td><td>Herb, mineral and treasure finding, tracking and sensing</td><td>On, Off</td><td>Player, Target: On; Target of Target, Focus, Pet, Party: Off</td><td>all</td></tr>
 <tr><td><b>Hide permanent</b></td><td>Everything without a duration, e.g. paladin auras, stances</td><td>On, Off</td><td>Player, Target, Target of Target, Focus, Pet: Off; Party: On</td><td>all</td></tr>
-<tr><td><b>Hide longer than (min)</b></td><td>Hour potions, food, long buffs; also auras without a duration</td><td>0 – 120 (0: Off)</td><td>Off</td><td>all</td></tr>
+<tr><td><b>Hide longer than (min)</b></td><td>Hour potions, food, long buffs; also auras without a duration</td><td>0 – 120 (0: Off)</td><td>Player: 71; Target, Target of Target, Focus, Pet: Off; Party: 26</td><td>all</td></tr>
 <tr><td><b>Show time left</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
 <tr><td><b>Anchor to</b></td><td>Debuffs: next to the debuff icons</td><td>Frame, Health bar, Power bar, Castbar, Debuffs</td><td>Player, Target, Party: Frame; Target of Target, Focus, Pet: Debuffs</td><td>all</td></tr>
 <tr><td><b>Point on the anchor</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Top left</td><td>all</td></tr>
 <tr><td><b>Point of the icons</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Player, Target, Target of Target, Focus, Pet: Bottom left; Party: Top right</td><td>all</td></tr>
-<tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>Player, Target of Target, Focus, Pet, Party: 0; Target: -1</td><td>all</td></tr>
+<tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>Player, Target of Target, Focus, Pet: 0; Target: -1; Party: -18</td><td>all</td></tr>
 <tr><td><b>Offset Y</b></td><td></td><td>-200 – 200</td><td>Player, Target: 3; Target of Target, Focus, Pet: 2; Party: 0</td><td>all</td></tr>
 <tr><td><b>Grow</b></td><td></td><td>Right, Left, Up, Down</td><td>Player, Target, Target of Target, Focus, Pet: Right; Party: Left</td><td>all</td></tr>
 <tr><td><b>New rows</b></td><td>Across the growth direction</td><td>Right, Left, Up, Down</td><td>Player, Target, Target of Target, Focus, Pet: Up; Party: Down</td><td>all</td></tr>
-<tr><td><b>Icon size</b></td><td></td><td>8 – 64</td><td>Player, Target: 18; Target of Target: 14; Focus: 20; Pet: 16; Party: 22</td><td>all</td></tr>
+<tr><td><b>Icon size</b></td><td></td><td>8 – 64</td><td>Player, Target: 18; Target of Target: 14; Focus: 20; Pet: 16; Party: 17</td><td>all</td></tr>
 <tr><td><b>Spacing</b></td><td></td><td>0 – 20</td><td>Player: 4; Target, Target of Target, Focus, Pet: 2; Party: 0</td><td>all</td></tr>
-<tr><td><b>Icons per row</b></td><td>Auto: as many as fit the frame</td><td>0 – 40 (0: Auto)</td><td>Player: 9; Target: 5; Target of Target, Focus, Pet, Party: Auto</td><td>all</td></tr>
+<tr><td><b>Icons per row</b></td><td>Auto: as many as fit the frame</td><td>0 – 40 (0: Auto)</td><td>Player, Target: 8; Target of Target, Focus, Pet, Party: Auto</td><td>all</td></tr>
 <tr><td><b>Maximum icons</b></td><td></td><td>1 – 40</td><td>Player, Target: 24; Target of Target: 9; Focus: 16; Pet: 6; Party: 8</td><td>all</td></tr>
 <tr><td><b>Mine first</b></td><td>Yours in their own rows, bigger</td><td>On, Off</td><td>Player, Target, Party: On; Target of Target, Focus, Pet: Off</td><td>all</td></tr>
 <tr><td><b>Size of mine</b></td><td></td><td>10 – 64</td><td>Player: 25; Target, Focus: 26; Target of Target, Pet: 21; Party: 28</td><td>all</td></tr>
@@ -65,22 +65,22 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <tbody>
 <tr><td><b>Show debuffs</b></td><td></td><td>On, Off</td><td>Player, Target, Focus, Pet, Party: On; Target of Target: Off</td><td>all</td></tr>
 <tr><td><b>Only mine</b></td><td>Cast by you or your pet</td><td>On, Off</td><td>Off</td><td>all</td></tr>
-<tr><td><b>Only dispellable</b></td><td>Debuffs you can remove</td><td>On, Off</td><td>Player, Target, Target of Target, Focus, Pet: Off; Party: On</td><td>all</td></tr>
+<tr><td><b>Only dispellable</b></td><td>Debuffs you can remove</td><td>On, Off</td><td>Off</td><td>all</td></tr>
 <tr><td><b>Hide permanent</b></td><td>Everything without a duration, e.g. an enemy's aura on you</td><td>On, Off</td><td>Off</td><td>all</td></tr>
 <tr><td><b>Show time left</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
 <tr><td><b>Anchor to</b></td><td>Buffs: next to the buff icons</td><td>Frame, Health bar, Power bar, Castbar, Buffs</td><td>Player, Target: Castbar; Target of Target, Focus, Pet, Party: Frame</td><td>all</td></tr>
-<tr><td><b>Point on the anchor</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Player, Target, Party: Bottom left; Target of Target, Focus, Pet: Top left</td><td>all</td></tr>
-<tr><td><b>Point of the icons</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Player, Target: Top left; Target of Target, Focus, Pet: Bottom left; Party: Top right</td><td>all</td></tr>
-<tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>Player: -1; Target, Target of Target, Focus, Pet: 0; Party: -3</td><td>all</td></tr>
-<tr><td><b>Offset Y</b></td><td></td><td>-200 – 200</td><td>Player: -3; Target: -4; Target of Target, Focus, Pet: 2; Party: 19</td><td>all</td></tr>
-<tr><td><b>Grow</b></td><td></td><td>Right, Left, Up, Down</td><td>Player, Target, Target of Target, Focus, Pet: Right; Party: Left</td><td>all</td></tr>
+<tr><td><b>Point on the anchor</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Player, Target: Bottom left; Target of Target, Focus, Pet: Top left; Party: Top right</td><td>all</td></tr>
+<tr><td><b>Point of the icons</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Player, Target: Top left; Target of Target, Focus, Pet: Bottom left; Party: Left</td><td>all</td></tr>
+<tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>Player: -1; Target, Target of Target, Focus, Pet: 0; Party: 16</td><td>all</td></tr>
+<tr><td><b>Offset Y</b></td><td></td><td>-200 – 200</td><td>Player: -3; Target: -4; Target of Target, Focus, Pet: 2; Party: -15</td><td>all</td></tr>
+<tr><td><b>Grow</b></td><td></td><td>Right, Left, Up, Down</td><td>Right</td><td>all</td></tr>
 <tr><td><b>New rows</b></td><td>Across the growth direction</td><td>Right, Left, Up, Down</td><td>Player, Target of Target, Focus, Pet: Up; Target, Party: Down</td><td>all</td></tr>
-<tr><td><b>Icon size</b></td><td></td><td>8 – 64</td><td>Player, Target: 18; Target of Target: 14; Focus: 20; Pet: 16; Party: 22</td><td>all</td></tr>
-<tr><td><b>Spacing</b></td><td></td><td>0 – 20</td><td>Player, Target of Target, Focus, Pet, Party: 2; Target: 4</td><td>all</td></tr>
-<tr><td><b>Icons per row</b></td><td>Auto: as many as fit the frame</td><td>0 – 40 (0: Auto)</td><td>Player, Target of Target, Focus, Pet, Party: Auto; Target: 12</td><td>all</td></tr>
+<tr><td><b>Icon size</b></td><td></td><td>8 – 64</td><td>Player, Target: 18; Target of Target: 14; Focus: 20; Pet: 16; Party: 17</td><td>all</td></tr>
+<tr><td><b>Spacing</b></td><td></td><td>0 – 20</td><td>Player, Target of Target, Focus, Pet: 2; Target: 4; Party: 3</td><td>all</td></tr>
+<tr><td><b>Icons per row</b></td><td>Auto: as many as fit the frame</td><td>0 – 40 (0: Auto)</td><td>Player, Target of Target, Focus, Pet: Auto; Target: 12; Party: 8</td><td>all</td></tr>
 <tr><td><b>Maximum icons</b></td><td></td><td>1 – 40</td><td>Player, Target: 24; Target of Target, Pet, Party: 6; Focus: 16</td><td>all</td></tr>
-<tr><td><b>Mine first</b></td><td>Yours in their own rows, bigger</td><td>On, Off</td><td>Player, Target, Focus: On; Target of Target, Pet, Party: Off</td><td>all</td></tr>
-<tr><td><b>Size of mine</b></td><td></td><td>10 – 64</td><td>Player, Target, Focus: 26; Target of Target, Pet: 21; Party: 25</td><td>all</td></tr>
+<tr><td><b>Mine first</b></td><td>Yours in their own rows, bigger</td><td>On, Off</td><td>Player, Target, Focus, Party: On; Target of Target, Pet: Off</td><td>all</td></tr>
+<tr><td><b>Size of mine</b></td><td></td><td>10 – 64</td><td>Player, Focus: 26; Target: 31; Target of Target, Pet: 21; Party: 27</td><td>all</td></tr>
 <tr><td><b>Mine in the same rows</b></td><td>Yours first, then the rest in the same rows, as SUF shows them</td><td>On, Off</td><td>Off</td><td>all</td></tr>
 <tr><td><b>Place of mine</b></td><td>Free: yours in a place of their own on the frame, the rest stay where they are</td><td>With the rest, Free</td><td>With the rest</td><td>all</td></tr>
 <tr><td><b>Mine: point on the frame</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Player, Target, Target of Target, Focus, Pet: Top right; Party: Top left</td><td>all</td></tr>
@@ -98,7 +98,7 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Show separately</b></td><td>Debuffs you can dispel, in their own place and size</td><td>On, Off</td><td>Off</td><td>Party</td></tr>
+<tr><td><b>Show separately</b></td><td>Debuffs you can dispel, in their own place and size</td><td>On, Off</td><td>On</td><td>Party</td></tr>
 <tr><td><b>Show time left</b></td><td></td><td>On, Off</td><td>On</td><td>Party</td></tr>
 <tr><td><b>Anchor to</b></td><td>Debuffs: next to the debuff icons</td><td>Frame, Health bar, Power bar, Castbar, Debuffs</td><td>Frame</td><td>Party</td></tr>
 <tr><td><b>Point on the anchor</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Center</td><td>Party</td></tr>
@@ -107,7 +107,7 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <tr><td><b>Offset Y</b></td><td></td><td>-200 – 200</td><td>0</td><td>Party</td></tr>
 <tr><td><b>Grow</b></td><td></td><td>Right, Left, Up, Down</td><td>Right</td><td>Party</td></tr>
 <tr><td><b>New rows</b></td><td>Across the growth direction</td><td>Right, Left, Up, Down</td><td>Down</td><td>Party</td></tr>
-<tr><td><b>Icon size</b></td><td></td><td>8 – 64</td><td>24</td><td>Party</td></tr>
+<tr><td><b>Icon size</b></td><td></td><td>8 – 64</td><td>31</td><td>Party</td></tr>
 <tr><td><b>Spacing</b></td><td></td><td>0 – 20</td><td>2</td><td>Party</td></tr>
 <tr><td><b>Icons per row</b></td><td>Auto: as many as fit the frame</td><td>0 – 40 (0: Auto)</td><td>Auto</td><td>Party</td></tr>
 <tr><td><b>Maximum icons</b></td><td></td><td>1 – 40</td><td>3</td><td>Party</td></tr>

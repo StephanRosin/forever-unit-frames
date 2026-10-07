@@ -51,7 +51,7 @@ The **Bars** tab on each frame's page in `/fuf`. The last column says which fram
 <tbody>
 <tr><td><b>Show incoming heals</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
 <tr><td><b>Overheal lane</b></td><td>Shows heals and shields past full health</td><td>On, Off</td><td>Off</td><td>all</td></tr>
-<tr><td><b>Heals past the frame</b></td><td>Incoming heals drawn in full, past the right edge</td><td>On, Off</td><td>Off</td><td>all</td></tr>
+<tr><td><b>Heals past the frame</b></td><td>Incoming heals drawn in full, past the right edge</td><td>On, Off</td><td>Player, Target, Party: On; Target of Target, Focus, Pet: Off</td><td>all</td></tr>
 <tr><td><b>Power bar matches health bar</b></td><td>With the overheal lane: the power bar ends where the health bar ends</td><td>On, Off</td><td>Off</td><td>all</td></tr>
 <tr><td><b>Your heals color</b></td><td></td><td>Color</td><td><code>#4df273</code>, 65 % opaque</td><td>all</td></tr>
 <tr><td><b>Other heals color</b></td><td></td><td>Color</td><td><code>#26a64d</code>, 55 % opaque</td><td>all</td></tr>
