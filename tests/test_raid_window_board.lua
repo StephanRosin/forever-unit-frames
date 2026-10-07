@@ -85,7 +85,7 @@ H.check("the board follows", board(), "Main panel[Group 1] Panel 2[Group 2]")
 -- Drag and drop: onto another column of its grouping.
 drag(chip(main, "Group 1"), own)
 H.check("dropped", RC.Get("r10", "panel2Blocks"), "2,1")
-H.check("the main panel empty", board(), "Main panel[] Panel 2[Group 2,Group 1]")
+H.check("the main panel empty, its blocks in group order", board(), "Main panel[] Panel 2[Group 1,Group 2]")
 drag(chip(own, "Group 1"), own)
 H.check("onto its own column: nothing", RC.Get("r10", "panel2Blocks"), "2,1")
 drag(chip(own, "Group 1"), nil)

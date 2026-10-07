@@ -4,9 +4,9 @@ local _, ns = ...
 -- beside the main one, built with it and moved with the raid window's
 -- movers. Per raid size (Raid/Settings.lua, Raid.OWN_PANELS) each is
 -- shown or not and has its grouping (group, class or role), the blocks of
--- that grouping it takes, in their order, a title above it and a layout
--- of its own; the cells are the main panel's of the size, so are the
--- spacing, the order within a block and the class order. A block it
+-- that grouping it takes (shown in the main panel's order), a title above
+-- it and a layout of its own; the cells are the main panel's of the size,
+-- so are the spacing, the order within a block and the class order. A block it
 -- takes in the main panel's grouping leaves the main panel
 -- (Raid/Header.lua asks Own.Taken); one of another grouping shows its
 -- players again. The raid window's Arrangement tab
@@ -49,7 +49,8 @@ local function groupingBlocks(groupBy, size)
     return Layout.Blocks(groupBy, size, RaidConfig.Get(scope, "sortBy"), RaidConfig.Get(scope, "classOrder"))
 end
 
--- The blocks a slot takes at a size, of its grouping, in its order.
+-- The blocks a slot takes at a size, of its grouping, in the main
+-- panel's order.
 local function chosenBlocks(slot, size)
     local scope = Raid.Scope(size)
     return Layout.Chosen(groupingBlocks(setting(slot, "GroupBy", scope), size), tokensOf(slot, scope))

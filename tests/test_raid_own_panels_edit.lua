@@ -55,7 +55,7 @@ Own.SetGrouping(20, ns.Raid.OwnPanel("panel2"), "ROLE")
 H.check("grouping set", RC.Get("r20", "panel2GroupBy"), "ROLE")
 Own.Place(20, "ROLE", "HEALER", "panel2")
 Own.Place(20, "ROLE", "TANK", "panel2")
-H.check("roles in panel 2", describe(Own.Columns(20)), "main(GROUP):1,2,4 panel2(ROLE):HEALER,TANK panel3(GROUP):3")
+H.check("roles in panel 2, in role order", describe(Own.Columns(20)), "main(GROUP):1,2,4 panel2(ROLE):TANK,HEALER panel3(GROUP):3")
 Own.Place(20, "ROLE", "HEALER", nil)
 H.check("taken out", RC.Get("r20", "panel2Blocks"), "TANK")
 H.check("what panel 2 may still take", (function()
@@ -68,6 +68,14 @@ Own.SetGrouping(20, ns.Raid.OwnPanel("panel2"), "ROLE")
 H.check("same grouping: blocks kept", RC.Get("r20", "panel2Blocks"), "TANK")
 Own.SetGrouping(20, ns.Raid.OwnPanel("panel2"), "CLASS")
 H.check("new grouping: no blocks", RC.Get("r20", "panel2Blocks"), "")
+-- Its blocks in the main panel's order: the size's class order, not as
+-- stored.
+RC.Set("r20", "panel2Blocks", "PRIEST,DRUID,MAGE")
+RC.Set("r20", "classOrder", "MAGE,DRUID")
+H.check("in the class order", describe(Own.Columns(20)):match("panel2%(CLASS%):(%S*)"), "MAGE,DRUID,PRIEST")
+RC.Set("r20", "classOrder", "")
+H.check("in Blizzard's order", describe(Own.Columns(20)):match("panel2%(CLASS%):(%S*)"), "PRIEST,DRUID,MAGE")
+RC.Set("r20", "panel2Blocks", "")
 
 -- Removing: the slot back to its defaults in one change; the main panel
 -- gets its blocks back.

@@ -1,6 +1,6 @@
 -- Own panels (Raid/OwnPanels.lua): Panel 2 to Panel 10, raid panels
 -- (Raid/Panel.lua) built with the main one, each with the blocks of its
--- grouping it takes, in their order; its own layout, borders and title;
+-- grouping it takes, in the main panel's order; its own layout, borders and title;
 -- the main panel's cells of the size. None shows by default.
 local M = H.M
 local ns = H.LoadAddon()
@@ -51,17 +51,17 @@ H.checkTrue("the gold ring", P.panel.border and P.panel.border[1]:IsShown())
 H.check("at its own spot", point(P.anchor.mover), "TOPLEFT UIParent CENTER 200 300")
 H.check("cells at the panel's corner", point(h, P.anchor), "TOPLEFT anchor TOPLEFT 0 0")
 
--- Its own grouping: the roles it takes, in its order; only the blocks of
--- that grouping count.
+-- Its own grouping: the roles it takes, in the main panel's order (the
+-- role order), not as stored; only the blocks of that grouping count.
 RC.Set("r10", "panel2GroupBy", "ROLE")
 RC.Set("r10", "panel2Blocks", "HEALER,TANK,2")
 M.RunTimers()
 H.check("two role blocks", #P.blocks, 2)
-H.check("healers first", P.headers[1]:GetAttribute("roleFilter"), "HEALER")
-H.check("then tanks", P.headers[2]:GetAttribute("roleFilter"), "TANK")
+H.check("tanks first", P.headers[1]:GetAttribute("roleFilter"), "TANK")
+H.check("then healers", P.headers[2]:GetAttribute("roleFilter"), "HEALER")
 H.check("strict", P.headers[1]:GetAttribute("strictFiltering"), true)
-H.check("three healers", P.Count(1), 3)
-H.check("one tank", P.Count(2), 1)
+H.check("one tank", P.Count(1), 1)
+H.check("three healers", P.Count(2), 3)
 H.check("by size: no group 3 at 10", (function()
     RC.Set("r10", "panel2GroupBy", "GROUP")
     RC.Set("r10", "panel2Blocks", "3,1")

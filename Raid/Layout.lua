@@ -99,12 +99,13 @@ function Layout.Token(block)
 end
 
 -- The blocks an own panel takes: those of blocks the tokens name, in the
--- tokens' order; a token naming none of them is passed over.
+-- order of blocks (the main panel's: group number, class order, role
+-- order), not the tokens'; a token naming none of them is passed over.
 function Layout.Chosen(blocks, tokens)
-    local byToken, list = {}, {}
-    for _, block in ipairs(blocks) do byToken[Layout.Token(block)] = block end
-    for _, token in ipairs(tokens) do
-        if byToken[token] then list[#list + 1] = byToken[token] end
+    local named, list = {}, {}
+    for _, token in ipairs(tokens) do named[token] = true end
+    for _, block in ipairs(blocks) do
+        if named[Layout.Token(block)] then list[#list + 1] = block end
     end
     return list
 end
