@@ -81,13 +81,17 @@ H.checkTrue("General: pulse on the target", ta.pulse:IsPlaying())
 C.Set("target", "combatIcon", false)
 H.check("icon off: animation stops", ta.pulse:IsPlaying(), false)
 
--- Options: with the combat icon; in General too.
+-- Options: with the combat icon (the player's: with its status icon's
+-- combat switch); in General too.
 local function sectionOf(scope)
     for _, tab in ipairs(ns.Schema.Tabs(scope)) do
         for _, sec in ipairs(tab.sections or {}) do
-            for _, k in ipairs(sec.keys) do if k == "combatAnimation" then return tab.id .. ":" .. sec.id end end
+            for _, k in ipairs(ns.Schema.SectionKeys(sec, scope)) do
+                if k == "combatAnimation" then return tab.id .. ":" .. sec.id end
+            end
         end
     end
 end
 H.check("target: combat icon section", sectionOf("target"), "status:combatIcon")
+H.check("player: status icons section", sectionOf("player"), "status:statusIcons")
 H.check("general: status tab", sectionOf("general"), "status:combatIcon")

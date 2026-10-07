@@ -118,12 +118,13 @@ end
 
 -- What each frame tab is for (the page's first line).
 local TAB_INTRO = {
-    layout = "Size, position, the rows of the frame, portrait, markers, border, shadow and corners.",
+    layout = "Size, position, the rows of the frame, portrait, border and corners, shadow.",
     group = "The party only: how the members are arranged, their pets and their targets.",
     bars = "Colors and textures of the bars, shields, incoming heals, power colors and the druid's mana.",
-    text = "What the texts on the title row and the bars show, how they read, and the font.",
+    text = "What the texts on the title row and the bars show, the damage and heal numbers, how the texts read,"
+        .. " and the font.",
     auras = "Buffs, debuffs, the party's dispellable debuffs and the player's totems.",
-    status = "Icons and markers on the frame, combo points, threat, highlights and fading.",
+    status = "Icons and markers on the frame (the elite marker too), combo points, highlights and fading.",
     castbar = "Castbars, and the player's threat bar below them.",
 }
 
@@ -156,7 +157,7 @@ local SECTION_NOTE = {
     healthText = "Each row (title, health and power) can have a center text as well. While one is set, the"
         .. " row's left and right texts keep to their third of the row and are cut off with \"...\" where they"
         .. " reach it; empty, the left and right texts share the row as before.",
-    indicators = "Where the marker (Marker style) sits: **Automatic** is its usual place, on the portrait's corner"
+    eliteMarker = "Where the marker (Marker style) sits: **Automatic** is its usual place, on the portrait's corner"
         .. " or as a word above the frame's top right corner, out of the class icon's way; the offset moves it"
         .. " from there. A point on the frame puts the marker's own point there instead, plus the offset. The"
         .. " border style ignores them.",
@@ -248,13 +249,23 @@ for _, tab in ipairs(Schema.FRAME) do
     local body, names = {}, {}
     local any = false
     for _, sec in ipairs(tab.sections) do
+        -- The frames whose page shows the key in this section.
+        local function shownOn(def)
+            local list = {}
+            for _, scope in ipairs(framesOf(def)) do
+                for _, key in ipairs(Schema.SectionKeys(sec, scope)) do
+                    if key == def.key then list[#list + 1] = scope end
+                end
+            end
+            return list
+        end
         local keys = {}
         for _, key in ipairs(sec.keys) do
-            if #framesOf(S.Get(key)) > 0 then keys[#keys + 1] = key end
+            if #shownOn(S.Get(key)) > 0 then keys[#keys + 1] = key end
         end
         if #keys > 0 then
             any = true
-            section(body, sec, keys, framesOf, true, "##")
+            section(body, sec, keys, shownOn, true, "##")
             local name = label("SECTION_" .. sec.id, sec.id)
             names[#names + 1] = ("[%s](#%s)"):format(name, anchor(name))
         end

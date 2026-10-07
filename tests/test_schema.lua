@@ -1,14 +1,14 @@
 local ns = H.LoadAddon()
 local S, Settings, L = ns.Schema, ns.Settings, ns.L
 
-local function keysOf(tabs)
+-- What a page shows, key -> how often (Schema.SectionKeys: a key of
+-- section.with only where its named key applies too).
+local function keysOf(tabs, scope)
     local seen = {}
     for _, tab in ipairs(tabs) do
         for _, sec in ipairs(tab.sections or {}) do
-            for _, key in ipairs(sec.keys) do
-                H.checkTrue("known key " .. key, Settings.Get(key))
-                seen[key] = (seen[key] or 0) + 1
-            end
+            for _, key in ipairs(sec.keys) do H.checkTrue("known key " .. key, Settings.Get(key)) end
+            for _, key in ipairs(S.SectionKeys(sec, scope)) do seen[key] = (seen[key] or 0) + 1 end
             H.checkTrue("section label " .. sec.id, L["SECTION_" .. sec.id] ~= "SECTION_" .. sec.id)
         end
         H.checkTrue("tab label " .. tab.id, L["TAB_" .. tab.id] ~= "TAB_" .. tab.id)
@@ -16,15 +16,17 @@ local function keysOf(tabs)
     return seen
 end
 
-local general, frame = keysOf(S.GENERAL), keysOf(S.FRAME)
+local general = keysOf(S.GENERAL, "general")
 local FRAMES = { "player", "target", "targettarget", "pet", "focus", "party" }
+local frame = {}
+for _, scope in ipairs(FRAMES) do frame[scope] = keysOf(S.FRAME, scope) end
 for _, def in ipairs(Settings.All()) do
     if Settings.AppliesTo(def, "general") and not def.inNav then
         H.check("general shows " .. def.key .. " once", general[def.key], 1)
     end
     for _, scope in ipairs(FRAMES) do
         if Settings.AppliesTo(def, scope) then
-            H.check(scope .. " page shows " .. def.key .. " once", frame[def.key], 1)
+            H.check(scope .. " page shows " .. def.key .. " once", frame[scope][def.key], 1)
         end
     end
     if def.type == "enum" then

@@ -192,7 +192,7 @@ ns.TestMode.Set(false)
 H.check("target: real marker back", icon._atlas, "nameplates-icon-elite-gold")
 H.check("focus: nothing", ns.Frames.focus.eliteText:IsShown(), false)
 
--- Options: its own section on the frame's Layout tab.
+-- Options: its own section on the frame's Status tab (decision 66).
 local found
 for _, tab in ipairs(ns.Schema.FRAME) do
     for _, sec in ipairs(tab.sections or {}) do
@@ -201,8 +201,8 @@ for _, tab in ipairs(ns.Schema.FRAME) do
         end
     end
 end
-H.check("options section", found, "indicators")
-H.check("section title", L.SECTION_indicators, "Indicators")
+H.check("options section", found, "eliteMarker")
+H.check("section title", L.SECTION_eliteMarker, "Elite / rare marker")
 
 -- Atlases the client does not know (fresh load: lookups are cached).
 ns = H.LoadAddon()

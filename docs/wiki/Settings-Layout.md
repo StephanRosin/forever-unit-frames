@@ -2,11 +2,11 @@
 
 # Settings: Layout
 
-Size, position, the rows of the frame, portrait, markers, border, shadow and corners.
+Size, position, the rows of the frame, portrait, border and corners, shadow.
 
 The **Layout** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
 
-**On this page:** [Display](#display) · [Size](#size) · [Position](#position) · [Bar heights](#bar-heights) · [Portrait](#portrait) · [Indicators](#indicators) · [Border](#border) · [Shadow](#shadow) · [Shape](#shape)
+**On this page:** [Display](#display) · [Size](#size) · [Position](#position) · [Bar heights](#bar-heights) · [Portrait](#portrait) · [Border and corners](#border-and-corners) · [Shadow](#shadow)
 
 ## Display
 
@@ -60,25 +60,7 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 </tbody>
 </table>
 
-## Indicators
-
-Where the marker (Marker style) sits: **Automatic** is its usual place, on the portrait's corner or as a word above the frame's top right corner, out of the class icon's way; the offset moves it from there. A point on the frame puts the marker's own point there instead, plus the offset. The border style ignores them.
-
-<table>
-<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
-<tbody>
-<tr><td><b>Elite / rare marker</b></td><td>On the portrait, else above the frame</td><td>On, Off</td><td>On</td><td>Target, Target of Target, Focus</td></tr>
-<tr><td><b>Elite / rare style</b></td><td>Border: gold for elites, silver for rares</td><td>Marker, Border</td><td>Marker</td><td>Target, Target of Target, Focus</td></tr>
-<tr><td><b>Elite border thickness</b></td><td></td><td>1 – 6</td><td>2</td><td>Target, Target of Target, Focus</td></tr>
-<tr><td><b>Marker: point on the frame</b></td><td>Automatic: on the portrait, else above the frame</td><td>Automatic, Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right</td><td>Automatic</td><td>Target, Target of Target, Focus</td></tr>
-<tr><td><b>Marker: its own point</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Center</td><td>Target, Target of Target, Focus</td></tr>
-<tr><td><b>Marker: offset X</b></td><td>Marker style; with Automatic, moves it from there</td><td>-200 – 200</td><td>0</td><td>Target, Target of Target, Focus</td></tr>
-<tr><td><b>Marker: offset Y</b></td><td>Marker style; with Automatic, moves it from there</td><td>-200 – 200</td><td>0</td><td>Target, Target of Target, Focus</td></tr>
-<tr><td><b>Damage and heal numbers</b></td><td>Shown briefly inside the frame</td><td>On, Off</td><td>Player, Target, Focus, Pet, Party: On; Target of Target: Off</td><td>all</td></tr>
-</tbody>
-</table>
-
-## Border
+## Border and corners
 
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
@@ -88,6 +70,7 @@ Where the marker (Marker style) sits: **Automatic** is its usual place, on the p
 <tr><td><b>Border size</b></td><td>0 = no border</td><td>0 – 8</td><td>1</td><td>all</td></tr>
 <tr><td><b>Border padding</b></td><td>Gap between frame and border</td><td>0 – 8</td><td>0</td><td>all</td></tr>
 <tr><td><b>Border color</b></td><td></td><td>Color</td><td><code>#000000</code></td><td>all</td></tr>
+<tr><td><b>Corner radius</b></td><td>0 = square corners</td><td>0 – 12</td><td>Player, Target, Party: 10; Target of Target, Focus, Pet: 0</td><td>all</td></tr>
 </tbody>
 </table>
 
@@ -99,15 +82,6 @@ Where the marker (Marker style) sits: **Automatic** is its usual place, on the p
 <tr><td><b>Drop shadow</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
 <tr><td><b>Shadow strength</b></td><td>Opacity in percent</td><td>0 – 100</td><td>16</td><td>all</td></tr>
 <tr><td><b>Shadow size</b></td><td>Width of the soft edge in pixels</td><td>1 – 16</td><td>Player: 1; Target, Target of Target, Focus, Pet, Party: 9</td><td>all</td></tr>
-</tbody>
-</table>
-
-## Shape
-
-<table>
-<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
-<tbody>
-<tr><td><b>Corner radius</b></td><td>0 = square corners</td><td>0 – 12</td><td>Player, Target, Party: 10; Target of Target, Focus, Pet: 0</td><td>all</td></tr>
 </tbody>
 </table>
 

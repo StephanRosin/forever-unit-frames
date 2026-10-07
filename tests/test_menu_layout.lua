@@ -36,7 +36,7 @@ end
 H.check("General > Display in the frame page's order", keysOf("general", "appearance", "display"),
     "infoClassColor,textCompact,showSurname")
 H.check("General: shield place beside its color", keysOf("general", "bars", "absorbs"), "absorbMode,absorbColor")
-H.check("General: highlight color in Status", where("general", "targetHighlightColor"), "status:targetHighlight")
+H.check("General: highlight color in Status", where("general", "targetHighlightColor"), "status:highlights")
 
 -- The restructure (decision 65): General like a frame's page. The
 -- switches first (master and per frame), the look, the bars (Colors
@@ -62,3 +62,51 @@ end)(), "health,textures,absorbs,healPrediction,powerColors")
 H.check("General: health colors on Bars", where("general", "healthColorMode"), "bars:health")
 H.check("General: minimap button with the profile", where("general", "minimapShow"), "profile:minimap")
 H.check("General: no textures left in Appearance", keysOf("general", "appearance", "bars"), nil)
+
+-- The restructure (decision 66) on the frame pages: the elite marker
+-- with the raid marker on Status; the combat numbers on Text; the
+-- corners in the border's section; the one-row highlights together; the
+-- player's swords animation right after its status icon's combat switch
+-- (the target's page keeps it with its combat icon).
+local function sectionIds(scope, tabId)
+    for _, tab in ipairs(ns.Schema.Tabs(scope)) do
+        if tab.id == tabId then
+            local ids = {}
+            for _, sec in ipairs(tab.sections) do
+                if #ns.Schema.SectionKeys(sec, scope) > 0 then ids[#ids + 1] = sec.id end
+            end
+            return table.concat(ids, ",")
+        end
+    end
+end
+local function shown(scope, tabId, secId)
+    for _, tab in ipairs(ns.Schema.Tabs(scope)) do
+        for _, sec in ipairs(tab.sections) do
+            if tab.id == tabId and sec.id == secId then return table.concat(ns.Schema.SectionKeys(sec, scope), ",") end
+        end
+    end
+end
+H.check("target Layout", sectionIds("target", "layout"), "frame,size,position,barHeights,portrait,border,shadow")
+H.check("elite marker after the raid marker", sectionIds("target", "status"):match("raidMarker,eliteMarker") ~= nil, true)
+H.check("elite marker rows", shown("target", "status", "eliteMarker"),
+    "eliteMarker,eliteMarkerStyle,eliteBorderSize,eliteMarkerFramePoint,eliteMarkerPoint,eliteMarkerX,eliteMarkerY")
+H.check("combat numbers on Text", where("player", "combatFeedback"), "text:combatFeedback")
+H.check("corners with the border", shown("target", "layout", "border"),
+    "borderShow,borderStyle,borderSize,borderPadding,borderColor,cornerRadius")
+H.check("General: corners with the border", keysOf("general", "appearance", "border"),
+    "borderShow,borderStyle,borderSize,borderPadding,borderColor,cornerRadius")
+H.check("party highlights", shown("party", "status", "highlights"),
+    "threatGlow,targetHighlight,targetHighlightColor,targetHighlightSize,dispelHighlight")
+H.check("player highlights", shown("player", "status", "highlights"), "threatGlow,dispelHighlight")
+H.check("player: swords after the combat switch", shown("player", "status", "statusIcons"),
+    "statusCombat,combatAnimation,statusResting,statusSize,statusFramePoint,statusPoint,statusX,statusY")
+H.check("player: no combat icon section", shown("player", "status", "combatIcon"), "")
+H.check("target: swords with the combat icon", shown("target", "status", "combatIcon"),
+    "combatIcon,combatAnimation,combatIconSize,combatIconFramePoint,combatIconPoint,combatIconX,combatIconY")
+H.check("target: status icons not there", shown("target", "status", "statusIcons"), "")
+-- One "Display" in English: the Text tab's section reads apart from the
+-- Layout tab's switch section.
+H.checkTrue("two names", ns.L.SECTION_display ~= ns.L.SECTION_frame)
+for code, t in pairs(ns.Locales) do
+    H.checkTrue(code .. ": Text's section named apart from Layout's", t.SECTION_display ~= t.SECTION_frame)
+end

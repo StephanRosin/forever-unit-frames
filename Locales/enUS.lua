@@ -146,8 +146,7 @@ L.HINT_frameEnabled = "Also on each frame's Layout tab"
 L.TAB_appearance = "Appearance"; L.TAB_profile = "Profile"
 L.TAB_layout = "Layout"; L.TAB_bars = "Bars"; L.TAB_text = "Text"; L.TAB_castbar = "Castbar"
 L.TAB_group = "Group"
-L.SECTION_font = "Font"; L.SECTION_border = "Border"
-L.SECTION_shape = "Shape"
+L.SECTION_font = "Font"; L.SECTION_border = "Border and corners"
 L.SECTION_health = "Health bar"; L.SECTION_frame = "Display"; L.SECTION_size = "Size"
 L.SECTION_barHeights = "Bar heights"; L.SECTION_position = "Position"
 L.SECTION_textures = "Textures"; L.SECTION_healthText = "Health bar text"
@@ -162,7 +161,6 @@ L.HINT_absorbColor = "Under the shield the bar is darkened, its empty part lit"
 L.SECTION_healPrediction = "Incoming heals"
 L.HINT_healOverflow = "Shows heals and shields past full health"
 L.HINT_powerMatchesHealth = "With the overheal lane: the power bar ends where the health bar ends"
-L.SECTION_indicators = "Indicators"
 L.HINT_eliteMarker = "On the portrait, else above the frame"
 L.HINT_combatFeedback = "Shown briefly inside the frame"
 L.FEEDBACK_IMMUNE = "Immune"; L.FEEDBACK_BLOCK = "Block"; L.FEEDBACK_DODGE = "Dodge"
@@ -404,7 +402,6 @@ L.RANGE_USING_OFF = "Off: never fades"
 L.ENUM_rangeFriendlyMode_OFF = "Off"; L.ENUM_rangeHostileMode_OFF = "Off"
 
 -- Status tab: threat.
-L.SECTION_threat = "Threat"
 L.SETTING_threatGlow = "Threat glow"
 L.HINT_threatGlow = "Player, party, pet: the unit's own threat. Target, focus: your threat on it"
 L.SECTION_threatBar = "Threat bar"
@@ -422,7 +419,6 @@ L.THREAT_AGGRO = "AGGRO"
 L.THREAT_LOST = "aggro lost"
 
 -- Status tab: dispel highlight.
-L.SECTION_dispel = "Dispel alert"
 L.SETTING_dispelHighlight = "Tint border on dispellable debuff"
 L.HINT_dispelHighlight = "In the debuff's color while it carries one you can dispel"
 
@@ -463,7 +459,6 @@ L.HINT_buffsHideTracking = "Herb, mineral and treasure finding, tracking and sen
 L.SETTING_weaponEnchants = "Weapon enchants"
 L.HINT_weaponEnchants = "Poisons, stones, Rockbiter Weapon and the like, before the buffs"
 L.SETTING_targetHighlightColor = "Target highlight color"
-L.SECTION_targetHighlight = "Target highlight"
 L.SETTING_targetHighlightSize = "Thickness"
 L.STATUS_FADE = "Player frame fade: %s (opacity %s)"
 L.FADE_FADED = "faded"
@@ -636,7 +631,7 @@ L.SETTING_healBeyond = "Heals past the frame"
 L.HINT_healBeyond = "Incoming heals drawn in full, past the right edge"
 
 -- Menu sections (0.16.2).
-L.SECTION_display = "Display"
+L.SECTION_display = "Presentation"
 L.SECTION_petAuras = "Pet auras"
 
 -- Hints (wiki review).
@@ -1186,3 +1181,8 @@ L.RAID_HINT_combatText = "Shown briefly inside the cell"
 L.RAID_HINT_panelBorder = "A gold border around the whole panel"
 L.RAID_HINT_blockTitles = "Group number, class or role above each block"
 L.RAID_HINT_buffWatchOnlyMissing = "Or running out; off, it shows in a group all the time"
+
+-- Menu restructure: the merged and moved sections.
+L.SECTION_highlights = "Highlights"
+L.SECTION_eliteMarker = "Elite / rare marker"
+L.SECTION_combatFeedback = "Combat numbers"

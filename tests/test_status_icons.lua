@@ -55,8 +55,9 @@ do
     local sec, tab = section("player")
     H.checkTrue("status icons section", sec)
     H.check("on the status tab", tab, "status")
-    H.check("section keys", sec and table.concat(sec.keys, ","),
-        "statusCombat,statusResting,statusSize,statusFramePoint,statusPoint,statusX,statusY")
+    -- The swords' animation right after the combat switch (decision 66).
+    H.check("section keys", sec and table.concat(ns.Schema.SectionKeys(sec, "player"), ","),
+        "statusCombat,combatAnimation,statusResting,statusSize,statusFramePoint,statusPoint,statusX,statusY")
     H.check("section title", ns.L.SECTION_statusIcons, "Status icons")
     H.check("combat label", ns.L.SETTING_statusCombat, "Show combat icon")
     H.check("resting label", ns.L.SETTING_statusResting, "Show resting icon")

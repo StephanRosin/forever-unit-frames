@@ -32,14 +32,15 @@ do
     local found
     for _, tab in ipairs(ns.Schema.Tabs("party")) do
         for _, sec in ipairs(tab.sections or {}) do
-            if sec.id == "dispel" then found = tab.id end
+            for _, key in ipairs(sec.keys) do
+                if key == "dispelHighlight" then found = tab.id .. ":" .. sec.id end
+            end
         end
     end
-    H.check("dispel section on the status tab", found, "status")
-    H.check("section label", ns.L.SECTION_dispel, "Dispel alert")
+    H.check("in Status > Highlights", found, "status:highlights")
     -- Named apart from the auras' section of dispellable debuffs.
     for code, t in pairs(ns.Locales) do
-        H.checkTrue(code .. ": not the auras' section's name", t.SECTION_dispel ~= t.SECTION_dispels)
+        H.checkTrue(code .. ": not the auras' section's name", t.SECTION_highlights ~= t.SECTION_dispels)
     end
     H.checkTrue("label", ns.L.SETTING_dispelHighlight ~= "SETTING_dispelHighlight")
 end

@@ -44,11 +44,13 @@ do
     local found
     for _, tab in ipairs(ns.Schema.Tabs("target")) do
         for _, sec in ipairs(tab.sections or {}) do
-            if sec.id == "threat" then found = tab.id end
+            for _, key in ipairs(sec.keys) do
+                if key == "threatGlow" then found = tab.id .. ":" .. sec.id end
+            end
         end
     end
-    H.check("threat section on the status tab", found, "status")
-    H.check("section label", ns.L.SECTION_threat, "Threat")
+    H.check("in Status > Highlights", found, "status:highlights")
+    H.check("section label", ns.L.SECTION_highlights, "Highlights")
     H.checkTrue("label", ns.L.SETTING_threatGlow ~= "SETTING_threatGlow")
 end
 

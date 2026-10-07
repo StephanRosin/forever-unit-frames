@@ -2,13 +2,13 @@
 
 # Settings: Status
 
-Icons and markers on the frame, combo points, threat, highlights and fading.
+Icons and markers on the frame (the elite marker too), combo points, highlights and fading.
 
 The **Status** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
 
 Point on the frame and point of the icon: the icon's own point sits on that point of the frame; the offset X and Y moves it from there.
 
-**On this page:** [Status icons](#status-icons) · [Combat icon](#combat-icon) · [PvP icon](#pvp-icon) · [Raid target marker](#raid-target-marker) · [Pet happiness](#pet-happiness) · [Group icons](#group-icons) · [Combo points](#combo-points) · [Threat](#threat) · [Target highlight](#target-highlight) · [Dispel alert](#dispel-alert) · [Range](#range) · [Out of combat](#out-of-combat)
+**On this page:** [Status icons](#status-icons) · [Combat icon](#combat-icon) · [PvP icon](#pvp-icon) · [Raid target marker](#raid-target-marker) · [Elite / rare marker](#elite--rare-marker) · [Pet happiness](#pet-happiness) · [Group icons](#group-icons) · [Combo points](#combo-points) · [Highlights](#highlights) · [Range](#range) · [Out of combat](#out-of-combat)
 
 ## Status icons
 
@@ -16,6 +16,7 @@ Point on the frame and point of the icon: the icon's own point sits on that poin
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
 <tr><td><b>Show combat icon</b></td><td>Crossed swords while you are in combat</td><td>On, Off</td><td>On</td><td>Player</td></tr>
+<tr><td><b>Combat icon animation</b></td><td>Duel: clashing swords. Burst: springs in. Pulse: breathes</td><td>Off, Burst, Pulse, Duel (clashing swords)</td><td>Duel (clashing swords)</td><td>Player</td></tr>
 <tr><td><b>Show resting icon</b></td><td>While you rest in an inn or a city</td><td>On, Off</td><td>On</td><td>Player</td></tr>
 <tr><td><b>Icon size</b></td><td></td><td>10 – 48</td><td>21</td><td>Player</td></tr>
 <tr><td><b>Point on the health bar</b></td><td>The icons follow the health bar</td><td>Any of the 9 points (corners, edges, center)</td><td>Center</td><td>Player</td></tr>
@@ -31,7 +32,7 @@ Point on the frame and point of the icon: the icon's own point sits on that poin
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
 <tr><td><b>Show combat icon</b></td><td>Crossed swords while the unit is in combat</td><td>On, Off</td><td>Off</td><td>Target, Target of Target, Focus, Party</td></tr>
-<tr><td><b>Combat icon animation</b></td><td>Duel: clashing swords. Burst: springs in. Pulse: breathes</td><td>Off, Burst, Pulse, Duel (clashing swords)</td><td>Duel (clashing swords)</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Combat icon animation</b></td><td>Duel: clashing swords. Burst: springs in. Pulse: breathes</td><td>Off, Burst, Pulse, Duel (clashing swords)</td><td>Duel (clashing swords)</td><td>Target, Target of Target, Focus, Party</td></tr>
 <tr><td><b>Icon size</b></td><td></td><td>8 – 48</td><td>18</td><td>Target, Target of Target, Focus, Party</td></tr>
 <tr><td><b>Point on the frame</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Left</td><td>Target, Target of Target, Focus, Party</td></tr>
 <tr><td><b>Point of the icon</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Right</td><td>Target, Target of Target, Focus, Party</td></tr>
@@ -66,6 +67,23 @@ Point on the frame and point of the icon: the icon's own point sits on that poin
 <tr><td><b>Point of the icon</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Center</td><td>all</td></tr>
 <tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>0</td><td>all</td></tr>
 <tr><td><b>Offset Y</b></td><td></td><td>-200 – 200</td><td>0</td><td>all</td></tr>
+</tbody>
+</table>
+
+## Elite / rare marker
+
+Where the marker (Marker style) sits: **Automatic** is its usual place, on the portrait's corner or as a word above the frame's top right corner, out of the class icon's way; the offset moves it from there. A point on the frame puts the marker's own point there instead, plus the offset. The border style ignores them.
+
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Elite / rare marker</b></td><td>On the portrait, else above the frame</td><td>On, Off</td><td>On</td><td>Target, Target of Target, Focus</td></tr>
+<tr><td><b>Elite / rare style</b></td><td>Border: gold for elites, silver for rares</td><td>Marker, Border</td><td>Marker</td><td>Target, Target of Target, Focus</td></tr>
+<tr><td><b>Elite border thickness</b></td><td></td><td>1 – 6</td><td>2</td><td>Target, Target of Target, Focus</td></tr>
+<tr><td><b>Marker: point on the frame</b></td><td>Automatic: on the portrait, else above the frame</td><td>Automatic, Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right</td><td>Automatic</td><td>Target, Target of Target, Focus</td></tr>
+<tr><td><b>Marker: its own point</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Center</td><td>Target, Target of Target, Focus</td></tr>
+<tr><td><b>Marker: offset X</b></td><td>Marker style; with Automatic, moves it from there</td><td>-200 – 200</td><td>0</td><td>Target, Target of Target, Focus</td></tr>
+<tr><td><b>Marker: offset Y</b></td><td>Marker style; with Automatic, moves it from there</td><td>-200 – 200</td><td>0</td><td>Target, Target of Target, Focus</td></tr>
 </tbody>
 </table>
 
@@ -119,31 +137,15 @@ Point on the frame and point of the icon: the icon's own point sits on that poin
 </tbody>
 </table>
 
-## Threat
+## Highlights
 
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
 <tr><td><b>Threat glow</b></td><td>Player, party, pet: the unit's own threat. Target, focus: your threat on it</td><td>On, Off</td><td>Player, Party: On; Target, Target of Target, Focus, Pet: Off</td><td>all</td></tr>
-</tbody>
-</table>
-
-## Target highlight
-
-<table>
-<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
-<tbody>
 <tr><td><b>Highlight your target</b></td><td>The party member you have targeted</td><td>On, Off</td><td>On</td><td>Party</td></tr>
 <tr><td><b>Target highlight color</b></td><td></td><td>Color</td><td><code>#ffffff</code>, 90 % opaque</td><td>Party</td></tr>
 <tr><td><b>Thickness</b></td><td></td><td>1 – 12</td><td>3</td><td>Party</td></tr>
-</tbody>
-</table>
-
-## Dispel alert
-
-<table>
-<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
-<tbody>
 <tr><td><b>Tint border on dispellable debuff</b></td><td>In the debuff's color while it carries one you can dispel</td><td>On, Off</td><td>On</td><td>Player, Party</td></tr>
 </tbody>
 </table>

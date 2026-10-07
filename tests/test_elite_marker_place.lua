@@ -28,14 +28,14 @@ H.check("marker point default", S.Get("eliteMarkerPoint") and S.Default(S.Get("e
 H.check("x default", S.Get("eliteMarkerX") and S.Default(S.Get("eliteMarkerX"), "target"), 0)
 H.check("y default", S.Get("eliteMarkerY") and S.Default(S.Get("eliteMarkerY"), "target"), 0)
 H.check("automatic label", ns.Schema.EnumText(fp or {}, "AUTO"), "Automatic")
--- In the indicators section after the marker's other settings.
+-- In the elite marker's section after the marker's other settings.
 local keys
 for _, tab in ipairs(ns.Schema.Tabs("target")) do
     for _, sec in ipairs(tab.sections or {}) do
-        if sec.id == "indicators" then keys = table.concat(sec.keys, ",") end
+        if sec.id == "eliteMarker" then keys = table.concat(sec.keys, ",") end
     end
 end
-H.checkTrue("in the indicators section", keys and keys:find(
+H.checkTrue("in the elite marker's section", keys and keys:find(
     "eliteBorderSize,eliteMarkerFramePoint,eliteMarkerPoint,eliteMarkerX,eliteMarkerY", 1, true))
 H.checkTrue("labels", L.SETTING_eliteMarkerX ~= "SETTING_eliteMarkerX")
 

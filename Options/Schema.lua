@@ -4,7 +4,8 @@ ns.Schema = Schema
 
 -- The unit's outer border and its shadow: General > Appearance and each
 -- frame's Layout tab.
-local BORDER_KEYS = { "borderShow", "borderStyle", "borderSize", "borderPadding", "borderColor" }
+-- The border section holds the corners too ("Border and corners").
+local BORDER_KEYS = { "borderShow", "borderStyle", "borderSize", "borderPadding", "borderColor", "cornerRadius" }
 local SHADOW_KEYS = { "shadowEnabled", "shadowAlpha", "shadowSize" }
 
 -- Structured like a frame's page: the switches, the look, the bars, the
@@ -27,7 +28,6 @@ Schema.GENERAL = {
         { id = "auraIcons", keys = { "auraBorder", "auraBorderSize" } },
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },
-        { id = "shape", keys = { "cornerRadius" } },
     } },
     -- The bars as on a frame's Bars tab: health colours, textures, the
     -- shield beside its colour, heals, power colours.
@@ -44,8 +44,9 @@ Schema.GENERAL = {
     -- (and opacity overrides) are per frame (Status > Range on each page).
     { id = "status", sections = {
         { id = "combatIcon", keys = { "combatAnimation" } },
-        -- The party's highlight colour, where its switch is (Status).
-        { id = "targetHighlight", keys = { "targetHighlightColor" } },
+        -- The party's highlight colour, where its switch is (Status >
+        -- Highlights).
+        { id = "highlights", keys = { "targetHighlightColor" } },
         { id = "range", keys = { "rangeAlpha", "rangeFriendlyMode", "rangeFriendlySpell", "rangeFriendlyYards",
             "rangeHostileMode", "rangeHostileSpell", "rangeHostileYards" } },
     } },
@@ -62,11 +63,8 @@ Schema.FRAME = {
         { id = "position", keys = { "x", "y" } },
         { id = "barHeights", keys = { "titlePercent", "healthPercent", "powerPercent", "powerEnabled", "powerHideEmpty" } },
         { id = "portrait", keys = { "portraitMode", "portraitStyle" } },
-        { id = "indicators", keys = { "eliteMarker", "eliteMarkerStyle", "eliteBorderSize", "eliteMarkerFramePoint",
-            "eliteMarkerPoint", "eliteMarkerX", "eliteMarkerY", "combatFeedback" } },
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },
-        { id = "shape", keys = { "cornerRadius" } },
     } },
     -- The party's arrangement and what hangs beside its members.
     -- The note: the raid window's click-casting may act on the party too.
@@ -95,6 +93,8 @@ Schema.FRAME = {
             "classIconX", "classIconY", "classIconRing", "classIconRingColor" } },
         { id = "healthText", keys = { "textHealthLeft", "textHealthCenter", "textHealthRight" } },
         { id = "powerText", keys = { "textPowerLeft", "textPowerCenter", "textPowerRight" } },
+        -- The damage and heal numbers shown inside the frame.
+        { id = "combatFeedback", keys = { "combatFeedback" } },
         -- How the texts read, on every bar: colours, level colour, compact
         -- values, the secondary name.
         { id = "display", keys = { "levelColorMode", "barNameColorMode", "infoClassColor", "textCompact",
@@ -119,24 +119,29 @@ Schema.FRAME = {
     } },
     -- What the unit is doing or what state it is in, drawn on the frame.
     -- The note: how a point on the frame and an own point place things.
+    -- The swords' animation (section.with): on the player's page with its
+    -- status icon's combat switch, on the others' with the combat icon.
     { id = "status", note = "points", sections = {
-        { id = "statusIcons", keys = { "statusCombat", "statusResting", "statusSize", "statusFramePoint",
-            "statusPoint", "statusX", "statusY" } },
+        { id = "statusIcons", keys = { "statusCombat", "combatAnimation", "statusResting", "statusSize",
+            "statusFramePoint", "statusPoint", "statusX", "statusY" }, with = { combatAnimation = "statusCombat" } },
         { id = "combatIcon", keys = { "combatIcon", "combatAnimation", "combatIconSize", "combatIconFramePoint", "combatIconPoint",
-            "combatIconX", "combatIconY" } },
+            "combatIconX", "combatIconY" }, with = { combatAnimation = "combatIcon" } },
         { id = "pvpIcon", keys = { "pvpIcon", "pvpIconNPC", "pvpIconSize", "pvpIconFramePoint", "pvpIconPoint", "pvpIconX",
             "pvpIconY" } },
         { id = "raidMarker", keys = { "raidMarker", "raidMarkerSize", "raidMarkerFramePoint", "raidMarkerPoint",
             "raidMarkerX", "raidMarkerY" } },
+        { id = "eliteMarker", keys = { "eliteMarker", "eliteMarkerStyle", "eliteBorderSize", "eliteMarkerFramePoint",
+            "eliteMarkerPoint", "eliteMarkerX", "eliteMarkerY" } },
         { id = "petHappiness", keys = { "petHappiness", "petHappinessHideHappy", "petHappinessSize",
             "petHappinessFramePoint", "petHappinessPoint", "petHappinessX", "petHappinessY" } },
         { id = "groupIcons", keys = { "groupLeader", "groupReadyCheck", "groupResurrect", "groupRole", "groupIconSize",
             "groupIconFramePoint", "groupIconPoint", "groupIconX", "groupIconY" } },
         { id = "comboPoints", keys = { "comboPoints", "comboHideEmpty", "comboShape", "comboSize", "comboSpacing", "comboColor",
             "comboFramePoint", "comboPoint", "comboX", "comboY" } },
-        { id = "threat", keys = { "threatGlow" } },
-        { id = "targetHighlight", keys = { "targetHighlight", "targetHighlightColor", "targetHighlightSize" } },
-        { id = "dispel", keys = { "dispelHighlight" } },
+        -- What lights the frame up: threat, the party's target, a debuff
+        -- you can dispel.
+        { id = "highlights", keys = { "threatGlow", "targetHighlight", "targetHighlightColor", "targetHighlightSize",
+            "dispelHighlight" } },
         -- Fading comes last: how the frame behaves, not what it shows.
         { id = "range", keys = { "rangeFade", "rangeAlpha" } },
         { id = "outOfCombat", keys = { "playerFadeOOC", "playerFadeAlpha", "playerFadeTarget", "playerFadePet" } },
@@ -150,6 +155,20 @@ Schema.FRAME = {
             "threatBarSolo" } },
     } },
 }
+
+-- The keys of a section that a page shows: those that apply to it; a key
+-- in section.with only where its named key applies too.
+function Schema.SectionKeys(section, scope)
+    local keys = {}
+    for _, key in ipairs(section.keys) do
+        local with = section.with and section.with[key]
+        if ns.Settings.AppliesTo(ns.Settings.Get(key), scope)
+            and (not with or ns.Settings.AppliesTo(ns.Settings.Get(with), scope)) then
+            keys[#keys + 1] = key
+        end
+    end
+    return keys
+end
 
 local function applicable(tab, scope)
     if tab.custom then return scope == "general" end

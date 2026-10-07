@@ -85,9 +85,9 @@ do
     local found
     for _, tab in ipairs(ns.Schema.Tabs("party")) do
         for _, sec in ipairs(tab.sections or {}) do
-            if sec.id == "targetHighlight" then found = tab.id .. ":" .. table.concat(sec.keys, ",") end
+            if sec.id == "highlights" then found = tab.id .. ":" .. table.concat(sec.keys, ",") end
         end
     end
-    H.check("own section on the status tab", found,
-        "status:targetHighlight,targetHighlightColor,targetHighlightSize")
+    H.check("with the other highlights on the status tab", found,
+        "status:threatGlow,targetHighlight,targetHighlightColor,targetHighlightSize,dispelHighlight")
 end

@@ -9,9 +9,9 @@ The **Profile** tab's export, import and reset are explained on the [[Home]] pag
 **On this page:**
 
 - **[Frames](#frames):** [Which frames are shown](#which-frames-are-shown)
-- **[Appearance](#appearance):** [Font](#font) · [Display](#display) · [Title row](#title-row) · [Aura icons](#aura-icons) · [Border](#border) · [Shadow](#shadow) · [Shape](#shape)
+- **[Appearance](#appearance):** [Font](#font) · [Presentation](#presentation) · [Title row](#title-row) · [Aura icons](#aura-icons) · [Border and corners](#border-and-corners) · [Shadow](#shadow)
 - **[Bars](#bars):** [Health bar](#health-bar) · [Textures](#textures) · [Absorb shields](#absorb-shields) · [Incoming heals](#incoming-heals) · [Power colors](#power-colors)
-- **[Status](#status):** [Combat icon](#combat-icon) · [Target highlight](#target-highlight) · [Range](#range)
+- **[Status](#status):** [Combat icon](#combat-icon) · [Highlights](#highlights) · [Range](#range)
 - **[Profile](#profile):** [Minimap button](#minimap-button)
 
 ## Frames
@@ -44,7 +44,7 @@ Button: **Apply to all frames**.
 </tbody>
 </table>
 
-### Display
+### Presentation
 
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
@@ -80,7 +80,7 @@ Button: **Apply to all frames**.
 </tbody>
 </table>
 
-### Border
+### Border and corners
 
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
@@ -90,6 +90,7 @@ Button: **Apply to all frames**.
 <tr><td><b>Border size</b></td><td>0 = no border</td><td>0 – 8</td><td>1</td></tr>
 <tr><td><b>Border padding</b></td><td>Gap between frame and border</td><td>0 – 8</td><td>0</td></tr>
 <tr><td><b>Border color</b></td><td></td><td>Color</td><td><code>#000000</code></td></tr>
+<tr><td><b>Corner radius</b></td><td>0 = square corners</td><td>0 – 12</td><td>0</td></tr>
 </tbody>
 </table>
 
@@ -101,15 +102,6 @@ Button: **Apply to all frames**.
 <tr><td><b>Drop shadow</b></td><td></td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Shadow strength</b></td><td>Opacity in percent</td><td>0 – 100</td><td>16</td></tr>
 <tr><td><b>Shadow size</b></td><td>Width of the soft edge in pixels</td><td>1 – 16</td><td>9</td></tr>
-</tbody>
-</table>
-
-### Shape
-
-<table>
-<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
-<tbody>
-<tr><td><b>Corner radius</b></td><td>0 = square corners</td><td>0 – 12</td><td>0</td></tr>
 </tbody>
 </table>
 
@@ -182,7 +174,7 @@ Button: **Apply to all frames**.
 </tbody>
 </table>
 
-### Target highlight
+### Highlights
 
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>

@@ -173,4 +173,4 @@ for _, tab in ipairs(ns.Schema.FRAME) do
         end
     end
 end
-H.check("options section", found, "indicators")
+H.check("options section: Text > Combat numbers", found, "combatFeedback")

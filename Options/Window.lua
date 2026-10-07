@@ -275,10 +275,7 @@ end
 -- A tab's sections onto the stack: those with a setting of the page.
 local function addSections(page, stack, scope, tab)
     for _, section in ipairs(tab.sections or {}) do
-        local keys = {}
-        for _, key in ipairs(section.keys) do
-            if ns.Settings.AppliesTo(ns.Settings.Get(key), scope) then keys[#keys + 1] = key end
-        end
+        local keys = Schema.SectionKeys(section, scope)
         if #keys > 0 then
             stack.add(sectionHeader(page, section.id))
             for _, key in ipairs(keys) do stack.add(settingRow(page, scope, key)) end

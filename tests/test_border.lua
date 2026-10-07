@@ -43,7 +43,8 @@ local function section(tabs, tabId, id)
         end
     end
 end
-local BORDER_KEYS = "borderShow,borderStyle,borderSize,borderPadding,borderColor"
+-- The corners with the border ("Border and corners", decision 66).
+local BORDER_KEYS = "borderShow,borderStyle,borderSize,borderPadding,borderColor,cornerRadius"
 local SHADOW_KEYS = "shadowEnabled,shadowAlpha,shadowSize"
 H.check("general border section", section(ns.Schema.GENERAL, "appearance", "border"), BORDER_KEYS)
 H.check("general shadow section", section(ns.Schema.GENERAL, "appearance", "shadow"), SHADOW_KEYS)

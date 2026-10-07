@@ -2,13 +2,13 @@
 
 # Settings: Text
 
-What the texts on the title row and the bars show, how they read, and the font.
+What the texts on the title row and the bars show, the damage and heal numbers, how the texts read, and the font.
 
 The **Text** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
 
 Level, class and race reads e.g. 60 Mage Gnome, or 60 Humanoid for a creature.
 
-**On this page:** [Title row](#title-row) · [Health bar text](#health-bar-text) · [Power bar text](#power-bar-text) · [Display](#display) · [Font](#font)
+**On this page:** [Title row](#title-row) · [Health bar text](#health-bar-text) · [Power bar text](#power-bar-text) · [Combat numbers](#combat-numbers) · [Presentation](#presentation) · [Font](#font)
 
 ## Title row
 
@@ -53,7 +53,16 @@ Each row (title, health and power) can have a center text as well. While one is 
 </tbody>
 </table>
 
-## Display
+## Combat numbers
+
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Damage and heal numbers</b></td><td>Shown briefly inside the frame</td><td>On, Off</td><td>Player, Target, Focus, Pet, Party: On; Target of Target: Off</td><td>all</td></tr>
+</tbody>
+</table>
+
+## Presentation
 
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
