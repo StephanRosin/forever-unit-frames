@@ -43,6 +43,7 @@ ns.On("PLAYER_LOGIN", function()
     ns.AfterCombat("raidToolsCreate", ns.RaidTools.Create)
     -- Click-casting on the cells just made and the party members.
     ns.AfterCombat("clickCast", ns.ClickCast.ApplyAll)
+    ns.AfterCombat("clickKeys", ns.ClickKeys.Update)
     ns.Blizzard.HideRaid()
     -- What's new follows once the loading screen is gone (Core/News.lua).
 end)

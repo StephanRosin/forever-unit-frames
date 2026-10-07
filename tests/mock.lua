@@ -2496,9 +2496,42 @@ function M.Reset()
         end
     end
 
-    -- Key bindings: only ESC is bound (to the game menu).
+    -- Key bindings: M.bindings (key -> action, the player's own; ESC opens
+    -- the game menu, W moves forward), and the override bindings of each
+    -- owner frame (M.overrides[owner][key] = "CLICK name:button"), which
+    -- win over the player's. GetBindingAction(key, checkOverride): the
+    -- action, "" for none. Setting or clearing an override is protected:
+    -- refused in combat (ADDON_ACTION_BLOCKED), as in the client.
+    M.bindings = { ESCAPE = "TOGGLEGAMEMENU", W = "MOVEFORWARD" }
+    M.overrides = {}
+    local function overridden(key)
+        for _, keys in pairs(M.overrides) do
+            if keys[key] then return keys[key] end
+        end
+    end
     _G.GetBindingFromClick = function(key)
-        if key == "ESCAPE" then return "TOGGLEGAMEMENU" end
+        return overridden(key) or M.bindings[key]
+    end
+    _G.GetBindingAction = function(key, checkOverride)
+        assert(type(key) == "string", "GetBindingAction: key required")
+        return (checkOverride and overridden(key)) or M.bindings[key] or ""
+    end
+    local function protectedBinding(name)
+        if M.combat and M.secureDepth == 0 then
+            M.blocked[#M.blocked + 1] = name
+            error("mock: " .. name .. " in combat", 3)
+        end
+    end
+    _G.SetOverrideBindingClick = function(owner, isPriority, key, buttonName, mouseButton)
+        protectedBinding("SetOverrideBindingClick")
+        assert(type(owner) == "table" and type(key) == "string" and type(buttonName) == "string",
+            "SetOverrideBindingClick(owner, isPriority, key, buttonName[, mouseButton])")
+        M.overrides[owner] = M.overrides[owner] or {}
+        M.overrides[owner][key] = "CLICK " .. buttonName .. ":" .. (mouseButton or "LeftButton")
+    end
+    _G.ClearOverrideBindings = function(owner)
+        protectedBinding("ClearOverrideBindings")
+        M.overrides[owner] = nil
     end
 
     -- Colour picker. Like the client, opening it sets the wheel colour, which
