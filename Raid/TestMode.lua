@@ -1,9 +1,10 @@
 local _, ns = ...
 
 -- Test mode for the raid panels: a pretend raid where the blocks are,
--- laid out exactly like the real ones (Raid/Layout.lua), and in each
--- special panel that is switched on its own pretend members (main tanks,
--- main assists, your tanks and favourites, pets). On with the unit
+-- laid out exactly like the real ones (Raid/Layout.lua), the same in the
+-- own panels' blocks, and in each special panel that is switched on its
+-- own pretend members (main tanks, main assists, your tanks and
+-- favourites, pets). On with the unit
 -- frames' test mode (Options/TestMode.lua fires TEST_MODE) or with the
 -- raid options window's own switch (Test.Set). While the raid window is
 -- open it shows the size the window edits, at that size's position
@@ -222,19 +223,25 @@ local function release(button)
     button.sample = nil
 end
 
+-- The pretend members a panel sorts into its blocks, and the order
+-- within a block: the whole pretend raid for the main panel and the own
+-- panels (Raid/OwnPanels.lua), as the main panel sorts; a special
+-- panel's own (Test.PanelMembers), in their order. None while a panel is
+-- switched off.
+local function membersFor(P, size)
+    if not P.Enabled() then return {} end
+    if P == Header or ns.RaidOwnPanels.panels[P.id] == P then
+        return Test.Members(size), ns.RaidConfig.Get(ns.Raid.Scope(size), "sortBy")
+    end
+    return Test.PanelMembers(P.id, size)
+end
+
 -- Out of combat (Raid/Panel.lua's layout): the pretend raid in place of
--- a panel's headers' cells, the main panel's without one. A special
--- panel shows its own pretend members (Test.PanelMembers), in their
--- order, while it is switched on.
+-- a panel's headers' cells, the main panel's without one.
 function Test.Show(P)
     P = P or Header
     local size = Cell.Size()
-    local members, sortBy
-    if P == Header then
-        members, sortBy = Test.Members(size), ns.RaidConfig.Get(ns.Raid.Scope(size), "sortBy")
-    else
-        members = P.Enabled() and Test.PanelMembers(P.id, size) or {}
-    end
+    local members, sortBy = membersFor(P, size)
     local lists = Test.Distribute(P.blocks, members, size, sortBy)
     local counts = {}
     for b, list in ipairs(lists) do counts[b] = #list end
