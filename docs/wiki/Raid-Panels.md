@@ -2,7 +2,7 @@
 
 # Raid frames: Panels
 
-Panels of their own beside the main panel, each with its own position per raid size: the main tanks and the main assists of the raid, your own lists of tanks and of favourites, and the raid's pets in smaller cells. Their players stay in their groups as well.
+Panels of their own beside the main panel, each with its own position per raid size: the main tanks and the main assists of the raid, your own lists of tanks and of favorites, and the raid's pets in smaller cells. Their players stay in their groups as well.
 
 The **Panels** tab of the raid options window (`/fuf raid`). Each raid size (10, 20, 40) has a profile of its own: the size tabs at the top choose which one you edit; a default that differs per size is listed per size.
 

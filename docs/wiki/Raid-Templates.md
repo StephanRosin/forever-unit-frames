@@ -35,7 +35,7 @@ Wider cells with the missing health, heals, overheal and shields, the debuff row
 
 ### Tank
 
-Compact cells, the aggro border, the main tanks panel. No filter for boss debuffs exists: the debuff row stays off and the centre icon shows any dispellable debuff. No heal prediction.
+Compact cells, the aggro border, the main tanks panel. No filter for boss debuffs exists: the debuff row stays off and the center icon shows any dispellable debuff. No heal prediction.
 
 <table>
 <thead><tr><th align="left" width="300">Setting</th><th align="left" width="596">Value</th></tr></thead>

@@ -31,7 +31,7 @@ Level, class and race reads e.g. 60 Mage Gnome, or 60 Humanoid for a creature.
 
 ## Health bar text
 
-Each row (title, health and power) can have a centre text as well. While one is set, the row's left and right texts keep to their third of the row and are cut off with "..." where they reach it; empty, the left and right texts share the row as before.
+Each row (title, health and power) can have a center text as well. While one is set, the row's left and right texts keep to their third of the row and are cut off with "..." where they reach it; empty, the left and right texts share the row as before.
 
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>

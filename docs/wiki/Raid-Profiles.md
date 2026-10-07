@@ -40,7 +40,7 @@ Copies one size onto another as it shows. **Everything** copies every setting; *
 - **Master looter**: Position
 - **Ready check**: Position
 
-The rest (grouping, sorting, the class order, colours, textures, fonts, borders, heals, which debuffs, icons and indicators show, the special panels on or off) is copied.
+The rest (grouping, sorting, the class order, colors, textures, fonts, borders, heals, which debuffs, icons and indicators show, the special panels on or off) is copied.
 
 On purpose, an own panel counts as layout as a whole: an own panel's borders, grouping and whether it shows are part of how you arranged the raid, so they stay too. The main panel's and the special panels' borders, grouping and on/off are how the cells behave, and are copied.
 

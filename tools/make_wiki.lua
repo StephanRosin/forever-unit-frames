@@ -150,9 +150,9 @@ end
 local SECTION_NOTE = {
     unitFrames = "Off, every unit frame counts as off and none of Blizzard's frames is hidden any more (they come"
         .. " back after a `/reload`). Each frame's own switch (the **Frames** tab, or the frame's page) keeps its"
-        .. " value and is greyed meanwhile; switched on again, every frame is as its own switch says. The raid"
+        .. " value and is grayed meanwhile; switched on again, every frame is as its own switch says. The raid"
         .. " frames do not depend on it: they have their own switch in `/fuf raid`.",
-    healthText = "Each row (title, health and power) can have a centre text as well. While one is set, the"
+    healthText = "Each row (title, health and power) can have a center text as well. While one is set, the"
         .. " row's left and right texts keep to their third of the row and are cut off with \"...\" where they"
         .. " reach it; empty, the left and right texts share the row as before.",
     indicators = "Where the marker (Marker style) sits: **Automatic** is its usual place, on the portrait's corner"
@@ -284,13 +284,13 @@ local RAID_TAB_INTRO = {
         .. " another grouping shows its players again. Each new panel starts at a spot of its own (the table shows"
         .. " Panel 2's).",
     panels = "Panels of their own beside the main panel, each with its own position per raid size: the main tanks"
-        .. " and the main assists of the raid, your own lists of tanks and of favourites, and the raid's pets in"
+        .. " and the main assists of the raid, your own lists of tanks and of favorites, and the raid's pets in"
         .. " smaller cells. Their players stay in their groups as well.",
     cell = "The size of a cell, its bars and colors, its border and corners, heals and shields.",
     tools = "The raid tools bar, in place of Blizzard's raid manager: where it is and which tools it holds.",
     texts = "The name and the second line in the middle of each cell: their colors and fonts.",
-    debuffs = "The most important dispellable debuff, as an icon in the centre or a square in a corner, and a"
-        .. " row that shows every debuff (the one in the centre may appear there too).",
+    debuffs = "The most important dispellable debuff, as an icon in the center or a square in a corner, and a"
+        .. " row that shows every debuff (the one in the center may appear there too).",
     indicators = "Up to five small squares at the corners and the top edge, each for spells of your choice"
         .. " (heals over time, shields).",
     clickCast = "Heal, decurse, target, assist or focus raid members with one click: up to 40 mouse combinations"
@@ -310,7 +310,7 @@ local RAID_TAB_INTRO = {
     buffs = "The buff watch: your class's group buffs (Fortitude, Divine Spirit, Shadow Protection, Arcane"
         .. " Intellect, Mark of the Wild, Thorns, the paladin blessings) on everyone in your raid or party."
         .. " Arcane Intellect and Divine Spirit go to those who use mana, Thorns to tanks only; a paladin picks one"
-        .. " blessing per class. A buff your spell book does not know is not offered (its row is greyed)."
+        .. " blessing per class. A buff your spell book does not know is not offered (its row is grayed)."
         .. " A small window shows each watched buff with how many members miss it and how many have it running"
         .. " out (under the time set here, at most a third of how long the buff lasts: a fresh blessing is not"
         .. " running out); members too far away for the client to see are not counted. By default it shows only"
@@ -320,7 +320,7 @@ local RAID_TAB_INTRO = {
         .. " blessing, which takes a Symbol of Kings and blesses a whole class) is cast when enough members of one"
         .. " group miss it or have it running out and its reagent is in your bags; otherwise the single form, on the member with the least"
         .. " time left, missing first, alive and in range. Rebuffing is out of combat only (a rule of the client):"
-        .. " in combat the rows and the key do nothing and the window shows its last state greyed. While the"
+        .. " in combat the rows and the key do nothing and the window shows its last state grayed. While the"
         .. " client keeps auras secret the window shows unknown rather than guess. Optionally an icon on a cell"
         .. " marks a member who misses a watched buff.",
     icons = "Role, raid target marker, leader, master looter and ready check icons, and the states: range,"
@@ -480,7 +480,7 @@ do
         end
     end
     for _, l in ipairs({ "",
-        "The rest (grouping, sorting, the class order, colours, textures, fonts, borders, heals, which debuffs,"
+        "The rest (grouping, sorting, the class order, colors, textures, fonts, borders, heals, which debuffs,"
             .. " icons and indicators show, the special panels on or off) is copied.", "",
         "On purpose, an own panel counts as layout as a whole: an own panel's borders, grouping and whether it"
             .. " shows are part of how you arranged the raid, so they stay too. The main panel's and the special"
@@ -565,7 +565,7 @@ do
             .. " spells that last on a member, as far as your spell book knows them, show as corner indicators"
             .. " (your own casts): heals over time, and shields such as Power Word: Shield and Earth Shield:",
         tank = "Compact cells, the aggro border, the main tanks panel. No filter for boss debuffs exists: the debuff"
-            .. " row stays off and the centre icon shows any dispellable debuff. No heal prediction.",
+            .. " row stays off and the center icon shows any dispellable debuff. No heal prediction.",
         dps = "Small cells by group, every group in one line, no second line, no heal prediction, only the debuffs"
             .. " you can dispel.",
         dispel = "The DPS template, with the dispel icon large and the cell tinted in the debuff's color. Its"

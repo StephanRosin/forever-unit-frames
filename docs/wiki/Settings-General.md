@@ -16,7 +16,7 @@ The **Profile** tab (export, import, reset) is explained on the [[Home]] page.
 
 ### Unit frames
 
-Off, every unit frame counts as off and none of Blizzard's frames is hidden any more (they come back after a `/reload`). Each frame's own switch (the **Frames** tab, or the frame's page) keeps its value and is greyed meanwhile; switched on again, every frame is as its own switch says. The raid frames do not depend on it: they have their own switch in `/fuf raid`.
+Off, every unit frame counts as off and none of Blizzard's frames is hidden any more (they come back after a `/reload`). Each frame's own switch (the **Frames** tab, or the frame's page) keeps its value and is grayed meanwhile; switched on again, every frame is as its own switch says. The raid frames do not depend on it: they have their own switch in `/fuf raid`.
 
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
