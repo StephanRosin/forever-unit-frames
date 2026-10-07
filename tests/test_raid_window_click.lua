@@ -11,6 +11,9 @@ ForeverUnitFramesDB = { raid = { ["Alt-Realm"] = { general = { click3 = "assist"
     clickKey2Bind = "spell:Mind Blast" } } } }
 M.FireEvent("PLAYER_LOGIN")
 M.RunTimers()
+-- A raid, so there are cells to take the bindings.
+M.SetRaidRoster({ { name = "A", class = "PRIEST", subgroup = 1, unit = { health = 1, healthMax = 1 } } })
+M.RunTimers()
 local RO, RC, L = ns.RaidOptions, ns.RaidConfig, ns.L
 M.known[2061] = true
 
@@ -55,8 +58,7 @@ H.check("now typed", shift.value:IsEnabled(), true)
 enter(shift.value, "2061")
 H.check("the ID became the name", RC.Get("general", "click1Shift"), "spell:Flash Heal")
 H.check("the box shows it", shift.value:GetText(), "Flash Heal")
-H.check("the cells' attributes", ns.RaidCell.buttons[1] == nil or
-    ns.RaidCell.buttons[1]:GetAttribute("shift-spell1") == "Flash Heal", true)
+H.check("the cells' attributes", ns.RaidCell.buttons[1]:GetAttribute("shift-spell1"), "Flash Heal")
 enter(shift.value, "Smite")
 H.check("an unknown spell refused", RC.Get("general", "click1Shift"), "spell:Flash Heal")
 H.checkTrue("said why", M.chat[#M.chat]:find("Not a spell in your spell book: Smite", 1, true))
