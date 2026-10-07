@@ -398,10 +398,78 @@ local function raidPage(tab)
     write(name .. ".md", lines)
     raidPages[#raidPages + 1] = { name, title }
 end
--- A tab without settings (Profile: export and import) has no page; the
--- Home page explains it.
+-- Every menu tab holds settings; the Profiles tab (beside the sizes) has
+-- a page of its own below.
 for _, tab in ipairs(RaidSchema.TABS) do
     if #tab.sections > 0 then raidPage(tab) end
+end
+
+-- The Profiles tab (Raid/Options/Profiles.lua, Raid/Profiles.lua): no menu
+-- tab, a page before the templates page. Which settings "Without layout
+-- and sizes" keeps, per section, from the registry's classes.
+do
+    local L, T = ns.L, ns.RaidTemplates
+    local lines = { GENERATED, "", "# Raid frames: Profiles", "",
+        "The **Profiles** tab sits next to the size tabs 10, 20 and 40 at the top of the raid options window"
+            .. " (`/fuf raid`). Picked, the window shows only this page: everything that acts on raid sizes as a"
+            .. " whole. Applying a profile, copying between sizes and importing several sizes are each one change:"
+            .. " **Undo** takes the last one back (once, until you log out or change something else). Nothing here"
+            .. " works in combat.", "",
+        "**On this page:** [Own profiles](#own-profiles) · [Copy between sizes](#copy-between-sizes) ·"
+            .. " [Copy from another character](#copy-from-another-character) · [Reset](#reset) · [Export](#export)"
+            .. " · [Import](#import)", "",
+        "## Own profiles", "",
+        ("**Save as** keeps your raid settings under a name, for every character of your account: **All three"
+            .. " sizes** (the default) or one size, every setting as it shows (positions included; not the"
+            .. " character's own settings such as click-casting or the buff watch). A name has at most %d letters;"
+            .. " a name in use asks for a second click and then replaces that profile. Up to %d own profiles."
+            .. " **Apply** puts a profile of all sizes into each size it holds; a profile of one size goes to the"
+            .. " size you pick under **Apply to**, or to all three. **Delete** takes two clicks. Profiles saved by"
+            .. " earlier versions (one size) still load."):format(T.OWN_NAME_LETTERS, T.OWN_MAX), "",
+        "## Copy between sizes", "",
+        "Copies one size onto another as it shows. **Everything** copies every setting; **Without layout and"
+            .. " sizes** copies how the cells behave and look but keeps the target's layout and sizes: the"
+            .. " settings below stay as they are. Click-casting, the buff watch, the name lists and the minimap"
+            .. " button belong to the character and are the same at every size: there is nothing to copy.", "" }
+    for _, tab in ipairs(RaidSchema.TABS) do
+        local sections = tab.alike and { tab.sections[1] } or tab.sections
+        for _, sec in ipairs(sections) do
+            local names, seen = {}, {}
+            for _, key in ipairs(sec.keys) do
+                local name = RaidSchema.Label(key)
+                if RS.Get(key).class == "layout" and not seen[name] then
+                    seen[name] = true
+                    names[#names + 1] = name
+                end
+            end
+            if #names > 0 then
+                local title = tab.alike and "Each own panel" or RaidSchema.SectionTitle(sec.id)
+                lines[#lines + 1] = ("- **%s**: %s"):format(title, table.concat(names, ", "))
+            end
+        end
+    end
+    for _, l in ipairs({ "",
+        "The rest (grouping, sorting, the class order, colours, textures, fonts, borders, heals, which debuffs,"
+            .. " icons and indicators show, the special panels on or off) is copied.", "",
+        "## Copy from another character", "",
+        "Takes one size of another of your characters (every character with raid settings is listed) onto the"
+            .. " size you pick, after a second click. The click-casting bindings of another character are copied on"
+            .. " the Click-casting tab.", "",
+        "## Reset", "",
+        "Puts one size back to its defaults, after a second click.", "",
+        "## Export", "",
+        "**All three sizes** (the default) gives one text with the 10, 20 and 40 player settings; or pick one"
+            .. " size. The character's own settings are not in it. Copy the text to share it or keep a backup.", "",
+        "## Import", "",
+        "Paste a text and click **" .. L.IMPORT .. "**. A text of one size replaces the size picked under **"
+            .. L.RAID_PROFILES_IMPORT_TO .. "**. A text of all sizes names them and asks for a second click,"
+            .. " then replaces every size it holds as one change (**Undo** takes it back). Texts exported by"
+            .. " earlier versions (one size) still import. Entries this version cannot read are left out and"
+            .. " counted." }) do
+        lines[#lines + 1] = l
+    end
+    write("Raid-Profiles.md", lines)
+    raidPages[#raidPages + 1] = { "Raid-Profiles", "Profiles" }
 end
 
 -- Templates and the setup wizard (Raid/Templates.lua, Raid/TemplateData.lua,
@@ -468,7 +536,7 @@ do
     }
     local lines = { GENERATED, "", "# Raid frames: Templates and setup wizard", "",
         "A template sets many raid settings in one go. The **Templates** section of the raid window's **General**"
-            .. " tab applies a role template, a look or one of your own templates to the size you edit or to all"
+            .. " tab applies a role template or a look to the size you edit or to all"
             .. " three sizes. A template sets only the settings listed below; everything else stays as it is."
             .. " Applying is one change, and **Undo** takes back the last one (once, until you log out). Nothing"
             .. " is applied in combat.", "",
@@ -518,10 +586,10 @@ do
     end
     htmlTable(lines, heads, widths, rows)
     for _, l in ipairs({ "## Own templates", "",
-        ("**Save this size as** keeps every setting of the size you edit under a name (at most %d letters; the"
-            .. " same name replaces it), for every character of your account: apply it to a size like the shipped"
-            .. " ones, or **Delete** it (click twice). Up to %d own templates. Export and import of a size are on"
-            .. " the Profile tab."):format(T.OWN_NAME_LETTERS, T.OWN_MAX), "",
+        ("Your own templates are your own profiles, on the [[Profiles|Raid-Profiles]] tab: all three sizes or"
+            .. " one under a name (at most %d letters; a name in use replaces it after a second click), for every"
+            .. " character of your account, applied like the shipped ones (with **Undo**), deleted after a second"
+            .. " click. Up to %d own templates."):format(T.OWN_NAME_LETTERS, T.OWN_MAX), "",
         "## Setup wizard", "",
         "The wizard opens by itself once: the first time a character whose raid settings nobody has changed opens"
             .. " the raid window, after the login loading screen is gone, out of combat and while the interface is"

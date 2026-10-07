@@ -2,7 +2,7 @@
 
 # Raid frames: Templates and setup wizard
 
-A template sets many raid settings in one go. The **Templates** section of the raid window's **General** tab applies a role template, a look or one of your own templates to the size you edit or to all three sizes. A template sets only the settings listed below; everything else stays as it is. Applying is one change, and **Undo** takes back the last one (once, until you log out). Nothing is applied in combat.
+A template sets many raid settings in one go. The **Templates** section of the raid window's **General** tab applies a role template or a look to the size you edit or to all three sizes. A template sets only the settings listed below; everything else stays as it is. Applying is one change, and **Undo** takes back the last one (once, until you log out). Nothing is applied in combat.
 
 **On this page:** [Role templates](#role-templates) · [Looks](#looks) · [Own templates](#own-templates) · [Setup wizard](#setup-wizard)
 
@@ -129,7 +129,7 @@ A look sets only how the cells look; a role template never touches these, so a r
 
 ## Own templates
 
-**Save this size as** keeps every setting of the size you edit under a name (at most 32 letters; the same name replaces it), for every character of your account: apply it to a size like the shipped ones, or **Delete** it (click twice). Up to 20 own templates. Export and import of a size are on the Profile tab.
+Your own templates are your own profiles, on the [[Profiles|Raid-Profiles]] tab: all three sizes or one under a name (at most 32 letters; a name in use replaces it after a second click), for every character of your account, applied like the shipped ones (with **Undo**), deleted after a second click. Up to 20 own templates.
 
 ## Setup wizard
 

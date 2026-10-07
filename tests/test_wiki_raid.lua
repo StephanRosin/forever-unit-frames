@@ -18,9 +18,11 @@ end
 
 local raid = {}
 H.checkTrue("the generator lists its pages", type(WIKI_PAGES) == "table" and #WIKI_PAGES > 0)
--- The templates page (no tab of its own) is checked at the end.
+-- The templates and profiles pages (no menu tab of their own) are
+-- checked at the end.
+local NOT_A_TAB = { ["Raid-Templates"] = true, ["Raid-Profiles"] = true }
 for _, page in ipairs(WIKI_PAGES or {}) do
-    if page[1]:match("^Raid%-") and page[1] ~= "Raid-Templates" then raid[#raid + 1] = page[1] end
+    if page[1]:match("^Raid%-") and not NOT_A_TAB[page[1]] then raid[#raid + 1] = page[1] end
 end
 H.check("raid pages", table.concat(raid, ","),
     "Raid-General,Raid-Layout,Raid-Panels,Raid-Arrangement,Raid-Cell,Raid-Texts,Raid-Debuffs,Raid-Indicators,"
@@ -109,4 +111,18 @@ H.checkTrue("templates: suggestions", templates:find("Flash Heal", 1, true))
 H.checkTrue("templates: undo", templates:find("**Undo**", 1, true))
 H.checkTrue("templates: once by itself", templates:find("opens by itself once", 1, true))
 H.checkTrue("in the sidebar", read("_Sidebar.md"):find("[[Templates|Raid-Templates]]", 1, true))
+-- The Profiles tab's page: before the templates page; own profiles, copy
+-- with its two modes and what each class of setting is, a character,
+-- reset, export of all sizes or one, the import of either; in the sidebar.
+H.check("profiles page before templates", WIKI_PAGES[#WIKI_PAGES - 1] and WIKI_PAGES[#WIKI_PAGES - 1][1],
+    "Raid-Profiles")
+local profiles = read("Raid-Profiles.md")
+H.checkTrue("profiles: title", profiles:find("# Raid frames: Profiles", 1, true))
+for _, t in ipairs({ "## Own profiles", "## Copy between sizes", "## Copy from another character", "## Reset",
+    "## Export", "## Import", "Without layout and sizes", "**Undo**", "All three sizes", "Cell width",
+    "Position X" }) do
+    H.checkTrue("profiles: " .. t, profiles:find(t, 1, true))
+end
+H.checkTrue("profiles in the sidebar", read("_Sidebar.md"):find("[[Profiles|Raid-Profiles]]", 1, true))
+H.checkTrue("templates: own ones on the Profiles page", templates:find("[[Profiles|Raid-Profiles]]", 1, true))
 os.execute("rm -rf '" .. dir .. "'")

@@ -29,7 +29,8 @@ Source: [GitHub](https://github.com/StephanRosin/forever-unit-frames)
 - **`/fuf raid`** opens the raid options window (also: the **Raid frames…** button at the bottom of `/fuf`, the raid
   frames' own minimap button, or their entry in the addon compartment).
 - Each character has **three raid profiles**, one per raid size: 10, 20 and 40. The size tabs at the
-  top of the window choose the profile you edit; the one shown right now is marked *(shown)*.
+  top of the window choose the profile you edit; the one shown right now is marked *(shown)*. The
+  **Profiles** tab beside them holds what acts on sizes as a whole (see below).
   **Raid size shown** next to them follows the raid instance (outside one the group's size), or fixes
   one size.
 - **Unlock frames** in the raid window lets you drag the raid panels and the raid tools bar (only these;
@@ -50,9 +51,10 @@ Source: [GitHub](https://github.com/StephanRosin/forever-unit-frames)
   assistants; everyone an assistant, party to raid and back and the loot method for the leader. It sits behind
   a handle on the right edge of the raid panel (click it to fold the bar out), or free where you drag it. It
   folds out and in, and follows changes of who leads, only out of combat.
-- **Copy from…** takes another size, or a size of another of your characters (two clicks).
-  **Reset this size** goes back to its defaults. The **Profile** tab exports and imports the size you
-  edit as a text.
+- The **Profiles** tab (beside the sizes) keeps your own profiles (all three sizes or one, under a name, for
+  every character of your account), copies one size onto another (everything, or without layout and sizes)
+  or a size of another of your characters, resets a size, and exports all sizes or one as a text and imports
+  it again. Applying, copying between sizes and importing several sizes can be undone once.
 - Corner indicators take spell IDs or spell names from your spell book; a name stands for every rank
   you know. A name or class the window cannot use is named in the chat.
 - The cells have a look of their own per raid size (texture, colors, fonts, border): changing the party
@@ -111,8 +113,10 @@ The raid frames have pages of their own, one per tab of the raid window:
 - [[Click-casting|Raid-Click-casting]] – spells, items, macros, target, focus, assist and the menu on
   mouse clicks over the cells and party frames, and keys that cast on the raid member under the mouse
 - [[Buffs|Raid-Buffs]] – the buff watch: missing and expiring group buffs, one click or key to rebuff
-- [[Templates|Raid-Templates]] – role templates (healer, tank, DPS, dispel only), looks (Forever, Flat,
-  Classic), your own templates and the setup wizard, all on the General tab
+- [[Profiles|Raid-Profiles]] – own profiles, copy between sizes and from another character, reset,
+  export and import of all sizes or one
+- [[Templates|Raid-Templates]] – role templates (healer, tank, DPS, dispel only) and looks (Forever, Flat,
+  Classic) on the General tab, and the setup wizard
 
 Questions that come up often: [[FAQ]].
 
