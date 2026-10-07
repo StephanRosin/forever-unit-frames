@@ -1759,8 +1759,9 @@ function M.Reset()
         ConvertToRaid = record("ConvertToRaid"), ConvertToParty = record("ConvertToParty"),
         SetLootMethod = record("SetLootMethod") }
     _G.InitiateRolePoll = record("InitiateRolePoll")
-    -- Everyone an assistant (an undocumented global Blizzard's raid
-    -- manager reads): M.everyoneAssistant.
+    -- Everyone an assistant (a global Blizzard's raid manager reads,
+    -- Blizzard_CompactRaidFrameManager.lua ~1402, Mainline):
+    -- M.everyoneAssistant.
     M.everyoneAssistant = false
     _G.IsEveryoneAssistant = function() return M.everyoneAssistant end
     -- d.offline: the unit's player is disconnected. d.dead / d.ghost:
@@ -2426,6 +2427,9 @@ function M.Reset()
     M.addonVersion = "0.1.0"
     -- Blizzard_Menu (Menu.lua): Menu.ModifyMenu(tag, callback) adds to
     -- every menu opened with that tag; M.menuMods[tag] lists the callbacks.
+    -- Not modelled: when a menu with that tag was generated before, the
+    -- client calls the callback at once with the last description for it
+    -- (Menu.lua ~2725-2734); the addon registers at load, before any menu.
     -- M.menu is the last unit menu opened (M.OpenUnitMenu, or a click on a
     -- button whose type is togglemenu).
     M.menuMods = {}
@@ -2547,6 +2551,9 @@ function M.NewMacroFrame()
 end
 
 -- Joins or leaves a party: M.SetGroup({ "party1", "party2" }) or M.SetGroup({}).
+-- The client always names the other members party1..n without gaps; a
+-- list with a gap (a few older tests use { "party2" }) is a party the
+-- client never shows, kept for those tests' own purposes.
 function M.SetGroup(units)
     M.group = units
     M.SetRaid(M.inRaid)
