@@ -254,11 +254,16 @@ local function updateScrollbar()
 end
 
 -- A page that changed its height (one whose rows come and go): the
--- scroll range follows while it is shown.
+-- scroll range follows while it is shown, and a scroll beyond the new
+-- range moves back to its end.
 function RaidOptions.PageResized(page)
     page:SetHeight(page.height)
     if not frame or RaidOptions.page ~= page then return end
     frame.scrollChild:SetHeight(page.height)
+    local scroll = frame.scroll
+    scroll:UpdateScrollChildRect()
+    local range = math.max(0, scroll:GetVerticalScrollRange())
+    if scroll:GetVerticalScroll() > range then scroll:SetVerticalScroll(range) end
     updateScrollbar()
 end
 

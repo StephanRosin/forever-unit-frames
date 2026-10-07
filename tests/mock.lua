@@ -1200,6 +1200,12 @@ local function newWidget(kind, name, parent)
     function w:SetVerticalScroll(v) self._vscroll = v end
     function w:GetVerticalScroll() return self._vscroll or 0 end
     function w:GetVerticalScrollRange() return self._vrange or 0 end
+    -- The range anew from the child's height and the frame's, when both
+    -- are known (the client works it out from their layout).
+    function w:UpdateScrollChildRect()
+        local child = self._scrollChild
+        if child and child._h and self._h then self._vrange = math.max(0, child._h - self._h) end
+    end
     -- Creation
     function w:CreateTexture(n, layer, _, sublevel)
         local t = newWidget("Texture", n, self)

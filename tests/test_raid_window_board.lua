@@ -191,6 +191,17 @@ H.check("the sixth under the first", select(4, sixth:GetPoint(1)), select(4, mai
 H.checkTrue("in a second row", select(5, sixth:GetPoint(1)) < select(5, main:GetPoint(1)))
 H.check("the board's height", b:GetHeight() > 2 * main:GetHeight(), true)
 
+-- Scrolled to the foot, the page gets shorter: the scroll stays in range.
+local scroll = RO.frame.scroll
+scroll:SetHeight(400)
+scroll:UpdateScrollChildRect()
+local tallRange = scroll:GetVerticalScrollRange()
+scroll:SetVerticalScroll(tallRange)
+for n = 6, 10 do ns.RaidOwnPanels.Remove(10, ns.Raid.OwnPanel("panel" .. n)) end
+H.checkTrue("shorter", scroll:GetVerticalScrollRange() < tallRange)
+H.check("the scroll within the new range", scroll:GetVerticalScroll(), scroll:GetVerticalScrollRange())
+for _ = 6, 10 do ns.RaidOwnPanels.Add(10) end
+
 -- Another size: its own board.
 RO.SelectSize(40)
 H.check("40: the main panel alone", board(), "Main panel[Group 1,Group 2,Group 3,Group 4,Group 5,Group 6,Group 7,Group 8]")
