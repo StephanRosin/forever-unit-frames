@@ -123,6 +123,14 @@ for _, t in ipairs({ "## Own profiles", "## Copy between sizes", "## Copy from a
     "Position X" }) do
     H.checkTrue("profiles: " .. t, profiles:find(t, 1, true))
 end
+-- Undo ends at any other change, on both pages (Raid/Templates.lua).
+H.check("templates: undo not only until logout", templates:find("once, until you log out)", 1, true), nil)
+H.checkTrue("templates: undo ends at another change", templates:find("any other change", 1, true))
+-- Decision 58: own panels' borders, grouping and show count as layout.
+H.checkTrue("profiles: own panels are layout", profiles:find("own panel's borders, grouping and whether it shows", 1, true))
+H.checkTrue("profiles: copy from a character undoable", profiles:find("as one change (**Undo** beside it", 1, true))
+H.checkTrue("profiles: an older version and all sizes",
+    profiles:find("older version refuses it", 1, true) and profiles:find("going back to an older version", 1, true))
 H.checkTrue("profiles in the sidebar", read("_Sidebar.md"):find("[[Profiles|Raid-Profiles]]", 1, true))
 H.checkTrue("templates: own ones on the Profiles page", templates:find("[[Profiles|Raid-Profiles]]", 1, true))
 os.execute("rm -rf '" .. dir .. "'")

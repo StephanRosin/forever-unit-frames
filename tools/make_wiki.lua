@@ -424,8 +424,9 @@ do
     local lines = { GENERATED, "", "# Raid frames: Profiles", "",
         "The **Profiles** tab sits next to the size tabs 10, 20 and 40 at the top of the raid options window"
             .. " (`/fuf raid`). Picked, the window shows only this page: everything that acts on raid sizes as a"
-            .. " whole. Applying a profile, copying between sizes and importing several sizes are each one change:"
-            .. " **Undo** takes the last one back (once, until you log out or change something else). Nothing here"
+            .. " whole. Applying a profile, copying between sizes or from a character and importing several sizes are"
+            .. " each one change: **Undo** takes the last one back (once; any other change to the raid settings, and"
+            .. " logging out, ends it). Nothing here"
             .. " works in combat.", "",
         "**On this page:** [Own profiles](#own-profiles) · [Copy between sizes](#copy-between-sizes) ·"
             .. " [Copy from another character](#copy-from-another-character) · [Reset](#reset) · [Export](#export)"
@@ -437,7 +438,9 @@ do
             .. " a name in use asks for a second click and then replaces that profile. Up to %d own profiles."
             .. " **Apply** puts a profile of all sizes into each size it holds; a profile of one size goes to the"
             .. " size you pick under **Apply to**, or to all three. **Delete** takes two clicks. Profiles saved by"
-            .. " earlier versions (one size) still load."):format(T.OWN_NAME_LETTERS, T.OWN_MAX), "",
+            .. " earlier versions (one size) still load; a profile of all sizes needs this version or newer:"
+            .. " going back to an older version loses the profiles of all sizes (they load there empty)."):format(
+            T.OWN_NAME_LETTERS, T.OWN_MAX), "",
         "## Copy between sizes", "",
         "Copies one size onto another as it shows. **Everything** copies every setting; **Without layout and"
             .. " sizes** copies how the cells behave and look but keeps the target's layout and sizes: the"
@@ -463,15 +466,21 @@ do
     for _, l in ipairs({ "",
         "The rest (grouping, sorting, the class order, colours, textures, fonts, borders, heals, which debuffs,"
             .. " icons and indicators show, the special panels on or off) is copied.", "",
+        "On purpose, an own panel counts as layout as a whole: an own panel's borders, grouping and whether it"
+            .. " shows are part of how you arranged the raid, so they stay too. The main panel's and the special"
+            .. " panels' borders, grouping and on/off are how the cells behave, and are copied.", "",
         "## Copy from another character", "",
         "Takes one size of another of your characters (every character with raid settings is listed) onto the"
-            .. " size you pick, after a second click. The click-casting bindings of another character are copied on"
+            .. " size you pick, after a second click, as one change (**Undo** beside it takes it back). The"
+            .. " click-casting bindings of another character are copied on"
             .. " the Click-casting tab.", "",
         "## Reset", "",
         "Puts one size back to its defaults, after a second click.", "",
         "## Export", "",
         "**All three sizes** (the default) gives one text with the 10, 20 and 40 player settings; or pick one"
-            .. " size. The character's own settings are not in it. Copy the text to share it or keep a backup.", "",
+            .. " size. The character's own settings are not in it. Copy the text to share it or keep a backup. A"
+            .. " text of all sizes has a format of its own: an older version refuses it (\"made by a newer"
+            .. " version\") rather than setting only some sizes.", "",
         "## Import", "",
         "Paste a text and click **" .. L.IMPORT .. "**. A text of one size replaces the size picked under **"
             .. L.RAID_PROFILES_IMPORT_TO .. "**. A text of all sizes names them and asks for a second click,"
@@ -550,7 +559,8 @@ do
         "A template sets many raid settings in one go. The **Templates** section of the raid window's **General**"
             .. " tab applies a role template or a look to the size you edit or to all"
             .. " three sizes. A template sets only the settings listed below; everything else stays as it is."
-            .. " Applying is one change, and **Undo** takes back the last one (once, until you log out). Nothing"
+            .. " Applying is one change, and **Undo** takes back the last one (once; any other change to the raid"
+            .. " settings, and logging out, ends it). Nothing"
             .. " is applied in combat.", "",
         "**On this page:** [Role templates](#role-templates) · [Looks](#looks) · [Own templates](#own-templates) ·"
             .. " [Setup wizard](#setup-wizard)", "",

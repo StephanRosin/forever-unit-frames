@@ -2,7 +2,7 @@
 
 # Raid frames: Templates and setup wizard
 
-A template sets many raid settings in one go. The **Templates** section of the raid window's **General** tab applies a role template or a look to the size you edit or to all three sizes. A template sets only the settings listed below; everything else stays as it is. Applying is one change, and **Undo** takes back the last one (once, until you log out). Nothing is applied in combat.
+A template sets many raid settings in one go. The **Templates** section of the raid window's **General** tab applies a role template or a look to the size you edit or to all three sizes. A template sets only the settings listed below; everything else stays as it is. Applying is one change, and **Undo** takes back the last one (once; any other change to the raid settings, and logging out, ends it). Nothing is applied in combat.
 
 **On this page:** [Role templates](#role-templates) · [Looks](#looks) · [Own templates](#own-templates) · [Setup wizard](#setup-wizard)
 

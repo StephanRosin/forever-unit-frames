@@ -2,13 +2,13 @@
 
 # Raid frames: Profiles
 
-The **Profiles** tab sits next to the size tabs 10, 20 and 40 at the top of the raid options window (`/fuf raid`). Picked, the window shows only this page: everything that acts on raid sizes as a whole. Applying a profile, copying between sizes and importing several sizes are each one change: **Undo** takes the last one back (once, until you log out or change something else). Nothing here works in combat.
+The **Profiles** tab sits next to the size tabs 10, 20 and 40 at the top of the raid options window (`/fuf raid`). Picked, the window shows only this page: everything that acts on raid sizes as a whole. Applying a profile, copying between sizes or from a character and importing several sizes are each one change: **Undo** takes the last one back (once; any other change to the raid settings, and logging out, ends it). Nothing here works in combat.
 
 **On this page:** [Own profiles](#own-profiles) · [Copy between sizes](#copy-between-sizes) · [Copy from another character](#copy-from-another-character) · [Reset](#reset) · [Export](#export) · [Import](#import)
 
 ## Own profiles
 
-**Save as** keeps your raid settings under a name, for every character of your account: **All three sizes** (the default) or one size, every setting as it shows (positions included; not the character's own settings such as click-casting or the buff watch). A name has at most 32 letters; a name in use asks for a second click and then replaces that profile. Up to 20 own profiles. **Apply** puts a profile of all sizes into each size it holds; a profile of one size goes to the size you pick under **Apply to**, or to all three. **Delete** takes two clicks. Profiles saved by earlier versions (one size) still load.
+**Save as** keeps your raid settings under a name, for every character of your account: **All three sizes** (the default) or one size, every setting as it shows (positions included; not the character's own settings such as click-casting or the buff watch). A name has at most 32 letters; a name in use asks for a second click and then replaces that profile. Up to 20 own profiles. **Apply** puts a profile of all sizes into each size it holds; a profile of one size goes to the size you pick under **Apply to**, or to all three. **Delete** takes two clicks. Profiles saved by earlier versions (one size) still load; a profile of all sizes needs this version or newer: going back to an older version loses the profiles of all sizes (they load there empty).
 
 ## Copy between sizes
 
@@ -42,9 +42,11 @@ Copies one size onto another as it shows. **Everything** copies every setting; *
 
 The rest (grouping, sorting, the class order, colours, textures, fonts, borders, heals, which debuffs, icons and indicators show, the special panels on or off) is copied.
 
+On purpose, an own panel counts as layout as a whole: an own panel's borders, grouping and whether it shows are part of how you arranged the raid, so they stay too. The main panel's and the special panels' borders, grouping and on/off are how the cells behave, and are copied.
+
 ## Copy from another character
 
-Takes one size of another of your characters (every character with raid settings is listed) onto the size you pick, after a second click. The click-casting bindings of another character are copied on the Click-casting tab.
+Takes one size of another of your characters (every character with raid settings is listed) onto the size you pick, after a second click, as one change (**Undo** beside it takes it back). The click-casting bindings of another character are copied on the Click-casting tab.
 
 ## Reset
 
@@ -52,7 +54,7 @@ Puts one size back to its defaults, after a second click.
 
 ## Export
 
-**All three sizes** (the default) gives one text with the 10, 20 and 40 player settings; or pick one size. The character's own settings are not in it. Copy the text to share it or keep a backup.
+**All three sizes** (the default) gives one text with the 10, 20 and 40 player settings; or pick one size. The character's own settings are not in it. Copy the text to share it or keep a backup. A text of all sizes has a format of its own: an older version refuses it ("made by a newer version") rather than setting only some sizes.
 
 ## Import
 
