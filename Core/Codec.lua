@@ -94,6 +94,7 @@ function ns.NewCodec(Settings)
     -- * An unknown scope or code, a setting on a scope it does not apply to,
     --   or an enum index past the known values is what a newer version may
     --   write. It is skipped and NOT counted: this version cannot use it.
+    --   So is a retired setting (def.retired): read, its value means nothing.
     -- * A known code whose value does not parse for its type, or an entry that
     --   is not <scope><CODE><value> at all (empty ones aside), is data this
     --   version should have understood. It IS counted, so callers can refuse
@@ -131,7 +132,9 @@ function ns.NewCodec(Settings)
                     shortened = true
                 end
                 local scope = scopeByPrefix[prefix]
-                if def and scope and profile[scope] and Settings.AppliesTo(def, scope) then
+                if def and def.retired then
+                    -- An older version's setting: read and dropped.
+                elseif def and scope and profile[scope] and Settings.AppliesTo(def, scope) then
                     local v = decodeValue(def, raw)
                     if v ~= nil then
                         profile[scope][def.key] = v

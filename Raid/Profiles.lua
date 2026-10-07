@@ -53,28 +53,38 @@ local function keepOldToolsSpot(db)
     db.raidToolsSpotKept = true
 end
 
+-- Decision 76: the raid profile's "click-casting on the party frames"
+-- became the unit frames' clickCast. Once per account, at the first login
+-- with this version, before any profile is cleaned: every character's
+-- stored value goes, and if any of them stored false (the default was on)
+-- the party's own value becomes off. db.clickCastPartyRetired marks it
+-- done, so a character logging in later cannot undo a choice made since.
+-- The setting stays defined (retired) so old strings still read.
+local function retireClickCastParty(db)
+    if db.clickCastPartyRetired then return end
+    local off = false
+    for _, profile in pairs(db.raid) do
+        local general = type(profile) == "table" and profile.general
+        if type(general) == "table" and general.clickCastParty ~= nil then
+            if general.clickCastParty == false then off = true end
+            general.clickCastParty = nil
+        end
+    end
+    if off and ns.Config.Profile() then ns.Config.Set(ns.Party.KEY, "clickCast", false) end
+    db.clickCastPartyRetired = true
+end
+
 -- At PLAYER_LOGIN: this character's profile, cleaned, becomes the one in use.
 function Profiles.Attach(db)
     if type(db.raid) ~= "table" then db.raid = {} end
     keepOldToolsSpot(db)
+    retireClickCastParty(db)
     store = db.raid
     charKey = Profiles.CharKey()
     local own = store[charKey]
     local profile = RaidSettings.Sanitise(type(own) == "table" and own or {})
     store[charKey] = profile
     RaidConfig.Use(profile)
-    Profiles.RetireClickCastParty(profile)
-end
-
--- Decision 76: the raid profile's "click-casting on the party frames"
--- became the unit frames' clickCast. A stored false (the default was on)
--- becomes the party's own value off, once: the raid value is then
--- removed. The setting stays defined so old strings still read.
-function Profiles.RetireClickCastParty(profile)
-    if profile.general.clickCastParty == nil then return end
-    local off = profile.general.clickCastParty == false
-    profile.general.clickCastParty = nil
-    if off and ns.Config.Profile() then ns.Config.Set(ns.Party.KEY, "clickCast", false) end
 end
 
 -- The other characters that have a raid profile, sorted.

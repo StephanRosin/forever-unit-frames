@@ -146,7 +146,9 @@ function ns.NewRegistry(scopes, prefix)
 
     -- Only known scopes and settings that apply to them survive, each with
     -- a value that passes validation: a hand-edited or outdated
-    -- SavedVariables file must never reach Config or the codec.
+    -- SavedVariables file must never reach Config or the codec. A retired
+    -- setting (def.retired: its code is kept so old strings still read,
+    -- the value means nothing any more) never survives.
     function R.Sanitise(profile)
         local clean = {}
         for _, scope in ipairs(scopes) do
@@ -155,7 +157,7 @@ function ns.NewRegistry(scopes, prefix)
             if type(values) == "table" then
                 for key, v in pairs(values) do
                     local def = byKey[key]
-                    if def and R.AppliesTo(def, scope) then
+                    if def and not def.retired and R.AppliesTo(def, scope) then
                         clean[scope][key] = validate(def, v)
                     end
                 end

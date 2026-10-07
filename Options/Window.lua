@@ -513,10 +513,9 @@ end
 -- switches and modes of the pages.
 local ROW_ACTIVE = {
     enabled = function() return ns.Config.Get("general", "unitFrames") end,
-    -- Only while the raid window's click-casting is not off.
-    clickCast = function()
-        return ns.RaidConfig.Profile() ~= nil and ns.RaidConfig.Get("general", "clickCast") ~= "OFF"
-    end,
+    -- Only while the raid window's click-casting is on (off, or automatic
+    -- with Clique loaded, it binds nothing anywhere).
+    clickCast = function() return ns.ClickCast.On() end,
     rangeFriendlySpell = function() return ns.Range.ReactionOn("friendly") end,
     rangeFriendlyYards = function() return ns.Range.ReactionOn("friendly") end,
     rangeHostileSpell = function() return ns.Range.ReactionOn("hostile") end,
@@ -894,7 +893,8 @@ ns.Listen("CONFIG_CHANGED", function()
     Options.languageRow:Refresh()
 end)
 
--- The raid window's click-casting mode greys the switch here.
+-- The raid window's click-casting mode greys the switch here (Clique is
+-- loaded or not before the window can open).
 ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
     if not Options.IsOpen() or (scope ~= nil and scope ~= "general") then return end
     if key == nil or key == "clickCast" then setRowStates() end

@@ -640,8 +640,9 @@ local function isKey(text) return Raid.ParseKey(text) == text end
 RaidSettings.Define({ key = "clickCast", code = "HA", scope = "general", type = "enum",
     values = { "AUTO", "ON", "OFF" }, default = "AUTO" })
 -- Retired (decision 76): the party frames' switch is the unit frames'
--- clickCast now (Raid/Profiles.lua migrates a stored false once). Kept so
--- old strings still read; shown nowhere.
+-- clickCast now (Raid/Profiles.lua migrates a stored false once). Its
+-- code stays taken so old strings still read; the codec and Sanitise drop
+-- its value (Core/Registry.lua); shown nowhere.
 RaidSettings.Define({ key = "clickCastParty", code = "HP", scope = "general", type = "bool", default = true,
     retired = true })
 

@@ -1,15 +1,17 @@
 local _, ns = ...
 
--- Click-casting on the raid cells of every panel and (switchable) the
--- unit frames' party members: the bindings of the raid profile's
--- character-wide scope (Raid/Settings.lua: Raid.CLICK_SLOTS) written as
+-- Click-casting on the raid cells of every panel (while the raid frames
+-- are on) and on the unit frames whose clickCast is on (player, pet,
+-- target, target of target, focus, party members; decision 76): the
+-- bindings of the raid profile's character-wide scope (Raid/Settings.lua: Raid.CLICK_SLOTS) written as
 -- the secure attributes the client reads on a click (SecureTemplates.lua:
 -- SecureButton_GetModifiedAttribute): "*type1" for the plain left click,
 -- "shift-type1" for Shift and left, with "spell1", "item1", "macrotext1"
 -- beside them. Static attributes only (no snippets on this client), and
 -- out of combat only: a cell a header makes in combat gets them after
 -- combat and does what the XML says until then (left target, right menu).
--- Test mode's pretend cells are never touched.
+-- Test mode's pretend cells, party pets and party targets are never
+-- touched.
 local ClickCast = {}
 ns.ClickCast = ClickCast
 
@@ -184,7 +186,8 @@ local function reset(frame, defaults)
 end
 
 -- Out of combat only. A frame that takes them gets the bindings; one
--- that no longer does (off, the party switched off) gets the XML's
+-- that no longer does (click-casting off, the raid frames off for a cell,
+-- the frame's clickCast off) gets the XML's
 -- attributes back on the names we wrote, if it had ours at all.
 local function apply(frame, values, defaults)
     if ClickCast.On() and takes(frame) then
@@ -235,14 +238,14 @@ function ClickCast.Added(frame)
         applyAfterCombat()
         return
     end
-    -- Off (or the raid frames off): a new frame keeps the XML's.
+    -- Click-casting off: a new frame keeps the XML's (apply asks the rest).
     if not ClickCast.On() then return end
     apply(frame, planned())
 end
 
 -- The settings that change the attributes; the panels have nothing to
 -- lay out for them (Raid/Panel.lua).
-ClickCast.KEYS = { clickCast = true, clickCastParty = true }
+ClickCast.KEYS = { clickCast = true }
 for _, slot in ipairs(Raid.CLICK_SLOTS) do ClickCast.KEYS[slot.key] = true end
 for key in pairs(ClickCast.KEYS) do ns.RaidPanel.UNRELATED_KEYS[key] = true end
 
@@ -250,7 +253,7 @@ ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
     if scope ~= nil and scope ~= "general" then return end
     if key == nil or key == "enabled" or ClickCast.KEYS[key] then applyAfterCombat() end
 end)
--- The unit frames' switches (any scope: a frame's own or General's).
+-- The unit frames' clickCast (any scope: a frame's own or General's).
 ns.Listen("CONFIG_CHANGED", function(_, key)
     if key == nil or key == "clickCast" then applyAfterCombat() end
 end)

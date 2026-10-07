@@ -92,7 +92,7 @@ The raid window's click-casting bindings (`/fuf raid` > General > Click-casting)
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Click-casting</b></td><td>The raid window's bindings on this frame</td><td>On, Off</td><td>On</td><td>all</td></tr>
+<tr><td><b>Click-casting</b></td><td>Clicks use the raid window's bindings</td><td>On, Off</td><td>On</td><td>all</td></tr>
 </tbody>
 </table>
 

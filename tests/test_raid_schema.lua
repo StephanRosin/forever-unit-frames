@@ -74,8 +74,9 @@ for _, tab in ipairs(Schema.TABS) do
     if tab.note then need("RAID_NOTE_" .. tab.note) end
     for _, sec in ipairs(tab.sections) do need("RAID_SECTION_" .. sec.id) end
 end
+-- A retired setting is shown nowhere: it has no words.
 for _, def in ipairs(RS.All()) do
-    need("RAID_SETTING_" .. Schema.WordKey(def.key))
+    if not def.retired then need("RAID_SETTING_" .. Schema.WordKey(def.key)) end
     if def.type == "enum" and def.values ~= ns.Settings.POINTS then
         for _, v in ipairs(def.values) do need("RAID_ENUM_" .. Schema.WordKey(def.key) .. "_" .. v) end
     end

@@ -4,12 +4,13 @@
 -- target, target of target, focus and party member buttons whose value is
 -- on; off, they get exactly their own attributes back. With the default
 -- bindings nothing changes (left target, right menu). The raid setting
--- clickCastParty is migrated once (a stored false is the party's override)
--- and no longer shown.
+-- clickCastParty is migrated once per account (a stored false is the
+-- party's override) and no longer shown; strings drop it.
 local M = H.M
 
-local function login(db)
+local function login(db, name)
     local ns = H.LoadAddon()
+    if name then M.playerName = name end
     _G.ForeverUnitFramesDB = db
     M.FireEvent("ADDON_LOADED", "ForeverUnitFrames")
     M.FireEvent("PLAYER_LOGIN")
@@ -117,14 +118,31 @@ RC.Set("general", "clickCast", "OFF")
 H.check("greyed while click-casting is off", row.enabledState, false)
 RC.Set("general", "clickCast", "AUTO")
 H.check("active again", row.enabledState, true)
+-- Automatic with Clique loaded binds nothing either: greyed too.
+M.loadedAddons.Clique = true
+RC.Set("general", "clickCast", "ON")
+RC.Set("general", "clickCast", "AUTO")
+H.check("greyed: automatic with Clique", row.enabledState, false)
+RC.Set("general", "clickCast", "ON")
+H.check("on with Clique: active", row.enabledState, true)
+M.loadedAddons.Clique = nil
+RC.Set("general", "clickCast", "AUTO")
+H.check("without Clique: active", row.enabledState, true)
 H.checkTrue("general: the button", button)
 H.check("its text", button and button.text:GetText(), L.CLICK_CAST_EDIT)
+-- The raid window was last on a size: the button still opens General's tab.
+ns.RaidOptions.Open(10)
+H.check("raid window on a size", ns.RaidOptions.view, "size")
+ns.RaidOptions.Close()
+Options.Open("general", "frames")
+for _, r in ipairs(Options.rows) do if r.editBindings then button = r.editBindings end end
 button:GetScript("OnClick")(button)
 H.check("the unit window closes", Options.IsOpen(), false)
 H.check("the raid window opens", ns.RaidOptions.IsOpen(), true)
 H.check("on the click-casting tab", ns.RaidOptions.currentTab, "clickCast")
+H.check("in the window's General", ns.RaidOptions.view, "general")
 ns.RaidOptions.Close()
-for _, key in ipairs(SINGLE) do
+for _, key in ipairs({ "player", "pet", "target", "targettarget", "focus", "party" }) do
     Options.Open(key, "layout")
     local r
     for _, x in ipairs(Options.rows) do if x.key == "clickCast" then r = x end end
@@ -139,13 +157,15 @@ ns.RaidOptions.Close()
 H.check("no errors", #M.errors, 0)
 H.check("nothing blocked", #M.blocked, 0)
 
--- Migration: a stored false of the raid setting is the party's override;
--- once (the raid value is retired).
+-- Migration, once per account at the first login with this version:
+-- every character's stored value goes; a stored false anywhere is the
+-- party's override off.
 ns = login({ profile = {}, raid = { ["Tester-Testrealm"] = { general = { clickCastParty = false } } } })
 H.check("migrated: party off", ns.Config.Get("party", "clickCast"), false)
 H.check("migrated: overridden", ns.Config.IsOverridden("party", "clickCast"), true)
 H.check("migrated: General still on", ns.Config.Get("general", "clickCast"), true)
 H.check("the raid value retired", ForeverUnitFramesDB.raid["Tester-Testrealm"].general.clickCastParty, nil)
+H.check("done for the account", ForeverUnitFramesDB.clickCastPartyRetired, true)
 ns.Config.Set("party", "clickCast", true)
 M.RunTimers()
 local saved = ForeverUnitFramesDB
@@ -153,5 +173,31 @@ ns = login(saved)
 H.check("once only", ns.Config.Get("party", "clickCast"), true)
 ns = login({ profile = {}, raid = { ["Tester-Testrealm"] = { general = { clickCastParty = true } } } })
 H.check("a stored true: nothing to do", ns.Config.IsOverridden("party", "clickCast"), false)
--- An old raid string with the setting still reads.
+H.check("a stored true: removed", ForeverUnitFramesDB.raid["Tester-Testrealm"].general.clickCastParty, nil)
+-- An alt's stored false is read at the first login of any character; the
+-- alt's own later login does not undo a choice made since.
+ns = login({ profile = {}, raid = { ["Tester-Testrealm"] = { general = {} },
+    ["Alt-Testrealm"] = { general = { clickCastParty = false } } } })
+H.check("alt's false: party off", ns.Config.Get("party", "clickCast"), false)
+H.check("alt's value removed", ForeverUnitFramesDB.raid["Alt-Testrealm"].general.clickCastParty, nil)
+ns.Config.Set("party", "clickCast", true)
+M.RunTimers()
+saved = ForeverUnitFramesDB
+ns = login(saved, "Alt")
+H.check("the alt logs in", ns.RaidProfiles.CharKey(), "Alt-Testrealm")
+H.check("the alt keeps the choice", ns.Config.Get("party", "clickCast"), true)
+-- A value appearing after the migration (an older version on another
+-- computer) is cleaned away, never read.
+saved = ForeverUnitFramesDB
+saved.raid["Alt-Testrealm"].general.clickCastParty = false
+ns = login(saved, "Alt")
+H.check("later value: choice kept", ns.Config.Get("party", "clickCast"), true)
+H.check("later value: cleaned", ForeverUnitFramesDB.raid["Alt-Testrealm"].general.clickCastParty, nil)
+-- An old raid string with the setting still reads: the code is known, its
+-- value dropped and not counted as lost.
 H.checkTrue("old code readable", ns.RaidSettings.ByCode("HP"))
+local old, err, rejected = ns.RaidCodec.Decode("1;gHP0;gHA2")
+H.check("old string: no error", err, nil)
+H.check("old string: nothing lost", rejected, 0)
+H.check("old string: the retired value dropped", old and old.general.clickCastParty, nil)
+H.check("old string: the rest read", old and old.general.clickCast, "ON")

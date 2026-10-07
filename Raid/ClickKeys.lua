@@ -1,14 +1,16 @@
 local _, ns = ...
 
--- Keys that cast on the raid member under the mouse (Raid/Settings.lua:
+-- Keys that cast on the group member under the mouse (Raid/Settings.lua:
 -- Raid.CLICK_KEYS): a secure action button per key, never shown on screen
 -- and never under the mouse, that runs a macro acting on @mouseover; the
 -- key clicks it through an override binding (SetOverrideBindingClick).
 -- Override bindings may not change in combat and no secure snippet runs on
 -- this client, so a key cannot be bound only while a cell is hovered:
--- the keys are bound for as long as the raid frames show (and, with the
--- party switch, while in a party), and the macro's condition makes them
--- act only on a friendly unit under the mouse. Set and cleared out of
+-- the keys are bound for as long as the raid frames show, or the unit
+-- frames' party members show with their clickCast on (decision 76), and
+-- the macro's condition makes them act only on a friendly unit under the
+-- mouse. The player, target and focus frames alone do not bind them: the
+-- keys would be taken all the time, solo too. Set and cleared out of
 -- combat only; in combat the bindings stay as they were.
 local ClickKeys = {}
 ns.ClickKeys = ClickKeys
@@ -126,7 +128,7 @@ ClickKeys.Queue = update
 
 -- The settings that change the bindings: the keys, and what decides
 -- whether the raid frames show.
-local KEYS = { clickCast = true, clickCastParty = true, enabled = true, showInParty = true }
+local KEYS = { clickCast = true, enabled = true, showInParty = true }
 for _, slot in ipairs(Raid.CLICK_KEYS) do
     KEYS[slot.key], KEYS[slot.bind] = true, true
     ns.RaidPanel.UNRELATED_KEYS[slot.key], ns.RaidPanel.UNRELATED_KEYS[slot.bind] = true, true
@@ -137,7 +139,7 @@ ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
     if key == nil or KEYS[key] then update() end
 end)
 ns.On("GROUP_ROSTER_UPDATE", update)
--- The party's click-casting switch (decision 76).
+-- The party's clickCast (decision 76; General's or the party's own).
 ns.Listen("CONFIG_CHANGED", function(_, key)
     if key == nil or key == "clickCast" then update() end
 end)

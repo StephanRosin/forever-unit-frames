@@ -36,7 +36,7 @@ Button: **Edit bindings…** (opens the raid window's click-casting tab).
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
-<tr><td><b>Click-casting</b></td><td>The raid window's bindings on this frame</td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Click-casting</b></td><td>Clicks use the raid window's bindings</td><td>On, Off</td><td>On</td></tr>
 </tbody>
 </table>
 
