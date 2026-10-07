@@ -32,9 +32,31 @@ function Profiles.CharKey()
     return name .. "-" .. realm
 end
 
+-- The tools bar's free spot was (300, 300) up to 0.22. Config keeps no
+-- value equal to the default, so a free bar with an axis left there (one
+-- slider moved, a straight drag) stored nothing for it and would now jump
+-- to the new default. Once per account, at the first login with this
+-- version: every character's free bar gets the old value stored for each
+-- axis it has none for (written directly, as Config would drop it).
+-- db.raidToolsSpotKept marks it done; profiles written later are left alone.
+Profiles.OLD_TOOLS_SPOT = 300
+local function keepOldToolsSpot(db)
+    if db.raidToolsSpotKept then return end
+    for _, profile in pairs(db.raid) do
+        local general = type(profile) == "table" and profile.general
+        if type(general) == "table" and general.toolsMode == "FREE" then
+            for _, key in ipairs({ "toolsX", "toolsY" }) do
+                if general[key] == nil then general[key] = Profiles.OLD_TOOLS_SPOT end
+            end
+        end
+    end
+    db.raidToolsSpotKept = true
+end
+
 -- At PLAYER_LOGIN: this character's profile, cleaned, becomes the one in use.
 function Profiles.Attach(db)
     if type(db.raid) ~= "table" then db.raid = {} end
+    keepOldToolsSpot(db)
     store = db.raid
     charKey = Profiles.CharKey()
     local own = store[charKey]
