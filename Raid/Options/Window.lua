@@ -1,12 +1,12 @@
 local _, ns = ...
 
 -- The raid options window, in the style of the unit frames' (the same
--- widgets and colours): a header bar with the raid size whose profile is
--- edited (the one shown now is marked), a fourth tab Profiles, and which
--- size the panel shows; the tabs of the raid menu (Raid/Options/Schema
--- .lua) and their rows; while Profiles is picked, its page alone (Raid/
--- Options/Profiles.lua: own profiles, copy, reset, export, import) and no
--- menu tabs. A footer laid out like the unit frames' window's left side:
+-- widgets and colours): a top bar General | 10 | 20 | 40 | Profiles and
+-- which size the panel shows (decision 71). General: the tabs whose
+-- settings belong to the character (Schema.PerCharacter); a size: the
+-- tabs of that size's profile (the size shown now is marked); Profiles:
+-- its page alone (Raid/Options/Profiles.lua: own profiles, copy, reset,
+-- export, import), no menu tabs. A footer laid out like the unit frames' window's left side:
 -- the raid panel's lock, test mode and the way to the unit frames'
 -- window. A plain
 -- (non-secure) frame: every change goes through ns.RaidConfig, whose
@@ -29,13 +29,13 @@ local SCROLLBAR_W, WHEEL_STEP = 10, 40
 local CONTENT_W = WIDTH - SCROLLBAR_W
 local PAGE_TOP, PAGE_BOTTOM, SECTION_GAP, INSET, NOTE_H = 4, 16, 8, 16, 34
 local BUTTON_H, DROPDOWN_W, GAP = 24, 160, 8
--- The size tabs on a tab whose settings are the character's.
-local DIM_ALPHA = 0.4
 local DEFAULT_POSITION = { point = "TOPLEFT", relativePoint = "TOPLEFT", x = 90, y = -150 }
 
 local frame
 local pages = {}
 local inCombat = false
+-- The last menu tab of General and of the sizes, for the session.
+local lastTab = {}
 
 -- Helpers ---------------------------------------------------------------------
 
@@ -331,51 +331,57 @@ end
 
 local anchorScroll
 
--- The menu tab shown: its settings all the character's (the same at
--- every size)? Not while the Profiles page shows.
-local function characterTab()
-    if RaidOptions.profilesShown then return false end
+-- Which part of the menu a tab is in: General (every setting of it the
+-- character's) or the sizes.
+local function groupOf(tab) return Schema.PerCharacter(tab) and "general" or "size" end
+
+local function tabById(id)
     for _, tab in ipairs(Schema.TABS) do
-        if tab.id == RaidOptions.currentTab then return Schema.PerCharacter(tab) end
+        if tab.id == id then return tab end
     end
-    return false
+end
+
+-- The tab a part opens on: the last one picked this session, else its first.
+local function openingTab(group)
+    if lastTab[group] then return lastTab[group] end
+    for _, tab in ipairs(Schema.TABS) do
+        if groupOf(tab) == group then return tab.id end
+    end
 end
 
 -- Edited values of a size the panel does not show change nothing on
--- screen: the note says so (test mode would show the edited size); on a
--- character's tab there is nothing of a size to edit.
+-- screen: the note says so (test mode would show the edited size); only
+-- while a size is picked.
 local function renderSizeNotice()
     local edited, shown = RaidOptions.Size(), ns.RaidCell.Size()
     local notice = RaidOptions.sizeNotice
-    local on = edited ~= shown and not RaidOptions.profilesShown and not characterTab()
+    local on = edited ~= shown and RaidOptions.view == "size"
     if on then notice.text:SetText(L.RAID_EDITING_NOT_SHOWN:format(edited, shown)) end
     if on == notice:IsShown() then return end
     notice:SetShown(on)
     anchorScroll()
 end
 
--- The sizes: the edited one underlined, the one the panel shows now
--- (test mode's preview included) says so; the note on a size not shown.
--- On a character's tab the sizes dim and the bar says they are alike.
+local function paintTopTab(b, selected)
+    b:SetWidth((b.text:GetStringWidth() or 0) + SIZE_TAB_PADDING)
+    paintSelection(b, selected, "muted")
+    b.underline:SetShown(selected)
+end
+
+-- The top bar: the part picked underlined (a size: the edited one), the
+-- size the panel shows now (test mode's preview included) says so; the
+-- note on a size not shown.
 local function renderSizeTabs()
-    local shown = ns.RaidCell.Size()
-    local alike = characterTab()
-    RaidOptions.sizeBarNote:SetShown(alike)
+    local shown, view = ns.RaidCell.Size(), RaidOptions.view
+    paintTopTab(RaidOptions.generalTab, view == "general")
     for _, size in ipairs(Raid.SIZES) do
         local b = RaidOptions.sizeTabs[size]
-        b:SetAlpha(alike and DIM_ALPHA or 1)
         local text = sizeText(size)
         if size == shown then text = L.RAID_SIZE_SHOWN:format(text) end
         b.text:SetText(text)
-        b:SetWidth((b.text:GetStringWidth() or 0) + SIZE_TAB_PADDING)
-        local edited = size == RaidOptions.Size() and not RaidOptions.profilesShown
-        paintSelection(b, edited, "muted")
-        b.underline:SetShown(edited)
+        paintTopTab(b, view == "size" and size == RaidOptions.Size())
     end
-    local profiles = RaidOptions.profilesTab
-    profiles:SetWidth((profiles.text:GetStringWidth() or 0) + SIZE_TAB_PADDING)
-    paintSelection(profiles, RaidOptions.profilesShown == true, "muted")
-    profiles.underline:SetShown(RaidOptions.profilesShown == true)
+    paintTopTab(RaidOptions.profilesTab, view == "profiles")
     renderSizeNotice()
 end
 
@@ -417,8 +423,7 @@ end
 -- The tabs in one row when they fit as they like; else in two, split as
 -- evenly as the first row allows (each row then fitted on its own). The
 -- tab row is as tall as its rows; the page hangs below it.
-local function fitTabs()
-    local buttons = RaidOptions.tabButtons
+local function fitTabs(buttons)
     local n, room = #buttons, WIDTH - 2 * TAB_ROW_INSET
     local split = n
     if naturalSum(buttons, 1, n) > room then
@@ -430,15 +435,29 @@ local function fitTabs()
     frame.tabRow:SetHeight((split < n and 2 or 1) * TAB_H)
 end
 
+-- Every menu tab's button; only those of the part picked show.
 local function menuTabs()
     for i, tab in ipairs(Schema.TABS) do
         local b = tabButton(frame.tabRow, TAB_H)
-        b.tabId = tab.id
+        b.tabId, b.group = tab.id, groupOf(tab)
         b.text:SetText(Schema.TabTitle(tab.id))
         b:SetScript("OnClick", function(self) RaidOptions.SelectTab(self.tabId) end)
+        b:Hide()
         RaidOptions.tabButtons[i] = b
     end
-    fitTabs()
+end
+
+-- General or a size: its tabs show, laid out anew; Profiles: no tabs.
+local function setView(view)
+    if RaidOptions.view == view then return end
+    RaidOptions.view = view
+    frame.tabRow:SetShown(view ~= "profiles")
+    local shown = {}
+    for _, b in ipairs(RaidOptions.tabButtons) do
+        b:SetShown(b.group == view)
+        if b.group == view then shown[#shown + 1] = b end
+    end
+    if #shown > 0 then fitTabs(shown) end
 end
 
 local function paintTabs()
@@ -484,14 +503,17 @@ local function createSizeBar(parent, titleBar)
     bar:SetPoint("TOPRIGHT", titleBar, "BOTTOMRIGHT", 0, 0)
     Style.Fill(bar, "panel")
     horizontalLine(bar, "BOTTOM")
+    local general = tabButton(bar, SIZE_BAR_H)
+    general.text:SetText(L.RAID_GENERAL_TAB)
+    general:SetScript("OnClick", function() RaidOptions.ShowGeneral() end)
+    general:SetPoint("LEFT", bar, "LEFT", RaidOptions.SIZE_BAR_LEFT, 0)
+    RaidOptions.generalTab = general
     RaidOptions.sizeTabs = {}
-    local previous
+    local previous = general
     for _, size in ipairs(Raid.SIZES) do
         local b = tabButton(bar, SIZE_BAR_H)
         b:SetScript("OnClick", function() RaidOptions.SelectSize(size) end)
-        if previous then b:SetPoint("LEFT", previous, "RIGHT", 0, 0) else
-            b:SetPoint("LEFT", bar, "LEFT", RaidOptions.SIZE_BAR_LEFT, 0)
-        end
+        b:SetPoint("LEFT", previous, "RIGHT", 0, 0)
         RaidOptions.sizeTabs[size] = b
         previous = b
     end
@@ -500,11 +522,6 @@ local function createSizeBar(parent, titleBar)
     profiles:SetScript("OnClick", function() RaidOptions.ShowProfiles() end)
     profiles:SetPoint("LEFT", previous, "RIGHT", 0, 0)
     RaidOptions.profilesTab = profiles
-    local note = Style.Text(bar, 11, "muted")
-    note:SetPoint("LEFT", profiles, "RIGHT", RaidOptions.SIZE_BAR_GAP, 0)
-    note:SetText(L.RAID_SIZE_ALL_SAME)
-    note:Hide()
-    RaidOptions.sizeBarNote = note
     RaidOptions.sizeModeRow = sizeModeRow(bar)
     frame.sizeBar = bar
 end
@@ -774,36 +791,34 @@ local function showPage(page)
     updateScrollbar()
 end
 
--- The Profiles tab of the size bar: its page alone, no menu tabs.
+-- Profiles in the top bar: its page alone, no menu tabs.
 local PROFILES_TAB = { id = "profiles", custom = "profiles" }
 
 function RaidOptions.ShowProfiles()
     ensureWindow()
-    RaidOptions.profilesShown = true
-    frame.tabRow:Hide()
+    setView("profiles")
     showPage(pageFor(PROFILES_TAB))
     renderSizeTabs()
 end
 
-local function leaveProfiles()
-    if not RaidOptions.profilesShown then return end
-    RaidOptions.profilesShown = false
-    frame.tabRow:Show()
-end
-
+-- A menu tab: General's or the edited size's part of the menu, whichever
+-- holds it.
 function RaidOptions.SelectTab(id)
     ensureWindow()
     if id == PROFILES_TAB.id then return RaidOptions.ShowProfiles() end
-    for _, tab in ipairs(Schema.TABS) do
-        if tab.id == id then
-            leaveProfiles()
-            RaidOptions.currentTab = id
-            showPage(pageFor(tab))
-            paintTabs()
-            renderSizeTabs()
-            return
-        end
-    end
+    local tab = tabById(id)
+    if not tab then return end
+    local group = groupOf(tab)
+    setView(group)
+    RaidOptions.currentTab, lastTab[group] = id, id
+    showPage(pageFor(tab))
+    paintTabs()
+    renderSizeTabs()
+end
+
+-- General in the top bar: the character's tabs, on the last one picked.
+function RaidOptions.ShowGeneral()
+    RaidOptions.SelectTab(openingTab("general"))
 end
 
 -- Edits another size's profile: the rows read it from now on; what was
@@ -817,28 +832,34 @@ local function setSize(size)
     if frame:IsShown() then ns.RaidTestMode.Preview(size) end
 end
 
--- A size tab: that size's settings (from the Profiles page: the menu
--- tab shown before it).
+-- A size in the top bar: that size's settings (from General or Profiles:
+-- the size's tab picked last).
 function RaidOptions.SelectSize(size)
     ensureWindow()
     setSize(size)
-    if RaidOptions.profilesShown then RaidOptions.SelectTab(RaidOptions.currentTab or Schema.TABS[1].id) end
+    if RaidOptions.view ~= "size" then RaidOptions.SelectTab(openingTab("size")) end
 end
 
 -- Without a size: the size edited while open, else the one the panel
--- shows now (not the one edited last time).
+-- shows now (not the one edited last time). Without a tab: the part of
+-- the top bar picked last this session (a size given: the sizes), on its
+-- last tab; the first time the size's first tab.
 function RaidOptions.Open(size, tabId)
     if not RaidConfig.Profile() then return end
     ensureWindow()
     if InCombatLockdown() then inCombat = true end
+    local given = size ~= nil
     if not frame:IsShown() then
         restorePosition()
         frame:Show()
         size = size or ns.RaidSize.Current()
     end
     setSize(size or RaidOptions.Size())
-    if not tabId and RaidOptions.profilesShown then tabId = PROFILES_TAB.id end
-    RaidOptions.SelectTab(tabId or RaidOptions.currentTab or Schema.TABS[1].id)
+    if not tabId then
+        local view = (not given and RaidOptions.view) or "size"
+        tabId = view == "profiles" and PROFILES_TAB.id or openingTab(view)
+    end
+    RaidOptions.SelectTab(tabId)
     -- The setup wizard may offer itself (Raid/Wizard.lua).
     ns.Fire("RAID_WINDOW_OPENED")
 end
@@ -881,11 +902,11 @@ end)
 -- new window (as the unit frames' window does), on the same size and tab.
 function RaidOptions.Rebuild()
     if not frame then return end
-    local wasOpen, wasProfiles = frame:IsShown(), RaidOptions.profilesShown
+    local wasOpen, wasProfiles = frame:IsShown(), RaidOptions.view == "profiles"
     frame:Hide()
     frame, RaidOptions.frame = nil, nil
     pages = {}
-    RaidOptions.page, RaidOptions.rows, RaidOptions.profilesShown = nil, nil, false
+    RaidOptions.page, RaidOptions.rows, RaidOptions.view = nil, nil, nil
     if wasOpen then RaidOptions.Open(RaidOptions.size, wasProfiles and PROFILES_TAB.id or RaidOptions.currentTab) end
 end
 

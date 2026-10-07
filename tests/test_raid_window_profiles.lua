@@ -34,7 +34,7 @@ end
 
 RO.Open(20, "profiles")
 list = ns.Widgets.list
-H.check("opened on the profiles page", RO.profilesShown, true)
+H.check("opened on the profiles page", RO.view, "profiles")
 -- An old one-size template is listed as one.
 H.check("old template listed", items(P.picker), "Old one (one size)")
 H.check("apply to: the edited size", P.target.button.text:GetText(), "20 players")

@@ -4,7 +4,7 @@
 
 The most important dispellable debuff, as an icon in the center or a square in a corner, and a row that shows every debuff (the one in the center may appear there too).
 
-The **Debuffs** tab of the raid options window (`/fuf raid`). Each raid size (10, 20, 40) has a profile of its own: the size tabs at the top choose which one you edit; a default that differs per size is listed per size.
+The **Debuffs** tab of the raid options window (`/fuf raid`), under a raid size in the top bar (General | 10 | 20 | 40 | Profiles). Each raid size (10, 20, 40) has a profile of its own: the size picked at the top is the one you edit; a default that differs per size is listed per size.
 
 **On this page:** [Dispellable debuff](#dispellable-debuff) · [Debuff row](#debuff-row)
 

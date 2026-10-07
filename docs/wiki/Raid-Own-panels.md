@@ -4,7 +4,7 @@
 
 Up to nine panels of your own beside the main panel (Panel 2 to Panel 10), per raid size. The tab shows a column per panel with its blocks; drag a block onto another panel's column, or click it for a menu (Move to …). Add and remove panels there, and pick each panel's grouping (group, class or role) and its blocks. A block of the main panel's grouping moves out of the main panel; a block of another grouping shows its players again. Each new panel starts at a spot of its own (the table shows Panel 2's).
 
-The **Own panels** tab of the raid options window (`/fuf raid`). Each raid size (10, 20, 40) has a profile of its own: the size tabs at the top choose which one you edit; a default that differs per size is listed per size.
+The **Own panels** tab of the raid options window (`/fuf raid`), under a raid size in the top bar (General | 10 | 20 | 40 | Profiles). Each raid size (10, 20, 40) has a profile of its own: the size picked at the top is the one you edit; a default that differs per size is listed per size.
 
 Up to nine panels of your own. A block of the main panel's grouping moves to the panel that takes it; a block of another grouping shows its players again.
 

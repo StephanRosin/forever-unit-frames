@@ -2,7 +2,7 @@
 
 # Raid frames: Profiles
 
-The **Profiles** tab sits next to the size tabs 10, 20 and 40 at the top of the raid options window (`/fuf raid`). Picked, the window shows only this page: everything that acts on raid sizes as a whole. At its top the **Templates** section applies a role template or a look and opens the setup wizard (see [[Templates|Raid-Templates]]). Applying a template or a profile, copying between sizes or from a character and importing several sizes are each one change: **Undo** takes the last one back (once; any other change to the raid settings, and logging out, ends it). Nothing here works in combat.
+**Profiles** is the last entry of the top bar of the raid options window (General | 10 | 20 | 40 | Profiles, `/fuf raid`). Picked, the window shows only this page: everything that acts on raid sizes as a whole. At its top the **Templates** section applies a role template or a look and opens the setup wizard (see [[Templates|Raid-Templates]]). Applying a template or a profile, copying between sizes or from a character and importing several sizes are each one change: **Undo** takes the last one back (once; any other change to the raid settings, and logging out, ends it). Nothing here works in combat.
 
 **On this page:** [Templates](#templates) · [Own profiles](#own-profiles) · [Copy between sizes](#copy-between-sizes) · [Copy from another character](#copy-from-another-character) · [Reset](#reset) · [Export](#export) · [Import](#import)
 

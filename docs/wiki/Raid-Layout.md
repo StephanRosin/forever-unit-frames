@@ -4,7 +4,7 @@
 
 How the panel is made of blocks, how cells and blocks are arranged, the panel's position and borders.
 
-The **Layout** tab of the raid options window (`/fuf raid`). Each raid size (10, 20, 40) has a profile of its own: the size tabs at the top choose which one you edit; a default that differs per size is listed per size.
+The **Layout** tab of the raid options window (`/fuf raid`), under a raid size in the top bar (General | 10 | 20 | 40 | Profiles). Each raid size (10, 20, 40) has a profile of its own: the size picked at the top is the one you edit; a default that differs per size is listed per size.
 
 **On this page:** [Grouping](#grouping) · [Blocks and cells](#blocks-and-cells) · [Position](#position) · [Borders](#borders)
 

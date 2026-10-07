@@ -4,7 +4,7 @@
 
 The size of a cell, its bars and colors, its border and corners, heals and shields.
 
-The **Cell** tab of the raid options window (`/fuf raid`). Each raid size (10, 20, 40) has a profile of its own: the size tabs at the top choose which one you edit; a default that differs per size is listed per size.
+The **Cell** tab of the raid options window (`/fuf raid`), under a raid size in the top bar (General | 10 | 20 | 40 | Profiles). Each raid size (10, 20, 40) has a profile of its own: the size picked at the top is the one you edit; a default that differs per size is listed per size.
 
 Heals, shields and the power strip keep the unit frames' standard colors.
 

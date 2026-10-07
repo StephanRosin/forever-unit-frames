@@ -24,17 +24,29 @@ local NOT_A_TAB = { ["Raid-Templates"] = true, ["Raid-Profiles"] = true }
 for _, page in ipairs(WIKI_PAGES or {}) do
     if page[1]:match("^Raid%-") and not NOT_A_TAB[page[1]] then raid[#raid + 1] = page[1] end
 end
+-- Grouped as the window's top bar groups the tabs (decision 71): the
+-- character's (General) first, then a size's.
 H.check("raid pages", table.concat(raid, ","),
-    "Raid-General,Raid-Cell,Raid-Text,Raid-Debuffs,Raid-Indicators,Raid-Icons-and-states,Raid-Layout,"
-        .. "Raid-Special-panels,Raid-Own-panels,Raid-Click-casting,Raid-Buffs,Raid-Tools")
+    "Raid-General,Raid-Click-casting,Raid-Buffs,Raid-Tools,Raid-Cell,Raid-Text,Raid-Debuffs,Raid-Indicators,"
+        .. "Raid-Icons-and-states,Raid-Layout,Raid-Special-panels,Raid-Own-panels")
+local sidebar = read("_Sidebar.md")
+local g, z, p = sidebar:find("**Raid frames: General**", 1, true), sidebar:find("**Raid frames: per size**", 1, true),
+    sidebar:find("**Raid frames: Profiles**", 1, true)
+H.checkTrue("sidebar: General, per size, Profiles", g and z and p and g < z and z < p)
+H.checkTrue("sidebar: Tools under General", g and z and sidebar:find("Raid-Tools", g, true) < z)
+H.checkTrue("sidebar: Cell per size", z and p and sidebar:find("Raid-Cell", z, true) < p)
+H.checkTrue("a size's page names the top bar", read("Raid-Cell.md"):find("under a raid size in the top bar", 1, true))
+H.checkTrue("General's page names the top bar", read("Raid-Buffs.md"):find("under **General** in the top bar", 1, true))
 
 -- Every setting on its tab's page, by its label; the own panels'
 -- sections are all alike: one table for every panel.
 local ns = H.LoadShipped()
 local Schema, RS = ns.RaidSchema, ns.RaidSettings
 local settingTabs = {}
-for _, tab in ipairs(Schema.TABS) do
-    if #tab.sections > 0 then settingTabs[#settingTabs + 1] = tab end
+for _, general in ipairs({ true, false }) do
+    for _, tab in ipairs(Schema.TABS) do
+        if #tab.sections > 0 and Schema.PerCharacter(tab) == general then settingTabs[#settingTabs + 1] = tab end
+    end
 end
 H.check("every tab has settings", #Schema.TABS - #settingTabs, 0)
 H.check("one page per settings tab", #raid, #settingTabs)
@@ -89,8 +101,7 @@ H.checkTrue("buffs: unknown", buffs:find("unknown", 1, true))
 H.checkTrue("buffs: the cell icon", buffs:find("icon on a cell", 1, true))
 H.checkTrue("buffs: each class its row", buffs:find("<b>Warlock</b>", 1, true))
 
-local sidebar = read("_Sidebar.md")
-H.checkTrue("sidebar: raid heading", sidebar:find("**Raid frames**", 1, true))
+H.checkTrue("sidebar: raid heading", sidebar:find("**Raid frames: General**", 1, true))
 H.checkTrue("sidebar: raid page", sidebar:find("[[Icons & states|Raid-Icons-and-states]]", 1, true))
 H.checkTrue("sidebar: settings kept", sidebar:find("[[General|Settings-General]]", 1, true))
 

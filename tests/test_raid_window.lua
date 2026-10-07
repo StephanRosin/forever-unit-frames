@@ -47,7 +47,9 @@ H.check("size switch", RO.sizeModeRow.button.text:GetText(), "Automatic")
 local titles = {}
 for i, b in ipairs(RO.tabButtons) do titles[i] = b.text:GetText() end
 H.check("tabs", table.concat(titles, ","), "General,Cell,Text,Debuffs,Indicators,Icons & states,Layout,Special panels,Own panels,Click-casting,Buffs,Tools")
-H.check("first tab", RO.currentTab, "general")
+-- Opens on the size's first tab (decision 71); General in the top bar.
+H.check("first tab", RO.currentTab, "cell")
+click(RO.generalTab)
 H.check("general rows", keys(), "enabled,showInParty,hideBlizzard,minimapShow,minimapAngle")
 H.check("label", rowFor("showInParty").label:GetText(), "Raid view in a party")
 H.check("hint", rowFor("hideBlizzard").hintText:GetText(), "Needs /reload to show them again")

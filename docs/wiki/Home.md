@@ -28,9 +28,11 @@ Source: [GitHub](https://github.com/StephanRosin/forever-unit-frames)
 
 - **`/fuf raid`** opens the raid options window (also: the **Raid frames…** button at the bottom of `/fuf`, the raid
   frames' own minimap button, or their entry in the addon compartment).
-- Each character has **three raid profiles**, one per raid size: 10, 20 and 40. The size tabs at the
-  top of the window choose the profile you edit; the one shown right now is marked *(shown)*. The
-  **Profiles** tab beside them holds what acts on sizes as a whole (see below).
+- The top bar of the raid window reads **General | 10 | 20 | 40 | Profiles**. **General** holds the
+  settings of your character, the same at every size (General, Click-casting, Buffs, Tools). Each character
+  has **three raid profiles**, one per raid size: 10, 20 and 40; picking a size shows its tabs and edits its
+  profile, the one shown right now is marked *(shown)*. **Profiles** holds what acts on sizes as a whole
+  (see below).
   **Raid size shown** next to them follows the raid instance (outside one the group's size), or fixes
   one size.
 - **Unlock frames** in the raid window lets you drag the raid panels and the raid tools bar (only these;
@@ -93,10 +95,20 @@ have it. They are generated from the addon itself, so they always match the curr
   threat, highlights, range and out-of-combat fading
 - [[Castbar|Settings-Castbar]] – castbars and the threat bar
 
-The raid frames have pages of their own, one per tab of the raid window:
+The raid frames have pages of their own, one per tab of the raid window, grouped as its top bar groups
+them.
+
+Under **General** (your character's, the same at every size):
 
 - [[General|Raid-General]] – raid frames on or off, the raid view in a party, Blizzard's raid frames,
   the raid size shown, the raid minimap button
+- [[Click-casting|Raid-Click-casting]] – spells, items, macros, target, focus, assist and the menu on
+  mouse clicks over the cells and party frames, and keys that cast on the raid member under the mouse
+- [[Buffs|Raid-Buffs]] – the buff watch: missing and expiring group buffs, one click or key to rebuff
+- [[Tools|Raid-Tools]] – the raid tools bar: docked or free, which tools it holds
+
+Under a raid size (10, 20, 40: each size its own):
+
 - [[Cell|Raid-Cell]] – cell size, bar texture and colors, power strip, border and corners, heals and
   shields
 - [[Text|Raid-Text]] – the name and the second line, their colors and fonts
@@ -108,12 +120,12 @@ The raid frames have pages of their own, one per tab of the raid window:
 - [[Layout|Raid-Layout]] – grouping, sorting, class order, how blocks and cells are arranged, position,
   borders
 - [[Special panels|Raid-Special-panels]] – the special panels: main tanks, main assists, my tanks, favorites, pets
+  (the name lists are per character)
 - [[Own panels|Raid-Own-panels]] – up to nine panels of your own: which blocks each one shows, moved by
   drag-and-drop, and each panel's layout
-- [[Click-casting|Raid-Click-casting]] – spells, items, macros, target, focus, assist and the menu on
-  mouse clicks over the cells and party frames, and keys that cast on the raid member under the mouse
-- [[Buffs|Raid-Buffs]] – the buff watch: missing and expiring group buffs, one click or key to rebuff
-- [[Tools|Raid-Tools]] – the raid tools bar: docked or free, which tools it holds
+
+Under **Profiles**:
+
 - [[Profiles|Raid-Profiles]] – templates and the setup wizard, own profiles, copy between sizes and from
   another character, reset, export and import of all sizes or one
 - [[Templates|Raid-Templates]] – role templates (healer, tank, DPS, dispel only) and looks (Forever, Flat,

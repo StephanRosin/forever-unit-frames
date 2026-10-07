@@ -15,9 +15,15 @@
 - [[Status|Settings-Status]]
 - [[Castbar|Settings-Castbar]]
 
-**Raid frames**
+**Raid frames: General**
 
 - [[General|Raid-General]]
+- [[Click-casting|Raid-Click-casting]]
+- [[Buffs|Raid-Buffs]]
+- [[Tools|Raid-Tools]]
+
+**Raid frames: per size**
+
 - [[Cell|Raid-Cell]]
 - [[Text|Raid-Text]]
 - [[Debuffs|Raid-Debuffs]]
@@ -26,8 +32,8 @@
 - [[Layout|Raid-Layout]]
 - [[Special panels|Raid-Special-panels]]
 - [[Own panels|Raid-Own-panels]]
-- [[Click-casting|Raid-Click-casting]]
-- [[Buffs|Raid-Buffs]]
-- [[Tools|Raid-Tools]]
+
+**Raid frames: Profiles**
+
 - [[Profiles|Raid-Profiles]]
 - [[Templates|Raid-Templates]]

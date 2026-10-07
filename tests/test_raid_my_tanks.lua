@@ -110,7 +110,7 @@ RO.Open(10, "panels")
 local row
 for _, r in ipairs(RO.rows) do if r.key == "myTankNames" then row = r end end
 H.check("label", row.label:GetText(), "Names")
-H.check("hint", row.hintText:GetText(), "Player names, separated by commas; Name-Realm only for other realms")
+H.check("hint", row.hintText:GetText(), "Per character: names, comma-separated; Name-Realm for other realms")
 H.check("shows the list", row.edit:GetText(), "Dee, Bob, Ann")
 M.Type(row.edit, " Cid ,Ann,, ")
 M.PressEnter(row.edit)

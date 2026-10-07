@@ -4,7 +4,7 @@
 
 The raid frames as a whole: on or off, the raid view in a 5-player group, Blizzard's raid frames, the raid frames' minimap button. The templates and the setup wizard are on the [[Profiles|Raid-Profiles]] page: see [[Templates|Raid-Templates]].
 
-The **General** tab of the raid options window (`/fuf raid`). Its settings belong to the character, not to a raid size: they are the same at every size.
+The **General** tab of the raid options window (`/fuf raid`), under **General** in the top bar (General | 10 | 20 | 40 | Profiles). Its settings belong to the character, not to a raid size: they are the same at every size.
 
 **On this page:** [Header bar](#header-bar) · [Raid frames](#raid-frames) · [Minimap button](#minimap-button)
 

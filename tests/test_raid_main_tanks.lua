@@ -139,29 +139,37 @@ H.check("the main panel's words", ns.RaidSchema.Label("mainTanksPerLine"), "Cell
 H.check("growth choices", ns.RaidSchema.EnumText(RS.Get("mainTanksGrowth"), "RIGHT"), "Right")
 H.check("section title", ns.RaidSchema.SectionTitle("mainTanks"), "Main tanks")
 
--- Every tab fits its row (the tabs wrap into two rows,
--- test_raid_window_tabs.lua), in every language.
+-- Every tab fits its row, in every language, General's and a size's
+-- (the top bar shows one part at a time, decision 71).
 local RO = ns.RaidOptions
 for _, code in ipairs({ "enUS", "deDE", "esES", "frFR" }) do
     ns.Config.Set("general", "language", code)
-    RO.Open()
-    local right, fits = 8, true
-    for _, b in ipairs(RO.tabButtons) do
-        if select(2, b:GetPoint(1)) == RO.frame.tabRow then right = 8 end
-        right = right + b:GetWidth()
-        fits = fits and right <= RO.frame:GetWidth() - 8
-        H.checkTrue(code .. ": word fits its tab " .. b.tabId, b.text:GetStringWidth() < b:GetWidth())
+    for _, first in ipairs({ "general", "cell" }) do
+        RO.Open(nil, first)
+        local right, fits = 8, true
+        for _, b in ipairs(RO.tabButtons) do
+            if b:IsShown() then
+                if select(2, b:GetPoint(1)) == RO.frame.tabRow then right = 8 end
+                right = right + b:GetWidth()
+                fits = fits and right <= RO.frame:GetWidth() - 8
+                H.checkTrue(code .. ": word fits its tab " .. b.tabId, b.text:GetStringWidth() < b:GetWidth())
+            end
+        end
+        H.checkTrue(code .. ": the tabs fit their rows, " .. first, fits)
+        RO.Close()
     end
-    H.checkTrue(code .. ": the tabs fit their rows", fits)
-    RO.Close()
 end
 ns.Config.Set("general", "language", "AUTO")
-RO.Open()
 -- English fits without squeezing: every tab its word and the padding,
 -- at least 70, as before the tabs were fitted to the row.
-for _, b in ipairs(RO.tabButtons) do
-    H.check("English: tab " .. b.tabId .. " as before", b:GetWidth(), math.max(70, b.text:GetStringWidth() + 28))
+for _, first in ipairs({ "general", "cell" }) do
+    RO.Open(nil, first)
+    for _, b in ipairs(RO.tabButtons) do
+        if b:IsShown() then
+            H.check("English: tab " .. b.tabId .. " as before", b:GetWidth(), math.max(70, b.text:GetStringWidth() + 28))
+        end
+    end
+    RO.Close()
 end
-RO.Close()
 H.check("nothing blocked", #M.blocked, 0)
 H.check("no error", #M.errors, 0)

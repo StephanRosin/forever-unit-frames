@@ -875,7 +875,7 @@ L.RAID_SECTION_myTanks = "My tanks"
 L.RAID_SECTION_favourites = "Favorites"
 L.RAID_SECTION_pets = L.SECTION_pets
 L.RAID_SETTING_nameList = "Names"
-L.RAID_HINT_nameList = "Player names, separated by commas; Name-Realm only for other realms"
+L.RAID_HINT_nameList = "Per character: names, comma-separated; Name-Realm for other realms"
 L.RAID_TYPED_NAME_INVALID = "Not a player name: %s"
 L.RAID_TYPED_NAME_TWICE = "Name given twice: %s"
 L.RAID_TYPED_NAMES_TOO_LONG = "Too many names: the list may hold %d characters."
@@ -1121,6 +1121,7 @@ L.RAID_WIZARD_DONE = "Raid frames set up. Undo on the raid window's Profiles pag
 
 -- The raid window's Profiles page (Raid/Options/Profiles.lua).
 L.RAID_PROFILES_TAB = "Profiles"
+L.RAID_GENERAL_TAB = "General"
 L.RAID_PROFILES_SECTION_OWN = "Own profiles"
 L.RAID_PROFILES_SECTION_COPY = "Copy between sizes"
 L.RAID_PROFILES_SECTION_CHARACTER = "Copy from another character"
@@ -1189,4 +1190,3 @@ L.SECTION_highlights = "Highlights"
 L.SECTION_eliteMarker = "Elite / rare marker"
 L.SECTION_combatFeedback = "Combat numbers"
 -- The raid window's size bar on a tab of the character's settings.
-L.RAID_SIZE_ALL_SAME = "Same at every size"

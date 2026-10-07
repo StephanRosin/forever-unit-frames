@@ -397,11 +397,12 @@ end
 
 -- What the tab's settings belong to: a raid size each, or (every setting
 -- of the tab per character) the character.
-local PER_SIZE = "The **%s** tab of the raid options window (`/fuf raid`). Each raid size (10, 20, 40) has a"
-    .. " profile of its own: the size tabs at the top choose which one you edit; a default that differs per size"
-    .. " is listed per size."
-local PER_CHARACTER = "The **%s** tab of the raid options window (`/fuf raid`). Its settings belong to the"
-    .. " character, not to a raid size: they are the same at every size."
+local PER_SIZE = "The **%s** tab of the raid options window (`/fuf raid`), under a raid size in the top bar"
+    .. " (General | 10 | 20 | 40 | Profiles). Each raid size (10, 20, 40) has a profile of its own: the size picked"
+    .. " at the top is the one you edit; a default that differs per size is listed per size."
+local PER_CHARACTER = "The **%s** tab of the raid options window (`/fuf raid`), under **General** in the top bar"
+    .. " (General | 10 | 20 | 40 | Profiles). Its settings belong to the character, not to a raid size: they are"
+    .. " the same at every size."
 local perCharacter = RaidSchema.PerCharacter
 
 local raidPages = {}
@@ -428,12 +429,15 @@ local function raidPage(tab)
     for _, l in ipairs(body) do lines[#lines + 1] = l end
     local name = "Raid-" .. title:gsub("&", "and"):gsub("%s+", "-")
     write(name .. ".md", lines)
-    raidPages[#raidPages + 1] = { name, title }
+    raidPages[#raidPages + 1] = { name, title, group = perCharacter(tab) and "general" or "size" }
 end
--- Every menu tab holds settings; the Profiles tab (beside the sizes) has
--- a page of its own below.
-for _, tab in ipairs(RaidSchema.TABS) do
-    if #tab.sections > 0 then raidPage(tab) end
+-- Every menu tab holds settings, grouped as the window's top bar groups
+-- them: General's (the character's) first, then a size's; Profiles (in
+-- the top bar) has a page of its own below.
+for _, general in ipairs({ true, false }) do
+    for _, tab in ipairs(RaidSchema.TABS) do
+        if #tab.sections > 0 and perCharacter(tab) == general then raidPage(tab) end
+    end
 end
 
 -- The Profiles tab (Raid/Options/Profiles.lua, Raid/Profiles.lua): no menu
@@ -442,8 +446,8 @@ end
 do
     local L, T = ns.L, ns.RaidTemplates
     local lines = { GENERATED, "", "# Raid frames: Profiles", "",
-        "The **Profiles** tab sits next to the size tabs 10, 20 and 40 at the top of the raid options window"
-            .. " (`/fuf raid`). Picked, the window shows only this page: everything that acts on raid sizes as a"
+        "**Profiles** is the last entry of the top bar of the raid options window (General | 10 | 20 | 40 | Profiles,"
+            .. " `/fuf raid`). Picked, the window shows only this page: everything that acts on raid sizes as a"
             .. " whole. At its top the **Templates** section applies a role template or a look and opens the setup"
             .. " wizard (see [[Templates|Raid-Templates]]). Applying a template or a profile, copying between sizes or from a character and importing several sizes are"
             .. " each one change: **Undo** takes the last one back (once; any other change to the raid settings, and"
@@ -583,7 +587,7 @@ do
     }
     local lines = { GENERATED, "", "# Raid frames: Templates and setup wizard", "",
         "A template sets many raid settings in one go. The **Templates** section at the top of the raid window's"
-            .. " **Profiles** page (beside the size tabs) applies a role template or a look to the size you edit or to all"
+            .. " **Profiles** page (the last entry of the top bar) applies a role template or a look to the size you edit or to all"
             .. " three sizes. A template sets only the settings listed below; everything else stays as it is."
             .. " Applying is one change, and **Undo** takes back the last one (once; any other change to the raid"
             .. " settings, and logging out, ends it). Nothing"
@@ -683,10 +687,21 @@ end
 do
     local lines = { GENERATED, "", "**[[Home]]**", "", "**[[FAQ]]**", "", "**Settings**", "" }
     for _, page in ipairs(pages) do lines[#lines + 1] = ("- [[%s|%s]]"):format(page[2], page[1]) end
-    lines[#lines + 1] = ""
-    lines[#lines + 1] = "**Raid frames**"
-    lines[#lines + 1] = ""
-    for _, page in ipairs(raidPages) do lines[#lines + 1] = ("- [[%s|%s]]"):format(page[2], page[1]) end
+    -- The raid pages as the window's top bar groups them: General's, a
+    -- size's, then Profiles and Templates.
+    local heads = { general = "**Raid frames: General**", size = "**Raid frames: per size**",
+        other = "**Raid frames: Profiles**" }
+    local group
+    for _, page in ipairs(raidPages) do
+        local g = page.group or "other"
+        if g ~= group then
+            lines[#lines + 1] = ""
+            lines[#lines + 1] = heads[g]
+            lines[#lines + 1] = ""
+            group = g
+        end
+        lines[#lines + 1] = ("- [[%s|%s]]"):format(page[2], page[1])
+    end
     write("_Sidebar.md", lines)
 end
 

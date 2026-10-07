@@ -4,7 +4,7 @@
 
 Role, raid target marker, leader, master looter and ready check icons, and the states: range, aggro, your target.
 
-The **Icons & states** tab of the raid options window (`/fuf raid`). Each raid size (10, 20, 40) has a profile of its own: the size tabs at the top choose which one you edit; a default that differs per size is listed per size.
+The **Icons & states** tab of the raid options window (`/fuf raid`), under a raid size in the top bar (General | 10 | 20 | 40 | Profiles). Each raid size (10, 20, 40) has a profile of its own: the size picked at the top is the one you edit; a default that differs per size is listed per size.
 
 **On this page:** [Icons](#icons) · [Role](#role) · [Raid target marker](#raid-target-marker) · [Leader and assistants](#leader-and-assistants) · [Master looter](#master-looter) · [Ready check](#ready-check) · [States](#states)
 

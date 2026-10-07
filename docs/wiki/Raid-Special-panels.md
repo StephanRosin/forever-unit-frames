@@ -4,7 +4,7 @@
 
 Panels of their own beside the main panel, each with its own position per raid size: the main tanks and the main assists of the raid, your own lists of tanks and of favorites, and the raid's pets in smaller cells. Their players stay in their groups as well.
 
-The **Special panels** tab of the raid options window (`/fuf raid`). Each raid size (10, 20, 40) has a profile of its own: the size tabs at the top choose which one you edit; a default that differs per size is listed per size.
+The **Special panels** tab of the raid options window (`/fuf raid`), under a raid size in the top bar (General | 10 | 20 | 40 | Profiles). Each raid size (10, 20, 40) has a profile of its own: the size picked at the top is the one you edit; a default that differs per size is listed per size.
 
 Players in a special panel stay in their group as well. The raid leader sets main tanks and main assists; right-click a cell for my tanks and favorites.
 
@@ -43,7 +43,7 @@ Players in a special panel stay in their group as well. The raid leader sets mai
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
-<tr><td><b>Names</b></td><td>Player names, separated by commas; Name-Realm only for other realms</td><td>Text</td><td>(none)</td></tr>
+<tr><td><b>Names</b></td><td>Per character: names, comma-separated; Name-Realm for other realms</td><td>Text</td><td>(none)</td></tr>
 <tr><td><b>Show the panel</b></td><td></td><td>On, Off</td><td>Off</td></tr>
 <tr><td><b>Title above it</b></td><td></td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Cells per line</b></td><td>Then a new column (or row) of cells</td><td>1 – 40</td><td>5</td></tr>
@@ -58,7 +58,7 @@ Players in a special panel stay in their group as well. The raid leader sets mai
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
-<tr><td><b>Names</b></td><td>Player names, separated by commas; Name-Realm only for other realms</td><td>Text</td><td>(none)</td></tr>
+<tr><td><b>Names</b></td><td>Per character: names, comma-separated; Name-Realm for other realms</td><td>Text</td><td>(none)</td></tr>
 <tr><td><b>Show the panel</b></td><td></td><td>On, Off</td><td>Off</td></tr>
 <tr><td><b>Title above it</b></td><td></td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Cells per line</b></td><td>Then a new column (or row) of cells</td><td>1 – 40</td><td>5</td></tr>
