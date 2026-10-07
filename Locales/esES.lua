@@ -1221,6 +1221,7 @@ L.NEWS_0_23_0_HIDDEN = "Auras ocultas: deja fuera beneficios y perjuicios que nu
 L.NEWS_0_23_0_ADD = "Mayús + clic derecho en las auras de un marco las lista para ocultarlas en ese marco (Mayús + Ctrl: en todas partes). /fuf auras undo deshace la última."
 L.NEWS_0_23_0_OWN = "Tus beneficios y perjuicios («Los míos primero») pueden tener su propio lugar en el marco, aparte del resto: pestaña Auras, «Lugar de los míos» Libre."
 L.NEWS_0_23_0_ELITE = "Marcador de élite: tamaño libre."
+L.NEWS_0_23_0_LOOK = "Las instalaciones nuevas empiezan con un aspecto renovado; las configuraciones existentes se quedan como están."
 L.NEWS_OPEN_HIDDEN = "Abrir auras ocultas"
 L.SETTING_clickCast = "Lanzamiento con clic"
 L.HINT_clickCast = "Los clics usan las asignaciones de la ventana de banda"

@@ -8,7 +8,7 @@ local L, News = ns.L, ns.News
 
 local entry = News.Entry("0.23.0")
 H.checkTrue("0.23.0 has news", entry)
-H.check("lines", entry and table.concat(entry.lines, ","), "NEWS_0_23_0_HIDDEN,NEWS_0_23_0_ADD,NEWS_0_23_0_CLICK,NEWS_0_23_0_OWN,NEWS_0_23_0_ELITE")
+H.check("lines", entry and table.concat(entry.lines, ","), "NEWS_0_23_0_HIDDEN,NEWS_0_23_0_ADD,NEWS_0_23_0_CLICK,NEWS_0_23_0_OWN,NEWS_0_23_0_ELITE,NEWS_0_23_0_LOOK")
 for _, code in ipairs({ "enUS", "deDE", "esES", "frFR" }) do
     for _, key in ipairs(entry.lines) do
         H.check(code .. " " .. key, type(rawget(ns.Locales[code], key)), "string")

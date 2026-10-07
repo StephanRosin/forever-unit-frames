@@ -1248,6 +1248,7 @@ L.NEWS_0_23_0_HIDDEN = "Hidden auras: leave out buffs and debuffs you never want
 L.NEWS_0_23_0_ADD = "Shift + right-click on a frame's auras lists them to hide on that frame (Shift + Ctrl: everywhere). /fuf auras undo takes the last one back."
 L.NEWS_0_23_0_OWN = "Your own buffs and debuffs (\"Mine first\") can sit in a place of their own on the frame, apart from the rest: Auras tab, \"Place of mine\" Free."
 L.NEWS_0_23_0_ELITE = "Elite marker: free size."
+L.NEWS_0_23_0_LOOK = "New installs start with a revised look; existing setups stay as they are."
 L.NEWS_OPEN_HIDDEN = "Open hidden auras"
 L.SETTING_clickCast = "Click-casting"
 L.HINT_clickCast = "Clicks use the raid window's bindings"

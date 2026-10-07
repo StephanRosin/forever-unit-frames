@@ -1220,6 +1220,7 @@ L.NEWS_0_23_0_HIDDEN = "Ausgeblendete Auren: Stärkungen und Schwächungen, die 
 L.NEWS_0_23_0_ADD = "Umschalt + Rechtsklick auf die Auren eines Rahmens listet sie zum Ausblenden auf diesem Rahmen auf (Umschalt + Strg: überall). /fuf auras undo nimmt die letzte zurück."
 L.NEWS_0_23_0_OWN = "Eigene Stärkungen und Schwächungen („Eigene zuerst“) können an einem eigenen Platz am Rahmen stehen, getrennt von den übrigen: Reiter Auren, „Platz der eigenen“ Frei."
 L.NEWS_0_23_0_ELITE = "Elite-Markierung: freie Größe."
+L.NEWS_0_23_0_LOOK = "Neue Installationen starten mit einem überarbeiteten Aussehen; bestehende Einstellungen bleiben, wie sie sind."
 L.NEWS_OPEN_HIDDEN = "Ausgeblendete Auren öffnen"
 L.SETTING_clickCast = "Klickzauber"
 L.HINT_clickCast = "Klicks nutzen die Belegung des Schlachtzugsfensters"

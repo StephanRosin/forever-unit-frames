@@ -1220,6 +1220,7 @@ L.NEWS_0_23_0_HIDDEN = "Auras masquées : écartez les améliorations et affaibl
 L.NEWS_0_23_0_ADD = "Maj + clic droit sur les auras d’un cadre les liste pour les masquer sur ce cadre (Maj + Ctrl : partout). /fuf auras undo annule la dernière."
 L.NEWS_0_23_0_OWN = "Vos améliorations et affaiblissements (« Les miens d'abord ») peuvent avoir leur propre place sur le cadre, à part du reste : onglet Auras, « Place des miens » Libre."
 L.NEWS_0_23_0_ELITE = "Marqueur d’élite : taille libre."
+L.NEWS_0_23_0_LOOK = "Les nouvelles installations démarrent avec une apparence revue ; les configurations existantes restent telles quelles."
 L.NEWS_OPEN_HIDDEN = "Ouvrir les auras masquées"
 L.SETTING_clickCast = "Sorts au clic"
 L.HINT_clickCast = "Les clics utilisent les raccourcis de la fenêtre de raid"
