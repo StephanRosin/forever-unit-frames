@@ -47,20 +47,20 @@ H.check("panels off: nothing added", texts(M.menu), "")
 -- Favourites on: add and remove.
 RC.Set("r10", "favouritesShow", true)
 M.SecureClick(bob, "RightButton")
-H.check("favourites", texts(M.menu), "-|Forever Unit Frames|Add to favourites")
-M.ClickMenu(button(M.menu, "Add to favourites"))
+H.check("favourites", texts(M.menu), "-|Forever Unit Frames|Add to favorites")
+M.ClickMenu(button(M.menu, "Add to favorites"))
 H.check("added", RC.Get("general", "favouriteNames"), "Bob")
 M.RunTimers()
 H.check("the panel follows at once", Special.panels.favourites.Count(1), 1)
 M.SecureClick(bob, "RightButton")
-H.check("on the list: remove", texts(M.menu), "-|Forever Unit Frames|Remove from favourites")
-M.ClickMenu(button(M.menu, "Remove from favourites"))
+H.check("on the list: remove", texts(M.menu), "-|Forever Unit Frames|Remove from favorites")
+M.ClickMenu(button(M.menu, "Remove from favorites"))
 H.check("removed", RC.Get("general", "favouriteNames"), "")
 
 -- My tanks on as well: favourites first.
 RC.Set("r10", "myTanksShow", true)
 M.SecureClick(bob, "RightButton")
-H.check("both", texts(M.menu), "-|Forever Unit Frames|Add to favourites|Mark as my tank")
+H.check("both", texts(M.menu), "-|Forever Unit Frames|Add to favorites|Mark as my tank")
 M.ClickMenu(button(M.menu, "Mark as my tank"))
 H.check("my tank", RC.Get("general", "myTankNames"), "Bob")
 H.check("not a favourite", RC.Get("general", "favouriteNames"), "")
@@ -70,14 +70,14 @@ H.check("unmark", button(M.menu, "Unmark as my tank") ~= nil, true)
 -- Your own cell: your menu.
 M.SecureClick(cell("raid1"), "RightButton")
 H.check("your menu", M.menu.tag, "MENU_UNIT_SELF")
-M.ClickMenu(button(M.menu, "Add to favourites"))
+M.ClickMenu(button(M.menu, "Add to favorites"))
 H.check("yourself", RC.Get("general", "favouriteNames"), "Me")
 
 -- In combat: the list at once, the panel after combat.
 local chat = #M.chat
 M.combat = true
 M.SecureClick(cell("raid3"), "RightButton")
-M.ClickMenu(button(M.menu, "Add to favourites"))
+M.ClickMenu(button(M.menu, "Add to favorites"))
 H.check("combat: stored", RC.Get("general", "favouriteNames"), "Me, Cid")
 H.checkTrue("combat: the chat says when", M.chat[chat + 1] and M.chat[chat + 1]:find("follows after combat", 1, true))
 H.check("combat: the header waits", Special.panels.favourites.headers[1]:GetAttribute("nameList"), "Me")
@@ -126,7 +126,7 @@ local lea
 for _, b in ipairs(ns.RaidCell.buttons) do if b.unit == "party1" and b:GetParent() == Header.headers[1] then lea = b end end
 M.SecureClick(lea, "RightButton")
 H.check("a party member's menu", M.menu.tag, "MENU_UNIT_PARTY")
-M.ClickMenu(button(M.menu, "Add to favourites"))
+M.ClickMenu(button(M.menu, "Add to favorites"))
 H.check("her name with its second part", RC.Get("general", "favouriteNames"), "Me, Cid, Lea-Stone")
 M.RunTimers()
 H.check("the panel shows her after you", Special.panels.favourites.headers[1]:GetAttribute("child2").unit, "party1")

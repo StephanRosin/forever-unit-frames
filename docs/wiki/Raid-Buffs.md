@@ -60,8 +60,8 @@ Out of combat, a click on a row of the buff window or the smart buff key casts t
 <tbody>
 <tr><td><b>Show the buff window</b></td><td>In a group, while a buff is watched</td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Only when a buff is missing</b></td><td></td><td>On, Off</td><td>On</td></tr>
-<tr><td><b>Position X</b></td><td>Top left corner, from the screen centre</td><td>-4000 – 4000</td><td>300</td></tr>
-<tr><td><b>Position Y</b></td><td>Top left corner, from the screen centre</td><td>-4000 – 4000</td><td>120</td></tr>
+<tr><td><b>Position X</b></td><td>Top left corner, from the screen center</td><td>-4000 – 4000</td><td>300</td></tr>
+<tr><td><b>Position Y</b></td><td>Top left corner, from the screen center</td><td>-4000 – 4000</td><td>120</td></tr>
 </tbody>
 </table>
 

@@ -18,7 +18,7 @@ The **Bars** tab on each frame's page in `/fuf`. The last column says which fram
 <tr><td><b>Friendly color</b></td><td>For health and title colors by reaction</td><td>Color</td><td><code>#33bf4d</code></td><td>all</td></tr>
 <tr><td><b>Neutral color</b></td><td></td><td>Color</td><td><code>#e6cc40</code></td><td>all</td></tr>
 <tr><td><b>Hostile color</b></td><td></td><td>Color</td><td><code>#d93333</code></td><td>all</td></tr>
-<tr><td><b>Grey when tapped by others</b></td><td>Someone else attacked it first: no experience or loot</td><td>On, Off</td><td>On</td><td>Target, Target of Target, Focus</td></tr>
+<tr><td><b>Gray when tapped by others</b></td><td>Someone else attacked it first: no experience or loot</td><td>On, Off</td><td>On</td><td>Target, Target of Target, Focus</td></tr>
 </tbody>
 </table>
 
@@ -76,7 +76,7 @@ The **Bars** tab on each frame's page in `/fuf`. The last column says which fram
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
 <tr><td><b>Show spell cost</b></td><td>While you cast, the end of the power bar shows what the spell will cost</td><td>On, Off</td><td>On</td><td>Player</td></tr>
-<tr><td><b>Cost colour</b></td><td></td><td>Color</td><td><code>#ffffff</code>, 45 % opaque</td><td>Player</td></tr>
+<tr><td><b>Cost color</b></td><td></td><td>Color</td><td><code>#ffffff</code>, 45 % opaque</td><td>Player</td></tr>
 </tbody>
 </table>
 

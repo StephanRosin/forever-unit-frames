@@ -8,7 +8,7 @@ The **Profile** tab (export, import, reset) is explained on the [[Home]] page.
 
 **On this page:**
 
-- **[Appearance](#appearance):** [Unit frames](#unit-frames) · [Font](#font) · [Display](#display) · [Title row](#title-row) · [Bars](#bars) · [Aura icons](#aura-icons) · [Border](#border) · [Shadow](#shadow) · [Shape](#shape) · [Minimap](#minimap)
+- **[Appearance](#appearance):** [Unit frames](#unit-frames) · [Font](#font) · [Display](#display) · [Title row](#title-row) · [Bars](#bars) · [Aura icons](#aura-icons) · [Border](#border) · [Shadow](#shadow) · [Shape](#shape) · [Minimap button](#minimap-button)
 - **[Colors](#colors):** [Health bar](#health-bar) · [Absorb shields](#absorb-shields) · [Target highlight](#target-highlight) · [Incoming heals](#incoming-heals) · [Power colors](#power-colors)
 - **[Status](#status):** [Combat icon](#combat-icon) · [Range](#range)
 
@@ -59,8 +59,8 @@ Button: **Apply to all frames**.
 <tr><td><b>AFK/DND badge</b></td><td>Gold AFK or red DND badge after the name</td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Show class icon</b></td><td>Players only, as a round badge on the frame's top right corner</td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Class icon size</b></td><td>Diameter of the badge, ring included</td><td>10 – 48</td><td>30</td></tr>
-<tr><td><b>Class icon X</b></td><td>Badge centre from the frame's right edge; negative moves it inside</td><td>-64 – 64</td><td>-6</td></tr>
-<tr><td><b>Class icon Y</b></td><td>Badge centre from the frame's top edge; positive moves it up</td><td>-64 – 64</td><td>-9</td></tr>
+<tr><td><b>Class icon X</b></td><td>Badge center from the frame's right edge; negative moves it inside</td><td>-64 – 64</td><td>-6</td></tr>
+<tr><td><b>Class icon Y</b></td><td>Badge center from the frame's top edge; positive moves it up</td><td>-64 – 64</td><td>-9</td></tr>
 <tr><td><b>Badge ring</b></td><td>Ring thickness around the icon; 0 = no ring</td><td>0 – 4</td><td>2</td></tr>
 <tr><td><b>Badge ring color</b></td><td>Color of the badge's ring</td><td>Color</td><td><code>#c7c7cc</code></td></tr>
 </tbody>
@@ -121,13 +121,13 @@ Button: **Apply to all frames**.
 </tbody>
 </table>
 
-### Minimap
+### Minimap button
 
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
-<tr><td><b>Show minimap button</b></td><td></td><td>On, Off</td><td>On</td></tr>
-<tr><td><b>Button position</b></td><td>Degrees around the minimap; drag the button to set it</td><td>0 – 359</td><td>282</td></tr>
+<tr><td><b>Show the button</b></td><td></td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Button position</b></td><td>Degrees around the minimap; or drag it</td><td>0 – 359</td><td>282</td></tr>
 </tbody>
 </table>
 

@@ -40,8 +40,8 @@ The **Layout** tab of the raid options window (`/fuf raid`). Each raid size (10,
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
-<tr><td><b>Position X</b></td><td>Top left corner, from the screen centre</td><td>-4000 – 4000</td><td>-600</td></tr>
-<tr><td><b>Position Y</b></td><td>Top left corner, from the screen centre</td><td>-4000 – 4000</td><td>150</td></tr>
+<tr><td><b>Position X</b></td><td>Top left corner, from the screen center</td><td>-4000 – 4000</td><td>-600</td></tr>
+<tr><td><b>Position Y</b></td><td>Top left corner, from the screen center</td><td>-4000 – 4000</td><td>150</td></tr>
 </tbody>
 </table>
 

@@ -6,9 +6,9 @@ Panels of their own beside the main panel, each with its own position per raid s
 
 The **Panels** tab of the raid options window (`/fuf raid`). Each raid size (10, 20, 40) has a profile of its own: the size tabs at the top choose which one you edit; a default that differs per size is listed per size.
 
-Players in a special panel stay in their group as well. The raid leader sets main tanks and main assists; right-click a cell for my tanks and favourites.
+Players in a special panel stay in their group as well. The raid leader sets main tanks and main assists; right-click a cell for my tanks and favorites.
 
-**On this page:** [Main tanks](#main-tanks) · [Main assists](#main-assists) · [My tanks](#my-tanks) · [Favourites](#favourites) · [Pets](#pets)
+**On this page:** [Main tanks](#main-tanks) · [Main assists](#main-assists) · [My tanks](#my-tanks) · [Favorites](#favorites) · [Pets](#pets)
 
 ## Main tanks
 
@@ -19,8 +19,8 @@ Players in a special panel stay in their group as well. The raid leader sets mai
 <tr><td><b>Title above it</b></td><td></td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Cells per line</b></td><td>Then a new column (or row) of cells</td><td>1 – 40</td><td>5</td></tr>
 <tr><td><b>Cells grow</b></td><td></td><td>Down, Right</td><td>Right</td></tr>
-<tr><td><b>Position X</b></td><td>Top left corner, from the screen centre</td><td>-4000 – 4000</td><td>-600</td></tr>
-<tr><td><b>Position Y</b></td><td>Top left corner, from the screen centre</td><td>-4000 – 4000</td><td>260</td></tr>
+<tr><td><b>Position X</b></td><td>Top left corner, from the screen center</td><td>-4000 – 4000</td><td>-600</td></tr>
+<tr><td><b>Position Y</b></td><td>Top left corner, from the screen center</td><td>-4000 – 4000</td><td>260</td></tr>
 </tbody>
 </table>
 
@@ -33,8 +33,8 @@ Players in a special panel stay in their group as well. The raid leader sets mai
 <tr><td><b>Title above it</b></td><td></td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Cells per line</b></td><td>Then a new column (or row) of cells</td><td>1 – 40</td><td>5</td></tr>
 <tr><td><b>Cells grow</b></td><td></td><td>Down, Right</td><td>Right</td></tr>
-<tr><td><b>Position X</b></td><td>Top left corner, from the screen centre</td><td>-4000 – 4000</td><td>-600</td></tr>
-<tr><td><b>Position Y</b></td><td>Top left corner, from the screen centre</td><td>-4000 – 4000</td><td>340</td></tr>
+<tr><td><b>Position X</b></td><td>Top left corner, from the screen center</td><td>-4000 – 4000</td><td>-600</td></tr>
+<tr><td><b>Position Y</b></td><td>Top left corner, from the screen center</td><td>-4000 – 4000</td><td>340</td></tr>
 </tbody>
 </table>
 
@@ -48,12 +48,12 @@ Players in a special panel stay in their group as well. The raid leader sets mai
 <tr><td><b>Title above it</b></td><td></td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Cells per line</b></td><td>Then a new column (or row) of cells</td><td>1 – 40</td><td>5</td></tr>
 <tr><td><b>Cells grow</b></td><td></td><td>Down, Right</td><td>Down</td></tr>
-<tr><td><b>Position X</b></td><td>Top left corner, from the screen centre</td><td>-4000 – 4000</td><td>120</td></tr>
-<tr><td><b>Position Y</b></td><td>Top left corner, from the screen centre</td><td>-4000 – 4000</td><td>150</td></tr>
+<tr><td><b>Position X</b></td><td>Top left corner, from the screen center</td><td>-4000 – 4000</td><td>120</td></tr>
+<tr><td><b>Position Y</b></td><td>Top left corner, from the screen center</td><td>-4000 – 4000</td><td>150</td></tr>
 </tbody>
 </table>
 
-## Favourites
+## Favorites
 
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
@@ -63,8 +63,8 @@ Players in a special panel stay in their group as well. The raid leader sets mai
 <tr><td><b>Title above it</b></td><td></td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Cells per line</b></td><td>Then a new column (or row) of cells</td><td>1 – 40</td><td>5</td></tr>
 <tr><td><b>Cells grow</b></td><td></td><td>Down, Right</td><td>Down</td></tr>
-<tr><td><b>Position X</b></td><td>Top left corner, from the screen centre</td><td>-4000 – 4000</td><td>240</td></tr>
-<tr><td><b>Position Y</b></td><td>Top left corner, from the screen centre</td><td>-4000 – 4000</td><td>150</td></tr>
+<tr><td><b>Position X</b></td><td>Top left corner, from the screen center</td><td>-4000 – 4000</td><td>240</td></tr>
+<tr><td><b>Position Y</b></td><td>Top left corner, from the screen center</td><td>-4000 – 4000</td><td>150</td></tr>
 </tbody>
 </table>
 
@@ -78,8 +78,8 @@ Players in a special panel stay in their group as well. The raid leader sets mai
 <tr><td><b>Cells per line</b></td><td>Then a new column (or row) of cells</td><td>1 – 40</td><td>8</td></tr>
 <tr><td><b>Cells grow</b></td><td></td><td>Down, Right</td><td>Right</td></tr>
 <tr><td><b>Cell height</b></td><td></td><td>12 – 100</td><td>24</td></tr>
-<tr><td><b>Position X</b></td><td>Top left corner, from the screen centre</td><td>-4000 – 4000</td><td>-600</td></tr>
-<tr><td><b>Position Y</b></td><td>Top left corner, from the screen centre</td><td>-4000 – 4000</td><td>-100</td></tr>
+<tr><td><b>Position X</b></td><td>Top left corner, from the screen center</td><td>-4000 – 4000</td><td>-600</td></tr>
+<tr><td><b>Position Y</b></td><td>Top left corner, from the screen center</td><td>-4000 – 4000</td><td>-100</td></tr>
 </tbody>
 </table>
 

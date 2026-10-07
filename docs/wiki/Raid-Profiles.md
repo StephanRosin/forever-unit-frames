@@ -20,7 +20,7 @@ Copies one size onto another as it shows. **Everything** copies every setting; *
 - **Main tanks**: Title above it, Cells per line, Cells grow, Position X, Position Y
 - **Main assists**: Title above it, Cells per line, Cells grow, Position X, Position Y
 - **My tanks**: Title above it, Cells per line, Cells grow, Position X, Position Y
-- **Favourites**: Title above it, Cells per line, Cells grow, Position X, Position Y
+- **Favorites**: Title above it, Cells per line, Cells grow, Position X, Position Y
 - **Pets**: Title above it, Cells per line, Cells grow, Cell height, Position X, Position Y
 - **Each own panel**: Show the panel, Group by, Blocks it shows, Title, Blocks, Blocks per line, Cells grow, Cells per line, Block titles, Hide empty blocks, Around the panel, Around each block, Position X, Position Y
 - **Size**: Cell width, Cell height

@@ -32,9 +32,9 @@ for key, code in pairs(CODES) do
     end
     H.check(key .. " not in General", def and S.AppliesTo(def, "general"), false)
 end
-H.check("label", L.SETTING_titleTextCenter, "Title row, centre text")
-H.check("health label", L.SETTING_textHealthCenter, "Health bar, centre text")
-H.check("power label", L.SETTING_textPowerCenter, "Power bar, centre text")
+H.check("label", L.SETTING_titleTextCenter, "Title row, center text")
+H.check("health label", L.SETTING_textHealthCenter, "Health bar, center text")
+H.check("power label", L.SETTING_textPowerCenter, "Power bar, center text")
 
 -- On the Text tab, between the left and the right text of its row.
 local sections = {}

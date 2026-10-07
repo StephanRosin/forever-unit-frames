@@ -32,8 +32,8 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Position X</b></td><td>Offset from the screen centre</td><td>-4000 – 4000</td><td>Player: -400; Target: 400; Target of Target: 536; Focus: 520; Pet: -624; Party: -709</td><td>all</td></tr>
-<tr><td><b>Position Y</b></td><td>Offset from the screen centre</td><td>-4000 – 4000</td><td>Player, Target: -220; Target of Target: -304; Focus: 232; Pet: -324; Party: 150</td><td>all</td></tr>
+<tr><td><b>Position X</b></td><td>Offset from the screen center</td><td>-4000 – 4000</td><td>Player: -400; Target: 400; Target of Target: 536; Focus: 520; Pet: -624; Party: -709</td><td>all</td></tr>
+<tr><td><b>Position Y</b></td><td>Offset from the screen center</td><td>-4000 – 4000</td><td>Player, Target: -220; Target of Target: -304; Focus: 232; Pet: -324; Party: 150</td><td>all</td></tr>
 </tbody>
 </table>
 
