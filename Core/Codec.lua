@@ -109,6 +109,9 @@ function ns.NewCodec(Settings)
         for _, scope in ipairs(Settings.SCOPES) do profile[scope] = {} end
         local rejected = 0
         local first = true
+        -- The numbers as written, per scope (Settings.Upgrade).
+        local numbers = {}
+        for _, scope in ipairs(Settings.SCOPES) do numbers[scope] = {} end
         for entry in (str .. ";"):gmatch("([^;]*);") do
             local prefix, code, raw = entry:match("^(%l)(%u%u?)(.*)$")
             if first then
@@ -132,12 +135,14 @@ function ns.NewCodec(Settings)
                     local v = decodeValue(def, raw)
                     if v ~= nil then
                         profile[scope][def.key] = v
+                        if def.type == "int" then numbers[scope][def.key] = tonumber(raw) end
                     elseif not shortened and not (def.type == "enum" and raw:match("^%d+$")) then
                         rejected = rejected + 1
                     end
                 end
             end
         end
+        Settings.Upgrade(profile, numbers)
         return profile, nil, rejected
     end
 

@@ -67,7 +67,7 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 <tbody>
 <tr><td><b>Show border</b></td><td>One ring around the frame and a docked castbar</td><td>On, Off</td><td>On</td><td>all</td></tr>
 <tr><td><b>Border style</b></td><td>Gold is shaded and ignores the border color</td><td>Flat, Gold</td><td>Gold</td><td>all</td></tr>
-<tr><td><b>Border size</b></td><td>0 = no border</td><td>0 – 8</td><td>1</td><td>all</td></tr>
+<tr><td><b>Border size</b></td><td></td><td>1 – 8</td><td>1</td><td>all</td></tr>
 <tr><td><b>Border padding</b></td><td>Gap between frame and border</td><td>0 – 8</td><td>0</td><td>all</td></tr>
 <tr><td><b>Border color</b></td><td></td><td>Color</td><td><code>#000000</code></td><td>all</td></tr>
 <tr><td><b>Corner radius</b></td><td>0 = square corners</td><td>0 – 12</td><td>Player, Target, Party: 10; Target of Target, Focus, Pet: 0</td><td>all</td></tr>

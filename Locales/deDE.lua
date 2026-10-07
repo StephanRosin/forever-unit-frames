@@ -150,7 +150,6 @@ L.CLASS_boss = "Boss"; L.CLASS_elite = "Elite"; L.CLASS_rareelite = "Rar-Elite";
 L.SECTION_shadow = "Schatten"
 L.HINT_borderShow = "Ein Ring um den Rahmen und eine angedockte Zauberleiste"
 L.HINT_borderStyle = "Gold ist schattiert und übergeht die Randfarbe"
-L.HINT_borderSize = "0 = kein Rand"
 L.HINT_borderPadding = "Lücke zwischen Rahmen und Rand"
 L.HINT_shadowAlpha = "Deckkraft in Prozent"
 L.HINT_shadowSize = "Breite des weichen Rands in Pixeln"

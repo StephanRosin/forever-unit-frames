@@ -151,7 +151,6 @@ L.CLASS_boss = "Jefe"; L.CLASS_elite = "Élite"; L.CLASS_rareelite = "Élite rar
 L.SECTION_shadow = "Sombra"
 L.HINT_borderShow = "Un anillo alrededor del marco y de una barra de lanzamiento acoplada"
 L.HINT_borderStyle = "El dorado tiene sombreado e ignora el color del borde"
-L.HINT_borderSize = "0 = sin borde"
 L.HINT_borderPadding = "Espacio entre el marco y el borde"
 L.HINT_shadowAlpha = "Opacidad en porcentaje"
 L.HINT_shadowSize = "Ancho del borde difuminado en píxeles"

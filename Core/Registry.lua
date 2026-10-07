@@ -105,6 +105,37 @@ function ns.NewRegistry(scopes, prefix)
         end
     end
 
+    -- def.offBelowMin (optional): the switch that a stored number under
+    -- def.min stood for (an earlier version's "0 = none"). Such a value
+    -- (raw[scope]: as stored, before validation) becomes that switch off
+    -- and the setting's default, in every scope that stored it. A scope
+    -- with a size of its own over a general "none" had its border: it
+    -- keeps it (its switch on, unless it stores one).
+    local function below(def, v) return type(v) == "number" and v < def.min end
+    local function rawValue(raw, scope, key)
+        return type(raw[scope]) == "table" and raw[scope][key] or nil
+    end
+    function R.Upgrade(profile, raw)
+        for _, def in ipairs(list) do
+            if def.offBelowMin then
+                local generalNone = below(def, rawValue(raw, "general", def.key))
+                for _, scope in ipairs(scopes) do
+                    local v = rawValue(raw, scope, def.key)
+                    local values = profile[scope]
+                    if values and R.AppliesTo(def, scope) then
+                        if below(def, v) then
+                            values[def.key] = R.Default(def, scope)
+                            values[def.offBelowMin] = false
+                        elseif generalNone and scope ~= "general" and type(v) == "number"
+                            and values[def.offBelowMin] == nil then
+                            values[def.offBelowMin] = true
+                        end
+                    end
+                end
+            end
+        end
+    end
+
     -- Only known scopes and settings that apply to them survive, each with
     -- a value that passes validation: a hand-edited or outdated
     -- SavedVariables file must never reach Config or the codec.
@@ -122,6 +153,7 @@ function ns.NewRegistry(scopes, prefix)
                 end
             end
         end
+        R.Upgrade(clean, profile)
         return clean
     end
 

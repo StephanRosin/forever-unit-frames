@@ -87,7 +87,7 @@ Button: **Apply to all frames**.
 <tbody>
 <tr><td><b>Show border</b></td><td>One ring around the frame and a docked castbar</td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Border style</b></td><td>Gold is shaded and ignores the border color</td><td>Flat, Gold</td><td>Gold</td></tr>
-<tr><td><b>Border size</b></td><td>0 = no border</td><td>0 – 8</td><td>1</td></tr>
+<tr><td><b>Border size</b></td><td></td><td>1 – 8</td><td>1</td></tr>
 <tr><td><b>Border padding</b></td><td>Gap between frame and border</td><td>0 – 8</td><td>0</td></tr>
 <tr><td><b>Border color</b></td><td></td><td>Color</td><td><code>#000000</code></td></tr>
 <tr><td><b>Corner radius</b></td><td>0 = square corners</td><td>0 – 12</td><td>0</td></tr>

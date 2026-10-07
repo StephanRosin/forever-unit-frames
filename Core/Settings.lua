@@ -61,7 +61,10 @@ Settings.Define({ key = "titleBackground", code = "NB", scope = "inherit", type 
 Settings.Define({ key = "borderShow", code = "BV", scope = "inherit", type = "bool", default = true })
 Settings.Define({ key = "borderStyle", code = "BY", scope = "inherit", type = "enum",
     values = { "FLAT", "GOLD" }, default = "FLAT" })
-Settings.Define({ key = "borderSize", code = "BS", scope = "inherit", type = "int", min = 0, max = 8, default = 1 })
+-- From 1: no border is borderShow's job; a 0 of an earlier version
+-- loads as borderShow off (Registry: Upgrade).
+Settings.Define({ key = "borderSize", code = "BS", scope = "inherit", type = "int", min = 1, max = 8, default = 1,
+    offBelowMin = "borderShow" })
 Settings.Define({ key = "borderColor", code = "BO", scope = "inherit", type = "color", default = { 0, 0, 0, 1 } })
 Settings.Define({ key = "borderPadding", code = "BP", scope = "inherit", type = "int", min = 0, max = 8, default = 0 })
 -- Soft drop shadow around the ring: strength in percent, size in pixels.

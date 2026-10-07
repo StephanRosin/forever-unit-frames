@@ -150,7 +150,6 @@ L.CLASS_boss = "Boss"; L.CLASS_elite = "Élite"; L.CLASS_rareelite = "Élite rar
 L.SECTION_shadow = "Ombre"
 L.HINT_borderShow = "Un anneau autour du cadre et d'une barre d'incantation ancrée"
 L.HINT_borderStyle = "L'or est ombré et ignore la couleur de bordure"
-L.HINT_borderSize = "0 = pas de bordure"
 L.HINT_borderPadding = "Espace entre le cadre et la bordure"
 L.HINT_shadowAlpha = "Opacité en pourcentage"
 L.HINT_shadowSize = "Largeur du bord adouci en pixels"

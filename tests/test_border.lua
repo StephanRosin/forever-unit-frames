@@ -164,11 +164,12 @@ H.check("square again: mask off", corner:GetNumMaskTextures(), 0)
 H.check("square again: a plain square", corner._texture, nil)
 
 -- Per frame override, and off.
-C.Set("target", "borderSize", 0)
+C.Set("target", "borderShow", false)
 H.check("override: off", b[1]:IsShown(), false)
 H.check("override: corners off", b.corners[1]:IsShown(), false)
 H.check("no border: no extent", B.Extent("target"), 0)
 H.checkTrue("other frames keep theirs", ns.Frames.player.frameRing.border[1]:IsShown())
+C.Set("target", "borderShow", true)
 C.Set("target", "borderSize", 4)
 C.Set("target", "borderColor", { 1, 0, 0, 1 })
 H.check("own colour", b[1]._color[1], 1)
