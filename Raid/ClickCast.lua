@@ -144,10 +144,15 @@ end
 -- Writes a plan, touching only names it sets, names the XML sets
 -- (defaults) and names written before (frame.clickCastNames): an
 -- attribute another addon (Clique) put on a name we never wrote stays.
+-- A name we clear that the XML does not set is ours no longer: what
+-- another addon writes there later stays too.
 local function write(frame, values, defaults)
     local touched = frame.clickCastNames or {}
     for name in pairs(touched) do
-        if values[name] == nil then frame:SetAttribute(name, nil) end
+        if values[name] == nil then
+            frame:SetAttribute(name, nil)
+            if defaults[name] == nil then touched[name] = nil end
+        end
     end
     for name in pairs(defaults) do
         if values[name] == nil and not touched[name] then

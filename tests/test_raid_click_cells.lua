@@ -122,3 +122,17 @@ H.check("off: shift-left (ours) reset", c:GetAttribute("shift-type1"), nil)
 RC.Set("general", "clickCast", "ON")
 H.check("on: ours again", c:GetAttribute("*type3"), "focus")
 H.check("on: the other's still there", c:GetAttribute("ctrl-type2"), "spell")
+
+-- A name we cleared that the XML never sets is no longer ours: another
+-- addon may put its own value there afterwards, and it stays on a change
+-- and when click-casting goes off.
+RC.Set("general", "click3Alt", "focus")
+H.check("alt-middle ours", c:GetAttribute("alt-type3"), "focus")
+RC.Set("general", "click3Alt", "")
+H.check("alt-middle cleared", c:GetAttribute("alt-type3"), nil)
+c:SetAttribute("alt-type3", "macro")
+RC.Set("general", "click3", "assist")
+H.check("a change: the other addon's alt-middle stays", c:GetAttribute("alt-type3"), "macro")
+RC.Set("general", "clickCast", "OFF")
+H.check("off: the other addon's alt-middle stays", c:GetAttribute("alt-type3"), "macro")
+RC.Set("general", "clickCast", "ON")
