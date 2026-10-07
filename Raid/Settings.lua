@@ -575,7 +575,8 @@ local KEY_MODIFIERS = { "ALT", "CTRL", "SHIFT" }
 local NEVER_TAKEN = { BUTTON1 = true, BUTTON2 = true, ESCAPE = true, ALT = true, CTRL = true, SHIFT = true }
 -- The client's key names. Its source holds no list of them (key names come
 -- from the keyboard driver, OnKeyDown); these are the families every
--- binding of the source uses, and the keys a keyboard and mouse have.
+-- binding of the source uses, the keys a keyboard and mouse have, and a
+-- gamepad's.
 local NAMED_KEYS = {}
 for _, name in ipairs({ "SPACE", "TAB", "ENTER", "BACKSPACE", "INSERT", "DELETE", "HOME", "END", "PAGEUP",
     "PAGEDOWN", "UP", "DOWN", "LEFT", "RIGHT", "CAPSLOCK", "NUMLOCK", "SCROLLLOCK", "PAUSE", "PRINTSCREEN",
@@ -591,6 +592,9 @@ local function isKeyName(name)
     return NAMED_KEYS[name] or name:match("^[%u%d]$") ~= nil or name:match("^%p$") ~= nil
         or inRange(name, "^F(%d%d?)$", 1, 24) or inRange(name, "^NUMPAD(%d)$", 0, 9)
         or inRange(name, "^BUTTON(%d%d?)$", 1, 31)
+        -- A gamepad's keys (Blizzard_SharedXML/Shared/GamepadConstants.lua:
+        -- PAD1-PAD4, PADDUP, PADLSHOULDER, PADBACK, ...).
+        or name:match("^PAD[%u%d]+$") ~= nil
 end
 function Raid.ParseKey(text)
     local rest = text:match("^%s*(.-)%s*$"):upper()

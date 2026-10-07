@@ -121,6 +121,13 @@ end
 for _, k in ipairs({ "FOO", "F25", "F0", "BUTTON32", "NUMPAD10", "MOUSEWHEEL", "SHIFTX", "AB" }) do
     H.check("no key name: " .. k, Raid.ParseKey(k), nil)
 end
+-- Gamepad keys (Blizzard_SharedXML/Shared/GamepadConstants.lua): the PAD
+-- family.
+for _, k in ipairs({ "PAD1", "PAD4", "PADDUP", "PADDDOWN", "PADDLEFT", "PADDRIGHT", "PADLSHOULDER", "PADRSHOULDER",
+    "PADLTRIGGER", "PADRTRIGGER", "PADLSTICK", "PADRSTICK", "PADBACK", "PADFORWARD" }) do
+    H.check("a gamepad key: " .. k, Raid.ParseKey("shift-" .. k:lower()), "SHIFT-" .. k)
+end
+H.check("no key name: PAD alone", Raid.ParseKey("PAD"), nil)
 H.checkTrue("the refusal names examples", ns.L.RAID_TYPED_KEY_INVALID:find("MOUSEWHEELUP", 1, true))
 H.check("stored key checked", RS.Validate(RS.Get("clickKey1"), "CTRL-SHIFT-Q"), "CTRL-SHIFT-Q")
 H.check("stored key: not normalised", RS.Validate(RS.Get("clickKey1"), "shift-ctrl-q"), nil)
