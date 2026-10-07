@@ -109,6 +109,19 @@ H.check("a modifier alone", Raid.ParseKey("SHIFT"), nil)
 H.check("a modifier twice", Raid.ParseKey("SHIFT-SHIFT-F"), nil)
 H.check("two keys", Raid.ParseKey("F G"), nil)
 H.check("a sign", Raid.ParseKey("ctrl-,"), "CTRL-,")
+-- Only the client's key names (no list of them in the client's source:
+-- letters, digits, signs, F1-F24, NUMPAD0-9 and its signs, BUTTON3-31,
+-- the wheel and the named keys). Every key the source's own default
+-- bindings use is one.
+for _, k in ipairs({ ",", "-", ".", "/", "=", "[", "\\", "]", "0", "9", "C", "CAPSLOCK", "F1", "F12", "F24",
+    "MOUSEWHEELDOWN", "MOUSEWHEELUP", "SPACE", "TAB", "NUMPAD0", "NUMPADPLUS", "NUMPADDIVIDE", "BUTTON3", "BUTTON31",
+    "PAGEUP", "INSERT", "ENTER", "BACKSPACE", "UP" }) do
+    H.check("a key name: " .. k, Raid.ParseKey("ctrl-" .. k:lower()), "CTRL-" .. k)
+end
+for _, k in ipairs({ "FOO", "F25", "F0", "BUTTON32", "NUMPAD10", "MOUSEWHEEL", "SHIFTX", "AB" }) do
+    H.check("no key name: " .. k, Raid.ParseKey(k), nil)
+end
+H.checkTrue("the refusal names examples", ns.L.RAID_TYPED_KEY_INVALID:find("MOUSEWHEELUP", 1, true))
 H.check("stored key checked", RS.Validate(RS.Get("clickKey1"), "CTRL-SHIFT-Q"), "CTRL-SHIFT-Q")
 H.check("stored key: not normalised", RS.Validate(RS.Get("clickKey1"), "shift-ctrl-q"), nil)
 

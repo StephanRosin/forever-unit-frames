@@ -567,12 +567,31 @@ end
 
 -- A key as the client names it: upper case, modifiers in its order
 -- (ALT-, CTRL-, SHIFT-) before a key name (F, F5, NUMPAD1, BUTTON4,
--- MOUSEWHEELUP, ...) or a single sign. Typed in any case and modifier
+-- MOUSEWHEELUP, ...) or a single sign; other names are refused. Typed in any case and modifier
 -- order, spaces around it trimmed. "" for none; nil for what is no key, a
 -- modifier alone or twice, and the keys never taken: the mouse's left
 -- and right buttons and Escape (the game's own clicks and menu).
 local KEY_MODIFIERS = { "ALT", "CTRL", "SHIFT" }
 local NEVER_TAKEN = { BUTTON1 = true, BUTTON2 = true, ESCAPE = true, ALT = true, CTRL = true, SHIFT = true }
+-- The client's key names. Its source holds no list of them (key names come
+-- from the keyboard driver, OnKeyDown); these are the families every
+-- binding of the source uses, and the keys a keyboard and mouse have.
+local NAMED_KEYS = {}
+for _, name in ipairs({ "SPACE", "TAB", "ENTER", "BACKSPACE", "INSERT", "DELETE", "HOME", "END", "PAGEUP",
+    "PAGEDOWN", "UP", "DOWN", "LEFT", "RIGHT", "CAPSLOCK", "NUMLOCK", "SCROLLLOCK", "PAUSE", "PRINTSCREEN",
+    "ESCAPE", "MOUSEWHEELUP", "MOUSEWHEELDOWN", "NUMPADPLUS", "NUMPADMINUS", "NUMPADMULTIPLY", "NUMPADDIVIDE",
+    "NUMPADDECIMAL", "NUMPADEQUALS" }) do
+    NAMED_KEYS[name] = true
+end
+local function inRange(text, pattern, lo, hi)
+    local n = tonumber(text:match(pattern))
+    return n ~= nil and n >= lo and n <= hi
+end
+local function isKeyName(name)
+    return NAMED_KEYS[name] or name:match("^[%u%d]$") ~= nil or name:match("^%p$") ~= nil
+        or inRange(name, "^F(%d%d?)$", 1, 24) or inRange(name, "^NUMPAD(%d)$", 0, 9)
+        or inRange(name, "^BUTTON(%d%d?)$", 1, 31)
+end
 function Raid.ParseKey(text)
     local rest = text:match("^%s*(.-)%s*$"):upper()
     if rest == "" then return "" end
@@ -584,7 +603,7 @@ function Raid.ParseKey(text)
         held[modifier] = true
         rest = after
     end
-    if not (rest:match("^[%u%d]+$") or rest:match("^%p$")) or NEVER_TAKEN[rest] then return nil end
+    if not isKeyName(rest) or NEVER_TAKEN[rest] then return nil end
     local key = ""
     for _, modifier in ipairs(KEY_MODIFIERS) do
         if held[modifier] then key = key .. modifier .. "-" end
