@@ -135,7 +135,7 @@ Schema.FRAME = {
         { id = "raidMarker", keys = { "raidMarker", "raidMarkerSize", "raidMarkerFramePoint", "raidMarkerPoint",
             "raidMarkerX", "raidMarkerY" } },
         { id = "eliteMarker", keys = { "eliteMarker", "eliteMarkerStyle", "eliteBorderSize", "eliteMarkerFramePoint",
-            "eliteMarkerPoint", "eliteMarkerX", "eliteMarkerY" } },
+            "eliteMarkerPoint", "eliteMarkerX", "eliteMarkerY", "eliteMarkerSize" } },
         { id = "petHappiness", keys = { "petHappiness", "petHappinessHideHappy", "petHappinessSize",
             "petHappinessFramePoint", "petHappinessPoint", "petHappinessX", "petHappinessY" } },
         { id = "groupIcons", keys = { "groupLeader", "groupReadyCheck", "groupResurrect", "groupRole", "groupIconSize",

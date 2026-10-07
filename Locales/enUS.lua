@@ -599,6 +599,8 @@ L.SETTING_eliteMarkerFramePoint = "Marker: point on the frame"
 L.SETTING_eliteMarkerPoint = "Marker: its own point"
 L.SETTING_eliteMarkerX = "Marker: offset X"
 L.SETTING_eliteMarkerY = "Marker: offset Y"
+L.SETTING_eliteMarkerSize = "Marker: size"
+L.HINT_eliteMarkerSize = "Badge, or the word's font size; Auto: as always"
 L.ENUM_eliteMarkerFramePoint_AUTO = "Automatic"
 
 -- Tapped by others.

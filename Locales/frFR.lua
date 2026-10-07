@@ -575,6 +575,8 @@ L.SETTING_eliteMarkerFramePoint = "Marqueur : point du cadre"
 L.SETTING_eliteMarkerPoint = "Marqueur : son propre point"
 L.SETTING_eliteMarkerX = "Marqueur : décalage X"
 L.SETTING_eliteMarkerY = "Marqueur : décalage Y"
+L.SETTING_eliteMarkerSize = "Marqueur : taille"
+L.HINT_eliteMarkerSize = "Badge ou taille du mot ; Auto : comme toujours"
 L.ENUM_eliteMarkerFramePoint_AUTO = "Automatique"
 
 -- Tapped by others.

@@ -184,6 +184,10 @@ Settings.Define({ key = "eliteMarkerX", code = "MX", scope = "frame", only = ELI
     default = 0 })
 Settings.Define({ key = "eliteMarkerY", code = "MY", scope = "frame", only = ELITE, type = "int", min = -200, max = 200,
     default = 0 })
+-- Its size: the badge's, or the word's font size. 0, Automatic, is the
+-- size it always had (Elements/Classification.lua).
+Settings.Define({ key = "eliteMarkerSize", code = "MZ", scope = "frame", only = ELITE, type = "int", min = 0, lowest = 8,
+    max = 64, default = 0, zeroText = "AUTO" })
 -- Damage and heal numbers inside the frame (Blizzard shows them on the
 -- player and pet frames).
 Settings.Define({ key = "combatFeedback", code = "CF", scope = "frame", type = "bool",

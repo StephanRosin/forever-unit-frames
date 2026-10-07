@@ -89,7 +89,7 @@ end
 H.check("target Layout", sectionIds("target", "layout"), "frame,size,position,barHeights,portrait,border,shadow")
 H.check("elite marker after the raid marker", sectionIds("target", "status"):match("raidMarker,eliteMarker") ~= nil, true)
 H.check("elite marker rows", shown("target", "status", "eliteMarker"),
-    "eliteMarker,eliteMarkerStyle,eliteBorderSize,eliteMarkerFramePoint,eliteMarkerPoint,eliteMarkerX,eliteMarkerY")
+    "eliteMarker,eliteMarkerStyle,eliteBorderSize,eliteMarkerFramePoint,eliteMarkerPoint,eliteMarkerX,eliteMarkerY,eliteMarkerSize")
 H.check("combat numbers on Text", where("player", "combatFeedback"), "text:combatFeedback")
 H.check("corners with the border", shown("target", "layout", "border"),
     "borderShow,borderStyle,borderSize,borderPadding,borderColor,cornerRadius")

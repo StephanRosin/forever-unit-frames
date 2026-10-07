@@ -114,7 +114,7 @@ local function placeIcon(frame)
     local scope, Pixel = frame.key, ns.Pixel
     local portrait = Config.Get(scope, "portraitMode")
     if portrait == "OFF" then return end
-    local size = Pixel.Snap(math.max(10, Config.Get(scope, "height") * 0.45))
+    local size = Classification.IconSize(scope)
     local icon = frame.eliteIcon
     icon:SetSize(size, size)
     local at, own = ownPoint(scope)
@@ -156,7 +156,7 @@ local function placeText(frame)
     local side, reach = ns.Shape.DockReach(frame)
     local bottom = (side == "ABOVE" and reach or 0) + ns.Border.Extent(scope) + Pixel.One()
     local x = 0
-    if hitsBadge(frame, -math.huge, 0, bottom, bottom + Classification.FontSize(scope)) then
+    if hitsBadge(frame, -math.huge, 0, bottom, bottom + Classification.TextSize(scope)) then
         x = math.min(0, frame.classBadgeBox.left - Pixel.Snap(BADGE_GAP))
     end
     local dx, dy = offset(scope)
@@ -230,6 +230,21 @@ function Classification.FontSize(scope)
     return math.max(Config.Get(scope, "fontSize") - 2, 6)
 end
 
+-- The sizes in use: the marker's own (eliteMarkerSize), or with 0
+-- (Automatic) the ones it always had: the word's font above, the badge
+-- 45 % of the frame's height, at least 10.
+function Classification.TextSize(scope)
+    local size = Config.Get(scope, "eliteMarkerSize")
+    if size > 0 then return size end
+    return Classification.FontSize(scope)
+end
+
+function Classification.IconSize(scope)
+    local size = Config.Get(scope, "eliteMarkerSize")
+    if size > 0 then return ns.Pixel.Snap(size) end
+    return ns.Pixel.Snap(math.max(10, Config.Get(scope, "height") * 0.45))
+end
+
 function Classification.Build(frame)
     if not Classification.Applies(frame.key) then return end
     local layer = CreateFrame("Frame", nil, frame)
@@ -257,7 +272,7 @@ function Classification.Style(frame)
         frame.eliteMode = "ICON"
     end
     local text = frame.eliteText
-    ns.Texts.SetFont(text, ns.Media.Font(Config.Get(scope, "fontFace")), Classification.FontSize(scope),
+    ns.Texts.SetFont(text, ns.Media.Font(Config.Get(scope, "fontFace")), Classification.TextSize(scope),
         Config.Get(scope, "fontOutline"))
     local shadow = Config.Get(scope, "fontShadow")
     text:SetShadowOffset(shadow and 1 or 0, shadow and -1 or 0)

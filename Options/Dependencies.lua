@@ -97,9 +97,10 @@ local RULES = {
     -- Elements/Classification.lua: the ring has a size, the marker a
     -- place; its own point only at a point of the frame.
     { on("eliteMarker"), { "eliteMarkerStyle", "eliteBorderSize", "eliteMarkerFramePoint", "eliteMarkerPoint",
-        "eliteMarkerX", "eliteMarkerY" } },
+        "eliteMarkerX", "eliteMarkerY", "eliteMarkerSize" } },
     { is("eliteMarkerStyle", "BORDER"), { "eliteBorderSize" } },
-    { is("eliteMarkerStyle", "MARKER"), { "eliteMarkerFramePoint", "eliteMarkerPoint", "eliteMarkerX", "eliteMarkerY" } },
+    { is("eliteMarkerStyle", "MARKER"), { "eliteMarkerFramePoint", "eliteMarkerPoint", "eliteMarkerX", "eliteMarkerY",
+        "eliteMarkerSize" } },
     { isNot("eliteMarkerFramePoint", "AUTO"), { "eliteMarkerPoint" } },
     -- Units/PartyPets.lua: the side only beside the owners. Show when
     -- solo needs no "show player": a solo header lists you anyway.

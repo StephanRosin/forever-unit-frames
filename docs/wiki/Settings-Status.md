@@ -84,6 +84,7 @@ Where the marker (Marker style) sits: **Automatic** is its usual place, on the p
 <tr><td><b>Marker: its own point</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Center</td><td>Target, Target of Target, Focus</td></tr>
 <tr><td><b>Marker: offset X</b></td><td>Marker style; with Automatic, moves it from there</td><td>-200 – 200</td><td>0</td><td>Target, Target of Target, Focus</td></tr>
 <tr><td><b>Marker: offset Y</b></td><td>Marker style; with Automatic, moves it from there</td><td>-200 – 200</td><td>0</td><td>Target, Target of Target, Focus</td></tr>
+<tr><td><b>Marker: size</b></td><td>Badge, or the word's font size; Auto: as always</td><td>0 – 64 (0: Auto)</td><td>Auto</td><td>Target, Target of Target, Focus</td></tr>
 </tbody>
 </table>
 

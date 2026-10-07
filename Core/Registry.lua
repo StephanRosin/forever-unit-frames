@@ -22,6 +22,9 @@ local function validate(def, v)
         v = math.floor(v + 0.5)
         if def.min and v < def.min then v = def.min end
         if def.max and v > def.max then v = def.max end
+        -- def.lowest (optional): with 0 standing for "Automatic", the
+        -- smallest number of its own; anything between goes up to it.
+        if def.lowest and v ~= 0 and v < def.lowest then v = def.lowest end
         return v
     elseif t == "bool" then
         if type(v) ~= "boolean" then return nil end

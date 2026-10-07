@@ -576,6 +576,8 @@ L.SETTING_eliteMarkerFramePoint = "Marcador: punto del marco"
 L.SETTING_eliteMarkerPoint = "Marcador: su propio punto"
 L.SETTING_eliteMarkerX = "Marcador: desplazamiento X"
 L.SETTING_eliteMarkerY = "Marcador: desplazamiento Y"
+L.SETTING_eliteMarkerSize = "Marcador: tamaño"
+L.HINT_eliteMarkerSize = "Insignia o tamaño de la palabra; Auto: como siempre"
 L.ENUM_eliteMarkerFramePoint_AUTO = "Automático"
 
 -- Tapped by others.
