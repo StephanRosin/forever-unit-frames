@@ -56,7 +56,7 @@ local function concealParty()
     Blizzard.Conceal(_G.CompactPartyFrame)
 end
 
-local function enabled(scope) return ns.Config.Get(scope, "enabled") end
+local function enabled(scope) return ns.FrameEnabled(scope) end
 
 -- Only frames we replace are hidden. Running again is harmless, so newly
 -- enabled frames are covered at once; getting a Blizzard frame back needs
@@ -80,7 +80,9 @@ function Blizzard.HideDefaults()
 end
 
 ns.Listen("CONFIG_CHANGED", function(_, key)
-    if key == nil or key == "enabled" or key == "hideBlizzardCastbar" then Blizzard.HideDefaults() end
+    if key == nil or key == "enabled" or key == "unitFrames" or key == "hideBlizzardCastbar" then
+        Blizzard.HideDefaults()
+    end
 end)
 
 -- Blizzard's party code acquires member frames and creates the compact

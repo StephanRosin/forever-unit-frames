@@ -221,7 +221,7 @@ end
 -- Out of combat only (Party.StyleAll): attributes, anchors, size and
 -- visibility are protected.
 function Pets.StyleAll(testing)
-    local on = get("enabled") and get("partyShowPets")
+    local on = ns.FrameEnabled(Party.KEY) and get("partyShowPets")
     local header = Pets.header
     if header then
         setAttributes(header, headerAttributes())

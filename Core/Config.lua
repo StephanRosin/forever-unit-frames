@@ -238,3 +238,9 @@ end
 -- the target of a copy: copying must not stack two frames or switch one
 -- on or off.
 ns.Config = ns.NewConfig(ns.Settings, "CONFIG_CHANGED", { x = true, y = true, enabled = true })
+
+-- Whether a unit frame is on: the master switch "Use unit frames" and
+-- the frame's own "enabled" (scope: a frame, or a scope derived from one).
+function ns.FrameEnabled(scope)
+    return ns.Config.Get("general", "unitFrames") and ns.Config.Get(scope, "enabled")
+end

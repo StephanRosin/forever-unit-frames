@@ -102,7 +102,7 @@ end
 Single.LayoutBars = layoutBars
 
 local function applyEnabled(frame)
-    if Config.Get(frame.key, "enabled") then
+    if ns.FrameEnabled(frame.key) then
         RegisterUnitWatch(frame)
     else
         UnregisterUnitWatch(frame)

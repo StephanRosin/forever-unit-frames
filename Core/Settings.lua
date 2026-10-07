@@ -94,6 +94,12 @@ Settings.Define({ key = "powerColorRage", code = "UG", scope = "inherit", type =
 Settings.Define({ key = "powerColorFocus", code = "UF", scope = "inherit", type = "color", default = { 1, 0.5, 0.25, 1 } })
 Settings.Define({ key = "powerColorEnergy", code = "UE", scope = "inherit", type = "color", default = { 1, 0.85, 0.2, 1 } })
 
+-- The master switch "Use unit frames": off, every unit frame counts as
+-- switched off (ns.FrameEnabled), each frame's own "enabled" kept as it
+-- is, so switching it back on restores them. The raid frames do not
+-- depend on it.
+Settings.Define({ key = "unitFrames", code = "UU", scope = "general", type = "bool", default = true })
+
 -- Frame layout
 Settings.Define({ key = "enabled", code = "E", scope = "frame", type = "bool", default = true })
 Settings.Define({ key = "width", code = "W", scope = "frame", type = "int", min = 40, max = 600,

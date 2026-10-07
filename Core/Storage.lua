@@ -174,7 +174,7 @@ end
 local function enabledFrames()
     local states = {}
     for _, scope in ipairs(ns.Settings.SCOPES) do
-        if scope ~= "general" then states[scope] = ns.Config.Get(scope, "enabled") end
+        if scope ~= "general" then states[scope] = ns.FrameEnabled(scope) end
     end
     return states
 end
@@ -187,7 +187,7 @@ end
 -- so the same problem applies if the backup turns it back off.
 local function hintReload(before, beforeHideCastbar)
     for scope, was in pairs(before) do
-        if was and not ns.Config.Get(scope, "enabled") then
+        if was and not ns.FrameEnabled(scope) then
             ns.Print(ns.L.RELOAD_FOR_BLIZZARD)
             return
         end

@@ -1120,3 +1120,7 @@ L.IMPORT_RAID_SEVERAL_SIZES = "Dieser Text enthält mehrere Schlachtzugsgrößen
 L.IMPORT_RAID_ONE_SIZE = "Dieser Text enthält eine Schlachtzugsgröße."
 L.IMPORT_RAID_COMBAT = "Nicht im Kampf."
 L.IMPORT_RAID_REFUSED = "Nicht importiert: Der Text enthält einen Wert, den diese Version nicht annimmt."
+
+L.SECTION_unitFrames = "Einheitenfenster"
+L.SETTING_unitFrames = "Einheitenfenster nutzen"
+L.HINT_unitFrames = "Aus: keins sichtbar; /reload holt Blizzards zurück"

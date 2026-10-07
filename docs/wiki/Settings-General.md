@@ -8,11 +8,20 @@ The **Profile** tab (export, import, reset) is explained on the [[Home]] page.
 
 **On this page:**
 
-- **[Appearance](#appearance):** [Font](#font) · [Display](#display) · [Title row](#title-row) · [Bars](#bars) · [Aura icons](#aura-icons) · [Border](#border) · [Shadow](#shadow) · [Shape](#shape) · [Minimap](#minimap)
+- **[Appearance](#appearance):** [Unit frames](#unit-frames) · [Font](#font) · [Display](#display) · [Title row](#title-row) · [Bars](#bars) · [Aura icons](#aura-icons) · [Border](#border) · [Shadow](#shadow) · [Shape](#shape) · [Minimap](#minimap)
 - **[Colors](#colors):** [Health bar](#health-bar) · [Absorb shields](#absorb-shields) · [Target highlight](#target-highlight) · [Incoming heals](#incoming-heals) · [Power colors](#power-colors)
 - **[Status](#status):** [Combat icon](#combat-icon) · [Range](#range)
 
 ## Appearance
+
+### Unit frames
+
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Use unit frames</b></td><td>Off: none shown; /reload brings back Blizzard's</td><td>On, Off</td><td>On</td></tr>
+</tbody>
+</table>
 
 ### Font
 

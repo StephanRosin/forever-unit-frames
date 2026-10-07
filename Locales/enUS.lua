@@ -1146,3 +1146,8 @@ L.IMPORT_RAID_SEVERAL_SIZES = "This text holds several raid sizes."
 L.IMPORT_RAID_ONE_SIZE = "This text holds one raid size."
 L.IMPORT_RAID_COMBAT = "Not in combat."
 L.IMPORT_RAID_REFUSED = "Not imported: this text holds a value this version does not take."
+
+-- The unit frames' master switch (Core/Settings.lua: unitFrames).
+L.SECTION_unitFrames = "Unit frames"
+L.SETTING_unitFrames = "Use unit frames"
+L.HINT_unitFrames = "Off: none shown; /reload brings back Blizzard's"

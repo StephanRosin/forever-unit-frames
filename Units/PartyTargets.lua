@@ -48,7 +48,7 @@ end
 Config.Derive(Targets.KEY, Party.KEY, resolve)
 
 function Targets.Enabled()
-    return get("enabled") and get("partyTargets")
+    return ns.FrameEnabled(Party.KEY) and get("partyTargets")
 end
 
 -- Where the target sits next to its member: points and offset, border to

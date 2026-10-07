@@ -1120,3 +1120,7 @@ L.IMPORT_RAID_SEVERAL_SIZES = "Ce texte contient plusieurs tailles de raid."
 L.IMPORT_RAID_ONE_SIZE = "Ce texte contient une seule taille de raid."
 L.IMPORT_RAID_COMBAT = "Pas en combat."
 L.IMPORT_RAID_REFUSED = "Non importé : ce texte contient une valeur que cette version n'accepte pas."
+
+L.SECTION_unitFrames = "Cadres d'unité"
+L.SETTING_unitFrames = "Utiliser les cadres"
+L.HINT_unitFrames = "Désactivé : aucun ; /reload rend ceux de Blizzard"

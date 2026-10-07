@@ -1121,3 +1121,7 @@ L.IMPORT_RAID_SEVERAL_SIZES = "Este texto contiene varios tamaños de banda."
 L.IMPORT_RAID_ONE_SIZE = "Este texto contiene un solo tamaño de banda."
 L.IMPORT_RAID_COMBAT = "No en combate."
 L.IMPORT_RAID_REFUSED = "No importado: el texto contiene un valor que esta versión no acepta."
+
+L.SECTION_unitFrames = "Marcos de unidad"
+L.SETTING_unitFrames = "Usar marcos de unidad"
+L.HINT_unitFrames = "No: ninguno; /reload devuelve los de Blizzard"

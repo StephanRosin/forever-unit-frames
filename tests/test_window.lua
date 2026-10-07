@@ -14,7 +14,8 @@ ns.Options.Select("general")
 ns.Options.SelectTab("appearance")
 local keys = {}
 for _, row in ipairs(ns.Options.rows) do if row.key then keys[#keys + 1] = row.key end end
-H.check("first general row", keys[1], "fontFace")
+H.check("first general row: the master switch", keys[1], "unitFrames")
+H.check("then the font", keys[2], "fontFace")
 
 -- Frame page, Layout tab; slider edits config
 ns.Options.Select("player")

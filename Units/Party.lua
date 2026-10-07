@@ -89,7 +89,7 @@ end
 -- No handle while the party frame is switched off.
 function Party.MoverSpec()
     return { scope = Party.KEY, point = "TOPLEFT", size = Party.BlockSize, label = function() return ns.L.FRAME_party end,
-        active = function() return get("enabled") end }
+        active = function() return ns.FrameEnabled(Party.KEY) end }
 end
 
 -- Shows a header (Hide + Show lays its buttons out again, OnShow). In a
@@ -204,7 +204,7 @@ local function fitToBlock(block)
     else
         block:SetPoint("TOPLEFT", UIParent, "CENTER", blockCorner())
     end
-    block:SetShown(get("enabled"))
+    block:SetShown(ns.FrameEnabled(Party.KEY))
 end
 
 local function plainBlock()
@@ -259,7 +259,7 @@ function Party.StyleAll()
         showFakes()
     else
         hideFakes()
-        Party.ShowHeader(header, get("enabled"))
+        Party.ShowHeader(header, ns.FrameEnabled(Party.KEY))
     end
     ns.PartyPets.StyleAll(testing)
     ns.PartyTargets.StyleAll(testing)

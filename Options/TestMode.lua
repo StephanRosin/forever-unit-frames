@@ -36,7 +36,7 @@ local function applyOff(frame)
     saved[frame] = nil
     ns.Single.SetUnit(frame, unit)
     ns.Single.Preview(frame, false)
-    if ns.Config.Get(frame.key, "enabled") then
+    if ns.FrameEnabled(frame.key) then
         RegisterUnitWatch(frame)
     else
         UnregisterUnitWatch(frame)
@@ -59,7 +59,7 @@ function TestMode.Set(state)
     on = state
     if on then
         for _, frame in pairs(ns.Frames) do
-            if ns.Config.Get(frame.key, "enabled") then applyOn(frame) end
+            if ns.FrameEnabled(frame.key) then applyOn(frame) end
         end
     else
         for frame in pairs(saved) do applyOff(frame) end
@@ -86,7 +86,7 @@ ns.Listen("CONFIG_CHANGED", function()
     if not on then return end
     ns.AfterCombat("testmode", function()
         for _, frame in pairs(ns.Frames) do
-            local enabled = ns.Config.Get(frame.key, "enabled")
+            local enabled = ns.FrameEnabled(frame.key)
             local owned = saved[frame] ~= nil
             if enabled and not owned then
                 applyOn(frame)

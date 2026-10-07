@@ -9,6 +9,8 @@ local SHADOW_KEYS = { "shadowEnabled", "shadowAlpha", "shadowSize" }
 
 Schema.GENERAL = {
     { id = "appearance", sections = {
+        -- The master switch first (Core/Settings.lua: unitFrames).
+        { id = "unitFrames", keys = { "unitFrames" } },
         -- action: a two-click button under the rows (Options/Window.lua).
         { id = "font", keys = { "fontFace", "fontSize", "valueFontSize", "fontOutline", "fontShadow" },
             action = "applyFontToFrames" },

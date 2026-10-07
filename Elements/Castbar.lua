@@ -297,7 +297,7 @@ function Castbar.MoverSpec(frame)
         label = function() return ns.L.MOVER_CASTBAR:format(ns.L["FRAME_" .. scope]) end,
         size = function() return size(scope) end,
         active = function()
-            return Config.Get(scope, "enabled") and Config.Get(scope, "castbarEnabled")
+            return ns.FrameEnabled(scope) and Config.Get(scope, "castbarEnabled")
                 and Castbar.Placement(scope) == "DETACHED"
         end,
     }
