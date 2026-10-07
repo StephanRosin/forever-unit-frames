@@ -615,6 +615,8 @@ L.HINT_tapDenied = "Someone else attacked it first: no experience or loot"
 -- Player fade: back with a target.
 L.SETTING_playerFadeTarget = "Show in full with a target"
 L.HINT_playerFadeTarget = "Fades back in when you select a target"
+L.SETTING_playerFadePet = "Pet frame fades too"
+L.HINT_playerFadePet = "Your pet's frame takes the same opacity"
 
 -- Druid mana.
 L.SECTION_druidMana = "Druid mana"

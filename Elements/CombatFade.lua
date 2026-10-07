@@ -13,6 +13,12 @@ local _, ns = ...
 -- (secret) result as it is. Power is not looked at: it has no such
 -- curve path to a single opacity together with health, and mana and
 -- energy refill quickly out of combat anyway.
+--
+-- The pet frame may fade with it (playerFadePet, off by default): it gets
+-- the very value the player frame gets, secret or not, through SetAlpha
+-- only. While it does, the pet's range fading (Elements/Range.lua) leaves
+-- its opacity alone (CombatFade.HoldsPet); whenever the player frame is in
+-- full (a blocker above), the pet goes back to its range fading.
 local CombatFade = {
     name = "CombatFade",
     unitEvents = { "UNIT_HEALTH", "UNIT_MAXHEALTH",
@@ -58,21 +64,46 @@ local function setAlpha(frame, value)
     if frame.portrait3D then frame.portrait3D:SetAlpha(value) end
 end
 
-function CombatFade.Apply(frame)
-    frame = frame or ns.Frames.player
+-- Whether the pet frame's opacity is the player frame's right now.
+function CombatFade.HoldsPet(frame)
+    return frame ~= nil and frame == ns.Frames.pet and Config.Get("player", "playerFadePet") == true
+        and CombatFade.Blocker() == nil
+end
+
+-- The pet frame takes value while it follows; one that followed and no
+-- longer does goes back to its range fading (its 3D portrait to full).
+local function applyPet(value)
+    local pet = ns.Frames.pet
+    if not pet then return end
+    if CombatFade.HoldsPet(pet) then
+        setAlpha(pet, value)
+        pet.fadeFollowed = true
+    elseif pet.fadeFollowed then
+        pet.fadeFollowed = nil
+        setAlpha(pet, 1)
+        ns.Range.Update(pet)
+    end
+end
+
+function CombatFade.Apply()
+    local frame = ns.Frames.player
     if not frame then return end
     if CombatFade.Blocker() ~= nil then
         setAlpha(frame, 1)
+        applyPet(1)
         return
     end
     local alpha = Config.Get("player", "playerFadeAlpha") / 100
     local ok, value = pcall(UnitHealthPercent, "player", false, healthCurve(alpha))
-    if ok and type(value) ~= "nil" then setAlpha(frame, value) else setAlpha(frame, 1) end
+    if not ok or type(value) == "nil" then value = 1 end
+    setAlpha(frame, value)
+    applyPet(value)
 end
 
+local FRAMES = { player = true, pet = true }
 function CombatFade.Build() end
-function CombatFade.Style(frame) if frame.key == "player" then CombatFade.Apply(frame) end end
-function CombatFade.Update(frame) if frame.key == "player" then CombatFade.Apply(frame) end end
+function CombatFade.Style(frame) if FRAMES[frame.key] then CombatFade.Apply() end end
+function CombatFade.Update(frame) if FRAMES[frame.key] then CombatFade.Apply() end end
 
 local function applyPlayer() CombatFade.Apply() end
 for _, event in ipairs({ "PLAYER_REGEN_DISABLED", "PLAYER_REGEN_ENABLED", "PLAYER_ENTERING_WORLD",

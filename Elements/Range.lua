@@ -497,6 +497,9 @@ local function apply(frame, inRange)
 end
 
 local function check(frame)
+    -- A pet frame that fades with the player frame (Elements/CombatFade.lua)
+    -- has the player's opacity.
+    if ns.CombatFade and ns.CombatFade.HoldsPet(frame) then return end
     if frame.rangeSample ~= nil then
         apply(frame, not frame.rangeSample)
         return

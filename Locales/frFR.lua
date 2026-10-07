@@ -591,6 +591,8 @@ L.HINT_tapDenied = "Quelqu'un d'autre a attaqué en premier : ni expérience ni 
 -- Player fade: back with a target.
 L.SETTING_playerFadeTarget = "Afficher en entier avec une cible"
 L.HINT_playerFadeTarget = "Réapparaît dès que vous choisissez une cible"
+L.SETTING_playerFadePet = "Le cadre du familier aussi"
+L.HINT_playerFadePet = "Le cadre de votre familier prend la même opacité"
 
 -- Druid mana.
 L.SECTION_druidMana = "Mana du druide"

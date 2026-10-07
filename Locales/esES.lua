@@ -592,6 +592,8 @@ L.HINT_tapDenied = "Otro atacó primero: sin experiencia ni botín"
 -- Player fade: back with a target.
 L.SETTING_playerFadeTarget = "Mostrar entero con objetivo"
 L.HINT_playerFadeTarget = "Vuelve a aparecer al elegir un objetivo"
+L.SETTING_playerFadePet = "El marco de la mascota también"
+L.HINT_playerFadePet = "El marco de tu mascota toma la misma opacidad"
 
 -- Druid mana.
 L.SECTION_druidMana = "Maná de druida"

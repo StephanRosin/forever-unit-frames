@@ -591,6 +591,8 @@ L.HINT_tapDenied = "Jemand anderes hat zuerst angegriffen: keine Erfahrung, kein
 -- Player fade: back with a target.
 L.SETTING_playerFadeTarget = "Mit Ziel voll anzeigen"
 L.HINT_playerFadeTarget = "Blendet wieder ein, sobald du ein Ziel wählst"
+L.SETTING_playerFadePet = "Begleiterrahmen blendet mit aus"
+L.HINT_playerFadePet = "Der Rahmen deines Begleiters wird gleich durchsichtig"
 
 -- Druid mana.
 L.SECTION_druidMana = "Druidenmana"

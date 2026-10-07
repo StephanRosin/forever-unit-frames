@@ -62,6 +62,8 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 
 ## Indicators
 
+Where the marker (Marker style) sits: **Automatic** is its usual place, on the portrait's corner or as a word above the frame's top right corner, out of the class icon's way; the offset moves it from there. A point on the frame puts the marker's own point there instead, plus the offset. The border style ignores them.
+
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>

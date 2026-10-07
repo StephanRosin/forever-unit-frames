@@ -152,6 +152,17 @@ local SECTION_NOTE = {
         .. " back after a `/reload`). Each frame's own switch (the **Frames** tab, or the frame's page) keeps its"
         .. " value and is greyed meanwhile; switched on again, every frame is as its own switch says. The raid"
         .. " frames do not depend on it: they have their own switch in `/fuf raid`.",
+    healthText = "Each row (title, health and power) can have a centre text as well. While one is set, the"
+        .. " row's left and right texts keep to their third of the row and are cut off with \"...\" where they"
+        .. " reach it; empty, the left and right texts share the row as before.",
+    indicators = "Where the marker (Marker style) sits: **Automatic** is its usual place, on the portrait's corner"
+        .. " or as a word above the frame's top right corner, out of the class icon's way; the offset moves it"
+        .. " from there. A point on the frame puts the marker's own point there instead, plus the offset. The"
+        .. " border style ignores them.",
+    outOfCombat = "With **Pet frame fades too** the pet frame takes the player frame's opacity whenever that"
+        .. " fades, and shows in full while you miss health. Meanwhile the pet frame's own range fading waits;"
+        .. " it is back whenever something keeps the player frame in full (combat, a cast, a target, test mode,"
+        .. " unlocked frames).",
 }
 
 -- One table per section: option, what it does, choices, default, frames.

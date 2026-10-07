@@ -703,6 +703,9 @@ Settings.Define({ key = "druidManaHeight", code = "MH", scope = "frame", only = 
 -- Back in full while you have a target: see your resources before a pull.
 Settings.Define({ key = "playerFadeTarget", code = "WT", scope = "frame", only = { player = true }, type = "bool",
     default = true })
+-- The pet frame fades with it (the same opacity); off by default.
+Settings.Define({ key = "playerFadePet", code = "WP", scope = "frame", only = { player = true }, type = "bool",
+    default = false })
 
 -- Dispel highlight (Elements/Dispel.lua): the border of the player and
 -- party frames tints while the unit has a debuff you can dispel.
