@@ -64,6 +64,7 @@ CellAuras.TINT_ALPHA = 0.35
 CellAuras.METHODS = { "SetUnit", "GetUnit", "UpdateAllAuras", "SetEditModePreviewEnabled", "AddAuraSlot",
     "SetAuraSlotEnabled", "SetAuraSlotFilterString", "SetAuraSlotCandidateFilters", "AddAuraGroup",
     "SetAuraGroupEnabled", "SetAuraGroupFilterString", "SetAuraGroupMaxFrameCount", "SetAuraGroupLayout",
+    "SetAuraGroupCandidateFilters",
     "SetFlowLayoutAxis", "SetFlowLayoutAnchorPoint", "SetFlowLayoutGrowthDirection" }
 
 -- Test mode's debuffs: the unit frames' samples (dispel types Magic,
@@ -84,6 +85,15 @@ end
 -- restyle.
 local waiting = setmetatable({}, { __mode = "k" })
 local stale = setmetatable({}, { __mode = "k" })
+
+-- Hidden auras: the shown size's list and the unit frames' account list
+-- (Core/AuraBlocklist.lua), as a set; nil when both are empty. The buff
+-- indicators and the debuff row leave them out where the client allows
+-- filtering by spell.
+function CellAuras.BlockSet()
+    local Blocklist = ns.AuraBlocklist
+    return Blocklist.Merge(Blocklist.Set(ns.Config.Get("general", "auraBlockAccount")), Blocklist.Set(get("auraBlock")))
+end
 
 -- Slots -------------------------------------------------------------------------------
 
@@ -283,11 +293,20 @@ CellAuras.AddPart({
         if not auras.row and not wanted then return false end
         local size = rowSize()
         local layout = rowLayout(size)
+        local block = CellAuras.BlockSet()
+        local filters = block and { excludeSpellIDs = block } or nil
         if not auras.row then
             local row = {}
             container:AddAuraGroup(key, CellAuras.ROW_FILTER, { maxFrameCount = get("debuffCount"), layout = layout,
-                initializeFrame = function(b) initRowButton(frame, row, b) end })
+                candidateFilters = filters, initializeFrame = function(b) initRowButton(frame, row, b) end })
             auras.row = row
+            auras.rowFilters = filters
+        end
+        -- Given again only when they changed (the container then looks
+        -- at every aura again).
+        if not same(filters, auras.rowFilters) then
+            container:SetAuraGroupCandidateFilters(key, filters)
+            auras.rowFilters = filters
         end
         container:SetFlowLayoutAxis(AnchorUtil.FlowLayoutAxis.Horizontal)
         container:SetFlowLayoutAnchorPoint("BOTTOMLEFT")

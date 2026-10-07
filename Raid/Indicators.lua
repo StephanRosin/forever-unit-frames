@@ -141,8 +141,10 @@ CellAuras.AddPart({
         for _, ind in ipairs(Raid.INDICATORS) do
             local key = Indicators.Key(ind)
             local spells = Indicators.SpellSet(get(key .. "Spells"))
+            -- Hidden auras (Raid/CellAuras.lua): left out even when listed here.
+            local filters = spells and { includeSpellIDs = spells, excludeSpellIDs = CellAuras.BlockSet() }
             local slot = CellAuras.SetSlot(frame, container, Indicators.SlotKey(ind), Indicators.Filter(key),
-                spells ~= nil, function(f, b) init(f, b, ind) end, spells and { includeSpellIDs = spells })
+                spells ~= nil, function(f, b) init(f, b, ind) end, filters)
             if slot and not pcall(look, frame, slot, ind) then refused = true end
         end
         return refused

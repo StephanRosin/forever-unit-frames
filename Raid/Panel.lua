@@ -524,6 +524,12 @@ ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
         refresh()
     end
 end)
+-- The unit frames' account list of hidden auras applies to the cells too
+-- (Raid/CellAuras.lua); so does a whole new unit-frame profile.
+ns.Listen("CONFIG_CHANGED", function(scope, key)
+    if not built() then return end
+    if scope == nil or (scope == "general" and (key == nil or key == "auraBlockAccount")) then refresh() end
+end)
 ns.Listen("PIXEL_GRID_CHANGED", function() if built() then refresh() end end)
 -- The cells' words (Dead, Offline, ...) follow the language at once.
 ns.Listen("LANGUAGE_CHANGED", function() if built() then refresh() end end)
