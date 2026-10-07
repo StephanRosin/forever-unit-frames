@@ -43,7 +43,7 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 - **Special panels:** main tanks, main assists, your own tanks, favorites (right-click a cell to add a player) and the raid's pets, each in a panel of its own.
 - **Own panels:** up to nine panels of your own beside the main panel; drag a block from one panel to another (a "Healers" panel beside the groups).
 - **Raid tools bar** in place of Blizzard's raid manager: raid target icons, ready check, role poll, world markers, everyone assistant, party/raid conversion and the loot method.
-- **Click-casting:** spells, items, macros, target, focus, assist and the menu on up to 40 mouse combinations over the cells and the party frames, and keys that cast on the member under the mouse. Steps aside while Clique is loaded.
+- **Click-casting:** spells, items, macros, target, focus, assist and the menu on up to 40 mouse combinations over the raid cells and every unit frame (player, pet, target, target of target, focus, party; switchable per frame), and keys that cast on the member under the mouse. Steps aside while Clique is loaded.
 - **Buff watch:** missing and expiring group buffs of your class in a small window and on the cells; a click or the smart buff key casts the next one, out of combat.
 - **Templates and setup wizard:** role templates (healer, tank, DPS, dispel only), looks (Forever, Flat, Classic) and a wizard that sets role, look and click-casting in a few steps. Named profiles of all sizes or one for every character of your account; copy, reset, export and import all sizes or one; one step of undo.
 - `/fuf raid` opens the raid options window (top bar General | 10 | 20 | 40 | Profiles); so do a button in `/fuf`, the raid frames' own minimap button and the addon compartment. Its test mode shows a pretend raid of the size you edit.
@@ -67,7 +67,7 @@ In a "Status" tab per frame.
 - Party: debuffs you can dispel can get a group of their own, with their own size and position (for example big in the middle of the frame); the normal debuff row then leaves them out.
 - Wraps to new rows when they don't fit, with a limit per row.
 - Anchor to the frame, the health bar, the power bar, the castbar or the other aura group, with any of the 9 points and an X/Y offset.
-- Size, spacing, growth direction, maximum count, "only mine", "dispellable only", "hide tracking" (herb, mineral and treasure finding, hunter tracking, sensing), "hide permanent" (every aura without a duration, e.g. auras and stances), "hide longer than N minutes" (hour potions, food, hour-long buffs), remaining time, dispel-type colours and an icon border that can be switched off or made thicker.
+- Size, spacing, growth direction, maximum count, "only mine", "dispellable only", "hide tracking" (herb, mineral and treasure finding, hunter tracking, sensing), "hide permanent" (every aura without a duration, e.g. auras and stances), "hide longer than N minutes" (hour potions, food, hour-long buffs), **hidden auras by spell** (a list for every frame, every raid size or everywhere; Shift + right-click on a row of auras picks one; works where the game allows it: buffs on you and your group, debuffs on enemies), **your own auras placed freely** apart from the others, remaining time, dispel-type colours and an icon border that can be switched off or made thicker.
 
 ## Castbars
 - Castbars for player, target, target of target, focus and party.
