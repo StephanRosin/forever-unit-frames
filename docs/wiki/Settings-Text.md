@@ -14,6 +14,7 @@ The **Text** tab on each frame's page in `/fuf`. The last column says which fram
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
 <tr><td><b>Title row, left text</b></td><td>Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>Player, Target, Party: Level and name; Target of Target, Focus, Pet: Name</td><td>all</td></tr>
+<tr><td><b>Title row, centre text</b></td><td>Left and right then keep to a third each</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>None</td><td>all</td></tr>
 <tr><td><b>Title row, right text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>None</td><td>all</td></tr>
 <tr><td><b>Title text color</b></td><td></td><td>Class (players), Reaction, White</td><td>Class (players)</td><td>all</td></tr>
 <tr><td><b>AFK/DND badge</b></td><td>Gold AFK or red DND badge after the name</td><td>On, Off</td><td>On</td><td>all</td></tr>
@@ -32,6 +33,7 @@ The **Text** tab on each frame's page in `/fuf`. The last column says which fram
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
 <tr><td><b>Health bar, left text</b></td><td>Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>Player, Target, Party: Current / max; Target of Target, Pet: Name; Focus: None</td><td>all</td></tr>
+<tr><td><b>Health bar, centre text</b></td><td>Left and right then keep to a third each</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>None</td><td>all</td></tr>
 <tr><td><b>Health bar, right text</b></td><td>Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>Player, Target, Focus, Party: Percent; Target of Target, Pet: None</td><td>all</td></tr>
 </tbody>
 </table>
@@ -42,6 +44,7 @@ The **Text** tab on each frame's page in `/fuf`. The last column says which fram
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
 <tr><td><b>Power bar, left text</b></td><td>Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>Player, Target, Party: Current / max; Target of Target, Focus, Pet: None</td><td>all</td></tr>
+<tr><td><b>Power bar, centre text</b></td><td>Left and right then keep to a third each</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>None</td><td>all</td></tr>
 <tr><td><b>Power bar, right text</b></td><td>Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race</td><td>Player, Target, Party: Percent; Target of Target, Focus, Pet: None</td><td>all</td></tr>
 </tbody>
 </table>

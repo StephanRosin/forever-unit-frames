@@ -74,6 +74,7 @@ local function layoutBars(frame)
     frame.titleHeight = titleH
     frame.titleLeft, frame.titleRight = left, right
     local width = frameWidth - left - right
+    frame.titleWidth = width
     -- The overheal lane (Elements/HealPrediction.lua) takes the end of
     -- the health bar's row; the title row keeps the full width, the power
     -- bar too unless it is set to match the health bar.

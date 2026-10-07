@@ -87,6 +87,9 @@ L.SETTING_textHealthLeft = "Barra de salud, texto izquierdo"
 L.SETTING_textHealthRight = "Barra de salud, texto derecho"
 L.SETTING_textPowerLeft = "Barra de recurso, texto izquierdo"
 L.SETTING_textPowerRight = "Barra de recurso, texto derecho"
+L.SETTING_titleTextCenter = "Fila de título, texto central"
+L.SETTING_textHealthCenter = "Barra de salud, texto central"
+L.SETTING_textPowerCenter = "Barra de recurso, texto central"
 
 L.LOCKED_IN_COMBAT = "Los marcos no se pueden mover en combate."
 L.UNLOCKED = "Marcos desbloqueados. Arrástralos y escribe /fuf lock."
@@ -611,6 +614,9 @@ L.HINT_textHealthLeft = "Nivel, clase y raza: p. ej. 60 Mago Gnomo o 60 Humanoid
 L.HINT_textHealthRight = "Nivel, clase y raza: p. ej. 60 Mago Gnomo o 60 Humanoide"
 L.HINT_textPowerLeft = "Nivel, clase y raza: p. ej. 60 Mago Gnomo o 60 Humanoide"
 L.HINT_textPowerRight = "Nivel, clase y raza: p. ej. 60 Mago Gnomo o 60 Humanoide"
+L.HINT_titleTextCenter = "Izquierda y derecha ocupan un tercio cada una"
+L.HINT_textHealthCenter = "Izquierda y derecha ocupan un tercio cada una"
+L.HINT_textPowerCenter = "Izquierda y derecha ocupan un tercio cada una"
 
 -- Marcos de banda: importar un tamaño de banda.
 L.IMPORT_RAID_NO_SIZE = "Este texto no contiene ningún tamaño de banda."

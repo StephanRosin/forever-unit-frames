@@ -107,6 +107,9 @@ L.SETTING_textHealthLeft = "Health bar, left text"
 L.SETTING_textHealthRight = "Health bar, right text"
 L.SETTING_textPowerLeft = "Power bar, left text"
 L.SETTING_textPowerRight = "Power bar, right text"
+L.SETTING_titleTextCenter = "Title row, centre text"
+L.SETTING_textHealthCenter = "Health bar, centre text"
+L.SETTING_textPowerCenter = "Power bar, centre text"
 
 L.LOCKED_IN_COMBAT = "Frames cannot be moved in combat."
 L.UNLOCKED = "Frames unlocked. Drag them, then type /fuf lock."
@@ -634,6 +637,9 @@ L.HINT_textHealthLeft = "Level, class and race: e.g. 60 Mage Gnome, or 60 Humano
 L.HINT_textHealthRight = "Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid"
 L.HINT_textPowerLeft = "Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid"
 L.HINT_textPowerRight = "Level, class and race: e.g. 60 Mage Gnome, or 60 Humanoid"
+L.HINT_titleTextCenter = "Left and right then keep to a third each"
+L.HINT_textHealthCenter = "Left and right then keep to a third each"
+L.HINT_textPowerCenter = "Left and right then keep to a third each"
 
 -- Raid frames: importing one raid size.
 L.IMPORT_RAID_NO_SIZE = "This text holds no raid size."

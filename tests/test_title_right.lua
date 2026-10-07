@@ -68,9 +68,9 @@ ns.Single.UpdateAll(t)
 H.checkTrue("AFK badge shown", t.awayBadge:IsShown())
 H.checkTrue("less room for the name with a right text", withRight <= left:GetWidth())
 
--- Options: beside the left text.
+-- Options: beside the left text (the centre text, decision 59, between them).
 local keys
 for _, sec in ipairs(ns.Schema.FRAME[4].sections) do
     if sec.id == "titleText" then keys = table.concat(sec.keys, ",") end
 end
-H.checkTrue("on the Text tab after the left text", keys and keys:find("titleText,titleTextRight", 1, true))
+H.checkTrue("on the Text tab after the left text", keys and keys:find("titleText,titleTextCenter,titleTextRight", 1, true))

@@ -19,7 +19,23 @@ local SLOTS = {
     { field = "healthRight", setting = "textHealthRight", bar = "health", point = "RIGHT", x = -4 },
     { field = "powerLeft", setting = "textPowerLeft", bar = "power", point = "LEFT", x = 4, before = "powerRight" },
     { field = "powerRight", setting = "textPowerRight", bar = "power", point = "RIGHT", x = -4 },
+    -- Centre texts, empty by default (placeCentres): last, so the left and
+    -- right texts keep their order everywhere else.
+    { field = "titleCenter", setting = "titleTextCenter", bar = "title", kind = "health", center = true },
+    { field = "healthCenter", setting = "textHealthCenter", bar = "health", center = true },
+    { field = "powerCenter", setting = "textPowerCenter", bar = "power", center = true },
 }
+
+-- Each row's left, centre and right text, and the width of its bar (plain
+-- numbers from the layout, Units/Single.lua).
+local ROWS = {
+    title = { left = "title", center = "titleCenter", right = "titleRight", width = "titleWidth" },
+    health = { left = "healthLeft", center = "healthCenter", right = "healthRight", width = "healthWidth" },
+    power = { left = "powerLeft", center = "powerCenter", right = "powerRight", width = "powerWidth" },
+}
+local ROW_ORDER = { "title", "health", "power" }
+local SLOT_OF = {}
+for _, slot in ipairs(SLOTS) do SLOT_OF[slot.field] = slot end
 
 -- Difficulty colours against the player's level, as Blizzard's
 -- (DifficultyUtil): red from 5 above, orange 3-4, yellow within 2, green
@@ -387,6 +403,8 @@ end
 -- one ends where the right one begins (an empty text is zero wide). No
 -- measuring: the texts may be secret; the badge's place is plain numbers.
 -- The vertical offset keeps the text centred on the row.
+-- With a centre text the left one ends where it begins and the right one
+-- begins where it ends (placeCentres).
 local function placeTitleEnd(frame)
     local title, right = frame.texts.title, frame.texts.titleRight
     right:ClearAllPoints()
@@ -396,7 +414,13 @@ local function placeTitleEnd(frame)
     else
         right:SetPoint("RIGHT", frame.title, "RIGHT", ns.Pixel.Snap(-4, right), 0)
     end
-    title:SetPoint("RIGHT", right, "LEFT", ns.Pixel.Snap(-4, title), 0)
+    local center = frame.centerShown and frame.centerShown.title and frame.texts.titleCenter
+    if center then
+        right:SetPoint("LEFT", center, "RIGHT", ns.Pixel.Snap(4, right), 0)
+        title:SetPoint("RIGHT", center, "LEFT", ns.Pixel.Snap(-4, title), 0)
+    else
+        title:SetPoint("RIGHT", right, "LEFT", ns.Pixel.Snap(-4, title), 0)
+    end
 end
 
 local function updateClassIcon(frame)
@@ -503,9 +527,12 @@ local function restoreTitle(frame)
 end
 
 -- The room the title text has: the title row less its insets, less the
--- class badge where that sits in the row, and less the right title text.
+-- class badge where that sits in the row, and less the right title text;
+-- with a centre text, its third less the insets.
 -- A secret right text cannot be measured: it is given half the room.
 local function titleRoom(frame)
+    -- With a centre text: its third.
+    if frame.centerShown and frame.centerShown.title then return math.max(0, frame.centerThird.title - 8) end
     local width = (Secrets.Number(frame.title:GetWidth()) or 0) - 8
     if frame.classIcon:IsShown() and frame.classBadgeInRow then
         width = width - (frame.classBadgeBox.right - frame.classBadgeBox.left) - 2
@@ -613,6 +640,39 @@ local function placeCentred(frame, nameSize, secondSize)
     end
 end
 
+-- Centre texts (decision 59): a row whose centre text is set gives it the
+-- middle third of its bar, the left text the first and the right text the
+-- last, each cut off with "..." at its edge. The thirds are plain numbers
+-- from the layout; nothing is measured. Rows without one keep the left
+-- and right texts as Style placed them; the empty centre text is hidden.
+-- Raid cells centre their texts their own way and never have one.
+local function placeCentres(frame)
+    frame.centerShown, frame.centerThird = frame.centerShown or {}, frame.centerThird or {}
+    for _, bar in ipairs(ROW_ORDER) do
+        local row = ROWS[bar]
+        local center = frame.texts[row.center]
+        local on = not frame.centerTexts and Config.Get(frame.key, SLOT_OF[row.center].setting) ~= "NONE"
+        frame.centerShown[bar] = on
+        center:SetShown(on)
+        if on then
+            local third = ns.Pixel.Snap((frame[row.width] or 0) / 3, center)
+            frame.centerThird[bar] = third
+            center:SetPoint("LEFT", frame[bar], "LEFT", third, 0)
+            center:SetPoint("RIGHT", frame[bar], "RIGHT", -third, 0)
+            center:SetJustifyH("CENTER")
+            center:SetWordWrap(false)
+            -- The title's ends are placed with the class badge
+            -- (placeTitleEnd); the bars' here.
+            if bar ~= "title" then
+                local left, right = frame.texts[row.left], frame.texts[row.right]
+                left:SetPoint("RIGHT", center, "LEFT", ns.Pixel.Snap(-4, left), 0)
+                right:SetPoint("LEFT", center, "RIGHT", ns.Pixel.Snap(4, right), 0)
+                right:SetWordWrap(false)
+            end
+        end
+    end
+end
+
 function Texts.Style(frame)
     local scope = frame.key
     frame.powerTextLayer:SetFrameLevel(frame.power:GetFrameLevel() + Texts.POWER_TEXT_LEVELS)
@@ -628,7 +688,10 @@ function Texts.Style(frame)
         Texts.SetFont(fs, font, (isValue and valueSize > 0) and valueSize or size, outline)
         fs:SetShadowOffset(shadow and 1 or 0, shadow and -1 or 0)
         fs:ClearAllPoints()
-        fs:SetPoint(slot.point, frame[slot.bar], slot.point, ns.Pixel.Snap(slot.x, fs), 0)
+        if not slot.center then
+            fs:SetPoint(slot.point, frame[slot.bar], slot.point, ns.Pixel.Snap(slot.x, fs), 0)
+            fs:SetJustifyH(slot.point)
+        end
         if slot.before then
             -- A left text ends where the right one begins (an empty right
             -- text is zero wide), so the two never overlap on a narrow
@@ -636,8 +699,8 @@ function Texts.Style(frame)
             fs:SetPoint("RIGHT", frame.texts[slot.before], "LEFT", ns.Pixel.Snap(-4, fs), 0)
             fs:SetWordWrap(false)
         end
-        fs:SetJustifyH(slot.point)
     end
+    placeCentres(frame)
     if frame.centerTexts then
         local secondTag = Config.Get(scope, "textHealthRight")
         placeCentred(frame, size, (SAMPLE_TAGS[secondTag] and valueSize > 0) and valueSize or size)
@@ -647,6 +710,7 @@ function Texts.Style(frame)
     title:SetShown(frame.titleHeight > 0)
     frame.texts.titleRight:SetWordWrap(false)
     frame.texts.titleRight:SetShown(frame.titleHeight > 0)
+    frame.texts.titleCenter:SetShown(frame.titleHeight > 0 and frame.centerShown.title)
     styleBadge(frame)
     if not classIconWanted(frame) then
         showClassIcon(frame, false)
@@ -658,16 +722,19 @@ function Texts.Style(frame)
 end
 
 -- Title text colour: class (players) or reaction, or plain white. The
--- right title text takes it when it names the unit; values stay white.
+-- right and centre title texts take it when they name the unit; values
+-- stay white.
 local function paintTitle(frame)
     local mode = Config.Get(frame.key, "titleColorMode")
     local r, g, b = 1, 1, 1
     if mode ~= "WHITE" then r, g, b = ns.Health.UnitColor(frame.unit, mode, frame.key) end
     frame.texts.title:SetTextColor(r, g, b, 1)
-    if Texts.NAME_TAGS[Config.Get(frame.key, "titleTextRight")] then
-        frame.texts.titleRight:SetTextColor(r, g, b, 1)
-    else
-        frame.texts.titleRight:SetTextColor(1, 1, 1, 1)
+    for field, key in pairs({ titleRight = "titleTextRight", titleCenter = "titleTextCenter" }) do
+        if Texts.NAME_TAGS[Config.Get(frame.key, key)] then
+            frame.texts[field]:SetTextColor(r, g, b, 1)
+        else
+            frame.texts[field]:SetTextColor(1, 1, 1, 1)
+        end
     end
 end
 
@@ -706,8 +773,9 @@ local function paintBars(frame, wordSlot)
 end
 
 -- Dead, ghost and offline units (Elements/UnitStatus.lua): the health
--- bar's value texts give way to one word, in the first of them; a bar
--- without a value text shows it on the right when that side is empty.
+-- bar's value texts give way to one word, in the first of them (left,
+-- right, then centre); a bar without a value text shows it on the right
+-- when that side is empty.
 -- Returns the slot field that shows the word, or nil.
 local function statusSlot(frame)
     local empty
@@ -715,7 +783,7 @@ local function statusSlot(frame)
         if slot.bar == "health" then
             local tag = Config.Get(frame.key, slot.setting)
             if SAMPLE_TAGS[tag] then return slot.field end
-            if tag == "NONE" then empty = slot.field end
+            if tag == "NONE" and not slot.center then empty = slot.field end
         end
     end
     return empty

@@ -48,14 +48,15 @@ local get = Cell.Get
 -- What a cell never shows: no title row, portrait, castbar, the unit
 -- frames' aura icons (a cell's are its own, Raid/CellAuras.lua) or threat
 -- glow, no heals past the edge (the next cell sits there), no shadow (it
--- would lie on the neighbours), no power texts, a ring right around the
--- cell (the cell spacing keeps them apart). The rows: a thin power strip
--- under the health bar.
+-- would lie on the neighbours), no power or centre texts, a ring right
+-- around the cell (the cell spacing keeps them apart). The rows: a thin
+-- power strip under the health bar.
 local FIXED = {
     titlePercent = 0, portraitMode = "OFF", castbarEnabled = false,
     buffsEnabled = false, debuffsEnabled = false, threatGlow = false,
     titleClassIcon = false, healBeyond = false, shadowEnabled = false, groupResurrect = false,
     textHealthLeft = "NAME", textPowerLeft = "NONE", textPowerRight = "NONE",
+    titleTextCenter = "NONE", textHealthCenter = "NONE", textPowerCenter = "NONE",
     healthPercent = 90, powerPercent = 10, borderPadding = 0,
 }
 

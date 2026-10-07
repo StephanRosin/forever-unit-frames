@@ -86,6 +86,9 @@ L.SETTING_textHealthLeft = "Barre de santé, texte à gauche"
 L.SETTING_textHealthRight = "Barre de santé, texte à droite"
 L.SETTING_textPowerLeft = "Barre de ressource, texte à gauche"
 L.SETTING_textPowerRight = "Barre de ressource, texte à droite"
+L.SETTING_titleTextCenter = "Ligne de titre, texte au centre"
+L.SETTING_textHealthCenter = "Barre de santé, texte au centre"
+L.SETTING_textPowerCenter = "Barre de ressource, texte au centre"
 
 L.LOCKED_IN_COMBAT = "Les cadres ne peuvent pas être déplacés en combat."
 L.UNLOCKED = "Cadres déverrouillés. Déplacez-les, puis tapez /fuf lock."
@@ -610,6 +613,9 @@ L.HINT_textHealthLeft = "Niveau, classe et race : p. ex. 60 Mage Gnome ou 60 Hum
 L.HINT_textHealthRight = "Niveau, classe et race : p. ex. 60 Mage Gnome ou 60 Humanoïde"
 L.HINT_textPowerLeft = "Niveau, classe et race : p. ex. 60 Mage Gnome ou 60 Humanoïde"
 L.HINT_textPowerRight = "Niveau, classe et race : p. ex. 60 Mage Gnome ou 60 Humanoïde"
+L.HINT_titleTextCenter = "Gauche et droite gardent alors un tiers chacune"
+L.HINT_textHealthCenter = "Gauche et droite gardent alors un tiers chacune"
+L.HINT_textPowerCenter = "Gauche et droite gardent alors un tiers chacune"
 
 -- Cadres de raid : importer une taille de raid.
 L.IMPORT_RAID_NO_SIZE = "Ce texte ne contient aucune taille de raid."

@@ -79,10 +79,10 @@ Schema.FRAME = {
         { id = "druidMana", keys = { "druidMana", "druidManaHeight" } },
     } },
     { id = "text", sections = {
-        { id = "titleText", keys = { "titleText", "titleTextRight", "titleColorMode", "awayBadge", "titleClassIcon", "classIconSize",
+        { id = "titleText", keys = { "titleText", "titleTextCenter", "titleTextRight", "titleColorMode", "awayBadge", "titleClassIcon", "classIconSize",
             "classIconX", "classIconY", "classIconRing", "classIconRingColor" } },
-        { id = "healthText", keys = { "textHealthLeft", "textHealthRight" } },
-        { id = "powerText", keys = { "textPowerLeft", "textPowerRight" } },
+        { id = "healthText", keys = { "textHealthLeft", "textHealthCenter", "textHealthRight" } },
+        { id = "powerText", keys = { "textPowerLeft", "textPowerCenter", "textPowerRight" } },
         -- How the texts read, on every bar: colours, level colour, compact
         -- values, the secondary name.
         { id = "display", keys = { "levelColorMode", "barNameColorMode", "infoClassColor", "textCompact",

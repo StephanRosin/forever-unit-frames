@@ -300,6 +300,14 @@ Settings.Define({ key = "textHealthRight", code = "TR", scope = "frame", type = 
 Settings.Define({ key = "textPowerLeft", code = "UL", scope = "frame", type = "enum", values = TEXT_TAGS, default = "NONE" })
 Settings.Define({ key = "textPowerRight", code = "UR", scope = "frame", type = "enum", values = TEXT_TAGS,
     default = { player = "CURRENT", _ = "NONE" } })
+-- A centre text on each row (Elements/Texts.lua), empty by default: while
+-- one is set, the left and right texts of its row keep to their third.
+Settings.Define({ key = "titleTextCenter", code = "NM", scope = "frame", type = "enum", values = TEXT_TAGS,
+    default = "NONE" })
+Settings.Define({ key = "textHealthCenter", code = "TM", scope = "frame", type = "enum", values = TEXT_TAGS,
+    default = "NONE" })
+Settings.Define({ key = "textPowerCenter", code = "UC", scope = "frame", type = "enum", values = TEXT_TAGS,
+    default = "NONE" })
 
 -- The border around every aura icon (plain colour on buffs, the dispel
 -- colour on debuffs). General, overridable per frame.

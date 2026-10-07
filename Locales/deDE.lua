@@ -86,6 +86,9 @@ L.SETTING_textHealthLeft = "Gesundheitsleiste, Text links"
 L.SETTING_textHealthRight = "Gesundheitsleiste, Text rechts"
 L.SETTING_textPowerLeft = "Ressourcenleiste, Text links"
 L.SETTING_textPowerRight = "Ressourcenleiste, Text rechts"
+L.SETTING_titleTextCenter = "Titelzeile, Text Mitte"
+L.SETTING_textHealthCenter = "Gesundheitsleiste, Text Mitte"
+L.SETTING_textPowerCenter = "Ressourcenleiste, Text Mitte"
 
 L.LOCKED_IN_COMBAT = "Rahmen können im Kampf nicht verschoben werden."
 L.UNLOCKED = "Rahmen entsperrt. Verschieben, danach /fuf lock eingeben."
@@ -610,6 +613,9 @@ L.HINT_textHealthLeft = "Stufe, Klasse und Volk: z. B. 60 Magier Gnom oder 60 Hu
 L.HINT_textHealthRight = "Stufe, Klasse und Volk: z. B. 60 Magier Gnom oder 60 Humanoid"
 L.HINT_textPowerLeft = "Stufe, Klasse und Volk: z. B. 60 Magier Gnom oder 60 Humanoid"
 L.HINT_textPowerRight = "Stufe, Klasse und Volk: z. B. 60 Magier Gnom oder 60 Humanoid"
+L.HINT_titleTextCenter = "Links und rechts bleibt dann je ein Drittel"
+L.HINT_textHealthCenter = "Links und rechts bleibt dann je ein Drittel"
+L.HINT_textPowerCenter = "Links und rechts bleibt dann je ein Drittel"
 
 -- Schlachtzugsrahmen: eine Schlachtzugsgröße importieren.
 L.IMPORT_RAID_NO_SIZE = "Dieser Text enthält keine Schlachtzugsgröße."
