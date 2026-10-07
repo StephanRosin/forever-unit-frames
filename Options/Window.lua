@@ -285,8 +285,9 @@ end
 
 -- Two-click action: the first click arms the button for a few seconds, the
 -- second runs it. armedText (optional): the armed button's word, for a
--- button narrower than L.CONFIRM needs.
-local function confirmButton(parent, text, action, armedText)
+-- button narrower than L.CONFIRM needs. needed (optional): asked at the
+-- first click; false runs the action at once (nothing to confirm).
+local function confirmButton(parent, text, action, armedText, needed)
     local button, armed
     local function paintArmed() if armed then Style.Paint(button.text, "error") end end
     local function disarm()
@@ -296,6 +297,7 @@ local function confirmButton(parent, text, action, armedText)
     end
     button = Widgets.Button(parent, { text = text, width = WIDE_BUTTON_W, onClick = function()
         if armed then disarm(); action(); return end
+        if needed and not needed() then action(); return end
         local token = {}
         armed = token
         button.text:SetText(armedText or L.CONFIRM)

@@ -37,7 +37,7 @@ local function resetChoices()
         size = ns.RaidOptions.Size(), ticked = {} }
 end
 
--- The click suggestions for the role picked, every one ticked at first.
+-- The click suggestions for the role picked; none ticked at first.
 local function suggestions()
     if choice.role == KEEP then return {} end
     return Templates.ClickSuggestions(choice.role, Templates.PlayerClass())
@@ -56,19 +56,36 @@ end
 local function tickedSuggestions()
     local list = {}
     for _, s in ipairs(suggestions()) do
-        if choice.ticked[s.key] ~= false then list[#list + 1] = s end
+        if choice.ticked[s.key] == true then list[#list + 1] = s end
     end
     return list
 end
 
--- Everything Apply sets, as one change.
+-- Everything Apply sets, as one change; nil when a template holds a
+-- value this version refuses.
 function Wizard.Changes()
     local parts = {}
     for _, id in ipairs({ choice.role, choice.look }) do
-        if id ~= KEEP then parts[#parts + 1] = assert(Templates.Changes(Templates.Find(id), sizes())) end
+        if id ~= KEEP then
+            local changes = Templates.Changes(Templates.Find(id), sizes())
+            if not changes then return nil end
+            parts[#parts + 1] = changes
+        end
     end
     parts[#parts + 1] = Templates.ClickChanges(tickedSuggestions())
     return Templates.Merge(parts)
+end
+
+-- A slot in words: its button's and its modifiers' ("Left button,
+-- Shift-click").
+function Wizard.SlotText(key)
+    local slot = Raid.CLICK_SLOT_BY_KEY[key]
+    for _, b in ipairs(Raid.CLICK_BUTTONS) do
+        if b.button == slot.button then
+            return L.RAID_WIZARD_SLOT:format(ns.RaidSchema.SectionTitle("click" .. b.name), ns.RaidSchema.Label(key))
+        end
+    end
+    return key
 end
 
 -- The summary's lines.
@@ -79,8 +96,14 @@ function Wizard.SummaryLines()
             lines[#lines + 1] = L.RAID_WIZARD_SUMMARY_TEMPLATE:format(Page.Title(Templates.Find(id)), sizesText())
         end
     end
-    local clicks = #tickedSuggestions()
-    if clicks > 0 then lines[#lines + 1] = L.RAID_WIZARD_SUMMARY_CLICKS:format(clicks) end
+    local clicks = tickedSuggestions()
+    if #clicks > 0 then
+        lines[#lines + 1] = L.RAID_WIZARD_SUMMARY_CLICKS:format(#clicks)
+        for _, c in ipairs(clicks) do
+            lines[#lines + 1] = L.RAID_WIZARD_SUMMARY_CLICK:format(Wizard.SlotText(c.key),
+                ns.RaidSchema.BindingText(c.binding, c.key))
+        end
+    end
     if #lines == 0 then lines[1] = L.RAID_WIZARD_SUMMARY_NOTHING end
     return lines
 end
@@ -134,25 +157,13 @@ local function sizesPage(page)
     return row
 end
 
--- A slot in words: its button's and its modifiers' ("Left button,
--- Shift-click").
-local function slotText(key)
-    local slot = Raid.CLICK_SLOT_BY_KEY[key]
-    for _, b in ipairs(Raid.CLICK_BUTTONS) do
-        if b.button == slot.button then
-            return L.RAID_WIZARD_SLOT:format(ns.RaidSchema.SectionTitle("click" .. b.name), ns.RaidSchema.Label(key))
-        end
-    end
-    return key
-end
-
 local function clickRows(page)
     local rows = {}
     for i = 1, MAX_CLICKS do
         local row
         row = Widgets.Checkbox(page, {
             label = "",
-            get = function() return row.suggestion and choice.ticked[row.suggestion.key] ~= false end,
+            get = function() return row.suggestion ~= nil and choice.ticked[row.suggestion.key] == true end,
             set = function(on) choice.ticked[row.suggestion.key] = on end,
         })
         row.spell = Style.Text(row, 12, "text")
@@ -170,7 +181,7 @@ local function renderClicks()
         row.suggestion = s
         row:SetShown(s ~= nil)
         if s then
-            row:SetLabel(slotText(s.key))
+            row:SetLabel(Wizard.SlotText(s.key))
             row.spell:SetText(ns.RaidSchema.BindingText(s.binding, s.key))
             row:Refresh()
         end
@@ -179,11 +190,12 @@ local function renderClicks()
 end
 
 local function renderStep()
+    if InCombatLockdown() then inCombat = true end
     local step = Wizard.STEPS[Wizard.step]
     for id, page in pairs(Wizard.pages) do page:SetShown(id == step) end
     frame.heading:SetText(L.RAID_WIZARD_STEP:format(Wizard.step, #Wizard.STEPS, L["RAID_WIZARD_STEP_" .. step]))
     if step == "role" then
-        Wizard.texts.role:SetText(L.RAID_WIZARD_TEXT_role:format(Page.Title(Templates.Find(Templates.SuggestRole()))))
+        Wizard.texts.role:SetText(L.RAID_WIZARD_TEXT_role:format(L["RAID_TEMPLATE_" .. Templates.SuggestRole()]))
     elseif step == "clicks" then
         renderClicks()
     elseif step == "summary" then
@@ -212,9 +224,20 @@ function Wizard.Back()
     end
 end
 
--- Everything chosen, as one change; the window closes. False in combat.
+local function say(text)
+    Wizard.message:SetText(text)
+    Style.Paint(Wizard.message, "error")
+end
+
+-- Everything chosen, as one change; the window closes. False in combat,
+-- or when a template is refused (the window says so, nothing is set).
 function Wizard.Apply()
-    if inCombat or not Templates.ApplyChanges(Wizard.Changes()) then return false end
+    if inCombat or InCombatLockdown() then return false end
+    local changes = Wizard.Changes()
+    if not changes or not Templates.ApplyChanges(changes) then
+        say(L.RAID_TEMPLATE_REFUSED)
+        return false
+    end
     ns.Print(L.RAID_WIZARD_DONE)
     Wizard.Close()
     return true
@@ -261,6 +284,12 @@ local function createPages(body)
     summary:SetJustifyH("LEFT")
     summary:SetWordWrap(true)
     Wizard.summary = summary
+    local message = Style.Text(Wizard.pages.summary, 11, "error")
+    message:SetPoint("BOTTOMLEFT", Wizard.pages.summary, "BOTTOMLEFT", INSET, GAP)
+    message:SetPoint("BOTTOMRIGHT", Wizard.pages.summary, "BOTTOMRIGHT", -INSET, GAP)
+    message:SetJustifyH("LEFT")
+    message:SetWordWrap(true)
+    Wizard.message = message
 end
 
 local function createWindow()
@@ -312,6 +341,7 @@ function Wizard.Open()
     if not RaidConfig.Profile() then return end
     if not frame then createWindow() end
     resetChoices()
+    Wizard.message:SetText("")
     Wizard.step = 1
     frame:ClearAllPoints()
     frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
@@ -341,15 +371,20 @@ local function seenTable()
 end
 
 -- The raid window opened: the wizard by itself, once per character, for
--- an untouched profile, after the login loading screen, out of combat.
+-- an untouched profile, after the login loading screen, out of combat
+-- (a /reload in combat sends no PLAYER_REGEN_DISABLED: the lockdown is
+-- asked too). Remembered only once it is seen: not while the interface
+-- is hidden (as Core/News.lua).
 function Wizard.MaybeOffer()
+    if InCombatLockdown() then inCombat = true end
     if not loadingDone or inCombat or Wizard.IsOpen() or not Wizard.Untouched() then return end
+    if not UIParent:IsShown() then return end
     local seen = seenTable()
     if not seen then return end
     local key = ns.RaidProfiles.CharKey()
     if seen[key] then return end
-    seen[key] = true
     Wizard.Open()
+    if frame and frame:IsVisible() then seen[key] = true end
 end
 
 ns.Listen("RAID_WINDOW_OPENED", Wizard.MaybeOffer)

@@ -71,17 +71,34 @@ H.check("saved message", P.message:GetText(), L.RAID_TEMPLATE_SAVED:format("Raid
 H.check("own listed and picked", P.picker.button.text:GetText(), "Own: Raid night")
 H.check("delete offered", P.deleteButton:IsEnabled(), true)
 H.check("box emptied", P.nameBox:GetText(), "")
+-- The same name again: a second click replaces it, and says so.
+RC.Set("r20", "cellWidth", 111)
+P.nameBox:SetText("raid NIGHT")
+click(P.saveButton)
+H.check("existing name: armed", P.saveButton.text:GetText(), L.CONFIRM)
+H.check("existing name: not replaced yet", T.Find("own:Raid night").values.cellWidth ~= 111, true)
+click(P.saveButton)
+H.check("replaced", T.Find("own:Raid night").values.cellWidth, 111)
+H.check("replaced message", P.message:GetText(), L.RAID_TEMPLATE_REPLACED:format("raid NIGHT"))
+H.check("still one", #T.Own(), 1)
+-- Another pick disarms Delete.
+click(P.deleteButton)
+H.check("delete armed", P.deleteButton.text:GetText(), L.CONFIRM)
+pick(P.picker, "Role: Tank")
+H.check("a pick disarms delete", P.deleteButton.text:GetText(), L.RAID_TEMPLATE_DELETE)
+pick(P.picker, "Own: raid NIGHT")
 P.nameBox:SetText("   ")
 click(P.saveButton)
 H.check("empty name refused", P.message:GetText(), L.RAID_TEMPLATE_NAME_EMPTY)
 -- Delete takes two clicks.
 click(P.deleteButton)
-H.checkTrue("armed, not deleted", T.Find("own:Raid night"))
+H.checkTrue("armed, not deleted", T.Find("own:raid NIGHT"))
 click(P.deleteButton)
-H.check("deleted", T.Find("own:Raid night"), nil)
+H.check("deleted", T.Find("own:raid NIGHT"), nil)
 H.check("the suggestion picked again", P.picker.button.text:GetText(), "Role: Healer")
 
 -- Combat locks the section.
+click(P.applyButton)
 M.combat = true
 M.FireEvent("PLAYER_REGEN_DISABLED")
 H.check("apply locked", P.applyButton:IsEnabled(), false)

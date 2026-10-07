@@ -75,12 +75,13 @@ local SAVE_WHY = {
 local function save()
     Page.nameBox:ClearFocus()
     local name = (Page.nameBox:GetText() or ""):match("^%s*(.-)%s*$")
+    local replacing = name ~= "" and Templates.Find("own:" .. name) ~= nil
     local ok, why = Templates.SaveOwn(name, RaidOptions.Size())
     if not ok then return say(SAVE_WHY[why](), "error") end
     typedName = ""
     Page.nameBox:SetText("")
     picked = "own:" .. name
-    say(L.RAID_TEMPLATE_SAVED:format(name))
+    say((replacing and L.RAID_TEMPLATE_REPLACED or L.RAID_TEMPLATE_SAVED):format(name))
     Page.Refresh()
 end
 
@@ -121,7 +122,12 @@ local function pickerRow(page)
         label = L.RAID_TEMPLATE_PICK, hint = L.RAID_TEMPLATE_PICK_HINT,
         items = function() return Page.Items(true) end,
         get = pickedId,
-        set = function(v) picked = v; say(""); Page.Refresh() end,
+        set = function(v)
+            picked = v
+            Page.deleteButton.Disarm()
+            say("")
+            Page.Refresh()
+        end,
     })
     local setEnabled = row.SetEnabled
     function row:SetEnabled(on) setEnabled(self, on); enabled = on; Page.Refresh() end
@@ -155,7 +161,11 @@ local function saveRow(page)
     local row = stateRow(Widgets.NewRow(page, { label = L.RAID_TEMPLATE_SAVE_AS }))
     Page.nameBox = Widgets.TextBox(row, { width = NAME_W, maxLetters = Templates.OWN_NAME_LETTERS,
         get = function() return typedName end, set = function(text) typedName = text; return true end })
-    Page.saveButton = Widgets.Button(row, { text = L.RAID_TEMPLATE_SAVE, width = BUTTON_W, onClick = save })
+    -- A name in use asks first: a second click replaces that template.
+    Page.saveButton = ns.Options.ConfirmButton(row, L.RAID_TEMPLATE_SAVE, save, nil, function()
+        local name = (Page.nameBox:GetText() or ""):match("^%s*(.-)%s*$")
+        return name ~= "" and Templates.Find("own:" .. name) ~= nil
+    end)
     Page.saveButton:SetPoint("LEFT", Page.nameBox, "RIGHT", GAP, 0)
     return row
 end

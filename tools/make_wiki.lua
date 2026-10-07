@@ -245,7 +245,9 @@ end
 -- What each raid tab is for (the page's first line).
 local RAID_TAB_INTRO = {
     general = "The raid frames as a whole: on or off, the raid view in a 5-player group, Blizzard's raid frames,"
-        .. " the raid frames' minimap button.",
+        .. " the raid frames' minimap button. Below the settings, the **Templates** section applies a role"
+        .. " template or a look to the size you edit or to all sizes (with **Undo**), and its **Setup wizard**"
+        .. " button opens the setup wizard: see [[Templates|Raid-Templates]].",
     layout = "How the panel is made of blocks, how cells and blocks are arranged, the panel's position and borders.",
     arrangement = "Up to nine panels of your own beside the main panel (Panel 2 to Panel 10), per raid size. The"
         .. " tab shows a column per panel with its blocks; drag a block onto another panel's column, or click it"
@@ -522,11 +524,13 @@ do
             .. " the Profile tab."):format(T.OWN_NAME_LETTERS, T.OWN_MAX), "",
         "## Setup wizard", "",
         "The wizard opens by itself once: the first time a character whose raid settings nobody has changed opens"
-            .. " the raid window. **Setup wizard** on the General tab opens it at any time. Its steps: your role"
-            .. " template (suggested from your specialization's role, else your assigned role, else your class),"
-            .. " a look, which raid sizes, click-casting suggestions for the spells your spell book knows (tick"
-            .. " the ones you want), and a summary. **Apply** sets all of it as one change, which **Undo** takes"
-            .. " back. Nothing is set or bound before Apply.", "",
+            .. " the raid window, after the login loading screen is gone, out of combat and while the interface is"
+            .. " shown (otherwise it waits for the next time). **Setup wizard** on the General tab opens it at any"
+            .. " time (not in combat). Its steps: your role template (suggested from your specialization's role,"
+            .. " else your assigned role, else your class), a look, which raid sizes, click-casting suggestions for"
+            .. " the spells your spell book knows (none is ticked at first: tick the ones you want), and a summary"
+            .. " that lists every binding with its click. **Apply** sets all of it as one change, which **Undo**"
+            .. " takes back. Nothing is set or bound before Apply.", "",
         "Click-casting suggestions (the healer template; the dispel template puts the first dispel you know on"
             .. " the plain left click and offers the dispels):", "" }) do
         lines[#lines + 1] = l

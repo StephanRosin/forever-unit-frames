@@ -51,6 +51,7 @@ H.check("the General tab's button opens it", W.IsOpen(), true)
 H.check("first step", W.step, 1)
 H.check("heading", W.frame.heading:GetText(), L.RAID_WIZARD_STEP:format(1, 5, L.RAID_WIZARD_STEP_role))
 H.check("suggested role", W.rolePicker.button.text:GetText(), "Role: Healer")
+H.check("the text names the role alone", W.texts.role:GetText(), L.RAID_WIZARD_TEXT_role:format("Healer"))
 H.check("no back on the first step", W.backButton:IsEnabled(), false)
 H.check("no apply before the summary", W.applyButton:IsShown(), false)
 -- Step 2: the look.
@@ -65,19 +66,24 @@ click(W.nextButton)
 H.check("three suggestions", W.clickRows[3]:IsShown() and not W.clickRows[4]:IsShown(), true)
 H.check("a suggestion's slot", W.clickRows[1].label:GetText(), "Left button, Shift-click")
 H.check("its spell", W.clickRows[1].spell:GetText(), "Cast a spell: Flash Heal")
+-- Nothing rebinds unless ticked: every suggestion starts unticked.
+for i = 1, 3 do H.check("unticked at first " .. i, W.clickRows[i].box:GetChecked(), false) end
+click(W.clickRows[1].box)
+click(W.clickRows[3].box)
 H.check("ticked", W.clickRows[1].box:GetChecked(), true)
-click(W.clickRows[2].box)
-H.check("unticked", W.clickRows[2].box:GetChecked(), false)
 -- Back and forth keeps the choices.
 click(W.backButton)
 click(W.nextButton)
+H.check("still ticked", W.clickRows[3].box:GetChecked(), true)
 H.check("still unticked", W.clickRows[2].box:GetChecked(), false)
--- Step 5: the summary; nothing set yet.
+-- Step 5: the summary names each binding's slot; nothing set yet.
 click(W.nextButton)
 H.check("summary", W.summary:GetText(), table.concat({
     L.RAID_WIZARD_SUMMARY_TEMPLATE:format("Role: Healer", "20 players"),
     L.RAID_WIZARD_SUMMARY_TEMPLATE:format("Look: Flat", "20 players"),
-    L.RAID_WIZARD_SUMMARY_CLICKS:format(2) }, "\n"))
+    L.RAID_WIZARD_SUMMARY_CLICKS:format(2),
+    L.RAID_WIZARD_SUMMARY_CLICK:format("Left button, Shift-click", "Cast a spell: Flash Heal"),
+    L.RAID_WIZARD_SUMMARY_CLICK:format("Right button, Ctrl-click", "Cast a spell: Dispel Magic") }, "\n"))
 H.check("nothing set before Apply", RC.Get("r20", "cellCornerRadius"), 3)
 H.check("no binding before Apply", RC.Get("general", "click1Shift"), "")
 -- In combat Apply is off.
@@ -98,8 +104,11 @@ H.check("ticked binding", RC.Get("general", "click1Shift"), "spell:Flash Heal")
 H.check("unticked binding left", RC.Get("general", "click1Ctrl"), "")
 H.check("ticked dispel", RC.Get("general", "click2Ctrl"), "spell:Dispel Magic")
 H.check("left click still targets", RC.Get("general", "click1"), "target")
--- One change: one undo takes all of it back.
-H.checkTrue("undo", T.Undo())
+-- One change: the General tab's Undo takes all of it back.
+local P = ns.RaidTemplatesPage
+H.check("undo offered on the General tab", P.undoButton:IsEnabled(), true)
+click(P.undoButton)
+H.check("undone by the button", T.CanUndo(), false)
 H.check("role undone", RC.Get("r20", "cellWidth"), 88)
 H.check("look undone", RC.Get("r20", "cellCornerRadius"), 3)
 H.check("binding undone", RC.Get("general", "click1Shift"), "")
@@ -129,3 +138,71 @@ ns2.RaidOptions.Open(10)
 H.check("changed profile: not by itself", ns2.RaidWizard.IsOpen(), false)
 H.check("not remembered either", ForeverUnitFramesDB.raidWizardSeen, nil)
 ns2.RaidOptions.Close()
+
+-- The General tab's wizard button is locked in combat.
+local ns3 = H.LoadAddon()
+M.units.player = { name = "Me", class = "PRIEST", health = 1, healthMax = 1 }
+_G.ForeverUnitFramesDB = {}
+M.FireEvent("PLAYER_LOGIN")
+M.FireEvent("LOADING_SCREEN_DISABLED")
+M.RunTimers()
+local W3, RO3 = ns3.RaidWizard, ns3.RaidOptions
+ForeverUnitFramesDB.raidWizardSeen = { [key] = true }
+RO3.Open(10, "general")
+M.combat = true
+M.FireEvent("PLAYER_REGEN_DISABLED")
+H.check("wizard button locked in combat", ns3.RaidTemplatesPage.wizardButton:IsEnabled(), false)
+M.combat = false
+M.FireEvent("PLAYER_REGEN_ENABLED")
+H.check("wizard button again", ns3.RaidTemplatesPage.wizardButton:IsEnabled(), true)
+RO3.Close()
+ForeverUnitFramesDB.raidWizardSeen = nil
+
+-- With UIParent hidden (the interface hidden) it does not open, and is
+-- not remembered as seen: it opens the next time.
+UIParent:Hide()
+RO3.Open(10)
+H.check("UIParent hidden: not opened", W3.IsOpen(), false)
+H.check("UIParent hidden: not remembered", ForeverUnitFramesDB.raidWizardSeen and ForeverUnitFramesDB.raidWizardSeen[key], nil)
+RO3.Close()
+UIParent:Show()
+
+-- In combat after a /reload (no PLAYER_REGEN_DISABLED seen): not by
+-- itself, and Apply is off when opened by hand.
+local ns4 = H.LoadAddon()
+M.units.player = { name = "Me", class = "PRIEST", health = 1, healthMax = 1 }
+_G.ForeverUnitFramesDB = {}
+M.FireEvent("PLAYER_LOGIN")
+M.FireEvent("LOADING_SCREEN_DISABLED")
+M.RunTimers()
+local W4 = ns4.RaidWizard
+M.combat = true
+ns4.RaidOptions.Open(10)
+H.check("combat after a reload: not by itself", W4.IsOpen(), false)
+H.check("combat after a reload: not remembered", ForeverUnitFramesDB.raidWizardSeen and ForeverUnitFramesDB.raidWizardSeen[key], nil)
+W4.Open()
+for _ = 2, #W4.STEPS do click(W4.nextButton) end
+H.check("combat after a reload: apply off", W4.applyButton:IsEnabled(), false)
+W4.Close()
+ns4.RaidOptions.Close()
+M.combat = false
+
+-- A template the version refuses: Apply says so, sets nothing, stays open.
+local ns5 = H.LoadAddon()
+M.units.player = { name = "Me", class = "PRIEST", health = 1, healthMax = 1 }
+_G.ForeverUnitFramesDB = {}
+M.FireEvent("PLAYER_LOGIN")
+M.FireEvent("LOADING_SCREEN_DISABLED")
+M.RunTimers()
+local W5, T5 = ns5.RaidWizard, ns5.RaidTemplates
+T5.Get("healer").values.noSuchKey = 1
+W5.Open()
+for _ = 2, #W5.STEPS do click(W5.nextButton) end
+click(W5.applyButton)
+H.check("refused: says so", W5.message:GetText(), L.RAID_TEMPLATE_REFUSED)
+H.check("refused: still open", W5.IsOpen(), true)
+H.check("refused: nothing set", ns5.RaidConfig.Get("r10", "cellWidth"), 96)
+H.check("refused: no undo", T5.CanUndo(), false)
+T5.Get("healer").values.noSuchKey = nil
+W5.Close()
+H.check("no error", #M.errors, 0)

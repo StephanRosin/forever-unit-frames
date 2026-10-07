@@ -133,7 +133,7 @@ A look sets only how the cells look; a role template never touches these, so a r
 
 ## Setup wizard
 
-The wizard opens by itself once: the first time a character whose raid settings nobody has changed opens the raid window. **Setup wizard** on the General tab opens it at any time. Its steps: your role template (suggested from your specialization's role, else your assigned role, else your class), a look, which raid sizes, click-casting suggestions for the spells your spell book knows (tick the ones you want), and a summary. **Apply** sets all of it as one change, which **Undo** takes back. Nothing is set or bound before Apply.
+The wizard opens by itself once: the first time a character whose raid settings nobody has changed opens the raid window, after the login loading screen is gone, out of combat and while the interface is shown (otherwise it waits for the next time). **Setup wizard** on the General tab opens it at any time (not in combat). Its steps: your role template (suggested from your specialization's role, else your assigned role, else your class), a look, which raid sizes, click-casting suggestions for the spells your spell book knows (none is ticked at first: tick the ones you want), and a summary that lists every binding with its click. **Apply** sets all of it as one change, which **Undo** takes back. Nothing is set or bound before Apply.
 
 Click-casting suggestions (the healer template; the dispel template puts the first dispel you know on the plain left click and offers the dispels):
 
