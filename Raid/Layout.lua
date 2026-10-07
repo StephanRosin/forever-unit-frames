@@ -92,6 +92,32 @@ function Layout.Blocks(groupBy, size, sortBy, classOrder)
     return blocks
 end
 
+-- A block's token as an own panel stores it (Raid.ParseBlockList): the
+-- group number, class token or role.
+function Layout.Token(block)
+    return tostring(block.id)
+end
+
+-- The blocks an own panel takes: those of blocks the tokens name, in the
+-- tokens' order; a token naming none of them is passed over.
+function Layout.Chosen(blocks, tokens)
+    local byToken, list = {}, {}
+    for _, block in ipairs(blocks) do byToken[Layout.Token(block)] = block end
+    for _, token in ipairs(tokens) do
+        if byToken[token] then list[#list + 1] = byToken[token] end
+    end
+    return list
+end
+
+-- The blocks left when those whose token is in taken (a set) are gone.
+function Layout.Without(blocks, taken)
+    local list = {}
+    for _, block in ipairs(blocks) do
+        if not taken[Layout.Token(block)] then list[#list + 1] = block end
+    end
+    return list
+end
+
 -- Whether a member { subgroup, class, assignedRole } belongs to a block,
 -- as its filter decides (test mode's pretend members).
 function Layout.Matches(block, member, size)

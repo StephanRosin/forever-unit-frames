@@ -32,7 +32,7 @@ local _, ns = ...
 --   template       the headers' template (default SecureGroupHeaderTemplate)
 --   cellKey        the cells' unit-frame scope (default Raid/Cell.lua's KEY)
 --   blocks(size)   the blocks for a raid size: { kind, id, capacity, filter }
---   shape()        the numbers Raid/Layout.lua works with
+--   shape(P)       the numbers Raid/Layout.lua works with
 --   attributes(a, size)  optional: adds to a header's attributes
 --   maxUnits       optional: the size a header's columns are counted for
 --                  (default: the raid size shown)
@@ -41,6 +41,10 @@ local _, ns = ...
 --   label()        the mover's text
 --   hideEmpty()    whether a block without members takes no room
 --   blockRing      false: no ring around its block (a single block)
+--   rings          optional: { panel(), block() } switch its rings, in
+--                  ring scopes of its own (P.panelScope, P.blockScope);
+--                  else the main panel's settings do
+--   title()        optional: a title row above the blocks ("": none)
 --   showTest(p), hideTest(p)  optional: test mode's pretend cells
 local Panel = {}
 ns.RaidPanel = Panel
@@ -64,16 +68,17 @@ local function general(key) return ns.RaidConfig.Get("general", key) end
 -- border (Core/Border.lua) in derived scopes of their own, square and
 -- without shadow, shown while switched on in the raid profile; the rest
 -- as a cell answers it, never as the party frame is set.
+-- A panel with switches of its own (spec.rings) has scopes of its own.
 local PANEL_RING = { borderStyle = "GOLD", borderSize = 3, borderPadding = 3, cornerRadius = 0, shadowEnabled = false }
 local BLOCK_RING = { borderStyle = "GOLD", borderSize = 2, borderPadding = 1, cornerRadius = 0, shadowEnabled = false }
-ns.Config.Derive(Panel.PANEL_SCOPE, Cell.KEY, function(key)
-    if key == "borderShow" then return get("panelBorder") end
-    return PANEL_RING[key]
-end)
-ns.Config.Derive(Panel.BLOCK_SCOPE, Cell.KEY, function(key)
-    if key == "borderShow" then return get("blockBorder") end
-    return BLOCK_RING[key]
-end)
+local function deriveRing(scope, ring, shown)
+    ns.Config.Derive(scope, Cell.KEY, function(key)
+        if key == "borderShow" then return shown() end
+        return ring[key]
+    end)
+end
+deriveRing(Panel.PANEL_SCOPE, PANEL_RING, function() return get("panelBorder") end)
+deriveRing(Panel.BLOCK_SCOPE, BLOCK_RING, function() return get("blockBorder") end)
 
 -- Switched on, with a raid profile attached.
 function Panel.Enabled()
@@ -114,29 +119,58 @@ local function setAttributes(header, attributes, filter)
     header:SetAttribute("_ignore", nil)
 end
 
-local function styleTitle(d, block, s)
-    local title = d.title
-    if s.titleHeight == 0 then
-        title:Hide()
-        return
-    end
+-- A title row across the top of frame: the cells' font, gold, centred.
+local function styleTitle(title, frame, height, text)
     local C = ns.Config
     ns.Texts.SetFont(title, ns.Media.Font(C.Get(Cell.KEY, "fontFace")), Panel.TITLE_SIZE,
         C.Get(Cell.KEY, "fontOutline"))
     title:ClearAllPoints()
-    title:SetPoint("TOPLEFT", d, "TOPLEFT", 0, 0)
-    title:SetPoint("TOPRIGHT", d, "TOPRIGHT", 0, 0)
-    title:SetHeight(s.titleHeight)
+    title:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, 0)
+    title:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, 0)
+    title:SetHeight(height)
     title:SetJustifyH("CENTER")
     title:SetWordWrap(false)
     local c = Panel.TITLE_COLOR
     title:SetTextColor(c[1], c[2], c[3], 1)
-    title:SetText(Layout.Title(block))
+    title:SetText(text)
     title:Show()
+end
+
+local function styleBlockTitle(d, block, s)
+    if s.titleHeight == 0 then
+        d.title:Hide()
+        return
+    end
+    styleTitle(d.title, d, s.titleHeight, Layout.Title(block))
+end
+
+-- The numbers Raid/Layout.lua works with, on the pixel grid, from a
+-- panel's settings: read(key) answers the main panel's setting of that
+-- name as the panel has it. A cell's border reaches out between the
+-- cells and from the block's edge, a block's border (blockScope) between
+-- the blocks. The cells are the main panel's.
+function Panel.Shape(read, blockScope)
+    local w, h = ns.Single.Size(Cell.KEY)
+    local cellExtent = Border.Extent(Cell.KEY)
+    return {
+        cellWidth = w, cellHeight = h,
+        cellGap = Pixel.Snap(get("cellSpacing")) + 2 * cellExtent,
+        cellsPerLine = read("cellsPerLine"), cellGrowth = read("cellGrowth"),
+        inset = cellExtent,
+        titleHeight = read("blockTitles") and Pixel.Snap(Panel.TITLE_HEIGHT) or 0,
+        blockGap = Pixel.Snap(get("blockSpacing")) + 2 * Border.Extent(blockScope),
+        blocksPerLine = read("blocksPerLine"), blockDirection = read("blockDirection"),
+    }
 end
 
 function Panel.New(spec)
     local P = { spec = spec, id = spec.id, headers = {}, blocks = {}, decor = {} }
+    P.panelScope, P.blockScope = Panel.PANEL_SCOPE, Panel.BLOCK_SCOPE
+    if spec.rings then
+        P.panelScope, P.blockScope = Panel.PANEL_SCOPE .. ":" .. spec.id, Panel.BLOCK_SCOPE .. ":" .. spec.id
+        deriveRing(P.panelScope, PANEL_RING, spec.rings.panel)
+        deriveRing(P.blockScope, BLOCK_RING, spec.rings.block)
+    end
     local template = spec.template or "SecureGroupHeaderTemplate"
     local cellKey = spec.cellKey or Cell.KEY
     P.cellKey = cellKey
@@ -145,7 +179,7 @@ function Panel.New(spec)
 
     function P.Enabled() return spec.enabled() end
 
-    function P.Shape() return spec.shape() end
+    function P.Shape() return spec.shape(P) end
 
     local function headerAttributes(s, size)
         local a = Layout.HeaderAttributes(s, spec.maxUnits or size)
@@ -221,6 +255,7 @@ function Panel.New(spec)
             sizes[i] = room and { Layout.BlockSize(s, room) } or false
         end
         local positions, width, height = Layout.Arrange(s, sizes)
+        height = P.PlaceTitle(positions, width, height)
         local hx, hy = Layout.HeaderOffset(s)
         local parkedY, parkedStep = -(height + s.blockGap), Layout.BlockSize(s, Layout.GROUP_SIZE) + s.blockGap
         local parked = 0
@@ -230,8 +265,8 @@ function Panel.New(spec)
                 d:ClearAllPoints()
                 d:SetPoint("TOPLEFT", P.panel, "TOPLEFT", pos.x, pos.y)
                 d:SetSize(sizes[i][1], sizes[i][2])
-                styleTitle(d, block, s)
-                if spec.blockRing == false then Border.Hide(d) else Border.Draw(d, Panel.BLOCK_SCOPE, d, 0) end
+                styleBlockTitle(d, block, s)
+                if spec.blockRing == false then Border.Hide(d) else Border.Draw(d, P.blockScope, d, 0) end
                 d:Show()
             else
                 d:Hide()
@@ -251,13 +286,28 @@ function Panel.New(spec)
         P.width, P.height = width, height
         P.panel:SetSize(math.max(width, 1), math.max(height, 1))
         if width > 0 then
-            Border.Draw(P.panel, Panel.PANEL_SCOPE, P.panel, 0)
+            Border.Draw(P.panel, P.panelScope, P.panel, 0)
         else
             Border.Hide(P.panel)
         end
         -- What hangs beside it follows (the raid tools bar, docked).
         ns.Fire("RAID_PANEL_PLACED", P)
         return positions, s
+    end
+
+    -- The panel's title row (spec.title) above the blocks, while any block
+    -- has room: the blocks move below it. Returns the panel's height.
+    function P.PlaceTitle(positions, width, height)
+        local text = spec.title and spec.title() or ""
+        if text == "" or width == 0 then
+            if P.title then P.title:Hide() end
+            return height
+        end
+        local row = Pixel.Snap(Panel.TITLE_HEIGHT)
+        for _, pos in pairs(positions) do pos.y = pos.y - row end
+        P.title = P.title or P.panel:CreateFontString(nil, "OVERLAY")
+        styleTitle(P.title, P.panel, row, text)
+        return height + row
     end
 
     -- The panel's size, or a cell's while it is empty (the mover's handle).

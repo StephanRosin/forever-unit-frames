@@ -5,29 +5,15 @@ local _, ns = ...
 -- profile's x / y. ns.RaidHeader is that panel, with what only the main
 -- panel answers: whether the raid frames are on, whether they take a
 -- 5-player group, the shape of its blocks.
-local Panel, Layout, Cell, Pixel, Border = ns.RaidPanel, ns.RaidLayout, ns.RaidCell, ns.Pixel, ns.Border
+local Panel, Layout, Cell = ns.RaidPanel, ns.RaidLayout, ns.RaidCell
 
 local function get(key) return ns.RaidConfig.Get(ns.Raid.Scope(Cell.Size()), key) end
 local function general(key) return ns.RaidConfig.Get("general", key) end
 
 local Header
 
--- The numbers Raid/Layout.lua works with, on the pixel grid. A cell's
--- border reaches out between the cells and from the block's edge, a
--- block's border between the blocks.
-local function shape()
-    local w, h = ns.Single.Size(Cell.KEY)
-    local cellExtent = Border.Extent(Cell.KEY)
-    return {
-        cellWidth = w, cellHeight = h,
-        cellGap = Pixel.Snap(get("cellSpacing")) + 2 * cellExtent,
-        cellsPerLine = get("cellsPerLine"), cellGrowth = get("cellGrowth"),
-        inset = cellExtent,
-        titleHeight = get("blockTitles") and Pixel.Snap(Panel.TITLE_HEIGHT) or 0,
-        blockGap = Pixel.Snap(get("blockSpacing")) + 2 * Border.Extent(Panel.BLOCK_SCOPE),
-        blocksPerLine = get("blocksPerLine"), blockDirection = get("blockDirection"),
-    }
-end
+-- The numbers Raid/Layout.lua works with: the main panel's own settings.
+local function shape() return Panel.Shape(get, Panel.BLOCK_SCOPE) end
 
 Header = Panel.New({
     id = "main", name = "ForeverUnitFramesRaid", xKey = "x", yKey = "y",
