@@ -82,6 +82,17 @@ function Look.Frame(lines, label, frame)
             region(lines, label .. ".totems.click" .. i, s.click, map)
         end
     end
+    -- Added after the first record: the role icon and its texture, the 3D
+    -- portrait's opacity (it fades with the frame).
+    if g then
+        region(lines, label .. ".groupIcons.role", g.role, map)
+        lines[#lines + 1] = ("%s.groupIcons.role texture=%s atlas=%s"):format(label, tostring(g.role._texture),
+            tostring(g.role._atlas))
+    end
+    if frame.portrait3D then
+        lines[#lines + 1] = ("%s.portrait3D shown=%s alpha=%s"):format(label, tostring(frame.portrait3D:IsShown()),
+            num(frame.portrait3D:GetAlpha()))
+    end
 end
 
 -- Boots the addon with a player, a pet, an elite target with a target of

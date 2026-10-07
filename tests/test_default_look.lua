@@ -1,6 +1,6 @@
 -- Options that are off by default leave the unit frames exactly as they
--- were: every frame's texts, group icons, elite marker, totems and
--- opacity after a default boot, live, with a portrait, faded and in test
+-- were: every frame's texts, group icons (the role icon's texture too),
+-- elite marker, totems, opacity and 3D portrait opacity after a default boot, live, with a portrait, faded and in test
 -- mode, against the record in default_look.lua (tests/look.lua).
 local Look = dofile("look.lua")
 local want = dofile("default_look.lua")
