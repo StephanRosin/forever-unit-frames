@@ -23,7 +23,7 @@ for _, page in ipairs(WIKI_PAGES or {}) do
 end
 H.check("raid pages", table.concat(raid, ","),
     "Raid-General,Raid-Layout,Raid-Panels,Raid-Arrangement,Raid-Cell,Raid-Texts,Raid-Debuffs,Raid-Indicators,"
-        .. "Raid-Icons-and-states,Raid-Tools")
+        .. "Raid-Icons-and-states,Raid-Tools,Raid-Click-casting")
 
 -- Every setting on its tab's page, by its label. The Profile tab (export
 -- and import, no settings) has no page; the own panels' sections are all

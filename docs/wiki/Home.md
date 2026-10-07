@@ -108,6 +108,8 @@ The raid frames have pages of their own, one per tab of the raid window:
 - [[Icons & states|Raid-Icons-and-states]] – role, raid marker, leader, master looter, ready check,
   range, aggro, your target
 - [[Tools|Raid-Tools]] – the raid tools bar: docked or free, which tools it holds
+- [[Click-casting|Raid-Click-casting]] – spells, items, macros, target, focus, assist and the menu on
+  mouse clicks over the cells and party frames, and keys that cast on the raid member under the mouse
 
 Questions that come up often: [[FAQ]].
 

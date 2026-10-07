@@ -41,6 +41,26 @@ local function ownPanelSections()
     return list
 end
 
+-- Click-casting: the switches, a section per mouse button with its
+-- slots, then the keys (each key and its binding).
+local function clickCastSections()
+    local list = { { id = "clickCastGeneral", keys = { "clickCast", "clickCastParty" } } }
+    for _, b in ipairs(ns.Raid.CLICK_BUTTONS) do
+        local keys = {}
+        for _, slot in ipairs(ns.Raid.CLICK_SLOTS) do
+            if slot.button == b.button then keys[#keys + 1] = slot.key end
+        end
+        list[#list + 1] = { id = "click" .. b.name, keys = keys }
+    end
+    local keys = {}
+    for _, slot in ipairs(ns.Raid.CLICK_KEYS) do
+        keys[#keys + 1] = slot.key
+        keys[#keys + 1] = slot.bind
+    end
+    list[#list + 1] = { id = "clickKeys", keys = keys }
+    return list
+end
+
 Schema.TABS = {
     { id = "general", sections = {
         { id = "raidFrames", keys = { "enabled", "showInParty", "hideBlizzard" } },
@@ -96,6 +116,9 @@ Schema.TABS = {
         { id = "toolsList", keys = { "toolsTargets", "toolsReady", "toolsMarkers", "toolsRolePoll", "toolsAssist",
             "toolsConvert", "toolsLoot" } },
     } },
+    -- Click-casting, per character (Raid/Options/ClickCast.lua builds the
+    -- page: a binding and its value per row).
+    { id = "clickCast", custom = "clickCast", note = "clickCast", sections = clickCastSections() },
     -- The window's own page: export and import of the edited size
     -- (Raid/Options/Window.lua). No settings; the wiki has no page for it.
     { id = "profile", custom = "profile", sections = {} },
@@ -134,6 +157,14 @@ for _, p in ipairs(ns.Raid.OWN_PANELS) do
     end
 end
 SHARED.toolsX, SHARED.toolsY = "x", "y"
+-- Click-casting: a mouse slot by its modifiers (the section names the
+-- button), a key slot's key and binding alike for every slot.
+for _, slot in ipairs(ns.Raid.CLICK_SLOTS) do
+    SHARED[slot.key] = "click" .. (slot.modifiers == "" and "Plain" or slot.modifiers)
+end
+for _, slot in ipairs(ns.Raid.CLICK_KEYS) do
+    SHARED[slot.key], SHARED[slot.bind] = "clickKey", "clickKeyBind"
+end
 
 -- The name a setting's words go by.
 function Schema.WordKey(key)
@@ -152,6 +183,19 @@ function Schema.Hint(key) return word("RAID_HINT_", Schema.WordKey(key)) end
 function Schema.SectionTitle(id) return word("RAID_SECTION_", id) or id end
 function Schema.TabTitle(id) return word("RAID_TAB_", id) or id end
 function Schema.Note(id) return word("RAID_NOTE_", id) end
+
+-- What a binding (Raid.ParseBinding) does, in words: the kind's, and the
+-- value after it ("Cast a spell: Renew"); nil for no binding.
+function Schema.KindText(kind)
+    if kind == "" then return L.RAID_CLICK_NOTHING end
+    return word("RAID_CLICK_", kind) or kind
+end
+function Schema.BindingText(text)
+    local kind, value = ns.Raid.ParseBinding(text)
+    if kind == nil then return nil end
+    if value == nil or value == "" then return Schema.KindText(kind) end
+    return Schema.KindText(kind) .. ": " .. value
+end
 
 -- A choice of an enum: the raid's own word, else the unit frames' (the
 -- nine points).

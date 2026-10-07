@@ -263,12 +263,19 @@ local RAID_TAB_INTRO = {
         .. " row that shows every debuff (the one in the centre may appear there too).",
     indicators = "Up to five small squares at the corners and the top edge, each for spells of your choice"
         .. " (heals over time, shields).",
+    clickCast = "Heal, decurse, target, assist or focus raid members with one click: up to 40 mouse combinations"
+        .. " (five buttons, with and without Shift, Ctrl and Alt) on the cells of every panel and on the party"
+        .. " frames, and up to 16 keys that cast on the raid member under the mouse. Spells are kept by name, so"
+        .. " the highest rank you know is cast. Per character, the same at every raid size; a key or binding"
+        .. " shows once for all sixteen.",
     icons = "Role, raid target marker, leader, master looter and ready check icons, and the states: range,"
         .. " aggro, your target.",
 }
 
--- The default per raid size when the sizes differ.
+-- The default per raid size when the sizes differ. A binding
+-- (click-casting) in words.
 local function raidDefault(def)
+    if def.kinds then return RaidSchema.BindingText(RS.Default(def, "general")) end
     if def.scope == "general" then return valueText(def, RS.Default(def, "general"), RaidSchema.EnumText) end
     local groups, order = {}, {}
     for _, size in ipairs(ns.Raid.SIZES) do
@@ -282,16 +289,29 @@ local function raidDefault(def)
     return table.concat(parts, "; ")
 end
 
--- One table of raid settings under a heading.
+-- What a raid setting takes: a binding's kinds in words.
+local function raidChoices(def)
+    if not def.kinds then return choices(def, true) end
+    local list = {}
+    for _, kind in ipairs(def.kinds) do list[#list + 1] = RaidSchema.KindText(kind) end
+    return table.concat(list, ", ")
+end
+
+-- One table of raid settings under a heading. Settings of the section
+-- that share their words (the click-casting keys) are one row.
 local function raidSection(lines, title, keys)
     lines[#lines + 1] = "## " .. title
     lines[#lines + 1] = ""
     tableStart(lines, 4)
+    local listed = {}
     for _, key in ipairs(keys) do
-        local def = RS.Get(key)
-        local row = { "<b>" .. cell(RaidSchema.Label(key)) .. "</b>", cell(RaidSchema.Hint(key) or ""),
-            cell(choices(def, true)), cell(raidDefault(def)) }
-        lines[#lines + 1] = "<tr><td>" .. table.concat(row, "</td><td>") .. "</td></tr>"
+        local def, wordKey = RS.Get(key), RaidSchema.WordKey(key)
+        if not listed[wordKey] then
+            listed[wordKey] = true
+            local row = { "<b>" .. cell(RaidSchema.Label(key)) .. "</b>", cell(RaidSchema.Hint(key) or ""),
+                cell(raidChoices(def)), cell(raidDefault(def)) }
+            lines[#lines + 1] = "<tr><td>" .. table.concat(row, "</td><td>") .. "</td></tr>"
+        end
     end
     lines[#lines + 1] = "</tbody>"
     lines[#lines + 1] = "</table>"

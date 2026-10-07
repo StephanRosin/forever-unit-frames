@@ -530,3 +530,125 @@ RaidSettings.Define({ key = "toolsRolePoll", code = "IP", scope = "general", typ
 RaidSettings.Define({ key = "toolsAssist", code = "IA", scope = "general", type = "bool", default = true })
 RaidSettings.Define({ key = "toolsConvert", code = "IC", scope = "general", type = "bool", default = true })
 RaidSettings.Define({ key = "toolsLoot", code = "IL", scope = "general", type = "bool", default = true })
+
+-- Click-casting (Raid/ClickCast.lua, Raid/ClickKeys.lua), per character:
+-- spells differ per class, not per raid size.
+--
+-- A binding is stored as text: "" (nothing), "target", "focus", "assist",
+-- "menu", or "spell:<name>", "item:<name or item ID>", "macro:<macro
+-- text>". The kinds go by name, never by index. An empty value
+-- ("spell:") does nothing yet. Returns the kind and the value (nil for a
+-- kind without one), or nil when the text is no binding.
+local PLAIN_BINDINGS = { [""] = true, target = true, focus = true, assist = true, menu = true }
+local VALUED_BINDINGS = { spell = true, item = true, macro = true }
+-- The kinds in the raid window's order: a mouse slot's, a key's.
+Raid.CLICK_KINDS = { "", "target", "focus", "assist", "menu", "spell", "item", "macro" }
+Raid.CLICK_KEY_KINDS = { "", "spell", "item", "macro" }
+-- Whether a kind takes a value.
+function Raid.BindingHasValue(kind) return VALUED_BINDINGS[kind] == true end
+function Raid.ParseBinding(text)
+    if PLAIN_BINDINGS[text] then return text end
+    local kind, value = text:match("^(%a+):(.*)$")
+    if kind and VALUED_BINDINGS[kind] then return kind, value end
+    return nil
+end
+-- The longest binding: a macro of the client's 255 letters.
+Raid.CLICK_BINDING_LETTERS = #"macro:" + 255
+
+local function isBinding(text) return Raid.ParseBinding(text) ~= nil end
+-- A key casts on the unit under the mouse: a spell, an item or a macro;
+-- target, focus, assist and the menu are clicks.
+local function isKeyBinding(text)
+    local kind = Raid.ParseBinding(text)
+    return kind == "" or (kind ~= nil and VALUED_BINDINGS[kind] == true)
+end
+
+-- A key as the client names it: upper case, modifiers in its order
+-- (ALT-, CTRL-, SHIFT-) before a key name (F, F5, NUMPAD1, BUTTON4,
+-- MOUSEWHEELUP, ...) or a single sign. Typed in any case and modifier
+-- order, spaces around it trimmed. "" for none; nil for what is no key, a
+-- modifier alone or twice, and the keys never taken: the mouse's left
+-- and right buttons and Escape (the game's own clicks and menu).
+local KEY_MODIFIERS = { "ALT", "CTRL", "SHIFT" }
+local NEVER_TAKEN = { BUTTON1 = true, BUTTON2 = true, ESCAPE = true, ALT = true, CTRL = true, SHIFT = true }
+function Raid.ParseKey(text)
+    local rest = text:match("^%s*(.-)%s*$"):upper()
+    if rest == "" then return "" end
+    local held = {}
+    while true do
+        local modifier, after = rest:match("^(%u+)%-(.+)$")
+        if not modifier or not (modifier == "ALT" or modifier == "CTRL" or modifier == "SHIFT") then break end
+        if held[modifier] then return nil end
+        held[modifier] = true
+        rest = after
+    end
+    if not (rest:match("^[%u%d]+$") or rest:match("^%p$")) or NEVER_TAKEN[rest] then return nil end
+    local key = ""
+    for _, modifier in ipairs(KEY_MODIFIERS) do
+        if held[modifier] then key = key .. modifier .. "-" end
+    end
+    return key .. rest
+end
+
+local function isKey(text) return Raid.ParseKey(text) == text end
+
+-- On or off: AUTO is on unless Clique (or another click-casting addon) is
+-- loaded. Stored by index: append only.
+RaidSettings.Define({ key = "clickCast", code = "HA", scope = "general", type = "enum",
+    values = { "AUTO", "ON", "OFF" }, default = "AUTO" })
+-- The unit frames' party frames take the bindings too.
+RaidSettings.Define({ key = "clickCastParty", code = "HP", scope = "general", type = "bool", default = true })
+
+-- The mouse: five buttons, each plain and with seven sets of modifiers.
+-- A slot's key is "click" .. button .. modifiers ("click1",
+-- "click2Shift", ...), its code the button's letter and the modifiers'.
+-- The prefix is the client's for the attributes (SecureTemplates.lua:
+-- alt- before ctrl- before shift-); the plain click is the wildcard "*",
+-- so a modified click with nothing bound does what the plain one does.
+Raid.CLICK_BUTTONS = {
+    { button = 1, name = "Left", letter = "H" },
+    { button = 2, name = "Right", letter = "V" },
+    { button = 3, name = "Middle", letter = "S" },
+    { button = 4, name = "Button4", letter = "Q" },
+    { button = 5, name = "Button5", letter = "W" },
+}
+Raid.CLICK_MODIFIERS = {
+    { name = "", prefix = "*", letter = "D" },
+    { name = "Shift", prefix = "shift-", letter = "H" },
+    { name = "Ctrl", prefix = "ctrl-", letter = "I" },
+    { name = "Alt", prefix = "alt-", letter = "J" },
+    { name = "ShiftCtrl", prefix = "ctrl-shift-", letter = "K" },
+    { name = "ShiftAlt", prefix = "alt-shift-", letter = "N" },
+    { name = "CtrlAlt", prefix = "alt-ctrl-", letter = "R" },
+    { name = "ShiftCtrlAlt", prefix = "alt-ctrl-shift-", letter = "U" },
+}
+-- Left click targets, right click opens the menu, as the cells' XML does.
+local CLICK_DEFAULTS = { click1 = "target", click2 = "menu" }
+Raid.CLICK_SLOTS = {}
+for _, b in ipairs(Raid.CLICK_BUTTONS) do
+    for _, m in ipairs(Raid.CLICK_MODIFIERS) do
+        local slot = { key = "click" .. b.button .. m.name, button = b.button, modifiers = m.name, prefix = m.prefix }
+        RaidSettings.Define({ key = slot.key, code = b.letter .. m.letter, scope = "general", type = "text",
+            maxLetters = Raid.CLICK_BINDING_LETTERS, check = isBinding, kinds = Raid.CLICK_KINDS,
+            default = CLICK_DEFAULTS[slot.key] or "" })
+        Raid.CLICK_SLOTS[#Raid.CLICK_SLOTS + 1] = slot
+    end
+end
+
+-- Sixteen keys that cast on the raid member under the mouse: the key
+-- ("clickKey1": code "T" and the slot's letter) and its binding
+-- ("clickKey1Bind": code "O" and the slot's letter).
+Raid.CLICK_KEY_COUNT = 16
+local KEY_LETTERS, KEY_BIND_LETTERS = "ADEFGHIJKLNPQRTU", "ABCDEFIJKMNOPQRU"
+-- The longest key: every modifier and a long key name.
+Raid.CLICK_KEY_LETTERS = 40
+Raid.CLICK_KEYS = {}
+for i = 1, Raid.CLICK_KEY_COUNT do
+    local slot = { index = i, key = "clickKey" .. i, bind = "clickKey" .. i .. "Bind" }
+    RaidSettings.Define({ key = slot.key, code = "T" .. KEY_LETTERS:sub(i, i), scope = "general", type = "text",
+        maxLetters = Raid.CLICK_KEY_LETTERS, check = isKey, default = "" })
+    RaidSettings.Define({ key = slot.bind, code = "O" .. KEY_BIND_LETTERS:sub(i, i), scope = "general",
+        type = "text", maxLetters = Raid.CLICK_BINDING_LETTERS, check = isKeyBinding, kinds = Raid.CLICK_KEY_KINDS,
+        default = "" })
+    Raid.CLICK_KEYS[i] = slot
+end

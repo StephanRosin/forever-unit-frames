@@ -11,10 +11,10 @@ local function ids(list)
     return table.concat(out, ",")
 end
 H.check("tabs", ids(Schema.TABS),
-    "general,layout,panels,arrangement,cell,texts,debuffs,indicators,icons,tools,profile")
+    "general,layout,panels,arrangement,cell,texts,debuffs,indicators,icons,tools,clickCast,profile")
 -- Profile: export and import of the edited size, no settings.
-H.check("profile tab is the window's own", Schema.TABS[11].custom, "profile")
-H.check("profile tab: no sections", #Schema.TABS[11].sections, 0)
+H.check("profile tab is the window's own", Schema.TABS[12].custom, "profile")
+H.check("profile tab: no sections", #Schema.TABS[12].sections, 0)
 -- Arrangement: the window's board, then a section per own panel.
 H.check("arrangement tab is the window's own", Schema.TABS[4].custom, "arrangement")
 H.check("a section per own panel", ids(Schema.TABS[4].sections),
