@@ -90,19 +90,46 @@ function ns.NewConfig(Settings, event, notCopied)
         return profile[scope] ~= nil and profile[scope][key] ~= nil
     end
 
-    function Config.Set(scope, key, value)
+    -- A value as Set would store it: the setting and the validated value,
+    -- or nil when it is refused.
+    local function checked(scope, key, value)
         local def = Settings.Get(key)
-        if not def or not profile[scope] or not Settings.AppliesTo(def, scope) then return false end
+        if not def or not profile[scope] or not Settings.AppliesTo(def, scope) then return nil end
         local v = Settings.Validate(def, value)
-        if v == nil then return false end
+        if v == nil then return nil end
+        return def, v
+    end
+
+    local function store(scope, def, v)
         -- A general value equal to the base default is still kept when some
         -- frame has a default of its own: it is what those frames follow.
         if sameValue(v, fallbackIn(profile, scope, def)) and not (scope == "general" and hasFrameDefaults(def)) then
-            profile[scope][key] = nil
+            profile[scope][def.key] = nil
         else
-            profile[scope][key] = v
+            profile[scope][def.key] = v
         end
+    end
+
+    function Config.Set(scope, key, value)
+        local def, v = checked(scope, key, value)
+        if not def then return false end
+        store(scope, def, v)
         ns.Fire(event, scope, key)
+        return true
+    end
+
+    -- Several settings of one scope at once (values: { key, value } pairs),
+    -- each stored as Set stores it; one event for everything (scope, nil).
+    -- When one is refused, none is set.
+    function Config.SetKeys(scope, values)
+        local list = {}
+        for i, pair in ipairs(values) do
+            local def, v = checked(scope, pair[1], pair[2])
+            if not def then return false end
+            list[i] = { def, v }
+        end
+        for _, entry in ipairs(list) do store(scope, entry[1], entry[2]) end
+        ns.Fire(event, scope, nil)
         return true
     end
 

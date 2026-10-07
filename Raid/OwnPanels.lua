@@ -162,17 +162,18 @@ function Own.Addable(size, slot)
     return Layout.Without(groupingBlocks(setting(slot, "GroupBy", Raid.Scope(size)), size), taken)
 end
 
-local function storeTokens(scope, slot, tokens)
-    RaidConfig.Set(scope, slot.id .. "Blocks", table.concat(tokens, ","))
+-- A slot's new block list as a { key, value } pair (RaidConfig.SetKeys).
+local function tokensPair(slot, tokens)
+    return { slot.id .. "Blocks", table.concat(tokens, ",") }
 end
 
 -- A block (its grouping and token) to a panel at a size: toId an own
 -- panel's id, "main" (the main panel, the block's grouping being its) or
 -- nil (taken out: nowhere). It leaves every other own panel of its
 -- grouping, so a block is in one place; a panel that has it keeps its
--- place.
+-- place. One change for all panels it touches.
 function Own.Place(size, groupBy, token, toId)
-    local scope = Raid.Scope(size)
+    local scope, changes = Raid.Scope(size), {}
     for _, slot in ipairs(Raid.OWN_PANELS) do
         if slot.id ~= toId and setting(slot, "GroupBy", scope) == groupBy then
             local tokens = tokensOf(slot, scope)
@@ -180,17 +181,19 @@ function Own.Place(size, groupBy, token, toId)
             for _, t in ipairs(tokens) do
                 if t ~= token then kept[#kept + 1] = t end
             end
-            if #kept < #tokens then storeTokens(scope, slot, kept) end
+            if #kept < #tokens then changes[#changes + 1] = tokensPair(slot, kept) end
         end
     end
     local target = toId and Raid.OwnPanel(toId)
-    if not target then return end
-    local tokens = tokensOf(target, scope)
-    for _, t in ipairs(tokens) do
-        if t == token then return end
+    if target then
+        local tokens, has = tokensOf(target, scope), false
+        for _, t in ipairs(tokens) do has = has or t == token end
+        if not has then
+            tokens[#tokens + 1] = token
+            changes[#changes + 1] = tokensPair(target, tokens)
+        end
     end
-    tokens[#tokens + 1] = token
-    storeTokens(scope, target, tokens)
+    if #changes > 0 then RaidConfig.SetKeys(scope, changes) end
 end
 
 -- Shows the first own panel not shown at a size; returns its slot, or nil
@@ -213,10 +216,9 @@ function Own.Remove(size, slot)
 end
 
 -- A panel's grouping at a size; a new grouping starts without blocks
--- (the old tokens name blocks of another grouping).
+-- (the old tokens name blocks of another grouping): one change.
 function Own.SetGrouping(size, slot, groupBy)
     local scope = Raid.Scope(size)
     if setting(slot, "GroupBy", scope) == groupBy then return end
-    RaidConfig.Set(scope, slot.id .. "GroupBy", groupBy)
-    storeTokens(scope, slot, {})
+    RaidConfig.SetKeys(scope, { { slot.id .. "GroupBy", groupBy }, { slot.id .. "Blocks", "" } })
 end
