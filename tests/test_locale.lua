@@ -55,6 +55,12 @@ for _, code in ipairs(LANGUAGES) do
     end
 end
 
+-- The threat bar's role hint says both halves, the tanks' and the others'.
+for code, other in pairs({ deDE = "andere: ihr Anteil", esES = "los demás: su parte", frFR = "les autres : leur part" }) do
+    H.checkTrue(code .. ": threat role hint names the others' share",
+        (ns.Locales[code].HINT_threatBarRole or ""):find(other, 1, true))
+end
+
 H.check("placeholder scan", specifiers("Client %s (build %s), interface %d, %.1f%%"), "%s %s %d %.1f")
 
 -- Every language the setting offers has a table (AUTO aside).

@@ -1144,7 +1144,7 @@ L.HINT_healthColorMode = "Klasse: Spieler in Klassenfarbe, NPCs in Reaktionsfarb
 L.HINT_titleColorMode = "Klasse: Spieler in Klassenfarbe, NPCs in Reaktionsfarbe"
 L.HINT_castbarPosition = "Frei platziert: Ort unter Freie Position, oder Rahmen entsperren"
 L.HINT_playerFadeAlpha = "0 = unsichtbar"
-L.HINT_threatBarRole = "Automatisch: nach Rolle, Gestalt oder Aura. Tanks sehen ihren Vorsprung"
+L.HINT_threatBarRole = "Automatisch: Rolle, Gestalt, Aura. Tanks: ihr Vorsprung, andere: ihr Anteil"
 L.HINT_rangeAlpha = "Gilt für alle Rahmen; die Seite eines Rahmens kann es überschreiben"
 L.RAID_HINT_rangeFade = "Gemessen wie bei den Einheitenrahmen: Allgemein > Status > Reichweite"
 L.RAID_HINT_dispelFilter = "Von mir bannbar: nur, was deine Klasse entfernen kann"

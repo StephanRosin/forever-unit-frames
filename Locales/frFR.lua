@@ -1144,7 +1144,7 @@ L.HINT_healthColorMode = "Classe : joueurs en couleur de classe, PNJ en couleur 
 L.HINT_titleColorMode = "Classe : joueurs en couleur de classe, PNJ en couleur de réaction"
 L.HINT_castbarPosition = "Détachée : place sous Position détachée, ou déverrouillez les cadres"
 L.HINT_playerFadeAlpha = "0 = invisible"
-L.HINT_threatBarRole = "Automatique : par rôle, forme ou aura. Le tank voit son avance"
+L.HINT_threatBarRole = "Automatique : rôle, forme, aura. Tank : son avance, les autres : leur part"
 L.HINT_rangeAlpha = "Vaut pour tous les cadres ; la page d'un cadre peut le remplacer"
 L.RAID_HINT_rangeFade = "Mesurée comme pour les cadres d'unité : Général > État > Portée"
 L.RAID_HINT_dispelFilter = "Dissipables par moi : seulement ce que votre classe peut retirer"

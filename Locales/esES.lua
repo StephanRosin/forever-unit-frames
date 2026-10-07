@@ -1145,7 +1145,7 @@ L.HINT_healthColorMode = "Clase: jugadores en color de clase, PNJ en color de re
 L.HINT_titleColorMode = "Clase: jugadores en color de clase, PNJ en color de reacción"
 L.HINT_castbarPosition = "Separada: lugar en Posición separada, o desbloquea los marcos"
 L.HINT_playerFadeAlpha = "0 = invisible"
-L.HINT_threatBarRole = "Automático: por rol, forma o aura. El tanque ve su ventaja"
+L.HINT_threatBarRole = "Automático: por rol, forma o aura. Tanque: ventaja; los demás: su parte"
 L.HINT_rangeAlpha = "Vale para todos los marcos; la página de un marco puede cambiarlo"
 L.RAID_HINT_rangeFade = "Se mide como en los marcos de unidad: General > Estado > Alcance"
 L.RAID_HINT_dispelFilter = "Que puedo disipar: solo lo que tu clase puede quitar"
