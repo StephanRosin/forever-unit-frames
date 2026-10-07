@@ -84,6 +84,7 @@ Raid\SpecialPanels.lua
 Raid\OwnPanels.lua
 Raid\Menu.lua
 Raid\TestMode.lua
+Raid\ClickCast.lua
 Core\Blizzard.lua
 Core\Movers.lua
 Core\Commands.lua
