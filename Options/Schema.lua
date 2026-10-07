@@ -117,7 +117,7 @@ Schema.FRAME = {
             "raidMarkerX", "raidMarkerY" } },
         { id = "petHappiness", keys = { "petHappiness", "petHappinessHideHappy", "petHappinessSize",
             "petHappinessFramePoint", "petHappinessPoint", "petHappinessX", "petHappinessY" } },
-        { id = "groupIcons", keys = { "groupLeader", "groupReadyCheck", "groupResurrect", "groupIconSize",
+        { id = "groupIcons", keys = { "groupLeader", "groupReadyCheck", "groupResurrect", "groupRole", "groupIconSize",
             "groupIconFramePoint", "groupIconPoint", "groupIconX", "groupIconY" } },
         { id = "comboPoints", keys = { "comboPoints", "comboHideEmpty", "comboShape", "comboSize", "comboSpacing", "comboColor",
             "comboFramePoint", "comboPoint", "comboX", "comboY" } },

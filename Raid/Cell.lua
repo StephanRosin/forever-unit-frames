@@ -54,7 +54,7 @@ local get = Cell.Get
 local FIXED = {
     titlePercent = 0, portraitMode = "OFF", castbarEnabled = false,
     buffsEnabled = false, debuffsEnabled = false, threatGlow = false,
-    titleClassIcon = false, healBeyond = false, shadowEnabled = false, groupResurrect = false,
+    titleClassIcon = false, healBeyond = false, shadowEnabled = false, groupResurrect = false, groupRole = false,
     textHealthLeft = "NAME", textPowerLeft = "NONE", textPowerRight = "NONE",
     titleTextCenter = "NONE", textHealthCenter = "NONE", textPowerCenter = "NONE",
     healthPercent = 90, powerPercent = 10, borderPadding = 0,
@@ -172,7 +172,7 @@ end
 
 function Cell.Role(frame)
     if frame.sample then return frame.sample.role end
-    return readable(pcall(UnitGroupRolesAssigned, frame.unit))
+    return ns.GroupIcons.UnitRole(frame.unit)
 end
 local roleOf = Cell.Role
 

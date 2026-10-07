@@ -12,6 +12,11 @@ local _, ns = ...
 --   not ready (CompactUnitFrame_FinishReadyCheck).
 -- * incoming resurrection: the raid frames' centre icon
 --   (CompactUnitFrame.lua, "IncomingResurrection").
+-- * role (off by default): the assigned role in the group finder's small
+--   role icons (GetMicroIconForRole, Blizzard_SharedXMLBase/
+--   TextureUtil.lua), the raid cells' too (Raid/CellRole.lua).
+--   UnitGroupRolesAssigned is secret while the unit's identity is
+--   restricted (SecretWhenUnitIdentityRestricted): then none.
 -- Master looter: the client has the loot method (C_PartyInfo.GetLootMethod,
 -- Enum.LootMethod.Masterlooter) but no art for it anywhere in its UI, so
 -- the unit frames do not show it; raid cells show our own
@@ -41,6 +46,8 @@ GroupIcons.LEADER = { leader = { atlas = "UI-HUD-UnitFrame-Player-Group-LeaderIc
 GroupIcons.READY = { ready = "UI-LFG-ReadyMark-Raid", notready = "UI-LFG-DeclineMark-Raid",
     waiting = "UI-LFG-PendingMark-Raid" }
 GroupIcons.REZ_ATLAS = "RaidFrame-Icon-Rez"
+GroupIcons.ROLE_ATLAS = { TANK = "UI-LFG-RoleIcon-Tank-Micro-GroupFinder",
+    HEALER = "UI-LFG-RoleIcon-Healer-Micro-GroupFinder", DAMAGER = "UI-LFG-RoleIcon-DPS-Micro-GroupFinder" }
 GroupIcons.LOOTER_TEXTURE = "Interface\\AddOns\\ForeverUnitFrames\\Media\\MasterLooter.tga"
 -- The icons a raid cell places on their own.
 GroupIcons.OWN_POINTS = { "leader", "looter", "ready" }
@@ -52,13 +59,15 @@ GroupIcons.LEVELS = 18
 -- Gap between two slots, in pixels.
 local GAP = 2
 
--- Test mode: the player leads and is ready; the pretend party answers
--- the check (member 2 not ready, dead, with a resurrection coming).
-GroupIcons.SAMPLES = { player = { leader = "leader", ready = "ready" } }
+-- Test mode: the player leads, tanks and is ready; the pretend party
+-- answers the check (member 2 not ready, dead, with a resurrection
+-- coming); member 1 heals, the others deal damage.
+GroupIcons.SAMPLES = { player = { leader = "leader", ready = "ready", role = "TANK" } }
 GroupIcons.PARTY_SAMPLES = {
-    [1] = { ready = "ready" },
-    [2] = { ready = "notready", rez = true },
-    [4] = { ready = "waiting" },
+    [1] = { ready = "ready", role = "HEALER" },
+    [2] = { ready = "notready", rez = true, role = "DAMAGER" },
+    [3] = { role = "DAMAGER" },
+    [4] = { ready = "waiting", role = "DAMAGER" },
 }
 
 -- Set from READY_CHECK_FINISHED until the result has decayed: a table
@@ -73,7 +82,7 @@ function GroupIcons.Build(frame)
     if not (GroupIcons.Applies(frame.key) or frame.iconPoint) then return end
     local holder = CreateFrame("Frame", nil, frame)
     local g = { holder = holder }
-    for _, name in ipairs({ "leader", "ready", "rez" }) do
+    for _, name in ipairs({ "leader", "ready", "rez", "role" }) do
         g[name] = holder:CreateTexture(nil, "OVERLAY")
         g[name]:Hide()
     end
@@ -94,6 +103,7 @@ local function slots(frame)
     if want(frame, "groupLeader") then list[#list + 1] = g.leader end
     if want(frame, "groupReadyCheck") then list[#list + 1] = g.ready end
     if want(frame, "groupResurrect") then list[#list + 1] = g.rez end
+    if want(frame, "groupRole") then list[#list + 1] = g.role end
     return list
 end
 
@@ -115,17 +125,21 @@ local function drawLeader(icon, kind)
 end
 
 -- Any time, combat included: which icons show, from what the frame knows
--- (g.leaderKind, g.readyStatus, g.hasRez, g.isLooter) or its test mode
+-- (g.leaderKind, g.readyStatus, g.hasRez, g.isLooter, g.role) or its test mode
 -- sample. A raid cell's icons keep their own places.
 function GroupIcons.Refresh(frame)
     local g = frame.groupIcons
     if not g then return end
-    local live = { leader = g.leaderKind, ready = g.readyStatus, rez = g.hasRez, looter = g.isLooter }
+    local live = { leader = g.leaderKind, ready = g.readyStatus, rez = g.hasRez, looter = g.isLooter,
+        role = g.roleKind }
     local data = g.preview or live
     local kind = want(frame, "groupLeader") and data.leader or nil
     local status = want(frame, "groupReadyCheck") and data.ready or nil
     local rez = want(frame, "groupResurrect") and data.rez == true
+    local role = want(frame, "groupRole") and GroupIcons.ROLE_ATLAS[data.role or ""] or nil
     if kind then drawLeader(g.leader, kind) end
+    if role then g.role:SetAtlas(role) end
+    g.role:SetShown(role ~= nil)
     if status then g.ready:SetAtlas(GroupIcons.READY[status]) end
     g.leader:SetShown(kind ~= nil)
     g.ready:SetShown(status ~= nil)
@@ -133,7 +147,7 @@ function GroupIcons.Refresh(frame)
     if g.looter then g.looter:SetShown(data.looter == true and frame.iconPoint(frame, "looter") ~= nil) end
     if frame.iconPoint then return end
     local shown = {}
-    for _, icon in ipairs({ g.leader, g.ready, g.rez }) do
+    for _, icon in ipairs({ g.leader, g.ready, g.rez, g.role }) do
         if icon:IsShown() then shown[#shown + 1] = icon end
     end
     arrange(g, shown)
@@ -175,6 +189,14 @@ function GroupIcons.Style(frame)
         Pixel.Snap(Config.Get(scope, "groupIconX")), Pixel.Snap(Config.Get(scope, "groupIconY")))
     g.holder:SetShown(n > 0)
     GroupIcons.Refresh(frame)
+end
+
+-- The assigned role ("TANK", "HEALER", "DAMAGER", "NONE"), or nil when it
+-- cannot be read (secret, refused). Raid cells ask too (Raid/Cell.lua).
+function GroupIcons.UnitRole(unit)
+    local ok, role = pcall(UnitGroupRolesAssigned, unit)
+    if not ok or Secrets.IsSecret(role) or type(role) ~= "string" then return nil end
+    return role
 end
 
 -- "leader", "guide", "assistant" or nil.
@@ -227,6 +249,7 @@ function GroupIcons.Update(frame)
     if not decay then g.readyStatus = readyStatus(unit) end
     g.hasRez = Secrets.Bool(UnitHasIncomingResurrection, unit) == true
     if g.looter then g.isLooter = isLooter(unit) end
+    g.roleKind = GroupIcons.UnitRole(unit)
     GroupIcons.Refresh(frame)
 end
 
@@ -254,6 +277,7 @@ local function updateAll(event) ns.Units.UpdateElement(GroupIcons, event) end
 ns.On("PARTY_LEADER_CHANGED", updateAll)
 ns.On("GROUP_ROSTER_UPDATE", updateAll)
 ns.On("PARTY_LOOT_METHOD_CHANGED", updateAll)
+ns.On("PLAYER_ROLES_ASSIGNED", updateAll)
 -- The confirming unit may be named by another token than the frame's
 -- (a raid token): every frame looks again.
 ns.On("READY_CHECK_CONFIRM", updateAll)

@@ -1,8 +1,8 @@
 local _, ns = ...
 
 -- The assigned role on a raid cell, in the group finder's small role
--- icons (GetMicroIconForRole, Blizzard_SharedXMLBase/TextureUtil.lua: the
--- atlases below): tank and healer, damage too when asked
+-- icons (Elements/GroupIcons.lua: ROLE_ATLAS, shared with the unit
+-- frames' role icon): tank and healer, damage too when asked
 -- (roleIconDamager). At its own point (Raid/Cell.lua: Cell.IconPoint),
 -- the profile's icon size. UnitGroupRolesAssigned is secret while the
 -- unit's identity is restricted: nothing shows then. A texture on a
@@ -14,8 +14,7 @@ ns.RaidRole = Role
 local Cell, Pixel = ns.RaidCell, ns.Pixel
 local get = Cell.Get
 
-Role.ATLAS = { TANK = "UI-LFG-RoleIcon-Tank-Micro-GroupFinder", HEALER = "UI-LFG-RoleIcon-Healer-Micro-GroupFinder",
-    DAMAGER = "UI-LFG-RoleIcon-DPS-Micro-GroupFinder" }
+Role.ATLAS = ns.GroupIcons.ROLE_ATLAS
 -- With the other icons (Elements/GroupIcons.lua).
 Role.LEVELS = 18
 

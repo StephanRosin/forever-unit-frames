@@ -90,6 +90,7 @@ The **Status** tab on each frame's page in `/fuf`. The last column says which fr
 <tr><td><b>Leader and assistant</b></td><td>The group's leader (or guide) and assistants</td><td>On, Off</td><td>On</td><td>Player, Party</td></tr>
 <tr><td><b>Ready check</b></td><td>Waiting, ready or not ready; stays a few seconds after the check</td><td>On, Off</td><td>On</td><td>Player, Party</td></tr>
 <tr><td><b>Incoming resurrection</b></td><td></td><td>On, Off</td><td>On</td><td>Player, Party</td></tr>
+<tr><td><b>Role (tank, healer, damage)</b></td><td>The role assigned in the group</td><td>On, Off</td><td>Off</td><td>Player, Party</td></tr>
 <tr><td><b>Icon size</b></td><td></td><td>8 – 48</td><td>16</td><td>Player, Party</td></tr>
 <tr><td><b>Point on the frame</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Top left</td><td>Player, Party</td></tr>
 <tr><td><b>Point of the icons</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Left</td><td>Player, Party</td></tr>

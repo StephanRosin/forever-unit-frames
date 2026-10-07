@@ -597,6 +597,9 @@ local GROUP = { player = true, party = true }
 Settings.Define({ key = "groupLeader", code = "LL", scope = "frame", only = GROUP, type = "bool", default = true })
 Settings.Define({ key = "groupReadyCheck", code = "LR", scope = "frame", only = GROUP, type = "bool", default = true })
 Settings.Define({ key = "groupResurrect", code = "LZ", scope = "frame", only = GROUP, type = "bool", default = true })
+-- The assigned role (tank, healer, damage) as a fourth icon in the row, in
+-- the raid cells' art; off by default.
+Settings.Define({ key = "groupRole", code = "LG", scope = "frame", only = GROUP, type = "bool", default = false })
 Settings.Define({ key = "groupIconSize", code = "LS", scope = "frame", only = GROUP, type = "int", min = 8, max = 48,
     default = 16 })
 Settings.Define({ key = "groupIconFramePoint", code = "LF", scope = "frame", only = GROUP, type = "enum",
