@@ -1,7 +1,8 @@
 -- The raid window's Arrangement tab (Raid/Options/Arrangement.lua): its
--- note, then a section per own panel shown at the edited size with that
--- panel's settings (title, grouping, layout, position); sections come and
--- go with their panels, the page's height follows.
+-- note, the board (tests/test_raid_window_board.lua), then a section per
+-- own panel shown at the edited size with that panel's settings (title,
+-- grouping, layout, position); sections come and go with their panels,
+-- the page's height follows.
 local M = H.M
 local ns = H.LoadAddon()
 M.units.player = { name = "Me", class = "MAGE", health = 1, healthMax = 1 }
@@ -67,7 +68,9 @@ H.checkTrue("panel 3 below", top(rowFor("panel3Title")) > top(rowFor("panel2Y"))
 -- Another size: its own panels (none).
 RO.SelectSize(20)
 H.check("20: no rows", shownKeys(), "")
-H.check("20: the page back", RO.page.height, empty)
+local P = RO.PAGE
+H.check("20: the note and the board only", RO.page.height,
+    P.top + P.noteHeight + ns.RaidArrangement.board:GetHeight() + P.bottom)
 RO.SelectSize(10)
 H.check("10 again", rowFor("panel3CellsPerLine").edit:GetText(), "3")
 

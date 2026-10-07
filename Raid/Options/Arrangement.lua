@@ -6,7 +6,8 @@ local _, ns = ...
 -- own panel shown at that size with its settings (its title, grouping,
 -- layout and position; its blocks are on the board). A section comes
 -- and goes with its panel: the page lays its rows out again whenever the
--- board refreshes, which every refresh of the window's rows does.
+-- board refreshes, which every refresh of the window's rows does (the
+-- board is one of them).
 local Arrangement = {}
 ns.RaidArrangement = Arrangement
 
@@ -34,8 +35,8 @@ local function slotRow(page, slot, part)
 end
 
 -- Every item of the page in its order: { row, visible() (optional) }.
-local function items(page, tab)
-    local list = { { row = RaidOptions.NoteBlock(page, Schema.Note(tab.note)) } }
+local function items(page, tab, board)
+    local list = { { row = RaidOptions.NoteBlock(page, Schema.Note(tab.note)) }, { row = board } }
     list[1].row:SetHeight(RaidOptions.PAGE.noteHeight)
     for _, slot in ipairs(Raid.OWN_PANELS) do
         local function visible() return shownAtEditedSize(slot) end
@@ -72,20 +73,15 @@ local function restack(page)
 end
 Arrangement.Restack = restack
 
--- The page's own row, first to refresh: lays the page out again.
-local function layoutRow(page)
-    local row = CreateFrame("Frame", nil, page)
-    row:SetHeight(1)
-    function row:Refresh() restack(page) end
-    function row:SetEnabled() end
-    return row
-end
-
+-- The board (Raid/Options/Board.lua) lays the page out again after each
+-- of its refreshes. Arrangement.board: the last one built.
 function Arrangement.BuildPage(page, tab)
-    page.items = items(page, tab)
-    page.rows = { layoutRow(page) }
+    local board = ns.RaidBoard.New(page, function() restack(page) end)
+    Arrangement.board = board
+    page.items = items(page, tab, board)
+    page.rows = {}
     for _, item in ipairs(page.items) do page.rows[#page.rows + 1] = item.row end
-    restack(page)
+    board:Refresh()
 end
 
 RaidOptions.CUSTOM_PAGES.arrangement = Arrangement.BuildPage
