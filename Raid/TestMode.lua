@@ -4,19 +4,19 @@ local _, ns = ...
 -- laid out exactly like the real ones (Raid/Layout.lua), the same in the
 -- own panels' blocks, and in each special panel that is switched on its
 -- own pretend members (main tanks, main assists, your tanks and
--- favourites, pets). On with the unit
--- frames' test mode (Options/TestMode.lua fires TEST_MODE) or with the
--- raid options window's own switch (Test.Set). While the raid window is
--- open it shows the size the window edits, at that size's position
--- (Test.Preview; Raid/Cell.lua asks Test.PreviewSize); otherwise the
--- active size. The pretend cells are secure
--- buttons on the player, so clicks target you, each with a sample of its
--- own (Elements/Health.lua: Health.Sample): a class (name and colour; the
--- name is Blizzard's class name), health, a role, and one dead, one
--- offline member. Made once, out of combat, and reused. Entering combat
--- ends test mode (Options/TestMode.lua); the cells go with the next
--- layout, after combat if it had already begun (the panel then hides at
--- once).
+-- favourites, pets). On only with the raid options window's own switch
+-- (Test.Set): the unit frames' test mode (Options/TestMode.lua) is a
+-- separate one and shows nothing here, as this one shows nothing on the
+-- unit frames. While the raid window is open it shows the size the
+-- window edits, at that size's position (Test.Preview; Raid/Cell.lua asks
+-- Test.PreviewSize); otherwise the active size. The pretend cells are
+-- secure buttons on the player, so clicks target you, each with a sample
+-- of its own (Elements/Health.lua: Health.Sample): a class (name and
+-- colour; the name is Blizzard's class name), health, a role, and one
+-- dead, one offline member. Made once, out of combat, and reused.
+-- Entering combat ends test mode (below; the unit frames' ends on its
+-- own); the cells go with the next layout, after combat if it had
+-- already begun (the panel then hides at once).
 local Test = {}
 ns.RaidTestMode = Test
 
@@ -49,15 +49,15 @@ Test.GROUP_ICONS = {
     [4] = { ready = "notready" }, [5] = { ready = "waiting" },
 }
 
-local on = false     -- the unit frames' test mode
 local own = false    -- the raid window's switch
 local preview        -- the size the raid window edits, while it is open
 
 function Test.IsOn()
-    return (on or own) and Header.Enabled()
+    return own and Header.Enabled()
 end
 
--- The raid window's switch is on.
+-- The raid window's switch is on (Test.IsOn: and the raid frames are
+-- switched on).
 function Test.IsOwnOn()
     return own
 end
@@ -274,11 +274,6 @@ function Test.Hide(P)
         if button.unit or button:IsShown() or button.sample then release(button) end
     end
 end
-
-ns.Listen("TEST_MODE", function(state)
-    on = state and true or false
-    relayout()
-end)
 
 -- Entering combat ends the raid window's test mode, as the unit frames'
 -- does its own.

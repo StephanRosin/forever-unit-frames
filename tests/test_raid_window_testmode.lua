@@ -85,14 +85,16 @@ H.check("lockdown: cells wait", shown(), 20)
 M.SetCombat(false)
 H.check("after combat: cells gone", shown(), 0)
 
--- The unit frames' test mode with the raid window open shows the edited
--- size too; closing the window hands it back to the active size.
+-- The unit frames' test mode, with the raid window open or not, is not
+-- the raid frames': no pretend raid.
 ns.TestMode.Set(true)
-H.check("unit test mode: the edited size", shown(), 20)
+H.check("unit test mode: no pretend cells", shown(), 0)
 H.check("the window's switch stays off", Test.IsOwnOn(), false)
+H.check("raid test mode off", Test.IsOn(), false)
+H.check("the button not outlined", outlined(RO.testButton), false)
 RO.Close()
 H.checkTrue("unit test mode stays on", ns.TestMode.IsOn())
-H.check("the active size", shown(), 10)
+H.check("closed: still no pretend cells", shown(), 0)
 ns.TestMode.Set(false)
 H.check("all off", shown(), 0)
 H.check("nothing blocked", #M.blocked, 0)

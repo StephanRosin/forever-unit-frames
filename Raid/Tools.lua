@@ -580,7 +580,6 @@ ns.On("GROUP_ROSTER_UPDATE", update)
 ns.On("PARTY_LEADER_CHANGED", update)
 ns.Listen("RAID_CONFIG_CHANGED", update)
 ns.Listen("RAID_TEST_MODE", update)
-ns.Listen("TEST_MODE", update)
 -- The words of the moment (a button's width may change).
 ns.Listen("LANGUAGE_CHANGED", update)
 -- Docked, it follows the main panel's size (placed out of combat).

@@ -81,12 +81,12 @@ H.check("player frame: no looter icon", ns.Frames.player.groupIcons.looter, nil)
 H.check("player frame: its own row", ns.Frames.player.groupIcons.holder._allPoints, nil)
 
 -- Test mode: the pretend members' icons.
-ns.TestMode.Set(true)
+ns.RaidTestMode.Set(true)
 local f1, f2, f4 = Cell.fakes[1].groupIcons, Cell.fakes[2].groupIcons, Cell.fakes[4].groupIcons
 H.checkTrue("pretend: you lead", f1.leader:IsShown())
 H.checkTrue("pretend: you loot", f1.looter:IsShown())
 H.check("pretend: member 2 assists", f2.leader._texture, GroupIcons.LEADER.assistant.file)
 H.check("pretend: member 4 not ready", f4.ready._atlas, GroupIcons.READY.notready)
 H.check("pretend: member 3 nothing", Cell.fakes[3].groupIcons.ready:IsShown(), false)
-ns.TestMode.Set(false)
+ns.RaidTestMode.Set(false)
 H.check("no errors", #M.errors, 0)

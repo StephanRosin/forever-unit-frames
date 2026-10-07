@@ -225,8 +225,9 @@ local waiting = setmetatable({}, { __mode = "k" })
 -- again after combat.
 local stale = setmetatable({}, { __mode = "k" })
 
-local function testing()
-    return ns.TestMode ~= nil and ns.TestMode.IsOn()
+-- The unit frames' test mode, where it shows samples (not on raid cells).
+local function testing(frame)
+    return ns.TestMode ~= nil and ns.TestMode.Covers(frame)
 end
 
 -- Adds the container of one group to made (before anything can fail).
@@ -380,7 +381,7 @@ end
 
 -- Settings (read by Auras.Style into frame.auras) onto the containers.
 local function apply(frame)
-    local live = not testing()
+    local live = not testing(frame)
     stale[frame] = nil
     local refusedNow = false
     for _, key in ipairs(groupKeys(frame)) do

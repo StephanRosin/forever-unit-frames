@@ -369,8 +369,9 @@ local function clear(frame)
     frame.auraSamples = nil
 end
 
-local function testing()
-    return ns.TestMode ~= nil and ns.TestMode.IsOn()
+-- The unit frames' test mode, where it shows samples (not on raid cells).
+local function testing(frame)
+    return ns.TestMode ~= nil and ns.TestMode.Covers(frame)
 end
 
 -- One list from the client; nil when it refused.
@@ -597,7 +598,7 @@ end
 -- Live auras come from the frame's containers where the client makes
 -- them (Elements/AuraContainers.lua); the reads below are the fallback.
 function Auras.Update(frame, event, _, info)
-    if testing() then
+    if testing(frame) then
         AuraContainers.Hide(frame)
         showSamples(frame)
         return

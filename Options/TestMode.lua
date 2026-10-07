@@ -49,6 +49,13 @@ function TestMode.IsOn()
     return on
 end
 
+-- Whether test mode shows samples on frame: on the unit frames only. A
+-- raid cell, real or pretend, follows the raid frames' own test mode
+-- (Raid/TestMode.lua), which gives its pretend cells their samples.
+function TestMode.Covers(frame)
+    return on and not (ns.RaidCell ~= nil and ns.RaidCell.Is(frame))
+end
+
 function TestMode.Set(state)
     if InCombatLockdown() then
         ns.Print(L.TEST_MODE_COMBAT)

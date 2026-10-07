@@ -49,11 +49,11 @@ H.checkTrue("on again", r.icon:IsShown())
 
 -- Test mode: the pretend members' own markers.
 H.check("member 1: skull", ns.RaidTestMode.Members(10)[1].marker, 8)
-ns.TestMode.Set(true)
+ns.RaidTestMode.Set(true)
 local f1, f2 = Cell.fakes[1], Cell.fakes[2]
 H.checkTrue("pretend: skull shown", f1.raidMarker.icon:IsShown())
 H.check("pretend: skull", f1.raidMarker.icon._spriteCell[1], 8)
 H.check("pretend member 2: none", f2.raidMarker.icon:IsShown(), false)
 H.check("pretend member 6: star", Cell.fakes[6].raidMarker.icon._spriteCell[1], 1)
-ns.TestMode.Set(false)
+ns.RaidTestMode.Set(false)
 H.check("no errors", #M.errors, 0)

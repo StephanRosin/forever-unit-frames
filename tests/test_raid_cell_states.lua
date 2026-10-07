@@ -67,10 +67,10 @@ H.check("target cleared", ann.target:IsShown(), false)
 H.check("player frame: none", ns.Frames.player.raidStates, nil)
 
 -- Test mode: the pretend tank has aggro, member 2 is your target.
-ns.TestMode.Set(true)
+ns.RaidTestMode.Set(true)
 H.check("pretend tank: aggro", Cell.fakes[1].raidStates.aggro.bars[1]:GetValue(), States.SAMPLE_AGGRO)
 H.check("pretend priest: none", Cell.fakes[2].raidStates.aggro.bars[1]:GetValue(), 0)
 H.checkTrue("pretend priest: your target", Cell.fakes[2].raidStates.target:IsShown())
 H.check("pretend tank: not your target", Cell.fakes[1].raidStates.target:IsShown(), false)
-ns.TestMode.Set(false)
+ns.RaidTestMode.Set(false)
 H.check("no errors", #M.errors, 0)

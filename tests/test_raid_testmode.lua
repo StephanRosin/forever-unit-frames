@@ -27,7 +27,7 @@ H.check("member 7 offline", members[7].status, "OFFLINE")
 H.check("others alive", members[4].status, false)
 
 -- On: ten pretend cells for the 10-player profile, in groups 1 and 2.
-ns.TestMode.Set(true)
+ns.RaidTestMode.Set(true)
 H.checkTrue("panel shown solo", Header.panel:IsShown())
 H.check("headers hidden", Header.headers[1]:IsShown(), false)
 local shown = 0
@@ -93,8 +93,8 @@ H.checkTrue("on: back", Cell.fakes[1]:IsShown())
 
 -- Off out of combat: the pretend cells go, samples and all; the real
 -- headers come back.
-ns.TestMode.Set(false)
-H.check("off: test mode off", ns.TestMode.IsOn(), false)
+ns.RaidTestMode.Set(false)
+H.check("off: test mode off", ns.RaidTestMode.IsOn(), false)
 local stale = 0
 for _, f in ipairs(Cell.fakes) do
     if f:IsShown() or f.sample ~= nil or f.unit ~= nil then stale = stale + 1 end
@@ -102,13 +102,13 @@ end
 H.check("off: pretend cells hidden, samples cleared", stale, 0)
 H.checkTrue("off: headers back", Header.headers[1]:IsShown())
 H.check("off: panel hidden solo", Header.panel:IsShown(), false)
-ns.TestMode.Set(true)
+ns.RaidTestMode.Set(true)
 H.checkTrue("on again: pretend cells back", Cell.fakes[1]:IsShown())
 H.check("on again: samples back", Cell.fakes[1].texts.healthLeft:GetText(), "Warrior")
 
 -- Entering combat ends test mode; the real headers come back.
 M.FireEvent("PLAYER_REGEN_DISABLED")
-H.check("combat: test mode off", ns.TestMode.IsOn(), false)
+H.check("combat: test mode off", ns.RaidTestMode.IsOn(), false)
 H.check("combat: pretend cells hidden", Cell.fakes[1]:IsShown(), false)
 H.checkTrue("combat: headers back", Header.headers[1]:IsShown())
 H.check("combat: samples cleared", Cell.fakes[1].sample, nil)
@@ -117,11 +117,11 @@ H.check("nothing blocked", #M.blocked, 0)
 
 -- Combat lockdown had already begun: the panel's border goes at once (a
 -- plain frame), the pretend cells wait for the end of combat.
-ns.TestMode.Set(true)
+ns.RaidTestMode.Set(true)
 H.checkTrue("lockdown: panel shown in test mode", Header.panel:IsShown())
 M.combat = true
 M.FireEvent("PLAYER_REGEN_DISABLED")
-H.check("lockdown: test mode off", ns.TestMode.IsOn(), false)
+H.check("lockdown: test mode off", ns.RaidTestMode.IsOn(), false)
 H.check("lockdown: panel hidden at once", Header.panel:IsShown(), false)
 H.checkTrue("lockdown: pretend cells wait", Cell.fakes[1]:IsShown())
 H.check("lockdown: nothing blocked", #M.blocked, 0)

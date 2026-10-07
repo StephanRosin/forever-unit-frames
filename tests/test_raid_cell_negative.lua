@@ -13,7 +13,7 @@ M.RunTimers()
 M.SetRaidRoster({ { name = "Ann", class = "DRUID", subgroup = 1,
     unit = { threat = 3, combat = true, pvp = true, incomingRez = true, powerType = 0, power = 10, powerMax = 100 } } })
 M.RunTimers()
-ns.TestMode.Set(true)
+ns.RaidTestMode.Set(true)
 
 local NEVER = { "castbar", "dispel", "targetHighlight", "threatBar", "combo", "totems", "statusIcons",
     "petHappiness", "unitIcons", "eliteLayer", "powerCost", "druidMana" }
@@ -31,7 +31,7 @@ for label, cell in pairs({ live = live, pretend = Cell.fakes[1] }) do
     H.check(label .. ": no resurrection icon", cell.groupIcons.rez:IsShown(), false)
     H.check(label .. ": not a single frame", ns.Frames[cell.key], nil)
 end
-ns.TestMode.Set(false)
+ns.RaidTestMode.Set(false)
 -- Live: no combat numbers either.
 M.FireEvent("UNIT_COMBAT", "raid1", "WOUND", nil, 500, 1)
 H.check("live: no combat numbers", live.feedback:IsShown(), false)

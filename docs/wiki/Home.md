@@ -17,7 +17,8 @@ Source: [GitHub](https://github.com/StephanRosin/forever-unit-frames)
 - **General > Frames** lists every frame with a switch, to turn frames on or off at a glance.
 - **Test mode** (button at the bottom of the window) shows every frame with sample values: auras,
   casts, a full party, and every indicator you have switched on, so you can set everything up
-  without a target or a group.
+  without a target or a group. It covers the unit frames only; the raid frames have a test mode of
+  their own (below).
 - **Moving frames:** *Unlock frames* at the bottom of the window (or `/fuf unlock`), drag them,
   then *Lock frames* (or `/fuf lock`). Exact positions are on each frame's **Layout** tab. This
   moves the unit frames; the raid panel has its own *Unlock frames* in the raid window.
@@ -38,7 +39,8 @@ Source: [GitHub](https://github.com/StephanRosin/forever-unit-frames)
 - **Unlock frames** in the raid window lets you drag the raid panels and the raid tools bar (only these;
   `/fuf lock` locks them too). **Test mode** in the raid window shows a pretend raid of the size you edit, at
   that size's place, with every option you switched on, and pretend players in the special panels you switched
-  on; closing the window or entering combat ends it.
+  on; closing the window or entering combat ends it. It covers the raid frames only (the panels, the raid
+  tools bar and the buff watch window); the unit frames keep their own test mode.
 - **Special panels** (the **Special panels** tab) show the raid's main tanks (on by default) and main assists, your own
   lists of tanks and of favorites, and the raid's pets, each in a panel of its own with its own place per
   raid size. Players stay in their group as well. Right-click a cell to put a player on your tanks or your

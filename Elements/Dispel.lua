@@ -52,7 +52,8 @@ Dispel.SAMPLES = { player = "Poison" }
 local all = setmetatable({}, { __mode = "k" })
 local waiting = setmetatable({}, { __mode = "k" })
 
-local function testing() return ns.TestMode ~= nil and ns.TestMode.IsOn() end
+-- The unit frames' test mode, where it shows samples (not on raid cells).
+local function testing(frame) return ns.TestMode ~= nil and ns.TestMode.Covers(frame) end
 
 function Dispel.Applies(scope)
     return Settings.AppliesTo(Settings.Get("dispelHighlight"), scope)
@@ -167,7 +168,7 @@ local function apply(frame)
         if not pcall(placeRing, edges, frame, reach, thick) then d.stale = true end
     end
     d.container:SetFrameLevel(frame:GetFrameLevel() + Dispel.LEVELS)
-    d.container:SetShown(wanted(frame) and not testing())
+    d.container:SetShown(wanted(frame) and not testing(frame))
 end
 
 local function build(frame)

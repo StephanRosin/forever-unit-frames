@@ -96,7 +96,7 @@ RC.ResetScope("r10")
 
 -- Test mode: the pretend member's first debuff with a type, in its colour.
 RC.Set("r10", "dispelStyle", "SQUARE")
-ns.TestMode.Set(true)
+ns.RaidTestMode.Set(true)
 local s2 = Cell.fakes[2].raidAuras.samples
 H.checkTrue("sample square shown", s2.square:IsShown())
 H.check("sample: magic's colour", s2.square.texture._color[3], 1.0)
@@ -106,7 +106,7 @@ H.check("member 1: none", Cell.fakes[1].raidAuras.samples.square:IsShown(), fals
 RC.Set("r10", "dispelStyle", "ICON")
 H.check("sample: icon again", s2.icon:IsShown(), true)
 H.check("sample: square hidden", s2.square:IsShown(), false)
-ns.TestMode.Set(false)
+ns.RaidTestMode.Set(false)
 
 -- In the window: the Debuffs tab, sizes as sliders.
 local tab

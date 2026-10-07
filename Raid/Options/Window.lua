@@ -824,10 +824,6 @@ ns.Listen("RAID_TEST_MODE", function()
         renderSizeTabs()
     end
 end)
--- The unit frames' test mode shows the edited size as well.
-ns.Listen("TEST_MODE", function()
-    if RaidOptions.IsOpen() then renderSizeTabs() end
-end)
 -- The raid panel's mover locked or unlocked from anywhere: this window,
 -- /fuf lock, the start of combat.
 ns.Listen("MOVERS_UNLOCKED", function(_, group)

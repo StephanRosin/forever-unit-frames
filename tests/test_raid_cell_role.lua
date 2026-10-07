@@ -49,9 +49,9 @@ H.check("secret role: none", tank.icon:IsShown(), false)
 H.check("player frame: none", ns.Frames.player.raidRole, nil)
 
 -- Test mode: the pretend members' roles.
-ns.TestMode.Set(true)
+ns.RaidTestMode.Set(true)
 H.check("pretend tank", Cell.fakes[1].raidRole.icon._atlas, Role.ATLAS.TANK)
 H.checkTrue("pretend healer", Cell.fakes[2].raidRole.icon:IsShown())
 H.check("pretend damage: hidden", Cell.fakes[3].raidRole.icon:IsShown(), false)
-ns.TestMode.Set(false)
+ns.RaidTestMode.Set(false)
 H.check("no errors", #M.errors, 0)

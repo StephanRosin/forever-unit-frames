@@ -58,10 +58,10 @@ click(RO.sizeTabs[40])
 H.check("editing 40", note(), "You are editing the 40-player layout — the panel shows 20. Turn on test mode to see it.")
 RC.Set("general", "sizeMode", "AUTO")
 H.check("follows the size shown", note(), "You are editing the 40-player layout — the panel shows 10. Turn on test mode to see it.")
--- The unit frames' test mode shows the edited size too.
+-- The unit frames' test mode is not the raid frames': the note stays.
 ns.TestMode.Set(true)
-H.check("unit test mode: no note", note(), nil)
-H.check("unit test mode: 40 marked shown", RO.sizeTabs[40].text:GetText(), "40 players (shown)")
+H.checkTrue("unit test mode: the note stays", note() ~= nil)
+H.check("unit test mode: 40 not marked shown", RO.sizeTabs[40].text:GetText(), "40 players")
 ns.TestMode.Set(false)
 H.checkTrue("unit test mode off: the note", note() ~= nil)
 

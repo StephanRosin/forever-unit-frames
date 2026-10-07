@@ -111,10 +111,10 @@ RC.ResetScope("r10")
 H.check("no errors", #M.errors, 0)
 
 -- Test mode's pretend cells have no container.
-ns.TestMode.Set(true)
+ns.RaidTestMode.Set(true)
 H.check("pretend cell: no container", Cell.fakes[1].raidAuras.container, nil)
 H.check("pretend cell: nothing built", Cell.fakes[1].raidAuras.built, nil)
-ns.TestMode.Set(false)
+ns.RaidTestMode.Set(false)
 
 -- Unit frames build nothing of it.
 H.check("player frame: nothing", ns.Frames.player.raidAuras, nil)

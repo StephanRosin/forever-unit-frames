@@ -20,7 +20,7 @@ local centre, rest = CellAuras.SampleDebuffs(members[9])
 H.check("centre: the first with a type", centre.dispel, "Disease")
 H.check("the rest", #rest, 2)
 
-ns.TestMode.Set(true)
+ns.RaidTestMode.Set(true)
 local f1, f2, f3, f9 = Cell.fakes[1], Cell.fakes[2], Cell.fakes[3], Cell.fakes[9]
 local s2 = f2.raidAuras.samples
 H.check("no container", f2.raidAuras.container, nil)
@@ -80,7 +80,7 @@ H.check("reset: gone", ind:IsShown(), false)
 
 -- Test mode off: everything hidden.
 RC.Set("r10", "debuffRow", true)
-ns.TestMode.Set(false)
+ns.RaidTestMode.Set(false)
 H.check("off: icon hidden", s2.icon:IsShown(), false)
 H.check("off: row hidden", s2.row[1]:IsShown(), false)
 H.check("off: sample gone", f2.raidAuras.previewing, nil)
