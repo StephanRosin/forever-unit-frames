@@ -54,11 +54,14 @@ M.FireEvent("READY_CHECK_CONFIRM", "raid3", false)
 H.check("two ready", f.counts.ready.text:GetText(), "2")
 H.check("one not", f.counts.notready.text:GetText(), "1")
 H.check("one waiting", f.counts.waiting.text:GetText(), "1")
--- Over: whoever did not answer is not ready; the result stays.
+-- Over: whoever did not answer is not ready; the result stays. The
+-- client no longer reports the answers then (the mock clears them): the
+-- counts come from the last ones read.
 M.FireEvent("READY_CHECK_FINISHED", false)
+H.check("finished: no answer readable", GetReadyCheckStatus("raid2"), nil)
+H.check("finished: still two ready", f.counts.ready.text:GetText(), "2")
 H.check("finished: two not ready", f.counts.notready.text:GetText(), "2")
 H.check("finished: none waiting", f.counts.waiting.text:GetText(), "0")
-for i = 1, 4 do M.units["raid" .. i].readyCheck = nil end
 M.Tick(20)
 M.RunTimers()
 H.check("the last result stays", f.counts.ready.text:GetText(), "2")

@@ -2880,6 +2880,11 @@ end
 
 function M.FireEvent(event, ...)
     local unit = ...
+    -- The check is over: the client no longer reports anyone's answer
+    -- (CompactUnitFrame_FinishReadyCheck works from what the frame showed).
+    if event == "READY_CHECK_FINISHED" then
+        for _, d in pairs(M.units) do d.readyCheck = nil end
+    end
     for _, f in ipairs(M.eventOrder) do
         local registration = f._events[event]
         if registration and f._scripts.OnEvent and wants(registration, unit) then

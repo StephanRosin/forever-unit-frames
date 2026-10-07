@@ -195,19 +195,26 @@ local function groupUnits()
     return list
 end
 
--- Counts every readable answer (a secret one is left out); when the
--- check is over, whoever did not answer is not ready (as Blizzard's raid
--- frames, CompactUnitFrame_FinishReadyCheck).
-local function countReady(finished)
+-- Counts every readable answer (a secret one is left out).
+local function countReady()
     local counts = { ready = 0, notready = 0, waiting = 0 }
     for _, unit in ipairs(groupUnits()) do
         local ok, status = pcall(GetReadyCheckStatus, unit)
         if ok and not ns.Secrets.IsSecret(status) and type(status) == "string" and counts[status] then
-            if finished and status == "waiting" then status = "notready" end
             counts[status] = counts[status] + 1
         end
     end
     Tools.readyCounts = counts
+end
+
+-- When the check is over the client no longer reports the answers:
+-- whoever was still waiting is not ready (from the last count, as
+-- Blizzard's raid frames, CompactUnitFrame_FinishReadyCheck).
+local function finishReady()
+    local counts = Tools.readyCounts
+    if not counts then return end
+    counts.notready = counts.notready + counts.waiting
+    counts.waiting = 0
 end
 
 local readyRow
@@ -258,15 +265,15 @@ end, layout = function(row)
 end })
 
 ns.On("READY_CHECK", function()
-    countReady(false)
+    countReady()
     renderReady()
 end)
 ns.On("READY_CHECK_CONFIRM", function()
-    countReady(false)
+    countReady()
     renderReady()
 end)
 ns.On("READY_CHECK_FINISHED", function()
-    countReady(true)
+    finishReady()
     renderReady()
 end)
 
