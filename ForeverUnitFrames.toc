@@ -100,6 +100,7 @@ Core\Commands.lua
 Options\Style.lua
 Options\Widgets.lua
 Options\Chrome.lua
+Options\AuraBlockEditor.lua
 Options\Schema.lua
 Options\TestMode.lua
 Options\Window.lua

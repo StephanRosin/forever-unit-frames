@@ -85,7 +85,7 @@ Button: **Apply to all frames**.
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
-<tr><td><b>Hidden auras (everywhere)</b></td><td></td><td>Text (a spell name or ID)</td><td>(none)</td></tr>
+<tr><td><b>Hidden auras (everywhere)</b></td><td>On every frame and raid cell</td><td>Spell IDs or names, up to 100 spells</td><td>(none)</td></tr>
 </tbody>
 </table>
 

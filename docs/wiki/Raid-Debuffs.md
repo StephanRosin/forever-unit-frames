@@ -39,7 +39,7 @@ The **Debuffs** tab of the raid options window (`/fuf raid`), under a raid size 
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
-<tr><td><b>Hidden auras</b></td><td></td><td>Text</td><td>(none)</td></tr>
+<tr><td><b>Hidden auras</b></td><td>With the account list (unit frames)</td><td>Spell IDs or names, up to 100 spells</td><td>(none)</td></tr>
 </tbody>
 </table>
 

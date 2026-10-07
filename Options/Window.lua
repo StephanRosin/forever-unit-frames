@@ -165,6 +165,8 @@ local ROW_BUILDERS = {
     end,
     color = function(parent, _, opts) return Widgets.Color(parent, opts) end,
     text = function(parent, def, opts)
+        -- A hidden-auras list has an editor of its own.
+        if def.blocklist then return ns.AuraBlockEditor.Row(parent, def, opts) end
         opts.maxLetters = def.maxLetters or ns.Settings.TEXT_MAX
         return Widgets.TextInput(parent, opts)
     end,
@@ -208,6 +210,7 @@ local function settingRow(parent, scope, key)
         label = L["SETTING_" .. key], hint = hintFor(scope, key),
         get = function() return Config.Get(scope, key) end,
         set = function(v) return Config.Set(scope, key, v) end,
+        scope = scope,
     }
     if isFrameScope(scope) and def.scope == "inherit" then opts.inherit = inheritOpts(scope, key) end
     local row = ROW_BUILDERS[def.type](parent, def, opts)

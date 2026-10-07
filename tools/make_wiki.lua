@@ -52,7 +52,7 @@ local function choices(def, raid)
     local t = def.type
     local enumText = raid and RaidSchema.EnumText or Schema.EnumText
     if t == "int" then
-        local range = ("%d – %d"):format(def.min or 0, def.max or 0)
+        local range = ("%d – %d"):format(def.lowest or def.min or 0, def.max or 0)
         if def.zeroText then range = range .. (" (0: %s)"):format(label(def.zeroText, "0")) end
         return range
     end
@@ -66,6 +66,9 @@ local function choices(def, raid)
     end
     if t == "color" then return "Color" end
     if t == "media" then return def.mediaKind == "font" and "Font" or "Texture" end
+    if t == "text" and def.blocklist then
+        return ("Spell IDs or names, up to %d spells"):format(ns.AuraBlocklist.MAX)
+    end
     if t == "text" then return raid and "Text" or "Text (a spell name or ID)" end
     if t == "bool" then return "On, Off" end
     return ""

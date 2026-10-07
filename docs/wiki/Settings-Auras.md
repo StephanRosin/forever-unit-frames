@@ -103,7 +103,7 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Hidden auras</b></td><td></td><td>Text (a spell name or ID)</td><td>(none)</td><td>all</td></tr>
+<tr><td><b>Hidden auras</b></td><td>Spell IDs or names; Enter adds</td><td>Spell IDs or names, up to 100 spells</td><td>(none)</td><td>all</td></tr>
 </tbody>
 </table>
 
