@@ -143,9 +143,12 @@ local function positionRow(parent, def, opts, panel, axis)
     return Widgets.Stepper(parent, opts)
 end
 
-local function settingRow(parent, key)
+-- A row for a raid setting of the edited size (or the character's);
+-- store (optional) stores a value in its place (returns whether it did).
+local function settingRow(parent, key, store)
     local def = ns.RaidSettings.Get(key)
     local convert = typedValue(key)
+    store = store or function(v) return RaidConfig.Set(scopeOf(def), key, v) end
     local opts = {
         label = Schema.Label(key), hint = Schema.Hint(key), enumText = Schema.EnumText,
         get = function() return RaidConfig.Get(scopeOf(def), key) end,
@@ -158,7 +161,7 @@ local function settingRow(parent, key)
                 end
                 v = converted
             end
-            return RaidConfig.Set(scopeOf(def), key, v)
+            return store(v)
         end,
     }
     local row
@@ -167,6 +170,7 @@ local function settingRow(parent, key)
     row.key = key
     return row
 end
+RaidOptions.SettingRow = settingRow
 
 -- Pages -------------------------------------------------------------------------
 
@@ -200,6 +204,10 @@ local function noteBlock(page, text)
     page.note = block.text
     return block
 end
+RaidOptions.NoteBlock = noteBlock
+-- The page's measures, for a page built elsewhere (Raid/Options/Arrangement.lua).
+RaidOptions.PAGE = { width = CONTENT_W, inset = INSET, top = PAGE_TOP, bottom = PAGE_BOTTOM,
+    sectionGap = SECTION_GAP, noteHeight = NOTE_H, gap = GAP }
 
 local function buildPage(page, tab)
     local stack = newStack(page)
@@ -213,7 +221,10 @@ local function buildPage(page, tab)
     stack.finish()
 end
 
-local buildProfilePage
+-- The builders of the window's own pages by tab.custom: (page, tab),
+-- setting page.rows and page.height. The Arrangement tab's is
+-- Raid/Options/Arrangement.lua's.
+RaidOptions.CUSTOM_PAGES = {}
 
 -- One page per tab: the rows read the edited size when they refresh.
 local function pageFor(tab)
@@ -221,7 +232,8 @@ local function pageFor(tab)
     local page = CreateFrame("Frame", nil, frame.scrollChild)
     page:SetPoint("TOPLEFT", frame.scrollChild, "TOPLEFT", 0, 0)
     page:SetWidth(CONTENT_W)
-    if tab.custom == "profile" then buildProfilePage(page, newStack(page)) else buildPage(page, tab) end
+    local build = RaidOptions.CUSTOM_PAGES[tab.custom] or buildPage
+    build(page, tab)
     page:SetHeight(page.height)
     page:Hide()
     pages[tab.id] = page
@@ -239,6 +251,15 @@ local function updateScrollbar()
     thumb:ClearAllPoints()
     thumb:SetPoint("TOPRIGHT", scroll, "TOPRIGHT", SCROLLBAR_W - 3, -(view - thumbH) * scroll:GetVerticalScroll() / range)
     thumb:Show()
+end
+
+-- A page that changed its height (one whose rows come and go): the
+-- scroll range follows while it is shown.
+function RaidOptions.PageResized(page)
+    page:SetHeight(page.height)
+    if not frame or RaidOptions.page ~= page then return end
+    frame.scrollChild:SetHeight(page.height)
+    updateScrollbar()
 end
 
 local function onWheel(scroll, delta)
@@ -640,7 +661,8 @@ local function importBlock(page)
     return block, MESSAGE_H + 2 + TEXT_AREA_H + GAP + BUTTON_H + 6 + MESSAGE_H
 end
 
-function buildProfilePage(page, stack)
+RaidOptions.CUSTOM_PAGES.profile = function(page)
+    local stack = newStack(page)
     for _, entry in ipairs({ { L.EXPORT, exportBlock }, { L.IMPORT, importBlock } }) do
         local header = Widgets.Header(page, entry[1])
         header.isSection = true
