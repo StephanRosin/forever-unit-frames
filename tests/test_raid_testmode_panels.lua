@@ -16,6 +16,7 @@ H.check("a pet per hunter and warlock", #pets, 2)
 H.check("the hunter's", pets[1].name, "Wolf")
 H.check("the warlock's", pets[2].name .. pets[2].class, "ImpWARLOCK")
 H.check("40: eight pets", #Test.PanelMembers("pets", 40), 8)
+H.check("a pet has no role", tostring(pets[1].role) .. "," .. tostring(pets[1].assignedRole), "NONE,NONE")
 H.check("your tanks, last first", Test.PanelMembers("myTanks", 10)[1].class, "WARRIOR")
 
 local function shown(list)
@@ -72,5 +73,16 @@ H.check("off: main panel's gone", shown(Cell.fakes), 0)
 H.check("off: special ones gone", shown(Cell.panelFakes), 0)
 H.check("off: no sample left", P.mainTanks.fakes[1].sample, nil)
 H.checkTrue("off: header back", P.mainTanks.headers[1]:IsShown())
+
+-- Combat lockdown had already begun: every panel's plain frame goes at
+-- once, not only the main one's.
+Test.Set(true)
+H.checkTrue("on: the main tanks panel", P.mainTanks.panel:IsShown())
+M.combat = true
+M.FireEvent("PLAYER_REGEN_DISABLED")
+H.check("lockdown: test mode off", Test.IsOn(), false)
+H.check("lockdown: main panel hidden at once", ns.RaidHeader.panel:IsShown(), false)
+H.check("lockdown: main tanks panel hidden at once", P.mainTanks.panel:IsShown(), false)
+M.SetCombat(false)
 H.check("nothing blocked", #M.blocked, 0)
 H.check("no error", #M.errors, 0)

@@ -68,12 +68,14 @@ function Test.PreviewSize()
     return nil
 end
 
--- The panel follows a change of test mode: the plain panel at once in
+-- The panels follow a change of test mode: their plain frames at once in
 -- combat, the cells with the next layout, after combat if it had already
 -- begun.
 local function relayout()
     if not Header.anchor then return end
-    if InCombatLockdown() then Header.UpdateVisibility() end
+    if InCombatLockdown() then
+        for _, P in ipairs(ns.RaidPanel.list) do P.UpdateVisibility() end
+    end
     ns.AfterCombat("raidLayout", ns.RaidPanel.RefreshAll)
 end
 
@@ -130,7 +132,7 @@ end
 
 -- A special panel's pretend members, in its order; the pets: one per
 -- hunter and warlock, in raid order, alive and well, coloured as their
--- owner.
+-- owner; no role.
 function Test.PanelMembers(id, size)
     local all, list = Test.Members(size), {}
     if id == "pets" then
@@ -138,6 +140,7 @@ function Test.PanelMembers(id, size)
             local word = Test.PETS[m.class]
             if word then
                 list[#list + 1] = { subgroup = m.subgroup, class = m.class, name = ns.L[word], health = m.health,
+                    role = "NONE", assignedRole = "NONE",
                     status = false, debuffs = {}, groupIcons = {}, outOfRange = false, aggro = false, target = false }
             end
         end
