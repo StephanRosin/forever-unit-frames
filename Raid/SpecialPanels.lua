@@ -17,7 +17,7 @@ local _, ns = ...
 local Special = {}
 ns.RaidSpecialPanels = Special
 
-local Panel, Cell, Pixel, Border, Raid = ns.RaidPanel, ns.RaidCell, ns.Pixel, ns.Border, ns.Raid
+local Panel, Cell, Raid = ns.RaidPanel, ns.RaidCell, ns.Raid
 
 -- Every special panel by id.
 Special.panels = {}
@@ -33,19 +33,13 @@ function Special.Title(id)
 end
 
 -- The numbers Raid/Layout.lua works with: the main panel's cells and
--- spacing, the panel's own cells per line, growth and title row; one
--- block, so no room between blocks.
+-- spacing (Panel.CellShape), the panel's own cells per line, growth and
+-- title row; one block, so no room between blocks.
 local function shape(id, cellKey)
-    local w, h = ns.Single.Size(cellKey)
-    local cellExtent = Border.Extent(cellKey)
-    return {
-        cellWidth = w, cellHeight = h,
-        cellGap = Pixel.Snap(get("cellSpacing")) + 2 * cellExtent,
-        cellsPerLine = get(id .. "PerLine"), cellGrowth = get(id .. "Growth"),
-        inset = cellExtent,
-        titleHeight = get(id .. "Title") and Pixel.Snap(Panel.TITLE_HEIGHT) or 0,
-        blockGap = 0, blocksPerLine = 1, blockDirection = "HORIZONTAL",
-    }
+    local own = { cellsPerLine = id .. "PerLine", cellGrowth = id .. "Growth", blockTitles = id .. "Title" }
+    local s = Panel.CellShape(function(key) return get(own[key]) end, cellKey)
+    s.blockGap, s.blocksPerLine, s.blockDirection = 0, 1, "HORIZONTAL"
+    return s
 end
 
 -- "mainTanks" -> "ForeverUnitFramesRaidMainTanks".

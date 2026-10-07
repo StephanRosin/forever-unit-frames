@@ -144,23 +144,34 @@ local function styleBlockTitle(d, block, s)
     styleTitle(d.title, d, s.titleHeight, Layout.Title(block))
 end
 
--- The numbers Raid/Layout.lua works with, on the pixel grid, from a
--- panel's settings: read(key) answers the main panel's setting of that
--- name as the panel has it. A cell's border reaches out between the
--- cells and from the block's edge, a block's border (blockScope) between
--- the blocks. The cells are the main panel's.
-function Panel.Shape(read, blockScope)
-    local w, h = ns.Single.Size(Cell.KEY)
-    local cellExtent = Border.Extent(Cell.KEY)
+-- The cells' part of the numbers Raid/Layout.lua works with, on the
+-- pixel grid: the cells of cellKey (default: the main panel's) and the
+-- main panel's spacing; read(key) answers cellsPerLine, cellGrowth and
+-- blockTitles (a title row) as the panel has them. A cell's border
+-- reaches out between the cells and from the block's edge. Every panel's
+-- shape starts from it.
+function Panel.CellShape(read, cellKey)
+    cellKey = cellKey or Cell.KEY
+    local w, h = ns.Single.Size(cellKey)
+    local cellExtent = Border.Extent(cellKey)
     return {
         cellWidth = w, cellHeight = h,
         cellGap = Pixel.Snap(get("cellSpacing")) + 2 * cellExtent,
         cellsPerLine = read("cellsPerLine"), cellGrowth = read("cellGrowth"),
         inset = cellExtent,
         titleHeight = read("blockTitles") and Pixel.Snap(Panel.TITLE_HEIGHT) or 0,
-        blockGap = Pixel.Snap(get("blockSpacing")) + 2 * Border.Extent(blockScope),
-        blocksPerLine = read("blocksPerLine"), blockDirection = read("blockDirection"),
     }
+end
+
+-- A panel of blocks: the cells' part, and read(key) answers the main
+-- panel's block settings as the panel has them; a block's border
+-- (blockScope) reaches out between the blocks. The cells are the main
+-- panel's.
+function Panel.Shape(read, blockScope)
+    local s = Panel.CellShape(read)
+    s.blockGap = Pixel.Snap(get("blockSpacing")) + 2 * Border.Extent(blockScope)
+    s.blocksPerLine, s.blockDirection = read("blocksPerLine"), read("blockDirection")
+    return s
 end
 
 function Panel.New(spec)
