@@ -1001,6 +1001,7 @@ L.RAID_CLICK_CLIQUE = "Clique is loaded: off unless switched on"
 L.RAID_CLICK_COPY = "Copy from"
 L.RAID_CLICK_COPY_BUTTON = "Copy"
 L.RAID_CLICK_COPY_DROPPED = "Not in your spell book, not copied: %s"
+L.RAID_CLICK_COPY_BUFF_KEY = "Your smart buff key, not copied as a click key: %s"
 L.RAID_CLICK_CLEAR = "Clear all"
 L.RAID_CLICK_KEYS_NOTE = "A key casts on the friendly raid member under the mouse. While the raid frames show, it no longer does what it is bound to otherwise: pick keys you do not use."
 

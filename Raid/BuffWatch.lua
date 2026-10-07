@@ -16,7 +16,9 @@ local _, ns = ...
 -- The state (BuffWatch.state): entries, one per watched buff, each with
 -- missing and expiring counts, unknown, and needs: who needs it, the
 -- missing first, then the least time left; missingUnits: unit -> the
--- entry of the first watched buff the member misses. After each scan
+-- entry of the first watched buff the member misses; missingGUIDs: the
+-- same by the member's GUID (where the client gives a plain one), which
+-- the cells follow when units change hands. After each scan
 -- RAID_BUFFS_CHANGED fires (the watch window, the smart buff key, the
 -- cells).
 local BuffWatch = {}
@@ -26,8 +28,12 @@ local Data, Secrets = ns.RaidBuffData, ns.Secrets
 
 BuffWatch.THROTTLE = 0.5
 BuffWatch.RESCAN = 5
-BuffWatch.state = { entries = {}, missingUnits = {} }
+BuffWatch.state = { entries = {}, missingUnits = {}, missingGUIDs = {} }
 BuffWatch.scans = 0
+-- False from a roster change to the next scan: the state's unit tokens
+-- may name other members then, so it gives no cast (the rows and the
+-- smart buff key cast nothing until the scan sets them again).
+BuffWatch.armed = true
 -- The filter the buffs are looked up with.
 BuffWatch.FILTER = "HELPFUL"
 
@@ -103,8 +109,13 @@ local function isTank(unit, rosterRole)
     return plain(GetPartyAssignment, "MAINTANK", unit) == true
 end
 
+-- A unit's GUID, nil when the client gives no plain one.
+function BuffWatch.GUID(unit)
+    return token(plain(UnitGUID, unit))
+end
+
 -- The members: { unit, group (raid group; 1 in a party), class (token,
--- nil while unknown), tank }; empty when solo.
+-- nil while unknown), tank, guid (nil while unknown) }; empty when solo.
 function BuffWatch.Members()
     local list = {}
     if IsInRaid() then
@@ -114,7 +125,7 @@ function BuffWatch.Members()
             if ok and plain(UnitExists, unit) == true then
                 local group = not Secrets.IsSecret(subgroup) and type(subgroup) == "number" and subgroup or nil
                 list[#list + 1] = { unit = unit, group = group, class = token(class),
-                    tank = isTank(unit, token(role)) }
+                    tank = isTank(unit, token(role)), guid = BuffWatch.GUID(unit) }
             end
         end
     elseif IsInGroup() then
@@ -124,7 +135,7 @@ function BuffWatch.Members()
             if plain(UnitExists, unit) == true then
                 local ok, _, class = pcall(UnitClass, unit)
                 list[#list + 1] = { unit = unit, group = 1, class = ok and token(class) or nil,
-                    tank = isTank(unit) }
+                    tank = isTank(unit), guid = BuffWatch.GUID(unit) }
             end
         end
     end
@@ -203,7 +214,7 @@ local function longer(leftA, limitA, leftB, limitB)
 end
 
 -- A watched buff on every member it is for.
-local function scanEntry(entry, members, secret, threshold, missingUnits)
+local function scanEntry(entry, members, secret, threshold, state)
     local st = { entry = entry, missing = 0, expiring = 0, needs = {}, unknown = secret }
     if not secret then
         local spells = spellsOf(entry)
@@ -237,7 +248,11 @@ local function scanEntry(entry, members, secret, threshold, missingUnits)
         return a.order < b.order
     end)
     for _, need in ipairs(st.needs) do
-        if need.left < 0 and not missingUnits[need.unit] then missingUnits[need.unit] = entry end
+        if need.left < 0 then
+            local guid = need.member.guid
+            if not state.missingUnits[need.unit] then state.missingUnits[need.unit] = entry end
+            if guid and not state.missingGUIDs[guid] then state.missingGUIDs[guid] = entry end
+        end
     end
     return st
 end
@@ -247,12 +262,13 @@ function BuffWatch.Scan()
     if InCombatLockdown() then return end
     local members, secret = BuffWatch.Members(), aurasSecret()
     local threshold = (general("buffExpiring") or 5) * 60
-    local state = { entries = {}, missingUnits = {} }
+    local state = { entries = {}, missingUnits = {}, missingGUIDs = {} }
     -- Solo: nothing is watched.
     for _, entry in ipairs(IsInGroup() and BuffWatch.Watched() or {}) do
-        state.entries[#state.entries + 1] = scanEntry(entry, members, secret, threshold, state.missingUnits)
+        state.entries[#state.entries + 1] = scanEntry(entry, members, secret, threshold, state)
     end
     BuffWatch.state = state
+    BuffWatch.armed = true
     BuffWatch.scans = BuffWatch.scans + 1
     BuffWatch.dirty, BuffWatch.since = false, 0
     ns.Fire("RAID_BUFFS_CHANGED")
@@ -301,7 +317,7 @@ end
 -- rank's ID), name, unit, groupForm, group (the raid group or class the
 -- group form is for) }.
 function BuffWatch.Best(st)
-    if not st or st.unknown or #st.needs == 0 then return nil end
+    if not BuffWatch.armed or not st or st.unknown or #st.needs == 0 then return nil end
     local entry = st.entry
     if groupReady(entry) then
         local key = crowdedGroup(entry, st.needs)
@@ -358,7 +374,12 @@ end
 ns.On("UNIT_AURA", function(_, unit)
     if groupUnit(unit) then BuffWatch.Mark() end
 end)
-ns.On("GROUP_ROSTER_UPDATE", BuffWatch.Mark)
+-- Before the smart buff key's and the window's handlers (TOC order): they
+-- empty their buttons out of combat on it.
+ns.On("GROUP_ROSTER_UPDATE", function()
+    BuffWatch.armed = false
+    BuffWatch.Mark()
+end)
 ns.On("BAG_UPDATE_DELAYED", BuffWatch.Mark)
 ns.On("SPELLS_CHANGED", BuffWatch.Mark)
 ns.On("PLAYER_REGEN_ENABLED", BuffWatch.Mark)

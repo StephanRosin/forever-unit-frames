@@ -976,6 +976,7 @@ L.RAID_CLICK_CLIQUE = "Clique geladen: aus, außer eingeschaltet"
 L.RAID_CLICK_COPY = "Kopieren von"
 L.RAID_CLICK_COPY_BUTTON = "Kopieren"
 L.RAID_CLICK_COPY_DROPPED = "Nicht in deinem Zauberbuch, nicht kopiert: %s"
+L.RAID_CLICK_COPY_BUFF_KEY = "Deine Buff-Taste, nicht als Klick-Taste kopiert: %s"
 L.RAID_CLICK_CLEAR = "Alle löschen"
 L.RAID_CLICK_KEYS_NOTE = "Eine Taste wirkt auf das freundliche Schlachtzugsmitglied unter der Maus. Solange die Schlachtzugsrahmen zu sehen sind, tut sie nicht mehr, worauf sie sonst gelegt ist: nimm Tasten, die du nicht benutzt."
 

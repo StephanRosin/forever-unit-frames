@@ -72,9 +72,12 @@ end
 
 -- Rows ------------------------------------------------------------------------------
 
+-- On whom a click casts; in combat nothing (the rows cast nothing then,
+-- and no range is asked).
 local function tooltip(row)
     row:SetScript("OnEnter", function(self)
-        local text = self.state and SmartBuff.Describe(Watch.Best(self.state)) or nil
+        local text
+        if self.state and not InCombatLockdown() then text = SmartBuff.Describe(Watch.Best(self.state)) end
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
         GameTooltip:SetText(text or L.RAID_BUFF_NOTHING, 1, 1, 1)
         GameTooltip:Show()

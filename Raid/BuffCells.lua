@@ -1,34 +1,35 @@
 local _, ns = ...
 
 -- The missing-buff icon on the raid cells (optional, off by default): a
--- cell whose member misses a watched buff (Raid/BuffWatch.lua:
--- state.missingUnits, the first such buff in the watch's order) shows
--- that buff's icon at the chosen point, just inside the cell, at the
--- profile's icon size. A buff whose state is unknown marks nobody. It
--- changes out of combat only (the scans run out of combat anyway); in
--- combat a cell keeps what it showed. Test mode's pretend cells show none.
+-- cell whose member misses a watched buff (Raid/BuffWatch.lua: the state's
+-- missingGUIDs, else missingUnits; the first such buff in the watch's
+-- order) shows that buff's icon at the chosen point, just inside the
+-- cell, at the profile's icon size. A buff whose state is unknown marks
+-- nobody. Every cell's icon is made and placed out of combat (the cells
+-- are secure frames); in combat, when cells change hands, an icon only
+-- shows or hides by its new member in the last state (by GUID; one whose
+-- GUID the client does not give plainly keeps what it showed). Test
+-- mode's pretend cells show none.
 local Cells = {}
 ns.RaidBuffCells = Cells
 
-local Cell, Pixel = ns.RaidCell, ns.Pixel
+local Cell, Pixel, Watch = ns.RaidCell, ns.Pixel, ns.RaidBuffWatch
 
 -- Above the bars and texts, beside the cell's other icons (+18).
 Cells.LEVELS = 19
 
 local function general(key) return ns.RaidConfig.Get("general", key) end
 
-local function holderOf(cell)
-    if cell.buffIcon then return cell.buffIcon end
-    local holder = CreateFrame("Frame", nil, cell)
-    holder:SetAllPoints(cell)
-    holder.icon = holder:CreateTexture(nil, "OVERLAY")
-    holder.icon:Hide()
-    cell.buffIcon = holder
-    return holder
-end
-
-local function show(cell, entry)
-    local holder = holderOf(cell)
+-- Out of combat: the cell's icon, made once, placed anew.
+local function place(cell)
+    local holder = cell.buffIcon
+    if not holder then
+        holder = CreateFrame("Frame", nil, cell)
+        holder:SetAllPoints(cell)
+        holder.icon = holder:CreateTexture(nil, "OVERLAY")
+        holder.icon:Hide()
+        cell.buffIcon = holder
+    end
     holder:SetFrameLevel(cell:GetFrameLevel() + Cells.LEVELS)
     local point = general("buffCellIconPoint")
     local x, y = Cell.Inset(point)
@@ -37,22 +38,46 @@ local function show(cell, entry)
     icon:ClearAllPoints()
     icon:SetPoint(point, cell, point, Pixel.Snap(x), Pixel.Snap(y))
     icon:SetSize(size, size)
-    icon:SetTexture(entry.single.icon)
-    icon:Show()
+    return holder
 end
 
--- Out of combat: every cell's icon anew.
+-- The watched buff the cell's member misses (nil: none), and whether
+-- that is known: by GUID; else by unit while the state is current (after
+-- a roster change the units may name other members); else unknown.
+local function missingOf(cell)
+    if not cell.unit then return nil, true end
+    local state = Watch.state
+    local guid = Watch.GUID(cell.unit)
+    if guid then return state.missingGUIDs[guid], true end
+    if Watch.armed then return state.missingUnits[cell.unit], true end
+    return nil, false
+end
+
+-- The icon of a placed cell shown or hidden (allowed in combat). Not
+-- known in combat: it stays as it is.
+local function paint(cell, on)
+    local holder = cell.buffIcon
+    if not holder then return end
+    local entry, known = nil, true
+    if on then entry, known = missingOf(cell) end
+    if not known and InCombatLockdown() then return end
+    if entry then
+        holder.icon:SetTexture(entry.single.icon)
+        holder.icon:Show()
+    else
+        holder.icon:Hide()
+    end
+end
+
+-- Every cell's icon anew: placed out of combat, in combat only shown or
+-- hidden.
 function Cells.Refresh()
-    if InCombatLockdown() or not ns.RaidConfig.Profile() then return end
+    if not ns.RaidConfig.Profile() then return end
     local on = general("buffCellIcon") == true
-    local missing = ns.RaidBuffWatch.state.missingUnits
+    local combat = InCombatLockdown()
     for _, cell in ipairs(Cell.buttons) do
-        local entry = on and cell.unit and missing[cell.unit]
-        if entry then
-            show(cell, entry)
-        elseif cell.buffIcon then
-            cell.buffIcon.icon:Hide()
-        end
+        if on and not combat then place(cell) end
+        paint(cell, on)
     end
 end
 
@@ -60,6 +85,8 @@ local KEYS = { buffCellIcon = true, buffCellIconPoint = true, iconSize = true }
 ns.Listen("RAID_BUFFS_CHANGED", Cells.Refresh)
 ns.Listen("RAID_CELLS_CHANGED", Cells.Refresh)
 ns.Listen("RAID_SIZE_CHANGED", Cells.Refresh)
+-- A cell can keep its unit while another member takes it.
+ns.On("GROUP_ROSTER_UPDATE", Cells.Refresh)
 ns.Listen("RAID_CONFIG_CHANGED", function(_, key)
     if key == nil or KEYS[key] then Cells.Refresh() end
 end)

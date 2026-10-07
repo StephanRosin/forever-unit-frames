@@ -7,7 +7,9 @@ local _, ns = ...
 -- (Raid/ClickKeys.lua). No secure snippet runs on this client and
 -- attributes cannot change in combat: the button is emptied as combat
 -- starts (PLAYER_REGEN_DISABLED fires before lockdown), so in combat the
--- key does nothing; after combat the next scan sets it again. The key is
+-- key does nothing; after combat the next scan sets it again. After a
+-- roster change it casts nothing until the next scan (BuffWatch.armed:
+-- the unit tokens may name other members). The key is
 -- bound while the raid frames are on, you are in a group and a buff is
 -- watched; bindings change out of combat only.
 local SmartBuff = {}

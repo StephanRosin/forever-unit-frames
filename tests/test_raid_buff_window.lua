@@ -41,6 +41,16 @@ H.check("the next cast", Win.next:GetText(), L.RAID_BUFF_NEXT:format("Power Word
 -- A click casts it on Ann.
 H.check("a click casts", M.SecureClick(row, "LeftButton"), "spell")
 H.check("on Ann", M.casts[1][1] .. "@" .. M.casts[1][2], "1243@party1")
+-- The roster changes: the units may be other members now; the rows and
+-- the smart buff key cast nothing until the next scan sets them again.
+M.FireEvent("GROUP_ROSTER_UPDATE")
+H.check("roster changed: the row casts nothing", row:GetAttribute("type"), nil)
+H.check("roster changed: the key casts nothing", ns.SmartBuff.button:GetAttribute("type"), nil)
+ns.Fire("RAID_TEST_MODE")
+H.check("roster changed: a refresh does not re-arm it", row:GetAttribute("unit"), nil)
+M.Tick(1)
+H.check("the next scan: armed again", row:GetAttribute("unit"), "party1")
+H.check("the key too", ns.SmartBuff.button:GetAttribute("unit"), "party1")
 -- Its tooltip says on whom.
 row:GetScript("OnEnter")(row)
 H.check("tooltip", M.tooltipLines[1], "Power Word: Fortitude: Ann")
@@ -81,6 +91,12 @@ H.check("combat: no cast", row:GetAttribute("type"), nil)
 H.check("combat: a click does nothing", M.SecureClick(row, "LeftButton"), nil)
 local r, g, b = row.count:GetTextColor()
 H.check("combat: greyed", table.concat({ r, g, b }, ","), table.concat({ unpack(ns.Style.COLORS.muted, 1, 3) }, ","))
+-- The tooltip in combat: nothing to cast, no range asked.
+local rangeQueries = M.spellQueries
+row:GetScript("OnEnter")(row)
+H.check("combat tooltip: nothing", M.tooltipLines[1], L.RAID_BUFF_NOTHING)
+H.check("combat tooltip: no range asked", M.spellQueries, rangeQueries)
+row:GetScript("OnLeave")(row)
 M.SetGroup({})
 M.Tick(1)
 H.check("combat: kept until combat ends", f:IsShown(), true)

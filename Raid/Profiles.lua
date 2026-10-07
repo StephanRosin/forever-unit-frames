@@ -86,12 +86,17 @@ end
 -- Another character's click-casting bindings and keys onto ours (the
 -- switches stay); what it left at the defaults is the default here too.
 -- A spell this character does not know is left out (the default stays)
--- and named in the chat. False if there is no such character.
+-- and named in the chat; so is a key that is this character's smart buff
+-- key (buffKey: one key, one meaning). False if there is no such
+-- character.
 function Profiles.CopyClickCast(key)
     local source = store and store[key]
     if key == charKey or type(source) ~= "table" then return false end
     local general = RaidSettings.Sanitise(source).general
-    local values, dropped = {}, {}
+    local keySlots = {}
+    for _, slot in ipairs(Raid.CLICK_KEYS) do keySlots[slot.key] = true end
+    local buffKey = RaidConfig.Get("general", "buffKey")
+    local values, dropped, buffKeyDropped = {}, {}, false
     for _, k in ipairs(Profiles.ClickKeys()) do
         local default = RaidSettings.Default(RaidSettings.Get(k), "general")
         local v = general[k]
@@ -100,10 +105,13 @@ function Profiles.CopyClickCast(key)
             local own, unknown = ownBinding(v)
             if own == nil then dropped[#dropped + 1] = unknown end
             v = own or default
+        elseif keySlots[k] and v ~= "" and v == buffKey then
+            v, buffKeyDropped = default, true
         end
         values[#values + 1] = { k, v }
     end
     if #dropped > 0 then ns.Print(ns.L.RAID_CLICK_COPY_DROPPED:format(table.concat(dropped, ", "))) end
+    if buffKeyDropped then ns.Print(ns.L.RAID_CLICK_COPY_BUFF_KEY:format(buffKey)) end
     return RaidConfig.SetKeys("general", values)
 end
 

@@ -977,6 +977,7 @@ L.RAID_CLICK_CLIQUE = "Clique cargado: apagado salvo activación"
 L.RAID_CLICK_COPY = "Copiar de"
 L.RAID_CLICK_COPY_BUTTON = "Copiar"
 L.RAID_CLICK_COPY_DROPPED = "No están en tu libro de hechizos, no copiados: %s"
+L.RAID_CLICK_COPY_BUFF_KEY = "Tu tecla de beneficios, no copiada como tecla de clic: %s"
 L.RAID_CLICK_CLEAR = "Borrar todo"
 L.RAID_CLICK_KEYS_NOTE = "Una tecla lanza sobre el miembro amistoso de la banda bajo el ratón. Mientras se ven los marcos de banda, deja de hacer lo que tiene asignado: elige teclas que no uses."
 

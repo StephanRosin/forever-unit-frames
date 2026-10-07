@@ -54,6 +54,34 @@ M.SetCombat(false)
 M.Tick(1)
 H.check("after combat: gone", shown(b), false)
 
+-- In combat the icon follows the member from the last state: the roster
+-- changes, the same cells now show other members (raid1 is B now); only
+-- the icons' textures show or hide.
+local fortB = { name = "Power Word: Fortitude", spellId = 1243, isHelpful = true, expirationTime = M.now + 1700 }
+M.units.raid1.guid, M.units.raid2.guid = "Player-A", "Player-B"
+M.units.raid2.auras = {}
+Watch.Scan()
+H.check("B misses it again", shown(b), true)
+H.check("A has it", shown(a), false)
+M.FireEvent("PLAYER_REGEN_DISABLED")
+M.SetCombat(true)
+M.SetRaidRoster({
+    { name = "B", class = "MAGE", subgroup = 1, unit = { auras = {}, guid = "Player-B" } },
+    { name = "A", class = "MAGE", subgroup = 1, unit = { auras = { fortB }, guid = "Player-A" } },
+})
+M.Tick(1)
+H.check("combat, B now on raid1's cell: icon", shown(cellOf("raid1")), true)
+H.check("combat, A now on raid2's cell: none", shown(cellOf("raid2")), false)
+H.check("combat: nothing blocked", #M.blocked, 0)
+M.SetCombat(false)
+M.Tick(1)
+H.check("after combat: still on B", shown(cellOf("raid1")), true)
+H.check("after combat: A none", shown(cellOf("raid2")), false)
+M.units.raid1.guid, M.units.raid2.guid = nil, nil
+M.units.raid1.auras = { fortB }
+M.units.raid2.auras = {}
+Watch.Scan()
+
 -- Unknown (secret auras): no icon, never a guess.
 M.units.raid2.auras = {}
 M.aurasSecret = true

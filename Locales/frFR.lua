@@ -976,6 +976,7 @@ L.RAID_CLICK_CLIQUE = "Clique chargé : éteint sauf si activé"
 L.RAID_CLICK_COPY = "Copier depuis"
 L.RAID_CLICK_COPY_BUTTON = "Copier"
 L.RAID_CLICK_COPY_DROPPED = "Absents de votre grimoire, non copiés : %s"
+L.RAID_CLICK_COPY_BUFF_KEY = "Votre touche d'amélioration, non copiée comme touche de clic : %s"
 L.RAID_CLICK_CLEAR = "Tout effacer"
 L.RAID_CLICK_KEYS_NOTE = "Une touche lance sur le membre amical du raid sous la souris. Tant que les cadres de raid sont affichés, elle ne fait plus ce à quoi elle est liée : choisissez des touches inutilisées."
 

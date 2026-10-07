@@ -130,6 +130,14 @@ H.check("not copied: an unknown spell", RC.Get("general", "click4"), "")
 H.check("not copied: a key's unknown spell", RC.Get("general", "clickKey2Bind"), "")
 H.check("its key copied all the same", RC.Get("general", "clickKey2"), "E")
 H.checkTrue("said which", M.chat[#M.chat]:find(L.RAID_CLICK_COPY_DROPPED:format("Smite, Mind Blast"), 1, true))
+-- A copied key that is this character's smart buff key is left out (its
+-- slot keeps the default), and the chat says so.
+RC.Set("general", "buffKey", "E")
+ns.RaidProfiles.CopyClickCast("Alt-Realm")
+H.check("not copied: the smart buff key", RC.Get("general", "clickKey2"), "")
+H.check("the buff key stays", RC.Get("general", "buffKey"), "E")
+H.checkTrue("said so", M.chat[#M.chat]:find(L.RAID_CLICK_COPY_BUFF_KEY:format("E"), 1, true))
+RC.Set("general", "buffKey", "")
 
 -- Clear all: two clicks, back to the defaults.
 RC.Set("general", "click4", "assist")
