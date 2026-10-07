@@ -6,11 +6,11 @@ local _, ns = ...
 local Options = {}
 ns.Options = Options
 
-local Style, Widgets, Schema, Config, L = ns.Style, ns.Widgets, ns.Schema, ns.Config, ns.L
+local Style, Widgets, Schema, Config, Chrome, L = ns.Style, ns.Widgets, ns.Schema, ns.Config, ns.Chrome, ns.L
 
 local WINDOW_NAME = "ForeverUnitFramesOptions"
 local WIDTH, HEIGHT = 780, 560
-local TITLE_H, NAV_W, TAB_H, FOOTER_H = 32, 160, 30, 40
+local NAV_W, TAB_H = 160, 30
 local NAV_ROW_H, NAV_TOP, NAV_BAR_W = 28, 8, 3
 local TAB_PADDING, TAB_MIN_W, TAB_UNDERLINE_H = 28, 70, 2
 local NOTICE_H = 26
@@ -21,7 +21,6 @@ local TEXT_AREA_H, MESSAGE_H, NOTE_H = 70, 20, 34
 -- A tab note's room for text (tests: two lines must hold it).
 Options.NOTE_W = CONTENT_W - 2 * INSET
 local BUTTON_H, BUTTON_W, WIDE_BUTTON_W, FOOTER_GAP, FOOTER_INSET = 24, 120, 160, 8, 12
-local CONFIRM_SECONDS = 3
 local HIGHLIGHT_HOLD, HIGHLIGHT_STEPS, HIGHLIGHT_STEP_SECONDS, HIGHLIGHT_W = 0.9, 6, 0.1, 2
 local DEFAULT_POSITION = { point = "TOPLEFT", relativePoint = "TOPLEFT", x = 60, y = -120 }
 
@@ -31,21 +30,10 @@ local inCombat = false
 
 -- Helpers ---------------------------------------------------------------------
 
+local line, horizontalLine = Chrome.Line, Chrome.HorizontalLine
+
 local function localized(key)
     if L[key] ~= key then return L[key] end
-end
-
-local function line(parent, colorKey)
-    local t = parent:CreateTexture(nil, "BORDER")
-    t:SetColorTexture(unpack(Style.COLORS[colorKey]))
-    return t
-end
-
-local function horizontalLine(parent, anchor)
-    local t = line(parent, "border")
-    t:SetHeight(1)
-    t:SetPoint(anchor .. "LEFT"); t:SetPoint(anchor .. "RIGHT")
-    return t
 end
 
 local function forEachRow(fn)
@@ -306,39 +294,8 @@ local function textArea(block, readOnly, y)
     return area
 end
 
--- Two-click action: the first click arms the button for a few seconds, the
--- second runs it. armedText (optional): the armed button's word, for a
--- button narrower than L.CONFIRM needs. needed (optional): asked at the
--- first click; false runs the action at once (nothing to confirm).
--- onDisarm (optional): called when an armed button disarms without running
--- (time, Disarm), e.g. to take back what the first click said.
-local function confirmButton(parent, text, action, armedText, needed, onDisarm)
-    local button, armed
-    local function paintArmed() if armed then Style.Paint(button.text, "error") end end
-    local function disarm()
-        armed = nil
-        button.text:SetText(text)
-        button:GetScript("OnLeave")(button)
-    end
-    local function disarmUnused()
-        local was = armed
-        disarm()
-        if was and onDisarm then onDisarm() end
-    end
-    button = Widgets.Button(parent, { text = text, width = WIDE_BUTTON_W, onClick = function()
-        if armed then disarm(); action(); return end
-        if needed and not needed() then action(); return end
-        local token = {}
-        armed = token
-        button.text:SetText(armedText or L.CONFIRM)
-        paintArmed()
-        C_Timer.After(CONFIRM_SECONDS, function() if armed == token then disarmUnused() end end)
-    end })
-    button:HookScript("OnEnter", paintArmed)
-    button:HookScript("OnLeave", paintArmed)
-    button.Disarm = disarmUnused
-    return button
-end
+local confirmButton = Chrome.ConfirmButton
+-- Kept for the raid window's pages until they use Chrome.ConfirmButton.
 Options.ConfirmButton = confirmButton
 
 -- The left group of both windows' footers, so that they match by
@@ -566,21 +523,7 @@ end
 
 -- Navigation --------------------------------------------------------------------
 
-local function paintSelection(entry, selected, idleColor)
-    Style.Paint(entry.text, selected and "accent" or idleColor)
-    entry.selected = selected
-end
-
-local function hoverable(button, idleColor)
-    button:SetScript("OnEnter", function(self)
-        if not self.selected then Style.Paint(self.text, "text") end
-        if self.hover then self.hover:Show() end
-    end)
-    button:SetScript("OnLeave", function(self)
-        if not self.selected then Style.Paint(self.text, idleColor) end
-        if self.hover then self.hover:Hide() end
-    end)
-end
+local paintSelection, hoverable = Chrome.PaintSelection, Chrome.Hoverable
 
 local function navButton(nav, key, text, y)
     local b = CreateFrame("Button", nil, nav)
@@ -757,11 +700,7 @@ local function createFooterRight(footer)
 end
 
 local function createFooter(parent)
-    local footer = CreateFrame("Frame", nil, parent)
-    footer:SetHeight(FOOTER_H)
-    footer:SetPoint("BOTTOMLEFT"); footer:SetPoint("BOTTOMRIGHT")
-    Style.Fill(footer, "panel")
-    horizontalLine(footer, "TOP")
+    local footer = Chrome.Footer(parent)
     createFooterLeft(footer)
     createFooterRight(footer)
     frame.footerControls = { Options.unlockButton, Options.testButton, Options.copyRow, Options.resetFrameButton }
@@ -770,51 +709,13 @@ end
 
 -- Title bar ---------------------------------------------------------------------
 
-local CROSS_SIZE, CROSS_ANGLE = 14, math.pi / 4
-
--- The × glyph is not in every game font, so it is drawn from two lines.
-local function closeButton(titleBar)
-    local b = CreateFrame("Button", nil, titleBar)
-    b:SetSize(TITLE_H, TITLE_H)
-    b:SetPoint("RIGHT", titleBar, "RIGHT", 0, 0)
-    b.lines = {}
-    for i, angle in ipairs({ CROSS_ANGLE, -CROSS_ANGLE }) do
-        local t = line(b, "muted")
-        t:SetSize(CROSS_SIZE, 2)
-        t:SetPoint("CENTER")
-        t:SetRotation(angle)
-        b.lines[i] = t
-    end
-    local function paint(colorKey)
-        for _, t in ipairs(b.lines) do t:SetColorTexture(unpack(Style.COLORS[colorKey])) end
-    end
-    b:SetScript("OnEnter", function() paint("accent") end)
-    b:SetScript("OnLeave", function() paint("muted") end)
-    b:SetScript("OnClick", function() Options.Close() end)
-    return b
-end
-
 local function createTitleBar(parent)
-    local bar = CreateFrame("Frame", nil, parent)
-    bar:SetHeight(TITLE_H)
-    bar:SetPoint("TOPLEFT"); bar:SetPoint("TOPRIGHT")
-    Style.Fill(bar, "panel")
-    horizontalLine(bar, "BOTTOM")
-    bar:EnableMouse(true)
-    bar:RegisterForDrag("LeftButton")
-    bar:SetScript("OnDragStart", function() frame:StartMoving() end)
-    bar:SetScript("OnDragStop", function()
-        frame:StopMovingOrSizing()
-        savePosition()
-    end)
-    local title = Style.Text(bar, 16, "text")
-    title:SetPoint("LEFT", bar, "LEFT", INSET, 0)
-    title:SetText(L.ADDON_NAME)
-    local version = Style.Text(bar, 11, "muted")
-    version:SetPoint("BOTTOMLEFT", title, "BOTTOMRIGHT", 8, 1)
-    version:SetText("v" .. (C_AddOns.GetAddOnMetadata(ns.name, "Version") or ""))
-    bar.close = closeButton(bar)
-    return bar
+    return Chrome.TitleBar(parent, {
+        title = L.ADDON_NAME,
+        sub = "v" .. (C_AddOns.GetAddOnMetadata(ns.name, "Version") or ""),
+        onDragStop = savePosition,
+        onClose = function() Options.Close() end,
+    })
 end
 
 -- Body: tab row, combat notice, scroll area ---------------------------------------

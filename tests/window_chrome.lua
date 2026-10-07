@@ -2,7 +2,7 @@
 -- (tests/chrome.lua).
 return {
     unit = {
-        "titleBar Frame pts=TOPLEFT TOPRIGHT _attr={} _drag={LeftButton} _h=32.000 _level=2.000 _mouse=true _shown=true _w=0.000 close=titleBar.5 scripts=OnDragStart,OnDragStop",
+        "titleBar Frame pts=TOPLEFT TOPRIGHT _attr={} _drag={LeftButton} _h=32.000 _level=2.000 _mouse=true _shown=true _w=0.000 close=titleBar.5 sub=titleBar.4 title=titleBar.3 scripts=OnDragStart,OnDragStop",
         "titleBar.1 Texture pts= _allPoints=titleBar _attr={} _color={0.100,0.100,0.120,1.000} _h=0.000 _layer=BACKGROUND _level=3.000 _shown=true _texColor={0.100,0.100,0.120,1.000} _w=0.000 scripts=",
         "titleBar.2 Texture pts=BOTTOMLEFT BOTTOMRIGHT _attr={} _color={0.000,0.000,0.000,1.000} _h=1.000 _layer=BORDER _level=3.000 _shown=true _texColor={0.000,0.000,0.000,1.000} _w=0.000 scripts=",
         "titleBar.3 FontString pts=LEFT:titleBar:LEFT:16.000:0.000 _attr={} _color={0.900,0.900,0.900,1.000} _font={Fonts\\FRIZQT__.TTF,16.000,} _h=0.000 _layer=OVERLAY _level=3.000 _shadow={1.000,-1.000} _shown=true _sublevel=0.000 _text=Forever Unit Frames _w=0.000 scripts=",

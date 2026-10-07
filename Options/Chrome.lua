@@ -98,6 +98,13 @@ function Chrome.Footer(frame, opts)
     return footer
 end
 
+-- A menu entry selected (accent) or not (idleColor); Hoverable leaves a
+-- selected one alone.
+function Chrome.PaintSelection(entry, selected, idleColor)
+    Style.Paint(entry.text, selected and "accent" or idleColor)
+    entry.selected = selected
+end
+
 -- A menu entry's hover paint: "text" under the mouse, idleColor after,
 -- unless it is selected (button.selected); button.hover (optional) is a
 -- fill shown under the mouse.
