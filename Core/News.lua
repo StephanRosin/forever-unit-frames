@@ -41,7 +41,7 @@ News.ENTRIES = {
     -- The account's list of hidden auras is on General > Appearance.
     ["0.23.0"] = {
         lines = { "NEWS_0_23_0_HIDDEN", "NEWS_0_23_0_ADD", "NEWS_0_23_0_CLICK", "NEWS_0_23_0_OWN",
-            "NEWS_0_23_0_ELITE", "NEWS_0_23_0_LOOK" },
+            "NEWS_0_23_0_ELITE", "NEWS_0_23_0_TOOLS", "NEWS_0_23_0_LOOK" },
         action = { text = "NEWS_OPEN_HIDDEN", run = function() ns.Options.Open("general", "appearance") end },
     },
 }

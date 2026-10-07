@@ -522,8 +522,9 @@ end
 -- docked or free, its top-left corner from the screen centre (free), and
 -- which tools it holds.
 RaidSettings.Define({ key = "toolsShow", code = "IO", scope = "general", type = "bool", default = true })
--- Docked to the main panel's right edge (a handle folds it out; open:
--- folded out) or free at its own position. Stored by index: append only.
+-- Docked to the main panel's right edge or free at its own position
+-- (both with a handle that folds it out and in; open: folded out).
+-- Stored by index: append only.
 RaidSettings.Define({ key = "toolsMode", code = "IM", scope = "general", type = "enum", values = { "DOCKED", "FREE" },
     default = "DOCKED" })
 -- uiState: a state of the screen (folded in or out), not a choice a

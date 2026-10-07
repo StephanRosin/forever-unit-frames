@@ -1,7 +1,7 @@
 -- The tools bar's default spot (free): at its largest (every tool, in
--- every language) it covers no panel's default spot (the main panel, the
--- special panels, panels 2 to 10: each one's first cell at the largest
--- default cell size) and stays on the smallest screen (1365 x 768 around
+-- every language, its handle included) it covers no panel's default spot
+-- (the main panel, the special panels, panels 2 to 10: each one's first
+-- cell at the largest default cell size) and stays on the smallest screen (1365 x 768 around
 -- the centre).
 local M = H.M
 local ns = H.LoadAddon()
@@ -34,7 +34,10 @@ local CELL_W, CELL_H = largest("cellWidth"), largest("cellHeight")
 local function overlap(a, b)
     return a.x < b.x + b.w and b.x < a.x + a.w and a.y - a.h < b.y and b.y - b.h < a.y
 end
-local bar = { x = RS.Get("toolsX").default, y = RS.Get("toolsY").default, w = width, h = height }
+-- With its handle left of it.
+local handleW = Tools.HANDLE_W + Tools.DOCK_GAP
+local bar = { x = RS.Get("toolsX").default - handleW, y = RS.Get("toolsY").default, w = width + handleW,
+    h = math.max(height, Tools.HANDLE_H) }
 local spots = { { "main panel", RS.Get("x").default, RS.Get("y").default } }
 for _, p in ipairs(Raid.PANELS) do spots[#spots + 1] = { p.id, p.x, p.y } end
 for _, slot in ipairs(Raid.OWN_PANELS) do

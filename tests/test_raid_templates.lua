@@ -106,11 +106,13 @@ H.check("the change kept", RC.Get("r10", "cellSpacing"), 4)
 T.Apply(sample, { 10, 20 })
 H.check("an apply keeps its own undo", T.CanUndo(), true)
 -- Nor does folding the tools bar in or out: a state of the screen, not a
--- setting a template or the undo touches.
+-- setting a template or the undo touches (the bar shows in test mode).
+ns.RaidTestMode.Set(true)
 ns.RaidTools.Fold()
 H.check("folded", RC.Get("general", "toolsOpen"), true)
 H.check("the fold keeps the undo", T.CanUndo(), true)
 ns.RaidTools.Fold()
+ns.RaidTestMode.Set(false)
 
 -- Nothing to change: no change, the undo there was stays.
 told = 0

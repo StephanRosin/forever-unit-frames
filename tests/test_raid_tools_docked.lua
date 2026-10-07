@@ -1,7 +1,8 @@
 -- The raid tools bar docked (Raid/Tools.lua): a handle on the main
--- panel's right edge folds the bar out and in, out of combat only; both
--- hang from the panel's anchor and follow the panel's size; free, the
--- handle goes and the bar has its own mover. The raid window's rows.
+-- panel's right edge folds the bar out and in, out of combat only (a fold
+-- asked for in combat waits for its end); both hang from the panel's
+-- anchor and follow the panel's size; free, the bar has its own mover
+-- and the handle stands left of it. The raid window's rows.
 local M = H.M
 local ns = H.LoadAddon()
 M.units.player = { name = "Me", class = "MAGE", health = 1, healthMax = 1, isPlayer = true }
@@ -56,39 +57,43 @@ H.check("bar follows", point(bar), "TOPLEFT anchor TOPLEFT " .. (Header.width + 
 RC.Set("r20", "x", -500)
 H.check("they hang from the panel's anchor", point(bar), "TOPLEFT anchor TOPLEFT " .. (Header.width + 20) .. " 0")
 
--- In combat the handle refuses; nothing protected is touched.
+-- In combat the fold waits for its end; nothing protected is touched.
 local chat = #M.chat
 M.combat = true
 M.FireEvent("PLAYER_REGEN_DISABLED")
 handle:GetScript("OnClick")(handle)
 H.check("combat: stays out", RC.Get("general", "toolsOpen"), true)
-H.checkTrue("combat: the chat says why", M.chat[chat + 1] and M.chat[chat + 1]:find("only out of combat", 1, true))
+H.checkTrue("combat: the chat says so", M.chat[chat + 1] and M.chat[chat + 1]:find("when combat ends", 1, true))
 H.check("combat: nothing blocked", #M.blocked, 0)
 M.SetCombat(false)
-handle:GetScript("OnClick")(handle)
 H.check("after combat: folded in", bar:IsShown(), false)
 
--- No mover while docked; free: no handle, its own mover.
+-- No mover while docked; free: the handle left of the bar, its own mover.
 ns.Movers.Unlock("raid")
 H.check("docked: no mover", bar.mover:IsShown(), false)
+RC.Set("general", "toolsOpen", true)
 RC.Set("general", "toolsMode", "FREE")
-H.check("free: no handle", handle:IsShown(), false)
+H.checkTrue("free: handle", handle:IsShown())
+H.check("free: the handle left of the bar", point(handle), "TOPRIGHT mover TOPLEFT -4 0")
 H.checkTrue("free: shown", bar:IsShown())
 H.check("free: at its mover", point(bar), "TOPLEFT mover TOPLEFT 0 0")
 H.checkTrue("free: its mover", bar.mover:IsShown())
 ns.Movers.Lock("raid")
 RC.Set("general", "toolsMode", "DOCKED")
+RC.Set("general", "toolsOpen", false)
 
 -- A party without the raid view in party: the main panel is hidden, so
--- the docked bar falls back to its free position (no handle); with the
--- raid view on, it docks again.
+-- the docked bar falls back to its free position (the handle left of
+-- it); with the raid view on, it docks again.
 M.SetRaidRoster({})
 RC.Set("general", "showInParty", false)
 M.units.party1 = { name = "Ann", class = "PRIEST", isPlayer = true }
 M.SetGroup({ "party1" })
 M.RunTimers()
 H.check("party, no raid view: the panel hidden", ns.RaidPanel.Active(), false)
-H.check("party, no raid view: no handle", handle:IsShown(), false)
+H.check("party, no raid view: the handle at the free place", point(handle), "TOPRIGHT mover TOPLEFT -4 0")
+H.check("party, no raid view: folded in", bar:IsShown(), false)
+RC.Set("general", "toolsOpen", true)
 H.checkTrue("party, no raid view: bar shown", bar:IsShown())
 H.check("party, no raid view: at its free place", point(bar), "TOPLEFT mover TOPLEFT 0 0")
 ns.Movers.Unlock("raid")
@@ -97,6 +102,8 @@ ns.Movers.Lock("raid")
 RC.Set("general", "showInParty", true)
 M.RunTimers()
 H.checkTrue("raid view on: docked again", handle:IsShown())
+H.check("raid view on: the handle on the panel", point(handle), "TOPLEFT anchor TOPLEFT " .. (Header.width + 4) .. " 0")
+RC.Set("general", "toolsOpen", false)
 H.check("raid view on: folded in", bar:IsShown(), false)
 -- Test mode shows the panel: docked.
 RC.Set("general", "showInParty", false)
@@ -110,7 +117,7 @@ M.SetRaidRoster({})
 H.check("solo: no handle", handle:IsShown(), false)
 H.check("solo: no bar", bar:IsShown(), false)
 
--- The raid window: the fold only while docked, the position only while
+-- The raid window: the fold docked and free, the position only while
 -- free.
 local RO = ns.RaidOptions
 RO.Open(10, "tools")
@@ -122,7 +129,7 @@ H.check("docked words", row("toolsMode").button.text:GetText(), "Docked to the p
 H.check("docked: fold enabled", row("toolsOpen").enabledState, true)
 H.check("docked: position disabled", row("toolsX").enabledState, false)
 RC.Set("general", "toolsMode", "FREE")
-H.check("free: fold disabled", row("toolsOpen").enabledState, false)
+H.check("free: fold enabled", row("toolsOpen").enabledState, true)
 H.check("free: position enabled", row("toolsY").enabledState, true)
 RO.Close()
 H.check("nothing blocked", #M.blocked, 0)

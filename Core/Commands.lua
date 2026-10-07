@@ -103,6 +103,9 @@ SlashCmdList.FOREVERUNITFRAMES = function(msg)
         else
             Commands.ToggleRaidOptions()
         end
+    elseif cmd == "tools" then
+        -- The raid tools bar folded out or in (Raid/Tools.lua).
+        ns.RaidTools.Fold()
     elseif cmd == "news" then
         Commands.ShowNews()
     elseif cmd == "auras" and rest:lower() == "undo" then

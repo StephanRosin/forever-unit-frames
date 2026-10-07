@@ -13,6 +13,8 @@ local RC, RS, Tools = ns.RaidConfig, ns.RaidSettings, ns.RaidTools
 H.check("code", RS.Get("toolsMarkers").code, "IW")
 H.check("on", RC.Get("general", "toolsMarkers"), true)
 RC.Set("general", "toolsMode", "FREE")
+-- Folded out (folded in, only its handle shows: tests/test_raid_tools_fold.lua).
+RC.Set("general", "toolsOpen", true)
 local row = Tools.rows[3]
 H.check("the third row", row.id, "markers")
 local f = row.frame

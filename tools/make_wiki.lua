@@ -434,10 +434,19 @@ local PER_CHARACTER = "The **%s** tab of the raid options window (`/fuf raid`), 
     .. " the same at every size."
 local perCharacter = RaidSchema.PerCharacter
 
--- More after a raid tab's settings: { title, lines }.
+-- More after a raid tab's settings: sections { title, lines }.
 local RAID_TAB_EXTRA = {
-    -- Raid/Tools.lua: Tools.Marks, Tools.Leads, Tools.IsLeader.
-    tools = { "Who may use which tool", {
+    tools = {
+        -- Raid/Tools.lua: Tools.Fold.
+        { "Folding the bar", {
+        "Docked or free, a handle on the bar's left edge folds it out and in; folded in, only the handle shows."
+            .. " `/fuf tools` and a right-click on the raid minimap button do the same, from anywhere (nothing"
+            .. " happens while the bar does not show). The bar is a protected frame: in combat the fold waits for"
+            .. " the end of combat, and the chat says so. Folding is not a setting a template or its Undo touches.",
+        "",
+        } },
+        -- Raid/Tools.lua: Tools.Marks, Tools.Leads, Tools.IsLeader.
+        { "Who may use which tool", {
         "Each tool shows only to those who may use it, as Blizzard's raid manager decides; in test mode everything"
             .. " shows. In a raid, while everyone is an assistant, everyone counts as an assistant.",
         "",
@@ -456,7 +465,8 @@ local RAID_TAB_EXTRA = {
         "</tbody>",
         "</table>",
         "",
-    } },
+        } },
+    },
 }
 
 local raidPages = {}
@@ -478,8 +488,7 @@ local function raidPage(tab)
         raidSection(body, sec.title, sec.keys)
         names[#names + 1] = ("[%s](#%s)"):format(sec.title, anchor(sec.title))
     end
-    local extra = RAID_TAB_EXTRA[tab.id]
-    if extra then
+    for _, extra in ipairs(RAID_TAB_EXTRA[tab.id] or {}) do
         body[#body + 1] = "## " .. extra[1]
         body[#body + 1] = ""
         for _, l in ipairs(extra[2]) do body[#body + 1] = l end

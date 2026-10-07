@@ -103,7 +103,7 @@ In a "Status" tab per frame.
 - Settings are stored compactly. They can be exported and imported as a string. Importing a profile keeps your own language.
 
 ## Commands
-`/fuf` (options), `/fuf raid` (raid frames' options), `/fuf raid off` / `/fuf raid on`, `/fuf news` (what's new in this version), `/fuf unlock`, `/fuf lock`, `/fuf status`, `/fuf reset <frame|all>`, `/fuf set <scope> <setting> <value>`
+`/fuf` (options), `/fuf raid` (raid frames' options), `/fuf raid off` / `/fuf raid on`, `/fuf news` (what's new in this version), `/fuf tools` (folds the raid tools bar), `/fuf unlock`, `/fuf lock`, `/fuf status`, `/fuf reset <frame|all>`, `/fuf set <scope> <setting> <value>`
 
 ## Notes
 - Made for WoW: Forever only. It relies on Forever's API and will not load on other clients.

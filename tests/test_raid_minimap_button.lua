@@ -1,7 +1,8 @@
 -- The raid frames' own minimap button (Raid/MinimapButton.lua): its own
 -- icon, angle and switch in the raid profile's General settings, dragged
 -- around the minimap like the unit frames' button; a left click opens or
--- closes the raid options window. Blizzard's addon compartment gets an
+-- closes the raid options window, a right click folds the raid tools
+-- (tests/test_raid_tools_fold.lua). Blizzard's addon compartment gets an
 -- entry for the raid window as well.
 local M = H.M
 
@@ -48,7 +49,7 @@ do
     H.checkTrue("shown", button:IsShown())
     H.check("its own icon", button.icon._texture, "Interface\\AddOns\\ForeverUnitFrames\\Media\\RaidMinimapIcon.tga")
     H.check("tracking border", button.border._texture, "Interface\\Minimap\\MiniMap-TrackingBorder")
-    H.check("left clicks only", table.concat(button._clicks, ","), "LeftButtonUp")
+    H.check("left and right clicks", table.concat(button._clicks, ","), "LeftButtonUp,RightButtonUp")
 
     -- On the circle at its own angle; a square minimap squares it off.
     local r = 70 + 5
@@ -92,7 +93,8 @@ do
     -- Tooltip.
     button:GetScript("OnEnter")(button)
     H.check("tooltip lines", table.concat(M.tooltipLines, "|"),
-        "Forever Unit Frames: raid frames|Left-click: raid frame options|Drag: move button")
+        "Forever Unit Frames: raid frames|Left-click: raid frame options|Right-click: fold the raid tools out or in"
+            .. "|Drag: move button")
     button:GetScript("OnLeave")(button)
     H.check("tooltip hidden", GameTooltip._owner, nil)
 

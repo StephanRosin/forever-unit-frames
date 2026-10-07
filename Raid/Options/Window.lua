@@ -528,13 +528,12 @@ local paintFooter
 
 -- Rows that only mean something while another setting allows it: the
 -- class order, while the edited size groups by class; the raid tools
--- bar's fold while it is docked, its position while it is free.
-local function toolsDocked() return RaidConfig.Get("general", "toolsMode") == "DOCKED" end
-local function toolsFree() return not toolsDocked() end
+-- bar's position while it is free (it folds docked and free).
+local function toolsFree() return RaidConfig.Get("general", "toolsMode") ~= "DOCKED" end
 -- Other tabs' files add theirs (Raid/Options/Buffs.lua).
 local ROW_ACTIVE = {
     classOrder = function() return RaidConfig.Get(Raid.Scope(RaidOptions.Size()), "groupBy") == "CLASS" end,
-    toolsOpen = toolsDocked, toolsX = toolsFree, toolsY = toolsFree,
+    toolsX = toolsFree, toolsY = toolsFree,
 }
 RaidOptions.ROW_ACTIVE = ROW_ACTIVE
 

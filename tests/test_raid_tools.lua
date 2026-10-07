@@ -21,6 +21,8 @@ H.check("shown", RC.Get("general", "toolsShow"), true)
 H.check("position", RC.Get("general", "toolsX") .. "," .. RC.Get("general", "toolsY"), "-60,370")
 H.check("raid target icons", RC.Get("general", "toolsTargets"), true)
 RC.Set("general", "toolsMode", "FREE")
+-- Folded out (folded in, only its handle shows: tests/test_raid_tools_fold.lua).
+RC.Set("general", "toolsOpen", true)
 -- The raid target icons alone: every other row off (they have tests of
 -- their own).
 for _, row in ipairs(Tools.rows) do

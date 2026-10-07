@@ -10,12 +10,15 @@ local _, ns = ...
 -- leader). A tool shows only to whom may use it (in a raid, everyone an
 -- assistant counts as an assistant), and while test mode is on. It shows in a raid and in a party while the raid
 -- frames are on, hidden when solo, and while test mode is on, so it can
--- be placed. Docked, it hangs on the main panel's right edge behind a
--- handle that folds it out and in (out of combat; the panel's anchor
--- never moves in combat) and follows the panel (while the panel is
--- hidden, it stands at its free position instead); free, it has its own
--- mover (the raid window's lock) and its top-left corner in the raid
--- profile's General settings, the same for every size.
+-- be placed. A handle on its left edge folds it out and in (folded in,
+-- only the handle shows), as do /fuf tools and a right-click on the raid
+-- minimap button (Tools.Fold): out of combat, a fold asked for in combat
+-- waits for its end. Docked, bar and handle hang on the main panel's
+-- right edge (the panel's anchor never moves in combat) and follow the
+-- panel (while the panel is hidden, they stand at the free position
+-- instead); free, the bar has its own mover (the raid window's lock) and
+-- its top-left corner in the raid profile's General settings, the same
+-- for every size, the handle just left of it.
 --
 -- Secure buttons (the raid target icons and the world markers:
 -- SECURE_ACTIONS.raidtarget and .worldmarker, Blizzard_FrameXML/
@@ -37,8 +40,8 @@ Tools.NAME = "ForeverUnitFramesRaidTools"
 Tools.ICON, Tools.GAP, Tools.PADDING = 18, 2, 4
 -- The mover's size while no row shows.
 Tools.EMPTY_SIZE = 40
--- Docked: the handle's size, and the room between the panel, the handle
--- and the bar.
+-- The handle's size, and the room between the panel (docked), the
+-- handle and the bar.
 Tools.HANDLE_W, Tools.HANDLE_H, Tools.DOCK_GAP = 12, 32, 4
 Tools.MARKERS = 8
 Tools.POSITION_KEYS = { toolsX = "x", toolsY = "y" }
@@ -473,21 +476,26 @@ ns.On("GROUP_ROSTER_UPDATE", paintAssist)
 
 -- Docked: the handle beside the main panel, the bar beyond it, both
 -- hanging from the panel's anchor (out of combat: the bar is protected).
--- Free: its own mover holds it; before the mover is there, its position.
+-- Free: its own mover holds it (before the mover is there, its
+-- position), the handle just left of it; the handle never hangs from the
+-- protected bar.
 local function place()
-    local bar = Tools.bar
+    local bar, handle = Tools.bar, Tools.handle
     bar:ClearAllPoints()
+    handle:ClearAllPoints()
     if docked() then
         local anchor = ns.RaidHeader.anchor or UIParent
         local x = (ns.RaidHeader.width or 0) + Tools.DOCK_GAP
-        Tools.handle:ClearAllPoints()
-        Tools.handle:SetPoint("TOPLEFT", anchor, "TOPLEFT", x, 0)
+        handle:SetPoint("TOPLEFT", anchor, "TOPLEFT", x, 0)
         bar:SetPoint("TOPLEFT", anchor, "TOPLEFT", x + Tools.HANDLE_W + Tools.DOCK_GAP, 0)
     elseif bar.mover then
         ns.Movers.Sync(bar)
         bar:SetPoint("TOPLEFT", bar.mover, "TOPLEFT", 0, 0)
+        handle:SetPoint("TOPRIGHT", bar.mover, "TOPLEFT", -Tools.DOCK_GAP, 0)
     else
-        bar:SetPoint("TOPLEFT", UIParent, "CENTER", ns.Pixel.Snap(general("toolsX")), ns.Pixel.Snap(general("toolsY")))
+        local x, y = ns.Pixel.Snap(general("toolsX")), ns.Pixel.Snap(general("toolsY"))
+        bar:SetPoint("TOPLEFT", UIParent, "CENTER", x, y)
+        handle:SetPoint("TOPRIGHT", UIParent, "CENTER", x - Tools.DOCK_GAP, y)
     end
 end
 
@@ -497,8 +505,8 @@ local function paintHandle()
 end
 
 -- Out of combat: the rows that show, one below the other, the bar around
--- them with the panel's ring, where it belongs; shown or hidden (docked,
--- while folded out), the handle while docked.
+-- them with the panel's ring, where it belongs; the handle shown with it,
+-- the bar while folded out.
 function Tools.Refresh()
     local bar = Tools.bar
     if not bar then return end
@@ -526,16 +534,34 @@ function Tools.Refresh()
     place()
     ns.Border.Draw(bar, Panel.PANEL_SCOPE, bar, 0)
     local shown = any and Tools.Shown()
-    bar:SetShown(shown and (not docked() or general("toolsOpen")))
-    Tools.handle:SetShown(shown and docked())
+    bar:SetShown(shown and general("toolsOpen"))
+    Tools.handle:SetShown(shown)
     paintHandle()
 end
 
--- The handle's click: folds the bar out or in; refused in combat.
+-- Whether the bar shows at all (its handle shows whenever it does).
+function Tools.IsShown()
+    return Tools.handle ~= nil and Tools.handle:IsShown()
+end
+
+-- The fold asked for in combat (nil: none), set when combat ends.
+local foldAsked
+
+-- The handle's click, /fuf tools and the raid minimap button's
+-- right-click: folds the bar out or in; nothing (and no word) while the
+-- bar does not show. In combat the fold waits for its end, and the chat
+-- says so; asked for twice, it is back where it was.
 function Tools.Fold()
+    if not Tools.IsShown() then return false end
     if InCombatLockdown() then
+        if foldAsked == nil then foldAsked = not general("toolsOpen") else foldAsked = not foldAsked end
         ns.Print(L.RAID_TOOLS_COMBAT)
-        return false
+        ns.AfterCombat("raidToolsFold", function()
+            local state = foldAsked
+            foldAsked = nil
+            if state ~= nil and state ~= general("toolsOpen") then ns.RaidConfig.Set("general", "toolsOpen", state) end
+        end)
+        return true
     end
     return ns.RaidConfig.Set("general", "toolsOpen", not general("toolsOpen"))
 end

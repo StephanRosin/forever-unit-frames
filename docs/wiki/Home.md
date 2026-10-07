@@ -53,8 +53,9 @@ Source: [GitHub](https://github.com/StephanRosin/forever-unit-frames)
 - The **raid tools bar** (the **Tools** tab) takes the place of Blizzard's raid manager: raid target icons and
   the last ready check for everyone; starting a ready check, a role poll and world markers for the leader and
   assistants; everyone an assistant, party to raid and back and the loot method for the leader. It sits behind
-  a handle on the right edge of the raid panel (click it to fold the bar out), or free where you drag it. It
-  folds out and in, and follows changes of who leads, only out of combat.
+  a handle on the right edge of the raid panel, or free where you drag it, with the handle on its left edge.
+  Click the handle, type `/fuf tools` or right-click the raid minimap button to fold the bar out or in. It
+  folds and follows changes of who leads only out of combat (a fold asked for in combat comes after it).
 - The **Profiles** tab (beside the sizes) starts with the role templates, the looks and the setup wizard's
   button (see [[Templates|Raid-Templates]]). Below them it keeps your own profiles (all three sizes or one, under a
   name, for every character of your account), copies one size onto another (everything, or without layout and sizes)
@@ -78,6 +79,7 @@ Source: [GitHub](https://github.com/StephanRosin/forever-unit-frames)
 | `/fuf raid` | Opens the raid frames' options |
 | `/fuf raid off`, `/fuf raid on` | Switches the raid frames off (then `/reload`) or on, without the window |
 | `/fuf news` | Shows what's new in this version (shown once by itself after an update) |
+| `/fuf tools` | Folds the raid tools bar out or in |
 | `/fuf unlock`, `/fuf lock` | Lets you drag the unit frames, and locks them (and the raid panel) again |
 | `/fuf status` | Prints the client version and where the settings came from |
 | `/fuf reset <frame\|all>` | Resets one frame (player, target, targettarget, pet, focus, party) or everything |

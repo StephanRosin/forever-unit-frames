@@ -8,7 +8,7 @@ The **Tools** tab of the raid options window (`/fuf raid`), under **General** in
 
 A tool shows only to those who may use it (in test mode to everyone).
 
-**On this page:** [The bar](#the-bar) · [Tools on it](#tools-on-it) · [Who may use which tool](#who-may-use-which-tool)
+**On this page:** [The bar](#the-bar) · [Tools on it](#tools-on-it) · [Folding the bar](#folding-the-bar) · [Who may use which tool](#who-may-use-which-tool)
 
 ## The bar
 
@@ -17,7 +17,7 @@ A tool shows only to those who may use it (in test mode to everyone).
 <tbody>
 <tr><td><b>Show the bar</b></td><td>In a raid or a party, in place of Blizzard's raid manager</td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Where</b></td><td>Docked: a handle on the main panel's right edge</td><td>Docked to the panel, Free</td><td>Docked to the panel</td></tr>
-<tr><td><b>Folded out</b></td><td>The handle folds it out and in</td><td>On, Off</td><td>Off</td></tr>
+<tr><td><b>Folded out</b></td><td>Its handle or /fuf tools folds it out and in</td><td>On, Off</td><td>Off</td></tr>
 <tr><td><b>Position X</b></td><td>Top left corner, from the screen center</td><td>-4000 – 4000</td><td>-60</td></tr>
 <tr><td><b>Position Y</b></td><td>Top left corner, from the screen center</td><td>-4000 – 4000</td><td>370</td></tr>
 </tbody>
@@ -37,6 +37,10 @@ A tool shows only to those who may use it (in test mode to everyone).
 <tr><td><b>Loot method</b></td><td>Master looter: yourself</td><td>On, Off</td><td>On</td></tr>
 </tbody>
 </table>
+
+## Folding the bar
+
+Docked or free, a handle on the bar's left edge folds it out and in; folded in, only the handle shows. `/fuf tools` and a right-click on the raid minimap button do the same, from anywhere (nothing happens while the bar does not show). The bar is a protected frame: in combat the fold waits for the end of combat, and the chat says so. Folding is not a setting a template or its Undo touches.
 
 ## Who may use which tool
 
