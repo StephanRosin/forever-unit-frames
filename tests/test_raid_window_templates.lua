@@ -1,7 +1,7 @@
 -- The raid window's General tab, section Templates
--- (Raid/Options/Templates.lua): pick a role template, a look or an own
--- template, apply it to the edited size or to all sizes, undo, save the
--- edited size as an own template, delete an own one; locked in combat.
+-- (Raid/Options/Templates.lua): pick a role template or a look, apply it
+-- to the edited size or to all sizes, undo; locked in combat. Own
+-- templates are on the Profiles page (test_raid_window_profiles.lua).
 local M = H.M
 local ns = H.LoadAddon()
 M.units.player = { name = "Me", class = "PRIEST", health = 1, healthMax = 1 }
@@ -41,7 +41,6 @@ H.check("templates offered", items(P.picker), "Role: Healer,Role: Tank,Role: DPS
     .. "Look: Forever,Look: Flat,Look: Classic")
 H.check("target offered", items(P.target), "This size (20 players),All sizes")
 H.check("undo: nothing yet", P.undoButton:IsEnabled(), false)
-H.check("delete: not for a shipped one", P.deleteButton:IsEnabled(), false)
 
 -- Apply to the edited size.
 pick(P.picker, "Role: DPS")
@@ -63,46 +62,18 @@ H.check("all sizes: 10", RC.Get("r10", "cellCornerRadius"), 0)
 H.check("all sizes: 40", RC.Get("r40", "cellCornerRadius"), 0)
 H.check("all sizes message", P.message:GetText(), L.RAID_TEMPLATE_APPLIED:format("Look: Flat", L.RAID_TEMPLATE_ALL))
 
--- Save the edited size as an own template: listed, picked, deletable.
-P.nameBox:SetText("Raid night")
-click(P.saveButton)
-H.check("saved", T.Find("own:Raid night") ~= nil, true)
-H.check("saved message", P.message:GetText(), L.RAID_TEMPLATE_SAVED:format("Raid night"))
-H.check("own listed and picked", P.picker.button.text:GetText(), "Own: Raid night")
-H.check("delete offered", P.deleteButton:IsEnabled(), true)
-H.check("box emptied", P.nameBox:GetText(), "")
--- The same name again: a second click replaces it, and says so.
-RC.Set("r20", "cellWidth", 111)
-P.nameBox:SetText("raid NIGHT")
-click(P.saveButton)
-H.check("existing name: armed", P.saveButton.text:GetText(), L.CONFIRM)
-H.check("existing name: not replaced yet", T.Find("own:Raid night").values.cellWidth ~= 111, true)
-click(P.saveButton)
-H.check("replaced", T.Find("own:Raid night").values.cellWidth, 111)
-H.check("replaced message", P.message:GetText(), L.RAID_TEMPLATE_REPLACED:format("raid NIGHT"))
-H.check("still one", #T.Own(), 1)
--- Another pick disarms Delete.
-click(P.deleteButton)
-H.check("delete armed", P.deleteButton.text:GetText(), L.CONFIRM)
-pick(P.picker, "Role: Tank")
-H.check("a pick disarms delete", P.deleteButton.text:GetText(), L.RAID_TEMPLATE_DELETE)
-pick(P.picker, "Own: raid NIGHT")
-P.nameBox:SetText("   ")
-click(P.saveButton)
-H.check("empty name refused", P.message:GetText(), L.RAID_TEMPLATE_NAME_EMPTY)
--- Delete takes two clicks.
-click(P.deleteButton)
-H.checkTrue("armed, not deleted", T.Find("own:raid NIGHT"))
-click(P.deleteButton)
-H.check("deleted", T.Find("own:raid NIGHT"), nil)
-H.check("the suggestion picked again", P.picker.button.text:GetText(), "Role: Healer")
+-- Own templates are on the Profiles page: none here.
+H.check("no save here", P.saveButton, nil)
+H.check("no delete here", P.deleteButton, nil)
+T.SaveOwn("Mine", 20)
+H.check("own ones not offered here", items(P.picker), "Role: Healer,Role: Tank,Role: DPS,Role: Dispel only,"
+    .. "Look: Forever,Look: Flat,Look: Classic")
 
 -- Combat locks the section.
 click(P.applyButton)
 M.combat = true
 M.FireEvent("PLAYER_REGEN_DISABLED")
 H.check("apply locked", P.applyButton:IsEnabled(), false)
-H.check("save locked", P.saveButton:IsEnabled(), false)
 H.check("picker locked", P.picker.button:IsEnabled(), false)
 M.combat = false
 M.FireEvent("PLAYER_REGEN_ENABLED")

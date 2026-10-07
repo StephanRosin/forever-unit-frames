@@ -2,13 +2,13 @@ local _, ns = ...
 
 -- The raid options window, in the style of the unit frames' (the same
 -- widgets and colours): a header bar with the raid size whose profile is
--- edited (the one shown now is marked) and which size the panel shows,
--- the tabs of the raid menu (Raid/Options/Schema.lua) and their rows, the
--- last one (Profile) the export and import of the edited size; a footer
--- laid out like the unit frames' window's: on the left the raid panel's
--- lock, test mode and the way to the unit frames' window, on the right
--- what acts on the edited size as a whole: copy from another size or
--- character, reset it. A plain
+-- edited (the one shown now is marked), a fourth tab Profiles, and which
+-- size the panel shows; the tabs of the raid menu (Raid/Options/Schema
+-- .lua) and their rows; while Profiles is picked, its page alone (Raid/
+-- Options/Profiles.lua: own profiles, copy, reset, export, import) and no
+-- menu tabs. A footer laid out like the unit frames' window's left side:
+-- the raid panel's lock, test mode and the way to the unit frames'
+-- window. A plain
 -- (non-secure) frame: every change goes through ns.RaidConfig, whose
 -- RAID_CONFIG_CHANGED listeners restyle the raid panel out of combat. In
 -- combat the window stays open but its controls lock.
@@ -28,8 +28,7 @@ local TAB_ROW_INSET, TAB_MIN_PADDING = 8, 12
 local SCROLLBAR_W, WHEEL_STEP = 10, 40
 local CONTENT_W = WIDTH - SCROLLBAR_W
 local PAGE_TOP, PAGE_BOTTOM, SECTION_GAP, INSET, NOTE_H = 4, 16, 8, 16, 34
-local BUTTON_H, BUTTON_W, DROPDOWN_W, GAP, WIDE_BUTTON_W, FOOTER_INSET = 24, 120, 160, 8, 160, 12
-local TEXT_AREA_H, MESSAGE_H, CONFIRM_SECONDS = 70, 20, 3
+local BUTTON_H, DROPDOWN_W, GAP = 24, 160, 8
 local DEFAULT_POSITION = { point = "TOPLEFT", relativePoint = "TOPLEFT", x = 90, y = -150 }
 
 local frame
@@ -211,6 +210,7 @@ local function noteBlock(page, text)
     return block
 end
 RaidOptions.NoteBlock = noteBlock
+RaidOptions.NewStack = newStack
 -- The page's measures, for a page built elsewhere (Raid/Options/Arrangement.lua).
 RaidOptions.PAGE = { width = CONTENT_W, inset = INSET, top = PAGE_TOP, bottom = PAGE_BOTTOM,
     sectionGap = SECTION_GAP, noteHeight = NOTE_H, gap = GAP }
@@ -335,7 +335,7 @@ local anchorScroll
 local function renderSizeNotice()
     local edited, shown = RaidOptions.Size(), ns.RaidCell.Size()
     local notice = RaidOptions.sizeNotice
-    local on = edited ~= shown
+    local on = edited ~= shown and not RaidOptions.profilesShown
     if on then notice.text:SetText(L.RAID_EDITING_NOT_SHOWN:format(edited, shown)) end
     if on == notice:IsShown() then return end
     notice:SetShown(on)
@@ -352,9 +352,14 @@ local function renderSizeTabs()
         if size == shown then text = L.RAID_SIZE_SHOWN:format(text) end
         b.text:SetText(text)
         b:SetWidth((b.text:GetStringWidth() or 0) + SIZE_TAB_PADDING)
-        paintSelection(b, size == RaidOptions.Size(), "muted")
-        b.underline:SetShown(size == RaidOptions.Size())
+        local edited = size == RaidOptions.Size() and not RaidOptions.profilesShown
+        paintSelection(b, edited, "muted")
+        b.underline:SetShown(edited)
     end
+    local profiles = RaidOptions.profilesTab
+    profiles:SetWidth((profiles.text:GetStringWidth() or 0) + SIZE_TAB_PADDING)
+    paintSelection(profiles, RaidOptions.profilesShown == true, "muted")
+    profiles.underline:SetShown(RaidOptions.profilesShown == true)
     renderSizeNotice()
 end
 
@@ -467,26 +472,33 @@ local function createSizeBar(parent, titleBar)
         RaidOptions.sizeTabs[size] = b
         previous = b
     end
+    local profiles = tabButton(bar, SIZE_BAR_H)
+    profiles.text:SetText(L.RAID_PROFILES_TAB)
+    profiles:SetScript("OnClick", function() RaidOptions.ShowProfiles() end)
+    profiles:SetPoint("LEFT", previous, "RIGHT", 0, 0)
+    RaidOptions.profilesTab = profiles
     RaidOptions.sizeModeRow = sizeModeRow(bar)
     frame.sizeBar = bar
 end
 
 -- Combat lock -------------------------------------------------------------------
 
--- Under the tabs: the combat notice while in combat, then the note on
--- the size edited, while it is not the one shown; then the page.
+-- Under the tabs (on the Profiles page, which has none: at the top): the
+-- combat notice while in combat, then the note on the size edited, while
+-- it is not the one shown; then the page.
 function anchorScroll()
-    local top = frame.tabRow
+    local top, edge = frame.tabRow, "BOTTOM"
+    if not frame.tabRow:IsShown() then top, edge = frame.body, "TOP" end
     for _, notice in ipairs({ RaidOptions.combatNotice, RaidOptions.sizeNotice }) do
         if notice:IsShown() then
             notice:ClearAllPoints()
-            notice:SetPoint("TOPLEFT", top, "BOTTOMLEFT", 0, 0)
-            notice:SetPoint("TOPRIGHT", top, "BOTTOMRIGHT", 0, 0)
-            top = notice
+            notice:SetPoint("TOPLEFT", top, edge .. "LEFT", 0, 0)
+            notice:SetPoint("TOPRIGHT", top, edge .. "RIGHT", 0, 0)
+            top, edge = notice, "BOTTOM"
         end
     end
     frame.scroll:ClearAllPoints()
-    frame.scroll:SetPoint("TOPLEFT", top, "BOTTOMLEFT", 0, 0)
+    frame.scroll:SetPoint("TOPLEFT", top, edge .. "LEFT", 0, 0)
     frame.scroll:SetPoint("BOTTOMRIGHT", frame.body, "BOTTOMRIGHT", -SCROLLBAR_W, 0)
 end
 
@@ -574,146 +586,13 @@ local function createTitleBar(parent)
     return bar
 end
 
--- Copy from: the other sizes, and every size of the other characters
--- that have a raid profile. Picking one arms the button; a second click
--- within a few seconds copies onto the edited size.
-local function copyItems()
-    local items = {}
-    for _, size in ipairs(Raid.SIZES) do
-        if size ~= RaidOptions.Size() then items[#items + 1] = { value = "size:" .. size, text = sizeText(size) } end
-    end
-    for _, key in ipairs(ns.RaidProfiles.Characters()) do
-        for _, size in ipairs(Raid.SIZES) do
-            local text = L.RAID_COPY_CHARACTER:format(key, sizeText(size))
-            items[#items + 1] = { value = "char:" .. key .. ":" .. size, text = text }
-        end
-    end
-    return items
-end
+-- What disarms the armed buttons of the window's pages (a second click
+-- confirms) when the window hides or another size is edited: functions
+-- (Raid/Options/Profiles.lua adds its own).
+RaidOptions.DISARM = {}
 
-local function runCopy(value)
-    local to = RaidOptions.Size()
-    local size = tonumber(value:match("^size:(%d+)$"))
-    if size then
-        ns.RaidProfiles.CopySize(size, to)
-        return
-    end
-    local key, from = value:match("^char:(.+):(%d+)$")
-    if key then ns.RaidProfiles.CopyFromCharacter(key, tonumber(from), to) end
-end
-
-local function copyFromRow(footer)
-    local row
-    local function disarm()
-        row.pending = nil
-        row.button.text:SetText(L.COPY_FROM)
-        Style.Paint(row.button.text, "text")
-    end
-    row = Widgets.Dropdown(footer, {
-        items = copyItems,
-        get = function() return nil end,
-        set = function(value)
-            local token = {}
-            row.pending, row.token = value, token
-            C_Timer.After(CONFIRM_SECONDS, function() if row.token == token and row.pending then disarm() end end)
-        end,
-    })
-    row:SetSize(WIDE_BUTTON_W, BUTTON_H)
-    row:EnableMouse(false)
-    row.hover:SetAlpha(0)
-    row.button:ClearAllPoints()
-    row.button:SetAllPoints(row)
-    local open = row.button:GetScript("OnClick")
-    row.button:SetScript("OnClick", function(self)
-        local value = row.pending
-        if not value then return open(self) end
-        disarm()
-        runCopy(value)
-    end)
-    local refresh = row.Refresh
-    function row:Refresh()
-        refresh(self)
-        if self.pending then
-            self.button.text:SetText(L.CONFIRM)
-            Style.Paint(self.button.text, "error")
-        else
-            self.button.text:SetText(L.COPY_FROM)
-        end
-    end
-    row.Disarm = disarm
-    row:Refresh()
-    return row
-end
-
--- The Profile tab: export and import of the edited size. Its blocks are
--- rows of the page: they refresh with the edited size and lock in combat
--- like the setting rows.
-local function showImportMessage(text, colorKey)
-    RaidOptions.importMessage:SetText(text)
-    Style.Paint(RaidOptions.importMessage, colorKey)
-end
-
-local function runImport()
-    local text = (RaidOptions.importArea:GetText() or ""):match("^%s*(.-)%s*$")
-    local ok, result = ns.RaidProfiles.Import(text, RaidOptions.Size())
-    if not ok then
-        showImportMessage(L["IMPORT_" .. result], "error")
-        return
-    end
-    RaidOptions.importArea:SetText("")
-    showImportMessage(result > 0 and L.IMPORT_SKIPPED:format(result) or L.IMPORT_DONE, "accent")
-end
-
-local function newBlock(page)
-    local block = CreateFrame("Frame", nil, page)
-    function block:Refresh() end
-    function block:SetEnabled() end
-    return block
-end
-
-local function hintAndArea(block, readOnly)
-    local hint = Style.Text(block, 11, "muted")
-    hint:SetPoint("TOPLEFT", block, "TOPLEFT", INSET, -4)
-    local area = Widgets.TextArea(block, { width = CONTENT_W - 2 * INSET, height = TEXT_AREA_H, readOnly = readOnly })
-    area:SetPoint("TOPLEFT", block, "TOPLEFT", INSET, -(MESSAGE_H + 2))
-    return hint, area
-end
-
-local function exportBlock(page)
-    local block = newBlock(page)
-    local hint, area = hintAndArea(block, true)
-    function block:Refresh()
-        hint:SetText(L.RAID_EXPORT_HINT:format(sizeText(RaidOptions.Size())))
-        area:SetText(ns.RaidProfiles.Export(RaidOptions.Size()))
-    end
-    RaidOptions.exportHint, RaidOptions.exportArea = hint, area
-    return block, MESSAGE_H + TEXT_AREA_H + 10
-end
-
-local function importBlock(page)
-    local block = newBlock(page)
-    local hint, area = hintAndArea(block, false)
-    local button = Widgets.Button(block, { text = L.IMPORT, width = BUTTON_W, onClick = runImport })
-    button:SetPoint("TOPLEFT", area, "BOTTOMLEFT", 0, -GAP)
-    local message = Style.Text(block, 11, "muted")
-    message:SetPoint("TOPLEFT", button, "BOTTOMLEFT", 0, -6)
-    message:SetJustifyH("LEFT")
-    function block:Refresh() hint:SetText(L.RAID_IMPORT_HINT:format(sizeText(RaidOptions.Size()))) end
-    function block:SetEnabled(on) button:SetEnabled(on); area.edit:SetEnabled(on) end
-    RaidOptions.importHint, RaidOptions.importArea = hint, area
-    RaidOptions.importButton, RaidOptions.importMessage = button, message
-    return block, MESSAGE_H + 2 + TEXT_AREA_H + GAP + BUTTON_H + 6 + MESSAGE_H
-end
-
-RaidOptions.CUSTOM_PAGES.profile = function(page)
-    local stack = newStack(page)
-    for _, entry in ipairs({ { L.EXPORT, exportBlock }, { L.IMPORT, importBlock } }) do
-        local header = Widgets.Header(page, entry[1])
-        header.isSection = true
-        stack.add(header)
-        stack.add(entry[2](page))
-    end
-    stack.finish()
+local function disarmAll()
+    for _, fn in ipairs(RaidOptions.DISARM) do fn() end
 end
 
 -- The raid panel's movers only (Core/Movers.lua, group "raid"); the unit
@@ -754,12 +633,6 @@ local function createFooter(parent)
     Style.Fill(footer, "panel")
     horizontalLine(footer, "TOP")
     createFooterLeft(footer)
-    local reset = ns.Options.ConfirmButton(footer, L.RAID_RESET_SIZE,
-        function() ns.RaidProfiles.ResetSize(RaidOptions.Size()) end)
-    reset:SetPoint("RIGHT", footer, "RIGHT", -FOOTER_INSET, 0)
-    local copy = copyFromRow(footer)
-    copy:SetPoint("RIGHT", reset, "LEFT", -GAP, 0)
-    RaidOptions.resetButton, RaidOptions.copyRow = reset, copy
     frame.footer = footer
     return footer
 end
@@ -822,15 +695,13 @@ local function createWindow()
     local footer = createFooter(frame)
     createBody(frame, frame.sizeBar, footer)
     -- Locked in combat with the rows.
-    frame.lockedControls = { RaidOptions.sizeModeRow, RaidOptions.copyRow, RaidOptions.resetButton,
-        RaidOptions.unlockButton, RaidOptions.testButton }
+    frame.lockedControls = { RaidOptions.sizeModeRow, RaidOptions.unlockButton, RaidOptions.testButton }
     -- Hiding the window (ESC, close button, /fuf raid) takes an open
     -- dropdown list and armed confirmations with it, and ends its test
     -- mode: the panel shows the active size again.
     frame:SetScript("OnHide", function()
         Widgets.CloseList()
-        RaidOptions.resetButton.Disarm()
-        RaidOptions.copyRow.Disarm()
+        disarmAll()
         ns.RaidTestMode.Set(false)
         ns.RaidTestMode.Preview(nil)
     end)
@@ -858,38 +729,70 @@ function RaidOptions.IsOpen()
     return frame ~= nil and frame:IsShown()
 end
 
+-- Shows a page in the scroll area: its rows refresh and lock with the
+-- window; page.onShow (optional) runs first.
+local function showPage(page)
+    Widgets.CloseList()
+    if RaidOptions.page then RaidOptions.page:Hide() end
+    if page.onShow then page.onShow() end
+    RaidOptions.page, RaidOptions.rows = page, page.rows
+    frame.scrollChild:SetHeight(page.height)
+    frame.scroll:SetVerticalScroll(0)
+    page:Show()
+    forEachRow(function(row) row:Refresh() end)
+    applyLock()
+    updateScrollbar()
+end
+
+-- The Profiles tab of the size bar: its page alone, no menu tabs.
+local PROFILES_TAB = { id = "profiles", custom = "profiles" }
+
+function RaidOptions.ShowProfiles()
+    ensureWindow()
+    RaidOptions.profilesShown = true
+    frame.tabRow:Hide()
+    showPage(pageFor(PROFILES_TAB))
+    renderSizeTabs()
+end
+
+local function leaveProfiles()
+    if not RaidOptions.profilesShown then return end
+    RaidOptions.profilesShown = false
+    frame.tabRow:Show()
+end
+
 function RaidOptions.SelectTab(id)
     ensureWindow()
+    if id == PROFILES_TAB.id then return RaidOptions.ShowProfiles() end
     for _, tab in ipairs(Schema.TABS) do
         if tab.id == id then
-            Widgets.CloseList()
-            if RaidOptions.page then RaidOptions.page:Hide() end
-            local page = pageFor(tab)
-            if tab.custom == "profile" then showImportMessage("", "muted") end
-            RaidOptions.page, RaidOptions.currentTab, RaidOptions.rows = page, id, page.rows
-            frame.scrollChild:SetHeight(page.height)
-            frame.scroll:SetVerticalScroll(0)
-            page:Show()
-            forEachRow(function(row) row:Refresh() end)
+            leaveProfiles()
+            RaidOptions.currentTab = id
+            showPage(pageFor(tab))
             paintTabs()
-            applyLock()
-            updateScrollbar()
+            renderSizeTabs()
             return
         end
     end
 end
 
--- Edits another size's profile: the rows (and the export) read it from
--- now on; a copy or reset armed for the size before is not.
-function RaidOptions.SelectSize(size)
-    ensureWindow()
+-- Edits another size's profile: the rows read it from now on; what was
+-- armed for the size before is not.
+local function setSize(size)
     Raid.Scope(size)
     Widgets.CloseList()
-    RaidOptions.resetButton.Disarm()
-    RaidOptions.copyRow.Disarm()
+    disarmAll()
     RaidOptions.size = size
     refreshAll()
     if frame:IsShown() then ns.RaidTestMode.Preview(size) end
+end
+
+-- A size tab: that size's settings (from the Profiles page: the menu
+-- tab shown before it).
+function RaidOptions.SelectSize(size)
+    ensureWindow()
+    setSize(size)
+    if RaidOptions.profilesShown then RaidOptions.SelectTab(RaidOptions.currentTab or Schema.TABS[1].id) end
 end
 
 -- Without a size: the size edited while open, else the one the panel
@@ -903,7 +806,8 @@ function RaidOptions.Open(size, tabId)
         frame:Show()
         size = size or ns.RaidSize.Current()
     end
-    RaidOptions.SelectSize(size or RaidOptions.Size())
+    setSize(size or RaidOptions.Size())
+    if not tabId and RaidOptions.profilesShown then tabId = PROFILES_TAB.id end
     RaidOptions.SelectTab(tabId or RaidOptions.currentTab or Schema.TABS[1].id)
     -- The setup wizard may offer itself (Raid/Wizard.lua).
     ns.Fire("RAID_WINDOW_OPENED")
@@ -947,12 +851,12 @@ end)
 -- new window (as the unit frames' window does), on the same size and tab.
 function RaidOptions.Rebuild()
     if not frame then return end
-    local wasOpen = frame:IsShown()
+    local wasOpen, wasProfiles = frame:IsShown(), RaidOptions.profilesShown
     frame:Hide()
     frame, RaidOptions.frame = nil, nil
     pages = {}
-    RaidOptions.page, RaidOptions.rows = nil, nil
-    if wasOpen then RaidOptions.Open(RaidOptions.size, RaidOptions.currentTab) end
+    RaidOptions.page, RaidOptions.rows, RaidOptions.profilesShown = nil, nil, false
+    if wasOpen then RaidOptions.Open(RaidOptions.size, wasProfiles and PROFILES_TAB.id or RaidOptions.currentTab) end
 end
 
 ns.Listen("LANGUAGE_CHANGED", function() RaidOptions.Rebuild() end)

@@ -1,131 +1,179 @@
--- What the raid options window does with the edited size as a whole
--- (Raid/Options/Window.lua): copy from another size or another
--- character after a second click, reset after a second click, export and
--- import as a string on the Profile tab, locked in combat.
+-- The raid window's Profiles tab (Raid/Options/Window.lua, Raid/Options/
+-- Profiles.lua): a fourth tab next to the sizes 10, 20 and 40 that shows
+-- only the profile page (no menu tabs). On it: copy from another
+-- character after a second click, reset a size after a second click,
+-- export all sizes or one, import one size into the size picked or a text
+-- of several sizes after a second click (one change with Undo); locked in
+-- combat.
 local M = H.M
 local ns = H.LoadAddon()
 M.units.player = { name = "Me", class = "MAGE", health = 1, healthMax = 1 }
 _G.ForeverUnitFramesDB = { raid = { ["Healer-Testrealm"] = { r20 = { cellWidth = 140 } } } }
 M.FireEvent("PLAYER_LOGIN")
 M.RunTimers()
-local RO, RC, L = ns.RaidOptions, ns.RaidConfig, ns.L
+local RO, RC, L, P, T = ns.RaidOptions, ns.RaidConfig, ns.L, ns.RaidProfilesPage, ns.RaidTemplates
 
 local function click(button) button:GetScript("OnClick")(button) end
 local list
-local function pick(text)
-    click(RO.copyRow.button)
+local function items(row)
+    click(row.button)
+    local texts = {}
+    for i, item in ipairs(list.items) do texts[i] = item.text end
+    ns.Widgets.CloseList()
+    return table.concat(texts, ",")
+end
+local function pick(row, text)
+    click(row.button)
     for _, r in ipairs(list.rows) do
         if r:IsShown() and r.text:GetText() == text then return click(r) end
     end
     error("no item " .. text)
 end
 
-RO.Open(40)
+RO.Open(40, "layout")
 list = ns.Widgets.list
-H.check("copy button", RO.copyRow.button.text:GetText(), "Copy from…")
-H.check("reset button", RO.resetButton.text:GetText(), "Reset this size")
-H.check("no share button in the footer", RO.shareButton, nil)
+H.check("no copy or reset in the footer", RO.copyRow == nil and RO.resetButton == nil, true)
+H.check("the profiles tab", RO.profilesTab.text:GetText(), "Profiles")
+H.checkTrue("beside the sizes", select(2, RO.profilesTab:GetPoint(1)) == RO.sizeTabs[40])
+H.check("no Profile menu tab any more", (function()
+    for _, tab in ipairs(ns.RaidSchema.TABS) do if tab.id == "profile" then return true end end
+    return false
+end)(), false)
 
--- Copy from: the other sizes, then every size of the other characters.
-click(RO.copyRow.button)
-local texts = {}
-for i, item in ipairs(list.items) do texts[i] = item.text end
-H.check("copy choices", table.concat(texts, ","), "10 players,20 players,Healer-Testrealm: 10 players,"
-    .. "Healer-Testrealm: 20 players,Healer-Testrealm: 40 players")
-ns.Widgets.CloseList()
+-- Picked: only its page, no menu tabs, no size underlined.
+click(RO.profilesTab)
+H.checkTrue("profiles shown", RO.profilesShown)
+H.check("menu tabs hidden", RO.frame.tabRow:IsShown(), false)
+H.checkTrue("its page", P.picker:IsVisible() and RO.page == P.picker:GetParent())
+H.check("its tab underlined", RO.profilesTab.underline:IsShown(), true)
+H.check("no size underlined", RO.sizeTabs[40].underline:IsShown(), false)
+H.check("the page at the top", select(2, RO.frame.scroll:GetPoint(1)), RO.frame.body)
+H.check("no note on a size not shown", RO.sizeNotice:IsShown(), false)
+-- A size tab: back to the menu tab shown before.
+click(RO.sizeTabs[20])
+H.check("a size: its settings again", RO.profilesShown, false)
+H.check("the tab before", RO.currentTab, "layout")
+H.checkTrue("menu tabs back", RO.frame.tabRow:IsShown())
+H.check("the size picked", RO.Size(), 20)
+RO.SelectSize(40)
+click(RO.profilesTab)
 
--- A pick arms the button; the second click copies.
-RC.Set("r20", "cellHeight", 50)
-pick("20 players")
-H.check("armed", RO.copyRow.button.text:GetText(), L.CONFIRM)
-H.check("armed in red", RO.copyRow.button.text._color[1], ns.Style.COLORS.error[1])
-H.check("nothing copied yet", RC.Get("r40", "cellHeight"), 38)
-click(RO.copyRow.button)
-H.check("copied", RC.Get("r40", "cellHeight"), 50)
-H.check("disarmed", RO.copyRow.button.text:GetText(), "Copy from…")
-H.check("no list opened by the confirming click", list:IsShown(), false)
-
--- Left armed, it disarms after a few seconds.
-pick("10 players")
-M.RunTimers()
-H.check("disarmed by time", RO.copyRow.button.text:GetText(), "Copy from…")
-H.check("not copied", RC.Get("r40", "cellHeight"), 50)
-click(RO.copyRow.button)
-H.checkTrue("a click opens the list again", list:IsShown())
-ns.Widgets.CloseList()
-
--- Another character's size.
-pick("Healer-Testrealm: 20 players")
-click(RO.copyRow.button)
+-- Copy from another character: every size of each, onto the size picked.
+H.check("characters offered", items(P.character), "Healer-Testrealm: 10 players,Healer-Testrealm: 20 players,"
+    .. "Healer-Testrealm: 40 players")
+H.check("onto: the edited size", P.characterTo.button.text:GetText(), "40 players")
+pick(P.character, "Healer-Testrealm: 20 players")
+click(P.characterButton)
+H.check("armed", P.characterButton.text:GetText(), L.CONFIRM)
+H.check("nothing copied yet", RC.Get("r40", "cellWidth"), 80)
+click(P.characterButton)
 H.check("copied from the character", RC.Get("r40", "cellWidth"), 140)
 H.check("the character untouched", ForeverUnitFramesDB.raid["Healer-Testrealm"].r40, nil)
+H.check("said", P.characterMessage:GetText(),
+    L.RAID_PROFILES_COPIED:format("Healer-Testrealm: 20 players", "40 players"))
+-- Left armed, it disarms after a few seconds.
+click(P.characterButton)
+M.RunTimers()
+H.check("disarmed by time", P.characterButton.text:GetText(), L.RAID_PROFILES_COPY)
 
--- Another edited size disarms.
-pick("20 players")
-RO.SelectSize(10)
-H.check("size change disarms", RO.copyRow.button.text:GetText(), "Copy from…")
-RO.SelectSize(40)
-
--- Reset this size: two clicks.
-click(RO.resetButton)
+-- Reset a size: two clicks.
+RC.Set("r20", "cellHeight", 50)
+pick(P.resetSize, "40 players")
+click(P.resetButton)
 H.check("reset armed", RC.Get("r40", "cellWidth"), 140)
-click(RO.resetButton)
+click(P.resetButton)
 H.check("reset", RC.Get("r40", "cellWidth"), 80)
 H.check("other sizes kept", RC.Get("r20", "cellHeight"), 50)
+H.check("reset said", P.resetMessage:GetText(), L.RAID_PROFILES_RESET_DONE:format("40 players"))
 
--- Export and import, on the Profile tab.
+-- Export: all sizes by default, or one.
 RC.Set("r40", "cellWidth", 90)
-H.check("profile tab button", RO.tabButtons[13].text:GetText(), "Profile")
-click(RO.tabButtons[13])
-H.check("profile tab selected", RO.currentTab, "profile")
-H.checkTrue("its page shown", RO.page:IsShown())
-H.checkTrue("export on it", RO.exportArea:IsVisible())
-H.checkTrue("import on it", RO.importButton:IsVisible())
-H.check("export of the edited size", RO.exportArea:GetText(), ns.RaidProfiles.Export(40))
-H.check("export hint names it", RO.exportHint:GetText(), "Copy this text to share or back up the 40 players profile.")
-RO.SelectSize(20)
-H.check("export follows the size", RO.exportArea:GetText(), ns.RaidProfiles.Export(20))
-H.check("import hint follows", RO.importHint:GetText(), "Paste a raid size here: it replaces the 20 players profile.")
-RO.importArea:SetText("  " .. ns.RaidProfiles.Export(40) .. "  ")
-click(RO.importButton)
-H.check("imported onto 20", RC.Get("r20", "cellWidth"), 90)
+H.check("export: all sizes", P.exportWhat.button.text:GetText(), L.RAID_PROFILES_ALL_SIZES)
+H.check("export of all", P.exportArea:GetText(), ns.RaidProfiles.ExportAll())
+H.check("its hint", P.exportHint:GetText(), L.RAID_EXPORT_ALL_HINT)
+pick(P.exportWhat, "40 players")
+H.check("export of one size", P.exportArea:GetText(), ns.RaidProfiles.Export(40))
+H.check("export hint names it", P.exportHint:GetText(), "Copy this text to share or back up the 40 players profile.")
+RC.Set("r40", "cellWidth", 95)
+H.check("export follows changes", P.exportArea:GetText(), ns.RaidProfiles.Export(40))
+
+-- Import one size into the size picked.
+pick(P.importTo, "20 players")
+H.check("import hint names the size", P.importHint:GetText(), L.RAID_IMPORT_ANY_HINT:format("20 players"))
+P.importArea:SetText("  " .. ns.RaidProfiles.Export(40) .. "  ")
+click(P.importButton)
+H.check("imported onto 20", RC.Get("r20", "cellWidth"), 95)
 H.check("as 40 shows it, its height included", RC.Get("r20", "cellHeight"), 38)
-H.check("done", RO.importMessage:GetText(), L.IMPORT_DONE)
-H.check("area cleared", RO.importArea:GetText(), "")
-H.check("export shows the new state", RO.exportArea:GetText(), ns.RaidProfiles.Export(20))
-RO.importArea:SetText("1;gSM2")
-click(RO.importButton)
-H.check("no size: refused", RO.importMessage:GetText(), L.IMPORT_RAID_NO_SIZE)
-H.check("refusal in red", RO.importMessage._color[1], ns.Style.COLORS.error[1])
-H.check("size kept", RC.Get("r20", "cellWidth"), 90)
-RO.importArea:SetText("1;bCW100;junk")
-click(RO.importButton)
-H.check("skipped entries counted", RO.importMessage:GetText(),
+H.check("done", P.importMessage:GetText(), L.IMPORT_DONE)
+H.check("area cleared", P.importArea:GetText(), "")
+P.importArea:SetText("1;gSM2")
+click(P.importButton)
+H.check("no size: refused", P.importMessage:GetText(), L.IMPORT_RAID_NO_SIZE)
+H.check("refusal in red", P.importMessage._color[1], ns.Style.COLORS.error[1])
+P.importArea:SetText("1;bCW100;junk")
+click(P.importButton)
+H.check("skipped entries counted", P.importMessage:GetText(),
     "Imported; 1 entries could not be read and were left out.")
 H.check("readable part imported", RC.Get("r20", "cellWidth"), 100)
-RO.importArea:SetText("")
-click(RO.importButton)
-H.check("empty", RO.importMessage:GetText(), L.IMPORT_CODEC_EMPTY)
-RO.SelectTab("layout")
-H.check("another tab hides it", RO.importButton:IsVisible(), false)
-RO.SelectTab("profile")
-H.check("back on it: the message cleared", RO.importMessage:GetText(), "")
-H.check("back on it: the current export", RO.exportArea:GetText(), ns.RaidProfiles.Export(20))
+P.importArea:SetText("")
+click(P.importButton)
+H.check("empty", P.importMessage:GetText(), L.IMPORT_CODEC_EMPTY)
 
--- Combat locks what changes the profile.
+-- A text of all sizes: a second click, then every size, one change.
+RC.Set("r10", "cellWidth", 111)
+local all = ns.RaidProfiles.ExportAll()
+RC.Set("r10", "cellWidth", 60)
+RC.Set("r40", "cellWidth", 61)
+P.importArea:SetText(all)
+click(P.importButton)
+H.check("all sizes: asks", P.importMessage:GetText(),
+    L.RAID_IMPORT_ALL_ASK:format("10 players, 20 players, 40 players"))
+H.check("all sizes: armed", P.importButton.text:GetText(), L.CONFIRM)
+H.check("all sizes: nothing yet", RC.Get("r10", "cellWidth"), 60)
+click(P.importButton)
+H.check("all sizes: 10", RC.Get("r10", "cellWidth"), 111)
+H.check("all sizes: 40", RC.Get("r40", "cellWidth"), 95)
+H.check("all sizes: said", P.importMessage:GetText(),
+    L.RAID_IMPORT_ALL_DONE:format("10 players, 20 players, 40 players"))
+click(P.copyUndoButton)
+H.check("all sizes: one undo", RC.Get("r10", "cellWidth"), 60)
+H.check("all sizes: one undo 40", RC.Get("r40", "cellWidth"), 61)
+
+-- Shown again: the messages cleared.
+RO.SelectTab("layout")
+H.check("another tab hides it", P.importButton:IsVisible(), false)
+click(RO.profilesTab)
+H.check("back on it: the message cleared", P.importMessage:GetText(), "")
+
+-- Combat locks what changes the profile; the tab stays reachable.
 M.combat = true
 M.FireEvent("PLAYER_REGEN_DISABLED")
-H.check("copy locked", RO.copyRow.button:IsEnabled(), false)
-H.check("reset locked", RO.resetButton:IsEnabled(), false)
-H.check("import locked", RO.importButton:IsEnabled(), false)
-H.check("import area locked", RO.importArea.edit:IsEnabled(), false)
-H.check("profile tab still reachable", RO.tabButtons[13]:IsEnabled(), true)
+H.check("character copy locked", P.characterButton:IsEnabled(), false)
+H.check("reset locked", P.resetButton:IsEnabled(), false)
+H.check("import locked", P.importButton:IsEnabled(), false)
+H.check("import area locked", P.importArea.edit:IsEnabled(), false)
+H.check("copy locked", P.copyButton:IsEnabled(), false)
+H.check("apply locked", P.applyButton:IsEnabled(), false)
+H.check("save locked", P.saveButton:IsEnabled(), false)
+H.check("picker locked", P.picker.button:IsEnabled(), false)
+H.check("combat notice at the top", select(2, RO.combatNotice:GetPoint(1)), RO.frame.body)
+H.check("profiles tab still reachable", RO.profilesTab:IsEnabled(), true)
 M.SetCombat(false)
-H.check("copy unlocked", RO.copyRow.button:IsEnabled(), true)
-H.check("import unlocked", RO.importButton:IsEnabled(), true)
+H.check("character copy unlocked", P.characterButton:IsEnabled(), true)
+H.check("import unlocked", P.importButton:IsEnabled(), true)
 
--- Closing disarms.
-click(RO.resetButton)
+-- Closing disarms; reopened, the Profiles page again.
+click(P.resetButton)
 RO.Close()
-H.check("closing disarms reset", RO.resetButton.text:GetText(), "Reset this size")
+H.check("closing disarms reset", P.resetButton.text:GetText(), L.RAID_PROFILES_RESET)
+RO.Open()
+H.check("reopened on the profiles page", RO.profilesShown, true)
+H.check("reopened: tabs still hidden", RO.frame.tabRow:IsShown(), false)
+-- A new language: a new window, still on the Profiles page.
+ns.Config.Set("general", "language", "deDE")
+H.check("rebuilt on the profiles page", RO.profilesShown, true)
+H.check("its word", RO.profilesTab.text:GetText(), "Profile")
+ns.Config.Set("general", "language", "AUTO")
+RO.Close()
 H.check("nothing blocked", #M.blocked, 0)
+H.check("no error", #M.errors, 0)

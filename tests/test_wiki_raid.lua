@@ -26,16 +26,15 @@ H.check("raid pages", table.concat(raid, ","),
     "Raid-General,Raid-Layout,Raid-Panels,Raid-Arrangement,Raid-Cell,Raid-Texts,Raid-Debuffs,Raid-Indicators,"
         .. "Raid-Icons-and-states,Raid-Tools,Raid-Click-casting,Raid-Buffs")
 
--- Every setting on its tab's page, by its label. The Profile tab (export
--- and import, no settings) has no page; the own panels' sections are all
--- alike: one table for every panel.
+-- Every setting on its tab's page, by its label; the own panels'
+-- sections are all alike: one table for every panel.
 local ns = H.LoadShipped()
 local Schema, RS = ns.RaidSchema, ns.RaidSettings
 local settingTabs = {}
 for _, tab in ipairs(Schema.TABS) do
     if #tab.sections > 0 then settingTabs[#settingTabs + 1] = tab end
 end
-H.check("tabs without settings: the Profile tab", #Schema.TABS - #settingTabs, 1)
+H.check("every tab has settings", #Schema.TABS - #settingTabs, 0)
 H.check("one page per settings tab", #raid, #settingTabs)
 for i, tab in ipairs(settingTabs) do
     local text = read(raid[i] .. ".md")

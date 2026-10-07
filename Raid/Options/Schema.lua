@@ -138,9 +138,6 @@ Schema.TABS = {
         { id = "buffWindow", keys = { "buffWatchShow", "buffWatchOnlyMissing", "buffWatchX", "buffWatchY" } },
         { id = "buffCell", keys = { "buffCellIcon", "buffCellIconPoint" } },
     } },
-    -- The window's own page: export and import of the edited size
-    -- (Raid/Options/Window.lua). No settings; the wiki has no page for it.
-    { id = "profile", custom = "profile", sections = {} },
 }
 
 -- Held by the header bar, not by a tab.

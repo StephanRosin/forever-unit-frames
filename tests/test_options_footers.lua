@@ -1,6 +1,7 @@
 -- Both options windows have the same footer on the left: [Unlock/Lock
 -- frames] [Test mode] [the other window…], 120 wide, 8 apart, from 12 px;
--- on the right [Copy from…] [Reset …]. Each window's lock and test
+-- the unit window on the right [Copy from…] [Reset …] (the raid window's
+-- are on its Profiles page). Each window's lock and test
 -- buttons act on its own frames: the unit window on the unit frames, the
 -- raid window on the raid panel (tests/test_movers_groups.lua).
 local M = H.M
@@ -14,7 +15,7 @@ local function click(button) button:GetScript("OnClick")(button) end
 local function place(widget)
     local p, rel, relPoint, x, y = widget:GetPoint(1)
     local names = { [O.unlockButton] = "unlock", [O.testButton] = "test", [RO.unlockButton] = "unlock",
-        [RO.testButton] = "test", [O.resetFrameButton] = "reset", [RO.resetButton] = "reset" }
+        [RO.testButton] = "test", [O.resetFrameButton] = "reset" }
     local relName = names[rel] or (rel == widget:GetParent() and "footer") or "?"
     return table.concat({ p, relName, relPoint, x, y }, " ") .. " w" .. widget:GetWidth()
 end
@@ -52,9 +53,8 @@ H.check("raid: 3rd is the unit button", RO.unitButton:GetParent(), raidFooter)
 -- The left group ends at 12 + 3 * 120 + 2 * 8 = 388.
 -- Right: Reset at 12 from the right, Copy from… 8 left of it, both 160.
 H.check("unit reset", place(O.resetFrameButton), "RIGHT footer RIGHT -12 0 w160")
-H.check("raid reset", place(RO.resetButton), "RIGHT footer RIGHT -12 0 w160")
 H.check("unit copy", place(O.copyRow), "RIGHT reset LEFT -8 0 w160")
-H.check("raid copy", place(RO.copyRow), "RIGHT reset LEFT -8 0 w160")
+H.check("raid: nothing on the right", RO.resetButton == nil and RO.copyRow == nil, true)
 -- 780 - 12 - 160 - 8 - 160 = 440: 52 px clear of the left group.
 
 -- The labels.
