@@ -12,8 +12,8 @@ local _, ns = ...
 --
 -- The state (BuffWatch.state): entries, one per watched buff, each with
 -- missing and expiring counts, unknown, and needs: who needs it, the
--- missing first, then the least time left; missingUnits: unit -> true
--- for every member missing a watched buff. After each scan
+-- missing first, then the least time left; missingUnits: unit -> the
+-- entry of the first watched buff the member misses. After each scan
 -- RAID_BUFFS_CHANGED fires (the watch window, the smart buff key, the
 -- cells).
 local BuffWatch = {}
@@ -216,7 +216,7 @@ local function scanEntry(entry, members, secret, threshold, missingUnits)
         return a.order < b.order
     end)
     for _, need in ipairs(st.needs) do
-        if need.left < 0 then missingUnits[need.unit] = true end
+        if need.left < 0 and not missingUnits[need.unit] then missingUnits[need.unit] = entry end
     end
     return st
 end
