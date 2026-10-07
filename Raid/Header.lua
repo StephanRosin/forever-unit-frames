@@ -1,10 +1,10 @@
 local _, ns = ...
 
 -- The main raid panel: the first panel (Raid/Panel.lua), with the blocks
--- of the grouping (Raid/Layout.lua) and its position in the raid
--- profile's x / y. ns.RaidHeader is that panel, with what only the main
--- panel answers: whether the raid frames are on, whether they take a
--- 5-player group, the shape of its blocks.
+-- of the grouping (Raid/Layout.lua) the own panels leave it, and its
+-- position in the raid profile's x / y. ns.RaidHeader is that panel,
+-- with what only the main panel answers: whether the raid frames are
+-- on, whether they take a 5-player group, the shape of its blocks.
 local Panel, Layout, Cell = ns.RaidPanel, ns.RaidLayout, ns.RaidCell
 
 local function get(key) return ns.RaidConfig.Get(ns.Raid.Scope(Cell.Size()), key) end
@@ -17,7 +17,13 @@ local function shape() return Panel.Shape(get, Panel.BLOCK_SCOPE) end
 
 Header = Panel.New({
     id = "main", name = "ForeverUnitFramesRaid", xKey = "x", yKey = "y",
-    blocks = function(size) return Layout.Blocks(get("groupBy"), size, get("sortBy"), get("classOrder")) end,
+    -- The grouping's blocks but those the own panels moved out
+    -- (Raid/OwnPanels.lua, made after this panel).
+    blocks = function(size)
+        local groupBy = get("groupBy")
+        local all = Layout.Blocks(groupBy, size, get("sortBy"), get("classOrder"))
+        return Layout.Without(all, ns.RaidOwnPanels.Taken(groupBy))
+    end,
     shape = shape,
     -- By role: the blocks group by role (Raid/Layout.lua), raid order within.
     attributes = function(a) a.sortMethod = get("sortBy") == "NAME" and "NAME" or "INDEX" end,
