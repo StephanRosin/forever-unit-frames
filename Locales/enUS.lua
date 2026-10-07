@@ -465,7 +465,6 @@ L.HINT_weaponEnchants = "Poisons, stones, Rockbiter Weapon and the like, before 
 L.SETTING_targetHighlightColor = "Target highlight color"
 L.SECTION_targetHighlight = "Target highlight"
 L.SETTING_targetHighlightSize = "Thickness"
-L.SECTION_highlight = "Target highlight"
 L.STATUS_FADE = "Player frame fade: %s (opacity %s)"
 L.FADE_FADED = "faded"
 L.FADE_OFF = "off in the options"

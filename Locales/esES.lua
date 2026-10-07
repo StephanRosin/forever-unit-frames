@@ -442,7 +442,6 @@ L.HINT_weaponEnchants = "Venenos, piedras, Arma muerdepiedras y similares, antes
 L.SETTING_targetHighlightColor = "Color del resaltado de objetivo"
 L.SECTION_targetHighlight = "Resaltado de objetivo"
 L.SETTING_targetHighlightSize = "Grosor"
-L.SECTION_highlight = "Resaltado de objetivo"
 L.STATUS_FADE = "Atenuación del marco del jugador: %s (opacidad %s)"
 L.FADE_FADED = "atenuado"
 L.FADE_OFF = "desactivado en las opciones"

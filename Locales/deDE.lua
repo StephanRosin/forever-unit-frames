@@ -441,7 +441,6 @@ L.HINT_weaponEnchants = "Gifte, Wetzsteine, Waffe des Felsbeißers u. Ä., vor d
 L.SETTING_targetHighlightColor = "Farbe der Ziel-Hervorhebung"
 L.SECTION_targetHighlight = "Ziel-Hervorhebung"
 L.SETTING_targetHighlightSize = "Dicke"
-L.SECTION_highlight = "Ziel-Hervorhebung"
 L.STATUS_FADE = "Spielerrahmen abblenden: %s (Deckkraft %s)"
 L.FADE_FADED = "abgeblendet"
 L.FADE_OFF = "in den Optionen aus"

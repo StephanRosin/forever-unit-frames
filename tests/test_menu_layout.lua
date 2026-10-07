@@ -23,3 +23,18 @@ H.check("pet layout", where("party", "partyPetWidth"), "group:pets")
 H.check("pet auras apart", where("party", "partyPetAuraMax"), "group:petAuras")
 H.check("apply-font keys: fonts only", table.concat(ns.Settings.TEXT_STYLE_KEYS, ","),
     "fontFace,fontSize,valueFontSize,fontOutline,fontShadow")
+
+-- The menu review (part 6): General's Display in the frame page's order;
+-- the shield's place beside its color; the highlight color with Status.
+local function keysOf(scope, tabId, secId)
+    for _, tab in ipairs(ns.Schema.Tabs(scope)) do
+        for _, sec in ipairs(tab.sections or {}) do
+            if tab.id == tabId and sec.id == secId then return table.concat(sec.keys, ",") end
+        end
+    end
+end
+H.check("General > Display in the frame page's order", keysOf("general", "appearance", "display"),
+    "infoClassColor,textCompact,showSurname")
+H.check("General: shield place beside its color", keysOf("general", "colors", "absorbs"), "absorbMode,absorbColor")
+H.check("General: highlight color in Status", where("general", "targetHighlightColor"), "status:targetHighlight")
+H.check("General: no highlight section in Colors", keysOf("general", "colors", "highlight"), nil)

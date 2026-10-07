@@ -441,7 +441,6 @@ L.HINT_weaponEnchants = "Poisons, pierres, Arme Croque-roc et autres, avant les 
 L.SETTING_targetHighlightColor = "Couleur de surbrillance"
 L.SECTION_targetHighlight = "Surbrillance de la cible"
 L.SETTING_targetHighlightSize = "Épaisseur"
-L.SECTION_highlight = "Mise en valeur de la cible"
 L.STATUS_FADE = "Estompage du cadre joueur : %s (opacité %s)"
 L.FADE_FADED = "estompé"
 L.FADE_OFF = "désactivé dans les options"

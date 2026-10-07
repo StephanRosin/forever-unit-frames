@@ -15,10 +15,10 @@ Schema.GENERAL = {
         { id = "font", keys = { "fontFace", "fontSize", "valueFontSize", "fontOutline", "fontShadow" },
             action = "applyFontToFrames" },
         -- How the texts read (not the font): also each frame's Text tab.
-        { id = "display", keys = { "showSurname", "textCompact", "infoClassColor" } },
+        { id = "display", keys = { "infoClassColor", "textCompact", "showSurname" } },
         { id = "titleText", keys = { "awayBadge", "titleClassIcon", "classIconSize", "classIconX", "classIconY",
             "classIconRing", "classIconRingColor" } },
-        { id = "bars", keys = { "barTexture", "backgroundColor", "titleBackground", "absorbMode" } },
+        { id = "bars", keys = { "barTexture", "backgroundColor", "titleBackground" } },
         { id = "auraIcons", keys = { "auraBorder", "auraBorderSize" } },
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },
@@ -28,15 +28,18 @@ Schema.GENERAL = {
     { id = "colors", sections = {
         { id = "health", keys = { "healthColorMode", "healthColor", "reactionFriendlyColor", "reactionNeutralColor",
             "reactionHostileColor" } },
-        { id = "absorbs", keys = { "absorbColor" } },
-        { id = "highlight", keys = { "targetHighlightColor" } },
+        -- The shield's place beside its colour, as on a frame's page.
+        { id = "absorbs", keys = { "absorbMode", "absorbColor" } },
         { id = "healPrediction", keys = { "healMyColor", "healOtherColor" } },
         { id = "powerColors", keys = { "powerColorMana", "powerColorRage", "powerColorFocus", "powerColorEnergy" } },
     } },
-    -- How range fading measures and how strongly it fades; the switches
+    -- The combat swords, the target highlight's colour; how range fading
+    -- measures and how strongly it fades; the switches
     -- (and opacity overrides) are per frame (Status > Range on each page).
     { id = "status", sections = {
         { id = "combatIcon", keys = { "combatAnimation" } },
+        -- The party's highlight colour, where its switch is (Status).
+        { id = "targetHighlight", keys = { "targetHighlightColor" } },
         { id = "range", keys = { "rangeAlpha", "rangeFriendlyMode", "rangeFriendlySpell", "rangeFriendlyYards",
             "rangeHostileMode", "rangeHostileSpell", "rangeHostileYards" } },
     } },

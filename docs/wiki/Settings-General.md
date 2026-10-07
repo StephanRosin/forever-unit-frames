@@ -9,8 +9,8 @@ The **Profile** tab (export, import, reset) is explained on the [[Home]] page.
 **On this page:**
 
 - **[Appearance](#appearance):** [Unit frames](#unit-frames) · [Font](#font) · [Display](#display) · [Title row](#title-row) · [Bars](#bars) · [Aura icons](#aura-icons) · [Border](#border) · [Shadow](#shadow) · [Shape](#shape) · [Minimap button](#minimap-button)
-- **[Colors](#colors):** [Health bar](#health-bar) · [Absorb shields](#absorb-shields) · [Target highlight](#target-highlight) · [Incoming heals](#incoming-heals) · [Power colors](#power-colors)
-- **[Status](#status):** [Combat icon](#combat-icon) · [Range](#range)
+- **[Colors](#colors):** [Health bar](#health-bar) · [Absorb shields](#absorb-shields) · [Incoming heals](#incoming-heals) · [Power colors](#power-colors)
+- **[Status](#status):** [Combat icon](#combat-icon) · [Target highlight](#target-highlight) · [Range](#range)
 
 ## Appearance
 
@@ -45,9 +45,9 @@ Button: **Apply to all frames**.
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
-<tr><td><b>Show secondary name</b></td><td>Surname next to the first name</td><td>On, Off</td><td>On</td></tr>
-<tr><td><b>Compact values</b></td><td>1234/1234 instead of 1234 / 1234</td><td>On, Off</td><td>Off</td></tr>
 <tr><td><b>Info: class in color</b></td><td>Level, class and race: only the class or creature type colored</td><td>On, Off</td><td>Off</td></tr>
+<tr><td><b>Compact values</b></td><td>1234/1234 instead of 1234 / 1234</td><td>On, Off</td><td>Off</td></tr>
+<tr><td><b>Show secondary name</b></td><td>Surname next to the first name</td><td>On, Off</td><td>On</td></tr>
 </tbody>
 </table>
 
@@ -74,7 +74,6 @@ Button: **Apply to all frames**.
 <tr><td><b>Bar texture</b></td><td></td><td>Texture</td><td>Raid</td></tr>
 <tr><td><b>Background color</b></td><td></td><td>Color</td><td><code>#000000</code>, 60 % opaque</td></tr>
 <tr><td><b>Background behind the name</b></td><td>Off: only the bars keep a background</td><td>On, Off</td><td>On</td></tr>
-<tr><td><b>Shield position</b></td><td>At the end: also shown at full health</td><td>After the health, At the bar's end</td><td>After the health</td></tr>
 </tbody>
 </table>
 
@@ -151,16 +150,8 @@ Button: **Apply to all frames**.
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
+<tr><td><b>Shield position</b></td><td>At the end: also shown at full health</td><td>After the health, At the bar's end</td><td>After the health</td></tr>
 <tr><td><b>Absorb shield stripes</b></td><td>Under the shield the bar is darkened, its empty part lit</td><td>Color</td><td><code>#ffffff</code>, 65 % opaque</td></tr>
-</tbody>
-</table>
-
-### Target highlight
-
-<table>
-<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
-<tbody>
-<tr><td><b>Target highlight color</b></td><td></td><td>Color</td><td><code>#ffffff</code>, 90 % opaque</td></tr>
 </tbody>
 </table>
 
@@ -194,6 +185,15 @@ Button: **Apply to all frames**.
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
 <tr><td><b>Combat icon animation</b></td><td>Duel: clashing swords. Burst: springs in. Pulse: breathes</td><td>Off, Burst, Pulse, Duel (clashing swords)</td><td>Duel (clashing swords)</td></tr>
+</tbody>
+</table>
+
+### Target highlight
+
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Target highlight color</b></td><td></td><td>Color</td><td><code>#ffffff</code>, 90 % opaque</td></tr>
 </tbody>
 </table>
 
