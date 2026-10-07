@@ -100,6 +100,7 @@ Raid\Options\Window.lua
 Raid\MinimapButton.lua
 Raid\Options\Board.lua
 Raid\Options\Arrangement.lua
+Raid\Options\ClickCast.lua
 Raid\Tools.lua
 Core\News.lua
 Options\News.lua

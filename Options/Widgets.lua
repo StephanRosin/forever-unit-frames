@@ -355,11 +355,10 @@ local function newTextBox(row, maxLetters)
     return e
 end
 
-function Widgets.TextInput(parent, opts)
-    local row = newRow(parent, opts)
-    local e = newTextBox(row, opts.maxLetters)
-    row.edit = e
-
+-- Enter or leaving the box commits a changed text through opts.set; a
+-- refusal (false) flashes the border. The box then shows opts.get() again
+-- (e.ShowValue); ESC puts it back without committing.
+local function bindTextBox(e, opts)
     local function show() e:SetText(opts.get() or "") end
     local function commit(self)
         local text = self:GetText() or ""
@@ -373,10 +372,28 @@ function Widgets.TextInput(parent, opts)
         self:HighlightText(0, 0)
     end)
     e:SetScript("OnEscapePressed", function(self) show(); self:ClearFocus() end)
+    e.ShowValue = show
+end
+
+-- A text box of its own in a row, beside another control (the raid
+-- window's click-casting rows): opts.get, opts.set, opts.maxLetters,
+-- opts.width. Placed by the caller.
+function Widgets.TextBox(row, opts)
+    local e = newTextBox(row, opts.maxLetters)
+    e:SetWidth(opts.width or Widgets.CONTROL_W)
+    bindTextBox(e, opts)
+    return e
+end
+
+function Widgets.TextInput(parent, opts)
+    local row = newRow(parent, opts)
+    local e = newTextBox(row, opts.maxLetters)
+    row.edit = e
+    bindTextBox(e, opts)
 
     -- A refresh must not wipe what is being typed.
     function row:Refresh()
-        if not e:HasFocus() then show() end
+        if not e:HasFocus() then e.ShowValue() end
         row:RefreshInherit()
     end
     function row:SetEnabled(on)

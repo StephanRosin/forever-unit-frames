@@ -60,6 +60,34 @@ function Profiles.CopyFromCharacter(key, fromSize, toSize)
     return true
 end
 
+-- The click-casting bindings and keys (per character, Raid.CLICK_SLOTS
+-- and Raid.CLICK_KEYS): every one, for a copy or Clear all.
+function Profiles.ClickKeys()
+    local keys = {}
+    for _, slot in ipairs(Raid.CLICK_SLOTS) do keys[#keys + 1] = slot.key end
+    for _, slot in ipairs(Raid.CLICK_KEYS) do
+        keys[#keys + 1] = slot.key
+        keys[#keys + 1] = slot.bind
+    end
+    return keys
+end
+
+-- Another character's click-casting bindings and keys onto ours (the
+-- switches stay); what it left at the defaults is the default here too.
+-- False if there is no such character.
+function Profiles.CopyClickCast(key)
+    local source = store and store[key]
+    if key == charKey or type(source) ~= "table" then return false end
+    local general = RaidSettings.Sanitise(source).general
+    local values = {}
+    for _, k in ipairs(Profiles.ClickKeys()) do
+        local v = general[k]
+        if v == nil then v = RaidSettings.Default(RaidSettings.Get(k), "general") end
+        values[#values + 1] = { k, v }
+    end
+    return RaidConfig.SetKeys("general", values)
+end
+
 function Profiles.ResetSize(size)
     RaidConfig.ResetScope(Raid.Scope(size))
 end
