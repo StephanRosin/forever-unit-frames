@@ -59,11 +59,42 @@ function Templates.Values(template, class)
     return values
 end
 
+-- The sizes an own template of several sizes holds, in order; nil for a
+-- template of one (it goes to the sizes asked for).
+function Templates.Held(template)
+    if type(template.sizes) ~= "table" then return nil end
+    local held = {}
+    for _, size in ipairs(Raid.SIZES) do
+        if type(template.sizes[Raid.Scope(size)]) == "table" then held[#held + 1] = size end
+    end
+    return held
+end
+
+-- A template of several sizes: each held size's values into that size.
+local function heldChanges(template)
+    local changes = {}
+    for _, size in ipairs(Templates.Held(template)) do
+        local scope, values, keys = Raid.Scope(size), template.sizes[Raid.Scope(size)], {}
+        for key in pairs(values) do keys[#keys + 1] = key end
+        table.sort(keys)
+        local list = {}
+        for _, key in ipairs(keys) do
+            local def = RaidSettings.Get(key)
+            if not def or def.scope == "general" or not Templates.Valid(key, values[key]) then return nil, key end
+            list[#list + 1] = { key, values[key] }
+        end
+        if #list > 0 then changes[#changes + 1] = { scope = scope, values = list } end
+    end
+    return changes
+end
+
 -- What applying a template to the sizes sets: { { scope =, values = {
 -- { key, value }, ... } }, ... }, the character's scope first, then the
--- sizes in their order, keys sorted. nil and the key when a key is
--- unknown or a value refused.
+-- sizes in their order, keys sorted; a template of several sizes sets
+-- each of them instead (the sizes asked for do not count). nil and the
+-- key when a key is unknown or a value refused.
 function Templates.Changes(template, sizes, class)
+    if Templates.Held(template) then return heldChanges(template) end
     local values = Templates.Values(template, class)
     local keys = {}
     for key in pairs(values) do keys[#keys + 1] = key end
@@ -196,12 +227,14 @@ end)
 
 -- Own templates ------------------------------------------------------------------
 -- Per account: ForeverUnitFramesDB.raidTemplates = { { name =, values = {
--- key = value } }, ... }, in the order saved. A template holds every
--- per-size setting of the size it was saved from, as shown then (its own
--- values and the defaults it kept), so applying it makes a size look the
--- same. Cleaned at login like an import: names trimmed and once (case
--- ignored), only known per-size settings, values as the registry takes
--- them.
+-- key = value } } or { name =, sizes = { r10 = { key = value }, r20 =,
+-- r40 = } }, ... }, in the order saved. A template of one size (values;
+-- what earlier versions saved) holds every per-size setting of the size
+-- it was saved from, as shown then (its own values and the defaults it
+-- kept), so applying it makes a size look the same; one of all sizes
+-- (sizes) holds each size so. Cleaned at login like an import: names
+-- trimmed and once (case ignored), only known per-size settings, values
+-- as the registry takes them.
 Templates.OWN_NAME_LETTERS = 32
 Templates.OWN_MAX = 20
 local OWN_PREFIX = "own:"
@@ -228,6 +261,20 @@ local function cleanValues(values)
     return RaidSettings.Sanitise({ r10 = values }).r10
 end
 
+-- The sizes of a template of several, each cleaned; nil when it has none.
+local function cleanSizes(sizes)
+    if type(sizes) ~= "table" then return nil end
+    local profile, any = {}, false
+    for _, size in ipairs(Raid.SIZES) do
+        local scope = Raid.Scope(size)
+        if type(sizes[scope]) == "table" then profile[scope], any = sizes[scope], true end
+    end
+    if not any then return nil end
+    local clean, kept = RaidSettings.Sanitise(profile), {}
+    for scope in pairs(profile) do kept[scope] = clean[scope] end
+    return { sizes = kept }
+end
+
 -- At PLAYER_LOGIN.
 function Templates.AttachOwn(db)
     local list, seen = {}, {}
@@ -236,7 +283,9 @@ function Templates.AttachOwn(db)
         if name and name ~= "" and #name <= Templates.OWN_NAME_LETTERS and not seen[nameKey(name)]
             and #list < Templates.OWN_MAX then
             seen[nameKey(name)] = true
-            list[#list + 1] = withId({ name = name, values = cleanValues(t.values) })
+            local clean = cleanSizes(t.sizes) or { values = cleanValues(t.values) }
+            clean.name = name
+            list[#list + 1] = withId(clean)
         end
     end
     db.raidTemplates = list
@@ -266,12 +315,8 @@ function Templates.Find(id)
     return Templates.Get(id)
 end
 
--- Saves the size's settings under a name (the same name, any case,
--- replaces that template). nil and why: EMPTY, TOO_LONG, FULL.
-function Templates.SaveOwn(name, size)
-    name = trimmed(name) or ""
-    if name == "" then return nil, "EMPTY" end
-    if #name > Templates.OWN_NAME_LETTERS then return nil, "TOO_LONG" end
+-- Every per-size setting of a size as it shows.
+local function sizeValues(size)
     local scope, values = Raid.Scope(size), {}
     for _, def in ipairs(RaidSettings.All()) do
         if def.scope ~= "general" then
@@ -280,7 +325,30 @@ function Templates.SaveOwn(name, size)
             values[def.key] = v
         end
     end
-    local t = withId({ name = name, values = values })
+    return values
+end
+
+-- Whether an own template has the name (any case).
+function Templates.OwnExists(name)
+    name = trimmed(name) or ""
+    return name ~= "" and ownIndex(name) ~= nil
+end
+
+-- Saves a size's settings (size: 10, 20 or 40), or every size's ("ALL"),
+-- under a name (the same name, any case, replaces that template). nil
+-- and why: EMPTY, TOO_LONG, FULL.
+function Templates.SaveOwn(name, size)
+    name = trimmed(name) or ""
+    if name == "" then return nil, "EMPTY" end
+    if #name > Templates.OWN_NAME_LETTERS then return nil, "TOO_LONG" end
+    local t
+    if size == "ALL" then
+        local sizes = {}
+        for _, s in ipairs(Raid.SIZES) do sizes[Raid.Scope(s)] = sizeValues(s) end
+        t = withId({ name = name, sizes = sizes })
+    else
+        t = withId({ name = name, values = sizeValues(size) })
+    end
     local i = ownIndex(name)
     if i then
         own[i] = t
