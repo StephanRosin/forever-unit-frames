@@ -124,24 +124,89 @@ function Profiles.Export(size)
     return RaidCodec.Encode(RaidConfig.Profile(), { Raid.Scope(size) })
 end
 
--- Puts an exported size on `size`, replacing everything that size had.
--- The first size found in the string counts (an export holds one). A
--- string without any is refused (RAID_NO_SIZE), unless it is exactly
--- what a size left at the defaults exports: the format version alone,
--- which resets the size. Returns true and how many entries the codec
--- could not read (they are left out); or nil and an error key.
-function Profiles.Import(str, size)
+-- Every size in one string: the sizes' entries behind a mark that says
+-- the string holds all three (a size left at the defaults has none). The
+-- mark reads as an entry of an unknown scope: a reader that does not know
+-- it skips it without counting it.
+local ALL_MARK = "zALL"
+function Profiles.ExportAll()
+    local scopes = {}
+    for i, size in ipairs(Raid.SIZES) do scopes[i] = Raid.Scope(size) end
+    local str = RaidCodec.Encode(RaidConfig.Profile(), scopes)
+    return (str:gsub("^(%d+)", "%1;" .. ALL_MARK, 1))
+end
+
+local function hasMark(str)
+    for entry in (str .. ";"):gmatch("([^;]*);") do
+        if entry == ALL_MARK then return true end
+    end
+    return false
+end
+
+-- The sizes a string holds (in order): all three behind the mark, else
+-- each that has an entry. nil and an error key for a string the codec
+-- refuses; also the decoded profile and how many entries it left out.
+function Profiles.ImportSizes(str)
     local decoded, err, rejected = RaidCodec.Decode(str)
     if not decoded then return nil, err end
+    local sizes = {}
+    local all = hasMark(str)
+    for _, size in ipairs(Raid.SIZES) do
+        if all or next(decoded[Raid.Scope(size)]) then sizes[#sizes + 1] = size end
+    end
+    return sizes, nil, decoded, rejected
+end
+
+-- Puts an exported size on `size`, replacing everything that size had.
+-- A string without any size is refused (RAID_NO_SIZE), unless it is
+-- exactly what a size left at the defaults exports: the format version
+-- alone, which resets the size; one of several sizes too
+-- (RAID_SEVERAL_SIZES: Profiles.ImportAll takes it). Returns true and how
+-- many entries the codec could not read (they are left out); or nil and
+-- an error key.
+function Profiles.Import(str, size)
+    local sizes, err, decoded, rejected = Profiles.ImportSizes(str)
+    if not sizes then return nil, err end
+    if #sizes > 1 then return nil, "RAID_SEVERAL_SIZES" end
     local target = Raid.Scope(size)
-    for _, s in ipairs(Raid.SIZES) do
-        local scope = Raid.Scope(s)
-        if next(decoded[scope]) then
-            RaidConfig.CopyScopeFrom(decoded, scope, target)
-            return true, rejected
-        end
+    if #sizes == 1 then
+        RaidConfig.CopyScopeFrom(decoded, Raid.Scope(sizes[1]), target)
+        return true, rejected
     end
     if str ~= tostring(RaidCodec.VERSION) then return nil, "RAID_NO_SIZE" end
     RaidConfig.ResetScope(target)
     return true, rejected
+end
+
+-- Every per-size setting of `scope` in a decoded profile as an import
+-- leaves it: its own values, the size's defaults for the rest.
+local function sizeValues(decoded, scope)
+    local values = {}
+    for _, def in ipairs(RaidSettings.All()) do
+        if RaidSettings.AppliesTo(def, scope) then
+            local v = decoded[scope][def.key]
+            if v == nil then v = RaidSettings.Default(def, scope) end
+            values[#values + 1] = { def.key, v }
+        end
+    end
+    return values
+end
+
+-- Sets every size a string of several holds, each replaced as a whole,
+-- as one change that Undo takes back (Raid/Templates.lua). Returns true,
+-- how many entries were left out and the sizes; or nil and an error key
+-- (RAID_ONE_SIZE: a string of one size, which Import takes;
+-- RAID_COMBAT).
+function Profiles.ImportAll(str)
+    local sizes, err, decoded, rejected = Profiles.ImportSizes(str)
+    if not sizes then return nil, err end
+    if #sizes < 2 then return nil, "RAID_ONE_SIZE" end
+    if InCombatLockdown() then return nil, "RAID_COMBAT" end
+    local changes = {}
+    for i, size in ipairs(sizes) do
+        local scope = Raid.Scope(size)
+        changes[i] = { scope = scope, values = sizeValues(decoded, scope) }
+    end
+    if not ns.RaidTemplates.ApplyChanges(changes) then return nil, "RAID_REFUSED" end
+    return true, rejected, sizes
 end
