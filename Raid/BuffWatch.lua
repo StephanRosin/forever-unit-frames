@@ -313,11 +313,12 @@ local function crowdedGroup(entry, needs)
     return nil
 end
 
--- The best cast of one watched buff's state, or nil: { entry, spell (a
--- rank's ID), name, unit, groupForm, group (the raid group or class the
--- group form is for) }.
+-- The best cast of one watched buff's state, or nil (also for a test
+-- mode preview, which has no needs): { entry, spell (a rank's ID), name,
+-- unit, groupForm, group (the raid group or class the group form is
+-- for) }.
 function BuffWatch.Best(st)
-    if not BuffWatch.armed or not st or st.unknown or #st.needs == 0 then return nil end
+    if not BuffWatch.armed or not st or st.unknown or not st.needs or #st.needs == 0 then return nil end
     local entry = st.entry
     if groupReady(entry) then
         local key = crowdedGroup(entry, st.needs)

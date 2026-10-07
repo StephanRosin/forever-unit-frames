@@ -46,6 +46,15 @@ H.check("test mode: rows", Win.rows[3] and Win.rows[3]:IsShown(), true)
 H.check("test mode: a row's name", Win.rows[2].name:GetText(), "Divine Spirit")
 H.check("test mode: no counts", Win.rows[1].count:GetText(), "")
 H.check("test mode: no cast", Win.rows[1]:GetAttribute("type"), nil)
+-- Hovering a preview row names no target and raises nothing.
+local wasArmed = ns.RaidBuffWatch.armed
+ns.RaidBuffWatch.armed = true
+local okHover, errHover = pcall(Win.rows[1]:GetScript("OnEnter"), Win.rows[1])
+H.check("test mode: hover a preview row" .. (okHover and "" or (": " .. tostring(errHover))), okHover, true)
+H.check("test mode: the tooltip names nobody", M.tooltipLines and M.tooltipLines[1], ns.L.RAID_BUFF_NOTHING)
+Win.rows[1]:GetScript("OnLeave")(Win.rows[1])
+H.check("a preview state: no best", ns.RaidBuffWatch.Best({ entry = Win.rows[1].state.entry, preview = true }), nil)
+ns.RaidBuffWatch.armed = wasArmed
 ns.RaidTestMode.Set(false)
 M.Tick(1)
 
