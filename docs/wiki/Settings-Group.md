@@ -6,7 +6,7 @@ The party only: how the members are arranged, their pets and their targets.
 
 The **Group** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
 
-The raid window's click-casting can act on the party frames too: /fuf raid > Click-casting, On the party frames too.
+Click-casting on the party: Layout tab (or General > Frames); the bindings are in the raid window.
 
 **On this page:** [Party layout](#party-layout) · [Pets](#pets) · [Pet auras](#pet-auras) · [Targets](#targets)
 

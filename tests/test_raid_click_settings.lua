@@ -141,7 +141,7 @@ H.checkTrue("a click-casting tab", tab)
 local secs = {}
 for i, sec in ipairs(tab.sections) do secs[i] = sec.id .. ":" .. #sec.keys end
 H.check("its sections", table.concat(secs, ","),
-    "clickCastGeneral:2,clickLeft:8,clickRight:8,clickMiddle:8,clickButton4:8,clickButton5:8,clickKeys:32")
+    "clickCastGeneral:1,clickLeft:8,clickRight:8,clickMiddle:8,clickButton4:8,clickButton5:8,clickKeys:32")
 H.check("tab word", Schema.TabTitle("clickCast"), "Click-casting")
 H.check("section word", Schema.SectionTitle("clickRight"), "Right button")
 H.check("plain click", Schema.Label("click3"), "Click")

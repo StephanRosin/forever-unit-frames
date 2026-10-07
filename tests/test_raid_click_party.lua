@@ -31,11 +31,11 @@ H.check("after combat: the binding", b3:GetAttribute("ctrl-type1"), "assist")
 H.check("nothing blocked", #M.blocked, 0)
 
 -- Switched off for the party: the XML's attributes again.
-RC.Set("general", "clickCastParty", false)
+ns.Config.Set("party", "clickCast", false)
 H.check("switched off", b1:GetAttribute("ctrl-type1"), nil)
 H.check("left targets", b1:GetAttribute("*type1"), "target")
 H.check("right menu", b1:GetAttribute("*type2"), "togglemenu")
-RC.Set("general", "clickCastParty", true)
+ns.Config.Set("party", "clickCast", true)
 H.check("on again", b1:GetAttribute("ctrl-type1"), "assist")
 
 -- Test mode's pretend members: never.

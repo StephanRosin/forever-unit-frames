@@ -104,6 +104,11 @@ Settings.Define({ key = "powerColorEnergy", code = "UE", scope = "inherit", type
 -- is, so switching it back on restores them. The raid frames do not
 -- depend on it.
 Settings.Define({ key = "unitFrames", code = "UU", scope = "general", type = "bool", default = true })
+-- Click-casting on the unit frames (decision 76): the raid window's
+-- bindings (Raid/ClickCast.lua) on the player, pet, target, target of
+-- target, focus and party member buttons. One switch on General, each
+-- frame may override it. With the default bindings nothing changes.
+Settings.Define({ key = "clickCast", code = "CK", scope = "inherit", type = "bool", default = true })
 
 -- Frame layout
 Settings.Define({ key = "enabled", code = "E", scope = "frame", type = "bool", default = true })

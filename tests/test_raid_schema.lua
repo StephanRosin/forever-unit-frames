@@ -38,7 +38,14 @@ for _, key in ipairs(Schema.HEADER_KEYS) do
     H.check("header bar only: " .. key, seen[key], nil)
     seen[key] = "header"
 end
-for _, def in ipairs(RS.All()) do H.checkTrue("reachable: " .. def.key, seen[def.key]) end
+-- A retired setting (read from old strings only) is shown nowhere.
+for _, def in ipairs(RS.All()) do
+    if def.retired then
+        H.check("retired, not shown: " .. def.key, seen[def.key], nil)
+    else
+        H.checkTrue("reachable: " .. def.key, seen[def.key])
+    end
+end
 H.check("character-wide ones on General", tostring(seen.showInParty) .. tostring(seen.hideBlizzard)
     .. tostring(seen.enabled), "generalgeneralgeneral")
 H.check("class order beside the grouping", seen.classOrder, "layout")

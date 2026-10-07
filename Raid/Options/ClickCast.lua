@@ -209,7 +209,6 @@ local function rows(page, tab)
     list[1] = note
     list[#list + 1] = header(page, "clickCastGeneral")
     list[#list + 1] = modeRow(page)
-    list[#list + 1] = RaidOptions.SettingRow(page, "clickCastParty")
     list[#list + 1] = actionsRow(page)
     for _, b in ipairs(Raid.CLICK_BUTTONS) do
         list[#list + 1] = header(page, "click" .. b.name)

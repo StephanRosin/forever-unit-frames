@@ -952,7 +952,7 @@ L.RAID_TEST_PET_WARLOCK = "Wichtel"
 -- Schlachtzugsrahmen: Klickzauber (Raid/ClickCast.lua, Raid/ClickKeys.lua,
 -- Raid/Options/ClickCast.lua).
 L.RAID_TAB_clickCast = "Klickzauber"
-L.RAID_NOTE_clickCast = "Für diesen Charakter, bei jeder Schlachtzugsgröße; Änderungen greifen außerhalb des Kampfes. Ein Klick mit Zusatztaste ohne Belegung wirkt wie der einfache Klick, aber nie als Ziel oder Menü. Blizzards eigene Klickbelegungen gehen vor."
+L.RAID_NOTE_clickCast = "Für diesen Charakter, bei jeder Schlachtzugsgröße; Änderungen greifen außerhalb des Kampfes. Ein Klick mit Zusatztaste ohne Belegung wirkt wie der einfache Klick, aber nie als Ziel oder Menü. Blizzards eigene Klickbelegungen gehen vor. Welche Einheitenrahmen sie nutzen: Optionen der Einheitenrahmen, Allgemein > Rahmen."
 L.RAID_SECTION_clickCastGeneral = "Allgemein"
 L.RAID_SECTION_clickLeft = "Linke Maustaste"
 L.RAID_SECTION_clickRight = "Rechte Maustaste"
@@ -1154,7 +1154,7 @@ L.HINT_unitFrames = "Aus: keins sichtbar; /reload holt Blizzards zurück"
 
 -- Notes above a tab's sections (Options/Schema.lua) and hints from the menu review.
 L.NOTE_texts = "Stufe, Klasse und Volk zeigt z. B. 60 Magier Gnom, bei einer Kreatur 60 Humanoid."
-L.NOTE_partyClickCast = "Die Klickzauber des Schlachtzugsfensters können auch auf die Gruppenrahmen wirken: /fuf raid > Klickzauber, Auch auf den Gruppenrahmen."
+L.NOTE_partyClickCast = "Klickzauber auf der Gruppe: Reiter Anordnung (oder Allgemein > Rahmen); die Belegung steht im Schlachtzugsfenster."
 L.NOTE_points = "Punkt am Rahmen und Punkt des Symbols: Der eigene Punkt des Symbols sitzt auf diesem Punkt des Rahmens; Versatz X und Y verschieben es von dort."
 L.HINT_healthColorMode = "Klasse: Spieler in Klassenfarbe, NPCs in Reaktionsfarbe"
 L.HINT_titleColorMode = "Klasse: Spieler in Klassenfarbe, NPCs in Reaktionsfarbe"
@@ -1205,3 +1205,7 @@ L.NEWS_0_23_0_HIDDEN = "Ausgeblendete Auren: Stärkungen und Schwächungen, die 
 L.NEWS_0_23_0_ADD = "Umschalt + Rechtsklick auf die Auren eines Rahmens listet sie zum Ausblenden auf diesem Rahmen auf (Umschalt + Strg: überall). /fuf auras undo nimmt die letzte zurück."
 L.NEWS_0_23_0_ELITE = "Elite-Markierung: freie Größe."
 L.NEWS_OPEN_HIDDEN = "Ausgeblendete Auren öffnen"
+L.SETTING_clickCast = "Klickzauber"
+L.HINT_clickCast = "Die Belegung des Schlachtzugsfensters hier"
+L.SECTION_clickCast = "Klickzauber"
+L.CLICK_CAST_EDIT = "Belegung bearbeiten…"

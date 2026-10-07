@@ -952,7 +952,7 @@ L.RAID_TEST_PET_WARLOCK = "Diablotin"
 -- Cadres de raid : sorts au clic (Raid/ClickCast.lua, Raid/ClickKeys.lua,
 -- Raid/Options/ClickCast.lua).
 L.RAID_TAB_clickCast = "Sorts au clic"
-L.RAID_NOTE_clickCast = "Pour ce personnage, à toutes les tailles de raid ; changements appliqués hors combat. Un clic avec modificateur non attribué agit comme le clic simple, sauf pour cibler ou ouvrir le menu. Les raccourcis de clic de Blizzard passent avant."
+L.RAID_NOTE_clickCast = "Pour ce personnage, à toutes les tailles de raid ; changements appliqués hors combat. Un clic avec modificateur non attribué agit comme le clic simple, sauf pour cibler ou ouvrir le menu. Les raccourcis de clic de Blizzard passent avant. Quels cadres d’unité les utilisent : options des cadres d’unité, Général > Cadres."
 L.RAID_SECTION_clickCastGeneral = "Général"
 L.RAID_SECTION_clickLeft = "Bouton gauche"
 L.RAID_SECTION_clickRight = "Bouton droit"
@@ -1154,7 +1154,7 @@ L.HINT_unitFrames = "Désactivé : aucun ; /reload rend ceux de Blizzard"
 
 -- Notes above a tab's sections (Options/Schema.lua) and hints from the menu review.
 L.NOTE_texts = "Niveau, classe et race affiche p. ex. 60 Mage Gnome, ou 60 Humanoïde pour une créature."
-L.NOTE_partyClickCast = "Les sorts au clic de la fenêtre de raid peuvent aussi agir sur les cadres de groupe : /fuf raid > Sorts au clic, Aussi sur les cadres de groupe."
+L.NOTE_partyClickCast = "Sorts au clic sur le groupe : onglet Disposition (ou Général > Cadres) ; les raccourcis sont dans la fenêtre de raid."
 L.NOTE_points = "Point du cadre et point de l'icône : le point propre de l'icône se place sur ce point du cadre ; le décalage X et Y la déplace ensuite."
 L.HINT_healthColorMode = "Classe : joueurs en couleur de classe, PNJ en couleur de réaction"
 L.HINT_titleColorMode = "Classe : joueurs en couleur de classe, PNJ en couleur de réaction"
@@ -1205,3 +1205,7 @@ L.NEWS_0_23_0_HIDDEN = "Auras masquées : écartez les améliorations et affaibl
 L.NEWS_0_23_0_ADD = "Maj + clic droit sur les auras d’un cadre les liste pour les masquer sur ce cadre (Maj + Ctrl : partout). /fuf auras undo annule la dernière."
 L.NEWS_0_23_0_ELITE = "Marqueur d’élite : taille libre."
 L.NEWS_OPEN_HIDDEN = "Ouvrir les auras masquées"
+L.SETTING_clickCast = "Sorts au clic"
+L.HINT_clickCast = "Les raccourcis de la fenêtre de raid ici"
+L.SECTION_clickCast = "Sorts au clic"
+L.CLICK_CAST_EDIT = "Modifier les raccourcis…"

@@ -639,8 +639,11 @@ local function isKey(text) return Raid.ParseKey(text) == text end
 -- loaded. Stored by index: append only.
 RaidSettings.Define({ key = "clickCast", code = "HA", scope = "general", type = "enum",
     values = { "AUTO", "ON", "OFF" }, default = "AUTO" })
--- The unit frames' party frames take the bindings too.
-RaidSettings.Define({ key = "clickCastParty", code = "HP", scope = "general", type = "bool", default = true })
+-- Retired (decision 76): the party frames' switch is the unit frames'
+-- clickCast now (Raid/Profiles.lua migrates a stored false once). Kept so
+-- old strings still read; shown nowhere.
+RaidSettings.Define({ key = "clickCastParty", code = "HP", scope = "general", type = "bool", default = true,
+    retired = true })
 
 -- The mouse: five buttons, each plain and with seven sets of modifiers.
 -- A slot's key is "click" .. button .. modifiers ("click1",

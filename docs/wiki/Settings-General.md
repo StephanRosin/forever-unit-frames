@@ -8,7 +8,7 @@ The **Profile** tab's export, import and reset are explained on the [[Home]] pag
 
 **On this page:**
 
-- **[Frames](#frames):** [Which frames are shown](#which-frames-are-shown)
+- **[Frames](#frames):** [Which frames are shown](#which-frames-are-shown) · [Click-casting](#click-casting)
 - **[Appearance](#appearance):** [Font](#font) · [Presentation](#presentation) · [Title row](#title-row) · [Aura icons](#aura-icons) · [Hidden auras](#hidden-auras) · [Border and corners](#border-and-corners) · [Shadow](#shadow)
 - **[Bars](#bars):** [Health bar](#health-bar) · [Textures](#textures) · [Absorb shields](#absorb-shields) · [Incoming heals](#incoming-heals) · [Power colors](#power-colors)
 - **[Status](#status):** [Combat icon](#combat-icon) · [Highlights](#highlights) · [Range](#range)
@@ -24,6 +24,15 @@ Below **Use unit frames**, one switch per frame: the frame's own, as on its page
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
 <tr><td><b>Use unit frames</b></td><td>Off: none shown; /reload brings back Blizzard's</td><td>On, Off</td><td>On</td></tr>
+</tbody>
+</table>
+
+### Click-casting
+
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Click-casting</b></td><td>The raid window's bindings on this frame</td><td>On, Off</td><td>On</td></tr>
 </tbody>
 </table>
 

@@ -57,7 +57,7 @@ end
 function ClickKeys.Wanted()
     if not ns.ClickCast.On() then return false end
     if ns.RaidPanel.Active() then return true end
-    return ns.RaidConfig.Get("general", "clickCastParty") == true and partyShows()
+    return ns.Config.Profile() ~= nil and ns.Config.Get(ns.Party.KEY, "clickCast") == true and partyShows()
 end
 
 local update
@@ -137,3 +137,7 @@ ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
     if key == nil or KEYS[key] then update() end
 end)
 ns.On("GROUP_ROSTER_UPDATE", update)
+-- The party's click-casting switch (decision 76).
+ns.Listen("CONFIG_CHANGED", function(_, key)
+    if key == nil or key == "clickCast" then update() end
+end)

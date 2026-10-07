@@ -44,7 +44,8 @@ end
 -- Click-casting: the switches, a section per mouse button with its
 -- slots, then the keys (each key and its binding).
 local function clickCastSections()
-    local list = { { id = "clickCastGeneral", keys = { "clickCast", "clickCastParty" } } }
+    -- The party's switch is the unit frames' clickCast now (decision 76).
+    local list = { { id = "clickCastGeneral", keys = { "clickCast" } } }
     for _, b in ipairs(ns.Raid.CLICK_BUTTONS) do
         local keys = {}
         for _, slot in ipairs(ns.Raid.CLICK_SLOTS) do

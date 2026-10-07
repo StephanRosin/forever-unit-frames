@@ -130,11 +130,16 @@ function ClickCast.On()
     return mode == "ON" or (mode == "AUTO" and not ClickCast.Clique())
 end
 
--- Whether a frame takes the bindings: a raid cell a header made, a party
--- member while the party switch is on.
+-- The unit frames that may take them (decision 76), each by its own
+-- clickCast (inherited from General). Party pets and targets never.
+ClickCast.UNIT_SCOPES = { player = true, pet = true, target = true, targettarget = true, focus = true, party = true }
+
+-- Whether a frame takes the bindings: a raid cell a header made while the
+-- raid frames are on, a unit frame whose switch is on.
 local function takes(frame)
     if ns.RaidCell.Is(frame) then return ns.RaidPanel.Enabled() end
-    return frame.key == ns.Party.KEY and ns.RaidConfig.Get("general", "clickCastParty") == true
+    return ClickCast.UNIT_SCOPES[frame.key] == true and ns.Config.Profile() ~= nil
+        and ns.Config.Get(frame.key, "clickCast") == true
 end
 
 -- The names a frame holds a value for in a plan, and their values.
@@ -190,10 +195,13 @@ local function apply(frame, values, defaults)
 end
 
 -- Every frame that may take bindings: the cells the headers made (never
--- test mode's) and the party members.
+-- test mode's), the single unit frames and the party members.
 local function frames()
     local list = {}
     for _, b in ipairs(ns.RaidCell.buttons) do list[#list + 1] = b end
+    for key in pairs(ClickCast.UNIT_SCOPES) do
+        if ns.Frames[key] then list[#list + 1] = ns.Frames[key] end
+    end
     for _, b in ipairs(ns.Party.buttons or {}) do list[#list + 1] = b end
     return list
 end
@@ -241,4 +249,8 @@ for key in pairs(ClickCast.KEYS) do ns.RaidPanel.UNRELATED_KEYS[key] = true end
 ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
     if scope ~= nil and scope ~= "general" then return end
     if key == nil or key == "enabled" or ClickCast.KEYS[key] then applyAfterCombat() end
+end)
+-- The unit frames' switches (any scope: a frame's own or General's).
+ns.Listen("CONFIG_CHANGED", function(_, key)
+    if key == nil or key == "clickCast" then applyAfterCombat() end
 end)

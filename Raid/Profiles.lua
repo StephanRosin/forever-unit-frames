@@ -63,6 +63,18 @@ function Profiles.Attach(db)
     local profile = RaidSettings.Sanitise(type(own) == "table" and own or {})
     store[charKey] = profile
     RaidConfig.Use(profile)
+    Profiles.RetireClickCastParty(profile)
+end
+
+-- Decision 76: the raid profile's "click-casting on the party frames"
+-- became the unit frames' clickCast. A stored false (the default was on)
+-- becomes the party's own value off, once: the raid value is then
+-- removed. The setting stays defined so old strings still read.
+function Profiles.RetireClickCastParty(profile)
+    if profile.general.clickCastParty == nil then return end
+    local off = profile.general.clickCastParty == false
+    profile.general.clickCastParty = nil
+    if off and ns.Config.Profile() then ns.Config.Set(ns.Party.KEY, "clickCast", false) end
 end
 
 -- The other characters that have a raid profile, sorted.

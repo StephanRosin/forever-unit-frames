@@ -86,7 +86,7 @@ local function shown(scope, tabId, secId)
         end
     end
 end
-H.check("target Layout", sectionIds("target", "layout"), "frame,size,position,barHeights,portrait,border,shadow")
+H.check("target Layout", sectionIds("target", "layout"), "frame,size,position,barHeights,portrait,border,shadow,clickCast")
 H.check("elite marker after the raid marker", sectionIds("target", "status"):match("raidMarker,eliteMarker") ~= nil, true)
 H.check("elite marker rows", shown("target", "status", "eliteMarker"),
     "eliteMarker,eliteMarkerStyle,eliteBorderSize,eliteMarkerFramePoint,eliteMarkerPoint,eliteMarkerX,eliteMarkerY,eliteMarkerSize")

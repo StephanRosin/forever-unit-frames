@@ -16,6 +16,14 @@ Every unit frame registers with click-casting addons through the common `ClickCa
 (since 0.15.2). If it still doesn't work, please report it with the addon's version; many addons
 aren't built for WoW: Forever yet.
 
+### Click-casting without another addon
+
+The raid window's own click-casting (`/fuf raid` > General > Click-casting) also works on the unit
+frames: player, pet, target, target of target, focus and the party, also while the raid frames are
+switched off. Switch it in the unit frames' options under General > Frames (**Click-casting**), or
+per frame on its Layout tab. With the default bindings nothing changes: left click targets, right
+click opens the menu. While Clique is loaded, the automatic mode leaves the clicks to Clique.
+
 ### A portrait shows a flat picture for a moment
 
 With 3D portraits the 2D picture stands in while the game loads the 3D model, usually only for a

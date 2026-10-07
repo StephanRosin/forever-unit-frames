@@ -16,6 +16,9 @@ Schema.GENERAL = {
     -- Layout tab (Options/Window.lua builds them).
     { id = "frames", sections = {
         { id = "frames", keys = { "unitFrames" }, frames = true },
+        -- Click-casting (decision 76): the switch and, on General, a
+        -- button to the bindings in the raid window.
+        { id = "clickCast", keys = { "clickCast" }, editBindings = true },
     } },
     { id = "appearance", sections = {
         -- action: a two-click button under the rows (Options/Window.lua).
@@ -67,6 +70,8 @@ Schema.FRAME = {
         { id = "portrait", keys = { "portraitMode", "portraitStyle" } },
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },
+        -- General's switch, overridable here (decision 76).
+        { id = "clickCast", keys = { "clickCast" } },
     } },
     -- The party's arrangement and what hangs beside its members.
     -- The note: the raid window's click-casting may act on the party too.

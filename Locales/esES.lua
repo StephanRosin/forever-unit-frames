@@ -953,7 +953,7 @@ L.RAID_TEST_PET_WARLOCK = "Diablillo"
 -- Marcos de banda: lanzar con clic (Raid/ClickCast.lua, Raid/ClickKeys.lua,
 -- Raid/Options/ClickCast.lua).
 L.RAID_TAB_clickCast = "Lanzar con clic"
-L.RAID_NOTE_clickCast = "Para este personaje, en todos los tamaños de banda; los cambios se aplican fuera de combate. Un clic con modificador sin asignar hace lo mismo que el clic simple, salvo seleccionar o abrir el menú. Las asignaciones de clic de Blizzard tienen prioridad."
+L.RAID_NOTE_clickCast = "Para este personaje, en todos los tamaños de banda; los cambios se aplican fuera de combate. Un clic con modificador sin asignar hace lo mismo que el clic simple, salvo seleccionar o abrir el menú. Las asignaciones de clic de Blizzard tienen prioridad. Qué marcos de unidad las usan: opciones de los marcos de unidad, General > Marcos."
 L.RAID_SECTION_clickCastGeneral = "General"
 L.RAID_SECTION_clickLeft = "Botón izquierdo"
 L.RAID_SECTION_clickRight = "Botón derecho"
@@ -1155,7 +1155,7 @@ L.HINT_unitFrames = "Desactivado: ninguno; /reload devuelve los de Blizzard"
 
 -- Notes above a tab's sections (Options/Schema.lua) and hints from the menu review.
 L.NOTE_texts = "Nivel, clase y raza muestra p. ej. 60 Mago Gnomo, o 60 Humanoide en una criatura."
-L.NOTE_partyClickCast = "El lanzamiento con clic de la ventana de banda puede actuar también en los marcos de grupo: /fuf raid > Lanzar con clic, También en los marcos de grupo."
+L.NOTE_partyClickCast = "Lanzamiento con clic en el grupo: pestaña Diseño (o General > Marcos); las asignaciones están en la ventana de banda."
 L.NOTE_points = "Punto del marco y punto del icono: el punto propio del icono se coloca en ese punto del marco; el desplazamiento X e Y lo mueve desde allí."
 L.HINT_healthColorMode = "Clase: jugadores en color de clase, PNJ en color de reacción"
 L.HINT_titleColorMode = "Clase: jugadores en color de clase, PNJ en color de reacción"
@@ -1206,3 +1206,7 @@ L.NEWS_0_23_0_HIDDEN = "Auras ocultas: deja fuera beneficios y perjuicios que nu
 L.NEWS_0_23_0_ADD = "Mayús + clic derecho en las auras de un marco las lista para ocultarlas en ese marco (Mayús + Ctrl: en todas partes). /fuf auras undo deshace la última."
 L.NEWS_0_23_0_ELITE = "Marcador de élite: tamaño libre."
 L.NEWS_OPEN_HIDDEN = "Abrir auras ocultas"
+L.SETTING_clickCast = "Lanzamiento con clic"
+L.HINT_clickCast = "Las asignaciones de la ventana de banda aquí"
+L.SECTION_clickCast = "Lanzamiento con clic"
+L.CLICK_CAST_EDIT = "Editar asignaciones…"

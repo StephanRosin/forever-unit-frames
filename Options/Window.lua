@@ -263,6 +263,23 @@ local function frameSwitches(page, stack)
     end
 end
 
+-- Click-casting (decision 76): a button that opens the raid window on its
+-- click-casting tab, where the bindings are.
+Options.CLICK_CAST_TAB = "clickCast"
+local function editBindingsBlock(page)
+    local block = CreateFrame("Frame", nil, page)
+    function block:Refresh() end
+    local button = Widgets.Button(block, { text = L.CLICK_CAST_EDIT, width = WIDE_BUTTON_W, onClick = function()
+        Options.Close()
+        ns.RaidOptions.Open(nil, Options.CLICK_CAST_TAB)
+    end })
+    button:SetPoint("TOPLEFT", block, "TOPLEFT", INSET, -6)
+    block.editBindings = button
+    function block:SetEnabled(on) button:SetEnabled(on) end
+    block:SetHeight(BUTTON_H + 12)
+    return block
+end
+
 -- A tab's sections onto the stack: those with a setting of the page.
 local function addSections(page, stack, scope, tab)
     for _, section in ipairs(tab.sections or {}) do
@@ -272,6 +289,7 @@ local function addSections(page, stack, scope, tab)
             for _, key in ipairs(keys) do stack.add(settingRow(page, scope, key)) end
             if section.frames then frameSwitches(page, stack) end
             if section.action then stack.add(actionBlock(page, section.action)) end
+            if section.editBindings and scope == "general" then stack.add(editBindingsBlock(page)) end
         end
     end
 end
@@ -495,6 +513,10 @@ end
 -- switches and modes of the pages.
 local ROW_ACTIVE = {
     enabled = function() return ns.Config.Get("general", "unitFrames") end,
+    -- Only while the raid window's click-casting is not off.
+    clickCast = function()
+        return ns.RaidConfig.Profile() ~= nil and ns.RaidConfig.Get("general", "clickCast") ~= "OFF"
+    end,
     rangeFriendlySpell = function() return ns.Range.ReactionOn("friendly") end,
     rangeFriendlyYards = function() return ns.Range.ReactionOn("friendly") end,
     rangeHostileSpell = function() return ns.Range.ReactionOn("hostile") end,
@@ -870,6 +892,12 @@ ns.Listen("CONFIG_CHANGED", function()
     forEachRow(function(row) row:Refresh() end)
     setRowStates()
     Options.languageRow:Refresh()
+end)
+
+-- The raid window's click-casting mode greys the switch here.
+ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
+    if not Options.IsOpen() or (scope ~= nil and scope ~= "general") then return end
+    if key == nil or key == "clickCast" then setRowStates() end
 end)
 
 -- Every label is set once, when its widget is built: a new language gets a

@@ -977,7 +977,7 @@ L.RAID_TEST_PET_WARLOCK = "Imp"
 -- Raid frames: click-casting (Raid/ClickCast.lua, Raid/ClickKeys.lua,
 -- Raid/Options/ClickCast.lua).
 L.RAID_TAB_clickCast = "Click-casting"
-L.RAID_NOTE_clickCast = "For this character, at every raid size; changes apply out of combat. A modified click with nothing bound does what the plain click does, but never targets or opens the menu. Blizzard's own click bindings win."
+L.RAID_NOTE_clickCast = "For this character, at every raid size; changes apply out of combat. A modified click with nothing bound does what the plain click does, but never targets or opens the menu. Blizzard's own click bindings win. Which unit frames take them: unit frames options, General > Frames."
 L.RAID_SECTION_clickCastGeneral = "General"
 L.RAID_SECTION_clickLeft = "Left button"
 L.RAID_SECTION_clickRight = "Right button"
@@ -1182,7 +1182,7 @@ L.HINT_unitFrames = "Off: none shown; /reload brings back Blizzard's"
 
 -- Notes above a tab's sections (Options/Schema.lua) and hints from the menu review.
 L.NOTE_texts = "Level, class and race reads e.g. 60 Mage Gnome, or 60 Humanoid for a creature."
-L.NOTE_partyClickCast = "The raid window's click-casting can act on the party frames too: /fuf raid > Click-casting, On the party frames too."
+L.NOTE_partyClickCast = "Click-casting on the party: Layout tab (or General > Frames); the bindings are in the raid window."
 L.NOTE_points = "Point on the frame and point of the icon: the icon's own point sits on that point of the frame; the offset X and Y moves it from there."
 L.HINT_healthColorMode = "Class: players in their class color, NPCs in reaction color"
 L.HINT_titleColorMode = "Class: players in their class color, NPCs in reaction color"
@@ -1233,3 +1233,7 @@ L.NEWS_0_23_0_HIDDEN = "Hidden auras: leave out buffs and debuffs you never want
 L.NEWS_0_23_0_ADD = "Shift + right-click on a frame's auras lists them to hide on that frame (Shift + Ctrl: everywhere). /fuf auras undo takes the last one back."
 L.NEWS_0_23_0_ELITE = "Elite marker: free size."
 L.NEWS_OPEN_HIDDEN = "Open hidden auras"
+L.SETTING_clickCast = "Click-casting"
+L.HINT_clickCast = "The raid window's bindings on this frame"
+L.SECTION_clickCast = "Click-casting"
+L.CLICK_CAST_EDIT = "Edit bindings…"

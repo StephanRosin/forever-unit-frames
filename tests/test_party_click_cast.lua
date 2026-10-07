@@ -27,11 +27,11 @@ H.check("raid off: left still targets", b1:GetAttribute("*type1"), "target")
 H.check("raid off: key bound while the party shows", GetBindingAction("F", true),
     "CLICK ForeverUnitFramesClickKey1:LeftButton")
 -- The party switch off: the XML's again, no key.
-RC.Set("general", "clickCastParty", false)
+ns.Config.Set("party", "clickCast", false)
 M.RunTimers()
 H.check("party off: the XML's", b1:GetAttribute("ctrl-type1"), nil)
 H.check("party off: no key", GetBindingAction("F", true), "")
-RC.Set("general", "clickCastParty", true)
+ns.Config.Set("party", "clickCast", true)
 M.RunTimers()
 H.check("party on again", b1:GetAttribute("ctrl-type1"), "assist")
 -- Click-casting switched off: nothing anywhere.

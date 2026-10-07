@@ -70,7 +70,7 @@ M.units.party1 = { name = "Ann", health = 1, healthMax = 1 }
 M.SetGroup({ "party1" })
 M.RunTimers()
 H.check("party: bound", GetBindingAction("T", true), "CLICK ForeverUnitFramesClickKey1:LeftButton")
-RC.Set("general", "clickCastParty", false)
+ns.Config.Set("party", "clickCast", false)
 H.check("party switched off: none", GetBindingAction("T", true), "")
 
 -- The warning: a key the player has bound to something else.
@@ -91,7 +91,7 @@ H.check("nothing blocked at all", #M.blocked, 0)
 -- Keys only while our frames show: the raid frames, or the party frames
 -- (not merely being in a group). The raid frames off leave the party's
 -- keys (decision 74, which revised 73).
-RC.Set("general", "clickCastParty", true)
+ns.Config.Set("party", "clickCast", true)
 H.check("party frames shown: bound", GetBindingAction("T", true), "CLICK ForeverUnitFramesClickKey1:LeftButton")
 RC.Set("general", "enabled", false)
 M.RunTimers()
