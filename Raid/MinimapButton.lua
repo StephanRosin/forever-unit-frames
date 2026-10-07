@@ -34,7 +34,7 @@ local function registerCompartment()
         text = L.RAID_COMPARTMENT, icon = RaidMinimapButton.ICON, func = onClick,
         funcOnEnter = function(menuButton)
             GameTooltip:SetOwner(menuButton, "ANCHOR_LEFT")
-            GameTooltip:SetText(L.ADDON_NAME)
+            GameTooltip:SetText(L.RAID_COMPARTMENT)
             tooltipLines(GameTooltip)
             GameTooltip:Show()
         end,
@@ -49,7 +49,7 @@ function RaidMinimapButton.Create()
     if RaidMinimapButton.button or not Minimap then return end
     RaidMinimapButton.button = ns.MinimapButton.New({
         name = "ForeverUnitFramesRaidMinimapButton", icon = RaidMinimapButton.ICON,
-        clicks = { "LeftButtonUp" }, onClick = onClick, lines = tooltipLines,
+        clicks = { "LeftButtonUp" }, onClick = onClick, title = L.RAID_COMPARTMENT, lines = tooltipLines,
         config = ns.RaidConfig, show = "minimapShow", angle = "minimapAngle",
     })
     registerCompartment()

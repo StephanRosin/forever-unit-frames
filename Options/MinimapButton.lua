@@ -128,8 +128,9 @@ local function texture(button, file, layer, size, x, y)
 end
 
 -- A button on the minimap's edge. spec: name (the frame's), icon (a file),
--- clicks (for RegisterForClicks), onClick, lines(tooltip) (the
--- tooltip's lines under the addon's name; the drag hint follows), and
+-- clicks (for RegisterForClicks), onClick, title (the tooltip's first
+-- line, default the addon's name), lines(tooltip) (the lines under it;
+-- the drag hint follows), and
 -- config with the keys of its General settings: show (whether it shows)
 -- and angle (where; set by dragging). button.place() puts it where they
 -- say; it follows a minimap another addon resizes.
@@ -147,7 +148,7 @@ function MinimapButton.New(spec)
     button:SetScript("OnClick", spec.onClick)
     button:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-        GameTooltip:SetText(L.ADDON_NAME)
+        GameTooltip:SetText(spec.title or L.ADDON_NAME)
         spec.lines(GameTooltip)
         GameTooltip:AddLine(L.MINIMAP_DRAG, 1, 1, 1)
         GameTooltip:Show()

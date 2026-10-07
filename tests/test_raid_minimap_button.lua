@@ -92,7 +92,7 @@ do
     -- Tooltip.
     button:GetScript("OnEnter")(button)
     H.check("tooltip lines", table.concat(M.tooltipLines, "|"),
-        "Forever Unit Frames|Left-click: raid frame options|Drag: move button")
+        "Forever Unit Frames: raid frames|Left-click: raid frame options|Drag: move button")
     button:GetScript("OnLeave")(button)
     H.check("tooltip hidden", GameTooltip._owner, nil)
 
@@ -115,7 +115,7 @@ do
     H.check("entry again: closed", RO.IsOpen(), false)
     local row = CreateFrame("Button", nil, UIParent)
     entry.funcOnEnter(row)
-    H.check("entry tooltip", table.concat(M.tooltipLines, "|"), "Forever Unit Frames|Left-click: raid frame options")
+    H.check("entry tooltip", table.concat(M.tooltipLines, "|"), "Forever Unit Frames: raid frames|Left-click: raid frame options")
     entry.funcOnLeave(row)
     H.check("entry tooltip hidden", GameTooltip._owner, nil)
 
