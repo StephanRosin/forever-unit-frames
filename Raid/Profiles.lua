@@ -53,6 +53,19 @@ local function keepOldToolsSpot(db)
     db.raidToolsSpotKept = true
 end
 
+-- Up to 0.22 only the docked tools bar folded; a free bar always showed.
+-- Now the free bar obeys toolsOpen too (default folded), so once per
+-- account every character's free bar of an earlier version is unfolded.
+-- db.raidFreeBarOpened marks it done; a bar folded later stays folded.
+local function openFreeBars(db)
+    if db.raidFreeBarOpened then return end
+    for _, profile in pairs(db.raid) do
+        local general = type(profile) == "table" and profile.general
+        if type(general) == "table" and general.toolsMode == "FREE" then general.toolsOpen = true end
+    end
+    db.raidFreeBarOpened = true
+end
+
 -- Decision 76: the raid profile's "click-casting on the party frames"
 -- became the unit frames' clickCast. Once per account, at the first login
 -- with this version, before any profile is cleaned: every character's
@@ -78,6 +91,7 @@ end
 function Profiles.Attach(db)
     if type(db.raid) ~= "table" then db.raid = {} end
     keepOldToolsSpot(db)
+    openFreeBars(db)
     retireClickCastParty(db)
     store = db.raid
     charKey = Profiles.CharKey()
