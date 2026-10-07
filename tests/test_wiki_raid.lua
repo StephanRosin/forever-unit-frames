@@ -71,6 +71,22 @@ H.checkTrue("click-casting: a macro as written", click:find("runs it as written"
 H.checkTrue("click-casting: Blizzard's bindings", click:find("Blizzard's own click bindings", 1, true))
 H.checkTrue("click-casting: party frames for keys", click:find("party frames) show", 1, true))
 
+-- The buff watch page: per character, out of combat only, the group form
+-- and its reagent, the blessings by class, the smart buff key apart from
+-- the click-casting keys, unknown while secret, each blessing row by its
+-- class.
+local buffs = read("Raid-Buffs.md")
+H.checkTrue("buffs: per character", buffs:find("belong to the character", 1, true))
+H.checkTrue("buffs: out of combat", buffs:find("out of combat only", 1, true))
+H.checkTrue("buffs: reagent", buffs:find("its reagent is in your bags", 1, true))
+H.checkTrue("buffs: greater blessings", buffs:find("Symbol of Kings", 1, true))
+H.checkTrue("buffs: the key", buffs:find("**smart buff key**", 1, true))
+H.checkTrue("buffs: not a click key", buffs:find("not one of the click-casting keys", 1, true))
+H.checkTrue("buffs: not offered", buffs:find("greyed", 1, true))
+H.checkTrue("buffs: unknown", buffs:find("unknown", 1, true))
+H.checkTrue("buffs: the cell icon", buffs:find("icon on a cell", 1, true))
+H.checkTrue("buffs: each class its row", buffs:find("<b>Warlock</b>", 1, true))
+
 local sidebar = read("_Sidebar.md")
 H.checkTrue("sidebar: raid heading", sidebar:find("**Raid frames**", 1, true))
 H.checkTrue("sidebar: raid page", sidebar:find("[[Icons & states|Raid-Icons-and-states]]", 1, true))
