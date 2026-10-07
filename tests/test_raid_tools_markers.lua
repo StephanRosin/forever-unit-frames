@@ -1,8 +1,8 @@
 -- The raid tools bar's world markers (Raid/Tools.lua): secure buttons
 -- whose action is the client's (worldmarker), for everyone in a party and
--- the leader and assistants in a raid (Raid/Tools.lua Tools.Marks), each drawn with the raid target icon of its sign; the
--- last one takes them all away. Not where the client has no world
--- markers.
+-- the leader and assistants in a raid (Raid/Tools.lua Tools.Marks), each
+-- drawn with the raid target icon of its sign; the last one takes them
+-- all away. Not where the client has no world markers.
 local M = H.M
 local ns = H.LoadAddon()
 M.units.player = { name = "Me", class = "MAGE", health = 1, healthMax = 1, isPlayer = true }

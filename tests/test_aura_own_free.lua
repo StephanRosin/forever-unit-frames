@@ -32,9 +32,7 @@ for _, g in ipairs({ "buffs", "debuffs" }) do
             H.check(g .. part .. " code", def.code, CODES[g][i])
             H.check(g .. part .. " per frame", def.scope, "frame")
             if LIKE[part] then H.checkTrue(g .. part .. " like " .. LIKE[part], same(def, S.Get(g .. LIKE[part]))) end
-            for _, lang in ipairs({ "SETTING_" }) do
-                H.checkTrue(g .. part .. " labelled", ns.L[lang .. g .. part] ~= lang .. g .. part)
-            end
+            H.checkTrue(g .. part .. " labelled", ns.L["SETTING_" .. g .. part] ~= "SETTING_" .. g .. part)
         end
     end
     local placement = S.Get(g .. "OwnPlacement")
