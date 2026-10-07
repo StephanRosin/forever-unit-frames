@@ -285,9 +285,8 @@ end
 -- What each raid tab is for (the page's first line).
 local RAID_TAB_INTRO = {
     general = "The raid frames as a whole: on or off, the raid view in a 5-player group, Blizzard's raid frames,"
-        .. " the raid frames' minimap button. Below the settings, the **Templates** section applies a role"
-        .. " template or a look to the size you edit or to all sizes (with **Undo**), and its **Setup wizard**"
-        .. " button opens the setup wizard: see [[Templates|Raid-Templates]].",
+        .. " the raid frames' minimap button. The templates and the setup wizard are on the"
+        .. " [[Profiles|Raid-Profiles]] page: see [[Templates|Raid-Templates]].",
     layout = "How the panel is made of blocks, how cells and blocks are arranged, the panel's position and borders.",
     arrangement = "Up to nine panels of your own beside the main panel (Panel 2 to Panel 10), per raid size. The"
         .. " tab shows a column per panel with its blocks; drag a block onto another panel's column, or click it"
@@ -445,13 +444,19 @@ do
     local lines = { GENERATED, "", "# Raid frames: Profiles", "",
         "The **Profiles** tab sits next to the size tabs 10, 20 and 40 at the top of the raid options window"
             .. " (`/fuf raid`). Picked, the window shows only this page: everything that acts on raid sizes as a"
-            .. " whole. Applying a profile, copying between sizes or from a character and importing several sizes are"
+            .. " whole. At its top the **Templates** section applies a role template or a look and opens the setup"
+            .. " wizard (see [[Templates|Raid-Templates]]). Applying a template or a profile, copying between sizes or from a character and importing several sizes are"
             .. " each one change: **Undo** takes the last one back (once; any other change to the raid settings, and"
             .. " logging out, ends it). Nothing here"
             .. " works in combat.", "",
-        "**On this page:** [Own profiles](#own-profiles) · [Copy between sizes](#copy-between-sizes) ·"
+        "**On this page:** [Templates](#templates) · [Own profiles](#own-profiles) · [Copy between sizes](#copy-between-sizes) ·"
             .. " [Copy from another character](#copy-from-another-character) · [Reset](#reset) · [Export](#export)"
             .. " · [Import](#import)", "",
+        "## Templates", "",
+        ("**%s** picks a role template or a look, **%s** the size you edit or all sizes, **%s** sets it,"
+            .. " **%s** takes it back; **%s** opens the setup wizard. What each template sets:"
+            .. " [[Templates|Raid-Templates]]."):format(L.RAID_TEMPLATE_PICK, L.RAID_TEMPLATE_TARGET,
+            L.RAID_TEMPLATE_APPLY, L.RAID_TEMPLATE_UNDO, L.RAID_WIZARD_TITLE), "",
         "## Own profiles", "",
         ("**Save as** keeps your raid settings under a name, for every character of your account: **All three"
             .. " sizes** (the default) or one size, every setting as it shows (positions included; not the"
@@ -577,8 +582,8 @@ do
             .. " click-casting suggestion (in the wizard) puts your dispel on the plain left click.",
     }
     local lines = { GENERATED, "", "# Raid frames: Templates and setup wizard", "",
-        "A template sets many raid settings in one go. The **Templates** section of the raid window's **General**"
-            .. " tab applies a role template or a look to the size you edit or to all"
+        "A template sets many raid settings in one go. The **Templates** section at the top of the raid window's"
+            .. " **Profiles** page (beside the size tabs) applies a role template or a look to the size you edit or to all"
             .. " three sizes. A template sets only the settings listed below; everything else stays as it is."
             .. " Applying is one change, and **Undo** takes back the last one (once; any other change to the raid"
             .. " settings, and logging out, ends it). Nothing"
@@ -636,7 +641,7 @@ do
         "## Setup wizard", "",
         "The wizard opens by itself once: the first time a character whose raid settings nobody has changed opens"
             .. " the raid window, after the login loading screen is gone, out of combat and while the interface is"
-            .. " shown (otherwise it waits for the next time). **Setup wizard** on the General tab opens it at any"
+            .. " shown (otherwise it waits for the next time). **Setup wizard** (**Open…**) on the Profiles page opens it at any"
             .. " time (not in combat). Its steps: your role template (suggested from your specialization's role,"
             .. " else your assigned role, else your class), a look, which raid sizes, click-casting suggestions for"
             .. " the spells your spell book knows (none is ticked at first: tick the ones you want), and a summary"

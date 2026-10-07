@@ -73,9 +73,8 @@ end
 -- the panels after the cells, then the character's own tabs
 -- (Schema.PerCharacter: the window dims the size tabs there).
 Schema.TABS = {
-    -- After its settings the window's section Templates
-    -- (Raid/Options/Templates.lua): no settings of its own.
-    { id = "general", extra = "templates", sections = {
+    -- The switches only; the templates are on the Profiles page.
+    { id = "general", sections = {
         { id = "raidFrames", keys = { "enabled", "showInParty", "hideBlizzard" } },
         { id = "minimap", keys = { "minimapShow", "minimapAngle" } },
     } },

@@ -217,8 +217,8 @@ RaidOptions.NewStack = newStack
 RaidOptions.PAGE = { width = CONTENT_W, inset = INSET, top = PAGE_TOP, bottom = PAGE_BOTTOM,
     sectionGap = SECTION_GAP, noteHeight = NOTE_H, gap = GAP }
 
--- Sections of the window's own after a tab's settings, by tab.extra:
--- (page, stack) adds their rows (Raid/Options/Templates.lua).
+-- Sections of the window's own, by name: (page, stack) adds their rows
+-- (Raid/Options/Templates.lua's, which the Profiles page places).
 RaidOptions.EXTRA_SECTIONS = {}
 
 local function buildPage(page, tab)
@@ -230,7 +230,6 @@ local function buildPage(page, tab)
         stack.add(header)
         for _, key in ipairs(section.keys) do stack.add(settingRow(page, key)) end
     end
-    if tab.extra then RaidOptions.EXTRA_SECTIONS[tab.extra](page, stack) end
     stack.finish()
 end
 

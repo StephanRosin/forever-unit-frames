@@ -2,7 +2,7 @@
 
 # Raid frames: General
 
-The raid frames as a whole: on or off, the raid view in a 5-player group, Blizzard's raid frames, the raid frames' minimap button. Below the settings, the **Templates** section applies a role template or a look to the size you edit or to all sizes (with **Undo**), and its **Setup wizard** button opens the setup wizard: see [[Templates|Raid-Templates]].
+The raid frames as a whole: on or off, the raid view in a 5-player group, Blizzard's raid frames, the raid frames' minimap button. The templates and the setup wizard are on the [[Profiles|Raid-Profiles]] page: see [[Templates|Raid-Templates]].
 
 The **General** tab of the raid options window (`/fuf raid`). Its settings belong to the character, not to a raid size: they are the same at every size.
 

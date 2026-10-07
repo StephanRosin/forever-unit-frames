@@ -1,10 +1,11 @@
 local _, ns = ...
 
--- The raid window's General tab, section Templates (Raid/Templates.lua):
--- pick a role template or a look, apply it to the edited size or to all
--- sizes, undo the last change; open the setup wizard. Own templates (own
--- profiles) are on the Profiles page (Raid/Options/Profiles.lua). Its
--- rows lock in combat with the others (Raid/Options/Window.lua).
+-- The raid window's Profiles page, section Templates at its top (Raid/
+-- Templates.lua; Raid/Options/Profiles.lua builds the page): pick a role
+-- template or a look, apply it to the edited size or to all sizes, undo
+-- the last change; open the setup wizard. Own templates (own profiles)
+-- follow on the same page. Its rows lock in combat with the others
+-- (Raid/Options/Window.lua).
 local Page = {}
 ns.RaidTemplatesPage = Page
 

@@ -1,7 +1,8 @@
--- The raid window's General tab, section Templates
--- (Raid/Options/Templates.lua): pick a role template or a look, apply it
--- to the edited size or to all sizes, undo; locked in combat. Own
--- templates are on the Profiles page (test_raid_window_profiles.lua).
+-- The raid window's Profiles page, section Templates at its top
+-- (Raid/Options/Templates.lua, decision 68): pick a role template or a
+-- look, apply it to the edited size or to all sizes, undo; locked in
+-- combat. Own templates are further down the page
+-- (test_raid_window_profiles.lua). The General tab keeps its switches.
 local M = H.M
 local ns = H.LoadAddon()
 M.units.player = { name = "Me", class = "PRIEST", health = 1, healthMax = 1 }
@@ -32,9 +33,14 @@ end
 -- Someone who changed something: no wizard on opening.
 RC.Set("r10", "cellSpacing", 3)
 RO.Open(20, "general")
+H.check("General: no templates", P.picker, nil)
+H.check("General: no extra section", ns.RaidSchema.TABS[1].extra, nil)
+RO.Open(20, "profiles")
 list = ns.Widgets.list
 H.check("section title", ns.RaidSchema.SectionTitle("templates"), "Templates")
-H.checkTrue("its rows on the General page", P.picker:IsShown() and P.picker:GetParent() == RO.page)
+H.checkTrue("its rows on the Profiles page", P.picker:IsShown() and P.picker:GetParent() == RO.page)
+H.check("at the top of the page", RO.page.rows[1].label and RO.page.rows[1].label:GetText(), "Templates")
+H.check("then the picker", RO.page.rows[2], P.picker)
 H.check("picker label", P.picker.label:GetText(), "Template")
 H.check("the suggested role first picked", P.picker.button.text:GetText(), "Role: Healer")
 H.check("templates offered", items(P.picker), "Role: Healer,Role: Tank,Role: DPS,Role: Dispel only,"

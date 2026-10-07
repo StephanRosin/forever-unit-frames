@@ -1,6 +1,6 @@
 -- The raid frames' setup wizard (Raid/Wizard.lua): opens once by itself
 -- for a character with an untouched raid profile when the raid window
--- opens after the login loading screen; any time from the General tab's
+-- opens after the login loading screen; any time from the Profiles page's
 -- button. Steps: role template, look, raid sizes, click-casting
 -- suggestions, summary; Apply sets all of it as one change.
 local M = H.M
@@ -42,12 +42,12 @@ H.checkTrue("ESC closes it", (function()
 end)())
 W.Close()
 RO.Close()
-RO.Open(20)
+RO.Open(20, "profiles")
 H.check("only once", W.IsOpen(), false)
 
 -- Step 1: the suggested role.
 click(ns.RaidTemplatesPage.wizardButton)
-H.check("the General tab's button opens it", W.IsOpen(), true)
+H.check("the Profiles page's button opens it", W.IsOpen(), true)
 H.check("first step", W.step, 1)
 H.check("heading", W.frame.heading:GetText(), L.RAID_WIZARD_STEP:format(1, 5, L.RAID_WIZARD_STEP_role))
 H.check("suggested role", W.rolePicker.button.text:GetText(), "Role: Healer")
@@ -104,9 +104,9 @@ H.check("ticked binding", RC.Get("general", "click1Shift"), "spell:Flash Heal")
 H.check("unticked binding left", RC.Get("general", "click1Ctrl"), "")
 H.check("ticked dispel", RC.Get("general", "click2Ctrl"), "spell:Dispel Magic")
 H.check("left click still targets", RC.Get("general", "click1"), "target")
--- One change: the General tab's Undo takes all of it back.
+-- One change: the Templates section's Undo takes all of it back.
 local P = ns.RaidTemplatesPage
-H.check("undo offered on the General tab", P.undoButton:IsEnabled(), true)
+H.check("undo offered in the Templates section", P.undoButton:IsEnabled(), true)
 click(P.undoButton)
 H.check("undone by the button", T.CanUndo(), false)
 H.check("role undone", RC.Get("r20", "cellWidth"), 88)
@@ -146,7 +146,7 @@ H.check("changed profile: not by itself", ns2.RaidWizard.IsOpen(), false)
 H.check("not remembered either", ForeverUnitFramesDB.raidWizardSeen, nil)
 ns2.RaidOptions.Close()
 
--- The General tab's wizard button is locked in combat.
+-- The Profiles page's wizard button is locked in combat.
 local ns3 = H.LoadAddon()
 M.units.player = { name = "Me", class = "PRIEST", health = 1, healthMax = 1 }
 _G.ForeverUnitFramesDB = {}
@@ -155,7 +155,7 @@ M.FireEvent("LOADING_SCREEN_DISABLED")
 M.RunTimers()
 local W3, RO3 = ns3.RaidWizard, ns3.RaidOptions
 ForeverUnitFramesDB.raidWizardSeen = { [key] = true }
-RO3.Open(10, "general")
+RO3.Open(10, "profiles")
 M.combat = true
 M.FireEvent("PLAYER_REGEN_DISABLED")
 H.check("wizard button locked in combat", ns3.RaidTemplatesPage.wizardButton:IsEnabled(), false)

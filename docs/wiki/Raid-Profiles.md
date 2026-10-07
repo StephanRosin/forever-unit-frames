@@ -2,9 +2,13 @@
 
 # Raid frames: Profiles
 
-The **Profiles** tab sits next to the size tabs 10, 20 and 40 at the top of the raid options window (`/fuf raid`). Picked, the window shows only this page: everything that acts on raid sizes as a whole. Applying a profile, copying between sizes or from a character and importing several sizes are each one change: **Undo** takes the last one back (once; any other change to the raid settings, and logging out, ends it). Nothing here works in combat.
+The **Profiles** tab sits next to the size tabs 10, 20 and 40 at the top of the raid options window (`/fuf raid`). Picked, the window shows only this page: everything that acts on raid sizes as a whole. At its top the **Templates** section applies a role template or a look and opens the setup wizard (see [[Templates|Raid-Templates]]). Applying a template or a profile, copying between sizes or from a character and importing several sizes are each one change: **Undo** takes the last one back (once; any other change to the raid settings, and logging out, ends it). Nothing here works in combat.
 
-**On this page:** [Own profiles](#own-profiles) · [Copy between sizes](#copy-between-sizes) · [Copy from another character](#copy-from-another-character) · [Reset](#reset) · [Export](#export) · [Import](#import)
+**On this page:** [Templates](#templates) · [Own profiles](#own-profiles) · [Copy between sizes](#copy-between-sizes) · [Copy from another character](#copy-from-another-character) · [Reset](#reset) · [Export](#export) · [Import](#import)
+
+## Templates
+
+**Template** picks a role template or a look, **Apply to** the size you edit or all sizes, **Apply** sets it, **Undo** takes it back; **Setup wizard** opens the setup wizard. What each template sets: [[Templates|Raid-Templates]].
 
 ## Own profiles
 

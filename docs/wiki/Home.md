@@ -113,10 +113,10 @@ The raid frames have pages of their own, one per tab of the raid window:
   mouse clicks over the cells and party frames, and keys that cast on the raid member under the mouse
 - [[Buffs|Raid-Buffs]] – the buff watch: missing and expiring group buffs, one click or key to rebuff
 - [[Tools|Raid-Tools]] – the raid tools bar: docked or free, which tools it holds
-- [[Profiles|Raid-Profiles]] – own profiles, copy between sizes and from another character, reset,
-  export and import of all sizes or one
+- [[Profiles|Raid-Profiles]] – templates and the setup wizard, own profiles, copy between sizes and from
+  another character, reset, export and import of all sizes or one
 - [[Templates|Raid-Templates]] – role templates (healer, tank, DPS, dispel only) and looks (Forever, Flat,
-  Classic) on the General tab, and the setup wizard
+  Classic) at the top of the Profiles page, and the setup wizard
 
 Questions that come up often: [[FAQ]].
 

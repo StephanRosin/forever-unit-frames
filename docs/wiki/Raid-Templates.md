@@ -2,7 +2,7 @@
 
 # Raid frames: Templates and setup wizard
 
-A template sets many raid settings in one go. The **Templates** section of the raid window's **General** tab applies a role template or a look to the size you edit or to all three sizes. A template sets only the settings listed below; everything else stays as it is. Applying is one change, and **Undo** takes back the last one (once; any other change to the raid settings, and logging out, ends it). Nothing is applied in combat.
+A template sets many raid settings in one go. The **Templates** section at the top of the raid window's **Profiles** page (beside the size tabs) applies a role template or a look to the size you edit or to all three sizes. A template sets only the settings listed below; everything else stays as it is. Applying is one change, and **Undo** takes back the last one (once; any other change to the raid settings, and logging out, ends it). Nothing is applied in combat.
 
 **On this page:** [Role templates](#role-templates) · [Looks](#looks) · [Own templates](#own-templates) · [Setup wizard](#setup-wizard)
 
@@ -133,7 +133,7 @@ Your own templates are your own profiles, on the [[Profiles|Raid-Profiles]] tab:
 
 ## Setup wizard
 
-The wizard opens by itself once: the first time a character whose raid settings nobody has changed opens the raid window, after the login loading screen is gone, out of combat and while the interface is shown (otherwise it waits for the next time). **Setup wizard** on the General tab opens it at any time (not in combat). Its steps: your role template (suggested from your specialization's role, else your assigned role, else your class), a look, which raid sizes, click-casting suggestions for the spells your spell book knows (none is ticked at first: tick the ones you want), and a summary that lists every binding with its click. **Apply** sets all of it as one change, which **Undo** takes back. Nothing is set or bound before Apply.
+The wizard opens by itself once: the first time a character whose raid settings nobody has changed opens the raid window, after the login loading screen is gone, out of combat and while the interface is shown (otherwise it waits for the next time). **Setup wizard** (**Open…**) on the Profiles page opens it at any time (not in combat). Its steps: your role template (suggested from your specialization's role, else your assigned role, else your class), a look, which raid sizes, click-casting suggestions for the spells your spell book knows (none is ticked at first: tick the ones you want), and a summary that lists every binding with its click. **Apply** sets all of it as one change, which **Undo** takes back. Nothing is set or bound before Apply.
 
 Click-casting suggestions (the healer template; the dispel template puts the first dispel you know on the plain left click and offers the dispels):
 

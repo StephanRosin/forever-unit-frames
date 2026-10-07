@@ -3,11 +3,11 @@ local _, ns = ...
 -- The raid frames' setup wizard: a small window that sets up the raid
 -- frames in a few steps (role template, look, raid sizes, click-casting
 -- suggestions, summary) and applies all of it as one change
--- (Raid/Templates.lua), which the General tab's Undo takes back. It opens
+-- (Raid/Templates.lua), which the Templates section's Undo takes back. It opens
 -- once by itself: the first time the raid window opens for a character
 -- whose raid profile nobody has changed, after the login loading screen
 -- (ForeverUnitFramesDB.raidWizardSeen[character] remembers it); at any
--- time from the General tab's button. Nothing is set before Apply, and
+-- time from the Templates section's button on the Profiles page. Nothing is set before Apply, and
 -- no click binding the user did not tick. Apply waits for the end of
 -- combat (its button is off in combat).
 local Wizard = {}
@@ -407,7 +407,8 @@ ns.Listen("LANGUAGE_CHANGED", function()
     frame, Wizard.frame = nil, nil
 end)
 
--- The General tab's button (Raid/Options/Templates.lua).
+-- The Templates section's button on the Profiles page (Raid/Options/
+-- Templates.lua).
 Page.MORE_ROWS[#Page.MORE_ROWS + 1] = function(page)
     local row = Widgets.NewRow(page, { label = L.RAID_WIZARD_TITLE, hint = L.RAID_WIZARD_HINT })
     local b = Widgets.Button(row, { text = L.RAID_WIZARD_OPEN, width = BUTTON_W, onClick = Wizard.Open })

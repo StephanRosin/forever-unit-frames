@@ -2,7 +2,8 @@ local _, ns = ...
 
 -- The raid window's Profiles page (the size bar's fourth tab, Raid/
 -- Options/Window.lua): everything that acts on raid sizes as a whole.
--- Own profiles (own templates, Raid/Templates.lua: all three sizes or one
+-- First the templates and the setup wizard (Raid/Options/Templates.lua),
+-- then own profiles (own templates, Raid/Templates.lua: all three sizes or one
 -- size under a name, applied with Undo, replaced or deleted after a
 -- second click); copy between sizes (everything, or without layout and
 -- sizes) and from another character; reset a size; export all sizes or
@@ -504,6 +505,9 @@ RaidOptions.DISARM[#RaidOptions.DISARM + 1] = disarm
 
 RaidOptions.CUSTOM_PAGES.profiles = function(page)
     local stack = RaidOptions.NewStack(page)
+    -- The role templates, the looks and the setup wizard first
+    -- (Raid/Options/Templates.lua).
+    RaidOptions.EXTRA_SECTIONS.templates(page, stack)
     ownSection(page, stack)
     copySection(page, stack)
     characterSection(page, stack)

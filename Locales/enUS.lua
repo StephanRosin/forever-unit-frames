@@ -1103,7 +1103,7 @@ L.RAID_WIZARD_TEXT_look = "How the cells look: shape, borders, bars, colors, fon
 L.RAID_WIZARD_TEXT_sizes = "The raid size you edit, or all three (10, 20 and 40 players)."
 L.RAID_WIZARD_TEXT_clicks = "Suggested for the spells you know; tick what you want. Nothing is bound before Apply."
 L.RAID_WIZARD_TEXT_NO_CLICKS = "No click-casting suggestions for this role and class."
-L.RAID_WIZARD_TEXT_summary = "Apply sets all of this as one change; Undo in the General tab takes it back."
+L.RAID_WIZARD_TEXT_summary = "Apply sets all of this as one change; Undo on the Profiles page takes it back."
 L.RAID_WIZARD_ROLE = "Role template"
 L.RAID_WIZARD_LOOK = "Look"
 L.RAID_WIZARD_KEEP = "Keep as it is"
@@ -1115,7 +1115,7 @@ L.RAID_WIZARD_SUMMARY_NOTHING = "Nothing to change."
 L.RAID_WIZARD_NEXT = "Next"
 L.RAID_WIZARD_BACK = "Back"
 L.RAID_WIZARD_CANCEL = "Cancel"
-L.RAID_WIZARD_DONE = "Raid frames set up. Undo in the raid window's General tab takes it back."
+L.RAID_WIZARD_DONE = "Raid frames set up. Undo on the raid window's Profiles page takes it back."
 
 -- The raid window's Profiles page (Raid/Options/Profiles.lua).
 L.RAID_PROFILES_TAB = "Profiles"
