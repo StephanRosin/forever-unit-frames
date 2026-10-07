@@ -24,6 +24,15 @@ H.check("an item by name", typed("item", " Major Healing Potion "), "Major Heali
 H.check("an item by ID", typed("item", "13446"), "13446")
 H.check("a macro", typed("macro", "/cast [@mouseover] Renew"), "/cast [@mouseover] Renew")
 H.check("a long macro", typed("macro", ("x"):rep(256)), "refused: A macro may hold 255 characters.")
+-- The spell lookup raising (as the other spell lookups, through pcall):
+-- an ID is not known, a name from the book stays as typed; no Lua error.
+local getSpellInfo = C_Spell.GetSpellInfo
+C_Spell.GetSpellInfo = function() error("lookup refused") end
+local ok, v, why = pcall(CC.TypedValue, "spell", "2052")
+H.checkTrue("raising lookup: no error", ok)
+H.check("raising lookup: an ID refused", v == nil and why, "Not a spell in your spell book: 2052")
+H.check("raising lookup: a name kept", select(2, pcall(CC.TypedValue, "spell", "Lesser Heal")), "Lesser Heal")
+C_Spell.GetSpellInfo = getSpellInfo
 
 -- Attributes: the plain click as the wildcard, modified ones by prefix.
 local function attrs(values)

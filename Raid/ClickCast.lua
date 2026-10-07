@@ -24,10 +24,12 @@ local ACTION_TYPE = { target = "target", focus = "focus", assist = "assist", men
 -- The client's longest macro.
 ClickCast.MACRO_LETTERS = 255
 
--- A spell ID's name, or nil (C_Spell may be missing).
+-- A spell ID's name, or nil (C_Spell may be missing; a lookup that
+-- raises is no name, as the other spell lookups).
 local function spellName(id)
-    local info = C_Spell and C_Spell.GetSpellInfo and C_Spell.GetSpellInfo(id)
-    return type(info) == "table" and type(info.name) == "string" and info.name or nil
+    if not (C_Spell and C_Spell.GetSpellInfo) then return nil end
+    local ok, info = pcall(C_Spell.GetSpellInfo, id)
+    return ok and type(info) == "table" and type(info.name) == "string" and info.name or nil
 end
 
 -- What a typed value of a kind is stored as, or nil and why (for the
