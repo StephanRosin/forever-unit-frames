@@ -141,3 +141,111 @@ function Templates.Get(id)
     end
     return nil
 end
+
+-- Suggestions --------------------------------------------------------------------
+
+-- The role template a class plays when nothing else says.
+Templates.CLASS_ROLE = { PRIEST = "healer", DRUID = "healer", PALADIN = "healer", SHAMAN = "healer",
+    WARRIOR = "tank" }
+local ROLE_TEMPLATE = { TANK = "tank", HEALER = "healer", DAMAGER = "dps" }
+
+-- A role token as the client gives it, when it is plain and one of the
+-- three.
+local function roleOf(v)
+    if ns.Secrets.IsSecret(v) or type(v) ~= "string" then return nil end
+    return ROLE_TEMPLATE[v]
+end
+
+local function specRole()
+    local spec = C_SpecializationInfo
+    if type(spec) ~= "table" or type(spec.GetSpecialization) ~= "function"
+        or type(spec.GetSpecializationInfo) ~= "function" then
+        return nil
+    end
+    local ok, index = pcall(spec.GetSpecialization)
+    if not ok or ns.Secrets.IsSecret(index) or type(index) ~= "number" or index < 1 then return nil end
+    local okInfo, _, _, _, _, role = pcall(spec.GetSpecializationInfo, index)
+    if not okInfo then return nil end
+    return roleOf(role)
+end
+
+local function assignedRole()
+    if type(UnitGroupRolesAssigned) ~= "function" then return nil end
+    local ok, role = pcall(UnitGroupRolesAssigned, "player")
+    if not ok then return nil end
+    return roleOf(role)
+end
+
+-- The role template to suggest: the specialization's role, else the
+-- role assigned in the group, else the class's; DPS for an unknown class.
+function Templates.SuggestRole()
+    local role = specRole() or assignedRole()
+    if role then return role end
+    local class = Templates.PlayerClass()
+    return class and Templates.CLASS_ROLE[class] or "dps"
+end
+
+-- Click-casting suggestions per class: a mouse slot and the spells for it
+-- (the first one the spell book knows). heals: for the healer template;
+-- dispels: for the healer and the dispel template, whose plain left click
+-- casts the first dispel the book knows.
+Templates.CLICKS = {
+    PRIEST = {
+        heals = { { "click1Shift", { 2061 } }, { "click1Ctrl", { 139 } }, { "click1Alt", { 17 } },
+            { "click2Shift", { 2060, 2054 } } },
+        dispels = { { "click2Ctrl", { 527 } }, { "click2Alt", { 552, 528 } } },
+    },
+    DRUID = {
+        heals = { { "click1Shift", { 5185 } }, { "click1Ctrl", { 774 } }, { "click1Alt", { 8936 } },
+            { "click2Shift", { 33763 } } },
+        dispels = { { "click2Ctrl", { 2782 } }, { "click2Alt", { 2893, 8946 } } },
+    },
+    PALADIN = {
+        heals = { { "click1Shift", { 19750 } }, { "click1Ctrl", { 635 } } },
+        dispels = { { "click2Ctrl", { 4987, 1152 } } },
+    },
+    SHAMAN = {
+        heals = { { "click1Shift", { 8004 } }, { "click1Ctrl", { 331 } }, { "click1Alt", { 1064 } },
+            { "click2Shift", { 974 } } },
+        dispels = { { "click2Ctrl", { 526 } }, { "click2Alt", { 2870 } } },
+    },
+    MAGE = { heals = {}, dispels = { { "click2Ctrl", { 475 } } } },
+}
+
+-- The binding of the first spell of the list the spell book knows, or nil.
+local function knownBinding(spells)
+    for _, id in ipairs(spells) do
+        local name = ns.ClickCast.TypedValue("spell", tostring(id))
+        if name and name ~= "" then return "spell:" .. name end
+    end
+    return nil
+end
+
+local function add(list, key, binding)
+    if binding then list[#list + 1] = { key = key, binding = binding } end
+end
+
+-- The suggestions for a role template and a class: { key =, binding = }
+-- in the order offered; spells the book does not know are left out.
+function Templates.ClickSuggestions(roleId, class)
+    local data = class and Templates.CLICKS[class]
+    local list = {}
+    if not data or (roleId ~= "healer" and roleId ~= "dispel") then return list end
+    if roleId == "dispel" then
+        local first
+        for _, entry in ipairs(data.dispels) do first = first or knownBinding(entry[2]) end
+        add(list, "click1", first)
+    else
+        for _, entry in ipairs(data.heals) do add(list, entry[1], knownBinding(entry[2])) end
+    end
+    for _, entry in ipairs(data.dispels) do add(list, entry[1], knownBinding(entry[2])) end
+    return list
+end
+
+-- Suggestions (all or those picked) as changes for ApplyChanges.
+function Templates.ClickChanges(list)
+    local values = {}
+    for i, s in ipairs(list) do values[i] = { s.key, s.binding } end
+    if #values == 0 then return {} end
+    return { { scope = "general", values = values } }
+end

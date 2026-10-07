@@ -2049,6 +2049,21 @@ function M.Reset()
         [475] = { name = "Remove Lesser Curse", maxRange = 40 },
     }
     M.known = {}
+    -- The player's specialization (SpecializationInfoDocumentation.lua):
+    -- GetSpecialization's index (not nilable; 0 here for none), and per
+    -- index { id =, name =, role = } for GetSpecializationInfo (role
+    -- nilable). M.specSecret hands the role back secret (guarded anyway).
+    M.specIndex, M.specs, M.specSecret = 0, {}, false
+    _G.C_SpecializationInfo = {
+        GetSpecialization = function() return M.specIndex end,
+        GetSpecializationInfo = function(index)
+            local s = M.specs[index]
+            if not s then return 0 end
+            local role = s.role
+            if M.specSecret then role = M.Secret(role) end
+            return s.id, s.name, "", 1, role, 1, 0, nil, 0, true
+        end,
+    }
     -- M.spellRangeError makes IsSpellInRange raise; M.spellRangeSecret
     -- hands its answer back secret (not documented, guarded anyway).
     -- M.spellQueries counts the calls.
