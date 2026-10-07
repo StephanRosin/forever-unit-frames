@@ -2,7 +2,7 @@
 
 # Raid frames: Click-casting
 
-Heal, decurse, target, assist or focus raid members with one click: up to 40 mouse combinations (five buttons, with and without Shift, Ctrl and Alt) on the cells of every panel and on the party frames, and up to 16 keys that cast on the raid member under the mouse. Spells are kept by name, so the highest rank you know is cast. Per character, the same at every raid size; a key or binding shows once for all sixteen.
+Heal, decurse, target, assist or focus raid members with one click: up to 40 mouse combinations (five buttons, with and without Shift, Ctrl and Alt) on the cells of every panel and on the party frames, and up to 16 keys that cast on the raid member under the mouse. Spells are kept by name, so the highest rank you know is cast. Per character, the same at every raid size; a key or binding shows once for all sixteen. A key is taken from what it is bound to otherwise while the raid frames show (the window warns), so pick keys you do not use. With Clique loaded, click-casting is off until switched on. A cell that joins in combat gets the bindings once combat ends.
 
 The **Click-casting** tab of the raid options window (`/fuf raid`). Each raid size (10, 20, 40) has a profile of its own: the size tabs at the top choose which one you edit; a default that differs per size is listed per size.
 

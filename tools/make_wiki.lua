@@ -267,7 +267,9 @@ local RAID_TAB_INTRO = {
         .. " (five buttons, with and without Shift, Ctrl and Alt) on the cells of every panel and on the party"
         .. " frames, and up to 16 keys that cast on the raid member under the mouse. Spells are kept by name, so"
         .. " the highest rank you know is cast. Per character, the same at every raid size; a key or binding"
-        .. " shows once for all sixteen.",
+        .. " shows once for all sixteen. A key is taken from what it is bound to otherwise while the raid frames"
+        .. " show (the window warns), so pick keys you do not use. With Clique loaded, click-casting is off until"
+        .. " switched on. A cell that joins in combat gets the bindings once combat ends.",
     icons = "Role, raid target marker, leader, master looter and ready check icons, and the states: range,"
         .. " aggro, your target.",
 }
