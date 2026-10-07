@@ -41,6 +41,7 @@ ns.On("PLAYER_LOGIN", function()
     ns.RaidSize.Update()
     ns.AfterCombat("raidCreate", ns.RaidHeader.Create)
     ns.AfterCombat("raidToolsCreate", ns.RaidTools.Create)
+    ns.AfterCombat("raidBuffWindowCreate", ns.RaidBuffWindow.Create)
     -- Click-casting on the cells just made and the party members.
     ns.AfterCombat("clickCast", ns.ClickCast.ApplyAll)
     ns.AfterCombat("clickKeys", ns.ClickKeys.Update)

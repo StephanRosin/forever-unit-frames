@@ -1118,6 +1118,10 @@ local function newWidget(kind, name, parent)
         self._fmt, self._args = nil, nil
     end
     function w:SetTextColor(r, g, b, a) self._color = { r, g, b, a } end
+    function w:GetTextColor()
+        local c = self._color or { 1, 1, 1, 1 }
+        return c[1], c[2], c[3], c[4] or 1
+    end
     function w:GetText() return self._text end
     function w:SetFormattedText(fmt, ...)
         if self._kind == "EditBox" or self._kind == "FontString" then

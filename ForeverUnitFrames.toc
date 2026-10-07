@@ -105,6 +105,7 @@ Raid\Options\Board.lua
 Raid\Options\Arrangement.lua
 Raid\Options\ClickCast.lua
 Raid\Tools.lua
+Raid\BuffWatchWindow.lua
 Core\News.lua
 Options\News.lua
 Core\Debug.lua
