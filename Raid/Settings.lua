@@ -693,3 +693,54 @@ for i = 1, Raid.CLICK_KEY_COUNT do
         default = "" })
     Raid.CLICK_KEYS[i] = slot
 end
+
+-- The buff watch (Raid/BuffWatch.lua, Raid/BuffWatchWindow.lua,
+-- Raid/SmartBuff.lua), per character: buffs differ per class, not per
+-- raid size. Which of your class's group buffs are watched
+-- (Raid/BuffData.lua: a switch per buff, one for every blessing), and
+-- the blessing each class of the members gets.
+local BuffData = ns.RaidBuffData
+local BUFF_CODES = { buffFortitude = "BF", buffSpirit = "BR", buffShadowProtection = "BH", buffIntellect = "BA",
+    buffWild = "BC", buffThorns = "BQ" }
+-- Shadow Protection when a fight asks for it; Thorns on tanks only, when
+-- you want it.
+local BUFF_OFF = { buffShadowProtection = true, buffThorns = true }
+for _, buff in ipairs(BuffData.BUFFS) do
+    RaidSettings.Define({ key = buff.key, code = assert(BUFF_CODES[buff.key]), scope = "general", type = "bool",
+        default = not BUFF_OFF[buff.key] })
+end
+RaidSettings.Define({ key = BuffData.BLESSINGS_KEY, code = "BO", scope = "general", type = "bool", default = true })
+local BLESSING_CODES = { WARRIOR = "ZW", PALADIN = "ZP", PRIEST = "ZR", SHAMAN = "ZC", DRUID = "ZD", ROGUE = "ZU",
+    MAGE = "ZM", WARLOCK = "ZK", HUNTER = "ZH" }
+local BLESSING_DEFAULTS = { WARRIOR = "MIGHT", ROGUE = "MIGHT", HUNTER = "MIGHT" }
+Raid.BLESSING_KEYS = {}
+for _, class in ipairs(BuffData.CLASSES) do
+    local key = "blessing" .. class
+    RaidSettings.Define({ key = key, code = BLESSING_CODES[class], scope = "general", type = "enum",
+        values = BuffData.BLESSINGS, default = BLESSING_DEFAULTS[class] or "WISDOM" })
+    Raid.BLESSING_KEYS[#Raid.BLESSING_KEYS + 1] = key
+end
+-- A buff runs out with less than this many minutes left; the group form
+-- is cast when this many members of one group (raid group, or class for
+-- a blessing) need it and its reagent is in your bags.
+RaidSettings.Define({ key = "buffExpiring", code = "BE", scope = "general", type = "int", min = 1, max = 30,
+    default = 5 })
+RaidSettings.Define({ key = "buffGroupMin", code = "BN", scope = "general", type = "int", min = 1,
+    max = Raid.GROUP_SIZE, default = 3 })
+-- The smart buff key: casts the next buff out of combat (a key as
+-- Raid.ParseKey stores it; "" none).
+RaidSettings.Define({ key = "buffKey", code = "BK", scope = "general", type = "text",
+    maxLetters = Raid.CLICK_KEY_LETTERS, check = isKey, default = "" })
+-- The watch window: shown in a group, only while a buff is missing, its
+-- top-left corner from the screen centre.
+RaidSettings.Define({ key = "buffWatchShow", code = "BW", scope = "general", type = "bool", default = true })
+RaidSettings.Define({ key = "buffWatchOnlyMissing", code = "BM", scope = "general", type = "bool", default = false })
+RaidSettings.Define({ key = "buffWatchX", code = "BX", scope = "general", type = "int", min = -4000, max = 4000,
+    default = 300 })
+RaidSettings.Define({ key = "buffWatchY", code = "BY", scope = "general", type = "int", min = -4000, max = 4000,
+    default = 120 })
+-- An icon on a cell whose member lacks a watched buff, at one of the
+-- cell's nine points.
+RaidSettings.Define({ key = "buffCellIcon", code = "BI", scope = "general", type = "bool", default = false })
+RaidSettings.Define({ key = "buffCellIconPoint", code = "BP", scope = "general", type = "enum", values = POINTS,
+    default = "BOTTOMLEFT" })

@@ -61,6 +61,14 @@ local function clickCastSections()
     return list
 end
 
+-- The buffs' switches in the table's order, the blessings' last.
+local function buffKeys()
+    local keys = {}
+    for _, buff in ipairs(ns.RaidBuffData.BUFFS) do keys[#keys + 1] = buff.key end
+    keys[#keys + 1] = ns.RaidBuffData.BLESSINGS_KEY
+    return keys
+end
+
 Schema.TABS = {
     { id = "general", sections = {
         { id = "raidFrames", keys = { "enabled", "showInParty", "hideBlizzard" } },
@@ -119,6 +127,15 @@ Schema.TABS = {
     -- Click-casting, per character (Raid/Options/ClickCast.lua builds the
     -- page: a binding and its value per row).
     { id = "clickCast", custom = "clickCast", note = "clickCast", sections = clickCastSections() },
+    -- The buff watch, per character: the note says that buffing waits
+    -- for the end of combat and which buffs are offered.
+    { id = "buffs", note = "buffs", sections = {
+        { id = "buffsWatched", keys = buffKeys() },
+        { id = "blessings", keys = ns.Raid.BLESSING_KEYS },
+        { id = "buffRules", keys = { "buffExpiring", "buffGroupMin", "buffKey" } },
+        { id = "buffWindow", keys = { "buffWatchShow", "buffWatchOnlyMissing", "buffWatchX", "buffWatchY" } },
+        { id = "buffCell", keys = { "buffCellIcon", "buffCellIconPoint" } },
+    } },
     -- The window's own page: export and import of the edited size
     -- (Raid/Options/Window.lua). No settings; the wiki has no page for it.
     { id = "profile", custom = "profile", sections = {} },
@@ -157,6 +174,10 @@ for _, p in ipairs(ns.Raid.OWN_PANELS) do
     end
 end
 SHARED.toolsX, SHARED.toolsY = "x", "y"
+SHARED.buffWatchX, SHARED.buffWatchY = "x", "y"
+-- The blessings: one word for their choices; each row is named by its
+-- class (Schema.Label).
+for _, key in ipairs(ns.Raid.BLESSING_KEYS) do SHARED[key] = "blessing" end
 -- Click-casting: a mouse slot by its modifiers (the section names the
 -- button), a key slot's key and binding alike for every slot.
 for _, slot in ipairs(ns.Raid.CLICK_SLOTS) do
@@ -178,7 +199,18 @@ local function word(prefix, key)
     return nil
 end
 
-function Schema.Label(key) return word("RAID_SETTING_", Schema.WordKey(key)) or key end
+-- A blessing's row: the client's name of the class.
+local function className(key)
+    local class = key:match("^blessing(%u+)$")
+    local names = class and rawget(_G, "LOCALIZED_CLASS_NAMES_MALE")
+    local name = type(names) == "table" and names[class]
+    return type(name) == "string" and name or class
+end
+
+function Schema.Label(key)
+    if ns.RaidSettings.Get(key) and SHARED[key] == "blessing" then return className(key) end
+    return word("RAID_SETTING_", Schema.WordKey(key)) or key
+end
 function Schema.Hint(key) return word("RAID_HINT_", Schema.WordKey(key)) end
 function Schema.SectionTitle(id) return word("RAID_SECTION_", id) or id end
 function Schema.TabTitle(id) return word("RAID_TAB_", id) or id end

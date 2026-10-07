@@ -23,9 +23,9 @@ Core\Locale.lua
 Core\Codec.lua
 Core\MacroBackup.lua
 Core\Storage.lua
+Raid\BuffData.lua
 Raid\Settings.lua
 Raid\Spellbook.lua
-Raid\BuffData.lua
 Raid\Profiles.lua
 Raid\Size.lua
 Raid\Layout.lua

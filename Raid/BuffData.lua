@@ -8,7 +8,8 @@ local _, ns = ...
 -- them (C_Spell.GetSpellName): an ID it does not know gives no name, and
 -- that form is left out. Nothing here is read in combat.
 --
--- who: whom the buff is for: everyone (ALL), those who use mana (MANA:
+-- key: the setting that switches it (Raid/Settings.lua). who: whom the
+-- buff is for: everyone (ALL), those who use mana (MANA:
 -- every class but warriors and rogues), tanks (TANK).
 local Data = {}
 ns.RaidBuffData = Data
@@ -16,28 +17,30 @@ ns.RaidBuffData = Data
 local Secrets = ns.Secrets
 
 Data.BUFFS = {
-    { id = "fortitude", class = "PRIEST", who = "ALL",
+    { id = "fortitude", key = "buffFortitude", class = "PRIEST", who = "ALL",
         single = { 1243, 1244, 1245, 2791, 10937, 10938 }, group = { 21562, 21564 },
         -- Holy Candle, Sacred Candle.
         reagents = { [21562] = 17028, [21564] = 17029 } },
-    { id = "spirit", class = "PRIEST", who = "MANA",
+    { id = "spirit", key = "buffSpirit", class = "PRIEST", who = "MANA",
         single = { 14752, 14818, 14819, 27841 }, group = { 27681 }, reagents = { [27681] = 17029 } },
-    { id = "shadowProtection", class = "PRIEST", who = "ALL",
+    { id = "shadowProtection", key = "buffShadowProtection", class = "PRIEST", who = "ALL",
         single = { 976, 10957, 10958 }, group = { 27683 }, reagents = { [27683] = 17029 } },
     -- Arcane Powder.
-    { id = "intellect", class = "MAGE", who = "MANA",
+    { id = "intellect", key = "buffIntellect", class = "MAGE", who = "MANA",
         single = { 1459, 1460, 1461, 10156, 10157 }, group = { 23028 }, reagents = { [23028] = 17020 } },
     -- Wild Berries, Wild Thornroot.
-    { id = "wild", class = "DRUID", who = "ALL",
+    { id = "wild", key = "buffWild", class = "DRUID", who = "ALL",
         single = { 1126, 5232, 6756, 5234, 8907, 9884, 9885 }, group = { 21849, 21850 },
         reagents = { [21849] = 17021, [21850] = 17026 } },
-    { id = "thorns", class = "DRUID", who = "TANK",
+    { id = "thorns", key = "buffThorns", class = "DRUID", who = "TANK",
         single = { 467, 782, 1075, 8914, 9756, 9910 }, group = {}, reagents = {} },
 }
 
 -- Paladin blessings: one per class of the members, chosen in the raid
 -- window. The greater forms bless every member of the class and take a
 -- Symbol of Kings. Stored by index (the setting's enum): append only.
+-- buffBlessings switches them all.
+Data.BLESSINGS_KEY = "buffBlessings"
 Data.BLESSINGS = { "NONE", "MIGHT", "WISDOM", "KINGS", "SALVATION", "LIGHT", "SANCTUARY" }
 local SYMBOL_OF_KINGS = 21177
 local function blessing(single, group)

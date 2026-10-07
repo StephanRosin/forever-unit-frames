@@ -277,6 +277,16 @@ local RAID_TAB_INTRO = {
         .. " win over these on the same click; and since this client lets target and the unit menu act only on"
         .. " clicks bound there (by default the plain left and right clicks), Target on any other click is done"
         .. " by a macro and the menu is offered on those two only.",
+    buffs = "The buff watch: your class's group buffs (Fortitude, Divine Spirit, Shadow Protection, Arcane"
+        .. " Intellect, Mark of the Wild, Thorns, the paladin blessings) on everyone in your raid or party."
+        .. " A small window shows each watched buff with how many members miss it and how many have it running"
+        .. " out; a click on its row casts it on the member who needs it most, and the smart buff key casts the"
+        .. " next buff of all of them. The group form (Prayer of Fortitude, Arcane Brilliance, Gift of the Wild,"
+        .. " a greater blessing) is cast when enough members of one group need it and its reagent is in your bags;"
+        .. " otherwise the single form, on the member with the least time left, missing first, alive and in range."
+        .. " Rebuffing is out of combat only (a rule of the client): in combat the rows and the key do nothing and"
+        .. " the window shows its last state greyed. While the client keeps auras secret the window shows"
+        .. " unknown rather than guess.",
     icons = "Role, raid target marker, leader, master looter and ready check icons, and the states: range,"
         .. " aggro, your target.",
 }
@@ -307,16 +317,17 @@ local function raidChoices(def)
 end
 
 -- One table of raid settings under a heading. Settings of the section
--- that share their words (the click-casting keys) are one row.
+-- that share their words and their name (the click-casting keys) are one
+-- row; the blessings share their words but each is named by its class.
 local function raidSection(lines, title, keys)
     lines[#lines + 1] = "## " .. title
     lines[#lines + 1] = ""
     tableStart(lines, 4)
     local listed = {}
     for _, key in ipairs(keys) do
-        local def, wordKey = RS.Get(key), RaidSchema.WordKey(key)
-        if not listed[wordKey] then
-            listed[wordKey] = true
+        local def, name = RS.Get(key), RaidSchema.Label(key)
+        if not listed[name] then
+            listed[name] = true
             local row = { "<b>" .. cell(RaidSchema.Label(key)) .. "</b>", cell(RaidSchema.Hint(key) or ""),
                 cell(raidChoices(def)), cell(raidDefault(def)) }
             lines[#lines + 1] = "<tr><td>" .. table.concat(row, "</td><td>") .. "</td></tr>"

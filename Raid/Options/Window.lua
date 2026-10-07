@@ -19,7 +19,7 @@ local Style, Widgets, Schema, L = ns.Style, ns.Widgets, ns.RaidSchema, ns.L
 local RaidConfig, Raid = ns.RaidConfig, ns.Raid
 
 local WINDOW_NAME = "ForeverUnitFramesRaidOptions"
-local WIDTH, HEIGHT = 980, 560
+local WIDTH, HEIGHT = 1060, 560
 local TITLE_H, SIZE_BAR_H, TAB_H, FOOTER_H, NOTICE_H, SIZE_NOTICE_H = 32, 40, 30, 40, 26, 36
 local SIZE_TAB_PADDING, TAB_PADDING, TAB_MIN_W, UNDERLINE_H, ACCENT_W = 24, 28, 70, 2, 3
 local TAB_ROW_INSET, TAB_MIN_PADDING = 8, 12
