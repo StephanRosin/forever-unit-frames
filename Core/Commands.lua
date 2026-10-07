@@ -105,6 +105,9 @@ SlashCmdList.FOREVERUNITFRAMES = function(msg)
         end
     elseif cmd == "news" then
         Commands.ShowNews()
+    elseif cmd == "auras" and rest:lower() == "undo" then
+        -- The last aura hidden from a frame's menu (Core/AuraBlocklist.lua).
+        ns.AuraBlocklist.Undo()
     elseif cmd == "unlock" then
         ns.Movers.Unlock()
     elseif cmd == "lock" then

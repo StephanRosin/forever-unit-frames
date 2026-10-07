@@ -175,3 +175,50 @@ function Blocklist.ForFrame(scope)
     return Blocklist.Merge(Blocklist.Set(ns.Config.Get("general", "auraBlockAccount")),
         Blocklist.Set(ns.Config.Get(scope, "auraBlock")))
 end
+
+-- Adding from the frame ---------------------------------------------------------
+-- One spell onto a list (scope "general": the account's, else that
+-- frame's), with a chat line that says what is hidden where and how to
+-- undo it; /fuf auras undo (Blocklist.Undo) takes the last one back.
+-- False when it was refused (full, already there, a setting refused).
+local last  -- { scope, key, id }
+
+local function listKey(scope)
+    return scope == "general" and "auraBlockAccount" or "auraBlock"
+end
+
+local function where(scope)
+    local L = ns.L
+    if scope == "general" then return L.AURA_BLOCK_EVERYWHERE end
+    return L["FRAME_" .. scope]
+end
+
+local function label(id)
+    return ("%s (%d)"):format(Blocklist.Name(id) or "?", id)
+end
+
+function Blocklist.Hide(scope, id)
+    local L, key = ns.L, listKey(scope)
+    local text, why = Blocklist.Add(ns.Config.Get(scope, key), id)
+    if not text then
+        if why == "FULL" then ns.Print(L.AURA_BLOCK_FULL:format(Blocklist.MAX)) end
+        return false
+    end
+    if not ns.Config.Set(scope, key, text) then return false end
+    last = { scope = scope, key = key, id = id }
+    ns.Print(L.AURA_BLOCK_ADDED:format(label(id), where(scope)))
+    return true
+end
+
+function Blocklist.Undo()
+    local L = ns.L
+    if not last then
+        ns.Print(L.AURA_BLOCK_UNDO_NONE)
+        return false
+    end
+    local entry = last
+    last = nil
+    ns.Config.Set(entry.scope, entry.key, Blocklist.Remove(ns.Config.Get(entry.scope, entry.key), entry.id))
+    ns.Print(L.AURA_BLOCK_UNDONE:format(label(entry.id), where(entry.scope)))
+    return true
+end

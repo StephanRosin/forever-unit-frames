@@ -50,6 +50,7 @@ Elements\AuraButton.lua
 Elements\AuraContainers.lua
 Elements\WeaponEnchants.lua
 Elements\Auras.lua
+Elements\AuraBlockMenu.lua
 Elements\Classification.lua
 Elements\CombatFeedback.lua
 Elements\Shape.lua
