@@ -76,8 +76,8 @@ local CASES = {
         { debuffsEnabled = true } },
     { "target", "buffsCasterBorder", false, true, { "buffsOwnBorderColor", "buffsOtherBorderColor" },
         { buffsEnabled = true } },
-    { "target", "auraBorder", false, true, { "auraBorderSize", "buffsCasterBorder", "buffsOwnBorderColor",
-        "buffsOtherBorderColor" }, { buffsEnabled = true, buffsCasterBorder = true } },
+    { "target", "auraBorder", false, true, { "auraBorderSize", "buffsOwnBorderColor", "buffsOtherBorderColor" },
+        { buffsEnabled = true, buffsCasterBorder = true } },
     { "general", "auraBorder", false, true, { "auraBorderSize" } },
     { "target", "castbarEnabled", false, true, { "castbarAlwaysShow", "castbarPosition", "castbarHeight",
         "castbarIcon", "castbarName", "castbarTime", "castbarX", "castbarY" }, { castbarPosition = "DETACHED" } },
@@ -142,6 +142,31 @@ stays("general: the absorbs' place", "general", "healthColorMode", "CLASS", "abs
 stays("general: the range opacity", "general", "minimapShow", true, "rangeAlpha")
 stays("general: the heal colours", "general", "healthColorMode", "CLASS", "healMyColor")
 stays("general: the combat swords", "general", "healthColorMode", "CLASS", "combatAnimation")
+-- Elements/Auras.lua: the caster border still puts your own buffs first
+-- without a border to paint; only its two colours need one.
+C.Set("target", "buffsEnabled", true)
+stays("aura border off: the caster border", "target", "auraBorder", false, "buffsCasterBorder")
+
+-- The General page: a parent greys its rows only while no frame's own
+-- value of it makes them mean something on that frame.
+local function overridden(label, frame, parent, frameValue, generalValue, key, want)
+    C.Set("general", parent, generalValue)
+    C.Set(frame, parent, frameValue)
+    O.Select("general")
+    O.SelectTab(tabOf("general", key))
+    H.check(label, rowFor(key) and rowFor(key).enabledState, want)
+    C.ResetScope("general")
+    C.ResetScope(frame)
+end
+overridden("general border off, the player's on: style", "player", "borderShow", true, false, "borderStyle", true)
+overridden("general border off, the player's on: size", "player", "borderShow", true, false, "borderSize", true)
+overridden("general border off, the player's off too", "player", "borderShow", false, false, "borderStyle", false)
+overridden("general by class, the pet's fixed: the colour", "pet", "healthColorMode", "STATIC", "CLASS",
+    "healthColor", true)
+overridden("general by class, the pet's by reaction", "pet", "healthColorMode", "REACTION", "CLASS",
+    "healthColor", false)
+overridden("general shadow off, the target's on", "target", "shadowEnabled", true, false, "shadowSize", true)
+overridden("general aura border off, the focus' on", "focus", "auraBorder", true, false, "auraBorderSize", true)
 
 -- In combat everything locks; afterwards a greyed row stays grey.
 O.Select("player")

@@ -5,25 +5,48 @@ local _, ns = ...
 -- kept): a row whose switch is off, or whose mode leaves it without
 -- effect. Each rule names what the code reads: a row greys only where
 -- its setting truly does nothing. A parent the page does not have (the
--- General page holds no frame switches) leaves its rows alone.
+-- General page holds no frame switches) leaves its rows alone. On the
+-- General page a row stays active while any frame's own value of the
+-- parent makes it mean something there: General's value is inherited,
+-- the row still reaches that frame.
 local Config = ns.Config
 local ACTIVE = ns.Options.ROW_ACTIVE
 
 local function applies(scope, key) return ns.Settings.AppliesTo(ns.Settings.Get(key), scope) end
 
+-- A test of the parents `keys` on one page, widened on General to every
+-- frame that has one of them.
+local function anywhere(keys, test)
+    return function(scope)
+        if test(scope) then return true end
+        if scope ~= "general" then return false end
+        for _, frame in ipairs(ns.Settings.SCOPES) do
+            if frame ~= "general" then
+                for _, key in ipairs(keys) do
+                    if applies(frame, key) then
+                        if test(frame) then return true end
+                        break
+                    end
+                end
+            end
+        end
+        return false
+    end
+end
+
 -- Tests: (scope) -> whether the rows mean something on that page.
 local function on(key)
-    return function(scope) return not applies(scope, key) or Config.Get(scope, key) == true end
+    return anywhere({ key }, function(scope) return not applies(scope, key) or Config.Get(scope, key) == true end)
 end
 local function is(key, value)
-    return function(scope) return not applies(scope, key) or Config.Get(scope, key) == value end
+    return anywhere({ key }, function(scope) return not applies(scope, key) or Config.Get(scope, key) == value end)
 end
 local function isNot(key, value)
-    return function(scope) return not applies(scope, key) or Config.Get(scope, key) ~= value end
+    return anywhere({ key }, function(scope) return not applies(scope, key) or Config.Get(scope, key) ~= value end)
 end
 -- Any of the switches the page has on (none on the page: alone).
 local function anyOn(keys)
-    return function(scope)
+    return anywhere(keys, function(scope)
         local present = false
         for _, key in ipairs(keys) do
             if applies(scope, key) then
@@ -32,7 +55,7 @@ local function anyOn(keys)
             end
         end
         return not present
-    end
+    end)
 end
 
 local function auraRows(group, except)
@@ -94,8 +117,9 @@ local RULES = {
     { on("dispelsEnabled"), auraRows("dispels", {}) },
     { on("buffsHighlightOwn"), { "buffsOwnSize", "buffsOwnSameRow" } },
     { on("debuffsHighlightOwn"), { "debuffsOwnSize", "debuffsOwnSameRow" } },
-    -- Elements/AuraButton.lua: without a border it is not seen.
-    { on("auraBorder"), { "auraBorderSize", "buffsCasterBorder", "buffsOwnBorderColor", "buffsOtherBorderColor" } },
+    -- Elements/AuraButton.lua: without a border its colours are not seen;
+    -- the caster border still puts your own buffs first (Elements/Auras.lua).
+    { on("auraBorder"), { "auraBorderSize", "buffsOwnBorderColor", "buffsOtherBorderColor" } },
     { on("buffsCasterBorder"), { "buffsOwnBorderColor", "buffsOtherBorderColor" } },
     -- Hiding Blizzard's castbar does not depend on ours.
     { on("castbarEnabled"), { "castbarAlwaysShow", "castbarPosition", "castbarDock", "castbarHeight", "castbarIcon",
