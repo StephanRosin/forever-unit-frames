@@ -863,7 +863,7 @@ L.RAID_NOTE_arrangement = "Hasta nueve paneles propios. Un bloque de la agrupaci
 L.RAID_OWN_PANEL = "Panel %d"
 for n = 2, 10 do L["RAID_SECTION_panel" .. n] = L.RAID_OWN_PANEL:format(n) end
 L.RAID_SETTING_ownBlocks = "Bloques mostrados"
-L.RAID_HINT_ownBlocks = "Se mueven en el tablero de arriba"
+L.RAID_HINT_ownBlocks = "Se mueven en el tablero de esta pestaña"
 L.RAID_SETTING_ownTitle = "Título"
 L.RAID_HINT_ownTitle = "Encima del panel; vacío: ninguno"
 L.RAID_MAIN_PANEL = "Panel principal"

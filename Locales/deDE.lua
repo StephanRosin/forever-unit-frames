@@ -862,7 +862,7 @@ L.RAID_NOTE_arrangement = "Bis zu neun eigene Felder. Ein Block der Gruppierung 
 L.RAID_OWN_PANEL = "Feld %d"
 for n = 2, 10 do L["RAID_SECTION_panel" .. n] = L.RAID_OWN_PANEL:format(n) end
 L.RAID_SETTING_ownBlocks = "Gezeigte Blöcke"
-L.RAID_HINT_ownBlocks = "Werden oben verschoben"
+L.RAID_HINT_ownBlocks = "Werden oben in diesem Reiter verschoben"
 L.RAID_SETTING_ownTitle = "Titel"
 L.RAID_HINT_ownTitle = "Über dem Feld; leer: keiner"
 L.RAID_MAIN_PANEL = "Hauptfeld"

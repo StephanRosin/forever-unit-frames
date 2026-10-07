@@ -17,7 +17,7 @@ Up to nine panels of your own. A block of the main panel's grouping moves to the
 <tbody>
 <tr><td><b>Show the panel</b></td><td></td><td>On, Off</td><td>Off</td></tr>
 <tr><td><b>Group by</b></td><td></td><td>Group, Class, Role</td><td>Group</td></tr>
-<tr><td><b>Blocks it shows</b></td><td>Moved on the board above</td><td>Text</td><td>(none)</td></tr>
+<tr><td><b>Blocks it shows</b></td><td>Moved on this tab's board</td><td>Text</td><td>(none)</td></tr>
 <tr><td><b>Title</b></td><td>Shown above the panel; empty: none</td><td>Text</td><td>(none)</td></tr>
 <tr><td><b>Blocks</b></td><td></td><td>Side by side, Stacked</td><td>Side by side</td></tr>
 <tr><td><b>Blocks per line</b></td><td>Then a new row (or column) of blocks</td><td>1 – 9</td><td>8</td></tr>

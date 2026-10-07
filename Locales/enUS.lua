@@ -886,7 +886,7 @@ L.RAID_NOTE_arrangement = "Up to nine panels of your own. A block of the main pa
 L.RAID_OWN_PANEL = "Panel %d"
 for n = 2, 10 do L["RAID_SECTION_panel" .. n] = L.RAID_OWN_PANEL:format(n) end
 L.RAID_SETTING_ownBlocks = "Blocks it shows"
-L.RAID_HINT_ownBlocks = "Moved on the board above"
+L.RAID_HINT_ownBlocks = "Moved on this tab's board"
 L.RAID_SETTING_ownTitle = "Title"
 L.RAID_HINT_ownTitle = "Shown above the panel; empty: none"
 L.RAID_MAIN_PANEL = "Main panel"

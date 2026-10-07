@@ -862,7 +862,7 @@ L.RAID_NOTE_arrangement = "Jusqu'à neuf panneaux personnels. Un bloc du regroup
 L.RAID_OWN_PANEL = "Panneau %d"
 for n = 2, 10 do L["RAID_SECTION_panel" .. n] = L.RAID_OWN_PANEL:format(n) end
 L.RAID_SETTING_ownBlocks = "Blocs affichés"
-L.RAID_HINT_ownBlocks = "Déplacés sur le tableau ci-dessus"
+L.RAID_HINT_ownBlocks = "Déplacés sur le tableau de cet onglet"
 L.RAID_SETTING_ownTitle = "Titre"
 L.RAID_HINT_ownTitle = "Au-dessus du panneau ; vide : aucun"
 L.RAID_MAIN_PANEL = "Panneau principal"
