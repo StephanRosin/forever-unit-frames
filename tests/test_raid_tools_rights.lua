@@ -1,6 +1,7 @@
 -- The raid tools bar shows a tool only to whom may use it (Raid/Tools.lua):
--- the raid target icons to everyone in a party, in a raid to the leader,
--- the assistants and everyone while everyone is an assistant (as
+-- the raid target icons and the world markers to everyone in a party, in a
+-- raid to the leader, the assistants and everyone while everyone is an
+-- assistant (as
 -- Blizzard's raid manager, Blizzard_CompactRaidFrameManager.lua,
 -- CompactRaidFrameManager_UpdateOptionsFlowContainer). Everyone an
 -- assistant counts as an assistant for the other leading tools too.
@@ -18,12 +19,13 @@ for _, row in ipairs(Tools.rows) do rows[row.id] = row.frame end
 local targets, ready, markers, group = rows.targets, rows.ready, rows.markers, rows.group
 local b = group.buttons
 
--- A party, not leading: the icons (anyone may mark), nothing else that leads.
+-- A party, not leading: the icons and the world markers (anyone may mark),
+-- nothing else that leads.
 M.units.party1 = { name = "Ann", class = "PRIEST", isPlayer = true }
 M.SetGroup({ "party1" })
 H.checkTrue("party: the icons", targets:IsShown())
 H.check("party: no ready check start", ready.start:IsShown(), false)
-H.check("party: no world markers", markers:IsShown(), false)
+H.checkTrue("party: the world markers", markers:IsShown())
 
 -- A raid, neither leader nor assistant: no icons.
 local function member(name, subgroup)
@@ -106,5 +108,6 @@ if fh then fh:close() end
 os.execute("rm -rf '" .. dir .. "'")
 H.checkTrue("rights: a section", page:find("## Who may use which tool", 1, true))
 H.checkTrue("rights: the icons", page:find("<tr><td><b>Raid target icons</b></td><td>Everyone</td><td>Leader, assistants</td></tr>", 1, true))
+H.checkTrue("rights: the world markers", page:find("<tr><td><b>World markers</b></td><td>Everyone</td><td>Leader, assistants</td></tr>", 1, true))
 H.checkTrue("rights: everyone an assistant", page:find("everyone counts as an assistant", 1, true))
 H.check("the note", ns.L.RAID_NOTE_tools, "A tool shows only to those who may use it (in test mode to everyone).")

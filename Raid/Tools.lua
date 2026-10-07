@@ -5,7 +5,7 @@ local _, ns = ...
 -- its own: the raid target icons for your target (anyone in a party; in
 -- a raid the leader and assistants); the ready check (the last result
 -- for everyone, starting one for the leader and assistants); the world
--- markers (leader and assistants); a role poll (leader and assistants),
+-- markers (as the raid target icons); a role poll (leader and assistants),
 -- everyone an assistant, party to raid and back, the loot method (the
 -- leader). A tool shows only to whom may use it (in a raid, everyone an
 -- assistant counts as an assistant), and while test mode is on. It shows in a raid and in a party while the raid
@@ -193,9 +193,10 @@ function Tools.Leads()
         or (IsInRaid() and everyoneAssists())
 end
 
--- Whether you may set raid target icons: anyone in a party, in a raid
--- those who lead (Blizzard's raid manager,
--- CompactRaidFrameManager_UpdateOptionsFlowContainer).
+-- Whether you may set raid target icons and place world markers: anyone
+-- in a party, in a raid those who lead (Blizzard's raid manager,
+-- CompactRaidFrameManager_UpdateOptionsFlowContainer: its marker row and
+-- its leader options with the world marker menu share this condition).
 function Tools.Marks()
     return not IsInRaid() or Tools.Leads()
 end
@@ -328,8 +329,8 @@ end
 -- A click places the marker (the client's PlaceRaidMarker) or takes it
 -- away again (action "toggle"); the last button takes every world marker
 -- away (action "clear" without a marker). On a light square, so they do
--- not pass for the raid target icons.
-Tools.AddRow({ id = "markers", key = "toolsMarkers", visible = function() return Tools.Leads() and worldMarkers() end,
+-- not pass for the raid target icons. Only while you may (Tools.Marks).
+Tools.AddRow({ id = "markers", key = "toolsMarkers", visible = function() return Tools.Marks() and worldMarkers() end,
     build = function(bar)
         local row = CreateFrame("Frame", nil, bar)
         local buttons = {}

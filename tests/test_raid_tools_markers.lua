@@ -1,6 +1,6 @@
 -- The raid tools bar's world markers (Raid/Tools.lua): secure buttons
--- whose action is the client's (worldmarker), for the leader and
--- assistants only, each drawn with the raid target icon of its sign; the
+-- whose action is the client's (worldmarker), for everyone in a party and
+-- the leader and assistants in a raid (Raid/Tools.lua Tools.Marks), each drawn with the raid target icon of its sign; the
 -- last one takes them all away. Not where the client has no world
 -- markers.
 local M = H.M
@@ -29,7 +29,7 @@ H.check("clear all", f.clear:GetAttribute("action") .. tostring(f.clear:GetAttri
 
 M.units.party1 = { name = "Ann", class = "PRIEST", isPlayer = true }
 M.SetGroup({ "party1" })
-H.check("not leading: hidden", f:IsShown(), false)
+H.checkTrue("a party, not leading: shown", f:IsShown())
 M.units.player.leader = true
 M.FireEvent("PARTY_LEADER_CHANGED")
 H.checkTrue("leading: shown", f:IsShown())

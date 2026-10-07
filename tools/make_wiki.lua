@@ -448,7 +448,7 @@ local RAID_TAB_EXTRA = {
         "<tr><td><b>Raid target icons</b></td><td>Everyone</td><td>Leader, assistants</td></tr>",
         "<tr><td><b>Ready check</b>: the result</td><td>Everyone</td><td>Everyone</td></tr>",
         "<tr><td><b>Ready check</b>: start one</td><td>Leader</td><td>Leader, assistants</td></tr>",
-        "<tr><td><b>World markers</b></td><td>Leader</td><td>Leader, assistants</td></tr>",
+        "<tr><td><b>World markers</b></td><td>Everyone</td><td>Leader, assistants</td></tr>",
         "<tr><td><b>Role poll</b></td><td>Leader</td><td>Leader, assistants</td></tr>",
         "<tr><td><b>Everyone an assistant</b></td><td>–</td><td>Leader</td></tr>",
         "<tr><td><b>Party and raid</b></td><td>Leader (to a raid)</td><td>Leader (to a party, up to 5 players)</td></tr>",
