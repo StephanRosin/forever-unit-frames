@@ -31,10 +31,10 @@ Tools only the leader and assistants may use show for them only (in test mode fo
 <tr><td><b>Raid target icons</b></td><td>Put an icon on your target</td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Ready check</b></td><td>The last result for everyone; leaders start one</td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>World markers</b></td><td>Click a marker again to take it away</td><td>On, Off</td><td>On</td></tr>
-<tr><td><b>Role poll</b></td><td></td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Role poll</b></td><td>Asks everyone to confirm their role</td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Everyone an assistant</b></td><td>In a raid; outlined while it is on</td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Party and raid</b></td><td>Makes the party a raid, and a small raid a party</td><td>On, Off</td><td>On</td></tr>
-<tr><td><b>Loot method</b></td><td></td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Loot method</b></td><td>Master looter: yourself</td><td>On, Off</td><td>On</td></tr>
 </tbody>
 </table>
 

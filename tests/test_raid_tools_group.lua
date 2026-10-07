@@ -85,13 +85,21 @@ H.check("its owner", M.menu.contextData.ownerFrame, b.loot)
 local names = {}
 for _, e in ipairs(M.menu.elements) do names[#names + 1] = e.text end
 H.check("the methods", table.concat(names, "|"),
-    "Loot|Free for all|Round robin|Master looter|Group loot|Need before greed")
+    "Loot|Free for all|Round robin|Master looter|Group loot|Need before greed|Personal loot")
 H.check("group loot marked", M.MenuSelected(M.menu.elements[5]), true)
 H.check("others not", M.MenuSelected(M.menu.elements[2]), false)
 M.ClickMenu(M.menu.elements[4])
 H.check("master looter: you", last()[1] .. "," .. last()[2] .. "," .. last()[3], "SetLootMethod,2,M1")
 M.ClickMenu(M.menu.elements[2])
 H.check("free for all: no looter", last()[2] .. "," .. tostring(last()[3]), "0,nil")
+M.ClickMenu(M.menu.elements[7])
+H.check("personal loot", last()[2] .. "," .. tostring(last()[3]), "5,nil")
+M.lootMethod = Enum.LootMethod.Personal
+click(b.loot)
+H.check("personal loot marked", M.MenuSelected(M.menu.elements[7]), true)
+-- The hints: who the role poll asks, who the master looter is.
+H.check("role poll hint", ns.L.RAID_HINT_toolsRolePoll, "Asks everyone to confirm their role")
+H.check("loot hint", ns.L.RAID_HINT_toolsLoot, "Master looter: yourself")
 
 -- A party, leading: to raid; no everyone-assistant.
 M.SetRaidRoster({})

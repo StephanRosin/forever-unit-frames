@@ -338,7 +338,7 @@ end
 
 -- The loot methods offered (Enum.LootMethod, LootConstantsDocumentation.lua)
 -- in this order, with their words.
-Tools.LOOT_METHODS = { "Freeforall", "Roundrobin", "Masterlooter", "Group", "Needbeforegreed" }
+Tools.LOOT_METHODS = { "Freeforall", "Roundrobin", "Masterlooter", "Group", "Needbeforegreed", "Personal" }
 Tools.GROUP_BUTTON_W, Tools.BUTTON_PADDING = 60, 16
 
 -- Everyone an assistant (the raid's leader): IsEveryoneAssistant, as
