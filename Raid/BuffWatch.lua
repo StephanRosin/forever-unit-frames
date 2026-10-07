@@ -3,8 +3,9 @@ local _, ns = ...
 -- The buff watch: which of your class's group buffs (Raid/BuffData.lua)
 -- the members of your raid or party miss or have running out, read out
 -- of combat only and at most every THROTTLE seconds after a change (an
--- aura, the roster, the bags, the spell book, a setting), and every
--- RESCAN seconds anyway (a buff runs out without an event). In combat the
+-- aura, the roster, the bags, the spell book, a setting), and in a group
+-- every RESCAN seconds anyway (a buff runs out without an event). Solo
+-- nothing is watched. In combat the
 -- last state stays. Every value read from the client is checked with
 -- Secrets.IsSecret before it is compared or used; while the client keeps
 -- auras secret (C_Secrets.ShouldAurasBeSecret, or a watched spell's aura
@@ -107,7 +108,7 @@ function BuffWatch.Members()
         for i = 1, GetNumGroupMembers() do
             local unit = "raid" .. i
             local ok, _, _, subgroup, _, _, class, _, _, _, role = pcall(GetRaidRosterInfo, i)
-            if ok and UnitExists(unit) then
+            if ok and plain(UnitExists, unit) == true then
                 local group = not Secrets.IsSecret(subgroup) and type(subgroup) == "number" and subgroup or nil
                 list[#list + 1] = { unit = unit, group = group, class = token(class),
                     tank = isTank(unit, token(role)) }
@@ -117,7 +118,7 @@ function BuffWatch.Members()
         local units = { "player" }
         for i = 1, GetNumGroupMembers() - 1 do units[#units + 1] = "party" .. i end
         for _, unit in ipairs(units) do
-            if UnitExists(unit) then
+            if plain(UnitExists, unit) == true then
                 local ok, _, class = pcall(UnitClass, unit)
                 list[#list + 1] = { unit = unit, group = 1, class = ok and token(class) or nil,
                     tank = isTank(unit) }
@@ -228,7 +229,8 @@ function BuffWatch.Scan()
     local members, secret = BuffWatch.Members(), aurasSecret()
     local threshold = (general("buffExpiring") or 5) * 60
     local state = { entries = {}, missingUnits = {} }
-    for _, entry in ipairs(BuffWatch.Watched()) do
+    -- Solo: nothing is watched.
+    for _, entry in ipairs(IsInGroup() and BuffWatch.Watched() or {}) do
         state.entries[#state.entries + 1] = scanEntry(entry, members, secret, threshold, state.missingUnits)
     end
     BuffWatch.state = state
@@ -322,7 +324,8 @@ local driver = CreateFrame("Frame")
 driver:SetScript("OnUpdate", function(_, elapsed)
     BuffWatch.since = BuffWatch.since + elapsed
     if InCombatLockdown() or not ns.RaidConfig.Profile() then return end
-    if (BuffWatch.dirty and BuffWatch.since >= BuffWatch.THROTTLE) or BuffWatch.since >= BuffWatch.RESCAN then
+    local rescan = BuffWatch.since >= BuffWatch.RESCAN and IsInGroup()
+    if (BuffWatch.dirty and BuffWatch.since >= BuffWatch.THROTTLE) or rescan then
         BuffWatch.Scan()
     end
 end)

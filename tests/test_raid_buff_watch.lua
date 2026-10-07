@@ -31,9 +31,13 @@ H.check("fortitude switched off", ids(Watch.Watched()), "shadowProtection")
 RC.Set("general", "buffFortitude", true)
 RC.Set("general", "buffShadowProtection", false)
 
--- Solo: nobody to watch.
+-- Solo: nobody to watch, nothing in the state; no rescans while solo.
 Watch.Scan()
 H.check("solo: no members", #Watch.Members(), 0)
+H.check("solo: no entries", #Watch.state.entries, 0)
+local soloScans = Watch.scans
+M.Tick(Watch.RESCAN)
+H.check("solo: no rescan", Watch.scans, soloScans)
 
 -- A party: you and the others.
 local function member(name, class, extra)
