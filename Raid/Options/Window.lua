@@ -905,6 +905,8 @@ function RaidOptions.Open(size, tabId)
     end
     RaidOptions.SelectSize(size or RaidOptions.Size())
     RaidOptions.SelectTab(tabId or RaidOptions.currentTab or Schema.TABS[1].id)
+    -- The setup wizard may offer itself (Raid/Wizard.lua).
+    ns.Fire("RAID_WINDOW_OPENED")
 end
 
 function RaidOptions.Close()
