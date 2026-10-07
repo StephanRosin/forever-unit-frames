@@ -108,9 +108,11 @@ function ns.NewRegistry(scopes, prefix)
     -- def.offBelowMin (optional): the switch that a stored number under
     -- def.min stood for (an earlier version's "0 = none"). Such a value
     -- (raw[scope]: as stored, before validation) becomes that switch off
-    -- and the setting's default, in every scope that stored it. A scope
-    -- with a size of its own over a general "none" had its border: it
-    -- keeps it (its switch on, unless it stores one).
+    -- in every scope that stored it; General gets the setting's default, a
+    -- frame none of its own (it follows General). A scope with a size of
+    -- its own over a general "none" had its border: it keeps it (its
+    -- switch on, unless it stores one). One that stored its switch on
+    -- without a size of its own had none: it stays without (switch off).
     local function below(def, v) return type(v) == "number" and v < def.min end
     local function rawValue(raw, scope, key)
         return type(raw[scope]) == "table" and raw[scope][key] or nil
@@ -124,11 +126,14 @@ function ns.NewRegistry(scopes, prefix)
                     local values = profile[scope]
                     if values and R.AppliesTo(def, scope) then
                         if below(def, v) then
-                            values[def.key] = R.Default(def, scope)
+                            values[def.key] = scope == "general" and R.Default(def, scope) or nil
                             values[def.offBelowMin] = false
                         elseif generalNone and scope ~= "general" and type(v) == "number"
                             and values[def.offBelowMin] == nil then
                             values[def.offBelowMin] = true
+                        elseif generalNone and scope ~= "general" and v == nil
+                            and values[def.offBelowMin] == true then
+                            values[def.offBelowMin] = false
                         end
                     end
                 end
