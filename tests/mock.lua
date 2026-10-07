@@ -2337,20 +2337,29 @@ function M.Reset()
             return list
         end,
         -- The first aura of that name (d.auras[i].name; filter as
-        -- GetUnitAuras'). RequiresNonSecretAura: nothing while auras are
-        -- secret or the aura's spell is (M.secretSpellAuras[spellId]).
+        -- GetUnitAuras'). UnitAuraDocumentation.lua marks it
+        -- SecretWhenUnitAuraRestricted and RequiresNonSecretAura without
+        -- saying how either shows; the mock takes the strict reading of
+        -- both: while auras are restricted (M.AurasSecret()) the answer is
+        -- secret whether or not the aura is there (its presence is not
+        -- told either); an aura whose spell is secret
+        -- (M.secretSpellAuras[spellId]) makes the call raise.
         GetAuraDataBySpellName = function(unit, name, filter)
             refuseAuras()
             assert(type(name) == "string" and not M.IsSecret(name), "GetAuraDataBySpellName: spellName")
             M.auraNameQueries = M.auraNameQueries + 1
-            local d = u(unit)
+            local d, found = u(unit), nil
             for _, a in ipairs(d and d.auras or {}) do
                 if M.Reveal(a.name) == name and auraMatches(a, filter or "HELPFUL") then
-                    if M.AurasSecret() or M.secretSpellAuras[M.Reveal(a.spellId)] then return nil end
-                    return a
+                    found = a
+                    break
                 end
             end
-            return nil
+            if M.AurasSecret() then return M.Secret(found) end
+            if found and M.secretSpellAuras[M.Reveal(found.spellId)] then
+                error("GetAuraDataBySpellName: the aura is secret", 2)
+            end
+            return found
         end,
         GetAuraDuration = function(unit, id)
             refuseAuras()

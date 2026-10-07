@@ -104,6 +104,21 @@ M.auraError = true
 Watch.Scan()
 H.check("refused: unknown", Watch.state.entries[1].unknown, true)
 M.auraError = false
+-- The predicates say readable, yet the query answers secret (auras
+-- restricted) or raises (the aura's spell is secret): unknown either way.
+local predicates = C_Secrets
+_G.C_Secrets = { ShouldAurasBeSecret = function() return false end,
+    ShouldSpellAuraBeSecret = function() return false end }
+M.aurasSecret = true
+Watch.Scan()
+H.check("query answers secret: unknown", Watch.state.entries[1].unknown, true)
+H.check("query answers secret: nobody marked", next(Watch.state.missingUnits), nil)
+M.aurasSecret = false
+M.secretSpellAuras[1244] = true
+Watch.Scan()
+H.check("query raises: unknown", Watch.state.entries[1].unknown, true)
+M.secretSpellAuras[1244] = nil
+_G.C_Secrets = predicates
 
 -- In combat nothing is read: the last state stays.
 Watch.Scan()
@@ -133,6 +148,16 @@ H.check("no change: no scan", Watch.scans, scans + 1)
 -- A rescan now and then: a buff runs out without an event.
 M.Tick(Watch.RESCAN)
 H.check("rescan", Watch.scans, scans + 2)
+
+-- Raid frames off: no scans at all; on again: a scan after the throttle.
+RC.Set("general", "enabled", false)
+scans = Watch.scans
+M.FireEvent("UNIT_AURA", "party2")
+M.Tick(Watch.RESCAN)
+H.check("raid frames off: no scan", Watch.scans, scans)
+RC.Set("general", "enabled", true)
+M.Tick(Watch.THROTTLE)
+H.check("on again: scanned", Watch.scans, scans + 1)
 
 -- Who a buff is for: Arcane Intellect on those who use mana.
 M.units.player.class = "MAGE"
@@ -169,6 +194,47 @@ H.check("rogues: none", Watch.state.entries[1].missing, 1)
 M.units.party1.class = M.Secret("WARRIOR")
 Watch.Scan()
 H.check("secret class: left out", Watch.state.entries[1].missing, 0)
+M.units.party1.class = "WARRIOR"
+
+-- "Expiring" is capped at a third of the form's duration: a fresh
+-- 5-minute blessing is not running out (else the smart key would cast it
+-- again and again); under 100 s it is.
+local function mightAura(left, duration)
+    return { name = "Blessing of Might", spellId = 19740, isHelpful = true, duration = duration,
+        expirationTime = M.now + left }
+end
+RC.Set("general", "blessingROGUE", "MIGHT")
+M.units.party1.auras = { mightAura(299, 300) }
+M.units.party3.auras = { mightAura(90, 300) }
+Watch.Scan()
+local mightSt = Watch.state.entries[1]
+H.check("fresh blessing: not expiring, only the other", mightSt.expiring, 1)
+H.check("the one under a third: expiring", mightSt.needs[1] and mightSt.needs[1].unit, "party3")
+H.check("nothing to cast on the fresh one", #mightSt.needs, 1)
+-- The aura's duration secret or missing: the shipped one (5 minutes).
+M.units.party1.auras = { mightAura(299, M.Secret(300)) }
+M.units.party3.auras = { mightAura(299) }
+Watch.Scan()
+H.check("duration unknown: the shipped one", Watch.state.entries[1].expiring, 0)
+-- The aura's own duration counts when readable (a longer one: 200 s).
+M.units.party3.auras = { mightAura(150, 600) }
+Watch.Scan()
+H.check("the aura's duration first", Watch.state.entries[1].expiring, 1)
+-- Cast, then scanned again: the key does not loop.
+M.units.party3.auras = {}
+Watch.Scan()
+local cast = Watch.Best(Watch.state.entries[1])
+H.check("the missing one is cast on", cast and cast.unit, "party3")
+M.units.party3.auras = { mightAura(299, 300) }
+Watch.Scan()
+H.check("after the cast: nothing more", Watch.Best(Watch.state.entries[1]), nil)
+
+-- A member the client cannot see (far away): not counted as missing.
+M.units.party3.auras = {}
+M.units.party3.visible = false
+Watch.Scan()
+H.check("out of sight: not missing", Watch.state.entries[1].missing, 0)
+M.units.party3.visible = nil
 
 -- A raid: raid1..n, groups from the roster.
 M.units.player.class = "PRIEST"

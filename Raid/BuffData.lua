@@ -10,7 +10,9 @@ local _, ns = ...
 --
 -- key: the setting that switches it (Raid/Settings.lua). who: whom the
 -- buff is for: everyone (ALL), those who use mana (MANA:
--- every class but warriors and rogues), tanks (TANK).
+-- every class but warriors and rogues), tanks (TANK). durations: how long
+-- each form lasts, in seconds (the watch's "expiring" is at most a third
+-- of it; an aura's own duration counts first when the client gives it).
 local Data = {}
 ns.RaidBuffData = Data
 
@@ -20,33 +22,37 @@ Data.BUFFS = {
     { id = "fortitude", key = "buffFortitude", class = "PRIEST", who = "ALL",
         single = { 1243, 1244, 1245, 2791, 10937, 10938 }, group = { 21562, 21564 },
         -- Holy Candle, Sacred Candle.
-        reagents = { [21562] = 17028, [21564] = 17029 } },
+        reagents = { [21562] = 17028, [21564] = 17029 }, durations = { single = 1800, group = 3600 } },
     { id = "spirit", key = "buffSpirit", class = "PRIEST", who = "MANA",
-        single = { 14752, 14818, 14819, 27841 }, group = { 27681 }, reagents = { [27681] = 17029 } },
+        single = { 14752, 14818, 14819, 27841 }, group = { 27681 }, reagents = { [27681] = 17029 },
+        durations = { single = 1800, group = 3600 } },
     { id = "shadowProtection", key = "buffShadowProtection", class = "PRIEST", who = "ALL",
-        single = { 976, 10957, 10958 }, group = { 27683 }, reagents = { [27683] = 17029 } },
+        single = { 976, 10957, 10958 }, group = { 27683 }, reagents = { [27683] = 17029 },
+        durations = { single = 600, group = 1200 } },
     -- Arcane Powder.
     { id = "intellect", key = "buffIntellect", class = "MAGE", who = "MANA",
-        single = { 1459, 1460, 1461, 10156, 10157 }, group = { 23028 }, reagents = { [23028] = 17020 } },
+        single = { 1459, 1460, 1461, 10156, 10157 }, group = { 23028 }, reagents = { [23028] = 17020 },
+        durations = { single = 1800, group = 3600 } },
     -- Wild Berries, Wild Thornroot.
     { id = "wild", key = "buffWild", class = "DRUID", who = "ALL",
         single = { 1126, 5232, 6756, 5234, 8907, 9884, 9885 }, group = { 21849, 21850 },
-        reagents = { [21849] = 17021, [21850] = 17026 } },
+        reagents = { [21849] = 17021, [21850] = 17026 }, durations = { single = 1800, group = 3600 } },
     { id = "thorns", key = "buffThorns", class = "DRUID", who = "TANK",
-        single = { 467, 782, 1075, 8914, 9756, 9910 }, group = {}, reagents = {} },
+        single = { 467, 782, 1075, 8914, 9756, 9910 }, group = {}, reagents = {}, durations = { single = 600 } },
 }
 
 -- Paladin blessings: one per class of the members, chosen in the raid
 -- window. The greater forms bless every member of the class and take a
--- Symbol of Kings. Stored by index (the setting's enum): append only.
--- buffBlessings switches them all.
+-- Symbol of Kings; a blessing lasts 5 minutes, a greater one 15. Stored
+-- by index (the setting's enum): append only. buffBlessings switches them
+-- all.
 Data.BLESSINGS_KEY = "buffBlessings"
 Data.BLESSINGS = { "NONE", "MIGHT", "WISDOM", "KINGS", "SALVATION", "LIGHT", "SANCTUARY" }
 local SYMBOL_OF_KINGS = 21177
 local function blessing(single, group)
     local reagents = {}
     for _, id in ipairs(group) do reagents[id] = SYMBOL_OF_KINGS end
-    return { single = single, group = group, reagents = reagents }
+    return { single = single, group = group, reagents = reagents, durations = { single = 300, group = 900 } }
 end
 Data.BLESSING = {
     MIGHT = blessing({ 19740, 19834, 19835, 19836, 19837, 19838, 25291 }, { 25782, 25916 }),
@@ -86,11 +92,12 @@ local function plainCall(fn, ...)
 end
 
 -- A form: { id = the highest known rank (nil: none), name = the client's
--- (from its first rank), icon }; nil when the client gives no name.
-function Data.Form(ids)
+-- (from its first rank), icon, duration (the shipped one, seconds) }; nil
+-- when the client gives no name.
+function Data.Form(ids, duration)
     if #ids == 0 then return nil end
     local name = plainCall(C_Spell.GetSpellName, ids[1])
     if type(name) ~= "string" or name == "" then return nil end
     local id = Data.Highest(ids)
-    return { id = id, name = name, icon = plainCall(C_Spell.GetSpellTexture, id or ids[1]) }
+    return { id = id, name = name, icon = plainCall(C_Spell.GetSpellTexture, id or ids[1]), duration = duration }
 end

@@ -5,11 +5,13 @@ local _, ns = ...
 -- of combat only and at most every THROTTLE seconds after a change (an
 -- aura, the roster, the bags, the spell book, a setting), and in a group
 -- every RESCAN seconds anyway (a buff runs out without an event). Solo
--- nothing is watched. In combat the
--- last state stays. Every value read from the client is checked with
--- Secrets.IsSecret before it is compared or used; while the client keeps
--- auras secret (C_Secrets.ShouldAurasBeSecret, or a watched spell's aura
--- ShouldSpellAuraBeSecret) a buff is "unknown", never guessed.
+-- nothing is watched; with the raid frames off nothing is scanned. In
+-- combat the last state stays. Members the client cannot see are left
+-- out. Every value read from the client is checked with Secrets.IsSecret
+-- before it is compared or used; while the client keeps auras secret
+-- (C_Secrets.ShouldAurasBeSecret, or a watched spell's aura
+-- ShouldSpellAuraBeSecret, or the query itself refuses or answers
+-- secret) a buff is "unknown", never guessed.
 --
 -- The state (BuffWatch.state): entries, one per watched buff, each with
 -- missing and expiring counts, unknown, and needs: who needs it, the
@@ -53,10 +55,11 @@ end
 -- by raid group (GROUP) or by class (CLASS, the blessings, for the
 -- classes in entry.classes).
 local function entryOf(id, spells, who)
-    local single = Data.Form(spells.single)
+    local durations = spells.durations or {}
+    local single = Data.Form(spells.single, durations.single)
     if not (single and single.id) then return nil end
-    return { id = id, single = single, group = Data.Form(spells.group), reagents = spells.reagents, who = who,
-        by = "GROUP" }
+    return { id = id, single = single, group = Data.Form(spells.group, durations.group), reagents = spells.reagents,
+        who = who, by = "GROUP" }
 end
 
 -- Your class's buffs that the spell book knows and that are switched on,
@@ -136,9 +139,11 @@ local function applies(entry, member)
     return true
 end
 
--- Dead (or a ghost) or offline: no buff for them now. Unknown: there.
+-- Dead (or a ghost), offline, or out of the client's sight (too far to
+-- see: their auras are not known): no buff for them now. Unknown: there.
 local function absent(unit)
     return plain(UnitIsDeadOrGhost, unit) == true or plain(UnitIsConnected, unit) == false
+        or plain(UnitIsVisible, unit) == false
 end
 
 -- Reading -------------------------------------------------------------------------------
@@ -163,24 +168,38 @@ local function spellsOf(entry)
     end
 end
 
--- One form on a unit: present, and the seconds left (math.huge without
--- an end, nil when unknown); error when the client refuses.
-local function readForm(unit, form)
-    if not form then return false end
-    local ok, aura = pcall(C_UnitAuras.GetAuraDataBySpellName, unit, form.name, BuffWatch.FILTER)
-    if not ok then error("refused", 0) end
-    if aura == nil then return false end
-    if Secrets.IsSecret(aura) or type(aura) ~= "table" then return true, nil end
-    local expires = aura.expirationTime
-    if Secrets.IsSecret(expires) or type(expires) ~= "number" then return true, nil end
-    if expires == 0 then return true, math.huge end
-    return true, expires - GetTime()
+-- "Expiring" for one form: under the setting, at most a third of how long
+-- the form lasts (a fresh 5-minute blessing is not running out).
+local function capped(threshold, duration)
+    if type(duration) == "number" and duration > 0 then return math.min(threshold, duration / 3) end
+    return threshold
 end
 
--- The longer of two times left (nil: unknown wins, it is there).
-local function longer(a, b)
-    if a == nil or b == nil then return nil end
-    return math.max(a, b)
+-- One form on a unit: present, the seconds left (math.huge without an
+-- end, nil when unknown) and under how many it is expiring (the aura's
+-- own duration when the client gives it, else the shipped one); an error
+-- when the client refuses or hands the aura back secret (the buff is then
+-- unknown, never guessed).
+local function readForm(unit, form, threshold)
+    if not form then return false end
+    local ok, aura = pcall(C_UnitAuras.GetAuraDataBySpellName, unit, form.name, BuffWatch.FILTER)
+    if not ok or Secrets.IsSecret(aura) then error("refused", 0) end
+    if aura == nil then return false end
+    if type(aura) ~= "table" then return true, nil end
+    local expires = aura.expirationTime
+    if Secrets.IsSecret(expires) or type(expires) ~= "number" then return true, nil end
+    if expires == 0 then return true, math.huge, threshold end
+    local duration = aura.duration
+    if Secrets.IsSecret(duration) or type(duration) ~= "number" or duration <= 0 then duration = form.duration end
+    return true, expires - GetTime(), capped(threshold, duration)
+end
+
+-- Of two forms on a member, the one lasting longer: its time left and
+-- limit (unknown wins: it is there).
+local function longer(leftA, limitA, leftB, limitB)
+    if leftA == nil or leftB == nil then return nil end
+    if leftB > leftA then return leftB, limitB end
+    return leftA, limitA
 end
 
 -- A watched buff on every member it is for.
@@ -194,16 +213,16 @@ local function scanEntry(entry, members, secret, threshold, missingUnits)
     local ok = pcall(function()
         for order, member in ipairs(members) do
             if applies(entry, member) and not absent(member.unit) then
-                local hasSingle, leftSingle = readForm(member.unit, entry.single)
-                local hasGroup, leftGroup = readForm(member.unit, entry.group)
-                local left
-                if hasSingle and hasGroup then left = longer(leftSingle, leftGroup)
-                elseif hasSingle then left = leftSingle
-                elseif hasGroup then left = leftGroup end
+                local hasSingle, leftSingle, limitSingle = readForm(member.unit, entry.single, threshold)
+                local hasGroup, leftGroup, limitGroup = readForm(member.unit, entry.group, threshold)
+                local left, limit
+                if hasSingle and hasGroup then left, limit = longer(leftSingle, limitSingle, leftGroup, limitGroup)
+                elseif hasSingle then left, limit = leftSingle, limitSingle
+                elseif hasGroup then left, limit = leftGroup, limitGroup end
                 if not (hasSingle or hasGroup) then
                     st.missing = st.missing + 1
                     st.needs[#st.needs + 1] = { unit = member.unit, member = member, left = -1, order = order }
-                elseif left ~= nil and left < threshold then
+                elseif left ~= nil and left < limit then
                     st.expiring = st.expiring + 1
                     st.needs[#st.needs + 1] = { unit = member.unit, member = member, left = left, order = order }
                 end
@@ -323,7 +342,7 @@ function BuffWatch.Mark() BuffWatch.dirty = true end
 local driver = CreateFrame("Frame")
 driver:SetScript("OnUpdate", function(_, elapsed)
     BuffWatch.since = BuffWatch.since + elapsed
-    if InCombatLockdown() or not ns.RaidConfig.Profile() then return end
+    if InCombatLockdown() or not ns.RaidPanel.Enabled() then return end
     local rescan = BuffWatch.since >= BuffWatch.RESCAN and IsInGroup()
     if (BuffWatch.dirty and BuffWatch.since >= BuffWatch.THROTTLE) or rescan then
         BuffWatch.Scan()
@@ -353,5 +372,5 @@ for _, c in ipairs(Data.CLASSES) do BuffWatch.KEYS["blessing" .. c] = true end
 for key in pairs(BuffWatch.KEYS) do ns.RaidPanel.UNRELATED_KEYS[key] = true end
 
 ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
-    if scope == nil or key == nil or BuffWatch.KEYS[key] then BuffWatch.Mark() end
+    if scope == nil or key == nil or key == "enabled" or BuffWatch.KEYS[key] then BuffWatch.Mark() end
 end)

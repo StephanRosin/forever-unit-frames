@@ -4,7 +4,9 @@ ns.Config.Use({})
 
 -- Client calls the mock does not have; the debug command must also work
 -- without them (checked first). The mock has C_Secrets (the buff watch
--- reads it): taken away here.
+-- reads it): taken away here, put back at the end (H.LoadAddon's
+-- M.Reset installs a fresh one for every file anyway).
+local mockSecrets = C_Secrets
 _G.C_Secrets = nil
 local function run()
     M.chat = {}
@@ -67,3 +69,4 @@ M.auraError = false
 M.chat = {}
 SlashCmdList.FOREVERUNITFRAMES("help")
 H.check("help still works", M.chat[1] and M.chat[1]:find(ns.L.HELP, 1, true) ~= nil, true)
+_G.C_Secrets = mockSecrets
