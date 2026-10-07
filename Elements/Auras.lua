@@ -75,11 +75,19 @@ function Auras.DispelsShown(frame)
         and Config.Get(frame.key, "dispelsEnabled") == true
 end
 
+-- Each group holds a second block, group.free: yours placed freely (with
+-- "mine first", place Free), a holder of its own with icons at the own
+-- size, laid out like a group without own icons (Layout.AuraPlace).
+local function block(frame, key)
+    return { key = key, frame = frame, isDebuff = GROUPS[key].isDebuff, holder = CreateFrame("Frame", nil, frame),
+        buttons = {}, count = 0, own = 0 }
+end
+
 function Auras.Build(frame)
     frame.auras = {}
     for _, key in ipairs(ORDER) do
-        frame.auras[key] = { key = key, frame = frame, isDebuff = GROUPS[key].isDebuff,
-            holder = CreateFrame("Frame", nil, frame), buttons = {}, count = 0, own = 0 }
+        frame.auras[key] = block(frame, key)
+        frame.auras[key].free = block(frame, key)
     end
     built[frame] = true
 end
@@ -131,14 +139,15 @@ end
 -- A group's offset from its anchor region, on the pixel grid. Offsets
 -- count from the outer border: a group that sits outside the unit box or
 -- a castbar box, across an edge its frame point names that carries the
--- ring, is pushed out by the border's extent on that axis.
-function Auras.AnchorOffset(frame, key, region)
-    local scope = frame.key
-    local x, y = Pixel.Snap(Config.Get(scope, key .. "X")), Pixel.Snap(Config.Get(scope, key .. "Y"))
+-- ring, is pushed out by the border's extent on that axis. part "Own":
+-- the place of yours placed freely (OwnX, OwnFramePoint, ...).
+function Auras.AnchorOffset(frame, key, region, part)
+    local scope, prefix = frame.key, key .. (part or "")
+    local x, y = Pixel.Snap(Config.Get(scope, prefix .. "X")), Pixel.Snap(Config.Get(scope, prefix .. "Y"))
     local ringed = region == frame.unitBox or (frame.castbar ~= nil and region == frame.castbar.box)
     if not ringed then return x, y end
     local extent = ns.Border.Extent(scope)
-    local at, own = SIDES[Config.Get(scope, key .. "FramePoint")], SIDES[Config.Get(scope, key .. "Point")]
+    local at, own = SIDES[Config.Get(scope, prefix .. "FramePoint")], SIDES[Config.Get(scope, prefix .. "Point")]
     if at[1] ~= 0 and own[1] == -at[1] then x = x + at[1] * extent end
     if at[2] ~= 0 and own[2] == -at[2] and at[2] ~= seamSide(frame, region) then y = y + at[2] * extent end
     return x, y
@@ -193,11 +202,35 @@ local function settle(group, count, own)
     fit(group)
 end
 
+-- No icons in the group, nor in its block for yours placed freely.
+local function empty(group)
+    settle(group, 0, 0)
+    if group.free.count > 0 then settle(group.free, 0, 0) end
+end
+
 -- Growing sideways, rows wrap at the frame's width; growing up or down, at
 -- its height (a party button's own size).
 local function frameLength(frame, primary)
     local side = (primary == "UP" or primary == "DOWN") and "height" or "width"
     return Pixel.Snap(Config.Get(frame.key, side))
+end
+
+-- Yours placed freely: group.ownFree, and the block's shape (group.free)
+-- at the own size, its own growth and icons per row. Otherwise the block
+-- stays empty.
+local function readFree(frame, group)
+    group.ownFree = group.highlightOwn and get(frame, group, "OwnPlacement") == "FREE" or false
+    local free = group.free
+    free.filter, free.max, free.showTime, free.spacing = group.filter, group.max, group.showTime, group.spacing
+    free.size, free.ownSize, free.ownSameRow = group.ownSize, group.ownSize, false
+    if not group.ownFree then return end
+    free.primary = get(frame, group, "OwnGrowth")
+    free.row = Layout.AuraRowDirection(free.primary, get(frame, group, "OwnRowGrowth"))
+    free.corner = Layout.AuraCorner(free.primary, free.row)
+    local perRow, length = get(frame, group, "OwnPerRow"), frameLength(frame, free.primary)
+    free.perRowSetting, free.length = perRow, length
+    free.perRow = Layout.AuraPerRow(perRow, length, free.size, free.spacing)
+    free.ownPerRow = free.perRow
 end
 
 local function readSettings(frame, group)
@@ -252,6 +285,23 @@ local function readSettings(frame, group)
     group.perRow = Layout.AuraPerRow(perRow, length, group.size, group.spacing)
     group.ownPerRow = Layout.AuraPerRow(perRow, length, group.ownSize, group.spacing)
     group.showTime = get(frame, group, "ShowTime")
+    readFree(frame, group)
+end
+
+-- The block for yours placed freely: its icons restyled and placed, or
+-- emptied while yours are with the rest.
+local function styleFree(frame, group)
+    local free = group.free
+    free.holder:SetFrameLevel(frame:GetFrameLevel() + Auras.LEVELS)
+    if not (group.ownFree and group.enabled) then
+        if free.count > 0 then settle(free, 0, 0) end
+        return
+    end
+    for i, button in ipairs(free.buttons) do
+        button.styledSize = nil
+        place(free, i)
+    end
+    settle(free, math.min(free.count, group.max), 0)
 end
 
 function Auras.Style(frame)
@@ -264,7 +314,8 @@ function Auras.Style(frame)
             place(group, i)
         end
         local count = group.enabled and math.min(group.count, group.max) or 0
-        settle(group, count, group.highlightOwn and math.min(group.own, count) or 0)
+        settle(group, count, group.highlightOwn and not group.ownFree and math.min(group.own, count) or 0)
+        styleFree(frame, group)
     end
     -- Anchors last: a group may hang from the other one.
     for _, key in ipairs(ORDER) do
@@ -273,6 +324,12 @@ function Auras.Style(frame)
         local region = Auras.AnchorRegion(frame, key)
         group.holder:SetPoint(get(frame, group, "Point"), region, get(frame, group, "FramePoint"),
             Auras.AnchorOffset(frame, key, region))
+        group.free.holder:ClearAllPoints()
+        if group.ownFree then
+            local unit = frame.unitBox or frame
+            group.free.holder:SetPoint(get(frame, group, "OwnPoint"), unit, get(frame, group, "OwnFramePoint"),
+                Auras.AnchorOffset(frame, key, unit, "Own"))
+        end
     end
     AuraContainers.Style(frame)
 end
@@ -285,20 +342,29 @@ local function showSamples(frame)
         -- The first samples pass for yours, so "mine first" and borders by
         -- caster can be seen.
         local mine = group.split and math.min(Auras.OWN_SAMPLES, count) or 0
-        local own = group.highlightOwn and mine or 0
+        -- Placed freely: yours in their block, the rest from the first row.
+        local free = group.ownFree and group.free
+        local skip = free and mine or 0
+        local own = group.highlightOwn and not free and mine or 0
         arrange(group, own)
         for i = 1, count do
-            local button = acquire(frame, group, i)
-            AuraButton.ShowSample(button, samples[(i - 1) % #samples + 1], sampleStart)
+            local sample = samples[(i - 1) % #samples + 1]
+            local button = i <= skip and acquire(frame, free, i) or acquire(frame, group, i - skip)
+            AuraButton.ShowSample(button, sample, sampleStart)
             AuraButton.SetCasterBorder(button, AuraContainers.CasterBorder(group, i <= mine))
         end
-        settle(group, count, own)
+        settle(group, count - skip, own)
+        if free then
+            settle(free, skip, 0)
+        elseif group.free.count > 0 then
+            settle(group.free, 0, 0)
+        end
     end
     frame.auraSamples = true
 end
 
 local function clear(frame)
-    for _, key in ipairs(ORDER) do settle(frame.auras[key], 0, 0) end
+    for _, key in ipairs(ORDER) do empty(frame.auras[key]) end
     frame.auraSamples = nil
 end
 
@@ -328,11 +394,14 @@ local function blocked(group, aura, rowApplies)
     return rowApplies or ns.AuraBlocklist.NeverSecret(id)
 end
 
-local function fill(frame, group, list, count, mine)
+-- into: the icons' block (default the group; group.free for yours placed
+-- freely), max: how many it may show (default the group's maximum).
+local function fill(frame, group, list, count, mine, into, max)
+    into, max = into or group, max or group.max
     local rowApplies = group.blockSet ~= nil and next(group.blockSet) ~= nil
         and ns.AuraBlocklist.RowApplies(frame.unit, not group.isDebuff)
     for i = 1, #list do
-        if count >= group.max then break end
+        if count >= max then break end
         local aura = list[i]
         -- Hide permanent: a readable duration of 0 is skipped (a secret one
         -- cannot be told apart and stays).
@@ -355,12 +424,12 @@ local function fill(frame, group, list, count, mine)
         -- looked up and stays.
         if aura and blocked(group, aura, rowApplies) then aura = nil end
         local button = aura ~= nil and not Secrets.IsSecret(aura) and type(aura) == "table"
-            and acquire(frame, group, count + 1)
+            and acquire(frame, into, count + 1)
         if button and AuraButton.Show(button, frame.unit, aura, group.filter) then
             AuraButton.SetCasterBorder(button, AuraContainers.CasterBorder(group, mine))
             count = count + 1
             -- Shown from a secret instance ID: later events cannot name it.
-            if not button.auraID then group.hasUnknownIDs = true end
+            if not button.auraID then into.hasUnknownIDs = true end
         end
     end
     return count
@@ -382,11 +451,20 @@ local function readGroup(frame, group)
         other = query(frame, group.filter, group.max)
         if not other then return false end
     end
-    group.hasUnknownIDs = false
+    group.hasUnknownIDs, group.free.hasUnknownIDs = false, false
+    if group.ownFree then
+        -- Yours in their own block; the maximum counts both.
+        local mine = own and fill(frame, group, own, 0, true, group.free) or 0
+        local count = other and fill(frame, group, other, 0, false, group, group.max - mine) or 0
+        settle(group.free, mine, 0)
+        settle(group, count, 0)
+        return true
+    end
     local mine = own and fill(frame, group, own, 0, true) or 0
     local count = other and fill(frame, group, other, mine, false) or mine
     -- Only "mine first" lays yours out apart (own size, own rows).
     settle(group, count, group.highlightOwn and mine or 0)
+    if group.free.count > 0 then settle(group.free, 0, 0) end
     return true
 end
 
@@ -398,7 +476,7 @@ local function readAll(frame, keep)
     for _, key in ipairs(ORDER) do
         local group = frame.auras[key]
         if not group.enabled or (not readGroup(frame, group) and not keep) then
-            settle(group, 0, 0)
+            empty(group)
         end
     end
 end
@@ -412,11 +490,20 @@ end
 -- whether a removed or changed ID is one of them, so any such ID it does
 -- not know makes it read again.
 
-local function shownButton(group, id)
-    for i = 1, group.count do
-        local button = group.buttons[i]
+local function shownIn(block, id)
+    for i = 1, block.count do
+        local button = block.buttons[i]
         if button.auraID == id then return button end
     end
+end
+
+-- In the group or its block for yours placed freely.
+local function shownButton(group, id)
+    return shownIn(group, id) or shownIn(group.free, id)
+end
+
+local function unknownIDs(group)
+    return group.hasUnknownIDs or group.free.hasUnknownIDs
 end
 
 local function readableID(id)
@@ -440,7 +527,7 @@ local function markRemoved(frame, id)
     id = readableID(id)
     for _, key in ipairs(ORDER) do
         local group = frame.auras[key]
-        if group.hasUnknownIDs or shownButton(group, id) then group.dirty = true end
+        if unknownIDs(group) or shownButton(group, id) then group.dirty = true end
     end
 end
 
@@ -449,7 +536,7 @@ local function refreshShown(frame, id)
     for _, key in ipairs(ORDER) do
         local group = frame.auras[key]
         local button = not group.dirty and shownButton(group, id)
-        if not button and group.hasUnknownIDs then group.dirty = true end
+        if not button and unknownIDs(group) then group.dirty = true end
         if button then
             local aura = C_UnitAuras.GetAuraDataByAuraInstanceID(frame.unit, id)
             if Secrets.IsSecret(aura) or type(aura) ~= "table"

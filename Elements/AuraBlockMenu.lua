@@ -29,12 +29,14 @@ local function mouseOver(region)
 end
 
 -- The aura group under the mouse: its container's area, or the holder of
--- the icons the addon draws itself.
+-- the icons the addon draws itself; for yours placed freely, their own
+-- container or block.
 local function groupUnderMouse(frame)
     for _, key in ipairs(ns.Settings.AURA_GROUPS) do
         local group = frame.auras[key]
         local entry = frame.auraContainers and frame.auraContainers[key]
-        if group and group.enabled and (mouseOver(entry and entry.container) or mouseOver(group.holder)) then
+        if group and group.enabled and (mouseOver(entry and entry.container) or mouseOver(group.holder)
+            or (group.ownFree and (mouseOver(entry and entry.ownContainer) or mouseOver(group.free.holder)))) then
             return group
         end
     end

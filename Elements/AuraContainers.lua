@@ -45,7 +45,11 @@ end
 -- A settings group (frame.auras.buffs / .debuffs, after Auras.Style read
 -- its settings) becomes one container with two groups: "own" (yours, at
 -- their own size) and "other" (the rest, or everything when yours are not
--- put first). Plain values in, plain tables out; no widget is touched.
+-- put first). Yours placed freely (group.ownFree) need a second container:
+-- a container's groups share its one flow, and the container has one
+-- anchor (Blizzard_CustomAuraContainer.lua, Blizzard_AuraContainerFlowLayout
+-- .lua); it holds one group, "own", and the first one's "own" is off.
+-- Plain values in, plain tables out; no widget is touched.
 AuraContainers.PARTS = { "own", "other" }
 -- Ten years in seconds: longer than any timed aura.
 AuraContainers.ANY_DURATION = 10 * 365 * 86400
@@ -99,24 +103,7 @@ function AuraContainers.Flow(group)
     }
 end
 
--- One container group: shown or not, filter, maximum and layout. Split
--- (yours first, or borders by caster): "own" takes the PLAYER filter,
--- "other" the rest (nothing when only yours are shown); with "mine first"
--- yours are at the own size and the rest start a new line, unless they
--- share the rows (ownSameRow). Otherwise "own" is off and "other" shows
--- everything the group's filter lets through.
-function AuraContainers.Part(group, part)
-    local own = part == "own"
-    local split = group.highlightOwn or group.casterBorder
-    local enabled, filter, size, newLine
-    if own then
-        enabled, filter, size, newLine = group.enabled and split, group.ownFilter, group.ownSize, false
-    elseif split then
-        enabled, filter, size, newLine = group.enabled and group.otherFilter ~= nil,
-            group.otherFilter or group.filter, group.size, group.highlightOwn and not group.ownSameRow
-    else
-        enabled, filter, size, newLine = group.enabled, group.filter, group.size, false
-    end
+local function describe(group, enabled, filter, size, newLine)
     local spacing = group.spacing
     return {
         enabled = enabled and true or false,
@@ -128,6 +115,32 @@ function AuraContainers.Part(group, part)
         -- timed aura (it is compared with the aura's full duration).
         candidateFilters = AuraContainers.CandidateFilters(group),
     }
+end
+
+-- One container group: shown or not, filter, maximum and layout. Split
+-- (yours first, or borders by caster): "own" takes the PLAYER filter,
+-- "other" the rest (nothing when only yours are shown); with "mine first"
+-- yours are at the own size and the rest start a new line, unless they
+-- share the rows (ownSameRow). Otherwise "own" is off and "other" shows
+-- everything the group's filter lets through. apart: yours are in their
+-- own container (default: group.ownFree); then "own" is off here and the
+-- rest start at the first row.
+function AuraContainers.Part(group, part, apart)
+    if apart == nil then apart = group.ownFree end
+    local split = group.highlightOwn or group.casterBorder
+    if part == "own" then
+        return describe(group, group.enabled and split and not apart, group.ownFilter, group.ownSize, false)
+    elseif split then
+        return describe(group, group.enabled and group.otherFilter ~= nil, group.otherFilter or group.filter,
+            group.size, group.highlightOwn and not group.ownSameRow and not apart)
+    end
+    return describe(group, group.enabled, group.filter, group.size, false)
+end
+
+-- The one group of the container for yours placed freely: yours at the
+-- own size; off unless they are placed freely.
+function AuraContainers.FreePart(group)
+    return describe(group, group.enabled and group.ownFree, group.ownFilter, group.ownSize, false)
 end
 
 -- A buff's border colour by caster (own or other group), or nil.
@@ -183,7 +196,9 @@ end
 
 -- Containers per frame ------------------------------------------------------------
 -- frame.auraContainers = { buffs = entry, debuffs = entry }, entry =
--- { container, frame, key, isDebuff, buttons, stale }. Made the first time
+-- { container, frame, key, isDebuff, buttons, stale, ownContainer (yours
+-- placed freely: made the first time they are), ownFailed, apart (yours
+-- in ownContainer now) }. Made the first time
 -- a frame shows live auras, so the pretend party (test mode only) never
 -- gets any. Made and configured out of combat only: the container itself
 -- would take settings in combat, but its buttons refuse us while auras
@@ -231,6 +246,31 @@ local function create(frame, key, made)
     container:SetUnit(frame.unit or "none")
 end
 
+-- The container for yours placed freely, made the first time they are
+-- (out of combat: apply). On a refusal it is dropped, reported once, and
+-- yours stay with the rest on this frame from then on.
+local function ownContainer(frame, entry, group)
+    if entry.ownContainer or entry.ownFailed or not group.ownFree then return entry.ownContainer end
+    local container
+    local ok, err = pcall(function()
+        container = CreateFrame("AuraContainer", nil, frame, AuraContainers.TEMPLATE)
+        container:SetEditModePreviewEnabled(false)
+        local p = AuraContainers.FreePart(group)
+        container:AddAuraGroup("own", p.filter, { maxFrameCount = p.max, layout = p.layout,
+            candidateFilters = p.candidateFilters,
+            initializeFrame = function(button) AuraContainers.InitButton(entry, true, button) end })
+        container:SetUnit(frame.unit or "none")
+    end)
+    if not ok then
+        if container then container:Hide() end
+        entry.ownFailed = true
+        geterrorhandler()(err)
+        return nil
+    end
+    entry.ownContainer = container
+    return container
+end
+
 -- Sizes and fonts of every button made so far; buttons made later get
 -- them in InitButton. Refused while auras are secret: tried again later.
 local function restyle(entry, group)
@@ -272,6 +312,16 @@ local function place(frame, key)
         region, Config.Get(scope, key .. "FramePoint"), x + dx, y + dy)
 end
 
+-- Yours placed freely hang from the unit's block by their own points.
+local function placeOwn(frame, key)
+    local Config = ns.Config
+    local scope = frame.key
+    local region = frame.unitBox or frame
+    local x, y = ns.Auras.AnchorOffset(frame, key, region, "Own")
+    frame.auraContainers[key].ownContainer:SetPoint(Config.Get(scope, key .. "OwnPoint"),
+        region, Config.Get(scope, key .. "OwnFramePoint"), x, y)
+end
+
 local function lineSize(frame, key, flow)
     local lead = AuraContainers.Lead(frame, key)
     return math.max(flow.lineSize - lead, frame.auras[key].size)
@@ -288,32 +338,53 @@ function AuraContainers.Relead(frame)
     place(frame, "buffs")
 end
 
+local function setFlow(container, flow, size)
+    container:SetFlowLayoutAxis(flow.axis)
+    container:SetFlowLayoutAnchorPoint(flow.anchor)
+    container:SetFlowLayoutGrowthDirection(flow.horizontal, flow.vertical)
+    container:SetFlowLayoutMaximumLineSize(size)
+end
+
+local function setPart(container, part, p)
+    container:SetAuraGroupFilterString(part, p.filter)
+    container:SetAuraGroupMaxFrameCount(part, p.max)
+    container:SetAuraGroupLayout(part, p.layout)
+    container:SetAuraGroupCandidateFilters(part, p.candidateFilters)
+    container:SetAuraGroupEnabled(part, p.enabled)
+end
+
 -- Settings (read by Auras.Style into frame.auras) onto the containers.
 local function apply(frame)
     local live = not testing()
     stale[frame] = nil
     for _, key in ipairs(groupKeys(frame)) do
         local group, entry = frame.auras[key], frame.auraContainers[key]
+        local own = ownContainer(frame, entry, group)
+        entry.apart = own ~= nil and group.ownFree or false
         local container, flow = entry.container, AuraContainers.Flow(group)
-        container:SetFlowLayoutAxis(flow.axis)
-        container:SetFlowLayoutAnchorPoint(flow.anchor)
-        container:SetFlowLayoutGrowthDirection(flow.horizontal, flow.vertical)
-        container:SetFlowLayoutMaximumLineSize(lineSize(frame, key, flow))
-        for _, part in ipairs(AuraContainers.PARTS) do
-            local p = AuraContainers.Part(group, part)
-            container:SetAuraGroupFilterString(part, p.filter)
-            container:SetAuraGroupMaxFrameCount(part, p.max)
-            container:SetAuraGroupLayout(part, p.layout)
-            container:SetAuraGroupCandidateFilters(part, p.candidateFilters)
-            container:SetAuraGroupEnabled(part, p.enabled)
+        setFlow(container, flow, lineSize(frame, key, flow))
+        for _, part in ipairs(AuraContainers.PARTS) do setPart(container, part, AuraContainers.Part(group, part, entry.apart)) end
+        if own then
+            local ownFlow = AuraContainers.Flow(group.free)
+            setFlow(own, ownFlow, ownFlow.lineSize)
+            setPart(own, "own", AuraContainers.FreePart(group))
+            own:SetFrameLevel(frame:GetFrameLevel() + ns.Auras.LEVELS)
+            own:SetShown(live and group.enabled and entry.apart)
         end
         if restyle(entry, group) then stale[frame] = true end
         container:SetFrameLevel(frame:GetFrameLevel() + ns.Auras.LEVELS)
         container:SetShown(live and group.enabled)
     end
     -- Anchors last, all cleared first: a group may hang from the other.
-    for _, key in ipairs(groupKeys(frame)) do frame.auraContainers[key].container:ClearAllPoints() end
-    for _, key in ipairs(groupKeys(frame)) do place(frame, key) end
+    for _, key in ipairs(groupKeys(frame)) do
+        local entry = frame.auraContainers[key]
+        entry.container:ClearAllPoints()
+        if entry.ownContainer then entry.ownContainer:ClearAllPoints() end
+    end
+    for _, key in ipairs(groupKeys(frame)) do
+        place(frame, key)
+        if frame.auraContainers[key].ownContainer then placeOwn(frame, key) end
+    end
     if ns.WeaponEnchants then ns.WeaponEnchants.Layout(frame) end
 end
 
@@ -388,16 +459,21 @@ end)
 -- know: the frame's unit changed (party slots, test mode), or the same
 -- token now means someone else (a new target or focus) or has no aura
 -- events at all (target of target, on the frame's timer).
+local function refreshOne(container, unit, event)
+    if container:GetUnit() ~= unit then
+        container:SetUnit(unit)
+    elseif event ~= "UNIT_AURA" then
+        container:UpdateAllAuras()
+    end
+end
+
 function AuraContainers.Refresh(frame, event)
     if not frame.auraContainers then return end
     local unit = frame.unit or "none"
     for _, key in ipairs(groupKeys(frame)) do
-        local container = frame.auraContainers[key].container
-        if container:GetUnit() ~= unit then
-            container:SetUnit(unit)
-        elseif event ~= "UNIT_AURA" then
-            container:UpdateAllAuras()
-        end
+        local entry = frame.auraContainers[key]
+        refreshOne(entry.container, unit, event)
+        if entry.ownContainer then refreshOne(entry.ownContainer, unit, event) end
     end
 end
 
@@ -414,14 +490,20 @@ end)
 -- Test mode shows our samples instead (a container shows only real auras).
 function AuraContainers.Hide(frame)
     if not frame.auraContainers then return end
-    for _, key in ipairs(groupKeys(frame)) do frame.auraContainers[key].container:Hide() end
+    for _, key in ipairs(groupKeys(frame)) do
+        local entry = frame.auraContainers[key]
+        entry.container:Hide()
+        if entry.ownContainer then entry.ownContainer:Hide() end
+    end
 end
 
 ns.Listen("TEST_MODE", function(on)
     if on then return end
     for frame in pairs(all) do
         for _, key in ipairs(groupKeys(frame)) do
-            frame.auraContainers[key].container:SetShown(frame.auras[key].enabled)
+            local entry, enabled = frame.auraContainers[key], frame.auras[key].enabled
+            entry.container:SetShown(enabled)
+            if entry.ownContainer then entry.ownContainer:SetShown(enabled and entry.apart) end
         end
     end
 end)
