@@ -2472,10 +2472,18 @@ function M.Reset()
             return root
         end,
     }
+    -- C_AddOns.IsAddOnLoaded(name) -> loadedOrLoading, loaded
+    -- (AddOnsDocumentation.lua): the addons in M.loadedAddons (name ->
+    -- true), this one always.
+    M.loadedAddons = {}
     _G.C_AddOns = { GetAddOnMetadata = function(name, field)
         assert(name ~= nil and type(field) == "string", "GetAddOnMetadata: name and field required")
         if name == "ForeverUnitFrames" and field == "Version" then return M.addonVersion end
         return nil
+    end, IsAddOnLoaded = function(name)
+        assert(name ~= nil, "IsAddOnLoaded: name required")
+        local loaded = name == "ForeverUnitFrames" or M.loadedAddons[name] == true
+        return loaded, loaded
     end }
     -- Post-hook: the original runs first, then fn with the same arguments.
     _G.hooksecurefunc = function(tbl, name, fn)
