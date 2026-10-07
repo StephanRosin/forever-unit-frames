@@ -31,8 +31,11 @@ ns.News = News
 
 News.ENTRIES = {
     ["0.22.0"] = {
-        lines = { "NEWS_0_22_0_RAID", "NEWS_0_22_0_BLOCKS", "NEWS_0_22_0_PROFILES", "NEWS_0_22_0_DEBUFFS",
-            "NEWS_0_22_0_ICONS", "NEWS_0_22_0_WINDOW", "NEWS_0_22_0_BLIZZARD", "NEWS_0_22_0_LOOK" },
+        lines = { "NEWS_0_22_0_RAID", "NEWS_0_22_0_BLOCKS", "NEWS_0_22_0_PROFILES", "NEWS_0_22_0_TEMPLATES",
+            "NEWS_0_22_0_PANELS", "NEWS_0_22_0_OWN", "NEWS_0_22_0_DEBUFFS", "NEWS_0_22_0_ICONS",
+            "NEWS_0_22_0_CLICK", "NEWS_0_22_0_BUFFS", "NEWS_0_22_0_WINDOW", "NEWS_0_22_0_BLIZZARD",
+            "NEWS_0_22_0_UNITS", "NEWS_0_22_0_MENUS", "NEWS_0_22_0_RAID_OFF",
+            "NEWS_0_22_0_LOOK" },
         action = { text = "NEWS_OPEN_RAID", run = function() ns.RaidOptions.Open() end },
     },
 }

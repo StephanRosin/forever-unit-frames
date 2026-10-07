@@ -74,6 +74,7 @@ Source: [GitHub](https://github.com/StephanRosin/forever-unit-frames)
 |---|---|
 | `/fuf` | Opens the options |
 | `/fuf raid` | Opens the raid frames' options |
+| `/fuf raid off`, `/fuf raid on` | Switches the raid frames off (then `/reload`) or on, without the window |
 | `/fuf news` | Shows what's new in this version (shown once by itself after an update) |
 | `/fuf unlock`, `/fuf lock` | Lets you drag the unit frames, and locks them (and the raid panel) again |
 | `/fuf status` | Prints the client version and where the settings came from |
@@ -137,3 +138,7 @@ Questions that come up often: [[FAQ]].
 
 Suggestions and bug reports are welcome in the comments on CurseForge or as an issue on GitHub.
 Please mention the frame, the tab and the setting, and other addons involved if there are any.
+
+**Reporting bugs:** found a bug or a Lua error? Write to **foreverwowui@gmail.com** (also at the bottom
+of `/fuf news`). A Lua error in a raid: `/fuf raid off` and `/reload` switch the raid frames off;
+`/fuf raid on` switches them on again.

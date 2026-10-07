@@ -56,6 +56,14 @@ end
 -- Out of combat only: the next cast on the button, the key bound or not.
 function SmartBuff.Update()
     if InCombatLockdown() or not ns.RaidConfig.Profile() then return end
+    -- The raid frames off: no key, nothing made (a button made before
+    -- casts nothing).
+    if not ns.RaidPanel.Enabled() then
+        if SmartBuff.button then SmartBuff.Set(SmartBuff.button, nil) end
+        if owner and boundKey ~= "" then ClearOverrideBindings(owner) end
+        boundKey = ""
+        return
+    end
     local button = SmartBuff.button or create()
     local wanted = SmartBuff.Wanted()
     SmartBuff.Set(button, wanted and ns.RaidBuffWatch.Next() or nil)

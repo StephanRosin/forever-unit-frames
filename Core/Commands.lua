@@ -64,6 +64,17 @@ function Commands.ToggleRaidOptions()
     if Commands.IsReady() then ns.RaidOptions.Toggle() end
 end
 
+-- /fuf raid off | on: the raid frames' switch, set without the window
+-- (when the raid side raises, this still turns it off). The setting is
+-- stored before its listeners run: one that raises is printed, and the
+-- chat line follows when the value is in.
+function Commands.SetRaid(on)
+    local ok, err = pcall(ns.RaidConfig.Set, "general", "enabled", on)
+    if not ok then ns.Print(tostring(err)) end
+    local read, value = pcall(ns.RaidConfig.Get, "general", "enabled")
+    if read and value == on then ns.Print(on and L.RAID_SWITCH_ON or L.RAID_SWITCH_OFF) end
+end
+
 -- /fuf news: the news of this version again (Options/News.lua), or why
 -- not. What was recorded at login stays as it is.
 function Commands.ShowNews()
@@ -86,7 +97,12 @@ SlashCmdList.FOREVERUNITFRAMES = function(msg)
     elseif cmd == "help" then
         ns.Print(L.HELP)
     elseif cmd == "raid" then
-        Commands.ToggleRaidOptions()
+        local arg = rest:lower()
+        if arg == "off" or arg == "on" then
+            Commands.SetRaid(arg == "on")
+        else
+            Commands.ToggleRaidOptions()
+        end
     elseif cmd == "news" then
         Commands.ShowNews()
     elseif cmd == "unlock" then

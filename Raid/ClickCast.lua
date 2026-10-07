@@ -122,7 +122,7 @@ end
 
 -- On: switched on, or automatic while no Clique is loaded.
 function ClickCast.On()
-    if not ns.RaidConfig.Profile() then return false end
+    if not ns.RaidPanel.Enabled() then return false end
     local mode = ns.RaidConfig.Get("general", "clickCast")
     return mode == "ON" or (mode == "AUTO" and not ClickCast.Clique())
 end
@@ -195,6 +195,14 @@ local function frames()
     return list
 end
 
+-- Whether a frame holds bindings we wrote (to take back when off).
+local function anyWritten()
+    for _, frame in ipairs(frames()) do
+        if frame.clickCastNames then return true end
+    end
+    return false
+end
+
 -- The bindings' and the XML's attribute values, by name.
 local function planned()
     return valuesOf(ClickCast.Plan(ClickCast.Values())), valuesOf(ClickCast.Plan(ClickCast.DefaultValues()))
@@ -202,6 +210,7 @@ end
 
 function ClickCast.ApplyAll()
     if InCombatLockdown() or not ns.RaidConfig.Profile() then return end
+    if not ClickCast.On() and not anyWritten() then return end
     local values, defaults = planned()
     for _, frame in ipairs(frames()) do apply(frame, values, defaults) end
 end
@@ -215,7 +224,8 @@ function ClickCast.Added(frame)
         applyAfterCombat()
         return
     end
-    if not ns.RaidConfig.Profile() then return end
+    -- Off (or the raid frames off): a new frame keeps the XML's.
+    if not ClickCast.On() then return end
     apply(frame, planned())
 end
 
@@ -227,5 +237,5 @@ for key in pairs(ClickCast.KEYS) do ns.RaidPanel.UNRELATED_KEYS[key] = true end
 
 ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
     if scope ~= nil and scope ~= "general" then return end
-    if key == nil or ClickCast.KEYS[key] then applyAfterCombat() end
+    if key == nil or key == "enabled" or ClickCast.KEYS[key] then applyAfterCombat() end
 end)

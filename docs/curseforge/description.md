@@ -35,16 +35,19 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 - 2D or 3D portraits, for players and creatures.
 
 ## Raid frames
-- Raid frames for 10, 20 and 40 players in the look of the unit frames: a panel of blocks (raid groups, classes, roles, or one block for everyone), side by side or stacked, wrapping after a number of your choice, with a gold border around the panel (borders around each block and each cell can be switched on).
-- Three profiles per character, one per raid size. The size follows the raid instance (outside one, the size of the group), or is fixed. Copy a size from another size or from another of your characters, reset it, or export and import one size as a text.
-- Cells with a look of their own per raid size, independent of the party frame: bar texture, background, font, name and second-line sizes, outline and shadow, the colours of the name and the second line, a border in its own style, thickness and colour, rounded corners.
-- Health in the class colour, a fixed colour or a gradient; name and missing health (or percent, or current health) in the middle; Dead, Ghost, Offline and AFK in place of the number; a thin power strip for everyone, mana users or healers; incoming heals, an overheal lane, shields and damage and heal numbers, each switched on or off.
-- The most important debuff you can dispel (or any dispellable debuff) as an icon in the centre, bordered in its type's colour, or as a small square in a corner (from a single pixel) in that colour, beside a corner indicator in the same corner; the whole cell can take that colour, and a row of debuffs can be switched on that shows every debuff (the one in the centre may appear there too).
-- Up to five corner indicators for spells of your choice (heals over time, shields): spell IDs, or spell names from your spell book (a name stands for every rank you know; a name it does not know is named in the chat). Each with its colour, size, your own casts only, and the time left as a darkening or a number. The game's aura containers fill them, so they keep updating in combat.
-- Icons for the role, the raid target marker, the leader and assistants, the master looter and the ready check, each at a point of your choice. Members out of range fade; a red line inside the cell shows aggro, a light one your target.
-- Within a block: raid order, name or role; class blocks in an order of your choice.
-- A 5-player group can be shown as a raid as well; Blizzard's raid frames hide while ours are on (unless you switch that off).
-- `/fuf raid` opens the raid options window; so do a button in `/fuf`, the raid frames' own minimap button (drag it, or hide it) and their entry in Blizzard's addon compartment. Its test mode shows a pretend raid of the size you edit, at that size's place: mixed classes and roles, one member dead, one offline, one out of range, debuffs and indicators.
+- Raid frames for 10, 20 and 40 players in the look of the unit frames: a panel of blocks (raid groups, classes, roles, or one block for everyone), side by side or stacked, sorted by raid order, name or role. Blizzard's raid frames hide while ours are on; a 5-player group can be shown as a raid too.
+- A profile per raid size and character, each with a look of its own (texture, fonts, colours, border, rounded corners). The size follows the raid instance, or is fixed.
+- Health in the class colour, a fixed colour or a gradient; name and missing health in the middle; Dead, Ghost, Offline and AFK; a thin power strip; incoming heals, shields and damage and heal numbers.
+- Dispellable debuffs as an icon in the centre or a coloured square in a corner, and a debuff row. Up to five corner indicators for your heals over time and shields, by spell ID or by name from your spell book; they keep updating in combat.
+- Icons for role, raid marker, leader, master looter and ready check; members out of range fade; lines in the cell show aggro and your target.
+- **Special panels:** main tanks, main assists, your own tanks, favorites (right-click a cell to add a player) and the raid's pets, each in a panel of its own.
+- **Own panels:** up to nine panels of your own beside the main panel; drag a block from one panel to another (a "Healers" panel beside the groups).
+- **Raid tools bar** in place of Blizzard's raid manager: raid target icons, ready check, role poll, world markers, everyone assistant, party/raid conversion and the loot method.
+- **Click-casting:** spells, items, macros, target, focus, assist and the menu on up to 40 mouse combinations over the cells and the party frames, and keys that cast on the member under the mouse. Steps aside while Clique is loaded.
+- **Buff watch:** missing and expiring group buffs of your class in a small window and on the cells; a click or the smart buff key casts the next one, out of combat.
+- **Templates and setup wizard:** role templates (healer, tank, DPS, dispel only), looks (Forever, Flat, Classic) and a wizard that sets role, look and click-casting in a few steps. Named profiles of all sizes or one for every character of your account; copy, reset, export and import all sizes or one; one step of undo.
+- `/fuf raid` opens the raid options window (top bar General | 10 | 20 | 40 | Profiles); so do a button in `/fuf`, the raid frames' own minimap button and the addon compartment. Its test mode shows a pretend raid of the size you edit.
+- Trouble in a raid? `/fuf raid off` and `/reload` switch the raid frames off and bring back Blizzard's; `/fuf raid on` switches them on again.
 
 ## Status
 In a "Status" tab per frame.
@@ -100,11 +103,13 @@ In a "Status" tab per frame.
 - Settings are stored compactly. They can be exported and imported as a string. Importing a profile keeps your own language.
 
 ## Commands
-`/fuf` (options), `/fuf raid` (raid frames' options), `/fuf news` (what's new in this version), `/fuf unlock`, `/fuf lock`, `/fuf status`, `/fuf reset <frame|all>`, `/fuf set <scope> <setting> <value>`
+`/fuf` (options), `/fuf raid` (raid frames' options), `/fuf raid off` / `/fuf raid on`, `/fuf news` (what's new in this version), `/fuf unlock`, `/fuf lock`, `/fuf status`, `/fuf reset <frame|all>`, `/fuf set <scope> <setting> <value>`
 
 ## Notes
 - Made for WoW: Forever only. It relies on Forever's API and will not load on other clients.
 - Languages: English, German (Deutsch), Spanish (Español, also for Latin American clients) and French (Français). The addon follows the game's language; a dropdown at the bottom of the options window's frame list picks another one, and the change applies at once. Other game languages use English.
 - The translations were not written by native speakers: corrections are very welcome on the issue tracker.
 - Updating from 0.2.x: the settings backup in the "FUF Save" character macros is no longer needed. Settings found only there are moved to the normal saved settings once, then the addon deletes its own backup macros.
-- Bug reports and ideas are welcome on the project's issue tracker.
+
+## Feedback
+Found a bug or a Lua error, or have an idea? Write to **foreverwowui@gmail.com** or leave a comment here on CurseForge. Please mention the frame, the tab and the setting, and other addons involved.

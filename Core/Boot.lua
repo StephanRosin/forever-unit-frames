@@ -13,6 +13,9 @@ local function afterBuild()
     for _, frame in pairs(ns.Frames) do ns.Castbar.AttachMover(frame) end
 end
 
+local startRaid   -- below
+local raidReady = false   -- login has come this far
+
 ns.On("PLAYER_LOGIN", function()
     if ns.booted then return end
     ns.booted = true
@@ -41,6 +44,21 @@ ns.On("PLAYER_LOGIN", function()
     ns.RaidTemplates.AttachOwn(ForeverUnitFramesDB)
     ns.RaidMinimapButton.Create()
     ns.RaidSize.Update()
+    raidReady = true
+    startRaid()
+    ns.Blizzard.HideRaid()
+    -- What's new follows once the loading screen is gone (Core/News.lua).
+end)
+
+-- The raid frames' panels, tools bar, buff window, click-casting, keys
+-- and smart buff key: built at login while the raid frames are on, else
+-- the first time they are switched on. Switched off (the window's switch,
+-- or /fuf raid off when the raid side raises), none of it runs after a
+-- /reload; the minimap button and the window stay to switch them on.
+local raidStarted = false
+startRaid = function()
+    if raidStarted or not raidReady or not ns.RaidPanel.Enabled() then return end
+    raidStarted = true
     ns.AfterCombat("raidCreate", ns.RaidHeader.Create)
     ns.AfterCombat("raidToolsCreate", ns.RaidTools.Create)
     ns.AfterCombat("raidBuffWindowCreate", ns.RaidBuffWindow.Create)
@@ -49,8 +67,10 @@ ns.On("PLAYER_LOGIN", function()
     ns.AfterCombat("clickKeys", ns.ClickKeys.Update)
     -- The smart buff key's button (Raid/SmartBuff.lua).
     ns.AfterCombat("smartBuff", ns.SmartBuff.Update)
-    ns.Blizzard.HideRaid()
-    -- What's new follows once the loading screen is gone (Core/News.lua).
+end
+
+ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
+    if scope == nil or (scope == "general" and (key == nil or key == "enabled")) then startRaid() end
 end)
 
 ns.Listen("CONFIG_CHANGED", function()

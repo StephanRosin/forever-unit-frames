@@ -57,7 +57,14 @@ It is hidden with Blizzard's raid frames. The raid tools bar (**Tools** tab of `
 work: the handle on the right edge of the raid panel folds it out. Tools only the leader and
 assistants may use show for them only.
 
+### Lua error in a raid?
+
+Type `/fuf raid off` and then `/reload`: our raid frames are off, none of their code runs, and
+Blizzard's raid frames are back. `/fuf raid on` switches them on again. Please report the error (below).
+
 ### I found a bug or have an idea
 
-Comments on CurseForge or an issue on GitHub. The more exact the better: which frame, which tab and
-setting, what you expected, and other addons involved.
+**Reporting bugs:** write to **foreverwowui@gmail.com** (the address is also at the bottom of the
+What's New window, `/fuf news`), comment on CurseForge or open an issue on GitHub. The more exact the
+better: which frame, which tab and setting, what you expected, the Lua error's text, and other addons
+involved.

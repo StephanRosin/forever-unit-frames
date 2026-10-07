@@ -277,15 +277,19 @@ end, layout = function(row)
     row:SetSize(x, Tools.ICON)
 end })
 
+-- Only while the bar exists (the raid frames have been on).
 ns.On("READY_CHECK", function()
+    if not Tools.bar then return end
     countReady()
     renderReady()
 end)
 ns.On("READY_CHECK_CONFIRM", function()
+    if not Tools.bar then return end
     countReady()
     renderReady()
 end)
 ns.On("READY_CHECK_FINISHED", function()
+    if not Tools.bar then return end
     finishReady()
     renderReady()
 end)

@@ -75,6 +75,11 @@ end
 -- Out of combat only: the bindings anew.
 function ClickKeys.Update()
     if InCombatLockdown() or not ns.RaidConfig.Profile() then return end
+    -- The raid frames off: no keys, nothing made.
+    if not ns.RaidPanel.Enabled() then
+        if owner then ClearOverrideBindings(owner) end
+        return
+    end
     watchParty()
     owner = owner or CreateFrame("Frame", nil, UIParent)
     ClearOverrideBindings(owner)

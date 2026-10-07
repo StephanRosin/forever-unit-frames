@@ -1,6 +1,8 @@
 -- The What's New window (Options/News.lua) and the news it shows
 -- (Core/News.lua): one line per entry, in the style of the options
--- windows; the entry's action button and Close; ESC; the language.
+-- windows; the entry's action button and Close; ESC; the language; the
+-- list scrolling when it is taller than the window; the bug report
+-- address.
 local M = H.M
 local ns = H.LoadAddon()
 M.units.player = { name = "Me", class = "MAGE", health = 1, healthMax = 1 }
@@ -52,11 +54,22 @@ H.check("not protected", f:IsProtected(), false)
 local escCount = 0
 for _, name in ipairs(UISpecialFrames) do if name == "ForeverUnitFramesNews" then escCount = escCount + 1 end end
 H.check("ESC closes it", escCount, 1)
-H.check("eight lines", shownLines(), 8)
+local LINES = #News.Entry("0.22.0").lines
+H.check("sixteen lines", shownLines(), 16)
 H.check("raid frames first", NW.lines[1].text:GetText(), L.NEWS_0_22_0_RAID)
-H.check("the raid's last line", NW.lines[7].text:GetText(), L.NEWS_0_22_0_BLIZZARD)
+H.check("the raid's last line", NW.lines[12].text:GetText(), L.NEWS_0_22_0_BLIZZARD)
+H.check("then the unit frames", NW.lines[13].text:GetText(), L.NEWS_0_22_0_UNITS)
+H.check("the raid frames' emergency switch", NW.lines[15].text:GetText(), L.NEWS_0_22_0_RAID_OFF)
+H.checkTrue("it names /fuf raid off", L.NEWS_0_22_0_RAID_OFF:find("/fuf raid off", 1, true))
 -- The shipped look's changes (decision 70), last.
-H.check("the last line: the unit frames' look", NW.lines[8].text:GetText(), L.NEWS_0_22_0_LOOK)
+H.check("the last line: the unit frames' look", NW.lines[LINES].text:GetText(), L.NEWS_0_22_0_LOOK)
+-- The top bar of the raid window as it reads now.
+H.checkTrue("the window line names the top bar", L.NEWS_0_22_0_WINDOW:find("General | 10 | 20 | 40 | Profiles", 1, true))
+for _, code in ipairs({ "deDE", "frFR", "esES" }) do
+    local tr = ns.Locales[code]
+    H.checkTrue(code .. ": the window line names the top bar",
+        tr.NEWS_0_22_0_WINDOW:find(tr.RAID_TAB_general .. " | 10 | 20 | 40 | " .. tr.RAID_PROFILES_TAB, 1, true))
+end
 H.checkTrue("it names the faded opacity", L.NEWS_0_22_0_LOOK:find("25", 1, true))
 H.check("a bullet each", NW.lines[3].bullet:GetText(), "•")
 local _, below = NW.lines[2].text:GetPoint(1)
@@ -99,7 +112,7 @@ H.check("its lines only", shownLines(), 2)
 H.check("its title", f.titleBar.title:GetText(), "What's new in 9.9.9")
 H.check("no action button", NW.actionButton:IsShown(), false)
 NW.Open("0.22.0")
-H.check("all lines again", shownLines(), 8)
+H.check("all lines again", shownLines(), LINES)
 H.checkTrue("action button again", NW.actionButton:IsShown())
 News.ENTRIES["9.9.9"] = nil
 NW.Close()
@@ -133,29 +146,90 @@ enUS.NEWS_OPEN_RAID = openRaid
 NW.Open("0.22.0")
 H.check("the wide button again", NW.actionButton:GetWidth(), 160)
 
--- The window grows with its list, between 440 and 600.
-local function listFits()
-    local need = 32 + 16 + 16 + 40
-    for i = 1, 8 do need = need + NW.lines[i].text:GetStringHeight() end
-    return f:GetHeight() >= math.min(600, need + 6 * 8)
+-- The window grows with its list, between 440 and 600; a longer list
+-- scrolls: the view is what the window leaves between the title bar and
+-- the bug report area, the rest is the scroll range.
+local FIXED = 32 + 16 + 16 + 52 + 40
+local function listHeight(count)
+    local h = 0
+    for i = 1, count do h = h + NW.lines[i].text:GetStringHeight() end
+    return h + (count - 1) * 8
+end
+local function listFits(count)
+    local list = listHeight(count)
+    local view = NW.scroll:GetHeight()
+    return f:GetHeight() == math.min(600, math.max(440, FIXED + list)) and view == f:GetHeight() - FIXED
+        and NW.listChild:GetHeight() == list and NW.scrollRange == math.max(0, list - view)
 end
 for _, code in ipairs({ "enUS", "deDE", "frFR", "esES" }) do
     ns.Config.Set("general", "language", code == "enUS" and "AUTO" or code)
-    H.checkTrue(code .. ": the list fits", listFits())
+    H.checkTrue(code .. ": the list fits or scrolls", listFits(LINES))
 end
 ns.Config.Set("general", "language", "AUTO")
+H.check("the long list: the most height", f:GetHeight(), 600)
+H.checkTrue("it scrolls", NW.scrollRange > 0)
+H.checkTrue("its bar shows", NW.scrollThumb:IsShown())
+H.check("from the top", NW.scroll:GetVerticalScroll(), 0)
+H.check("lines in the scroll child", NW.lines[1].text:GetParent(), NW.listChild)
+local wheel = NW.scroll:GetScript("OnMouseWheel")
+wheel(NW.scroll, -1)
+H.check("the wheel scrolls down", NW.scroll:GetVerticalScroll(), 20)
+wheel(NW.scroll, 1); wheel(NW.scroll, 1)
+H.check("not above the top", NW.scroll:GetVerticalScroll(), 0)
+for _ = 1, 200 do wheel(NW.scroll, -1) end
+H.check("not below the end", NW.scroll:GetVerticalScroll(), NW.scrollRange)
+NW.Open("0.22.0")
+H.check("opening again: from the top", NW.scroll:GetVerticalScroll(), 0)
+-- A short list: the least height, nothing to scroll.
+News.ENTRIES["9.9.9"] = { lines = { "NEWS_0_22_0_RAID", "NEWS_0_22_0_ICONS" } }
+NW.Open("9.9.9")
 H.check("short list: the least height", f:GetHeight(), 440)
+H.checkTrue("short list: it fits", listFits(2))
+H.check("short list: no scrolling", NW.scrollRange, 0)
+H.check("short list: no bar", NW.scrollThumb:IsShown(), false)
 local raidLine = enUS.NEWS_0_22_0_RAID
-enUS.NEWS_0_22_0_RAID = string.rep("A much longer line. ", 30)
-NW.Open("0.22.0")
+enUS.NEWS_0_22_0_RAID = string.rep("A much longer line. ", 80)
+NW.Open("9.9.9")
 H.checkTrue("taller lines: taller window", f:GetHeight() > 440)
-H.checkTrue("taller lines: the list fits", listFits())
+H.checkTrue("taller lines: the list fits", listFits(2))
 enUS.NEWS_0_22_0_RAID = string.rep("A much longer line. ", 300)
-NW.Open("0.22.0")
+NW.Open("9.9.9")
 H.check("at most 600", f:GetHeight(), 600)
+H.checkTrue("at most 600: it scrolls", listFits(2) and NW.scrollRange > 0)
 enUS.NEWS_0_22_0_RAID = raidLine
-NW.Open("0.22.0")
+NW.Open("9.9.9")
 H.check("the least height again", f:GetHeight(), 440)
+News.ENTRIES["9.9.9"] = nil
+
+-- Where to report a bug: a hint and the address, selected in full on
+-- focus and on a click so Ctrl+C copies it, put back when typed over.
+NW.Open("0.22.0")
+local box = NW.bugAddress
+H.check("bug hint", NW.bugHint:GetText(), "Found a bug or a Lua error? Please tell us:")
+H.check("the address", box:GetText(), "foreverwowui@gmail.com")
+H.check("it does not take the focus by itself", box._autoFocus, false)
+H.checkTrue("above the footer", select(2, f.report:GetPoint(1)) == f.footer)
+box:SetFocus(); box:GetScript("OnEditFocusGained")(box)
+H.check("focus selects it all", box._highlighted and #box._highlighted, 0)
+box._highlighted = nil
+box:GetScript("OnMouseUp")(box, "LeftButton")
+H.checkTrue("a click selects it all", box._highlighted and box._highlighted[1] == nil)
+M.Type(box, "foreverwowui@gmail.co")
+H.check("typed over: put back", box:GetText(), "foreverwowui@gmail.com")
+H.checkTrue("typed over: selected again", box._highlighted and box._highlighted[1] == nil)
+H.checkTrue("Enter lets go", M.PressEnter(box) and not box:HasFocus())
+box:SetFocus()
+H.checkTrue("ESC lets go", M.PressEscape(box) and not box:HasFocus())
+H.checkTrue("the window stays", NW.IsOpen())
+M.LeaveBox(box)
+H.check("leaving: nothing selected", box._highlighted[1], 0)
+for _, code in ipairs({ "deDE", "frFR", "esES" }) do
+    ns.Config.Set("general", "language", code)
+    H.check(code .. " bug hint", NW.bugHint:GetText(), ns.Locales[code].NEWS_BUG)
+    H.check(code .. ": the address stays", box:GetText(), "foreverwowui@gmail.com")
+end
+ns.Config.Set("general", "language", "AUTO")
+NW.Close()
 
 -- An entry that vanishes while it is shown: a new language renders nothing.
 News.ENTRIES["9.9.9"] = { lines = { "NEWS_0_22_0_RAID" } }

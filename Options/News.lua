@@ -5,8 +5,12 @@ local _, ns = ...
 -- close cross). Its left button runs the entry's action (0.22.0: opens
 -- the raid options window) and closes it; Close closes it. A plain
 -- (non-secure) frame; ESC closes it too; /fuf news opens it again (its
--- footer says so). Every text is set when it opens, and again when the
--- language changes while it is open.
+-- footer says so). The list scrolls (mouse wheel) when it is taller than
+-- the window allows. Above the footer, where to report a bug: the
+-- project's address in a box that looks read-only and selects it all on
+-- focus or click, so Ctrl+C copies it; typing puts it back. Every text is
+-- set when it opens, and again when the language changes while it is
+-- open.
 local NewsWindow = {}
 ns.NewsWindow = NewsWindow
 
@@ -15,6 +19,10 @@ local Style, Widgets, L = ns.Style, ns.Widgets, ns.L
 local WINDOW_NAME = "ForeverUnitFramesNews"
 local WIDTH, MIN_HEIGHT, MAX_HEIGHT = 560, 440, 600
 local TITLE_H, FOOTER_H, INSET, LINE_GAP, BULLET_W = 32, 40, 16, 8, 12
+-- The bug report area: its hint on top, the address box below.
+local REPORT_H, REPORT_TOP, ADDRESS_W, ADDRESS_H = 52, 8, 260, 20
+local WHEEL_STEP, THUMB_W = 20, 2
+NewsWindow.BUG_ADDRESS = "foreverwowui@gmail.com"
 local FONT_SIZE = 13
 local BUTTON_W, WIDE_BUTTON_W, GAP, FOOTER_INSET, BUTTON_PADDING = 120, 160, 8, 12, 16
 -- The widest action button: what the footer leaves beside the Close
@@ -107,6 +115,80 @@ local function createFooter(parent)
     return footer
 end
 
+-- The address: selected in full on focus and click, put back when typed
+-- over; ESC and Enter let go of the focus.
+local function selectAll(box) box:HighlightText() end
+local function createAddressBox(parent)
+    local box = CreateFrame("EditBox", nil, parent)
+    box:SetSize(ADDRESS_W, ADDRESS_H)
+    box:SetAutoFocus(false)
+    box:SetFont(ns.Media.Font("Friz Quadrata"), 12, "")
+    Style.Paint(box, "accent")
+    box:SetText(NewsWindow.BUG_ADDRESS)
+    box:SetCursorPosition(0)
+    box:SetScript("OnEditFocusGained", selectAll)
+    box:SetScript("OnMouseUp", selectAll)
+    box:SetScript("OnEditFocusLost", function(self) self:HighlightText(0, 0) end)
+    box:SetScript("OnTextChanged", function(self, userInput)
+        if not userInput then return end
+        self:SetText(NewsWindow.BUG_ADDRESS)
+        self:HighlightText()
+    end)
+    box:SetScript("OnEscapePressed", box.ClearFocus)
+    box:SetScript("OnEnterPressed", box.ClearFocus)
+    return box
+end
+
+local function createReport(parent)
+    local report = CreateFrame("Frame", nil, parent)
+    report:SetHeight(REPORT_H)
+    report:SetPoint("BOTTOMLEFT", parent.footer, "TOPLEFT")
+    report:SetPoint("BOTTOMRIGHT", parent.footer, "TOPRIGHT")
+    horizontalLine(report, "TOP")
+    local hint = Style.Text(report, 11, "muted")
+    hint:SetPoint("TOPLEFT", report, "TOPLEFT", INSET, -REPORT_TOP)
+    hint:SetJustifyH("LEFT")
+    local address = createAddressBox(report)
+    address:SetPoint("TOPLEFT", hint, "BOTTOMLEFT", 0, -4)
+    NewsWindow.bugHint, NewsWindow.bugAddress = hint, address
+    return report
+end
+
+-- The list: a scroll frame between the title bar and the report area; a
+-- thin bar on its right shows where the view is while it scrolls.
+local function updateThumb()
+    local scroll, thumb = NewsWindow.scroll, NewsWindow.scrollThumb
+    local view, range = scroll:GetHeight(), NewsWindow.scrollRange or 0
+    if range <= 0 then thumb:Hide(); return end
+    local thumbH = math.max(20, view * view / (view + range))
+    thumb:SetHeight(thumbH)
+    thumb:ClearAllPoints()
+    thumb:SetPoint("TOPRIGHT", scroll, "TOPRIGHT", -4, -(view - thumbH) * scroll:GetVerticalScroll() / range)
+    thumb:Show()
+end
+
+local function onWheel(scroll, delta)
+    local v = scroll:GetVerticalScroll() - delta * WHEEL_STEP
+    scroll:SetVerticalScroll(math.max(0, math.min(NewsWindow.scrollRange or 0, v)))
+    updateThumb()
+end
+
+local function createList(parent)
+    local scroll = CreateFrame("ScrollFrame", nil, parent)
+    scroll:SetPoint("TOPLEFT", parent.titleBar, "BOTTOMLEFT", 0, -INSET)
+    scroll:SetSize(WIDTH, 1)
+    scroll:EnableMouseWheel(true)
+    scroll:SetScript("OnMouseWheel", onWheel)
+    local child = CreateFrame("Frame", nil, scroll)
+    child:SetSize(WIDTH, 1)
+    scroll:SetScrollChild(child)
+    local thumb = parent:CreateTexture(nil, "ARTWORK")
+    thumb:SetColorTexture(unpack(Style.COLORS.accent))
+    thumb:SetWidth(THUMB_W)
+    thumb:Hide()
+    NewsWindow.scroll, NewsWindow.listChild, NewsWindow.scrollThumb = scroll, child, thumb
+end
+
 local function createWindow()
     frame = CreateFrame("Frame", WINDOW_NAME, UIParent)
     NewsWindow.frame = frame
@@ -122,6 +204,8 @@ local function createWindow()
     Style.Border(frame)
     frame.titleBar = createTitleBar(frame)
     frame.footer = createFooter(frame)
+    frame.report = createReport(frame)
+    createList(frame)
     NewsWindow.lines = {}
     frame:Hide()
     table.insert(UISpecialFrames, WINDOW_NAME)
@@ -131,14 +215,15 @@ end
 local function listLine(i)
     local entry = NewsWindow.lines[i]
     if entry then return entry end
-    local bullet = Style.Text(frame, FONT_SIZE, "accent")
+    local child = NewsWindow.listChild
+    local bullet = Style.Text(child, FONT_SIZE, "accent")
     bullet:SetText("•")
-    local text = Style.Text(frame, FONT_SIZE, "text")
+    local text = Style.Text(child, FONT_SIZE, "text")
     text:SetWidth(WIDTH - 2 * INSET - BULLET_W)
     text:SetJustifyH("LEFT")
     text:SetWordWrap(true)
     if i == 1 then
-        text:SetPoint("TOPLEFT", frame.titleBar, "BOTTOMLEFT", INSET + BULLET_W, -INSET)
+        text:SetPoint("TOPLEFT", child, "TOPLEFT", INSET + BULLET_W, 0)
     else
         text:SetPoint("TOPLEFT", NewsWindow.lines[i - 1].text, "BOTTOMLEFT", 0, -LINE_GAP)
     end
@@ -160,8 +245,10 @@ local function fitActionButton()
     button:SetWidth(width)
 end
 
--- The window as tall as its list (between MIN_HEIGHT and MAX_HEIGHT). A
--- line the client has not measured counts as one line of text.
+-- The window as tall as its list (between MIN_HEIGHT and MAX_HEIGHT); a
+-- longer list scrolls, from its top. A line the client has not measured
+-- counts as one line of text.
+local FIXED_H = TITLE_H + INSET + INSET + REPORT_H + FOOTER_H
 local function fitHeight(count)
     local listHeight = 0
     for i = 1, count do
@@ -170,8 +257,15 @@ local function fitHeight(count)
         listHeight = listHeight + h
     end
     listHeight = listHeight + math.max(0, count - 1) * LINE_GAP
-    local height = TITLE_H + INSET + listHeight + INSET + FOOTER_H
-    frame:SetHeight(math.min(MAX_HEIGHT, math.max(MIN_HEIGHT, height)))
+    local height = math.min(MAX_HEIGHT, math.max(MIN_HEIGHT, FIXED_H + listHeight))
+    frame:SetHeight(height)
+    local view = height - FIXED_H
+    NewsWindow.listChild:SetHeight(math.max(1, listHeight))
+    NewsWindow.scroll:SetHeight(view)
+    NewsWindow.scrollRange = math.max(0, listHeight - view)
+    NewsWindow.scroll:UpdateScrollChildRect()
+    NewsWindow.scroll:SetVerticalScroll(0)
+    updateThumb()
 end
 
 local function render()
@@ -189,6 +283,7 @@ local function render()
     end
     NewsWindow.closeButton.text:SetText(L.NEWS_CLOSE)
     NewsWindow.hint:SetText(L.NEWS_AGAIN)
+    NewsWindow.bugHint:SetText(L.NEWS_BUG)
     local action = entry.action
     NewsWindow.actionButton:SetShown(action ~= nil)
     if action then

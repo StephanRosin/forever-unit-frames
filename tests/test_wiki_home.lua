@@ -34,3 +34,12 @@ end
 H.checkTrue("Home: the elite marker under Status", home:find("[[Status|Settings-Status]] – combat, PvP and status icons, raid markers, the elite marker", 1, true))
 H.checkTrue("Home: the Profiles tab starts with templates",
     home:find("The **Profiles** tab (beside the sizes) starts with the role templates", 1, true))
+-- Where to report a bug, and the raid frames' emergency switch.
+H.checkTrue("FAQ: a Lua error in a raid", faq:find("### Lua error in a raid?", 1, true)
+    and faq:find("`/fuf raid off` and then `/reload`", 1, true))
+H.checkTrue("FAQ: reporting bugs", faq:find("**Reporting bugs:**", 1, true) and faq:find("foreverwowui@gmail.com", 1, true))
+H.checkTrue("Home: reporting bugs", home:find("**Reporting bugs:**", 1, true) and home:find("foreverwowui@gmail.com", 1, true))
+H.checkTrue("Home: the switch in the commands", home:find("| `/fuf raid off`, `/fuf raid on` |", 1, true))
+local description = H.ReadFile("docs/curseforge/description.md")
+H.checkTrue("description: feedback", description:find("## Feedback", 1, true) and description:find("foreverwowui@gmail.com", 1, true))
+H.checkTrue("description: the switch", description:find("`/fuf raid off`", 1, true))
