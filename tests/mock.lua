@@ -1049,6 +1049,11 @@ local function newWidget(kind, name, parent)
         self._atlas = atlas; self._texture = nil
     end
     function w:SetTexCoord(...) self._texCoord = { ... } end
+    -- SimpleTextureBaseAPI: radians, may be secret (AllowedWhenTainted).
+    function w:SetRotation(radians)
+        assert(type(M.Reveal(radians)) == "number", "SetRotation: radians must be a number")
+        self._rotation = M.Reveal(radians)
+    end
     -- Takes a secret boolean (AllowedWhenTainted).
     function w:SetDesaturated(v)
         assert(type(M.Reveal(v)) == "boolean", "SetDesaturated: value must be a boolean")
