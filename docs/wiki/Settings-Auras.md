@@ -100,6 +100,8 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 
 ## Hidden auras
 
+Auras hidden by spell, such as a campfire or a food buff: the list under General > Appearance hides them on every frame and raid cell, each frame's own list on that frame (both apply; each raid size has one too, on the raid window's Debuffs tab). Type spell IDs or names (several, separated by commas) and press Enter; a name adds the ranks in your spell book and the game's own spell of that name, other ranks go in by ID. Up to 100 spells per list. Faster: **Shift + right-click** on a frame's auras lists that row's auras, out of combat; pick one to hide it on that frame (**Shift + Ctrl**: everywhere). `/fuf auras undo` takes the last one back. The game decides where a spell can be hidden: buffs on you, your group, pets and other friendly units; debuffs only on enemies, except spells the game never keeps secret (those everywhere). The list marks entries that will not hide everywhere on its frames.
+
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>

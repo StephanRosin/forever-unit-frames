@@ -169,6 +169,20 @@ local SECTION_NOTE = {
         .. " fades, and shows in full while you miss health. Meanwhile the pet frame's own range fading waits;"
         .. " it is back whenever something keeps the player frame in full (combat, a cast, a target, test mode,"
         .. " unlocked frames).",
+    auraBlock = "Auras hidden by spell, such as a campfire or a food buff: the list under General > Appearance"
+        .. " hides them on every frame and raid cell, each frame's own list on that frame (both apply; each raid"
+        .. " size has one too, on the raid window's Debuffs tab). Type spell IDs or names (several, separated by"
+        .. " commas) and press Enter; a name adds the ranks in your spell book and the game's own spell of that"
+        .. " name, other ranks go in by ID. Up to " .. ns.AuraBlocklist.MAX .. " spells per list. Faster:"
+        .. " **Shift + right-click** on a frame's auras lists that row's auras, out of combat; pick one to hide it on"
+        .. " that frame (**Shift + Ctrl**: everywhere). `/fuf auras undo` takes the last one back. The game decides"
+        .. " where a spell can be hidden: buffs on you, your group, pets and other friendly units; debuffs only on"
+        .. " enemies, except spells the game never keeps secret (those everywhere). The list marks entries that"
+        .. " will not hide everywhere on its frames.",
+    clickCast = "The raid window's click-casting bindings (`/fuf raid` > General > Click-casting) on this frame:"
+        .. " one switch on General for every unit frame, each frame can differ on its Layout tab. Works while the"
+        .. " raid frames are off. With the default bindings nothing changes (left click targets, right click opens"
+        .. " the menu).",
 }
 
 -- One table per section: option, what it does, choices, default, frames.
@@ -181,6 +195,11 @@ local function section(lines, sec, keys, scopesFor, showFrames, level)
     end
     if sec.action then
         lines[#lines + 1] = ("Button: **%s**."):format(label("ACTION_" .. sec.action, sec.action))
+        lines[#lines + 1] = ""
+    end
+    if sec.editBindings and showFrames == false then
+        lines[#lines + 1] = ("Button: **%s** (opens the raid window's click-casting tab)."):format(
+            label("CLICK_CAST_EDIT", "Edit bindings"))
         lines[#lines + 1] = ""
     end
     tableStart(lines, showFrames and 5 or 4)
@@ -305,7 +324,10 @@ local RAID_TAB_INTRO = {
     tools = "The raid tools bar, in place of Blizzard's raid manager: where it is and which tools it holds.",
     texts = "The name and the second line in the middle of each cell: their colors and fonts.",
     debuffs = "The most important dispellable debuff, as an icon in the center or a square in a corner, and a"
-        .. " row that shows every debuff (the one in the center may appear there too).",
+        .. " row that shows every debuff (the one in the center may appear there too). Hidden auras: spells this"
+        .. " size leaves out of the debuff row and the corner indicators, together with the unit frames' list"
+        .. " for everywhere (General > Appearance); on your group the game hides debuffs only for spells it never"
+        .. " keeps secret.",
     indicators = "Up to five small squares at the corners and the top edge, each for spells of your choice"
         .. " (heals over time, shields).",
     clickCast = "Heal, decurse, target, assist or focus raid members with one click: up to 40 mouse combinations"

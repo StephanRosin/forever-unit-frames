@@ -87,6 +87,8 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 
 ## Click-casting
 
+The raid window's click-casting bindings (`/fuf raid` > General > Click-casting) on this frame: one switch on General for every unit frame, each frame can differ on its Layout tab. Works while the raid frames are off. With the default bindings nothing changes (left click targets, right click opens the menu).
+
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
