@@ -75,15 +75,6 @@ function Profiles.CopySizeMode(fromSize, toSize, mode)
     return ns.RaidTemplates.ApplyChanges({ { scope = to, values = values } })
 end
 
--- Another character's size onto one of ours. False if there is no such
--- character.
-function Profiles.CopyFromCharacter(key, fromSize, toSize)
-    local source = store and store[key]
-    if key == charKey or type(source) ~= "table" then return false end
-    RaidConfig.CopyScopeFrom(RaidSettings.Sanitise(source), Raid.Scope(fromSize), Raid.Scope(toSize))
-    return true
-end
-
 -- The click-casting bindings and keys (per character, Raid.CLICK_SLOTS
 -- and Raid.CLICK_KEYS): every one, for a copy or Clear all.
 function Profiles.ClickKeys()
@@ -209,18 +200,31 @@ function Profiles.Import(str, size)
     return true, rejected
 end
 
--- Every per-size setting of `scope` in a decoded profile as an import
--- leaves it: its own values, the size's defaults for the rest.
-local function sizeValues(decoded, scope)
+-- Every per-size setting of size `to` as a size `from` of a decoded
+-- profile shows it: its own values, that size's defaults for the rest.
+local function sizeValues(decoded, from, to)
     local values = {}
     for _, def in ipairs(RaidSettings.All()) do
-        if RaidSettings.AppliesTo(def, scope) then
-            local v = decoded[scope][def.key]
-            if v == nil then v = RaidSettings.Default(def, scope) end
+        if RaidSettings.AppliesTo(def, to) and RaidSettings.AppliesTo(def, from) then
+            local v = decoded[from][def.key]
+            if v == nil then v = RaidSettings.Default(def, from) end
             values[#values + 1] = { def.key, copied(v) }
         end
     end
     return values
+end
+
+-- Another character's size onto one of ours, as one change that Undo
+-- takes back (Raid/Templates.lua; decision 57). True; or false and why:
+-- GONE (no such character), COMBAT, REFUSED.
+function Profiles.CopyFromCharacter(key, fromSize, toSize)
+    local source = store and store[key]
+    if key == charKey or type(source) ~= "table" then return false, "GONE" end
+    if InCombatLockdown() then return false, "COMBAT" end
+    local from, to = Raid.Scope(fromSize), Raid.Scope(toSize)
+    local values = sizeValues(RaidSettings.Sanitise(source), from, to)
+    if not ns.RaidTemplates.ApplyChanges({ { scope = to, values = values } }) then return false, "REFUSED" end
+    return true
 end
 
 -- Sets every size a string of several holds, each replaced as a whole,
@@ -236,7 +240,7 @@ function Profiles.ImportAll(str)
     local changes = {}
     for i, size in ipairs(sizes) do
         local scope = Raid.Scope(size)
-        changes[i] = { scope = scope, values = sizeValues(decoded, scope) }
+        changes[i] = { scope = scope, values = sizeValues(decoded, scope, scope) }
     end
     if not ns.RaidTemplates.ApplyChanges(changes) then return nil, "RAID_REFUSED" end
     return true, rejected, sizes

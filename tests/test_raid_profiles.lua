@@ -60,8 +60,17 @@ H.checkTrue("copy from character", P.CopyFromCharacter("Healer-Testrealm", 20, 1
 H.check("copied x", RC.Get("r10", "x"), -100)
 H.check("copied y", RC.Get("r10", "y"), 40)
 H.check("source untouched", db.raid["Healer-Testrealm"].r10, nil)
+-- One change that Undo takes back.
+H.checkTrue("copy undoable", ns.RaidTemplates.CanUndo())
+ns.RaidTemplates.Undo()
+H.check("undone x", RC.Get("r10", "x"), -250)
+P.CopyFromCharacter("Healer-Testrealm", 20, 10)
 H.check("unknown character", P.CopyFromCharacter("Nobody-Testrealm", 20, 10), false)
+H.check("unknown character: why", select(2, P.CopyFromCharacter("Nobody-Testrealm", 20, 10)), "GONE")
 H.check("not from yourself", P.CopyFromCharacter("Tester-Testrealm", 20, 10), false)
+M.combat = true
+H.check("not in combat", select(2, P.CopyFromCharacter("Healer-Testrealm", 20, 10)), "COMBAT")
+M.combat = false
 
 -- Export one size, import it on another.
 RC.Set("r20", "x", 12)

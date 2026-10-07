@@ -1116,6 +1116,13 @@ local function newWidget(kind, name, parent)
         end
         self._text = t
         self._fmt, self._args = nil, nil
+        -- An EditBox reports every new text: userInput true only for the
+        -- player's typing (M.Type), false for SetText from code.
+        if self._kind == "EditBox" and self._scripts and self._scripts.OnTextChanged then
+            local userInput = M.typing == self
+            M.typing = nil   -- a SetText in the handler is the code's own
+            self._scripts.OnTextChanged(self, userInput)
+        end
     end
     function w:SetTextColor(r, g, b, a) self._color = { r, g, b, a } end
     function w:GetTextColor()
@@ -3094,7 +3101,10 @@ end
 function M.Type(box, text)
     if not box:IsEnabled() then return false end
     box:SetFocus()
-    box:SetText(text)
+    M.typing = box
+    local ok, err = pcall(box.SetText, box, text)
+    M.typing = nil
+    if not ok then error(err, 0) end
     return true
 end
 local function key(box, script)

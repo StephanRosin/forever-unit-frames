@@ -71,6 +71,24 @@ H.check("copied from the character", RC.Get("r40", "cellWidth"), 140)
 H.check("the character untouched", ForeverUnitFramesDB.raid["Healer-Testrealm"].r40, nil)
 H.check("said", P.characterMessage:GetText(),
     L.RAID_PROFILES_COPIED:format("Healer-Testrealm: 20 players", "40 players"))
+-- One change: its Undo takes it back.
+H.checkTrue("its undo offered", P.characterUndoButton:IsEnabled())
+click(P.characterUndoButton)
+H.check("copy undone", RC.Get("r40", "cellWidth"), 80)
+H.check("undo said", P.characterMessage:GetText(), L.RAID_TEMPLATE_UNDONE)
+-- The character gone between the clicks: said so.
+click(P.characterButton)
+local saved = ForeverUnitFramesDB.raid["Healer-Testrealm"]
+ForeverUnitFramesDB.raid["Healer-Testrealm"] = nil
+click(P.characterButton)
+H.check("gone: said", P.characterMessage:GetText(), L.RAID_PROFILES_COPY_GONE)
+H.check("gone: in red", P.characterMessage._color[1], ns.Style.COLORS.error[1])
+ForeverUnitFramesDB.raid["Healer-Testrealm"] = saved
+P.Refresh()
+pick(P.character, "Healer-Testrealm: 20 players")
+click(P.characterButton)
+click(P.characterButton)
+H.check("copied again", RC.Get("r40", "cellWidth"), 140)
 -- Left armed, it disarms after a few seconds.
 click(P.characterButton)
 M.RunTimers()
@@ -138,6 +156,24 @@ H.check("all sizes: said", P.importMessage:GetText(),
 click(P.copyUndoButton)
 H.check("all sizes: one undo", RC.Get("r10", "cellWidth"), 60)
 H.check("all sizes: one undo 40", RC.Get("r40", "cellWidth"), 61)
+-- Left armed, it disarms after a few seconds and the question goes too.
+P.importArea:SetText(all)
+click(P.importButton)
+M.RunTimers()
+H.check("import disarmed by time", P.importButton.text:GetText(), L.IMPORT)
+H.check("its question gone", P.importMessage:GetText(), "")
+-- Another text typed: the question was about the old one.
+click(P.importButton)
+H.checkTrue("typed", M.Type(P.importArea.edit, ns.RaidProfiles.Export(10)))
+H.check("typing disarms", P.importButton.text:GetText(), L.IMPORT)
+H.check("typing: the question gone", P.importMessage:GetText(), "")
+-- Entries left out: still names the sizes and the undo.
+P.importArea:SetText(all .. ";junk")
+click(P.importButton)
+click(P.importButton)
+H.check("all sizes, entries left out: said", P.importMessage:GetText(),
+    L.RAID_IMPORT_ALL_SKIPPED:format("10 players, 20 players, 40 players", 1))
+click(P.copyUndoButton)
 
 -- Shown again: the messages cleared.
 RO.SelectTab("layout")

@@ -228,6 +228,13 @@ end
 
 -- Copy between sizes, from a character, reset ----------------------------------------
 
+-- Why a copy did not happen, as the page says it.
+local COPY_WHY = {
+    GONE = function() return L.RAID_PROFILES_COPY_GONE end,
+    COMBAT = function() return L.IMPORT_RAID_COMBAT end,
+    REFUSED = function() return L.RAID_PROFILES_COPY_REFUSED end,
+}
+
 local function copySizes()
     local from, to = state.copyFrom, picked("copyTo")
     if not from then
@@ -242,7 +249,7 @@ local function copyBetween()
     local from, to = copySizes()
     if from == to then return say(Page.copyMessage, L.RAID_PROFILES_SAME_SIZE, "error") end
     if not Profiles.CopySizeMode(from, to, state.copyMode or "ALL") then
-        return say(Page.copyMessage, L.RAID_TEMPLATE_REFUSED, "error")
+        return say(Page.copyMessage, COPY_WHY[InCombatLockdown() and "COMBAT" or "REFUSED"](), "error")
     end
     say(Page.copyMessage, L.RAID_PROFILES_COPIED:format(sizeText(from), sizeText(to)))
 end
@@ -298,12 +305,12 @@ end
 
 local function copyCharacter()
     local key, from = characterSource():match("^(.+):(%d+)$")
-    if not key then return end
+    if not key then return say(Page.characterMessage, COPY_WHY.GONE(), "error") end
     local to = picked("characterTo")
-    if Profiles.CopyFromCharacter(key, tonumber(from), to) then
-        say(Page.characterMessage, L.RAID_PROFILES_COPIED:format(L.RAID_COPY_CHARACTER:format(key,
-            sizeText(tonumber(from))), sizeText(to)))
-    end
+    local ok, why = Profiles.CopyFromCharacter(key, tonumber(from), to)
+    if not ok then return say(Page.characterMessage, COPY_WHY[why](), "error") end
+    say(Page.characterMessage, L.RAID_PROFILES_COPIED:format(L.RAID_COPY_CHARACTER:format(key,
+        sizeText(tonumber(from))), sizeText(to)))
 end
 
 local function characterSection(page, stack)
@@ -321,6 +328,8 @@ local function characterSection(page, stack)
     stack.add(Page.characterTo)
     local row = ownRow(Widgets.NewRow(page, { label = "" }))
     Page.characterButton = confirmButton(row, L.RAID_PROFILES_COPY, copyCharacter)
+    Page.characterUndoButton = button(row, L.RAID_TEMPLATE_UNDO, function() undo(Page.characterMessage)() end,
+        Page.characterButton)
     stack.add(row)
     local messageRow_, message = messageRow(page)
     Page.characterMessage = message
@@ -420,7 +429,9 @@ local function runImport()
     else
         text_ = L.IMPORT_DONE
     end
-    if result > 0 then text_ = L.IMPORT_SKIPPED:format(result) end
+    if result > 0 then
+        text_ = done and L.RAID_IMPORT_ALL_SKIPPED:format(sizesText(done), result) or L.IMPORT_SKIPPED:format(result)
+    end
     say(Page.importMessage, text_)
 end
 
@@ -434,7 +445,11 @@ local function importSection(page, stack)
     stack.add(Page.importTo)
     local block = newBlock(page)
     local hint, area = hintAndArea(block, false)
-    local b = ns.Options.ConfirmButton(block, L.IMPORT, runImport, nil, importNeedsConfirm)
+    -- Its question goes when it disarms; another text disarms it (the
+    -- question was about the text before).
+    local b = ns.Options.ConfirmButton(block, L.IMPORT, runImport, nil, importNeedsConfirm,
+        function() say(Page.importMessage, "") end)
+    area.edit:HookScript("OnTextChanged", function(_, userInput) if userInput then b.Disarm() end end)
     b:SetPoint("TOPLEFT", area, "BOTTOMLEFT", 0, -GAP)
     local message = Style.Text(block, 11, "muted")
     message:SetPoint("TOPLEFT", b, "BOTTOMLEFT", 0, -6)
@@ -462,6 +477,7 @@ function Page.Refresh()
     Page.deleteButton:SetEnabled(enabled and t ~= nil)
     Page.undoButton:SetEnabled(enabled and Templates.CanUndo())
     Page.copyUndoButton:SetEnabled(enabled and Templates.CanUndo())
+    Page.characterUndoButton:SetEnabled(enabled and Templates.CanUndo())
     Page.saveButton:SetEnabled(enabled)
     Page.nameBox:SetEnabled(enabled)
     Page.copyButton:SetEnabled(enabled)

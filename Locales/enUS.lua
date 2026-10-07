@@ -1142,10 +1142,13 @@ L.RAID_PROFILES_IMPORT_TO = "Into size"
 L.RAID_IMPORT_ANY_HINT = "Paste an exported text here: one size replaces %s, all sizes replace every size the text holds."
 L.RAID_IMPORT_ALL_ASK = "This text holds %s: click again to replace them all."
 L.RAID_IMPORT_ALL_DONE = "Imported %s. Undo takes it back."
+L.RAID_IMPORT_ALL_SKIPPED = "Imported %s; %d entries could not be read and were left out. Undo takes it back."
 L.IMPORT_RAID_SEVERAL_SIZES = "This text holds several raid sizes."
 L.IMPORT_RAID_ONE_SIZE = "This text holds one raid size."
 L.IMPORT_RAID_COMBAT = "Not in combat."
 L.IMPORT_RAID_REFUSED = "Not imported: this text holds a value this version does not take."
+L.RAID_PROFILES_COPY_GONE = "That character has no raid profile any more."
+L.RAID_PROFILES_COPY_REFUSED = "Not copied: it holds a value this version does not take."
 
 -- The unit frames' master switch (Core/Settings.lua: unitFrames).
 L.SECTION_unitFrames = "Unit frames"

@@ -287,13 +287,20 @@ end
 -- second runs it. armedText (optional): the armed button's word, for a
 -- button narrower than L.CONFIRM needs. needed (optional): asked at the
 -- first click; false runs the action at once (nothing to confirm).
-local function confirmButton(parent, text, action, armedText, needed)
+-- onDisarm (optional): called when an armed button disarms without running
+-- (time, Disarm), e.g. to take back what the first click said.
+local function confirmButton(parent, text, action, armedText, needed, onDisarm)
     local button, armed
     local function paintArmed() if armed then Style.Paint(button.text, "error") end end
     local function disarm()
         armed = nil
         button.text:SetText(text)
         button:GetScript("OnLeave")(button)
+    end
+    local function disarmUnused()
+        local was = armed
+        disarm()
+        if was and onDisarm then onDisarm() end
     end
     button = Widgets.Button(parent, { text = text, width = WIDE_BUTTON_W, onClick = function()
         if armed then disarm(); action(); return end
@@ -302,11 +309,11 @@ local function confirmButton(parent, text, action, armedText, needed)
         armed = token
         button.text:SetText(armedText or L.CONFIRM)
         paintArmed()
-        C_Timer.After(CONFIRM_SECONDS, function() if armed == token then disarm() end end)
+        C_Timer.After(CONFIRM_SECONDS, function() if armed == token then disarmUnused() end end)
     end })
     button:HookScript("OnEnter", paintArmed)
     button:HookScript("OnLeave", paintArmed)
-    button.Disarm = disarm
+    button.Disarm = disarmUnused
     return button
 end
 Options.ConfirmButton = confirmButton
