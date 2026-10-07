@@ -21,7 +21,7 @@ local function tokens(P)
     return table.concat(list, ",")
 end
 H.check("by default every group in the main panel", tokens(Header), "1,2")
-H.check("taken: none", next(Own.Taken("GROUP")), nil)
+H.check("taken: none", next(Own.Taken(10, "GROUP")), nil)
 
 -- Group 2 to panel 2: it leaves the main panel.
 local P = Own.panels.panel2
@@ -30,7 +30,7 @@ RC.Set("r10", "panel2Blocks", "2")
 M.RunTimers()
 H.check("main: group 1 only", tokens(Header), "1")
 H.check("panel 2: group 2", tokens(P), "2")
-H.check("taken", Own.Taken("GROUP")["2"], true)
+H.check("taken", Own.Taken(10, "GROUP")["2"], true)
 H.check("its header hidden", Header.headers[2]:IsShown(), false)
 H.check("the main panel holds one group", Header.Count(1), 2)
 H.check("panel 2 the other", P.Count(1), 2)

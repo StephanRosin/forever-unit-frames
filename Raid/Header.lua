@@ -19,11 +19,7 @@ Header = Panel.New({
     id = "main", name = "ForeverUnitFramesRaid", xKey = "x", yKey = "y",
     -- The grouping's blocks but those the own panels moved out
     -- (Raid/OwnPanels.lua, made after this panel).
-    blocks = function(size)
-        local groupBy = get("groupBy")
-        local all = Layout.Blocks(groupBy, size, get("sortBy"), get("classOrder"))
-        return Layout.Without(all, ns.RaidOwnPanels.Taken(groupBy))
-    end,
+    blocks = function(size) return ns.RaidOwnPanels.MainBlocks(size) end,
     shape = shape,
     -- By role: the blocks group by role (Raid/Layout.lua), raid order within.
     attributes = function(a) a.sortMethod = get("sortBy") == "NAME" and "NAME" or "INDEX" end,

@@ -122,6 +122,14 @@ function ns.NewConfig(Settings, event, notCopied)
         ns.Fire(event, scope, key)
     end
 
+    -- Removes the given keys' overrides from one scope: they fall back to
+    -- their defaults. One event for everything (scope, nil).
+    function Config.ResetKeys(scope, keys)
+        if not profile[scope] then return end
+        for _, key in ipairs(keys) do profile[scope][key] = nil end
+        ns.Fire(event, scope, nil)
+    end
+
     -- Removes the given keys from every frame scope, so each frame falls
     -- back to General again. General itself keeps its values. One event
     -- for everything.
