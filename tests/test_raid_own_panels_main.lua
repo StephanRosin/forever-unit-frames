@@ -70,6 +70,25 @@ H.check("main panel empty", tokens(Header), "")
 H.check("main: no room", Header.width, 0)
 H.check("panel 3: group 2", tokens(Own.panels.panel3), "2")
 
+-- An import that puts a block into two panels of the same grouping: the
+-- lower-numbered panel keeps it, the other passes it over.
+RC.Set("r10", "panel3Blocks", "2,1")
+M.RunTimers()
+H.check("twice: panel 2 keeps group 1", tokens(P), "1")
+H.check("twice: panel 3 passes it over", tokens(Own.panels.panel3), "2")
+H.check("twice: one column each", (function()
+    local parts = {}
+    for _, column in ipairs(Own.Columns(10)) do parts[#parts + 1] = #column.blocks end
+    return table.concat(parts, ",")
+end)(), "0,1,1")
+H.check("twice: the main panel still empty", tokens(Header), "")
+RC.Set("r10", "panel2Show", false)
+M.RunTimers()
+H.check("panel 2 hidden: panel 3 has both", tokens(Own.panels.panel3), "1,2")
+RC.Set("r10", "panel2Show", true)
+RC.Set("r10", "panel3Blocks", "2")
+M.RunTimers()
+
 -- Per size: 20 keeps every group.
 RC.Set("general", "sizeMode", "20")
 M.RunTimers()
@@ -77,5 +96,11 @@ H.check("20: every group", tokens(Header), "1,2,3,4")
 RC.Set("general", "sizeMode", "AUTO")
 M.RunTimers()
 H.check("10 again", tokens(Header), "")
+
+-- A panel's blocks for the size asked, not the one shown.
+RC.Set("r20", "panel4Show", true)
+RC.Set("r20", "panel4Blocks", "3")
+H.check("20's blocks while 10 shows", tokens({ blocks = Own.panels.panel4.spec.blocks(20) }), "3")
+H.check("10's: none", #Own.panels.panel4.spec.blocks(10), 0)
 H.check("no error", #M.errors, 0)
 H.check("nothing blocked", #M.blocked, 0)

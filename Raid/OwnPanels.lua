@@ -38,8 +38,26 @@ for _, entry in ipairs(Raid.OWN_PANEL_PARTS) do
     if entry.like then PART_LIKE[entry.like] = entry.part end
 end
 
-local function shown(slot)
-    return Panel.Enabled() and setting(slot, "Show") == true
+-- Shown at a scope (default: the shown size's).
+local function shown(slot, scope)
+    return Panel.Enabled() and setting(slot, "Show", scope) == true
+end
+
+-- The tokens a slot takes at a scope, but those a lower-numbered panel
+-- shown there with the same grouping takes too (an import may name a
+-- block in two panels): that panel keeps it, so a block is in one place.
+local function keptTokens(slot, scope)
+    local groupBy, earlier, kept = setting(slot, "GroupBy", scope), {}, {}
+    for _, other in ipairs(Raid.OWN_PANELS) do
+        if other == slot then break end
+        if setting(other, "Show", scope) and setting(other, "GroupBy", scope) == groupBy then
+            for _, token in ipairs(tokensOf(other, scope)) do earlier[token] = true end
+        end
+    end
+    for _, token in ipairs(tokensOf(slot, scope)) do
+        if not earlier[token] then kept[#kept + 1] = token end
+    end
+    return kept
 end
 
 -- The blocks of a grouping at a size, in the order the main panel has
@@ -53,7 +71,7 @@ end
 -- panel's order.
 local function chosenBlocks(slot, size)
     local scope = Raid.Scope(size)
-    return Layout.Chosen(groupingBlocks(setting(slot, "GroupBy", scope), size), tokensOf(slot, scope))
+    return Layout.Chosen(groupingBlocks(setting(slot, "GroupBy", scope), size), keptTokens(slot, scope))
 end
 
 -- A panel's word: its title, else "Panel N".
@@ -62,9 +80,9 @@ function Own.Name(slot, title)
     return ns.L.RAID_OWN_PANEL:format(slot.number)
 end
 
--- The panel's blocks at the shown size; none while it is not shown.
+-- The panel's blocks at a size; none while it is not shown there.
 local function blocks(slot, size)
-    if not shown(slot) then return {} end
+    if not shown(slot, Raid.Scope(size)) then return {} end
     return chosenBlocks(slot, size)
 end
 
