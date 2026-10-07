@@ -301,11 +301,13 @@ L.SECTION_totems = "Tótems"
 L.SETTING_totemsEnabled = "Mostrar tótems"
 L.SETTING_totemsSize = "Tamaño de icono"
 L.SETTING_totemsSpacing = "Espaciado"
+L.SETTING_totemsDirection = "Dirección"
 L.SETTING_totemsFramePoint = "Punto del marco"
 L.SETTING_totemsPoint = "Punto de los iconos"
 L.SETTING_totemsX = "Desplazamiento X"
 L.SETTING_totemsY = "Desplazamiento Y"
 L.HINT_totemsEnabled = "Visibles mientras haya un tótem; clic derecho en uno para destruirlo"
+L.HINT_totemsDirection = "Una fila (de izquierda a derecha) o una columna (de arriba abajo)"
 L.HINT_totemsFramePoint = "El marco y una barra de lanzamiento acoplada, como un solo bloque"
 
 -- Status icons (player frame).

@@ -489,6 +489,10 @@ Settings.Define({ key = "totemsSize", code = "QS", scope = "frame", only = TOTEM
     default = 24 })
 Settings.Define({ key = "totemsSpacing", code = "QD", scope = "frame", only = TOTEMS, type = "int", min = 0, max = 20,
     default = 3 })
+-- A row (left to right) or a column (top to bottom). Stored by index:
+-- append only.
+Settings.Define({ key = "totemsDirection", code = "QG", scope = "frame", only = TOTEMS, type = "enum",
+    values = { "HORIZONTAL", "VERTICAL" }, default = "HORIZONTAL" })
 Settings.Define({ key = "totemsFramePoint", code = "QF", scope = "frame", only = TOTEMS, type = "enum",
     values = Settings.POINTS, default = "RIGHT" })
 Settings.Define({ key = "totemsPoint", code = "QO", scope = "frame", only = TOTEMS, type = "enum",

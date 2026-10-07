@@ -321,11 +321,13 @@ L.SECTION_totems = "Totems"
 L.SETTING_totemsEnabled = "Show totems"
 L.SETTING_totemsSize = "Icon size"
 L.SETTING_totemsSpacing = "Spacing"
+L.SETTING_totemsDirection = "Direction"
 L.SETTING_totemsFramePoint = "Point on the frame"
 L.SETTING_totemsPoint = "Point of the icons"
 L.SETTING_totemsX = "Offset X"
 L.SETTING_totemsY = "Offset Y"
 L.HINT_totemsEnabled = "Shown while a totem is out; right-click one to destroy it"
+L.HINT_totemsDirection = "A row (left to right) or a column (top to bottom)"
 L.HINT_totemsFramePoint = "The frame and a docked castbar, as one block"
 
 -- Status icons (player frame).

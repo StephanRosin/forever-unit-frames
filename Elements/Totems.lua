@@ -1,7 +1,8 @@
 local _, ns = ...
 
 -- Totem icons of the player frame: one per totem slot (MAX_TOTEMS), in a
--- row that hangs from the player's block like an aura group.
+-- row (or a column, totemsDirection) that hangs from the player's block
+-- like an aura group.
 --
 -- Our own icons, not Blizzard's totem frame: that frame is a managed frame
 -- of the concealed PlayerFrame, and every time it shows (a totem dropped
@@ -135,7 +136,9 @@ local function layout(frame)
     local size = Pixel.Snap(Config.Get(scope, "totemsSize"))
     local spacing = Pixel.Snap(Config.Get(scope, "totemsSpacing"))
     local holder, n = t.holder, #t.slots
-    holder:SetSize(n * size + (n - 1) * spacing, size)
+    local column = Config.Get(scope, "totemsDirection") == "VERTICAL"
+    local length = n * size + (n - 1) * spacing
+    if column then holder:SetSize(size, length) else holder:SetSize(length, size) end
     holder:SetFrameLevel(frame:GetFrameLevel() + ns.Auras.LEVELS)
     local region = frame.unitBox or frame
     local x, y = ns.Auras.AnchorOffset(frame, "totems", region)
@@ -143,11 +146,13 @@ local function layout(frame)
     holder:SetPoint(Config.Get(scope, "totemsPoint"), region, Config.Get(scope, "totemsFramePoint"), x, y)
     for i, s in ipairs(t.slots) do
         local offset = (i - 1) * (size + spacing)
+        local x, y = offset, 0
+        if column then x, y = 0, -offset end
         AuraButton.Style(s.art, scope, size, true)
         s.art:ClearAllPoints()
-        s.art:SetPoint("TOPLEFT", holder, "TOPLEFT", offset, 0)
+        s.art:SetPoint("TOPLEFT", holder, "TOPLEFT", x, y)
         s.click:ClearAllPoints()
-        s.click:SetPoint("TOPLEFT", holder, "TOPLEFT", offset, 0)
+        s.click:SetPoint("TOPLEFT", holder, "TOPLEFT", x, y)
         s.click:SetSize(size, size)
         -- Above the icon, its swipe and its count cover.
         s.click:SetFrameLevel(s.art:GetFrameLevel() + 3)

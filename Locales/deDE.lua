@@ -300,11 +300,13 @@ L.SECTION_totems = "Totems"
 L.SETTING_totemsEnabled = "Totems anzeigen"
 L.SETTING_totemsSize = "Symbolgröße"
 L.SETTING_totemsSpacing = "Abstand"
+L.SETTING_totemsDirection = "Richtung"
 L.SETTING_totemsFramePoint = "Punkt am Rahmen"
 L.SETTING_totemsPoint = "Punkt der Symbole"
 L.SETTING_totemsX = "Versatz X"
 L.SETTING_totemsY = "Versatz Y"
 L.HINT_totemsEnabled = "Solange ein Totem steht; Rechtsklick zerstört es"
+L.HINT_totemsDirection = "Eine Zeile (von links nach rechts) oder eine Spalte (von oben nach unten)"
 L.HINT_totemsFramePoint = "Rahmen und angedockte Zauberleiste als ein Block"
 
 -- Status icons (player frame).

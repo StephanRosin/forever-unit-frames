@@ -300,11 +300,13 @@ L.SECTION_totems = "Totems"
 L.SETTING_totemsEnabled = "Afficher les totems"
 L.SETTING_totemsSize = "Taille des icônes"
 L.SETTING_totemsSpacing = "Espacement"
+L.SETTING_totemsDirection = "Direction"
 L.SETTING_totemsFramePoint = "Point du cadre"
 L.SETTING_totemsPoint = "Point des icônes"
 L.SETTING_totemsX = "Décalage X"
 L.SETTING_totemsY = "Décalage Y"
 L.HINT_totemsEnabled = "Visibles tant qu'un totem est posé ; clic droit sur l'un pour le détruire"
+L.HINT_totemsDirection = "Une ligne (de gauche à droite) ou une colonne (de haut en bas)"
 L.HINT_totemsFramePoint = "Le cadre et une barre d'incantation ancrée, en un seul bloc"
 
 -- Status icons (player frame).

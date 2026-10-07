@@ -106,6 +106,7 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <tr><td><b>Show totems</b></td><td>Shown while a totem is out; right-click one to destroy it</td><td>On, Off</td><td>On</td><td>Player</td></tr>
 <tr><td><b>Icon size</b></td><td></td><td>12 – 64</td><td>24</td><td>Player</td></tr>
 <tr><td><b>Spacing</b></td><td></td><td>0 – 20</td><td>3</td><td>Player</td></tr>
+<tr><td><b>Direction</b></td><td>A row (left to right) or a column (top to bottom)</td><td>Horizontal, Vertical</td><td>Horizontal</td><td>Player</td></tr>
 <tr><td><b>Point on the frame</b></td><td>The frame and a docked castbar, as one block</td><td>Any of the 9 points (corners, edges, center)</td><td>Right</td><td>Player</td></tr>
 <tr><td><b>Point of the icons</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Left</td><td>Player</td></tr>
 <tr><td><b>Offset X</b></td><td></td><td>-400 – 400</td><td>6</td><td>Player</td></tr>

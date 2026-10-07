@@ -103,7 +103,7 @@ Schema.FRAME = {
         { id = "dispels", keys = { "dispelsEnabled", "dispelsShowTime", "dispelsAnchor", "dispelsFramePoint",
             "dispelsPoint", "dispelsX", "dispelsY", "dispelsGrowth", "dispelsRowGrowth", "dispelsSize",
             "dispelsSpacing", "dispelsPerRow", "dispelsMax" } },
-        { id = "totems", keys = { "totemsEnabled", "totemsSize", "totemsSpacing", "totemsFramePoint", "totemsPoint",
+        { id = "totems", keys = { "totemsEnabled", "totemsSize", "totemsSpacing", "totemsDirection", "totemsFramePoint", "totemsPoint",
             "totemsX", "totemsY" } },
     } },
     -- What the unit is doing or what state it is in, drawn on the frame.
