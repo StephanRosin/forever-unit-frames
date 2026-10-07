@@ -2002,6 +2002,22 @@ function M.Reset()
         [635] = { name = "Holy Light", maxRange = 40 },
         -- Warrior (melee reach)
         [78] = { name = "Heroic Strike", maxRange = 5, harmful = true },
+        -- Group buffs (Raid/BuffData.lua): every rank, single and group form.
+        [1243] = { name = "Power Word: Fortitude", maxRange = 30 }, [1244] = { name = "Power Word: Fortitude", maxRange = 30 },
+        [1245] = { name = "Power Word: Fortitude", maxRange = 30 }, [2791] = { name = "Power Word: Fortitude", maxRange = 30 },
+        [10937] = { name = "Power Word: Fortitude", maxRange = 30 },
+        [10938] = { name = "Power Word: Fortitude", maxRange = 30 },
+        [21562] = { name = "Prayer of Fortitude", maxRange = 30 }, [21564] = { name = "Prayer of Fortitude", maxRange = 30 },
+        [14752] = { name = "Divine Spirit", maxRange = 30 }, [27681] = { name = "Prayer of Spirit", maxRange = 30 },
+        [976] = { name = "Shadow Protection", maxRange = 30 }, [27683] = { name = "Prayer of Shadow Protection", maxRange = 30 },
+        [1460] = { name = "Arcane Intellect", maxRange = 30 }, [23028] = { name = "Arcane Brilliance", maxRange = 30 },
+        [1126] = { name = "Mark of the Wild", maxRange = 30 }, [5232] = { name = "Mark of the Wild", maxRange = 30 },
+        [21849] = { name = "Gift of the Wild", maxRange = 30 }, [21850] = { name = "Gift of the Wild", maxRange = 30 },
+        [467] = { name = "Thorns", maxRange = 30 },
+        [19740] = { name = "Blessing of Might", maxRange = 30 }, [19834] = { name = "Blessing of Might", maxRange = 30 },
+        [25782] = { name = "Greater Blessing of Might", maxRange = 30 },
+        [19742] = { name = "Blessing of Wisdom", maxRange = 30 }, [25894] = { name = "Greater Blessing of Wisdom", maxRange = 30 },
+        [20217] = { name = "Blessing of Kings", maxRange = 30 }, [25898] = { name = "Greater Blessing of Kings", maxRange = 30 },
         -- Not in any class list: a user's own pick.
         [5019] = { name = "Shoot", maxRange = 30, harmful = true },
         [2061] = { name = "Flash Heal", maxRange = 40 },
@@ -2035,6 +2051,16 @@ function M.Reset()
         GetSpellInfo = function(identifier)
             local id = spellID(identifier)
             if id then return M.newSpellInfo(id) end
+        end,
+        -- SpellDocumentation.lua: the name, the icon; nothing for an ID the
+        -- client does not know.
+        GetSpellName = function(identifier)
+            local id = spellID(identifier)
+            return id and M.spells[id].name or nil
+        end,
+        GetSpellTexture = function(identifier)
+            local id = spellID(identifier)
+            if id then return 100000 + id, 100000 + id end
         end,
         -- true, false, or nil when the check is invalid: unknown spell,
         -- missing target, a target the spell cannot be cast on, a unit

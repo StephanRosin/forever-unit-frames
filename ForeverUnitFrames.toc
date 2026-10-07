@@ -25,6 +25,7 @@ Core\MacroBackup.lua
 Core\Storage.lua
 Raid\Settings.lua
 Raid\Spellbook.lua
+Raid\BuffData.lua
 Raid\Profiles.lua
 Raid\Size.lua
 Raid\Layout.lua
