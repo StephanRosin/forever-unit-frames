@@ -38,6 +38,11 @@ News.ENTRIES = {
             "NEWS_0_22_0_LOOK" },
         action = { text = "NEWS_OPEN_RAID", run = function() ns.RaidOptions.Open() end },
     },
+    -- The account's list of hidden auras is on General > Appearance.
+    ["0.23.0"] = {
+        lines = { "NEWS_0_23_0_HIDDEN", "NEWS_0_23_0_ADD", "NEWS_0_23_0_ELITE" },
+        action = { text = "NEWS_OPEN_HIDDEN", run = function() ns.Options.Open("general", "appearance") end },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).
