@@ -33,6 +33,14 @@ local function panelSections()
     return list
 end
 
+-- One section per own panel (Raid.OWN_PANELS), its settings in their
+-- order; every section alike (the wiki shows one).
+local function ownPanelSections()
+    local list = {}
+    for _, p in ipairs(ns.Raid.OWN_PANELS) do list[#list + 1] = { id = p.id, keys = p.keys } end
+    return list
+end
+
 Schema.TABS = {
     { id = "general", sections = {
         { id = "raidFrames", keys = { "enabled", "showInParty", "hideBlizzard" } },
@@ -47,6 +55,9 @@ Schema.TABS = {
     } },
     -- The special panels; the note says who is in them.
     { id = "panels", note = "panels", sections = panelSections() },
+    -- The own panels: the window's board of panels and blocks
+    -- (Raid/Options/Arrangement.lua), then each shown panel's settings.
+    { id = "arrangement", custom = "arrangement", note = "arrangement", alike = true, sections = ownPanelSections() },
     -- Heals, shields and the power strip keep the unit frames' shipped
     -- colours (Raid/Cell.lua): the note says so.
     { id = "cell", note = "cell", sections = {
@@ -96,7 +107,8 @@ Schema.HEADER_KEYS = { "sizeMode" }
 -- Settings that share their words: the five indicator positions (the
 -- section names the position), the icons' switches and points (the
 -- section names the icon), the special panels' settings (the section
--- names the panel; their layout has the main panel's words).
+-- names the panel; their layout has the main panel's words), the own
+-- panels' settings (likewise).
 local SHARED = {}
 for _, ind in ipairs(ns.Raid.INDICATORS) do
     for _, part in ipairs({ "Spells", "Color", "Size", "Own", "Time" }) do
@@ -113,6 +125,14 @@ for _, p in ipairs(ns.Raid.PANELS) do
     if p.names then SHARED[p.names] = "nameList" end
 end
 SHARED.petsCellHeight = "cellHeight"
+-- The own panels' settings: the main panel's words for its layout and
+-- position, the special panels' for being shown.
+local OWN_WORDS = { Show = "panelShow", GroupBy = "groupBy", Blocks = "ownBlocks", Title = "ownTitle" }
+for _, p in ipairs(ns.Raid.OWN_PANELS) do
+    for _, entry in ipairs(ns.Raid.OWN_PANEL_PARTS) do
+        SHARED[p.id .. entry.part] = entry.like or OWN_WORDS[entry.part]
+    end
+end
 SHARED.toolsX, SHARED.toolsY = "x", "y"
 
 -- The name a setting's words go by.

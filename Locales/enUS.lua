@@ -880,6 +880,16 @@ L.RAID_MENU_TANK_REMOVE = "Unmark as my tank"
 L.RAID_LIST_FULL = "The list is full: remove a name first."
 L.RAID_LIST_AFTER_COMBAT = "Saved: the panel follows after combat."
 
+-- Raid frames: own panels (Raid/OwnPanels.lua, Raid/Options/Arrangement.lua).
+L.RAID_TAB_arrangement = "Arrangement"
+L.RAID_NOTE_arrangement = "Up to nine panels of your own. A block of the main panel's grouping moves to the panel that takes it; a block of another grouping shows its players again."
+L.RAID_OWN_PANEL = "Panel %d"
+for n = 2, 10 do L["RAID_SECTION_panel" .. n] = L.RAID_OWN_PANEL:format(n) end
+L.RAID_SETTING_ownBlocks = "Blocks it shows"
+L.RAID_HINT_ownBlocks = "Moved on the board above"
+L.RAID_SETTING_ownTitle = "Title"
+L.RAID_HINT_ownTitle = "Shown above the panel; empty: none"
+
 -- Raid frames: the raid tools bar (Raid/Tools.lua).
 L.RAID_TAB_tools = "Tools"
 L.RAID_SECTION_toolsBar = "The bar"

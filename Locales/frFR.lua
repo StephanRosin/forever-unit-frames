@@ -856,6 +856,16 @@ L.RAID_MENU_TANK_REMOVE = "Ne plus marquer comme mon tank"
 L.RAID_LIST_FULL = "La liste est pleine : retirez d'abord un nom."
 L.RAID_LIST_AFTER_COMBAT = "Enregistré : le panneau suit après le combat."
 
+-- Cadres de raid : panneaux personnels (Raid/OwnPanels.lua, Raid/Options/Arrangement.lua).
+L.RAID_TAB_arrangement = "Répartition"
+L.RAID_NOTE_arrangement = "Jusqu'à neuf panneaux personnels. Un bloc du regroupement du panneau principal passe au panneau qui le prend ; un bloc d'un autre regroupement montre ses joueurs une fois de plus."
+L.RAID_OWN_PANEL = "Panneau %d"
+for n = 2, 10 do L["RAID_SECTION_panel" .. n] = L.RAID_OWN_PANEL:format(n) end
+L.RAID_SETTING_ownBlocks = "Blocs affichés"
+L.RAID_HINT_ownBlocks = "Déplacés sur le tableau ci-dessus"
+L.RAID_SETTING_ownTitle = "Titre"
+L.RAID_HINT_ownTitle = "Au-dessus du panneau ; vide : aucun"
+
 -- Cadres de raid : la barre d'outils (Raid/Tools.lua).
 L.RAID_TAB_tools = "Outils"
 L.RAID_SECTION_toolsBar = "La barre"

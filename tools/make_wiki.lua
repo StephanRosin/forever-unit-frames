@@ -247,6 +247,12 @@ local RAID_TAB_INTRO = {
     general = "The raid frames as a whole: on or off, the raid view in a 5-player group, Blizzard's raid frames,"
         .. " the raid frames' minimap button.",
     layout = "How the panel is made of blocks, how cells and blocks are arranged, the panel's position and borders.",
+    arrangement = "Up to nine panels of your own beside the main panel (Panel 2 to Panel 10), per raid size. The"
+        .. " tab shows a column per panel with its blocks; drag a block onto another panel's column, or click it"
+        .. " for a menu (Move to …). Add and remove panels there, and pick each panel's grouping (group, class or"
+        .. " role) and its blocks. A block of the main panel's grouping moves out of the main panel; a block of"
+        .. " another grouping shows its players again. Each new panel starts at a spot of its own (the table shows"
+        .. " Panel 2's).",
     panels = "Panels of their own beside the main panel, each with its own position per raid size: the main tanks"
         .. " and the main assists of the raid, your own lists of tanks and of favourites, and the raid's pets in"
         .. " smaller cells. Their players stay in their groups as well.",
@@ -292,6 +298,16 @@ local function raidSection(lines, title, keys)
     lines[#lines + 1] = ""
 end
 
+-- A tab's sections as the page lists them: { title, keys }. Sections all
+-- alike (the own panels) are one, for every panel.
+local OWN_PANELS_TITLE = "Each own panel"
+local function raidSections(tab)
+    if tab.alike then return { { title = OWN_PANELS_TITLE, keys = tab.sections[1].keys } } end
+    local list = {}
+    for i, sec in ipairs(tab.sections) do list[i] = { title = RaidSchema.SectionTitle(sec.id), keys = sec.keys } end
+    return list
+end
+
 local raidPages = {}
 local function raidPage(tab)
     local title = RaidSchema.TabTitle(tab.id)
@@ -309,10 +325,9 @@ local function raidPage(tab)
         raidSection(body, "Header bar", RaidSchema.HEADER_KEYS)
         names[#names + 1] = "[Header bar](#header-bar)"
     end
-    for _, sec in ipairs(tab.sections) do
-        local name = RaidSchema.SectionTitle(sec.id)
-        raidSection(body, name, sec.keys)
-        names[#names + 1] = ("[%s](#%s)"):format(name, anchor(name))
+    for _, sec in ipairs(raidSections(tab)) do
+        raidSection(body, sec.title, sec.keys)
+        names[#names + 1] = ("[%s](#%s)"):format(sec.title, anchor(sec.title))
     end
     lines[#lines + 1] = "**On this page:** " .. table.concat(names, " · ")
     lines[#lines + 1] = ""
@@ -321,10 +336,10 @@ local function raidPage(tab)
     write(name .. ".md", lines)
     raidPages[#raidPages + 1] = { name, title }
 end
--- A custom tab (Profile: export and import) holds no settings: no page;
--- the Home page explains it.
+-- A tab without settings (Profile: export and import) has no page; the
+-- Home page explains it.
 for _, tab in ipairs(RaidSchema.TABS) do
-    if not tab.custom then raidPage(tab) end
+    if #tab.sections > 0 then raidPage(tab) end
 end
 
 -- Sidebar ---------------------------------------------------------------------------

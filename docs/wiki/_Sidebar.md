@@ -20,6 +20,7 @@
 - [[General|Raid-General]]
 - [[Layout|Raid-Layout]]
 - [[Panels|Raid-Panels]]
+- [[Arrangement|Raid-Arrangement]]
 - [[Cell|Raid-Cell]]
 - [[Texts|Raid-Texts]]
 - [[Debuffs|Raid-Debuffs]]

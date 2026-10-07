@@ -395,6 +395,102 @@ RaidSettings.Define({ key = "petsCellHeight", code = "OH", scope = "frame", type
     default = 24 })
 table.insert(pets.keys, 5, "petsCellHeight")
 
+-- Own panels (Raid/OwnPanels.lua): up to nine panels beside the main one,
+-- "Panel 2" to "Panel 10", made and arranged in the raid window's
+-- Arrangement tab. Per size: shown, the grouping and which of its blocks
+-- the panel takes (Raid.ParseBlockList), a title above it, its own layout
+-- (the main panel's settings of the same name: their ranges, lists and
+-- defaults), the panel's top-left corner from the screen centre. A code
+-- is the slot's letter and the setting's.
+Raid.OWN_TITLE_LETTERS = 40
+Raid.ROLES = { "TANK", "HEALER", "DAMAGER" }
+-- The groups of the largest size.
+Raid.GROUP_COUNT = 8
+
+-- A block's token: a group number, a class token or a role.
+local function isBlockToken(token)
+    local group = token:match("^%d$") and tonumber(token)
+    if group then return group >= 1 and group <= Raid.GROUP_COUNT end
+    for _, role in ipairs(Raid.ROLES) do
+        if role == token then return true end
+    end
+    return isClass(token)
+end
+
+-- The blocks an own panel takes as stored: tokens separated by commas,
+-- each once. Returns the tokens in their order, or nil when one is
+-- unknown or named twice.
+function Raid.ParseBlockList(text)
+    local tokens, seen = {}, {}
+    for piece in text:gmatch("[^,]+") do
+        local token = piece:match("^%s*(.-)%s*$")
+        if token ~= "" then
+            if seen[token] or not isBlockToken(token) then return nil end
+            seen[token] = true
+            tokens[#tokens + 1] = token
+        end
+    end
+    return tokens
+end
+
+local function isBlockList(text) return Raid.ParseBlockList(text) ~= nil end
+
+-- The settings of a slot, in the raid window's order; like: the main
+-- panel's setting whose range, list and default it takes.
+local OWN_PANEL_PARTS = {
+    { part = "Show", letter = "E", def = { type = "bool", default = false } },
+    -- Stored by index: append only.
+    { part = "GroupBy", letter = "G", def = { type = "enum", values = { "GROUP", "CLASS", "ROLE" }, default = "GROUP" } },
+    { part = "Blocks", letter = "K", def = { type = "text", maxLetters = Raid.CLASS_ORDER_LETTERS, check = isBlockList,
+        default = "" } },
+    { part = "Title", letter = "T", def = { type = "text", maxLetters = Raid.OWN_TITLE_LETTERS, default = "" } },
+    { part = "BlockDirection", letter = "D", like = "blockDirection" },
+    { part = "BlocksPerLine", letter = "L", like = "blocksPerLine" },
+    { part = "CellGrowth", letter = "R", like = "cellGrowth" },
+    { part = "CellsPerLine", letter = "N", like = "cellsPerLine" },
+    { part = "BlockTitles", letter = "U", like = "blockTitles" },
+    { part = "HideEmpty", letter = "Q", like = "hideEmpty" },
+    { part = "PanelBorder", letter = "W", like = "panelBorder" },
+    { part = "BlockBorder", letter = "V", like = "blockBorder" },
+    { part = "X", letter = "X", like = "x" },
+    { part = "Y", letter = "Y", like = "y" },
+}
+-- Each part and the main panel's setting it is like (nil: its own).
+Raid.OWN_PANEL_PARTS = {}
+for i, entry in ipairs(OWN_PANEL_PARTS) do Raid.OWN_PANEL_PARTS[i] = { part = entry.part, like = entry.like } end
+
+local function ownPanelDef(entry)
+    local like = entry.like and RaidSettings.Get(entry.like)
+    local def = {}
+    for field, value in pairs(like or entry.def) do def[field] = value end
+    return def
+end
+
+-- Panels 2 to 10: the slots' letters, and where each one first stands
+-- (three to a row, right of the screen centre).
+local OWN_PANEL_LETTERS = { "A", "F", "L", "N", "P", "M", "J", "K", "U" }
+local OWN_SPOT_X, OWN_SPOT_Y, OWN_SPOT_STEP, OWN_SPOTS_PER_ROW = 200, 300, 160, 3
+Raid.OWN_PANELS = {}
+local ownById = {}
+for i, letter in ipairs(OWN_PANEL_LETTERS) do
+    local p = { id = "panel" .. (i + 1), number = i + 1, letter = letter, keys = {} }
+    for _, entry in ipairs(OWN_PANEL_PARTS) do
+        local def = ownPanelDef(entry)
+        def.key, def.code, def.scope = p.id .. entry.part, letter .. entry.letter, "frame"
+        if entry.part == "X" then def.default = OWN_SPOT_X + ((i - 1) % OWN_SPOTS_PER_ROW) * OWN_SPOT_STEP end
+        if entry.part == "Y" then def.default = OWN_SPOT_Y - math.floor((i - 1) / OWN_SPOTS_PER_ROW) * OWN_SPOT_STEP end
+        RaidSettings.Define(def)
+        p.keys[#p.keys + 1] = def.key
+    end
+    Raid.OWN_PANELS[i] = p
+    ownById[p.id] = p
+end
+
+-- An own panel's slot by its id ("panel2" ...), or nil.
+function Raid.OwnPanel(id)
+    return ownById[id]
+end
+
 -- The raid tools bar (Raid/Tools.lua), per character: shown in a group,
 -- docked or free, its top-left corner from the screen centre (free), and
 -- which tools it holds.

@@ -857,6 +857,16 @@ L.RAID_MENU_TANK_REMOVE = "Desmarcar como mi tanque"
 L.RAID_LIST_FULL = "La lista está llena: quita primero un nombre."
 L.RAID_LIST_AFTER_COMBAT = "Guardado: el panel se actualiza tras el combate."
 
+-- Marcos de banda: paneles propios (Raid/OwnPanels.lua, Raid/Options/Arrangement.lua).
+L.RAID_TAB_arrangement = "Reparto"
+L.RAID_NOTE_arrangement = "Hasta nueve paneles propios. Un bloque de la agrupación del panel principal pasa al panel que lo toma; un bloque de otra agrupación muestra a sus jugadores otra vez."
+L.RAID_OWN_PANEL = "Panel %d"
+for n = 2, 10 do L["RAID_SECTION_panel" .. n] = L.RAID_OWN_PANEL:format(n) end
+L.RAID_SETTING_ownBlocks = "Bloques mostrados"
+L.RAID_HINT_ownBlocks = "Se mueven en el tablero de arriba"
+L.RAID_SETTING_ownTitle = "Título"
+L.RAID_HINT_ownTitle = "Encima del panel; vacío: ninguno"
+
 -- Marcos de banda: la barra de herramientas (Raid/Tools.lua).
 L.RAID_TAB_tools = "Herramientas"
 L.RAID_SECTION_toolsBar = "La barra"

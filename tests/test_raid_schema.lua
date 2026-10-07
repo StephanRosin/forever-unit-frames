@@ -10,10 +10,19 @@ local function ids(list)
     for i, t in ipairs(list) do out[i] = t.id end
     return table.concat(out, ",")
 end
-H.check("tabs", ids(Schema.TABS), "general,layout,panels,cell,texts,debuffs,indicators,icons,tools,profile")
+H.check("tabs", ids(Schema.TABS),
+    "general,layout,panels,arrangement,cell,texts,debuffs,indicators,icons,tools,profile")
 -- Profile: export and import of the edited size, no settings.
-H.check("profile tab is the window's own", Schema.TABS[10].custom, "profile")
-H.check("profile tab: no sections", #Schema.TABS[10].sections, 0)
+H.check("profile tab is the window's own", Schema.TABS[11].custom, "profile")
+H.check("profile tab: no sections", #Schema.TABS[11].sections, 0)
+-- Arrangement: the window's board, then a section per own panel.
+H.check("arrangement tab is the window's own", Schema.TABS[4].custom, "arrangement")
+H.check("a section per own panel", ids(Schema.TABS[4].sections),
+    "panel2,panel3,panel4,panel5,panel6,panel7,panel8,panel9,panel10")
+H.check("own panel section title", Schema.SectionTitle("panel4"), "Panel 4")
+H.check("own panel: the main panel's words", Schema.Label("panel4CellsPerLine"), "Cells per line")
+H.check("own panel: grouping words", Schema.EnumText(RS.Get("panel4GroupBy"), "ROLE"), "Role")
+H.check("own panel: its title", Schema.Label("panel4Title"), "Title")
 H.check("profile tab title", Schema.TabTitle("profile"), "Profile")
 
 -- Every setting once: in a section, or in the header bar.

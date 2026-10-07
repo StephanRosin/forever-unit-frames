@@ -856,6 +856,16 @@ L.RAID_MENU_TANK_REMOVE = "Nicht mehr mein Tank"
 L.RAID_LIST_FULL = "Die Liste ist voll: Entferne zuerst einen Namen."
 L.RAID_LIST_AFTER_COMBAT = "Gespeichert: Das Feld folgt nach dem Kampf."
 
+-- Schlachtzugsrahmen: eigene Felder (Raid/OwnPanels.lua, Raid/Options/Arrangement.lua).
+L.RAID_TAB_arrangement = "Aufteilung"
+L.RAID_NOTE_arrangement = "Bis zu neun eigene Felder. Ein Block der Gruppierung des Hauptfelds wandert in das Feld, das ihn nimmt; ein Block einer anderen Gruppierung zeigt seine Spieler ein weiteres Mal."
+L.RAID_OWN_PANEL = "Feld %d"
+for n = 2, 10 do L["RAID_SECTION_panel" .. n] = L.RAID_OWN_PANEL:format(n) end
+L.RAID_SETTING_ownBlocks = "Gezeigte Blöcke"
+L.RAID_HINT_ownBlocks = "Werden oben verschoben"
+L.RAID_SETTING_ownTitle = "Titel"
+L.RAID_HINT_ownTitle = "Über dem Feld; leer: keiner"
+
 -- Schlachtzugsrahmen: die Werkzeugleiste (Raid/Tools.lua).
 L.RAID_TAB_tools = "Werkzeuge"
 L.RAID_SECTION_toolsBar = "Die Leiste"

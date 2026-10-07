@@ -40,6 +40,11 @@ Source: [GitHub](https://github.com/StephanRosin/forever-unit-frames)
   lists of tanks and of favourites, and the raid's pets, each in a panel of its own with its own place per
   raid size. Players stay in their group as well. Right-click a cell to put a player on your tanks or your
   favourites, or type the names on the **Panels** tab; in combat the panel follows after the fight.
+- **Own panels** (the **Arrangement** tab): up to nine panels of your own beside the main panel, per raid size,
+  each with its grouping (group, class or role), the blocks it shows, a title and a layout of its own. Drag a
+  block from one panel's column to another's, or click it and pick **Move to …**. A block of the main panel's
+  grouping leaves the main panel; one of another grouping shows its players again (a "Healers" panel beside
+  the groups). Changes made in combat apply after the fight.
 - The **raid tools bar** (the **Tools** tab) takes the place of Blizzard's raid manager: raid target icons and
   the last ready check for everyone; starting a ready check, a role poll and world markers for the leader and
   assistants; everyone an assistant, party to raid and back and the loot method for the leader. It sits behind
@@ -92,6 +97,8 @@ The raid frames have pages of their own, one per tab of the raid window:
 - [[Layout|Raid-Layout]] – grouping, sorting, class order, how blocks and cells are arranged, position,
   borders
 - [[Panels|Raid-Panels]] – the special panels: main tanks, main assists, my tanks, favourites, pets
+- [[Arrangement|Raid-Arrangement]] – up to nine panels of your own: which blocks each one shows, moved by
+  drag-and-drop, and each panel's layout
 - [[Cell|Raid-Cell]] – cell size, bar texture and colors, power strip, border and corners, heals and
   shields
 - [[Texts|Raid-Texts]] – the name and the second line, their colors and fonts

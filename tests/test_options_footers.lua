@@ -35,7 +35,9 @@ H.check("both windows' left group from the shared builder", table.concat(built, 
 local footer = O.unlockButton:GetParent()
 local raidFooter = RO.unlockButton:GetParent()
 H.check("raid window: footer", raidFooter, RO.frame.footer)
-H.check("same width", O.frame:GetWidth(), RO.frame:GetWidth())
+-- The raid window is wider: its eleven tabs need the room.
+H.check("unit window's width", O.frame:GetWidth(), 780)
+H.check("raid window's width", RO.frame:GetWidth(), 880)
 
 -- Left: the same three places in both.
 local LEFT = { "LEFT footer LEFT 12 0 w120", "LEFT unlock RIGHT 8 0 w120", "LEFT test RIGHT 8 0 w120" }
