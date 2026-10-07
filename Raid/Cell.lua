@@ -225,6 +225,8 @@ function Cell.InitButton(button)
     -- Made in combat it keeps the XML size until the relayout after combat.
     if not InCombatLockdown() then button:SetSize(ns.Single.Size(button.key)) end
     ns.Single.StyleContent(button)
+    -- Our click-casting (Raid/ClickCast.lua), now or after combat.
+    ns.ClickCast.Added(button)
 end
 
 -- The header assigns or clears a unit, in or out of combat. The panel

@@ -95,3 +95,86 @@ function ClickCast.Plan(values)
     end
     return plan
 end
+
+-- Whether Clique (or another addon that does click-casting through the
+-- shared ClickCastFrames table, Units/Units.lua) is loaded: Clique's own
+-- header frame, or the addon by name.
+function ClickCast.Clique()
+    if rawget(_G, "ClickCastHeader") ~= nil then return true end
+    local addons = C_AddOns
+    if addons and addons.IsAddOnLoaded then
+        local ok, loaded = pcall(addons.IsAddOnLoaded, "Clique")
+        return ok and loaded == true
+    end
+    return false
+end
+
+-- On: switched on, or automatic while no Clique is loaded.
+function ClickCast.On()
+    if not ns.RaidConfig.Profile() then return false end
+    local mode = ns.RaidConfig.Get("general", "clickCast")
+    return mode == "ON" or (mode == "AUTO" and not ClickCast.Clique())
+end
+
+-- Whether a frame takes the bindings: a raid cell a header made, a party
+-- member while the party switch is on.
+local function takes(frame)
+    if ns.RaidCell.Is(frame) then return true end
+    return frame.key == ns.Party.KEY and ns.RaidConfig.Get("general", "clickCastParty") == true
+end
+
+local function write(frame, plan)
+    for _, attr in ipairs(plan) do frame:SetAttribute(attr[1], attr[2]) end
+end
+
+-- Out of combat only. A frame that takes them gets the bindings; one
+-- that no longer does (off, the party switched off) gets the XML's
+-- attributes back, but only if it had ours: Clique's are left alone.
+local function apply(frame, plan, defaultPlan)
+    if ClickCast.On() and takes(frame) then
+        write(frame, plan)
+        frame.clickCastWritten = true
+    elseif frame.clickCastWritten then
+        write(frame, defaultPlan)
+        frame.clickCastWritten = nil
+    end
+end
+
+-- Every frame that may take bindings: the cells the headers made (never
+-- test mode's) and the party members.
+local function frames()
+    local list = {}
+    for _, b in ipairs(ns.RaidCell.buttons) do list[#list + 1] = b end
+    for _, b in ipairs(ns.Party.buttons or {}) do list[#list + 1] = b end
+    return list
+end
+
+function ClickCast.ApplyAll()
+    if InCombatLockdown() or not ns.RaidConfig.Profile() then return end
+    local plan, defaultPlan = ClickCast.Plan(ClickCast.Values()), ClickCast.Plan(ClickCast.DefaultValues())
+    for _, frame in ipairs(frames()) do apply(frame, plan, defaultPlan) end
+end
+
+local function applyAfterCombat() ns.AfterCombat("clickCast", ClickCast.ApplyAll) end
+
+-- A header (or the party's) made a frame: its bindings now, or after
+-- combat (it keeps the XML's until then).
+function ClickCast.Added(frame)
+    if InCombatLockdown() then
+        applyAfterCombat()
+        return
+    end
+    if not ns.RaidConfig.Profile() then return end
+    apply(frame, ClickCast.Plan(ClickCast.Values()), ClickCast.Plan(ClickCast.DefaultValues()))
+end
+
+-- The settings that change the attributes; the panels have nothing to
+-- lay out for them (Raid/Panel.lua).
+ClickCast.KEYS = { clickCast = true, clickCastParty = true }
+for _, slot in ipairs(Raid.CLICK_SLOTS) do ClickCast.KEYS[slot.key] = true end
+for key in pairs(ClickCast.KEYS) do ns.RaidPanel.UNRELATED_KEYS[key] = true end
+
+ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
+    if scope ~= nil and scope ~= "general" then return end
+    if key == nil or ClickCast.KEYS[key] then applyAfterCombat() end
+end)
