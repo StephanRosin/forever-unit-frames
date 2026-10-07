@@ -58,6 +58,18 @@ H.checkTrue("raid words for choices", read("Raid-Texts.md"):find("Missing health
 H.checkTrue("the cell's own fonts", read("Raid-Texts.md"):find("<b>Second line size</b>", 1, true))
 H.checkTrue("the dispel square", read("Raid-Debuffs.md"):find("Icon in the center, Square in a corner", 1, true))
 H.checkTrue("the raid minimap button", general:find("<b>Show the button</b>", 1, true))
+-- The click-casting page is per character: no size tabs, no "per raid
+-- size"; it names Copy from and Clear all, that a key's own macro runs as
+-- written, and that Blizzard's click bindings win.
+local click = read("Raid-Click-casting.md")
+H.check("click-casting: no size tabs", click:find("size tabs", 1, true), nil)
+H.check("click-casting: not per raid size", click:find("per raid size", 1, true), nil)
+H.checkTrue("click-casting: per character", click:find("belong to the character", 1, true))
+H.checkTrue("click-casting: Copy from", click:find("**Copy from**", 1, true))
+H.checkTrue("click-casting: Clear all", click:find("**Clear all**", 1, true))
+H.checkTrue("click-casting: a macro as written", click:find("runs it as written", 1, true))
+H.checkTrue("click-casting: Blizzard's bindings", click:find("Blizzard's own click bindings", 1, true))
+H.checkTrue("click-casting: party frames for keys", click:find("party frames) show", 1, true))
 
 local sidebar = read("_Sidebar.md")
 H.checkTrue("sidebar: raid heading", sidebar:find("**Raid frames**", 1, true))

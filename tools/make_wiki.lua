@@ -265,14 +265,18 @@ local RAID_TAB_INTRO = {
         .. " (heals over time, shields).",
     clickCast = "Heal, decurse, target, assist or focus raid members with one click: up to 40 mouse combinations"
         .. " (five buttons, with and without Shift, Ctrl and Alt) on the cells of every panel and on the party"
-        .. " frames, and up to 16 keys that cast on the raid member under the mouse. Spells are kept by name, so"
-        .. " the highest rank you know is cast. Per character, the same at every raid size; a key or binding"
-        .. " shows once for all sixteen. A key is taken from what it is bound to otherwise while the raid frames"
-        .. " show (the window warns), so pick keys you do not use. With Clique loaded, click-casting is off until"
-        .. " switched on. A cell that joins in combat gets the bindings once combat ends. Blizzard's own click"
-        .. " bindings (its click-casting window) win over these on the same click; and since this client lets"
-        .. " target and the unit menu act only on clicks bound there (by default the plain left and right"
-        .. " clicks), Target on any other click is done by a macro and the menu is offered on those two only.",
+        .. " frames, and up to 16 keys. Spells are kept by name, so the highest rank you know is cast. A key with"
+        .. " a spell or an item casts it on the friendly raid member under the mouse; a key with a macro runs it"
+        .. " as written, so add [@mouseover] to it yourself. While the raid frames (or, with the party switch, the"
+        .. " party frames) show, a key is taken from what it is bound to otherwise (the window warns), so pick"
+        .. " keys you do not use; the keys' table below has one row for all sixteen. **Copy from** takes another"
+        .. " character's bindings and keys (a spell this character does not know is left out, the chat names it);"
+        .. " **Clear all** (click twice) puts back the defaults: the left click targets, the right click opens"
+        .. " the menu, no keys. With Clique loaded, click-casting is off until switched on. A cell that joins in"
+        .. " combat gets the bindings once combat ends. Blizzard's own click bindings (its click-casting window)"
+        .. " win over these on the same click; and since this client lets target and the unit menu act only on"
+        .. " clicks bound there (by default the plain left and right clicks), Target on any other click is done"
+        .. " by a macro and the menu is offered on those two only.",
     icons = "Role, raid target marker, leader, master looter and ready check icons, and the states: range,"
         .. " aggro, your target.",
 }
@@ -333,13 +337,27 @@ local function raidSections(tab)
     return list
 end
 
+-- What the tab's settings belong to: a raid size each, or (every setting
+-- of the tab per character) the character.
+local PER_SIZE = "The **%s** tab of the raid options window (`/fuf raid`). Each raid size (10, 20, 40) has a"
+    .. " profile of its own: the size tabs at the top choose which one you edit; a default that differs per size"
+    .. " is listed per size."
+local PER_CHARACTER = "The **%s** tab of the raid options window (`/fuf raid`). Its settings belong to the"
+    .. " character, not to a raid size: they are the same at every size."
+local function perCharacter(tab)
+    for _, sec in ipairs(tab.sections) do
+        for _, key in ipairs(sec.keys) do
+            if RS.Get(key).scope ~= "general" then return false end
+        end
+    end
+    return true
+end
+
 local raidPages = {}
 local function raidPage(tab)
     local title = RaidSchema.TabTitle(tab.id)
     local lines = { GENERATED, "", "# Raid frames: " .. title, "", RAID_TAB_INTRO[tab.id] or "", "",
-        ("The **%s** tab of the raid options window (`/fuf raid`). Each raid size (10, 20, 40) has a profile of"
-            .. " its own: the size tabs at the top choose which one you edit; a default that differs per size"
-            .. " is listed per size."):format(title), "" }
+        (perCharacter(tab) and PER_CHARACTER or PER_SIZE):format(title), "" }
     if tab.note then
         lines[#lines + 1] = RaidSchema.Note(tab.note)
         lines[#lines + 1] = ""
