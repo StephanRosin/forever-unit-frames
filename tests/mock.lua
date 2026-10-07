@@ -868,6 +868,60 @@ function M.NewAuraContainer(w, template)
     M.auraContainers[#M.auraContainers + 1] = w
 end
 
+-- What a container would show (Blizzard_AuraContainerUtil.lua): the
+-- container decides in secure code; the mock gives tests its choice.
+-- CanApplyIdentityCandidateFilters as in the source: spells flagged
+-- never-secret always; helpful auras on you, a group member or a pet;
+-- harmful auras only on units you cannot assist, helpful ones only on
+-- units you can (immune and uninteractable ignored).
+function M.CanApplyIdentityCandidateFilters(unit, aura)
+    local id = M.Reveal(aura.spellId)
+    if id and C_Secrets.GetSpellAuraSecrecy(id) == Enum.SecrecyLevel.NeverSecret then return true end
+    local helpful = M.Reveal(aura.isHelpful) == true
+    if helpful and UnitIsPlayerControlledOrGroupMember(unit) then return true end
+    if not helpful and UnitCanAssist("player", unit, true, true) then return false end
+    if helpful and not UnitCanAssist("player", unit, true, true) then return false end
+    return true
+end
+
+-- DoesAuraPassCandidateFilters, for the filters the addon uses: spell IDs
+-- (only where the identity filters apply; an include list there refuses
+-- everything else) and maxDuration (permanent auras out too).
+function M.PassesCandidateFilters(unit, aura, filters)
+    if filters == nil then return true end
+    local id = M.Reveal(aura.spellId)
+    if M.CanApplyIdentityCandidateFilters(unit, aura) then
+        if filters.excludeSpellIDs ~= nil and filters.excludeSpellIDs[id] then return false end
+        if filters.includeSpellIDs ~= nil and not filters.includeSpellIDs[id] then return false end
+    elseif filters.includeSpellIDs ~= nil then
+        return false
+    end
+    if filters.maxDuration ~= nil then
+        local duration = M.Reveal(aura.duration) or 0
+        if duration > filters.maxDuration or duration == 0 then return false end
+    end
+    return true
+end
+
+-- The auras of the container's unit a group (or slot) would show, in the
+-- unit's order: its filter string, its candidate filters, its maximum;
+-- none while it is switched off. Spell IDs of what it shows.
+function M.AuraContainerShows(container, key, isSlot)
+    local record = isSlot and container._slots[key] or container._groups[key]
+    assert(record, "mock: no such group or slot " .. tostring(key))
+    local shown = {}
+    if not record.enabled then return shown end
+    local d = M.units[container._unit]
+    local max = isSlot and 1 or record.max
+    for _, a in ipairs(d and d.auras or {}) do
+        if #shown >= max then break end
+        if M.AuraMatches(a, record.filter) and M.PassesCandidateFilters(container._unit, a, record.candidateFilters) then
+            shown[#shown + 1] = M.Reveal(a.spellId)
+        end
+    end
+    return shown
+end
+
 -- A frame counts as protected when it or any descendant is (the client
 -- protects the parents of protected frames too).
 function M.IsProtectedTree(obj)
@@ -1889,6 +1943,27 @@ function M.Reset()
     end
     -- Two tokens name the same unit when they share its data table.
     _G.UnitIsUnit = function(a, b) return M.units[a] ~= nil and M.units[a] == M.units[b] end
+    -- UnitIsPlayerControlledOrGroupMember (UnitDocumentation.lua): you,
+    -- your pet or vehicle, a group member or a member's pet. d.groupMember
+    -- overrides; any other unit is not (stricter than guessing: an
+    -- exclusion the client would apply is then left out, never the reverse).
+    local OWN_TOKENS = { player = true, pet = true, vehicle = true }
+    _G.UnitIsPlayerControlledOrGroupMember = function(unit)
+        local d = u(unit)
+        if not d then return false end
+        if d.groupMember ~= nil then return d.groupMember end
+        local token = tostring(unit)
+        return OWN_TOKENS[token] or token:match("^party%d+$") ~= nil or token:match("^partypet%d+$") ~= nil
+            or token:match("^raid%d+$") ~= nil or token:match("^raidpet%d+$") ~= nil
+    end
+    -- UnitCanAssist(unit, target, ignoreImmune, ignoreUninteractable):
+    -- d.canAssist, else every unit that is not d.hostile.
+    _G.UnitCanAssist = function(_, unit)
+        local d = u(unit)
+        if not d then return false end
+        if d.canAssist ~= nil then return d.canAssist end
+        return d.hostile ~= true
+    end
     _G.UnitInParty = function(unit)
         local d = u(unit)
         return d ~= nil and (d.inParty or groupToken(unit) ~= nil) or false
@@ -2118,6 +2193,14 @@ function M.Reset()
             local id = spellID(identifier)
             return id and M.spells[id].name or nil
         end,
+        -- Meant for a spell's ID from its name or link; nothing for a
+        -- spell the client does not know (MayReturnNothing). By name: the
+        -- one the spell book knows, else the lowest ID of that name.
+        GetSpellIDForSpellIdentifier = function(identifier)
+            assert(type(identifier) == "number" or type(identifier) == "string",
+                "GetSpellIDForSpellIdentifier: spellIdentifier")
+            return spellID(identifier)
+        end,
         GetSpellTexture = function(identifier)
             local id = spellID(identifier)
             if id then return 100000 + id, 100000 + id end
@@ -2304,6 +2387,7 @@ function M.Reset()
             Name = 5, NameOnly = 6 },
         CustomAuraButtonDispelTypeTextureStyle = { Border = 0, BorderWithIcon = 1, Icon = 2, PreserveAsset = 3,
             CustomAsset = 4 },
+        SecrecyLevel = { NeverSecret = 0, AlwaysSecret = 1, ContextuallySecret = 2 },
     }
 
     -- Auras: M.units[unit].auras lists { auraInstanceID, icon, applications,
@@ -2348,6 +2432,7 @@ function M.Reset()
         end
         return true
     end
+    M.AuraMatches = auraMatches
     M.auraQueries = 0      -- GetUnitAuras calls
     M.lastAuraQuery = nil  -- { unit, filter, maxCount, sortRule } of the last one
     M.auraQueryLog = {}    -- the filter of every GetUnitAuras call, in order
@@ -2357,11 +2442,23 @@ function M.Reset()
     -- combat or while M.aurasSecret; a spell's aura while
     -- M.secretSpellAuras[id].
     M.secretSpellAuras = {}
+    M.neverSecretSpells = {}
     _G.C_Secrets = {
         ShouldAurasBeSecret = function() return M.AurasSecret() == true end,
         ShouldSpellAuraBeSecret = function(id)
             assert(type(id) == "number" or type(id) == "string", "ShouldSpellAuraBeSecret: spellIdentifier")
             return M.AurasSecret() == true or M.secretSpellAuras[id] == true
+        end,
+        -- The spell's base secrecy as an aura (SecretArguments =
+        -- AllowedWhenUntainted: an addon may not pass a secret):
+        -- M.neverSecretSpells[id] NeverSecret, M.secretSpellAuras[id]
+        -- AlwaysSecret, any other ContextuallySecret.
+        GetSpellAuraSecrecy = function(id)
+            assert(not M.IsSecret(id), "GetSpellAuraSecrecy: secret argument from tainted code")
+            assert(type(id) == "number" or type(id) == "string", "GetSpellAuraSecrecy: spellIdentifier")
+            if M.neverSecretSpells[id] then return Enum.SecrecyLevel.NeverSecret end
+            if M.secretSpellAuras[id] then return Enum.SecrecyLevel.AlwaysSecret end
+            return Enum.SecrecyLevel.ContextuallySecret
         end,
     }
     _G.C_UnitAuras = {
