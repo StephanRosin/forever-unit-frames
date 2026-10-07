@@ -238,7 +238,10 @@ function Wizard.Apply()
         say(L.RAID_TEMPLATE_REFUSED)
         return false
     end
-    ns.Print(L.RAID_WIZARD_DONE)
+    -- Nothing chosen sets nothing: no Undo to speak of.
+    local any = false
+    for _, c in ipairs(changes) do any = any or #c.values > 0 end
+    ns.Print(any and L.RAID_WIZARD_DONE or L.RAID_WIZARD_SUMMARY_NOTHING)
     Wizard.Close()
     return true
 end

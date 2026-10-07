@@ -520,7 +520,10 @@ RaidSettings.Define({ key = "toolsShow", code = "IO", scope = "general", type = 
 -- folded out) or free at its own position. Stored by index: append only.
 RaidSettings.Define({ key = "toolsMode", code = "IM", scope = "general", type = "enum", values = { "DOCKED", "FREE" },
     default = "DOCKED" })
-RaidSettings.Define({ key = "toolsOpen", code = "IE", scope = "general", type = "bool", default = false })
+-- uiState: a state of the screen (folded in or out), not a choice a
+-- template or the templates' Undo touches (Raid/Templates.lua).
+RaidSettings.Define({ key = "toolsOpen", code = "IE", scope = "general", type = "bool", default = false,
+    uiState = true })
 RaidSettings.Define({ key = "toolsX", code = "IX", scope = "general", type = "int", min = -4000, max = 4000,
     default = 300 })
 RaidSettings.Define({ key = "toolsY", code = "IY", scope = "general", type = "int", min = -4000, max = 4000,

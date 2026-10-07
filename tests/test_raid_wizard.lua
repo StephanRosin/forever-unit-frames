@@ -124,6 +124,13 @@ H.check("no suggestions without a role", W.clickRows[1]:IsShown(), false)
 H.check("says so", W.texts.clicks:GetText(), L.RAID_WIZARD_TEXT_NO_CLICKS)
 click(W.nextButton)
 H.check("nothing to change", W.summary:GetText(), L.RAID_WIZARD_SUMMARY_NOTHING)
+-- Applied anyway: no word of an Undo (there is nothing to take back).
+local said = #M.chat
+click(W.applyButton)
+H.check("nothing chosen: closed", W.IsOpen(), false)
+H.check("nothing chosen: one line", #M.chat, said + 1)
+H.check("nothing chosen: no undo promised", M.chat[#M.chat]:find(L.RAID_WIZARD_DONE, 1, true), nil)
+H.checkTrue("nothing chosen: says so", M.chat[#M.chat]:find(L.RAID_WIZARD_SUMMARY_NOTHING, 1, true))
 W.Close()
 RO.Close()
 

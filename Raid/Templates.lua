@@ -218,9 +218,12 @@ end
 
 -- A change from anywhere else (a setting row, a copy, an import, a mover)
 -- ends the undo: putting back what the last change replaced would take
--- that one back too.
-ns.Listen("RAID_CONFIG_CHANGED", function()
+-- that one back too. A state of the screen (uiState: the tools bar folded
+-- in or out) is no such change.
+ns.Listen("RAID_CONFIG_CHANGED", function(_, key)
     if ours or not undo then return end
+    local def = key and RaidSettings.Get(key)
+    if def and def.uiState then return end
     undo = nil
     ns.Fire("RAID_TEMPLATE_UNDO")
 end)
