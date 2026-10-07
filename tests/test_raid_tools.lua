@@ -18,7 +18,7 @@ for key, code in pairs(CODES) do
     H.check(key .. " per character", def and RS.AppliesTo(def, "general"), true)
 end
 H.check("shown", RC.Get("general", "toolsShow"), true)
-H.check("position", RC.Get("general", "toolsX") .. "," .. RC.Get("general", "toolsY"), "300,300")
+H.check("position", RC.Get("general", "toolsX") .. "," .. RC.Get("general", "toolsY"), "-60,370")
 H.check("raid target icons", RC.Get("general", "toolsTargets"), true)
 RC.Set("general", "toolsMode", "FREE")
 -- The raid target icons alone: every other row off (they have tests of
@@ -38,7 +38,7 @@ local function point(frame)
     local name = rel == UIParent and "UIParent" or rel == bar.mover and "mover" or "?"
     return table.concat({ p, name, relPoint, x, y }, " ")
 end
-H.check("at its position", point(bar.mover), "TOPLEFT UIParent CENTER 300 300")
+H.check("at its position", point(bar.mover), "TOPLEFT UIParent CENTER -60 370")
 H.check("hangs from its mover", point(bar), "TOPLEFT mover TOPLEFT 0 0")
 
 -- The raid target icons.
@@ -111,7 +111,7 @@ ns.Movers.Unlock("raid")
 H.checkTrue("handle shown", bar.mover:IsShown())
 H.check("handle label", bar.mover.label:GetText(), "Raid tools")
 RC.Set("general", "toolsY", 200)
-H.check("moved", point(bar.mover), "TOPLEFT UIParent CENTER 300 200")
+H.check("moved", point(bar.mover), "TOPLEFT UIParent CENTER -60 200")
 ns.Movers.Lock("raid")
 
 -- In combat: the group changes, the bar waits for the end of combat.

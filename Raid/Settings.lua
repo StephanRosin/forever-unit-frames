@@ -524,10 +524,12 @@ RaidSettings.Define({ key = "toolsMode", code = "IM", scope = "general", type = 
 -- template or the templates' Undo touches (Raid/Templates.lua).
 RaidSettings.Define({ key = "toolsOpen", code = "IE", scope = "general", type = "bool", default = false,
     uiState = true })
+-- Free, it first stands above the screen centre, clear of every panel's
+-- default spot (tests/test_raid_tools_default_spot.lua).
 RaidSettings.Define({ key = "toolsX", code = "IX", scope = "general", type = "int", min = -4000, max = 4000,
-    default = 300 })
+    default = -60 })
 RaidSettings.Define({ key = "toolsY", code = "IY", scope = "general", type = "int", min = -4000, max = 4000,
-    default = 300 })
+    default = 370 })
 -- The raid target icons for your target.
 RaidSettings.Define({ key = "toolsTargets", code = "IT", scope = "general", type = "bool", default = true })
 -- The ready check: the last result, and starting one (leader, assistants).
