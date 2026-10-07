@@ -68,6 +68,10 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 <tr><td><b>Elite / rare marker</b></td><td>On the portrait, else above the frame</td><td>On, Off</td><td>On</td><td>Target, Target of Target, Focus</td></tr>
 <tr><td><b>Elite / rare style</b></td><td>Border: gold for elites, silver for rares</td><td>Marker, Border</td><td>Marker</td><td>Target, Target of Target, Focus</td></tr>
 <tr><td><b>Elite border thickness</b></td><td></td><td>1 – 6</td><td>2</td><td>Target, Target of Target, Focus</td></tr>
+<tr><td><b>Marker: point on the frame</b></td><td>Automatic: on the portrait, else above the frame</td><td>Automatic, Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right</td><td>Automatic</td><td>Target, Target of Target, Focus</td></tr>
+<tr><td><b>Marker: its own point</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Center</td><td>Target, Target of Target, Focus</td></tr>
+<tr><td><b>Marker: offset X</b></td><td>Marker style; with Automatic, moves it from there</td><td>-200 – 200</td><td>0</td><td>Target, Target of Target, Focus</td></tr>
+<tr><td><b>Marker: offset Y</b></td><td>Marker style; with Automatic, moves it from there</td><td>-200 – 200</td><td>0</td><td>Target, Target of Target, Focus</td></tr>
 <tr><td><b>Damage and heal numbers</b></td><td>Shown briefly inside the frame</td><td>On, Off</td><td>Player, Target, Focus, Pet, Party: On; Target of Target: Off</td><td>all</td></tr>
 </tbody>
 </table>

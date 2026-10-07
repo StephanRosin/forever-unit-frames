@@ -9,6 +9,11 @@ local _, ns = ...
 -- for players. Where it shows and would cover the marker, the marker
 -- moves: the word ends left of the badge, the portrait badge goes to the
 -- portrait's inner top corner. Both geometries are plain numbers.
+--
+-- That is the automatic place (eliteMarkerFramePoint AUTO, the default),
+-- which the offset (eliteMarkerX/Y) moves. A point on the frame instead
+-- puts the marker's own point (eliteMarkerPoint) there, plus the offset,
+-- and nothing moves out of the class badge's way.
 local Classification = { name = "Classification", unitEvents = { "UNIT_CLASSIFICATION_CHANGED" } }
 ns.Classification = Classification
 
@@ -83,6 +88,25 @@ local function hitsBadge(frame, left, right, bottom, top)
     return left < b.right and b.left < right and bottom < b.top and b.bottom < top
 end
 
+-- The offset on the pixel grid, and the frame point set (nil: automatic).
+local function offset(scope)
+    local Pixel = ns.Pixel
+    return Pixel.Snap(Config.Get(scope, "eliteMarkerX")), Pixel.Snap(Config.Get(scope, "eliteMarkerY"))
+end
+
+local function ownPoint(scope)
+    local at = Config.Get(scope, "eliteMarkerFramePoint")
+    if at == "AUTO" then return nil end
+    return at, Config.Get(scope, "eliteMarkerPoint")
+end
+
+-- The marker's own point at the frame's point set, plus the offset.
+local function placeOwn(frame, region, at, own)
+    local dx, dy = offset(frame.key)
+    region:ClearAllPoints()
+    region:SetPoint(own, frame, at, dx, dy)
+end
+
 -- The portrait badge: on the portrait's outer top corner, sticking out by
 -- a third of its size; on the inner one when the class badge covers the
 -- outer. Under a castbar docked on top it does not reach up into it.
@@ -91,6 +115,13 @@ local function placeIcon(frame)
     local portrait = Config.Get(scope, "portraitMode")
     if portrait == "OFF" then return end
     local size = Pixel.Snap(math.max(10, Config.Get(scope, "height") * 0.45))
+    local icon = frame.eliteIcon
+    icon:SetSize(size, size)
+    local at, own = ownPoint(scope)
+    if at then
+        placeOwn(frame, icon, at, own)
+        return
+    end
     local out = Pixel.Snap(size / 3)
     local up = ns.Shape.DockReach(frame) == "ABOVE" and 0 or out
     local width, height = ns.Single.Size(scope)
@@ -104,25 +135,38 @@ local function placeIcon(frame)
     local onLeft = left
     if inner then onLeft = not left end
     local point = onLeft and "TOPLEFT" or "TOPRIGHT"
-    local icon = frame.eliteIcon
+    local dx, dy = offset(scope)
     icon:ClearAllPoints()
-    icon:SetPoint(point, frame.portraitBg, point, onLeft and -out or out, up)
-    icon:SetSize(size, size)
+    icon:SetPoint(point, frame.portraitBg, point, (onLeft and -out or out) + dx, up + dy)
 end
 
 -- The word: above the frame's top right corner, and above a castbar
 -- docked on top, clear of the border; left of the class badge when that
 -- reaches over the spot. All in the frame's coordinates.
+-- A word at a point of its own is aligned to that point's side.
+local function justify(point)
+    if point:find("LEFT") then return "LEFT" end
+    if point:find("RIGHT") then return "RIGHT" end
+    return "CENTER"
+end
+
 local function placeText(frame)
     local scope, text, Pixel = frame.key, frame.eliteText, ns.Pixel
+    local at, own = ownPoint(scope)
+    if at then
+        placeOwn(frame, text, at, own)
+        text:SetJustifyH(justify(own))
+        return
+    end
     local side, reach = ns.Shape.DockReach(frame)
     local bottom = (side == "ABOVE" and reach or 0) + ns.Border.Extent(scope) + Pixel.One()
     local x = 0
     if hitsBadge(frame, -math.huge, 0, bottom, bottom + Classification.FontSize(scope)) then
         x = math.min(0, frame.classBadgeBox.left - Pixel.Snap(BADGE_GAP))
     end
+    local dx, dy = offset(scope)
     text:ClearAllPoints()
-    text:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", x, bottom)
+    text:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", x + dx, bottom + dy)
     text:SetJustifyH("RIGHT")
 end
 

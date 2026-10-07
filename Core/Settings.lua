@@ -16,6 +16,8 @@ ns.Settings = Settings
 -- ("60 Mage Gnome"); creatures: level and type ("60 Humanoid").
 local TEXT_TAGS = { "NONE", "NAME", "NAME_LEVEL", "LEVEL", "CURRENT", "CURRENT_MAX", "PERCENT", "DEFICIT", "INFO" }
 Settings.TEXT_TAGS = TEXT_TAGS
+-- The anchor points a placed icon or group chooses from.
+Settings.POINTS = { "TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT" }
 
 -- General appearance (inherited by every frame, overridable per frame)
 -- The font settings, in the order the options page lists them.
@@ -164,6 +166,21 @@ Settings.Define({ key = "eliteMarkerStyle", code = "EZ", scope = "frame",
     default = "MARKER" })
 Settings.Define({ key = "eliteBorderSize", code = "EU", scope = "frame",
     only = { target = true, targettarget = true, focus = true }, type = "int", min = 1, max = 6, default = 2 })
+-- Where the marker (MARKER style) sits: AUTO, the default, is the place it
+-- always had (Elements/Classification.lua); X and Y then move it from
+-- there. A point on the frame instead puts the marker's own point there.
+-- Stored by index: append only.
+local ELITE = { target = true, targettarget = true, focus = true }
+local ELITE_POINTS = { "AUTO" }
+for _, point in ipairs(Settings.POINTS) do ELITE_POINTS[#ELITE_POINTS + 1] = point end
+Settings.Define({ key = "eliteMarkerFramePoint", code = "MF", scope = "frame", only = ELITE, type = "enum",
+    values = ELITE_POINTS, default = "AUTO" })
+Settings.Define({ key = "eliteMarkerPoint", code = "MO", scope = "frame", only = ELITE, type = "enum",
+    values = Settings.POINTS, default = "CENTER" })
+Settings.Define({ key = "eliteMarkerX", code = "MX", scope = "frame", only = ELITE, type = "int", min = -200, max = 200,
+    default = 0 })
+Settings.Define({ key = "eliteMarkerY", code = "MY", scope = "frame", only = ELITE, type = "int", min = -200, max = 200,
+    default = 0 })
 -- Damage and heal numbers inside the frame (Blizzard shows them on the
 -- player and pet frames).
 Settings.Define({ key = "combatFeedback", code = "CF", scope = "frame", type = "bool",
@@ -332,7 +349,6 @@ Settings.TRACKING_SPELLS = {
     5502, -- paladin: Sense Undead
     5500, -- warlock: Sense Demons
 }
-Settings.POINTS = { "TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT" }
 local AURA_ANCHORS = { "FRAME", "HEALTH", "POWER", "CASTBAR", "OTHER" }
 local DIRECTIONS = { "RIGHT", "LEFT", "UP", "DOWN" }
 local AURA_SIZE = { party = 18, targettarget = 16, pet = 16, _ = 20 }
