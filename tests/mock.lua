@@ -1364,7 +1364,7 @@ function M.Reset()
     M.units = {}
     -- RegionalUniqueNamesEnabled() answer; the client's default is unknown.
     M.regionalUniqueNames = false
-    M.cvars = {}
+    M.cvars = { ActionButtonUseKeyDown = "1" }
     M.macros = {}          -- list of { name=, icon=, body=, perChar= }
     M.macroFrameShown = false
     M.macroWrites = 0      -- CreateMacro/EditMacro calls (must stay 0)
@@ -2377,6 +2377,9 @@ function M.Reset()
         GetCVar = function(name) return M.cvars[name] end,
         SetCVar = function(name, v) M.cvars[name] = v; return true end,
     }
+    -- GetCVarBool: "1" is true. ActionButtonUseKeyDown is on by default
+    -- (M.Reset).
+    _G.GetCVarBool = function(name) local v = M.cvars[name]; return v == "1" or v == true end
 
     -- Macros (character macros live at indices MAX_ACCOUNT_MACROS + 1 ...)
     _G.GetMacroIndexByName = function(name)
@@ -2726,12 +2729,22 @@ local SECURE_ACTIONS = {
         end
     end,
 }
-function M.SecureClick(button, mouseButton)
-    local registered = false
+-- Whether the button takes this stroke (RegisterForClicks).
+local function takesStroke(button, mouseButton, down)
+    local stroke = down and "Down" or "Up"
     for _, c in ipairs(button._clicks or {}) do
-        if c == "AnyUp" or c == mouseButton .. "Up" then registered = true end
+        if c == "Any" .. stroke or c == mouseButton .. stroke then return true end
     end
-    if not registered or not button:IsVisible() or button._mouse == false then return nil end
+    return false
+end
+-- GetCVarBool("ActionButtonUseKeyDown"), or the button's useOnKeyDown.
+local function useOnKeyDown(button)
+    local v = button._attr.useOnKeyDown
+    if v == nil then v = GetCVarBool("ActionButtonUseKeyDown") end
+    return v or button._attr.pressAndHoldAction ~= nil
+end
+-- One stroke's OnClick: the type it ran, or nil.
+local function secureStroke(button, mouseButton, down)
     local suffix = BUTTON_SUFFIX[mouseButton] or ""
     local function attr(name)
         for _, k in ipairs({ name .. suffix, "*" .. name .. suffix, name .. "*", "*" .. name .. "*", name }) do
@@ -2739,6 +2752,17 @@ function M.SecureClick(button, mouseButton)
             if v ~= nil then return v end
         end
         return nil
+    end
+    if button._template == "SecureActionButtonTemplate" then
+        -- SecureActionButton_OnClick: an addon's button never gets
+        -- isSecureAction, so the down stroke acts while the player uses
+        -- keys on the down stroke (CVar ActionButtonUseKeyDown, on by
+        -- default), else the up stroke; the other one does nothing.
+        if down ~= (useOnKeyDown(button) and true or false) then return nil end
+        -- GetConvertedButtonUnitAndActionType: a unit that does not exist
+        -- stops the click.
+        local unit = attr("unit")
+        if unit and unit ~= "none" and not UnitExists(unit) then return nil end
     end
     local kind = attr("type")
     local action = kind and SECURE_ACTIONS[kind]
@@ -2749,6 +2773,19 @@ function M.SecureClick(button, mouseButton)
         if not ok then error(err, 0) end
     end
     return kind
+end
+-- A mouse click: the down stroke, then the up stroke, each one the button
+-- is registered for (RegisterForClicks). Returns the type that ran (the
+-- last one, if both strokes ran one), or nil.
+function M.SecureClick(button, mouseButton)
+    if not button:IsVisible() or button._mouse == false then return nil end
+    local ran
+    for _, down in ipairs({ true, false }) do
+        if takesStroke(button, mouseButton, down) then
+            ran = secureStroke(button, mouseButton, down) or ran
+        end
+    end
+    return ran
 end
 
 -- The login loading screen: UIParent is hidden while it is up (the client

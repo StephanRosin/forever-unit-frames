@@ -19,7 +19,7 @@ local f = row.frame
 H.check("eight and a clear button", #f.buttons, 9)
 local blue = f.buttons[1]
 H.checkTrue("secure", blue:IsProtected())
-H.check("type", blue:GetAttribute("type"), "worldmarker")
+H.check("type", blue:GetAttribute("*type1"), "worldmarker")
 H.check("its marker", blue:GetAttribute("marker"), 1)
 H.check("toggles", blue:GetAttribute("action"), "toggle")
 H.check("no unit", blue:GetAttribute("unit"), nil)
@@ -41,6 +41,9 @@ M.SecureClick(blue, "LeftButton")
 H.check("again: taken away", M.worldMarkers[1], nil)
 M.SecureClick(f.clear, "LeftButton")
 H.check("cleared: none left", next(M.worldMarkers), nil)
+H.check("both strokes", table.concat(blue._clicks, ","), "AnyUp,AnyDown")
+H.check("right button: nothing", M.SecureClick(blue, "RightButton"), nil)
+H.check("right button: not placed", M.worldMarkers[1], nil)
 
 -- A client without world markers: no row.
 M.worldMarkerSystem = false

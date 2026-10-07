@@ -106,12 +106,17 @@ local function tooltip(button, textKey)
     end)
 end
 
--- A secure button that acts on a mouse button's release (the client runs
--- its type's action).
-local function secureButton(parent, attributes)
+-- A secure button whose action (its type, the client's) runs on the left
+-- mouse button, with or without a modifier; the others do nothing. Both
+-- strokes: an addon's button never gets isSecureAction, so
+-- SecureActionButton_OnClick acts on the down stroke while the player
+-- casts on key down (CVar ActionButtonUseKeyDown, on by default), else on
+-- the up stroke, and ignores the other one (as Elements/Totems.lua).
+local function secureButton(parent, kind, attributes)
     local b = CreateFrame("Button", nil, parent, "SecureActionButtonTemplate")
     b:SetSize(Tools.ICON, Tools.ICON)
-    b:RegisterForClicks("AnyUp")
+    b:RegisterForClicks("AnyUp", "AnyDown")
+    b:SetAttribute("*type1", kind)
     for name, value in pairs(attributes) do b:SetAttribute(name, value) end
     return b
 end
@@ -146,14 +151,14 @@ Tools.AddRow({ id = "targets", key = "toolsTargets", build = function(bar)
     local row = CreateFrame("Frame", nil, bar)
     local buttons = {}
     for i = 1, Tools.MARKERS do
-        local b = secureButton(row, { type = "raidtarget", unit = "target", marker = i, action = "toggle" })
+        local b = secureButton(row, "raidtarget", { unit = "target", marker = i, action = "toggle" })
         b.icon = b:CreateTexture(nil, "ARTWORK")
         b.icon:SetAllPoints(b)
         b.icon:SetTexture(ns.RaidMarker.TEXTURE)
         b.icon:SetSpriteSheetCell(i, ns.RaidMarker.ROWS, ns.RaidMarker.COLUMNS)
         buttons[i] = b
     end
-    local clear = secureButton(row, { type = "raidtarget", unit = "target", action = "clear" })
+    local clear = secureButton(row, "raidtarget", { unit = "target", action = "clear" })
     cross(clear)
     tooltip(clear, "RAID_TOOLS_CLEAR_TARGET")
     buttons[#buttons + 1] = clear
@@ -288,7 +293,7 @@ Tools.AddRow({ id = "markers", key = "toolsMarkers", visible = function() return
         local row = CreateFrame("Frame", nil, bar)
         local buttons = {}
         for i, icon in ipairs(Tools.WORLD_MARKER_ICONS) do
-            local b = secureButton(row, { type = "worldmarker", marker = i, action = "toggle" })
+            local b = secureButton(row, "worldmarker", { marker = i, action = "toggle" })
             local bg = b:CreateTexture(nil, "BACKGROUND")
             bg:SetAllPoints(b)
             bg:SetColorTexture(1, 1, 1, 0.15)
@@ -300,7 +305,7 @@ Tools.AddRow({ id = "markers", key = "toolsMarkers", visible = function() return
             tooltip(b, "RAID_TOOLS_WORLD_MARKER")
             buttons[i] = b
         end
-        local clear = secureButton(row, { type = "worldmarker", action = "clear" })
+        local clear = secureButton(row, "worldmarker", { action = "clear" })
         cross(clear)
         tooltip(clear, "RAID_TOOLS_CLEAR_MARKERS")
         buttons[#buttons + 1] = clear

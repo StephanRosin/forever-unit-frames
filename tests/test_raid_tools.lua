@@ -46,7 +46,7 @@ local row = Tools.rows[1].frame
 H.check("eight icons and a clear button", #row.buttons, 9)
 local skull = row.buttons[8]
 H.checkTrue("secure", skull:IsProtected())
-H.check("type", skull:GetAttribute("type"), "raidtarget")
+H.check("type", skull:GetAttribute("*type1"), "raidtarget")
 H.check("on your target", skull:GetAttribute("unit"), "target")
 H.check("its marker", skull:GetAttribute("marker"), 8)
 H.check("toggles", skull:GetAttribute("action"), "toggle")
@@ -65,11 +65,25 @@ H.check("click: the action", M.SecureClick(skull, "LeftButton"), "raidtarget")
 H.check("skull on the target", M.units.target.raidTarget, 8)
 M.SecureClick(skull, "LeftButton")
 H.check("again: off", M.units.target.raidTarget, nil)
-M.SecureClick(row.buttons[2], "RightButton")
-H.check("any button: a circle", M.units.target.raidTarget, 2)
+-- Both strokes registered: the client acts on the one the player's
+-- setting picks (CVar ActionButtonUseKeyDown), once.
+H.check("both strokes", table.concat(skull._clicks, ","), "AnyUp,AnyDown")
+H.check("right button: nothing", M.SecureClick(row.buttons[2], "RightButton"), nil)
+H.check("right button: no circle", M.units.target.raidTarget, nil)
+M.SecureClick(row.buttons[2], "LeftButton")
+H.check("left button: a circle", M.units.target.raidTarget, 2)
 M.SecureClick(row.clear, "LeftButton")
 H.check("cleared", M.units.target.raidTarget, nil)
-H.check("set by the client's secure code", #M.raidTargetCalls, 4)
+M.cvars.ActionButtonUseKeyDown = "0"
+M.SecureClick(skull, "LeftButton")
+H.check("on the up stroke: the skull", M.units.target.raidTarget, 8)
+M.cvars.ActionButtonUseKeyDown = "1"
+M.SecureClick(row.clear, "LeftButton")
+H.check("set by the client's secure code, once a click", #M.raidTargetCalls, 6)
+-- No target: the client does nothing.
+M.units.target = nil
+H.check("no target: nothing", M.SecureClick(skull, "LeftButton"), nil)
+H.check("no target: no call", #M.raidTargetCalls, 6)
 
 -- Off, or the raid frames off: hidden.
 RC.Set("general", "toolsShow", false)
