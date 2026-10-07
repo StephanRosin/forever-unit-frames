@@ -7,7 +7,8 @@ local ns = H.LoadAddon()
 M.units.player = { name = "Me", class = "PRIEST", health = 1, healthMax = 1 }
 -- Another character with bindings of its own.
 ForeverUnitFramesDB = { raid = { ["Alt-Realm"] = { general = { click3 = "assist", clickKey1 = "Q",
-    clickKey1Bind = "item:1251" } } } }
+    clickKey1Bind = "item:1251", click4 = "spell:Smite", click5 = "spell:flash heal", clickKey2 = "E",
+    clickKey2Bind = "spell:Mind Blast" } } } }
 M.FireEvent("PLAYER_LOGIN")
 M.RunTimers()
 local RO, RC, L = ns.RaidOptions, ns.RaidConfig, ns.L
@@ -119,6 +120,14 @@ H.check("copied: middle", RC.Get("general", "click3"), "assist")
 H.check("copied: key", RC.Get("general", "clickKey1"), "Q")
 H.check("copied: what it casts", RC.Get("general", "clickKey1Bind"), "item:1251")
 H.check("copied: the rest back to the defaults", RC.Get("general", "click1Shift"), "")
+-- Spells go through this character's spell book: a known one as it
+-- writes it, an unknown one is left out (the slot keeps its default) and
+-- named in the chat.
+H.check("copied: a known spell", RC.Get("general", "click5"), "spell:Flash Heal")
+H.check("not copied: an unknown spell", RC.Get("general", "click4"), "")
+H.check("not copied: a key's unknown spell", RC.Get("general", "clickKey2Bind"), "")
+H.check("its key copied all the same", RC.Get("general", "clickKey2"), "E")
+H.checkTrue("said which", M.chat[#M.chat]:find(L.RAID_CLICK_COPY_DROPPED:format("Smite, Mind Blast"), 1, true))
 
 -- Clear all: two clicks, back to the defaults.
 RC.Set("general", "click4", "assist")

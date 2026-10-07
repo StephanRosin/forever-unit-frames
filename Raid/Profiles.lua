@@ -72,19 +72,38 @@ function Profiles.ClickKeys()
     return keys
 end
 
+-- A copied binding as this character has it: a spell through its spell
+-- book (as the book writes it), or nil and the spell's name when it does
+-- not know it. Everything else as it is.
+local function ownBinding(binding)
+    local kind, value = Raid.ParseBinding(binding)
+    if kind ~= "spell" or value == "" then return binding end
+    local name = ns.ClickCast.TypedValue("spell", value)
+    if name == nil then return nil, value end
+    return "spell:" .. name
+end
+
 -- Another character's click-casting bindings and keys onto ours (the
 -- switches stay); what it left at the defaults is the default here too.
--- False if there is no such character.
+-- A spell this character does not know is left out (the default stays)
+-- and named in the chat. False if there is no such character.
 function Profiles.CopyClickCast(key)
     local source = store and store[key]
     if key == charKey or type(source) ~= "table" then return false end
     local general = RaidSettings.Sanitise(source).general
-    local values = {}
+    local values, dropped = {}, {}
     for _, k in ipairs(Profiles.ClickKeys()) do
+        local default = RaidSettings.Default(RaidSettings.Get(k), "general")
         local v = general[k]
-        if v == nil then v = RaidSettings.Default(RaidSettings.Get(k), "general") end
+        if v == nil then v = default end
+        if RaidSettings.Get(k).kinds then
+            local own, unknown = ownBinding(v)
+            if own == nil then dropped[#dropped + 1] = unknown end
+            v = own or default
+        end
         values[#values + 1] = { k, v }
     end
+    if #dropped > 0 then ns.Print(ns.L.RAID_CLICK_COPY_DROPPED:format(table.concat(dropped, ", "))) end
     return RaidConfig.SetKeys("general", values)
 end
 
