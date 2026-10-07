@@ -185,16 +185,22 @@ function Schema.TabTitle(id) return word("RAID_TAB_", id) or id end
 function Schema.Note(id) return word("RAID_NOTE_", id) end
 
 -- What a binding (Raid.ParseBinding) does, in words: the kind's, and the
--- value after it ("Cast a spell: Renew"); nil for no binding.
-function Schema.KindText(kind)
-    if kind == "" then return L.RAID_CLICK_NOTHING end
+-- value after it ("Cast a spell: Renew"); nil for no binding. key: the
+-- setting it is for (optional): an empty modified mouse slot does what
+-- the plain click does (the client's fallback), and says so.
+function Schema.KindText(kind, key)
+    if kind == "" then
+        local slot = key and ns.Raid.CLICK_SLOT_BY_KEY[key]
+        if slot and slot.prefix ~= "*" then return L.RAID_CLICK_LIKE_PLAIN end
+        return L.RAID_CLICK_NOTHING
+    end
     return word("RAID_CLICK_", kind) or kind
 end
-function Schema.BindingText(text)
+function Schema.BindingText(text, key)
     local kind, value = ns.Raid.ParseBinding(text)
     if kind == nil then return nil end
-    if value == nil or value == "" then return Schema.KindText(kind) end
-    return Schema.KindText(kind) .. ": " .. value
+    if value == nil or value == "" then return Schema.KindText(kind, key) end
+    return Schema.KindText(kind, key) .. ": " .. value
 end
 
 -- A choice of an enum: the raid's own word, else the unit frames' (the

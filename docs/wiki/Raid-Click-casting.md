@@ -26,13 +26,13 @@ For this character, at every raid size; changes apply out of combat. A modified 
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
 <tr><td><b>Click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Target</td></tr>
-<tr><td><b>Shift-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Shift-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Ctrl-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Shift-Ctrl-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Shift-Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Ctrl-Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Shift-Ctrl-Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
 </tbody>
 </table>
 
@@ -42,13 +42,13 @@ For this character, at every raid size; changes apply out of combat. A modified 
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
 <tr><td><b>Click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Open the menu</td></tr>
-<tr><td><b>Shift-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Shift-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Ctrl-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Shift-Ctrl-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Shift-Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Ctrl-Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Shift-Ctrl-Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
 </tbody>
 </table>
 
@@ -58,13 +58,13 @@ For this character, at every raid size; changes apply out of combat. A modified 
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
 <tr><td><b>Click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Shift-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Ctrl-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Shift-Ctrl-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Shift-Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Ctrl-Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Shift-Ctrl-Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
 </tbody>
 </table>
 
@@ -74,13 +74,13 @@ For this character, at every raid size; changes apply out of combat. A modified 
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
 <tr><td><b>Click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Shift-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Ctrl-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Shift-Ctrl-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Shift-Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Ctrl-Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Shift-Ctrl-Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
 </tbody>
 </table>
 
@@ -90,13 +90,13 @@ For this character, at every raid size; changes apply out of combat. A modified 
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
 <tr><td><b>Click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Ctrl-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
-<tr><td><b>Shift-Ctrl-Alt-click</b></td><td></td><td>Nothing, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
+<tr><td><b>Shift-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Ctrl-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Shift-Ctrl-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Shift-Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Ctrl-Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Shift-Ctrl-Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
 </tbody>
 </table>
 

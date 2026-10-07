@@ -24,10 +24,10 @@ local function binding(key)
     return kind or "", value or ""
 end
 
-local function kindItems(kinds)
+local function kindItems(key, kinds)
     return function()
         local items = {}
-        for _, kind in ipairs(kinds) do items[#items + 1] = { value = kind, text = Schema.KindText(kind) } end
+        for _, kind in ipairs(kinds) do items[#items + 1] = { value = kind, text = Schema.KindText(kind, key) } end
         return items
     end
 end
@@ -71,7 +71,7 @@ end
 
 local function bindingDropdown(page, key, kinds, label, hint)
     return Widgets.Dropdown(page, {
-        label = label, hint = hint, items = kindItems(kinds),
+        label = label, hint = hint, items = kindItems(key, kinds),
         get = function() return (binding(key)) end,
         set = function(kind)
             if kind == binding(key) then return true end

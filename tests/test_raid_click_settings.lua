@@ -135,6 +135,18 @@ H.check("binding words: nothing", Schema.BindingText(""), "Nothing")
 H.check("binding words: menu", Schema.BindingText("menu"), "Open the menu")
 H.check("binding words: no value yet", Schema.BindingText("item:"), "Use an item")
 H.check("binding words: none", Schema.BindingText("dance"), nil)
+-- An empty modified slot does what the plain click does (the client's
+-- fallback): its word says so. A plain click's or a key's empty slot does
+-- nothing.
+H.check("empty shift-left", Schema.KindText("", "click1Shift"), "Like the plain click")
+H.check("empty ctrl-alt-button 5", Schema.BindingText("", "click5CtrlAlt"), "Like the plain click")
+H.check("empty plain middle", Schema.KindText("", "click3"), "Nothing")
+H.check("empty key", Schema.KindText("", "clickKey1Bind"), "Nothing")
+H.check("no slot", Schema.KindText(""), "Nothing")
+H.check("other kinds unchanged", Schema.KindText("focus", "click1Shift"), "Focus")
+for _, code in ipairs({ "enUS", "deDE", "esES", "frFR" }) do
+    H.checkTrue(code .. " has the fallback word", type(ns.Locales[code].RAID_CLICK_LIKE_PLAIN) == "string")
+end
 for _, code in ipairs({ "enUS", "deDE", "esES", "frFR" }) do
     for _, kind in ipairs(Raid.CLICK_KINDS) do
         local name = kind == "" and "RAID_CLICK_NOTHING" or ("RAID_CLICK_" .. kind)

@@ -40,7 +40,7 @@ H.checkTrue("party row", rowFor("clickCastParty"))
 local plain, shift = rowFor("click1"), rowFor("click1Shift")
 H.check("left: target", plain.button.text:GetText(), "Target")
 H.check("left: no value to type", plain.value:IsEnabled(), false)
-H.check("shift-left: nothing", shift.button.text:GetText(), "Nothing")
+H.check("shift-left: like the plain click", shift.button.text:GetText(), "Like the plain click")
 H.check("a row per slot", (function()
     local n = 0
     for _, slot in ipairs(ns.Raid.CLICK_SLOTS) do if rowFor(slot.key) then n = n + 1 end end

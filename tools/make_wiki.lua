@@ -280,7 +280,7 @@ local RAID_TAB_INTRO = {
 -- The default per raid size when the sizes differ. A binding
 -- (click-casting) in words.
 local function raidDefault(def)
-    if def.kinds then return RaidSchema.BindingText(RS.Default(def, "general")) end
+    if def.kinds then return RaidSchema.BindingText(RS.Default(def, "general"), def.key) end
     if def.scope == "general" then return valueText(def, RS.Default(def, "general"), RaidSchema.EnumText) end
     local groups, order = {}, {}
     for _, size in ipairs(ns.Raid.SIZES) do
@@ -298,7 +298,7 @@ end
 local function raidChoices(def)
     if not def.kinds then return choices(def, true) end
     local list = {}
-    for _, kind in ipairs(def.kinds) do list[#list + 1] = RaidSchema.KindText(kind) end
+    for _, kind in ipairs(def.kinds) do list[#list + 1] = RaidSchema.KindText(kind, def.key) end
     return table.concat(list, ", ")
 end
 
