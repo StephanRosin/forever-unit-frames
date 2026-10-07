@@ -841,7 +841,7 @@ L.NEWS_AGAIN = "/fuf news affiche ceci à nouveau."
 L.NEWS_NONE = "Cette version n'a pas de nouveautés."
 
 -- Cadres de raid : panneaux spéciaux (Raid/SpecialPanels.lua).
-L.RAID_TAB_panels = "Panneaux"
+L.RAID_TAB_panels = "Panneaux spéciaux"
 L.RAID_NOTE_panels = "Les joueurs d'un panneau spécial restent aussi dans leur groupe. Le chef de raid désigne les tanks et assistants principaux ; clic droit sur une cellule pour mes tanks et favoris."
 L.RAID_SECTION_mainTanks = "Tanks principaux"
 L.RAID_SECTION_mainAssists = "Assistants principaux"
@@ -863,7 +863,7 @@ L.RAID_LIST_FULL = "La liste est pleine : retirez d'abord un nom."
 L.RAID_LIST_AFTER_COMBAT = "Enregistré : le panneau suit après le combat."
 
 -- Cadres de raid : panneaux personnels (Raid/OwnPanels.lua, Raid/Options/Arrangement.lua).
-L.RAID_TAB_arrangement = "Répartition"
+L.RAID_TAB_arrangement = "Panneaux personnels"
 L.RAID_NOTE_arrangement = "Jusqu'à neuf panneaux personnels. Un bloc du regroupement du panneau principal passe au panneau qui le prend ; un bloc d'un autre regroupement montre ses joueurs une fois de plus."
 L.RAID_OWN_PANEL = "Panneau %d"
 for n = 2, 10 do L["RAID_SECTION_panel" .. n] = L.RAID_OWN_PANEL:format(n) end
@@ -1159,3 +1159,5 @@ L.RAID_HINT_buffWatchOnlyMissing = "Ou sur le point d'expirer ; sinon toujours v
 L.SECTION_highlights = "Surbrillances"
 L.SECTION_eliteMarker = "Marque élite / rare"
 L.SECTION_combatFeedback = "Chiffres de combat"
+-- The raid window's size bar on a tab of the character's settings.
+L.RAID_SIZE_ALL_SAME = "Identique pour toutes les tailles"

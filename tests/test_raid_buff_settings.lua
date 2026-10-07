@@ -46,11 +46,11 @@ H.check("the group form's hint: missing or expiring count", ns.L.RAID_HINT_buffG
 H.check("cell icon off", def("buffCellIcon").default, false)
 H.check("cell icon point: one of the nine", def("buffCellIconPoint").values, ns.Settings.POINTS)
 
--- The Buffs tab, the last.
+-- The Buffs tab, before the Tools tab, the last (decision 67).
 local tab, index
 for i, t in ipairs(Schema.TABS) do if t.id == "buffs" then tab, index = t, i end end
 H.checkTrue("a Buffs tab", tab)
-H.check("the last", index, #Schema.TABS)
+H.check("before the last", index, #Schema.TABS - 1)
 local secs = {}
 for i, s in ipairs(tab.sections) do secs[i] = s.id end
 H.check("its sections", table.concat(secs, ","), "buffsWatched,blessings,buffRules,buffWindow,buffCell")

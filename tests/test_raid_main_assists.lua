@@ -49,7 +49,7 @@ H.check("moved", select(5, P.anchor.mover:GetPoint(1)), 300)
 H.check("the main tanks stay", select(5, T.anchor.mover:GetPoint(1)), 260)
 
 -- The Panels tab: main tanks, then main assists.
-local tab = ns.RaidSchema.TABS[3]
+local tab = ns.RaidSchema.TABS[8]
 H.check("its section", tab.sections[2].id, "mainAssists")
 H.check("its keys", table.concat(tab.sections[2].keys, ","),
     "mainAssistsShow,mainAssistsTitle,mainAssistsPerLine,mainAssistsGrowth,mainAssistsX,mainAssistsY")

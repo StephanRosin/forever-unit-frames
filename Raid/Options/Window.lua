@@ -29,6 +29,8 @@ local SCROLLBAR_W, WHEEL_STEP = 10, 40
 local CONTENT_W = WIDTH - SCROLLBAR_W
 local PAGE_TOP, PAGE_BOTTOM, SECTION_GAP, INSET, NOTE_H = 4, 16, 8, 16, 34
 local BUTTON_H, DROPDOWN_W, GAP = 24, 160, 8
+-- The size tabs on a tab whose settings are the character's.
+local DIM_ALPHA = 0.4
 local DEFAULT_POSITION = { point = "TOPLEFT", relativePoint = "TOPLEFT", x = 90, y = -150 }
 
 local frame
@@ -330,12 +332,23 @@ end
 
 local anchorScroll
 
+-- The menu tab shown: its settings all the character's (the same at
+-- every size)? Not while the Profiles page shows.
+local function characterTab()
+    if RaidOptions.profilesShown then return false end
+    for _, tab in ipairs(Schema.TABS) do
+        if tab.id == RaidOptions.currentTab then return Schema.PerCharacter(tab) end
+    end
+    return false
+end
+
 -- Edited values of a size the panel does not show change nothing on
--- screen: the note says so (test mode would show the edited size).
+-- screen: the note says so (test mode would show the edited size); on a
+-- character's tab there is nothing of a size to edit.
 local function renderSizeNotice()
     local edited, shown = RaidOptions.Size(), ns.RaidCell.Size()
     local notice = RaidOptions.sizeNotice
-    local on = edited ~= shown and not RaidOptions.profilesShown
+    local on = edited ~= shown and not RaidOptions.profilesShown and not characterTab()
     if on then notice.text:SetText(L.RAID_EDITING_NOT_SHOWN:format(edited, shown)) end
     if on == notice:IsShown() then return end
     notice:SetShown(on)
@@ -344,10 +357,14 @@ end
 
 -- The sizes: the edited one underlined, the one the panel shows now
 -- (test mode's preview included) says so; the note on a size not shown.
+-- On a character's tab the sizes dim and the bar says they are alike.
 local function renderSizeTabs()
     local shown = ns.RaidCell.Size()
+    local alike = characterTab()
+    RaidOptions.sizeBarNote:SetShown(alike)
     for _, size in ipairs(Raid.SIZES) do
         local b = RaidOptions.sizeTabs[size]
+        b:SetAlpha(alike and DIM_ALPHA or 1)
         local text = sizeText(size)
         if size == shown then text = L.RAID_SIZE_SHOWN:format(text) end
         b.text:SetText(text)
@@ -484,6 +501,11 @@ local function createSizeBar(parent, titleBar)
     profiles:SetScript("OnClick", function() RaidOptions.ShowProfiles() end)
     profiles:SetPoint("LEFT", previous, "RIGHT", 0, 0)
     RaidOptions.profilesTab = profiles
+    local note = Style.Text(bar, 11, "muted")
+    note:SetPoint("LEFT", profiles, "RIGHT", RaidOptions.SIZE_BAR_GAP, 0)
+    note:SetText(L.RAID_SIZE_ALL_SAME)
+    note:Hide()
+    RaidOptions.sizeBarNote = note
     RaidOptions.sizeModeRow = sizeModeRow(bar)
     frame.sizeBar = bar
 end

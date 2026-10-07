@@ -25,8 +25,8 @@ for _, page in ipairs(WIKI_PAGES or {}) do
     if page[1]:match("^Raid%-") and not NOT_A_TAB[page[1]] then raid[#raid + 1] = page[1] end
 end
 H.check("raid pages", table.concat(raid, ","),
-    "Raid-General,Raid-Layout,Raid-Panels,Raid-Arrangement,Raid-Cell,Raid-Text,Raid-Debuffs,Raid-Indicators,"
-        .. "Raid-Icons-and-states,Raid-Tools,Raid-Click-casting,Raid-Buffs")
+    "Raid-General,Raid-Cell,Raid-Text,Raid-Debuffs,Raid-Indicators,Raid-Icons-and-states,Raid-Layout,"
+        .. "Raid-Special-panels,Raid-Own-panels,Raid-Click-casting,Raid-Buffs,Raid-Tools")
 
 -- Every setting on its tab's page, by its label; the own panels'
 -- sections are all alike: one table for every panel.
@@ -55,7 +55,7 @@ H.checkTrue("size switch on General", general:find("<b>Raid size shown</b>", 1, 
 H.checkTrue("its choices", general:find("Automatic, 10 players, 20 players, 40 players", 1, true))
 H.checkTrue("defaults per size", read("Raid-Cell.md"):find("10 players: 96; 20 players: 88; 40 players: 80", 1, true))
 H.checkTrue("the cell's note", read("Raid-Cell.md"):find(ns.L.RAID_NOTE_cell, 1, true))
-H.checkTrue("own panels: one table", select(2, read("Raid-Arrangement.md"):gsub("\n## ", "")) == 1)
+H.checkTrue("own panels: one table", select(2, read("Raid-Own-panels.md"):gsub("\n## ", "")) == 1)
 H.checkTrue("raid words for choices", read("Raid-Text.md"):find("Missing health", 1, true))
 H.checkTrue("the cell's own fonts", read("Raid-Text.md"):find("<b>Second line size</b>", 1, true))
 H.checkTrue("the dispel square", read("Raid-Debuffs.md"):find("Icon in the center, Square in a corner", 1, true))

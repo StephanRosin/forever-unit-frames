@@ -37,11 +37,11 @@ Source: [GitHub](https://github.com/StephanRosin/forever-unit-frames)
   `/fuf lock` locks them too). **Test mode** in the raid window shows a pretend raid of the size you edit, at
   that size's place, with every option you switched on, and pretend players in the special panels you switched
   on; closing the window or entering combat ends it.
-- **Special panels** (the **Panels** tab) show the raid's main tanks (on by default) and main assists, your own
+- **Special panels** (the **Special panels** tab) show the raid's main tanks (on by default) and main assists, your own
   lists of tanks and of favourites, and the raid's pets, each in a panel of its own with its own place per
   raid size. Players stay in their group as well. Right-click a cell to put a player on your tanks or your
-  favourites, or type the names on the **Panels** tab; in combat the panel follows after the fight.
-- **Own panels** (the **Arrangement** tab): up to nine panels of your own beside the main panel, per raid size,
+  favourites, or type the names on the **Special panels** tab; in combat the panel follows after the fight.
+- **Own panels** (the **Own panels** tab): up to nine panels of your own beside the main panel, per raid size,
   each with its grouping (group, class or role), the blocks it shows, a title and a layout of its own. Drag a
   block from one panel's column to another's, or click it and pick **Move to …**. A block of the main panel's
   grouping leaves the main panel; one of another grouping shows its players again (a "Healers" panel beside
@@ -96,11 +96,6 @@ The raid frames have pages of their own, one per tab of the raid window:
 
 - [[General|Raid-General]] – raid frames on or off, the raid view in a party, Blizzard's raid frames,
   the raid size shown, the raid minimap button
-- [[Layout|Raid-Layout]] – grouping, sorting, class order, how blocks and cells are arranged, position,
-  borders
-- [[Panels|Raid-Panels]] – the special panels: main tanks, main assists, my tanks, favourites, pets
-- [[Arrangement|Raid-Arrangement]] – up to nine panels of your own: which blocks each one shows, moved by
-  drag-and-drop, and each panel's layout
 - [[Cell|Raid-Cell]] – cell size, bar texture and colors, power strip, border and corners, heals and
   shields
 - [[Text|Raid-Text]] – the name and the second line, their colors and fonts
@@ -109,10 +104,15 @@ The raid frames have pages of their own, one per tab of the raid window:
 - [[Indicators|Raid-Indicators]] – the five corner indicators
 - [[Icons & states|Raid-Icons-and-states]] – role, raid marker, leader, master looter, ready check,
   range, aggro, your target
-- [[Tools|Raid-Tools]] – the raid tools bar: docked or free, which tools it holds
+- [[Layout|Raid-Layout]] – grouping, sorting, class order, how blocks and cells are arranged, position,
+  borders
+- [[Special panels|Raid-Special-panels]] – the special panels: main tanks, main assists, my tanks, favourites, pets
+- [[Own panels|Raid-Own-panels]] – up to nine panels of your own: which blocks each one shows, moved by
+  drag-and-drop, and each panel's layout
 - [[Click-casting|Raid-Click-casting]] – spells, items, macros, target, focus, assist and the menu on
   mouse clicks over the cells and party frames, and keys that cast on the raid member under the mouse
 - [[Buffs|Raid-Buffs]] – the buff watch: missing and expiring group buffs, one click or key to rebuff
+- [[Tools|Raid-Tools]] – the raid tools bar: docked or free, which tools it holds
 - [[Profiles|Raid-Profiles]] – own profiles, copy between sizes and from another character, reset,
   export and import of all sizes or one
 - [[Templates|Raid-Templates]] – role templates (healer, tank, DPS, dispel only) and looks (Forever, Flat,

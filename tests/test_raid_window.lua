@@ -46,7 +46,7 @@ H.check("size switch", RO.sizeModeRow.button.text:GetText(), "Automatic")
 -- The menu.
 local titles = {}
 for i, b in ipairs(RO.tabButtons) do titles[i] = b.text:GetText() end
-H.check("tabs", table.concat(titles, ","), "General,Layout,Panels,Arrangement,Cell,Text,Debuffs,Indicators,Icons & states,Tools,Click-casting,Buffs")
+H.check("tabs", table.concat(titles, ","), "General,Cell,Text,Debuffs,Indicators,Icons & states,Layout,Special panels,Own panels,Click-casting,Buffs,Tools")
 H.check("first tab", RO.currentTab, "general")
 H.check("general rows", keys(), "enabled,showInParty,hideBlizzard,minimapShow,minimapAngle")
 H.check("label", rowFor("showInParty").label:GetText(), "Raid view in a party")
@@ -56,7 +56,7 @@ H.check("character-wide setting", RC.Get("general", "showInParty"), true)
 click(rowFor("showInParty").box)
 
 RO.SelectTab("layout")
-H.checkTrue("selected tab underlined", RO.tabButtons[2].underline:IsShown())
+H.checkTrue("selected tab underlined", RO.tabButtons[7].underline:IsShown())
 enter(rowFor("cellsPerLine"), "4")
 H.check("set on the edited size", RC.Get("r10", "cellsPerLine"), 4)
 H.check("other sizes untouched", RC.Get("r40", "cellsPerLine"), 5)

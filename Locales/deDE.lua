@@ -841,7 +841,7 @@ L.NEWS_AGAIN = "/fuf news zeigt dies erneut."
 L.NEWS_NONE = "Diese Version hat keine Neuigkeiten."
 
 -- Schlachtzugsrahmen: Sonderfelder (Raid/SpecialPanels.lua).
-L.RAID_TAB_panels = "Felder"
+L.RAID_TAB_panels = "Sonderfelder"
 L.RAID_NOTE_panels = "Spieler in einem Sonderfeld bleiben auch in ihrer Gruppe. Haupttanks und Hauptassistenten legt die Schlachtzugsleitung fest; Rechtsklick auf eine Zelle für meine Tanks und Favoriten."
 L.RAID_SECTION_mainTanks = "Haupttanks"
 L.RAID_SECTION_mainAssists = "Hauptassistenten"
@@ -863,7 +863,7 @@ L.RAID_LIST_FULL = "Die Liste ist voll: Entferne zuerst einen Namen."
 L.RAID_LIST_AFTER_COMBAT = "Gespeichert: Das Feld folgt nach dem Kampf."
 
 -- Schlachtzugsrahmen: eigene Felder (Raid/OwnPanels.lua, Raid/Options/Arrangement.lua).
-L.RAID_TAB_arrangement = "Aufteilung"
+L.RAID_TAB_arrangement = "Eigene Felder"
 L.RAID_NOTE_arrangement = "Bis zu neun eigene Felder. Ein Block der Gruppierung des Hauptfelds wandert in das Feld, das ihn nimmt; ein Block einer anderen Gruppierung zeigt seine Spieler ein weiteres Mal."
 L.RAID_OWN_PANEL = "Feld %d"
 for n = 2, 10 do L["RAID_SECTION_panel" .. n] = L.RAID_OWN_PANEL:format(n) end
@@ -1159,3 +1159,5 @@ L.RAID_HINT_buffWatchOnlyMissing = "Oder bald abläuft; aus: in einer Gruppe imm
 L.SECTION_highlights = "Hervorhebungen"
 L.SECTION_eliteMarker = "Elite-/Rar-Markierung"
 L.SECTION_combatFeedback = "Kampfzahlen"
+-- The raid window's size bar on a tab of the character's settings.
+L.RAID_SIZE_ALL_SAME = "Gleich für jede Größe"

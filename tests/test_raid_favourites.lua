@@ -46,7 +46,7 @@ M.RunTimers()
 H.check("removed", P.Count(1), 1)
 H.check("my tanks kept", T.Count(1), 1)
 
-local tab = ns.RaidSchema.TABS[3]
+local tab = ns.RaidSchema.TABS[8]
 H.check("its section", tab.sections[4].id, "favourites")
 H.check("its list first", tab.sections[4].keys[1], "favouriteNames")
 H.check("the list's words", ns.RaidSchema.Label("favouriteNames"), "Names")

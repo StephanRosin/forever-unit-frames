@@ -14,15 +14,6 @@ The **Profiles** tab sits next to the size tabs 10, 20 and 40 at the top of the 
 
 Copies one size onto another as it shows. **Everything** copies every setting; **Without layout and sizes** copies how the cells behave and look but keeps the target's layout and sizes: the settings below stay as they are. Click-casting, the buff watch, the name lists and the minimap button belong to the character and are the same at every size: there is nothing to copy.
 
-- **Grouping**: Hide empty blocks, Block titles
-- **Blocks and cells**: Blocks, Blocks per line, Block spacing, Cells grow, Cells per line, Cell spacing
-- **Position**: Position X, Position Y
-- **Main tanks**: Title above it, Cells per line, Cells grow, Position X, Position Y
-- **Main assists**: Title above it, Cells per line, Cells grow, Position X, Position Y
-- **My tanks**: Title above it, Cells per line, Cells grow, Position X, Position Y
-- **Favorites**: Title above it, Cells per line, Cells grow, Position X, Position Y
-- **Pets**: Title above it, Cells per line, Cells grow, Cell height, Position X, Position Y
-- **Each own panel**: Show the panel, Group by, Blocks it shows, Title, Blocks, Blocks per line, Cells grow, Cells per line, Block titles, Hide empty blocks, Around the panel, Around each block, Position X, Position Y
 - **Size**: Cell width, Cell height
 - **Border and corners**: Border size, Corner radius
 - **Font**: Name size, Second line size
@@ -39,6 +30,15 @@ Copies one size onto another as it shows. **Everything** copies every setting; *
 - **Leader and assistants**: Position
 - **Master looter**: Position
 - **Ready check**: Position
+- **Grouping**: Hide empty blocks, Block titles
+- **Blocks and cells**: Blocks, Blocks per line, Block spacing, Cells grow, Cells per line, Cell spacing
+- **Position**: Position X, Position Y
+- **Main tanks**: Title above it, Cells per line, Cells grow, Position X, Position Y
+- **Main assists**: Title above it, Cells per line, Cells grow, Position X, Position Y
+- **My tanks**: Title above it, Cells per line, Cells grow, Position X, Position Y
+- **Favorites**: Title above it, Cells per line, Cells grow, Position X, Position Y
+- **Pets**: Title above it, Cells per line, Cells grow, Cell height, Position X, Position Y
+- **Each own panel**: Show the panel, Group by, Blocks it shows, Title, Blocks, Blocks per line, Cells grow, Cells per line, Block titles, Hide empty blocks, Around the panel, Around each block, Position X, Position Y
 
 The rest (grouping, sorting, the class order, colors, textures, fonts, borders, heals, which debuffs, icons and indicators show, the special panels on or off) is copied.
 

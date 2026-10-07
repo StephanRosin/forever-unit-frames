@@ -34,8 +34,9 @@ H.check("another size shown: that one", RO.Size(), 20)
 ns.RaidConfig.Set("general", "sizeMode", "AUTO")
 RO.Close()
 
--- The note.
-RO.Open()
+-- The note, on a tab of a size's settings (decision 67: the General tab
+-- is the character's, the same at every size).
+RO.Open(nil, "cell")
 H.check("editing the shown size: no note", note(), nil)
 H.check("no note: the page under the tabs", scrollTop(), RO.frame.tabRow)
 click(RO.sizeTabs[20])

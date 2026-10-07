@@ -69,6 +69,9 @@ local function buffKeys()
     return keys
 end
 
+-- The size's tabs first (General's switches belong to the character),
+-- the panels after the cells, then the character's own tabs
+-- (Schema.PerCharacter: the window dims the size tabs there).
 Schema.TABS = {
     -- After its settings the window's section Templates
     -- (Raid/Options/Templates.lua): no settings of its own.
@@ -76,18 +79,6 @@ Schema.TABS = {
         { id = "raidFrames", keys = { "enabled", "showInParty", "hideBlizzard" } },
         { id = "minimap", keys = { "minimapShow", "minimapAngle" } },
     } },
-    { id = "layout", sections = {
-        { id = "grouping", keys = { "groupBy", "sortBy", "classOrder", "hideEmpty", "blockTitles" } },
-        { id = "arrangement", keys = { "blockDirection", "blocksPerLine", "blockSpacing", "cellGrowth",
-            "cellsPerLine", "cellSpacing" } },
-        { id = "position", keys = { "x", "y" } },
-        { id = "borders", keys = { "panelBorder", "blockBorder" } },
-    } },
-    -- The special panels; the note says who is in them.
-    { id = "panels", note = "panels", sections = panelSections() },
-    -- The own panels: the window's board of panels and blocks
-    -- (Raid/Options/Arrangement.lua), then each shown panel's settings.
-    { id = "arrangement", custom = "arrangement", note = "arrangement", alike = true, sections = ownPanelSections() },
     -- Heals, shields and the power strip keep the unit frames' shipped
     -- colours (Raid/Cell.lua): the note says so.
     { id = "cell", note = "cell", sections = {
@@ -119,13 +110,18 @@ Schema.TABS = {
         icon("readyCheck", "readyCheckIcon"),
         { id = "states", keys = { "rangeFade", "rangeAlpha", "aggroBorder", "targetBorder" } },
     } },
-    -- The raid tools bar: where it is, which tools it holds; the note says
-    -- who sees which.
-    { id = "tools", note = "tools", sections = {
-        { id = "toolsBar", keys = { "toolsShow", "toolsMode", "toolsOpen", "toolsX", "toolsY" } },
-        { id = "toolsList", keys = { "toolsTargets", "toolsReady", "toolsMarkers", "toolsRolePoll", "toolsAssist",
-            "toolsConvert", "toolsLoot" } },
+    { id = "layout", sections = {
+        { id = "grouping", keys = { "groupBy", "sortBy", "classOrder", "hideEmpty", "blockTitles" } },
+        { id = "arrangement", keys = { "blockDirection", "blocksPerLine", "blockSpacing", "cellGrowth",
+            "cellsPerLine", "cellSpacing" } },
+        { id = "position", keys = { "x", "y" } },
+        { id = "borders", keys = { "panelBorder", "blockBorder" } },
     } },
+    -- The special panels; the note says who is in them.
+    { id = "panels", note = "panels", sections = panelSections() },
+    -- The own panels: the window's board of panels and blocks
+    -- (Raid/Options/Arrangement.lua), then each shown panel's settings.
+    { id = "arrangement", custom = "arrangement", note = "arrangement", alike = true, sections = ownPanelSections() },
     -- Click-casting, per character (Raid/Options/ClickCast.lua builds the
     -- page: a binding and its value per row).
     { id = "clickCast", custom = "clickCast", note = "clickCast", sections = clickCastSections() },
@@ -137,6 +133,13 @@ Schema.TABS = {
         { id = "buffRules", keys = { "buffExpiring", "buffGroupMin", "buffKey" } },
         { id = "buffWindow", keys = { "buffWatchShow", "buffWatchOnlyMissing", "buffWatchX", "buffWatchY" } },
         { id = "buffCell", keys = { "buffCellIcon", "buffCellIconPoint" } },
+    } },
+    -- The raid tools bar: where it is, which tools it holds; the note says
+    -- who sees which.
+    { id = "tools", note = "tools", sections = {
+        { id = "toolsBar", keys = { "toolsShow", "toolsMode", "toolsOpen", "toolsX", "toolsY" } },
+        { id = "toolsList", keys = { "toolsTargets", "toolsReady", "toolsMarkers", "toolsRolePoll", "toolsAssist",
+            "toolsConvert", "toolsLoot" } },
     } },
 }
 
@@ -214,6 +217,19 @@ function Schema.Hint(key) return word("RAID_HINT_", Schema.WordKey(key)) end
 function Schema.SectionTitle(id) return word("RAID_SECTION_", id) or id end
 function Schema.TabTitle(id) return word("RAID_TAB_", id) or id end
 function Schema.Note(id) return word("RAID_NOTE_", id) end
+
+-- Whether every setting of a tab belongs to the character (the same at
+-- every size); a tab without settings does not.
+function Schema.PerCharacter(tab)
+    local any = false
+    for _, sec in ipairs(tab.sections) do
+        for _, key in ipairs(sec.keys) do
+            if ns.RaidSettings.Get(key).scope ~= "general" then return false end
+            any = true
+        end
+    end
+    return any
+end
 
 -- What a binding (Raid.ParseBinding) does, in words: the kind's, and the
 -- value after it ("Cast a spell: Renew"); nil for no binding. key: the

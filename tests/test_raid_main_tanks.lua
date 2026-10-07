@@ -129,9 +129,9 @@ H.checkTrue("party: shown", P.panel:IsShown())
 RC.Set("general", "showInParty", false)
 H.check("party without the raid view: hidden", P.panel:IsShown(), false)
 
--- The raid window: a Panels tab with a section per panel.
-local tab = ns.RaidSchema.TABS[3]
-H.check("Panels tab after Layout", tab.id, "panels")
+-- The raid window: a Special panels tab with a section per panel.
+local tab = ns.RaidSchema.TABS[8]
+H.check("Special panels tab after Layout", tab.id, "panels")
 H.check("its section", tab.sections[1].id, "mainTanks")
 H.check("its note", ns.RaidSchema.Note("panels"), ns.L.RAID_NOTE_panels)
 H.check("show label", ns.RaidSchema.Label("mainTanksShow"), "Show the panel")

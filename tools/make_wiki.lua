@@ -403,14 +403,7 @@ local PER_SIZE = "The **%s** tab of the raid options window (`/fuf raid`). Each 
     .. " is listed per size."
 local PER_CHARACTER = "The **%s** tab of the raid options window (`/fuf raid`). Its settings belong to the"
     .. " character, not to a raid size: they are the same at every size."
-local function perCharacter(tab)
-    for _, sec in ipairs(tab.sections) do
-        for _, key in ipairs(sec.keys) do
-            if RS.Get(key).scope ~= "general" then return false end
-        end
-    end
-    return true
-end
+local perCharacter = RaidSchema.PerCharacter
 
 local raidPages = {}
 local function raidPage(tab)

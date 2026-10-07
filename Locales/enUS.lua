@@ -865,7 +865,7 @@ L.NEWS_AGAIN = "/fuf news shows this again."
 L.NEWS_NONE = "This version has no news."
 
 -- Raid frames: special panels (Raid/SpecialPanels.lua).
-L.RAID_TAB_panels = "Panels"
+L.RAID_TAB_panels = "Special panels"
 L.RAID_NOTE_panels = "Players in a special panel stay in their group as well. The raid leader sets main tanks and main assists; right-click a cell for my tanks and favorites."
 L.RAID_SECTION_mainTanks = "Main tanks"
 L.RAID_SECTION_mainAssists = "Main assists"
@@ -887,7 +887,7 @@ L.RAID_LIST_FULL = "The list is full: remove a name first."
 L.RAID_LIST_AFTER_COMBAT = "Saved: the panel follows after combat."
 
 -- Raid frames: own panels (Raid/OwnPanels.lua, Raid/Options/Arrangement.lua).
-L.RAID_TAB_arrangement = "Arrangement"
+L.RAID_TAB_arrangement = "Own panels"
 L.RAID_NOTE_arrangement = "Up to nine panels of your own. A block of the main panel's grouping moves to the panel that takes it; a block of another grouping shows its players again."
 L.RAID_OWN_PANEL = "Panel %d"
 for n = 2, 10 do L["RAID_SECTION_panel" .. n] = L.RAID_OWN_PANEL:format(n) end
@@ -1186,3 +1186,5 @@ L.RAID_HINT_buffWatchOnlyMissing = "Or running out; off, it shows in a group all
 L.SECTION_highlights = "Highlights"
 L.SECTION_eliteMarker = "Elite / rare marker"
 L.SECTION_combatFeedback = "Combat numbers"
+-- The raid window's size bar on a tab of the character's settings.
+L.RAID_SIZE_ALL_SAME = "Same at every size"

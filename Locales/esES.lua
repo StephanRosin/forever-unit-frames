@@ -842,7 +842,7 @@ L.NEWS_AGAIN = "/fuf news vuelve a mostrar esto."
 L.NEWS_NONE = "Esta versión no tiene novedades."
 
 -- Marcos de banda: paneles especiales (Raid/SpecialPanels.lua).
-L.RAID_TAB_panels = "Paneles"
+L.RAID_TAB_panels = "Paneles especiales"
 L.RAID_NOTE_panels = "Los jugadores de un panel especial siguen también en su grupo. El líder de banda asigna los tanques y asistentes principales; clic derecho en una celda para mis tanques y favoritos."
 L.RAID_SECTION_mainTanks = "Tanques principales"
 L.RAID_SECTION_mainAssists = "Asistentes principales"
@@ -864,7 +864,7 @@ L.RAID_LIST_FULL = "La lista está llena: quita primero un nombre."
 L.RAID_LIST_AFTER_COMBAT = "Guardado: el panel se actualiza tras el combate."
 
 -- Marcos de banda: paneles propios (Raid/OwnPanels.lua, Raid/Options/Arrangement.lua).
-L.RAID_TAB_arrangement = "Reparto"
+L.RAID_TAB_arrangement = "Paneles propios"
 L.RAID_NOTE_arrangement = "Hasta nueve paneles propios. Un bloque de la agrupación del panel principal pasa al panel que lo toma; un bloque de otra agrupación muestra a sus jugadores otra vez."
 L.RAID_OWN_PANEL = "Panel %d"
 for n = 2, 10 do L["RAID_SECTION_panel" .. n] = L.RAID_OWN_PANEL:format(n) end
@@ -1160,3 +1160,5 @@ L.RAID_HINT_buffWatchOnlyMissing = "O a punto de acabar; si no, siempre visible 
 L.SECTION_highlights = "Resaltados"
 L.SECTION_eliteMarker = "Marca de élite / raro"
 L.SECTION_combatFeedback = "Números de combate"
+-- The raid window's size bar on a tab of the character's settings.
+L.RAID_SIZE_ALL_SAME = "Igual en todos los tamaños"
