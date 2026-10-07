@@ -283,6 +283,8 @@ function Party.InitButton(button)
         button:SetSize(Single.Size(Party.KEY))
     end
     Single.StyleContent(button)
+    -- Click-casting (Raid/ClickCast.lua), now or after combat.
+    ns.ClickCast.Added(button)
 end
 
 -- The header assigns or clears a unit, in or out of combat.
