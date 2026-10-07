@@ -27,7 +27,7 @@ Up to nine panels of your own. A block of the main panel's grouping moves to the
 <tr><td><b>Hide empty blocks</b></td><td>Blocks without members take no room</td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Around the panel</b></td><td></td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Around each block</b></td><td></td><td>On, Off</td><td>Off</td></tr>
-<tr><td><b>Position X</b></td><td>Top left corner, from the screen centre</td><td>-4000 – 4000</td><td>200</td></tr>
+<tr><td><b>Position X</b></td><td>Top left corner, from the screen centre</td><td>-4000 – 4000</td><td>360</td></tr>
 <tr><td><b>Position Y</b></td><td>Top left corner, from the screen centre</td><td>-4000 – 4000</td><td>300</td></tr>
 </tbody>
 </table>

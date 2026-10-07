@@ -48,7 +48,7 @@ H.check("in raid order", h:GetAttribute("child1").unit, "raid4")
 H.checkTrue("shown", P.panel:IsShown() and h:IsShown())
 H.check("a group keeps room for five", P.width .. "x" .. P.height, 96 .. "x" .. (5 * 44 + 4 * 2))
 H.checkTrue("the gold ring", P.panel.border and P.panel.border[1]:IsShown())
-H.check("at its own spot", point(P.anchor.mover), "TOPLEFT UIParent CENTER 200 300")
+H.check("at its own spot", point(P.anchor.mover), "TOPLEFT UIParent CENTER 360 300")
 H.check("cells at the panel's corner", point(h, P.anchor), "TOPLEFT anchor TOPLEFT 0 0")
 
 -- Its own grouping: the roles it takes, in the main panel's order (the

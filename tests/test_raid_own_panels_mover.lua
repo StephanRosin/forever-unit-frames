@@ -24,7 +24,7 @@ RC.Set("r10", "panel4Show", true)
 H.checkTrue("on: handle", mover:IsShown())
 local p, rel, relPoint, x, y = mover:GetPoint(1)
 H.check("at its own spot", table.concat({ p, rel == UIParent and "UIParent" or "?", relPoint, x, y }, " "),
-    "TOPLEFT UIParent CENTER 520 300")
+    "TOPLEFT UIParent CENTER 580 300")
 H.check("empty: a cell's size", mover:GetWidth() .. "x" .. mover:GetHeight(), "96x44")
 
 -- Dragged: the shown size's corner, snapped; the main panel stays.
@@ -33,7 +33,7 @@ mover._cx, mover._cy = 97 + w / 2, -47 - h / 2
 Movers.OnDragStop(mover)
 H.check("x stored", RC.Get("r10", "panel4X"), 96)
 H.check("y stored", RC.Get("r10", "panel4Y"), -48)
-H.check("other sizes keep theirs", RC.Get("r20", "panel4X"), 520)
+H.check("other sizes keep theirs", RC.Get("r20", "panel4X"), 580)
 H.check("the main panel stays", RC.Get("r10", "x"), -600)
 H.check("anchor follows", select(4, P.anchor.mover:GetPoint(1)), 96)
 

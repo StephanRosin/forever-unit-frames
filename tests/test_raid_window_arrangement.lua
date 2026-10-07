@@ -42,7 +42,7 @@ H.check("the main panel's words", rowFor("panel3CellsPerLine").label:GetText(), 
 H.checkTrue("the page grew", RO.page.height > empty)
 H.check("the scroll range follows", RO.frame.scrollChild:GetHeight(), RO.page.height)
 H.checkTrue("x: - and + buttons", rowFor("panel3X").minus and rowFor("panel3X").plus)
-H.check("x: its spot", rowFor("panel3X").edit:GetText(), "360")
+H.check("x: its spot", rowFor("panel3X").edit:GetText(), "470")
 
 -- The rows set the edited size.
 enter(rowFor("panel3CellsPerLine"), "3")

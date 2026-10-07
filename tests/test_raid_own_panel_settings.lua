@@ -62,6 +62,24 @@ for _, p in ipairs(Raid.OWN_PANELS) do
     H.check("own spot " .. p.id, spots[spot], nil)
     spots[spot] = true
 end
+-- A new panel (one cell, the largest default) clear of the special
+-- panels' default spots (a column of five such cells: my tanks,
+-- favourites, ...) and inside a 1365-wide UI (1080p at the default scale).
+local CELL_W, CELL_H = RS.Get("cellWidth").default.r10, RS.Get("cellHeight").default.r10
+local function overlaps(a, b)
+    return a.x < b.x + b.w and b.x < a.x + a.w and a.y - a.h < b.y and b.y - b.h < a.y
+end
+for _, p in ipairs(Raid.OWN_PANELS) do
+    local own = { x = RC.Get("r40", p.id .. "X"), y = RC.Get("r40", p.id .. "Y"), w = CELL_W, h = CELL_H }
+    for _, special in ipairs(Raid.PANELS) do
+        if special.growth == "DOWN" then
+            local box = { x = RC.Get("r40", special.id .. "X"), y = RC.Get("r40", special.id .. "Y"), w = CELL_W,
+                h = 5 * CELL_H }
+            H.check(p.id .. " clear of " .. special.id, overlaps(own, box), false)
+        end
+    end
+    H.checkTrue(p.id .. " on a small screen", own.x + own.w <= 1365 / 2)
+end
 
 -- The blocks: group numbers, class tokens or roles, comma-separated, each
 -- once; stored as written.

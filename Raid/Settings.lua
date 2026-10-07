@@ -478,9 +478,10 @@ local function ownPanelDef(entry)
 end
 
 -- Panels 2 to 10: the slots' letters, and where each one first stands
--- (three to a row, right of the screen centre).
+-- (three to a row, right of the screen centre, right of my tanks and
+-- favourites, inside a 1365 wide UI).
 local OWN_PANEL_LETTERS = { "A", "F", "L", "N", "P", "M", "J", "K", "U" }
-local OWN_SPOT_X, OWN_SPOT_Y, OWN_SPOT_STEP, OWN_SPOTS_PER_ROW = 200, 300, 160, 3
+local OWN_SPOT_X, OWN_SPOT_Y, OWN_SPOT_STEP_X, OWN_SPOT_STEP_Y, OWN_SPOTS_PER_ROW = 360, 300, 110, 160, 3
 Raid.OWN_PANELS = {}
 local ownById = {}
 for i, letter in ipairs(OWN_PANEL_LETTERS) do
@@ -488,8 +489,10 @@ for i, letter in ipairs(OWN_PANEL_LETTERS) do
     for _, entry in ipairs(OWN_PANEL_PARTS) do
         local def = ownPanelDef(entry)
         def.key, def.code, def.scope = p.id .. entry.part, letter .. entry.letter, "frame"
-        if entry.part == "X" then def.default = OWN_SPOT_X + ((i - 1) % OWN_SPOTS_PER_ROW) * OWN_SPOT_STEP end
-        if entry.part == "Y" then def.default = OWN_SPOT_Y - math.floor((i - 1) / OWN_SPOTS_PER_ROW) * OWN_SPOT_STEP end
+        if entry.part == "X" then def.default = OWN_SPOT_X + ((i - 1) % OWN_SPOTS_PER_ROW) * OWN_SPOT_STEP_X end
+        if entry.part == "Y" then
+            def.default = OWN_SPOT_Y - math.floor((i - 1) / OWN_SPOTS_PER_ROW) * OWN_SPOT_STEP_Y
+        end
         RaidSettings.Define(def)
         p.keys[#p.keys + 1] = def.key
     end
