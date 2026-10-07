@@ -60,9 +60,39 @@ M.SetCombat(false)
 H.check("after combat: not watched", ns.Frames.player._unitWatch, nil)
 H.check("party too", ns.Party.header:IsShown(), false)
 
+-- The window: while it is off, each frame's own switch is greyed (it
+-- keeps its value but means nothing then).
+local O = ns.Options
+O.Open("general", "frames")
+local function switches()
+    local list = {}
+    for _, row in ipairs(O.rows) do if row.key == "enabled" then list[#list + 1] = row end end
+    return list
+end
+H.checkTrue("frame switches listed", #switches() > 0)
+for _, row in ipairs(switches()) do H.check("off: switch greyed", row.box:IsEnabled(), false) end
+C.Set("general", "unitFrames", true)
+for _, row in ipairs(switches()) do H.check("on: switch usable", row.box:IsEnabled(), true) end
+O.Select("player")
+O.SelectTab("general")
+C.Set("general", "unitFrames", false)
+local own
+for _, row in ipairs(O.rows) do if row.key == "enabled" then own = row end end
+if own then H.check("a frame's page: greyed too", own.box:IsEnabled(), false) end
+C.Set("general", "unitFrames", true)
+O.Close()
+M.RunTimers()
+
 -- Its words, at the top of the General tab.
 local first = ns.Schema.GENERAL[1].sections[1]
 H.check("first on the General tab", first.keys[1], "unitFrames")
 H.check("label", L.SETTING_unitFrames, "Use unit frames")
 H.checkTrue("the hint names the /reload", L.HINT_unitFrames:find("/reload", 1, true))
+-- The wiki's General page says what it does to the frames' own switches
+-- and that the raid frames do not depend on it.
+local fh = assert(io.open(ADDONDIR .. "/docs/wiki/Settings-General.md"))
+local wiki = fh:read("*a")
+fh:close()
+H.checkTrue("wiki: own switches kept", wiki:find("own switch", 1, true) ~= nil)
+H.checkTrue("wiki: raid frames independent", wiki:find("raid frames do not depend on it", 1, true) ~= nil)
 H.check("no error", #M.errors, 0)

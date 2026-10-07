@@ -511,8 +511,10 @@ local function refreshFooter()
 end
 
 -- Rows that only mean something while another setting allows it: the
--- range spell and yards of a reaction whose fading is off.
+-- range spell and yards of a reaction whose fading is off; each frame's
+-- own switch while "Use unit frames" is off (its value is kept).
 local ROW_ACTIVE = {
+    enabled = function() return ns.Config.Get("general", "unitFrames") end,
     rangeFriendlySpell = function() return ns.Range.ReactionOn("friendly") end,
     rangeFriendlyYards = function() return ns.Range.ReactionOn("friendly") end,
     rangeHostileSpell = function() return ns.Range.ReactionOn("hostile") end,

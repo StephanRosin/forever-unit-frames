@@ -146,10 +146,22 @@ local function tableStart(lines, columns)
     lines[#lines + 1] = "<tbody>"
 end
 
+-- A section's first paragraph, where its table alone does not say enough.
+local SECTION_NOTE = {
+    unitFrames = "Off, every unit frame counts as off and none of Blizzard's frames is hidden any more (they come"
+        .. " back after a `/reload`). Each frame's own switch (the **Frames** tab, or the frame's page) keeps its"
+        .. " value and is greyed meanwhile; switched on again, every frame is as its own switch says. The raid"
+        .. " frames do not depend on it: they have their own switch in `/fuf raid`.",
+}
+
 -- One table per section: option, what it does, choices, default, frames.
 local function section(lines, sec, keys, scopesFor, showFrames, level)
     lines[#lines + 1] = level .. " " .. label("SECTION_" .. sec.id, sec.id)
     lines[#lines + 1] = ""
+    if SECTION_NOTE[sec.id] then
+        lines[#lines + 1] = SECTION_NOTE[sec.id]
+        lines[#lines + 1] = ""
+    end
     if sec.action then
         lines[#lines + 1] = ("Button: **%s**."):format(label("ACTION_" .. sec.action, sec.action))
         lines[#lines + 1] = ""
