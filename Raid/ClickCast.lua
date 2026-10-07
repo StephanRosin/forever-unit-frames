@@ -24,6 +24,12 @@ local ACTION_TYPE = { target = "target", focus = "focus", assist = "assist", men
 -- The client's longest macro.
 ClickCast.MACRO_LETTERS = 255
 
+-- A spell ID's name, or nil (C_Spell may be missing).
+local function spellName(id)
+    local info = C_Spell and C_Spell.GetSpellInfo and C_Spell.GetSpellInfo(id)
+    return type(info) == "table" and type(info.name) == "string" and info.name or nil
+end
+
 -- What a typed value of a kind is stored as, or nil and why (for the
 -- chat). A spell by its name as the spell book writes it (the client casts
 -- the highest rank it knows; a rank learned later is cast without
@@ -34,14 +40,10 @@ function ClickCast.TypedValue(kind, text)
     if value == "" then return "" end
     if kind == "spell" then
         local name = value
-        if value:match("^%d+$") then
-            local info = C_Spell and C_Spell.GetSpellInfo and C_Spell.GetSpellInfo(tonumber(value))
-            name = type(info) == "table" and type(info.name) == "string" and info.name or nil
-        end
+        if value:match("^%d+$") then name = spellName(tonumber(value)) end
         local ids = name and ns.RaidSpellbook.IDs(name) or {}
         if #ids == 0 then return nil, L.RAID_TYPED_SPELL_UNKNOWN:format(value) end
-        local info = C_Spell.GetSpellInfo(ids[1])
-        return type(info) == "table" and type(info.name) == "string" and info.name or name
+        return spellName(ids[1]) or name
     end
     if kind == "macro" and #value > ClickCast.MACRO_LETTERS then
         return nil, L.RAID_TYPED_MACRO_TOO_LONG:format(ClickCast.MACRO_LETTERS)
