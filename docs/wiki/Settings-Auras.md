@@ -44,6 +44,14 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <tr><td><b>Mine first</b></td><td>Yours in their own rows, bigger</td><td>On, Off</td><td>Player, Target, Party: On; Target of Target, Focus, Pet: Off</td><td>all</td></tr>
 <tr><td><b>Size of mine</b></td><td></td><td>10 – 64</td><td>Player: 25; Target, Focus: 26; Target of Target, Pet: 21; Party: 28</td><td>all</td></tr>
 <tr><td><b>Mine in the same rows</b></td><td>Yours first, then the rest in the same rows, as SUF shows them</td><td>On, Off</td><td>Off</td><td>all</td></tr>
+<tr><td><b>Place of mine</b></td><td>Free: yours in a place of their own on the frame, the rest stay where they are</td><td>With the rest, Free</td><td>With the rest</td><td>all</td></tr>
+<tr><td><b>Mine: point on the frame</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Player, Target, Target of Target, Focus, Pet: Bottom right; Party: Bottom left</td><td>all</td></tr>
+<tr><td><b>Mine: point of the icons</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Player, Target, Target of Target, Focus, Pet: Bottom left; Party: Bottom right</td><td>all</td></tr>
+<tr><td><b>Mine: offset X</b></td><td></td><td>-200 – 200</td><td>Player, Target, Target of Target, Focus, Pet: 4; Party: -4</td><td>all</td></tr>
+<tr><td><b>Mine: offset Y</b></td><td></td><td>-200 – 200</td><td>0</td><td>all</td></tr>
+<tr><td><b>Mine: grow</b></td><td></td><td>Right, Left, Up, Down</td><td>Player, Target, Target of Target, Focus, Pet: Right; Party: Left</td><td>all</td></tr>
+<tr><td><b>Mine: new rows</b></td><td></td><td>Right, Left, Up, Down</td><td>Up</td><td>all</td></tr>
+<tr><td><b>Mine: icons per row</b></td><td>Auto: as many as fit the frame</td><td>0 – 40 (0: Auto)</td><td>Auto</td><td>all</td></tr>
 <tr><td><b>Border color by caster</b></td><td>Yours in one color, others' in another</td><td>On, Off</td><td>Off</td><td>all</td></tr>
 <tr><td><b>Border of mine</b></td><td></td><td>Color</td><td><code>#33d933</code></td><td>all</td></tr>
 <tr><td><b>Border of others'</b></td><td></td><td>Color</td><td><code>#d93333</code></td><td>all</td></tr>
@@ -74,6 +82,14 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <tr><td><b>Mine first</b></td><td>Yours in their own rows, bigger</td><td>On, Off</td><td>Player, Target, Focus: On; Target of Target, Pet, Party: Off</td><td>all</td></tr>
 <tr><td><b>Size of mine</b></td><td></td><td>10 – 64</td><td>Player, Target, Focus: 26; Target of Target, Pet: 21; Party: 25</td><td>all</td></tr>
 <tr><td><b>Mine in the same rows</b></td><td>Yours first, then the rest in the same rows, as SUF shows them</td><td>On, Off</td><td>Off</td><td>all</td></tr>
+<tr><td><b>Place of mine</b></td><td>Free: yours in a place of their own on the frame, the rest stay where they are</td><td>With the rest, Free</td><td>With the rest</td><td>all</td></tr>
+<tr><td><b>Mine: point on the frame</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Player, Target, Target of Target, Focus, Pet: Top right; Party: Top left</td><td>all</td></tr>
+<tr><td><b>Mine: point of the icons</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Player, Target, Target of Target, Focus, Pet: Top left; Party: Top right</td><td>all</td></tr>
+<tr><td><b>Mine: offset X</b></td><td></td><td>-200 – 200</td><td>Player, Target, Target of Target, Focus, Pet: 4; Party: -4</td><td>all</td></tr>
+<tr><td><b>Mine: offset Y</b></td><td></td><td>-200 – 200</td><td>0</td><td>all</td></tr>
+<tr><td><b>Mine: grow</b></td><td></td><td>Right, Left, Up, Down</td><td>Player, Target, Target of Target, Focus, Pet: Right; Party: Left</td><td>all</td></tr>
+<tr><td><b>Mine: new rows</b></td><td></td><td>Right, Left, Up, Down</td><td>Down</td><td>all</td></tr>
+<tr><td><b>Mine: icons per row</b></td><td>Auto: as many as fit the frame</td><td>0 – 40 (0: Auto)</td><td>Auto</td><td>all</td></tr>
 </tbody>
 </table>
 

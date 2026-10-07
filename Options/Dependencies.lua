@@ -67,6 +67,16 @@ local function auraRows(group, except)
     return keys
 end
 
+-- A group's free own block (Core/Settings.lua: OwnFramePoint .. OwnPerRow),
+-- after the given suffixes.
+local OWN_PLACE = { "OwnFramePoint", "OwnPoint", "OwnX", "OwnY", "OwnGrowth", "OwnRowGrowth", "OwnPerRow" }
+local function ownRows(group, first)
+    local keys = {}
+    for _, suffix in ipairs(first or {}) do keys[#keys + 1] = group .. suffix end
+    for _, suffix in ipairs(OWN_PLACE) do keys[#keys + 1] = group .. suffix end
+    return keys
+end
+
 local function iconRows(prefix, extra)
     local keys = { prefix .. "Size", prefix .. "FramePoint", prefix .. "Point", prefix .. "X", prefix .. "Y" }
     for _, key in ipairs(extra or {}) do keys[#keys + 1] = key end
@@ -116,8 +126,14 @@ local RULES = {
     { on("buffsEnabled"), { "weaponEnchants" } },
     { on("debuffsEnabled"), auraRows("debuffs", {}) },
     { on("dispelsEnabled"), auraRows("dispels", {}) },
-    { on("buffsHighlightOwn"), { "buffsOwnSize", "buffsOwnSameRow" } },
-    { on("debuffsHighlightOwn"), { "debuffsOwnSize", "debuffsOwnSameRow" } },
+    { on("buffsHighlightOwn"), ownRows("buffs", { "OwnSize", "OwnSameRow", "OwnPlacement" }) },
+    { on("debuffsHighlightOwn"), ownRows("debuffs", { "OwnSize", "OwnSameRow", "OwnPlacement" }) },
+    -- Elements/Auras.lua: placed freely, yours share no rows with the rest,
+    -- and their own place means something only then.
+    { isNot("buffsOwnPlacement", "FREE"), { "buffsOwnSameRow" } },
+    { isNot("debuffsOwnPlacement", "FREE"), { "debuffsOwnSameRow" } },
+    { is("buffsOwnPlacement", "FREE"), ownRows("buffs") },
+    { is("debuffsOwnPlacement", "FREE"), ownRows("debuffs") },
     -- Elements/AuraButton.lua: without a border its colours are not seen;
     -- the caster border still puts your own buffs first (Elements/Auras.lua).
     { on("auraBorder"), { "auraBorderSize", "buffsOwnBorderColor", "buffsOtherBorderColor" } },

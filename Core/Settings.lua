@@ -405,6 +405,20 @@ local AURA_SETTINGS = {
     -- Yours first, but in the same rows as the rest (as Shadowed Unit
     -- Frames shows them), not in rows of their own.
     { "OwnSameRow", "Z", { type = "bool" } },
+    -- Where yours go with "mine first": WITH the rest (their own rows
+    -- before them, or the same rows), or FREE: a block of their own,
+    -- anchored to the frame by its own points and offsets, with its own
+    -- growth and icons per row (same choices as the group's). The rest
+    -- keep the group's place. Codes: the group's own-block letter (O for
+    -- buffs, Z for debuffs) + a letter; stored by index: append only.
+    { "OwnPlacement", "P", { type = "enum", values = { "WITH", "FREE" } }, true },
+    { "OwnFramePoint", "E", { type = "enum", values = Settings.POINTS }, true },
+    { "OwnPoint", "T", { type = "enum", values = Settings.POINTS }, true },
+    { "OwnX", "H", { type = "int", min = -200, max = 200 }, true },
+    { "OwnY", "U", { type = "int", min = -200, max = 200 }, true },
+    { "OwnGrowth", "G", { type = "enum", values = DIRECTIONS }, true },
+    { "OwnRowGrowth", "W", { type = "enum", values = DIRECTIONS }, true },
+    { "OwnPerRow", "N", { type = "int", min = 0, max = 40, zeroText = "AUTO" }, true },
 }
 
 -- Debuffs sit above the frame, buffs above the debuffs; party auras to
@@ -429,6 +443,14 @@ local AURA_DEFAULTS = {
         Size = AURA_SIZE, Spacing = 2, PerRow = 0,
         Max = { party = 4, targettarget = 6, pet = 6, _ = 16 },
         HighlightOwn = false, OwnSize = ownSizes(AURA_SIZE), OwnSameRow = false,
+        -- Free, beside the frame's bottom edge (rows up): right of it, on
+        -- the party left (the rest sits right of the members).
+        ownLetter = "O",
+        OwnPlacement = "WITH",
+        OwnFramePoint = { party = "BOTTOMLEFT", _ = "BOTTOMRIGHT" },
+        OwnPoint = { party = "BOTTOMRIGHT", _ = "BOTTOMLEFT" },
+        OwnX = { party = -4, _ = 4 }, OwnY = 0,
+        OwnGrowth = { party = "LEFT", _ = "RIGHT" }, OwnRowGrowth = "UP", OwnPerRow = 0,
     },
     debuffs = {
         letter = "D",
@@ -448,6 +470,13 @@ local AURA_DEFAULTS = {
         Max = { party = 6, targettarget = 6, pet = 6, _ = 16 },
         HighlightOwn = { target = true, focus = true, _ = false }, OwnSize = ownSizes(AURA_SIZE),
         OwnSameRow = false,
+        -- Free, beside the frame's top edge (rows down).
+        ownLetter = "Z",
+        OwnPlacement = "WITH",
+        OwnFramePoint = { party = "TOPLEFT", _ = "TOPRIGHT" },
+        OwnPoint = { party = "TOPRIGHT", _ = "TOPLEFT" },
+        OwnX = { party = -4, _ = 4 }, OwnY = 0,
+        OwnGrowth = { party = "LEFT", _ = "RIGHT" }, OwnRowGrowth = "DOWN", OwnPerRow = 0,
     },
     -- Off by default; when on, centred on the member.
     dispels = {
@@ -471,10 +500,11 @@ for _, group in ipairs(Settings.AURA_GROUPS) do
     local defaults = AURA_DEFAULTS[group]
     for _, entry in ipairs(AURA_SETTINGS) do
         local suffix, letter, template = entry[1], entry[2], entry[3]
+        local prefix = entry[4] and defaults.ownLetter or defaults.letter
         -- A setting a group has no default for does not exist for it
         -- (only debuffs can be limited to dispellable ones).
         if defaults[suffix] ~= nil then
-            local def = { key = group .. suffix, code = defaults.letter .. letter, scope = "frame",
+            local def = { key = group .. suffix, code = prefix .. letter, scope = "frame",
                 only = defaults.only, default = defaults[suffix] }
             for k, v in pairs(template) do def[k] = v end
             Settings.Define(def)
