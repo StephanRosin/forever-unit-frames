@@ -1943,26 +1943,29 @@ function M.Reset()
     end
     -- Two tokens name the same unit when they share its data table.
     _G.UnitIsUnit = function(a, b) return M.units[a] ~= nil and M.units[a] == M.units[b] end
-    -- UnitIsPlayerControlledOrGroupMember (UnitDocumentation.lua): you,
-    -- your pet or vehicle, a group member or a member's pet. d.groupMember
-    -- overrides; any other unit is not (stricter than guessing: an
-    -- exclusion the client would apply is then left out, never the reverse).
+    -- UnitIsPlayerControlledOrGroupMember (UnitDocumentation.lua): by the
+    -- token only, "player", "pet", "vehicle" or any partyN, partypetN,
+    -- raidN, raidpetN (a group member as "target" is not).
     local OWN_TOKENS = { player = true, pet = true, vehicle = true }
-    _G.UnitIsPlayerControlledOrGroupMember = function(unit)
-        local d = u(unit)
-        if not d then return false end
-        if d.groupMember ~= nil then return d.groupMember end
+    local function groupOrOwnToken(unit)
         local token = tostring(unit)
         return OWN_TOKENS[token] or token:match("^party%d+$") ~= nil or token:match("^partypet%d+$") ~= nil
             or token:match("^raid%d+$") ~= nil or token:match("^raidpet%d+$") ~= nil
     end
+    _G.UnitIsPlayerControlledOrGroupMember = function(unit)
+        return u(unit) ~= nil and groupOrOwnToken(unit)
+    end
     -- UnitCanAssist(unit, target, ignoreImmune, ignoreUninteractable):
-    -- d.canAssist, else every unit that is not d.hostile.
+    -- d.canAssist; else friendly units only: d.friend, or you, your pet
+    -- and your group by token, unless d.hostile (mind control). A neutral
+    -- unit (neither friend nor hostile, a boar) cannot be assisted, as in
+    -- the client.
     _G.UnitCanAssist = function(_, unit)
         local d = u(unit)
         if not d then return false end
         if d.canAssist ~= nil then return d.canAssist end
-        return d.hostile ~= true
+        if d.hostile == true then return false end
+        return d.friend == true or groupOrOwnToken(unit)
     end
     _G.UnitInParty = function(unit)
         local d = u(unit)

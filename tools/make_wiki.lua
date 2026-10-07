@@ -174,8 +174,10 @@ local SECTION_NOTE = {
         .. " size has one too, on the raid window's Debuffs tab). Type spell IDs or names (several, separated by"
         .. " commas) and press Enter; a name adds the ranks in your spell book and the game's own spell of that"
         .. " name, other ranks go in by ID. Up to " .. ns.AuraBlocklist.MAX .. " spells per list. Faster:"
-        .. " **Shift + right-click** on a frame's auras lists that row's auras, out of combat; pick one to hide it on"
-        .. " that frame (**Shift + Ctrl**: everywhere). `/fuf auras undo` takes the last one back. The game decides"
+        .. " **Shift + right-click** on a frame's auras lists that row's auras the game lets you hide on that unit,"
+        .. " out of combat; pick one to hide it on that frame (**Shift + Ctrl**: everywhere). With nothing to offer"
+        .. " the chat says why; a Shift (or Ctrl + Shift) right-click bound to click-casting casts instead."
+        .. " `/fuf auras undo` takes the last one back. The game decides"
         .. " where a spell can be hidden: buffs on you, your group, pets and other friendly units; debuffs only on"
         .. " enemies, except spells the game never keeps secret (those everywhere). The list marks entries that"
         .. " will not hide everywhere on its frames.",

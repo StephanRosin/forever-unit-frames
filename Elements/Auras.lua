@@ -317,7 +317,20 @@ end
 
 -- Shows the auras of a list from icon count + 1 on, up to the maximum.
 -- Returns the new count.
+-- Whether a listed spell is left out on this frame's unit: only where the
+-- client's containers would leave it out too (Core/AuraBlocklist.lua,
+-- Applies), so the query path and the containers show the same auras.
+-- The row's part is asked once per fill.
+local function blocked(group, aura, rowApplies)
+    if not (group.blockSet and not Secrets.IsSecret(aura) and type(aura) == "table") then return false end
+    local id = Secrets.Number(aura.spellId)
+    if not (id and group.blockSet[id]) then return false end
+    return rowApplies or ns.AuraBlocklist.NeverSecret(id)
+end
+
 local function fill(frame, group, list, count, mine)
+    local rowApplies = group.blockSet ~= nil and next(group.blockSet) ~= nil
+        and ns.AuraBlocklist.RowApplies(frame.unit, not group.isDebuff)
     for i = 1, #list do
         if count >= group.max then break end
         local aura = list[i]
@@ -337,12 +350,10 @@ local function fill(frame, group, list, count, mine)
             and Auras.IS_TRACKING[Secrets.Number(aura.spellId) or false] then
             aura = nil
         end
-        -- Hidden auras: a readable spell ID on the lists is skipped; a
-        -- secret one cannot be looked up and stays.
-        if aura and group.blockSet and not Secrets.IsSecret(aura) and type(aura) == "table"
-            and group.blockSet[Secrets.Number(aura.spellId) or false] then
-            aura = nil
-        end
+        -- Hidden auras: a readable spell ID on the lists is skipped where
+        -- the client's containers skip it too; a secret one cannot be
+        -- looked up and stays.
+        if aura and blocked(group, aura, rowApplies) then aura = nil end
         local button = aura ~= nil and not Secrets.IsSecret(aura) and type(aura) == "table"
             and acquire(frame, group, count + 1)
         if button and AuraButton.Show(button, frame.unit, aura, group.filter) then

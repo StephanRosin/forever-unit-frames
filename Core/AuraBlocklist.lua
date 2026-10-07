@@ -161,6 +161,24 @@ function Blocklist.NeverSecret(id)
     return level ~= nil and level == Enum.SecrecyLevel.NeverSecret
 end
 
+-- Whether the client's containers leave an aura out by its spell ID on a
+-- unit (Blizzard_AuraContainerUtil.lua, CanApplyIdentityCandidateFilters),
+-- for a spell that is not never-secret: a buff on you, your pet or your
+-- group (by token); otherwise a debuff only on a unit you cannot assist, a
+-- buff only on one you can. An answer that is secret or fails counts as
+-- no (the aura is shown, as the client would rather show it).
+function Blocklist.RowApplies(unit, helpful)
+    if helpful and Secrets.Call(UnitIsPlayerControlledOrGroupMember, unit) == true then return true end
+    local assist = Secrets.Call(UnitCanAssist, "player", unit, true, true)
+    if type(assist) ~= "boolean" then return false end
+    return assist == (helpful == true)
+end
+
+-- The same for one spell: never-secret ones everywhere.
+function Blocklist.Applies(unit, id, helpful)
+    return Blocklist.NeverSecret(id) or Blocklist.RowApplies(unit, helpful)
+end
+
 -- What the options say about an entry in a context: nil when the client
 -- hides it everywhere; "GROUP" (here only as a buff: debuffs on your
 -- group stay); "MIXED" (buffs on friends, debuffs on enemies).
@@ -217,8 +235,10 @@ function Blocklist.Undo()
         return false
     end
     local entry = last
+    if not ns.Config.Set(entry.scope, entry.key, Blocklist.Remove(ns.Config.Get(entry.scope, entry.key), entry.id)) then
+        return false
+    end
     last = nil
-    ns.Config.Set(entry.scope, entry.key, Blocklist.Remove(ns.Config.Get(entry.scope, entry.key), entry.id))
     ns.Print(L.AURA_BLOCK_UNDONE:format(label(entry.id), where(entry.scope)))
     return true
 end

@@ -88,14 +88,28 @@ M.RunTimers()
 C = ns.Config
 M.spells[FOOD] = { name = "Well Fed" }
 M.units.player = { name = "Me", health = 5, healthMax = 10 }
-M.units.target = { name = "Foe", health = 5, healthMax = 10, auras = auras() }
+-- The same rule as the containers: on a friend the listed buff goes, the
+-- debuff stays; on an enemy the other way round.
+M.units.target = { name = "Ann", friend = true, health = 5, healthMax = 10, auras = auras() }
 t = ns.Frames.target
 M.FireEvent("PLAYER_TARGET_CHANGED")
 H.check("read: three buffs", t.auras.buffs.count, 3)
 C.Set("target", "auraBlock", tostring(FOOD))
 M.FireEvent("UNIT_AURA", "target", { isFullUpdate = true })
 H.check("read: listed buff skipped", t.auras.buffs.count, 2)
-H.check("read: listed debuff skipped", t.auras.debuffs.count, 1)
+H.check("read: friend's listed debuff stays", t.auras.debuffs.count, 2)
+H.check("read: as the container would", M.CanApplyIdentityCandidateFilters("target", auras()[4]), false)
+M.units.target.friend, M.units.target.hostile = nil, true
+M.FireEvent("UNIT_AURA", "target", { isFullUpdate = true })
+H.check("read: enemy's listed buff stays", t.auras.buffs.count, 3)
+H.check("read: enemy's listed debuff skipped", t.auras.debuffs.count, 1)
+-- A never-secret spell goes everywhere.
+M.neverSecretSpells[FOOD] = true
+M.FireEvent("UNIT_AURA", "target", { isFullUpdate = true })
+H.check("read: never-secret buff skipped on an enemy", t.auras.buffs.count, 2)
+M.neverSecretSpells[FOOD] = nil
+M.units.target.friend, M.units.target.hostile = true, nil
+M.FireEvent("UNIT_AURA", "target", { isFullUpdate = true })
 -- A secret spell ID: shown, no error.
 M.units.target.auras[1].spellId = M.Secret(FOOD)
 M.FireEvent("UNIT_AURA", "target", { isFullUpdate = true })

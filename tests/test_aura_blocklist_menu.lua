@@ -21,7 +21,7 @@ local function aura(id, spell, helpful)
         applications = 0, duration = 0, expirationTime = 0 }
 end
 M.units.player = { name = "Me", health = 5, healthMax = 10 }
-M.units.target = { name = "Ann", isPlayer = true, health = 5, healthMax = 10,
+M.units.target = { name = "Ann", isPlayer = true, friend = true, health = 5, healthMax = 10,
     auras = { aura(1, FOOD, true), aura(2, FIRE, true), aura(3, FIRE, false) } }
 local t = ns.Frames.target
 M.FireEvent("PLAYER_TARGET_CHANGED")
@@ -90,14 +90,60 @@ M.ctrlDown = false
 SlashCmdList.FOREVERUNITFRAMES("auras undo")
 H.check("account undo", C.Get("general", "auraBlockAccount"), "")
 
--- Over the debuffs: the debuffs.
+-- Over the debuffs of a friendly target: the client keeps showing them
+-- (CanApplyIdentityCandidateFilters), so none is offered; the chat says
+-- why. Shift + Ctrl the same.
 buffs._mouseOver = false
 t.auraContainers.debuffs.container._mouseOver = true
 list = ours(rightClick())
-H.check("debuffs", #list, 2)
-H.check("the debuff", list[2].text, L.AURA_BLOCK_MENU_ENTRY:format("Cozy Fire", FIRE))
+H.check("friendly debuffs: no menu", #list, 0)
+H.check("friendly debuffs: chat says why", M.chat[#M.chat]:find(L.AURA_BLOCK_MENU_NO_DEBUFFS, 1, true) ~= nil, true)
+M.ctrlDown = true
+H.check("friendly debuffs, account: no menu", #ours(rightClick()), 0)
+M.ctrlDown = false
+-- A never-secret debuff is offered there (the client hides it anywhere).
+M.neverSecretSpells[FIRE] = true
+list = ours(rightClick())
+H.check("never-secret debuff offered", #list, 2)
+M.neverSecretSpells[FIRE] = nil
+-- An enemy target's debuffs: offered.
+M.units.target.friend, M.units.target.hostile = nil, true
+list = ours(rightClick())
+H.check("enemy debuffs", #list, 2)
+H.check("the debuff", list[2] and list[2].text, L.AURA_BLOCK_MENU_ENTRY:format("Cozy Fire", FIRE))
+-- ... and its buffs not (the client keeps showing an enemy's buffs).
 t.auraContainers.debuffs.container._mouseOver = false
 buffs._mouseOver = true
+H.check("enemy buffs: no menu", #ours(rightClick()), 0)
+H.check("enemy buffs: chat says why", M.chat[#M.chat]:find(L.AURA_BLOCK_MENU_NO_BUFFS, 1, true) ~= nil, true)
+M.units.target.friend, M.units.target.hostile = true, nil
+
+-- Your own debuffs: not offered.
+M.units.player.auras = { aura(11, FIRE, false) }
+M.FireEvent("UNIT_AURA", "player")
+local p = ns.Frames.player
+p.auraContainers.debuffs.container._mouseOver = true
+H.check("player debuff: not offered", ns.AuraBlockMenu.Open(p), false)
+local cands = ns.AuraBlockMenu.Candidates(p, p.auras.debuffs, {})
+H.check("player debuff: no candidate", #cands, 0)
+p.auraContainers.debuffs.container._mouseOver = false
+
+-- A Shift + right-click bound to click-casting is the binding's: no menu.
+ns.RaidConfig.Set("general", "click2Shift", "assist")
+M.RunTimers()
+H.check("shift-right bound", t:GetAttribute("shift-type2"), "assist")
+H.check("bound: no menu", #ours(rightClick()), 0)
+M.ctrlDown = true
+H.check("bound shift only: the account's menu still", #ours(rightClick()), 3)
+ns.RaidConfig.Set("general", "click2ShiftCtrl", "focus")
+M.RunTimers()
+H.check("ctrl-shift-right bound", t:GetAttribute("ctrl-shift-type2"), "focus")
+H.check("ctrl-shift bound: no menu", #ours(rightClick()), 0)
+M.ctrlDown = false
+ns.RaidConfig.Set("general", "click2Shift", "")
+ns.RaidConfig.Set("general", "click2ShiftCtrl", "")
+M.RunTimers()
+H.check("unbound again: the menu", #ours(rightClick()), 3)
 
 -- A secret spell ID or name is left out; no error.
 table.insert(M.units.target.auras, aura(4, SECRET, true))
@@ -108,6 +154,17 @@ H.check("secret: left out", #list, 3)
 M.auraError = true
 H.check("refused: nothing", #ours(rightClick()), 0)
 M.auraError = false
+
+-- Undo refused by the settings: no "shows again" line, the undo stays.
+ns.AuraBlocklist.Hide("target", FOOD)
+local realSet = C.Set
+C.Set = function() return false end
+local lines = #M.chat
+H.check("undo refused", ns.AuraBlocklist.Undo(), false)
+H.check("undo refused: no line", #M.chat, lines)
+C.Set = realSet
+H.check("undo again: done", ns.AuraBlocklist.Undo(), true)
+H.check("undo again: removed", C.Get("target", "auraBlock"), "")
 
 -- Party pets (a derived scope) get no menu.
 H.check("no list of their own", ns.AuraBlockMenu.Open({ auras = {}, key = ns.Party.PET_KEY, unit = "partypet1" }),

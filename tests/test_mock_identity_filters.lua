@@ -15,7 +15,8 @@ M.units.player = { name = "Me" }
 M.units.party1 = { name = "Ann" }
 M.units.pet = { name = "Cat" }
 M.units.target = { name = "Foe", hostile = true }
-M.units.focus = { name = "Friend" }
+M.units.focus = { name = "Friend", friend = true }
+M.units.mouseover = { name = "Boar" }
 
 local function passes(unit, aura) return M.PassesCandidateFilters(unit, aura, EXCLUDE) end
 
@@ -33,6 +34,18 @@ H.check("debuff on you stays", passes("player", debuff(FOOD)), true)
 H.check("debuff on a member stays", passes("party1", debuff(FOOD)), true)
 H.check("debuff on a friendly unit stays", passes("focus", debuff(FOOD)), true)
 H.check("debuff on an enemy", passes("target", debuff(FOOD)), false)
+-- A neutral unit cannot be assisted: its debuffs can be left out, its
+-- buffs not.
+H.check("neutral: not assistable", UnitCanAssist("player", "mouseover"), false)
+H.check("debuff on a neutral unit", passes("mouseover", debuff(FOOD)), false)
+H.check("buff on a neutral unit stays", passes("mouseover", buff(FOOD)), true)
+-- A group member by another token is no group token: only UnitCanAssist.
+H.check("group member as focus: not by token", UnitIsPlayerControlledOrGroupMember("focus"), false)
+-- Mind-controlled member: hostile, its buffs still filterable by token.
+M.units.party2 = { name = "Bob", hostile = true }
+H.check("mind control: not assistable", UnitCanAssist("player", "party2"), false)
+H.check("mind control: buff still left out", passes("party2", buff(FOOD)), false)
+H.check("mind control: debuff left out", passes("party2", debuff(FOOD)), false)
 -- No filters, other spells: shown.
 H.check("no filters", M.PassesCandidateFilters("player", buff(FOOD), nil), true)
 H.check("other spell", passes("player", buff(1)), true)
