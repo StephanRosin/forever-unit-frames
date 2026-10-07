@@ -146,13 +146,13 @@ local function layout(frame)
     holder:SetPoint(Config.Get(scope, "totemsPoint"), region, Config.Get(scope, "totemsFramePoint"), x, y)
     for i, s in ipairs(t.slots) do
         local offset = (i - 1) * (size + spacing)
-        local x, y = offset, 0
-        if column then x, y = 0, -offset end
+        local dx, dy = offset, 0
+        if column then dx, dy = 0, -offset end
         AuraButton.Style(s.art, scope, size, true)
         s.art:ClearAllPoints()
-        s.art:SetPoint("TOPLEFT", holder, "TOPLEFT", x, y)
+        s.art:SetPoint("TOPLEFT", holder, "TOPLEFT", dx, dy)
         s.click:ClearAllPoints()
-        s.click:SetPoint("TOPLEFT", holder, "TOPLEFT", x, y)
+        s.click:SetPoint("TOPLEFT", holder, "TOPLEFT", dx, dy)
         s.click:SetSize(size, size)
         -- Above the icon, its swipe and its count cover.
         s.click:SetFrameLevel(s.art:GetFrameLevel() + 3)
