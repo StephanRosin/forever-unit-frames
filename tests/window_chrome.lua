@@ -1,5 +1,6 @@
 -- Written from the four windows before they shared Options/Chrome.lua
--- (tests/chrome.lua).
+-- (tests/chrome.lua); since then only the title bars' field names changed
+-- (title, sub and close in each, as Chrome.TitleBar keeps them).
 return {
     unit = {
         "titleBar Frame pts=TOPLEFT TOPRIGHT _attr={} _drag={LeftButton} _h=32.000 _level=2.000 _mouse=true _shown=true _w=0.000 close=titleBar.5 sub=titleBar.4 title=titleBar.3 scripts=OnDragStart,OnDragStop",
@@ -138,7 +139,7 @@ return {
         "window.10 pts=TOPRIGHT:window.9:TOPRIGHT:-4.000:-0.000",
     },
     wizard = {
-        "titleBar Frame pts=TOPLEFT TOPRIGHT _attr={} _drag={LeftButton} _h=32.000 _level=2.000 _mouse=true _shown=true _w=0.000 scripts=OnDragStart,OnDragStop",
+        "titleBar Frame pts=TOPLEFT TOPRIGHT _attr={} _drag={LeftButton} _h=32.000 _level=2.000 _mouse=true _shown=true _w=0.000 title=titleBar.2 scripts=OnDragStart,OnDragStop",
         "titleBar.1 Texture pts= _allPoints=titleBar _attr={} _color={0.100,0.100,0.120,1.000} _h=0.000 _layer=BACKGROUND _level=3.000 _shown=true _texColor={0.100,0.100,0.120,1.000} _w=0.000 scripts=",
         "titleBar.2 FontString pts=LEFT:titleBar:LEFT:16.000:0.000 _attr={} _color={0.900,0.900,0.900,1.000} _font={Fonts\\FRIZQT__.TTF,14.000,} _h=0.000 _layer=OVERLAY _level=3.000 _shadow={1.000,-1.000} _shown=true _sublevel=0.000 _text=Setup wizard _w=0.000 scripts=",
         "footer Frame pts=BOTTOMLEFT BOTTOMRIGHT _attr={} _h=40.000 _level=2.000 _shown=true _w=0.000 scripts=",

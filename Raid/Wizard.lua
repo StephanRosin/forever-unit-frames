@@ -13,11 +13,11 @@ local _, ns = ...
 local Wizard = {}
 ns.RaidWizard = Wizard
 
-local Style, Widgets, L = ns.Style, ns.Widgets, ns.L
+local Style, Widgets, Chrome, L = ns.Style, ns.Widgets, ns.Chrome, ns.L
 local Templates, Page, RaidConfig, Raid = ns.RaidTemplates, ns.RaidTemplatesPage, ns.RaidConfig, ns.Raid
 
 local WINDOW_NAME = "ForeverUnitFramesRaidWizard"
-local WIDTH, HEIGHT, TITLE_H, FOOTER_H, INSET, GAP, BUTTON_W = 560, 400, 32, 40, 16, 8, 110
+local WIDTH, HEIGHT, TITLE_SIZE, INSET, GAP, BUTTON_W = 560, 400, 14, 16, 8, 110
 local TEXT_H, MAX_CLICKS = 48, 8
 Wizard.STEPS = { "role", "look", "sizes", "clicks", "summary" }
 local KEEP = "KEEP"
@@ -251,10 +251,7 @@ local function button(parent, text, onClick)
 end
 
 local function createFooter()
-    local footer = CreateFrame("Frame", nil, frame)
-    footer:SetHeight(FOOTER_H)
-    footer:SetPoint("BOTTOMLEFT"); footer:SetPoint("BOTTOMRIGHT")
-    Style.Fill(footer, "panel")
+    local footer = Chrome.Footer(frame, { line = false })
     Wizard.cancelButton = button(footer, L.RAID_WIZARD_CANCEL, function() Wizard.Close() end)
     Wizard.cancelButton:SetPoint("LEFT", footer, "LEFT", INSET, 0)
     Wizard.nextButton = button(footer, L.RAID_WIZARD_NEXT, Wizard.Next)
@@ -307,17 +304,10 @@ local function createWindow()
     frame:EnableMouse(true)
     Style.Fill(frame, "bg")
     Style.Border(frame)
-    local bar = CreateFrame("Frame", nil, frame)
-    bar:SetHeight(TITLE_H)
-    bar:SetPoint("TOPLEFT"); bar:SetPoint("TOPRIGHT")
-    Style.Fill(bar, "panel")
-    bar:EnableMouse(true)
-    bar:RegisterForDrag("LeftButton")
-    bar:SetScript("OnDragStart", function() frame:StartMoving() end)
-    bar:SetScript("OnDragStop", function() frame:StopMovingOrSizing() end)
-    local title = Style.Text(bar, 14, "text")
-    title:SetPoint("LEFT", bar, "LEFT", INSET, 0)
-    title:SetText(L.RAID_WIZARD_TITLE)
+    -- No line under the title bar nor above the footer, no close cross
+    -- (Cancel closes it).
+    local bar = Chrome.TitleBar(frame, { title = L.RAID_WIZARD_TITLE, titleSize = TITLE_SIZE, line = false })
+    frame.titleBar = bar
     frame.heading = Style.Text(frame, 12, "accent")
     frame.heading:SetPoint("TOPLEFT", bar, "BOTTOMLEFT", INSET, -10)
     local footer = createFooter()
