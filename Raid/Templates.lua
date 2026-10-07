@@ -27,8 +27,7 @@ local function isBySize(v) return type(v) == "table" and v[BY_SIZE] == true end
 -- The player's class token, or nil (secret or unknown).
 function Templates.PlayerClass()
     local ok, _, token = pcall(UnitClass, "player")
-    if ok and not Secrets.IsSecret(token) and type(token) == "string" then return token end
-    return nil
+    return ok and Secrets.Plain(token, "string") or nil
 end
 
 local function sameValue(a, b)

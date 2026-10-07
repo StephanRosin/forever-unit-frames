@@ -159,15 +159,10 @@ Cell.MANA_CLASSES = { PALADIN = true, PRIEST = true, SHAMAN = true, DRUID = true
 -- The class token and the assigned role of a cell's unit (a test cell's:
 -- its sample's), or nil: both are secret while the unit's identity is
 -- restricted.
-local function readable(ok, v)
-    if not ok or Secrets.IsSecret(v) or type(v) ~= "string" then return nil end
-    return v
-end
-
 local function classOf(frame)
     if frame.sample then return frame.sample.class end
     local ok, _, token = pcall(UnitClass, frame.unit)
-    return readable(ok, token)
+    return ok and Secrets.Plain(token, "string") or nil
 end
 
 function Cell.Role(frame)

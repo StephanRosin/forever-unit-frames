@@ -39,19 +39,10 @@ BuffWatch.FILTER = "HELPFUL"
 
 local function general(key) return ns.RaidConfig.Get("general", key) end
 
--- A plain value of a client call, or nil (secret, an error).
-local function plain(fn, ...)
-    if type(fn) ~= "function" then return nil end
-    local ok, v = pcall(fn, ...)
-    if not ok or Secrets.IsSecret(v) then return nil end
-    return v
-end
-
 -- Your class token, nil while it is unknown.
 function BuffWatch.PlayerClass()
     local ok, _, token = pcall(UnitClass, "player")
-    if ok and not Secrets.IsSecret(token) and type(token) == "string" then return token end
-    return nil
+    return ok and Secrets.Plain(token, "string") or nil
 end
 
 -- What is watched ------------------------------------------------------------------
@@ -98,20 +89,22 @@ end
 
 -- The members -------------------------------------------------------------------------
 
+-- A plain, non-empty string, or nil.
 local function token(v)
-    if Secrets.IsSecret(v) or type(v) ~= "string" or v == "" then return nil end
-    return v
+    v = Secrets.Plain(v, "string")
+    if v ~= "" then return v end
+    return nil
 end
 
 local function isTank(unit, rosterRole)
     if rosterRole == "MAINTANK" then return true end
-    if token(plain(UnitGroupRolesAssigned, unit)) == "TANK" then return true end
-    return plain(GetPartyAssignment, "MAINTANK", unit) == true
+    if token(Secrets.Call(UnitGroupRolesAssigned, unit)) == "TANK" then return true end
+    return Secrets.Call(GetPartyAssignment, "MAINTANK", unit) == true
 end
 
 -- A unit's GUID, nil when the client gives no plain one.
 function BuffWatch.GUID(unit)
-    return token(plain(UnitGUID, unit))
+    return token(Secrets.Call(UnitGUID, unit))
 end
 
 -- The members: { unit, group (raid group; 1 in a party), class (token,
@@ -122,8 +115,8 @@ function BuffWatch.Members()
         for i = 1, GetNumGroupMembers() do
             local unit = "raid" .. i
             local ok, _, _, subgroup, _, _, class, _, _, _, role = pcall(GetRaidRosterInfo, i)
-            if ok and plain(UnitExists, unit) == true then
-                local group = not Secrets.IsSecret(subgroup) and type(subgroup) == "number" and subgroup or nil
+            if ok and Secrets.Call(UnitExists, unit) == true then
+                local group = Secrets.Plain(subgroup, "number")
                 list[#list + 1] = { unit = unit, group = group, class = token(class),
                     tank = isTank(unit, token(role)), guid = BuffWatch.GUID(unit) }
             end
@@ -132,7 +125,7 @@ function BuffWatch.Members()
         local units = { "player" }
         for i = 1, GetNumGroupMembers() - 1 do units[#units + 1] = "party" .. i end
         for _, unit in ipairs(units) do
-            if plain(UnitExists, unit) == true then
+            if Secrets.Call(UnitExists, unit) == true then
                 local ok, _, class = pcall(UnitClass, unit)
                 list[#list + 1] = { unit = unit, group = 1, class = ok and token(class) or nil,
                     tank = isTank(unit), guid = BuffWatch.GUID(unit) }
@@ -153,8 +146,8 @@ end
 -- Dead (or a ghost), offline, or out of the client's sight (too far to
 -- see: their auras are not known): no buff for them now. Unknown: there.
 local function absent(unit)
-    return plain(UnitIsDeadOrGhost, unit) == true or plain(UnitIsConnected, unit) == false
-        or plain(UnitIsVisible, unit) == false
+    return Secrets.Call(UnitIsDeadOrGhost, unit) == true or Secrets.Call(UnitIsConnected, unit) == false
+        or Secrets.Call(UnitIsVisible, unit) == false
 end
 
 -- Reading -------------------------------------------------------------------------------
@@ -162,14 +155,14 @@ end
 local function aurasSecret()
     local secrets = C_Secrets
     if not (secrets and secrets.ShouldAurasBeSecret) then return false end
-    return plain(secrets.ShouldAurasBeSecret) ~= false
+    return Secrets.Call(secrets.ShouldAurasBeSecret) ~= false
 end
 
 -- Whether the client hides a form's auras (its first rank stands for all).
 local function formSecret(spells)
     local secrets = C_Secrets
     if not (secrets and secrets.ShouldSpellAuraBeSecret) or #spells == 0 then return false end
-    return plain(secrets.ShouldSpellAuraBeSecret, spells[1]) ~= false
+    return Secrets.Call(secrets.ShouldSpellAuraBeSecret, spells[1]) ~= false
 end
 
 local function spellsOf(entry)
@@ -279,7 +272,7 @@ end
 -- Whether a spell reaches the unit: only a plain "no" says it does not
 -- (unknown: in range, the cast fails visibly at worst).
 local function inRange(spell, unit)
-    return plain(C_Spell.IsSpellInRange, spell, unit) ~= false
+    return Secrets.Call(C_Spell.IsSpellInRange, spell, unit) ~= false
 end
 
 -- Whether the group form can be cast: a known rank and its reagent in
@@ -289,7 +282,7 @@ local function groupReady(entry)
     if not (form and form.id) then return false end
     local reagent = entry.reagents and entry.reagents[form.id]
     if not reagent then return true end
-    local count = plain(C_Item.GetItemCount, reagent)
+    local count = Secrets.Call(C_Item.GetItemCount, reagent)
     return type(count) == "number" and count > 0
 end
 

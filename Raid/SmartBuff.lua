@@ -77,9 +77,7 @@ end
 
 -- A member's name, or the unit token while the name is secret.
 local function nameOf(unit)
-    local ok, name = pcall(UnitName, unit)
-    if ok and not Secrets.IsSecret(name) and type(name) == "string" then return name end
-    return unit
+    return Secrets.Plain(Secrets.Call(UnitName, unit), "string") or unit
 end
 
 local function groupText(group)

@@ -21,8 +21,8 @@ Templates.HOTS = {
 -- Every learned rank of a shipped spell (by its name), as a spell list
 -- stores them; nil when the book knows none or the client no name.
 function Templates.SpellIDs(id)
-    local ok, name = pcall(C_Spell.GetSpellName, id)
-    if not ok or ns.Secrets.IsSecret(name) or type(name) ~= "string" or name == "" then return nil end
+    local name = ns.Secrets.Plain(ns.Secrets.Call(C_Spell.GetSpellName, id), "string")
+    if not name or name == "" then return nil end
     local ids = ns.RaidSpellbook.IDs(name)
     if #ids == 0 then return nil end
     local text = table.concat(ids, ",")
@@ -161,8 +161,8 @@ local ROLE_TEMPLATE = { TANK = "tank", HEALER = "healer", DAMAGER = "dps" }
 -- A role token as the client gives it, when it is plain and one of the
 -- three.
 local function roleOf(v)
-    if ns.Secrets.IsSecret(v) or type(v) ~= "string" then return nil end
-    return ROLE_TEMPLATE[v]
+    v = ns.Secrets.Plain(v, "string")
+    return v and ROLE_TEMPLATE[v]
 end
 
 local function specRole()
@@ -171,8 +171,8 @@ local function specRole()
         or type(spec.GetSpecializationInfo) ~= "function" then
         return nil
     end
-    local ok, index = pcall(spec.GetSpecialization)
-    if not ok or ns.Secrets.IsSecret(index) or type(index) ~= "number" or index < 1 then return nil end
+    local index = ns.Secrets.Plain(ns.Secrets.Call(spec.GetSpecialization), "number")
+    if not index or index < 1 then return nil end
     local okInfo, _, _, _, _, role, _, points = pcall(spec.GetSpecializationInfo, index)
     if not okInfo then return nil end
     -- No point spent in it (a plain 0): the specialization says nothing.
@@ -182,9 +182,7 @@ end
 
 local function assignedRole()
     if type(UnitGroupRolesAssigned) ~= "function" then return nil end
-    local ok, role = pcall(UnitGroupRolesAssigned, "player")
-    if not ok then return nil end
-    return roleOf(role)
+    return roleOf(ns.Secrets.Call(UnitGroupRolesAssigned, "player"))
 end
 
 -- The role template to suggest: the specialization's role, else the

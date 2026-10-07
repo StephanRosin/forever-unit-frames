@@ -72,8 +72,7 @@ Data.NO_MANA = { WARRIOR = true, ROGUE = true }
 local function known(id)
     local book = C_SpellBook
     if not (book and book.IsSpellKnown) then return false end
-    local ok, v = pcall(book.IsSpellKnown, id)
-    return ok and not Secrets.IsSecret(v) and v == true
+    return Secrets.Call(book.IsSpellKnown, id) == true
 end
 
 -- The highest rank of a form the spell book knows, or nil.
@@ -84,20 +83,13 @@ function Data.Highest(ids)
     return nil
 end
 
-local function plainCall(fn, ...)
-    if type(fn) ~= "function" then return nil end
-    local ok, v = pcall(fn, ...)
-    if not ok or Secrets.IsSecret(v) then return nil end
-    return v
-end
-
 -- A form: { id = the highest known rank (nil: none), name = the client's
 -- (from its first rank), icon, duration (the shipped one, seconds) }; nil
 -- when the client gives no name.
 function Data.Form(ids, duration)
     if #ids == 0 then return nil end
-    local name = plainCall(C_Spell.GetSpellName, ids[1])
+    local name = Secrets.Call(C_Spell.GetSpellName, ids[1])
     if type(name) ~= "string" or name == "" then return nil end
     local id = Data.Highest(ids)
-    return { id = id, name = name, icon = plainCall(C_Spell.GetSpellTexture, id or ids[1]), duration = duration }
+    return { id = id, name = name, icon = Secrets.Call(C_Spell.GetSpellTexture, id or ids[1]), duration = duration }
 end

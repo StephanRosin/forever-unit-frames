@@ -194,9 +194,7 @@ end
 -- The assigned role ("TANK", "HEALER", "DAMAGER", "NONE"), or nil when it
 -- cannot be read (secret, refused). Raid cells ask too (Raid/Cell.lua).
 function GroupIcons.UnitRole(unit)
-    local ok, role = pcall(UnitGroupRolesAssigned, unit)
-    if not ok or Secrets.IsSecret(role) or type(role) ~= "string" then return nil end
-    return role
+    return Secrets.Plain(Secrets.Call(UnitGroupRolesAssigned, unit), "string")
 end
 
 -- "leader", "guide", "assistant" or nil.
@@ -230,9 +228,8 @@ end
 -- Blizzard's party frames (PartyMemberFrameMixin:UpdateReadyCheck).
 local function readyStatus(unit)
     if Secrets.Bool(UnitIsConnected, unit) == false then return nil end
-    local ok, status = pcall(GetReadyCheckStatus, unit)
-    if not ok or Secrets.IsSecret(status) or type(status) ~= "string" then return nil end
-    if GroupIcons.READY[status] then return status end
+    local status = Secrets.Plain(Secrets.Call(GetReadyCheckStatus, unit), "string")
+    if status and GroupIcons.READY[status] then return status end
     return nil
 end
 

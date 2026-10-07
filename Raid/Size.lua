@@ -33,8 +33,8 @@ function Size.HighestGroup(members)
     local highest
     for i = 1, members do
         local ok, _, _, subgroup = pcall(GetRaidRosterInfo, i)
-        if ok and not ns.Secrets.IsSecret(subgroup) and type(subgroup) == "number"
-            and (highest == nil or subgroup > highest) then
+        subgroup = ok and ns.Secrets.Plain(subgroup, "number") or nil
+        if subgroup and (highest == nil or subgroup > highest) then
             highest = subgroup
         end
     end

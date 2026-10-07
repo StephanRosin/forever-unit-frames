@@ -27,6 +27,21 @@ function Secrets.Bool(fn, ...)
     return v and true or false
 end
 
+-- The first result of fn(...) when the call succeeds and the result is
+-- not secret; nil otherwise (an error, a secret, fn not a function).
+function Secrets.Call(fn, ...)
+    local ok, v = pcall(fn, ...)
+    if not ok or Secrets.IsSecret(v) then return nil end
+    return v
+end
+
+-- v when it is not secret and of type kind ("string", "number", …); nil
+-- otherwise.
+function Secrets.Plain(v, kind)
+    if Secrets.IsSecret(v) or type(v) ~= kind then return nil end
+    return v
+end
+
 -- "12.3k" style text for readable numbers; secret values are returned
 -- untouched so SetText/SetFormattedText can still display them in full.
 function Secrets.Abbreviate(v)

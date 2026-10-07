@@ -205,8 +205,8 @@ end
 local function countReady()
     local counts = { ready = 0, notready = 0, waiting = 0 }
     for _, unit in ipairs(groupUnits()) do
-        local ok, status = pcall(GetReadyCheckStatus, unit)
-        if ok and not ns.Secrets.IsSecret(status) and type(status) == "string" and counts[status] then
+        local status = ns.Secrets.Plain(ns.Secrets.Call(GetReadyCheckStatus, unit), "string")
+        if status and counts[status] then
             counts[status] = counts[status] + 1
         end
     end
@@ -355,8 +355,7 @@ Tools.GROUP_BUTTON_W, Tools.BUTTON_PADDING = 60, 16
 -- Everyone an assistant (the raid's leader): IsEveryoneAssistant, as
 -- Blizzard's raid manager reads it.
 local function everyoneAssists()
-    local ok, on = pcall(IsEveryoneAssistant)
-    return ok and not ns.Secrets.IsSecret(on) and on == true
+    return ns.Secrets.Call(IsEveryoneAssistant) == true
 end
 
 -- Master looter is the player himself, as Blizzard's unit menu sets it.
@@ -364,8 +363,7 @@ local function setLoot(name)
     local method = Enum.LootMethod[name]
     local looter
     if name == "Masterlooter" then
-        local ok, me = pcall(UnitName, "player")
-        if ok and not ns.Secrets.IsSecret(me) and type(me) == "string" then looter = me end
+        looter = ns.Secrets.Plain(ns.Secrets.Call(UnitName, "player"), "string")
     end
     Tools.Ask(L.RAID_TOOLS_LOOT, C_PartyInfo.SetLootMethod, method, looter)
 end
@@ -373,8 +371,7 @@ end
 -- The current method marked (never secret, PartyInfoDocumentation.lua;
 -- checked all the same).
 local function openLootMenu(owner)
-    local ok, current = pcall(C_PartyInfo.GetLootMethod)
-    if not ok or ns.Secrets.IsSecret(current) then current = nil end
+    local current = ns.Secrets.Call(C_PartyInfo.GetLootMethod)
     MenuUtil.CreateContextMenu(owner, function(_, root)
         root:CreateTitle(L.RAID_TOOLS_LOOT)
         for _, name in ipairs(Tools.LOOT_METHODS) do
