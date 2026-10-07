@@ -8,6 +8,7 @@ ns.Config.Use({})
 ns.RaidProfiles.Attach({})
 ns.RaidSize.Update()
 ns.RaidHeader.Create()
+ns.Party.Create()
 
 H.check("spell macro", Keys.MacroText("spell:Renew"), "/cast [@mouseover,help,nodead] Renew")
 H.check("item macro", Keys.MacroText("item:Linen Bandage"), "/use [@mouseover,help,nodead] Linen Bandage")
@@ -77,3 +78,27 @@ H.check("W is taken", Keys.Taken("W"), "MOVEFORWARD")
 H.check("T is free", Keys.Taken("T"), nil)
 H.check("nothing", Keys.Taken(""), nil)
 H.check("nothing blocked at all", #M.blocked, 0)
+
+-- Keys only while our frames show: the raid frames, or the party frames
+-- (not merely being in a group).
+RC.Set("general", "clickCastParty", true)
+RC.Set("general", "enabled", false)
+H.check("party, raid frames off, party frames shown: bound", GetBindingAction("T", true),
+    "CLICK ForeverUnitFramesClickKey1:LeftButton")
+ns.Config.Set("party", "enabled", false)
+M.RunTimers()
+H.check("party frames off too: none", GetBindingAction("T", true), "")
+ns.Config.Set("party", "enabled", true)
+M.RunTimers()
+H.check("party frames back: bound", GetBindingAction("T", true), "CLICK ForeverUnitFramesClickKey1:LeftButton")
+-- A raid: the party frames hide in raids (the default), the raid frames
+-- are off: nothing shows, no key is taken.
+M.SetGroup({})
+M.SetRaidRoster({ { name = "A", class = "PRIEST", subgroup = 1, unit = { health = 1, healthMax = 1 } } })
+M.RunTimers()
+H.check("party frames hidden in the raid", ns.Party.header:IsVisible(), false)
+H.check("raid, nothing of ours shows: none", GetBindingAction("T", true), "")
+RC.Set("general", "enabled", true)
+M.RunTimers()
+H.check("raid frames on: bound", GetBindingAction("T", true), "CLICK ForeverUnitFramesClickKey1:LeftButton")
+H.check("nothing blocked at the end", #M.blocked, 0)

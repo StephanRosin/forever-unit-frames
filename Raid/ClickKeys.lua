@@ -44,17 +44,38 @@ local function button(i)
     return b
 end
 
+-- Whether the unit frames' party members show (switched on, not hidden
+-- by their visibility driver, e.g. in a raid) in a group.
+local function partyShows()
+    local header = ns.Party.header
+    return header ~= nil and header:IsVisible() and IsInGroup()
+end
+
 -- Whether the keys are bound: click-casting on, and the raid frames
--- showing, or in a party whose frames take the bindings.
+-- showing, or the party frames showing while they take the bindings.
 function ClickKeys.Wanted()
     if not ns.ClickCast.On() then return false end
     if ns.RaidPanel.Active() then return true end
-    return IsInGroup() and ns.RaidConfig.Get("general", "clickCastParty") == true
+    return ns.RaidConfig.Get("general", "clickCastParty") == true and partyShows()
+end
+
+local update
+
+-- The party header shows and hides by its visibility driver (and by the
+-- unit frames' settings): the keys follow, after combat if need be.
+local watched
+local function watchParty()
+    local header = ns.Party.header
+    if watched or not header then return end
+    watched = true
+    header:HookScript("OnShow", function() update() end)
+    header:HookScript("OnHide", function() update() end)
 end
 
 -- Out of combat only: the bindings anew.
 function ClickKeys.Update()
     if InCombatLockdown() or not ns.RaidConfig.Profile() then return end
+    watchParty()
     owner = owner or CreateFrame("Frame", nil, UIParent)
     ClearOverrideBindings(owner)
     if not ClickKeys.Wanted() then return end
@@ -78,7 +99,7 @@ function ClickKeys.Taken(key)
     return action
 end
 
-local function update() ns.AfterCombat("clickKeys", ClickKeys.Update) end
+update = function() ns.AfterCombat("clickKeys", ClickKeys.Update) end
 ClickKeys.Queue = update
 
 -- The settings that change the bindings: the keys, and what decides
