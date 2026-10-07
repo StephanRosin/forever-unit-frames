@@ -102,4 +102,11 @@ for _, code in ipairs({ "enUS", "deDE", "esES", "frFR" }) do
             H.checkTrue(code .. " hint fits: " .. key, width(v, 10) <= longestHint)
         end
     end
+    -- The click-casting tab's own hints stay on one line of the label
+    -- column: Clique's, and a key's warning with a binding's name of 24
+    -- letters ("Target Nearest Friend" and the like).
+    local L = ns.Locales[code]
+    H.checkTrue(code .. " Clique hint on one line", width(L.RAID_CLICK_CLIQUE, 10) <= ns.Widgets.LABEL_MAX_W)
+    H.checkTrue(code .. " key warning on one line",
+        width(L.RAID_CLICK_KEY_TAKEN:format(("x"):rep(24)), 10) <= ns.Widgets.LABEL_MAX_W)
 end
