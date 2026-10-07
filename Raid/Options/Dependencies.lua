@@ -56,7 +56,10 @@ local RULES = {
     { is("dispelStyle", "ICON"), { "dispelIconSize" } },
     { is("dispelStyle", "SQUARE"), { "dispelSquarePoint", "dispelSquareSize" } },
     { on("debuffRow"), { "debuffCount", "debuffSize" } },
-    { anyOn(ICON_SWITCHES), { "iconSize" } },
+    -- Raid/BuffCells.lua: the buff square (a character switch) takes
+    -- the icons' size too.
+    { anyOn({ "roleIcon", "raidMarker", "leaderIcon", "looterIcon", "readyCheckIcon", "buffCellIcon" }),
+        { "iconSize" } },
     { on("roleIcon"), { "roleIconDamager" } },
     { on("rangeFade"), { "rangeAlpha" } },
     { on("toolsShow"), { "toolsMode", "toolsOpen", "toolsX", "toolsY", "toolsTargets", "toolsReady",

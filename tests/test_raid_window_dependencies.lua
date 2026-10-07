@@ -55,6 +55,9 @@ local CASES = {
     { "looterIcon", false, true, { "looterIconPoint" } },
     { "readyCheckIcon", false, true, { "readyCheckIconPoint", "iconSize" },
         { roleIcon = false, raidMarker = false, leaderIcon = false, looterIcon = false } },
+    -- Raid/BuffCells.lua: the buff square takes the icons' size too.
+    { "buffCellIcon", false, true, { "iconSize" },
+        { roleIcon = false, raidMarker = false, leaderIcon = false, looterIcon = false, readyCheckIcon = false } },
     { "rangeFade", false, true, { "rangeAlpha" } },
     { "mainTanksShow", false, true, { "mainTanksTitle", "mainTanksPerLine", "mainTanksGrowth", "mainTanksX",
         "mainTanksY" } },
