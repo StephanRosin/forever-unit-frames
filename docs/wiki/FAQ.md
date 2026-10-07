@@ -46,8 +46,9 @@ Blizzard's frame for one of them, switch ours off on its **Layout** tab (*Enable
 ### A player I put on my tanks or favourites does not show
 
 The panels change their lists only out of combat: someone added during a fight shows after it. The
-name has to be written as the game writes it in your group: a player from another realm as
-*Name-Realm*. Right-clicking the player's cell puts the name there for you. And the panel itself has
+name has to be written as the game writes it in your group (upper and lower case of the name do not
+matter: "bob" becomes "Bob"); only a player from another realm as *Name-Realm*, the realm spelled as
+the game spells it. Right-clicking the player's cell puts the name there for you. And the panel itself has
 to be switched on for the raid size you are in (**Panels** tab).
 
 ### Where is Blizzard's raid manager?
