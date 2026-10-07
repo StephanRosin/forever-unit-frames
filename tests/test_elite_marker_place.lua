@@ -65,14 +65,15 @@ H.check("auto + offset: same point", p[1], q[1])
 H.check("auto + offset: x moved", p[4], tonumber(q[4]) - 10)
 H.check("auto + offset: y moved", p[5], tonumber(q[5]) + 5)
 
--- A point of its own: the word there, aligned to its side.
+-- A point of its own: the word's own point there (it has no width, so
+-- no justification: the point alone places it).
 C.Set("target", "eliteMarkerFramePoint", "BOTTOMLEFT")
 C.Set("target", "eliteMarkerPoint", "TOPLEFT")
 H.check("own point: the word", pts(text), "TOPLEFT,frame,BOTTOMLEFT,-10,5")
-H.check("own point: left-aligned", text._justifyH, "LEFT")
 H.checkTrue("still shown", text:IsShown())
 C.Set("target", "eliteMarkerPoint", "CENTER")
-H.check("centre: centred", text._justifyH, "CENTER")
+H.check("centre: the word's centre there", pts(text), "CENTER,frame,BOTTOMLEFT,-10,5")
+H.check("no width of its own", text:GetWidth(), 0)
 
 -- The portrait badge: at the frame's point too.
 C.Set("target", "portraitMode", "LEFT")

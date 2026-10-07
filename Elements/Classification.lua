@@ -142,20 +142,15 @@ end
 
 -- The word: above the frame's top right corner, and above a castbar
 -- docked on top, clear of the border; left of the class badge when that
--- reaches over the spot. All in the frame's coordinates.
--- A word at a point of its own is aligned to that point's side.
-local function justify(point)
-    if point:find("LEFT") then return "LEFT" end
-    if point:find("RIGHT") then return "RIGHT" end
-    return "CENTER"
-end
+-- reaches over the spot. All in the frame's coordinates. The word has no
+-- width of its own (one point), so its justification would change
+-- nothing: its own point decides where it sits.
 
 local function placeText(frame)
     local scope, text, Pixel = frame.key, frame.eliteText, ns.Pixel
     local at, own = ownPoint(scope)
     if at then
         placeOwn(frame, text, at, own)
-        text:SetJustifyH(justify(own))
         return
     end
     local side, reach = ns.Shape.DockReach(frame)
@@ -167,7 +162,6 @@ local function placeText(frame)
     local dx, dy = offset(scope)
     text:ClearAllPoints()
     text:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", x + dx, bottom + dy)
-    text:SetJustifyH("RIGHT")
 end
 
 -- Shows the marker for kind (nil: none) in the frame's current style.

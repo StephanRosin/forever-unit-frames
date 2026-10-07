@@ -159,8 +159,9 @@ local SECTION_NOTE = {
         .. " reach it; empty, the left and right texts share the row as before.",
     eliteMarker = "Where the marker (Marker style) sits: **Automatic** is its usual place, on the portrait's corner"
         .. " or as a word above the frame's top right corner, out of the class icon's way; the offset moves it"
-        .. " from there. A point on the frame puts the marker's own point there instead, plus the offset. The"
-        .. " border style ignores them.",
+        .. " from there. A point on the frame puts the marker's own point there instead, plus the offset: for"
+        .. " the word, that point of the word itself (its own point **Left** puts the word's left end there)."
+        .. " The border style ignores them.",
     outOfCombat = "With **Pet frame fades too** the pet frame takes the player frame's opacity whenever that"
         .. " fades, and shows in full while you miss health. Meanwhile the pet frame's own range fading waits;"
         .. " it is back whenever something keeps the player frame in full (combat, a cast, a target, test mode,"
