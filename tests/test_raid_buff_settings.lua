@@ -40,6 +40,9 @@ H.check("no key", def("buffKey").default, "")
 H.check("a key: stored as the client names it", RS.Validate(def("buffKey"), "CTRL-B"), "CTRL-B")
 H.check("a key: not normalised refused", RS.Validate(def("buffKey"), "ctrl-b"), nil)
 H.check("watch window on", def("buffWatchShow").default, true)
+H.check("only while something is missing: on", def("buffWatchOnlyMissing").default, true)
+H.check("the group form's hint: missing or expiring count", ns.L.RAID_HINT_buffGroupMin,
+    "Members of one group (blessings: a class) missing it or running out")
 H.check("cell icon off", def("buffCellIcon").default, false)
 H.check("cell icon point: one of the nine", def("buffCellIconPoint").values, ns.Settings.POINTS)
 

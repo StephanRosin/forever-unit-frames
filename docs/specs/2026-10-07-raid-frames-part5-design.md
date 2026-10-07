@@ -16,20 +16,24 @@ beforehand.
    table of spell IDs per class (all ranks, single and group form); the spell book decides what is known; names come
    from the client. Paladin blessings: one blessing per class (VuhDo-like), chosen per class in the window.
 2. **Buff watch window** ("Buff watch", de "Buff-Übersicht"): a small movable panel (mover group "raid"), one row per
-   watched buff: icon, "missing n / expiring n" (expiring = less than a set time left, default 5 min), click on the row
-   = cast that buff on the next member that needs it (secure button, see 4). Hidden when solo and while nothing is
-   watched; option to show only when something is missing; locked/hidden in combat (it shows its last state greyed).
+   watched buff: icon, "missing n / expiring n" (expiring = less than a set time left, default 5 min, at most a third
+   of the buff's duration — the aura's when readable, else a shipped one per form — so a fresh 5-minute blessing is
+   not expiring), click on the row = cast that buff on the next member that needs it (secure button, see 4). Members
+   the client cannot see (`UnitIsVisible` false) are not counted. Hidden when solo and while nothing is watched;
+   option to show only when something is missing or running out (default on); locked/hidden in combat (it shows its
+   last state greyed).
 3. **Missing buffs on the cells**: an optional indicator (a small icon in a chosen corner) on a cell whose member lacks
    one of the watched buffs (out of combat only; in combat it keeps its last state). Default off.
 4. **Smart buff key**: one key (default none, user-set like the click-casting keys) and the watch rows' clicks run a
    hidden secure button whose `type=spell`, `spell` and `unit` attributes we set **out of combat** to the best next
-   cast: the group form when ≥ N (setting, default 3) members of one group miss it and the reagent is in the bags,
+   cast: the group form when ≥ N (setting, default 3) members of one group miss it or have it running out (both
+   count, the setting's hint says so) and the reagent is in the bags,
    else the single form on the member with the least time left (missing first), in range and alive. Recomputed on
    UNIT_AURA / roster / bag changes out of combat (throttled). In combat the key does nothing (attributes cleared at
    combat start). The button's tooltip/chat line says what the next press will cast on whom.
 5. **Reading auras**: `C_UnitAuras.GetAuraDataBySpellName` / `GetUnitAuras(unit, "HELPFUL")` — every field checked
-   with `Secrets.IsSecret` before use; when auras are secret (`C_Secrets.ShouldAurasBeSecret`) the watch shows
-   "unknown" instead of guessing. No comparisons or arithmetic on secret values.
+   with `Secrets.IsSecret` before use; when auras are secret (`C_Secrets.ShouldAurasBeSecret`), or the query
+   answers secret or raises, the watch shows "unknown" instead of guessing. No comparisons or arithmetic on secret values.
 6. **HoT/buff indicators** ("advanced indicators" of the roadmap) are already covered by part 1's indicators; part 5
    adds nothing there. Out of scope: HoTs in heal prediction (separate open item).
 7. **Window**: a new raid window tab "Buffs" (watched buffs per class, blessing per class, expiring threshold, group

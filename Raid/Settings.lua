@@ -720,9 +720,10 @@ for _, class in ipairs(BuffData.CLASSES) do
         values = BuffData.BLESSINGS, default = BLESSING_DEFAULTS[class] or "WISDOM" })
     Raid.BLESSING_KEYS[#Raid.BLESSING_KEYS + 1] = key
 end
--- A buff runs out with less than this many minutes left; the group form
--- is cast when this many members of one group (raid group, or class for
--- a blessing) need it and its reagent is in your bags.
+-- A buff runs out with less than this many minutes left (at most a third
+-- of how long it lasts); the group form is cast when this many members of
+-- one group (raid group, or class for a blessing) miss it or have it
+-- running out and its reagent is in your bags.
 RaidSettings.Define({ key = "buffExpiring", code = "BE", scope = "general", type = "int", min = 1, max = 30,
     default = 5 })
 RaidSettings.Define({ key = "buffGroupMin", code = "BN", scope = "general", type = "int", min = 1,
@@ -731,10 +732,10 @@ RaidSettings.Define({ key = "buffGroupMin", code = "BN", scope = "general", type
 -- Raid.ParseKey stores it; "" none).
 RaidSettings.Define({ key = "buffKey", code = "BK", scope = "general", type = "text",
     maxLetters = Raid.CLICK_KEY_LETTERS, check = isKey, default = "" })
--- The watch window: shown in a group, only while a buff is missing, its
--- top-left corner from the screen centre.
+-- The watch window: shown in a group (by default only while a buff is
+-- missing or running out), its top-left corner from the screen centre.
 RaidSettings.Define({ key = "buffWatchShow", code = "BW", scope = "general", type = "bool", default = true })
-RaidSettings.Define({ key = "buffWatchOnlyMissing", code = "BM", scope = "general", type = "bool", default = false })
+RaidSettings.Define({ key = "buffWatchOnlyMissing", code = "BM", scope = "general", type = "bool", default = true })
 RaidSettings.Define({ key = "buffWatchX", code = "BX", scope = "general", type = "int", min = -4000, max = 4000,
     default = 300 })
 RaidSettings.Define({ key = "buffWatchY", code = "BY", scope = "general", type = "int", min = -4000, max = 4000,

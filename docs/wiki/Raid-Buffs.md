@@ -2,7 +2,7 @@
 
 # Raid frames: Buffs
 
-The buff watch: your class's group buffs (Fortitude, Divine Spirit, Shadow Protection, Arcane Intellect, Mark of the Wild, Thorns, the paladin blessings) on everyone in your raid or party. Arcane Intellect and Divine Spirit go to those who use mana, Thorns to tanks only; a paladin picks one blessing per class. A buff your spell book does not know is not offered (its row is greyed). A small window shows each watched buff with how many members miss it and how many have it running out; a click on its row casts it on the member who needs it most, and the **smart buff key** (set here, not one of the click-casting keys; taken while you are in a group) casts the next buff of all of them. The group form (Prayer of Fortitude, Arcane Brilliance, Gift of the Wild, a greater blessing, which takes a Symbol of Kings and blesses a whole class) is cast when enough members of one group need it and its reagent is in your bags; otherwise the single form, on the member with the least time left, missing first, alive and in range. Rebuffing is out of combat only (a rule of the client): in combat the rows and the key do nothing and the window shows its last state greyed. While the client keeps auras secret the window shows unknown rather than guess. Optionally an icon on a cell marks a member who misses a watched buff.
+The buff watch: your class's group buffs (Fortitude, Divine Spirit, Shadow Protection, Arcane Intellect, Mark of the Wild, Thorns, the paladin blessings) on everyone in your raid or party. Arcane Intellect and Divine Spirit go to those who use mana, Thorns to tanks only; a paladin picks one blessing per class. A buff your spell book does not know is not offered (its row is greyed). A small window shows each watched buff with how many members miss it and how many have it running out (under the time set here, at most a third of how long the buff lasts: a fresh blessing is not running out); members too far away for the client to see are not counted. By default it shows only while something is missing or running out. A click on its row casts it on the member who needs it most, and the **smart buff key** (set here, not one of the click-casting keys; taken while you are in a group) casts the next buff of all of them. The group form (Prayer of Fortitude, Arcane Brilliance, Gift of the Wild, a greater blessing, which takes a Symbol of Kings and blesses a whole class) is cast when enough members of one group miss it or have it running out and its reagent is in your bags; otherwise the single form, on the member with the least time left, missing first, alive and in range. Rebuffing is out of combat only (a rule of the client): in combat the rows and the key do nothing and the window shows its last state greyed. While the client keeps auras secret the window shows unknown rather than guess. Optionally an icon on a cell marks a member who misses a watched buff.
 
 The **Buffs** tab of the raid options window (`/fuf raid`). Its settings belong to the character, not to a raid size: they are the same at every size.
 
@@ -48,7 +48,7 @@ Out of combat, a click on a row of the buff window or the smart buff key casts t
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
 <tr><td><b>Runs out below (minutes)</b></td><td>Then it counts as expiring</td><td>1 – 30</td><td>5</td></tr>
-<tr><td><b>Group form from</b></td><td>Members of one group (blessings: one class)</td><td>1 – 5</td><td>3</td></tr>
+<tr><td><b>Group form from</b></td><td>Members of one group (blessings: a class) missing it or running out</td><td>1 – 5</td><td>3</td></tr>
 <tr><td><b>Smart buff key</b></td><td>e.g. SHIFT-B; out of combat only</td><td>Text</td><td>(none)</td></tr>
 </tbody>
 </table>
@@ -59,7 +59,7 @@ Out of combat, a click on a row of the buff window or the smart buff key casts t
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
 <tr><td><b>Show the buff window</b></td><td>In a group, while a buff is watched</td><td>On, Off</td><td>On</td></tr>
-<tr><td><b>Only when a buff is missing</b></td><td></td><td>On, Off</td><td>Off</td></tr>
+<tr><td><b>Only when a buff is missing</b></td><td></td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Position X</b></td><td>Top left corner, from the screen centre</td><td>-4000 – 4000</td><td>300</td></tr>
 <tr><td><b>Position Y</b></td><td>Top left corner, from the screen centre</td><td>-4000 – 4000</td><td>120</td></tr>
 </tbody>
