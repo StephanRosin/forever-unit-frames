@@ -50,6 +50,24 @@ end
 -- preset. XML files are not loaded; the mock mirrors their templates (see
 -- M.templates).
 function H.LoadAddon(files)
+    -- The shared ClickCastFrames table (Units/Units.lua) outlives a boot and
+    -- holds every unit button of the previous one, and through them that
+    -- whole addon: thousands of boots ran the suite out of memory. A table
+    -- with buttons in it is left over; a table a test put there for Clique
+    -- is still empty and stays.
+    -- The same for the addon's named frames: a frame the next boot does not
+    -- make again (a test cell, the minimap button) keeps the old boot alive.
+    local ccf = rawget(_G, "ClickCastFrames")
+    if type(ccf) == "table" and next(ccf) ~= nil then _G.ClickCastFrames = nil end
+    local named = {}
+    for k in pairs(_G) do
+        if type(k) == "string" and k:find("^ForeverUnitFrames") and not k:find("^ForeverUnitFramesDB") then
+            named[#named + 1] = k
+        end
+    end
+    for _, k in ipairs(named) do
+        if type(_G[k]) == "table" and _G[k].GetObjectType then _G[k] = nil end
+    end
     M.Reset()
     local ns = {}
     for _, f in ipairs(files or withoutPreset(H.TocFiles())) do

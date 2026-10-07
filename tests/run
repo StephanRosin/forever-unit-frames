@@ -2,4 +2,7 @@
 set -e
 HERE="$(cd "$(dirname "$0")" && pwd)"
 cd "$HERE"
+# At most 8 GB: a leak between boots fails the run ("not enough memory")
+# instead of filling RAM and swap until the system kills the terminal.
+ulimit -v 8000000
 exec lua5.1 -e "ADDONDIR='$(cd "$HERE/.." && pwd)'" run.lua "$@"
