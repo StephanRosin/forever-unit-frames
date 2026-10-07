@@ -18,8 +18,9 @@ end
 
 local raid = {}
 H.checkTrue("the generator lists its pages", type(WIKI_PAGES) == "table" and #WIKI_PAGES > 0)
+-- The templates page (no tab of its own) is checked at the end.
 for _, page in ipairs(WIKI_PAGES or {}) do
-    if page[1]:match("^Raid%-") then raid[#raid + 1] = page[1] end
+    if page[1]:match("^Raid%-") and page[1] ~= "Raid-Templates" then raid[#raid + 1] = page[1] end
 end
 H.check("raid pages", table.concat(raid, ","),
     "Raid-General,Raid-Layout,Raid-Panels,Raid-Arrangement,Raid-Cell,Raid-Texts,Raid-Debuffs,Raid-Indicators,"
@@ -91,4 +92,22 @@ local sidebar = read("_Sidebar.md")
 H.checkTrue("sidebar: raid heading", sidebar:find("**Raid frames**", 1, true))
 H.checkTrue("sidebar: raid page", sidebar:find("[[Icons & states|Raid-Icons-and-states]]", 1, true))
 H.checkTrue("sidebar: settings kept", sidebar:find("[[General|Settings-General]]", 1, true))
+
+-- The templates page: listed after the tabs' pages; the role templates and
+-- the looks with what they set, own templates, the wizard and the
+-- click-casting suggestions per class.
+local last = WIKI_PAGES[#WIKI_PAGES]
+H.check("templates page last", last and last[1], "Raid-Templates")
+local templates = read("Raid-Templates.md")
+H.checkTrue("templates: title", templates:find("# Raid frames: Templates and setup wizard", 1, true))
+for _, t in ipairs({ "Healer", "Tank", "DPS", "Dispel only", "Forever", "Flat", "Classic" }) do
+    H.checkTrue("templates: " .. t, templates:find("## " .. t, 1, true) or templates:find(">" .. t .. "<", 1, true))
+end
+H.checkTrue("templates: a value per size", templates:find("10 players: 120; 20 players: 104; 40 players: 92", 1, true))
+H.checkTrue("templates: a panel's setting named with its panel", templates:find("<b>Main tanks: Show the panel</b>", 1, true))
+H.checkTrue("templates: heals over time", templates:find("Rejuvenation", 1, true))
+H.checkTrue("templates: suggestions", templates:find("Flash Heal", 1, true))
+H.checkTrue("templates: undo", templates:find("**Undo**", 1, true))
+H.checkTrue("templates: once by itself", templates:find("opens by itself once", 1, true))
+H.checkTrue("in the sidebar", read("_Sidebar.md"):find("[[Templates|Raid-Templates]]", 1, true))
 os.execute("rm -rf '" .. dir .. "'")

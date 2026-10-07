@@ -29,3 +29,4 @@
 - [[Tools|Raid-Tools]]
 - [[Click-casting|Raid-Click-casting]]
 - [[Buffs|Raid-Buffs]]
+- [[Templates|Raid-Templates]]

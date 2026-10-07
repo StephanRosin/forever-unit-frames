@@ -402,6 +402,162 @@ for _, tab in ipairs(RaidSchema.TABS) do
     if #tab.sections > 0 then raidPage(tab) end
 end
 
+-- Templates and the setup wizard (Raid/Templates.lua, Raid/TemplateData.lua,
+-- Raid/Wizard.lua): no tab of their own, a page after the tabs' pages.
+do
+    local T, Page = ns.RaidTemplates, ns.RaidTemplatesPage
+    -- A raid setting's name with its section's ("Main tanks: Show the
+    -- panel"): many share their words.
+    local sectionOf = {}
+    for _, tab in ipairs(RaidSchema.TABS) do
+        for _, sec in ipairs(tab.sections) do
+            for _, key in ipairs(sec.keys) do sectionOf[key] = sec.id end
+        end
+    end
+    local function settingName(key)
+        local name = RaidSchema.Label(key)
+        if sectionOf[key] then
+            name = RaidSchema.SectionTitle(sectionOf[key]) .. ": " .. name
+        end
+        return name
+    end
+    local function sizeName(size) return RaidSchema.EnumText(RS.Get("sizeMode"), tostring(size)) end
+    -- A template's value: per size where it differs.
+    local function templateValue(key, v)
+        local def = RS.Get(key)
+        if type(v) == "table" and v[10] ~= nil then
+            local parts = {}
+            for _, size in ipairs(ns.Raid.SIZES) do
+                parts[#parts + 1] = ("%s: %s"):format(sizeName(size), valueText(def, v[size], RaidSchema.EnumText))
+            end
+            return table.concat(parts, "; ")
+        end
+        return valueText(def, v, RaidSchema.EnumText)
+    end
+    local function sortedKeys(values)
+        local keys = {}
+        for key in pairs(values) do keys[#keys + 1] = key end
+        table.sort(keys, function(a, b) return settingName(a) < settingName(b) end)
+        return keys
+    end
+    local function spellName(id) return C_Spell.GetSpellName(id) or ("spell " .. id) end
+    local function htmlTable(lines, headings, widths, rows)
+        lines[#lines + 1] = "<table>"
+        local head = {}
+        for i, h in ipairs(headings) do head[i] = ('<th align="left" width="%d">%s</th>'):format(widths[i], h) end
+        lines[#lines + 1] = "<thead><tr>" .. table.concat(head) .. "</tr></thead>"
+        lines[#lines + 1] = "<tbody>"
+        for _, row in ipairs(rows) do lines[#lines + 1] = "<tr><td>" .. table.concat(row, "</td><td>") .. "</td></tr>" end
+        lines[#lines + 1] = "</tbody>"
+        lines[#lines + 1] = "</table>"
+        lines[#lines + 1] = ""
+    end
+    local ROLE_TEXT = {
+        healer = "Wider cells with the missing health, heals, overheal and shields, the debuff row and the dispel"
+            .. " icon, range fading. A class with group buffs also gets the buff watch window, and the heals over"
+            .. " time of its class that your spell book knows show as corner indicators (your own casts):",
+        tank = "Compact cells, the aggro border, the main tanks panel. No filter for boss debuffs exists: the debuff"
+            .. " row stays off and the centre icon shows any dispellable debuff. No heal prediction.",
+        dps = "Small cells by group, every group in one line, no second line, no heal prediction, only the debuffs"
+            .. " you can dispel.",
+        dispel = "The DPS template, with the dispel icon large and the cell tinted in the debuff's color. Its"
+            .. " click-casting suggestion (in the wizard) puts your dispel on the plain left click.",
+    }
+    local lines = { GENERATED, "", "# Raid frames: Templates and setup wizard", "",
+        "A template sets many raid settings in one go. The **Templates** section of the raid window's **General**"
+            .. " tab applies a role template, a look or one of your own templates to the size you edit or to all"
+            .. " three sizes. A template sets only the settings listed below; everything else stays as it is."
+            .. " Applying is one change, and **Undo** takes back the last one (once, until you log out). Nothing"
+            .. " is applied in combat.", "",
+        "**On this page:** [Role templates](#role-templates) · [Looks](#looks) · [Own templates](#own-templates) ·"
+            .. " [Setup wizard](#setup-wizard)", "",
+        "## Role templates", "" }
+    for _, t in ipairs(T.ROLES) do
+        lines[#lines + 1] = "### " .. L["RAID_TEMPLATE_" .. t.id]
+        lines[#lines + 1] = ""
+        lines[#lines + 1] = ROLE_TEXT[t.id]
+        lines[#lines + 1] = ""
+        if t.id == "healer" then
+            for _, class in ipairs(ns.RaidBuffData.CLASSES) do
+                local hots = T.HOTS[class]
+                if hots then
+                    local names = {}
+                    for _, hot in ipairs(hots) do
+                        names[#names + 1] = ("%s (%s)"):format(spellName(hot.spell),
+                            RaidSchema.SectionTitle("indicator" .. hot.indicator))
+                    end
+                    lines[#lines + 1] = ("- %s: %s"):format(LOCALIZED_CLASS_NAMES_MALE[class] or class,
+                        table.concat(names, ", "))
+                end
+            end
+            lines[#lines + 1] = ""
+        end
+        local rows = {}
+        for _, key in ipairs(sortedKeys(t.values)) do
+            rows[#rows + 1] = { "<b>" .. cell(settingName(key)) .. "</b>", cell(templateValue(key, t.values[key])) }
+        end
+        htmlTable(lines, { "Setting", "Value" }, { 300, 596 }, rows)
+    end
+    lines[#lines + 1] = "## Looks"
+    lines[#lines + 1] = ""
+    lines[#lines + 1] = "A look sets only how the cells look; a role template never touches these, so a role and a"
+        .. " look add up. **Forever** is the default look."
+    lines[#lines + 1] = ""
+    local heads, widths, rows = { "Setting" }, { 230 }, {}
+    for _, look in ipairs(T.LOOKS) do
+        heads[#heads + 1] = L["RAID_TEMPLATE_" .. look.id]
+        widths[#widths + 1] = 222
+    end
+    for _, key in ipairs(sortedKeys(T.LOOKS[1].values)) do
+        local row = { "<b>" .. cell(settingName(key)) .. "</b>" }
+        for _, look in ipairs(T.LOOKS) do row[#row + 1] = cell(templateValue(key, look.values[key])) end
+        rows[#rows + 1] = row
+    end
+    htmlTable(lines, heads, widths, rows)
+    for _, l in ipairs({ "## Own templates", "",
+        ("**Save this size as** keeps every setting of the size you edit under a name (at most %d letters; the"
+            .. " same name replaces it), for every character of your account: apply it to a size like the shipped"
+            .. " ones, or **Delete** it (click twice). Up to %d own templates. Export and import of a size are on"
+            .. " the Profile tab."):format(T.OWN_NAME_LETTERS, T.OWN_MAX), "",
+        "## Setup wizard", "",
+        "The wizard opens by itself once: the first time a character whose raid settings nobody has changed opens"
+            .. " the raid window. **Setup wizard** on the General tab opens it at any time. Its steps: your role"
+            .. " template (suggested from your specialization's role, else your assigned role, else your class),"
+            .. " a look, which raid sizes, click-casting suggestions for the spells your spell book knows (tick"
+            .. " the ones you want), and a summary. **Apply** sets all of it as one change, which **Undo** takes"
+            .. " back. Nothing is set or bound before Apply.", "",
+        "Click-casting suggestions (the healer template; the dispel template puts the first dispel you know on"
+            .. " the plain left click and offers the dispels):", "" }) do
+        lines[#lines + 1] = l
+    end
+    rows = {}
+    for _, class in ipairs(ns.RaidBuffData.CLASSES) do
+        local data = T.CLICKS[class]
+        if data then
+            local parts = {}
+            for _, group in ipairs({ data.heals, data.dispels }) do
+                for _, entry in ipairs(group) do
+                    local slot = ns.Raid.CLICK_SLOT_BY_KEY[entry[1]]
+                    local buttonName
+                    for _, b in ipairs(ns.Raid.CLICK_BUTTONS) do
+                        if b.button == slot.button then buttonName = RaidSchema.SectionTitle("click" .. b.name) end
+                    end
+                    local names = {}
+                    for _, id in ipairs(entry[2]) do names[#names + 1] = spellName(id) end
+                    parts[#parts + 1] = ("%s, %s: %s"):format(buttonName, RaidSchema.Label(entry[1]),
+                        table.concat(names, " or "))
+                end
+            end
+            rows[#rows + 1] = { "<b>" .. cell(LOCALIZED_CLASS_NAMES_MALE[class] or class) .. "</b>",
+                cell(table.concat(parts, " · ")) }
+        end
+    end
+    htmlTable(lines, { "Class", "Suggestions" }, { 150, 746 }, rows)
+    lines[#lines] = nil
+    write("Raid-Templates.md", lines)
+    raidPages[#raidPages + 1] = { "Raid-Templates", "Templates" }
+end
+
 -- Sidebar ---------------------------------------------------------------------------
 do
     local lines = { GENERATED, "", "**[[Home]]**", "", "**[[FAQ]]**", "", "**Settings**", "" }

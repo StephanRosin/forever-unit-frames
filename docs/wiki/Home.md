@@ -111,6 +111,8 @@ The raid frames have pages of their own, one per tab of the raid window:
 - [[Click-casting|Raid-Click-casting]] – spells, items, macros, target, focus, assist and the menu on
   mouse clicks over the cells and party frames, and keys that cast on the raid member under the mouse
 - [[Buffs|Raid-Buffs]] – the buff watch: missing and expiring group buffs, one click or key to rebuff
+- [[Templates|Raid-Templates]] – role templates (healer, tank, DPS, dispel only), looks (Forever, Flat,
+  Classic), your own templates and the setup wizard, all on the General tab
 
 Questions that come up often: [[FAQ]].
 
