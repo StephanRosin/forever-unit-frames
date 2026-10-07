@@ -19,7 +19,9 @@ local Style, Widgets, Schema, L = ns.Style, ns.Widgets, ns.RaidSchema, ns.L
 local RaidConfig, Raid = ns.RaidConfig, ns.Raid
 
 local WINDOW_NAME = "ForeverUnitFramesRaidOptions"
-local WIDTH, HEIGHT = 1060, 560
+-- At most 900 wide: a 960-wide screen (the smallest UIParent) keeps a
+-- margin; tabs that do not fit one row wrap into two (fitTabs).
+local WIDTH, HEIGHT = 880, 560
 local TITLE_H, SIZE_BAR_H, TAB_H, FOOTER_H, NOTICE_H, SIZE_NOTICE_H = 32, 40, 30, 40, 26, 36
 local SIZE_TAB_PADDING, TAB_PADDING, TAB_MIN_W, UNDERLINE_H, ACCENT_W = 24, 28, 70, 2, 3
 local TAB_ROW_INSET, TAB_MIN_PADDING = 8, 12
@@ -351,23 +353,55 @@ local function renderSizeTabs()
     renderSizeNotice()
 end
 
--- The tabs share the row: each as wide as its word and the padding, at
--- least TAB_MIN_W; when that does not fit (more tabs, longer words), every
--- tab gets its word and an equal share of what is left, at least
--- TAB_MIN_PADDING.
-local function fitTabs()
-    local buttons, words, total, letters = RaidOptions.tabButtons, {}, 0, 0
-    for i, b in ipairs(buttons) do
-        words[i] = b.text:GetStringWidth() or 0
-        total = total + math.max(TAB_MIN_W, words[i] + TAB_PADDING)
-        letters = letters + words[i]
-    end
+-- A tab's width as it likes it: its word and the padding, at least
+-- TAB_MIN_W.
+local function naturalWidth(b)
+    return math.max(TAB_MIN_W, (b.text:GetStringWidth() or 0) + TAB_PADDING)
+end
+
+local function naturalSum(buttons, first, last)
+    local total = 0
+    for i = first, last do total = total + naturalWidth(buttons[i]) end
+    return total
+end
+
+-- One row of tabs, buttons first..last, from the top of the tab row: each
+-- as wide as it likes; when that does not fit, every tab gets its word
+-- and an equal share of what is left, at least TAB_MIN_PADDING.
+local function layRow(buttons, first, last, row)
     local room = WIDTH - 2 * TAB_ROW_INSET
     local padding
-    if total > room then padding = math.max(TAB_MIN_PADDING, math.floor((room - letters) / #buttons)) end
-    for i, b in ipairs(buttons) do
-        b:SetWidth(padding and (words[i] + padding) or math.max(TAB_MIN_W, words[i] + TAB_PADDING))
+    if naturalSum(buttons, first, last) > room then
+        local letters = 0
+        for i = first, last do letters = letters + (buttons[i].text:GetStringWidth() or 0) end
+        padding = math.max(TAB_MIN_PADDING, math.floor((room - letters) / (last - first + 1)))
     end
+    for i = first, last do
+        local b = buttons[i]
+        b:SetWidth(padding and ((b.text:GetStringWidth() or 0) + padding) or naturalWidth(b))
+        b:ClearAllPoints()
+        if i == first then
+            b:SetPoint("TOPLEFT", frame.tabRow, "TOPLEFT", TAB_ROW_INSET, -(row - 1) * TAB_H)
+        else
+            b:SetPoint("LEFT", buttons[i - 1], "RIGHT", 0, 0)
+        end
+    end
+end
+
+-- The tabs in one row when they fit as they like; else in two, split as
+-- evenly as the first row allows (each row then fitted on its own). The
+-- tab row is as tall as its rows; the page hangs below it.
+local function fitTabs()
+    local buttons = RaidOptions.tabButtons
+    local n, room = #buttons, WIDTH - 2 * TAB_ROW_INSET
+    local split = n
+    if naturalSum(buttons, 1, n) > room then
+        split = math.ceil(n / 2)
+        while split > 1 and naturalSum(buttons, 1, split) > room do split = split - 1 end
+    end
+    layRow(buttons, 1, split, 1)
+    if split < n then layRow(buttons, split + 1, n, 2) end
+    frame.tabRow:SetHeight((split < n and 2 or 1) * TAB_H)
 end
 
 local function menuTabs()
@@ -376,12 +410,6 @@ local function menuTabs()
         b.tabId = tab.id
         b.text:SetText(Schema.TabTitle(tab.id))
         b:SetScript("OnClick", function(self) RaidOptions.SelectTab(self.tabId) end)
-        local previous = RaidOptions.tabButtons[i - 1]
-        if previous then
-            b:SetPoint("LEFT", previous, "RIGHT", 0, 0)
-        else
-            b:SetPoint("LEFT", frame.tabRow, "LEFT", TAB_ROW_INSET, 0)
-        end
         RaidOptions.tabButtons[i] = b
     end
     fitTabs()

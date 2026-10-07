@@ -139,17 +139,20 @@ H.check("the main panel's words", ns.RaidSchema.Label("mainTanksPerLine"), "Cell
 H.check("growth choices", ns.RaidSchema.EnumText(RS.Get("mainTanksGrowth"), "RIGHT"), "Right")
 H.check("section title", ns.RaidSchema.SectionTitle("mainTanks"), "Main tanks")
 
--- Every tab fits the row, in every language.
+-- Every tab fits its row (the tabs wrap into two rows,
+-- test_raid_window_tabs.lua), in every language.
 local RO = ns.RaidOptions
 for _, code in ipairs({ "enUS", "deDE", "esES", "frFR" }) do
     ns.Config.Set("general", "language", code)
     RO.Open()
-    local right = 8
+    local right, fits = 8, true
     for _, b in ipairs(RO.tabButtons) do
+        if select(2, b:GetPoint(1)) == RO.frame.tabRow then right = 8 end
         right = right + b:GetWidth()
+        fits = fits and right <= RO.frame:GetWidth() - 8
         H.checkTrue(code .. ": word fits its tab " .. b.tabId, b.text:GetStringWidth() < b:GetWidth())
     end
-    H.checkTrue(code .. ": the tabs fit the row", right <= RO.frame:GetWidth() - 8)
+    H.checkTrue(code .. ": the tabs fit their rows", fits)
     RO.Close()
 end
 ns.Config.Set("general", "language", "AUTO")
