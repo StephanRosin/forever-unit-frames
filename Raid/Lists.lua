@@ -25,9 +25,11 @@ function Lists.Names(id)
     return Raid.ParseNameList(ns.RaidConfig.Get("general", key(id))) or {}
 end
 
+-- Names compare without case (Raid.ParseNameList).
 function Lists.Has(id, name)
+    local key = Raid.NameKey(name)
     for _, n in ipairs(Lists.Names(id)) do
-        if n == name then return true end
+        if Raid.NameKey(n) == key then return true end
     end
     return false
 end
@@ -37,7 +39,8 @@ local function store(id, names)
     return ns.RaidConfig.Set("general", key(id), table.concat(names, ", "))
 end
 
--- At the end of the list; true if it is on it now.
+-- At the end of the list, as given (the menu gives the roster's
+-- spelling); true if it is on it now.
 function Lists.Add(id, name)
     if Lists.Has(id, name) then return true end
     local names = Lists.Names(id)
@@ -46,9 +49,9 @@ function Lists.Add(id, name)
 end
 
 function Lists.Remove(id, name)
-    local kept = {}
+    local kept, key = {}, Raid.NameKey(name)
     for _, n in ipairs(Lists.Names(id)) do
-        if n ~= name then kept[#kept + 1] = n end
+        if Raid.NameKey(n) ~= key then kept[#kept + 1] = n end
     end
     return store(id, kept)
 end

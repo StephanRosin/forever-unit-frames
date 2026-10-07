@@ -305,19 +305,39 @@ RaidSettings.Define({ key = "aggroBorder", code = "AB", scope = "frame", type = 
 RaidSettings.Define({ key = "targetBorder", code = "TB", scope = "frame", type = "bool", default = true })
 
 -- A name list (Raid/Lists.lua): player names separated by commas, each
--- once; a name may hold a space (a surname), an apostrophe or the realm
--- (Name-Realm), never a digit or a sign no name holds. Returns the
--- names, or nil, why ("INVALID" or "TWICE") and the name in question.
+-- once; never a digit or a sign no name holds. A name may hold an
+-- apostrophe, and a second part as the group headers compare it
+-- (Raid/Lists.lua: Lists.UnitName): a realm for a player from another
+-- realm (Name-Realm), or on this client a surname, which a party
+-- member's name carries joined by "-" (Lea-Stone). A space is accepted
+-- too: how the raid roster (GetRaidRosterInfo) writes a surname is not
+-- known yet, an in-game check.
+-- A typed name takes WoW's spelling: its first part (up to a "-" or a
+-- space) with the first letter upper case and the rest lower case; the
+-- second part stays as typed. string.upper/lower change ASCII letters
+-- only, so a name starting with another letter keeps that letter's case.
+-- Names are compared without case. Returns the names, or nil, why
+-- ("INVALID" or "TWICE") and the name in question.
 Raid.NAME_LIST_LETTERS = 250
 local NOT_IN_A_NAME = "[%d%c%%;|\\/\"<>%[%]{}()=+*!?@#$^&~_:.]"
+function Raid.NormaliseName(name)
+    local first, rest = name:match("^([^%- ]*)(.*)$")
+    return first:sub(1, 1):upper() .. first:sub(2):lower() .. rest
+end
+-- The key two names are the same by.
+function Raid.NameKey(name)
+    return name:lower()
+end
 function Raid.ParseNameList(text)
     local names, seen = {}, {}
     for piece in text:gmatch("[^,]+") do
         local name = piece:match("^%s*(.-)%s*$")
         if name ~= "" then
             if name:find(NOT_IN_A_NAME) then return nil, "INVALID", name end
-            if seen[name] then return nil, "TWICE", name end
-            seen[name] = true
+            name = Raid.NormaliseName(name)
+            local key = Raid.NameKey(name)
+            if seen[key] then return nil, "TWICE", name end
+            seen[key] = true
             names[#names + 1] = name
         end
     end
