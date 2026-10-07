@@ -90,3 +90,30 @@ local computed = { id = "f", values = { cellWidth = 100 }, extra = function(clas
 end }
 T.Apply(computed, { 40 })
 H.check("computed for the class", RC.Get("r40", "secondLine"), "PERCENT")
+
+-- A change made anywhere else (a setting row, a copy, an import) ends the
+-- undo: putting back the values from before the template would undo that
+-- change too. The undo button hears of it.
+T.Apply(sample, { 10 })
+H.checkTrue("undo before another change", T.CanUndo())
+local told = 0
+ns.Listen("RAID_TEMPLATE_UNDO", function() told = told + 1 end)
+RC.Set("r10", "cellSpacing", 4)
+H.check("another change ends the undo", T.CanUndo(), false)
+H.check("the undo button told", told, 1)
+H.check("the change kept", RC.Get("r10", "cellSpacing"), 4)
+-- Its own events (the apply's, the undo's) do not.
+T.Apply(sample, { 10, 20 })
+H.check("an apply keeps its own undo", T.CanUndo(), true)
+
+-- Nothing to change: no change, the undo there was stays.
+told = 0
+H.checkTrue("nothing to apply", T.ApplyChanges({}))
+H.checkTrue("only empty scopes", T.ApplyChanges({ { scope = "r10", values = {} } }))
+H.check("the undo kept", T.CanUndo(), true)
+H.check("nothing told", told, 0)
+T.Undo()
+H.check("the earlier change undone", RC.Get("r20", "cellWidth"), 88)
+
+-- A snapshot of a scope the profile does not have: nothing, as Restore.
+H.check("snapshot of an unknown scope", #RC.Snapshot("r99", { "cellWidth" }), 0)

@@ -94,6 +94,7 @@ function Templates.Changes(template, sizes, class)
 end
 
 local undo   -- the overrides before the last change: { { scope, saved }, ... }
+local ours = false   -- the change under way is the templates' own (apply, undo)
 
 -- Several templates' changes as one (later ones win on the same key).
 function Templates.Merge(list)
@@ -120,22 +121,41 @@ function Templates.Merge(list)
     return merged
 end
 
+-- Runs fn as the templates' own change: its events leave the undo be.
+local function asOurs(fn)
+    ours = true
+    local ok, err = pcall(fn)
+    ours = false
+    if not ok then error(err, 0) end
+end
+
 -- Sets changes (Templates.Changes) as one change that can be undone.
 -- False in combat, or when a scope refuses its values (none is set).
+-- Nothing to change: true, and the undo there was stays.
 function Templates.ApplyChanges(changes)
     if InCombatLockdown() then return false end
+    local list = {}
+    for _, c in ipairs(changes) do
+        if #c.values > 0 then list[#list + 1] = c end
+    end
+    if #list == 0 then return true end
     local before = {}
-    for i, c in ipairs(changes) do
+    for i, c in ipairs(list) do
         local keys = {}
         for j, pair in ipairs(c.values) do keys[j] = pair[1] end
         before[i] = { c.scope, RaidConfig.Snapshot(c.scope, keys) }
     end
-    for i, c in ipairs(changes) do
-        if not RaidConfig.SetKeys(c.scope, c.values) then
-            for j = i - 1, 1, -1 do RaidConfig.Restore(before[j][1], before[j][2]) end
-            return false
+    local refused = false
+    asOurs(function()
+        for i, c in ipairs(list) do
+            if not RaidConfig.SetKeys(c.scope, c.values) then
+                for j = i - 1, 1, -1 do RaidConfig.Restore(before[j][1], before[j][2]) end
+                refused = true
+                return
+            end
         end
-    end
+    end)
+    if refused then return false end
     undo = before
     ns.Fire("RAID_TEMPLATE_UNDO")
     return true
@@ -158,10 +178,21 @@ function Templates.Undo()
     if not undo or InCombatLockdown() then return false end
     local saved = undo
     undo = nil
-    for _, entry in ipairs(saved) do RaidConfig.Restore(entry[1], entry[2]) end
+    asOurs(function()
+        for _, entry in ipairs(saved) do RaidConfig.Restore(entry[1], entry[2]) end
+    end)
     ns.Fire("RAID_TEMPLATE_UNDO")
     return true
 end
+
+-- A change from anywhere else (a setting row, a copy, an import, a mover)
+-- ends the undo: putting back what the last change replaced would take
+-- that one back too.
+ns.Listen("RAID_CONFIG_CHANGED", function()
+    if ours or not undo then return end
+    undo = nil
+    ns.Fire("RAID_TEMPLATE_UNDO")
+end)
 
 -- Own templates ------------------------------------------------------------------
 -- Per account: ForeverUnitFramesDB.raidTemplates = { { name =, values = {
@@ -189,14 +220,12 @@ local function withId(t)
     return t
 end
 
+-- A saved template's values as an import takes them (RaidSettings.
+-- Sanitise, one path for both): known per-size settings only, values the
+-- registry takes (clamped).
 local function cleanValues(values)
-    local clean = {}
-    if type(values) ~= "table" then return clean end
-    for key, v in pairs(values) do
-        local def = type(key) == "string" and RaidSettings.Get(key)
-        if def and def.scope ~= "general" then clean[key] = RaidSettings.Validate(def, v) end
-    end
-    return clean
+    if type(values) ~= "table" then return {} end
+    return RaidSettings.Sanitise({ r10 = values }).r10
 end
 
 -- At PLAYER_LOGIN.

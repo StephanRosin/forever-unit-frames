@@ -21,8 +21,14 @@ M.units.player.class = "PRIEST"
 M.units.player.role = "DAMAGER"
 H.check("assigned role", T.SuggestRole(), "dps")
 -- The specialization's role wins over both.
-M.specIndex, M.specs = 2, { [2] = { id = 258, name = "Shadow", role = "TANK" } }
+M.specIndex, M.specs = 2, { [2] = { id = 258, name = "Shadow", role = "TANK", points = 31 } }
 H.check("spec role", T.SuggestRole(), "tank")
+-- A specialization without a point spent in it says nothing.
+M.specs[2].points = 0
+H.check("no points: the assigned role", T.SuggestRole(), "dps")
+M.specs[2].points = M.Secret(31)
+H.check("secret points: the spec's role still", T.SuggestRole(), "tank")
+M.specs[2].points = 31
 -- Secret answers count as none.
 M.specSecret = true
 H.check("secret spec role: the assigned role", T.SuggestRole(), "dps")

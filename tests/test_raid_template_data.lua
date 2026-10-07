@@ -130,3 +130,18 @@ H.check("flat: square corners", RC.Get("r40", "cellCornerRadius"), 0)
 H.check("flat: flat style", RC.Get("r40", "cellBorderStyle"), "FLAT")
 H.check("flat: thin", RC.Get("r40", "cellBorderSize"), 1)
 H.check("flat: the role stays", RC.Get("r40", "dispelTint"), true)
+
+-- The defaults of each size, whatever the kind of value: a colour that
+-- differs per size too (a setting made for the test).
+RS.Define({ key = "testSizedColor", code = "ZZ", scope = "frame", type = "color",
+    default = { r10 = { 1, 0, 0, 1 }, r20 = { 0, 1, 0, 1 }, _ = { 0, 0, 1, 1 } } })
+local sized = T.SizeDefaults({ "testSizedColor", "cellWidth", "cellSpacing" })
+for _, size in ipairs(Raid.SIZES) do
+    local changes = T.Changes({ id = "d", values = sized }, { size })
+    local got = {}
+    for _, pair in ipairs(changes[1].values) do got[pair[1]] = pair[2] end
+    local want = RS.Default(RS.Get("testSizedColor"), Raid.Scope(size))
+    H.check("sized colour " .. size, table.concat(got.testSizedColor, ","), table.concat(want, ","))
+    H.check("sized width " .. size, got.cellWidth, RS.Default(RS.Get("cellWidth"), Raid.Scope(size)))
+    H.check("same at every size " .. size, got.cellSpacing, 2)
+end

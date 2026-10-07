@@ -90,17 +90,26 @@ Templates.LOOK_KEYS_SORTED = {}
 for i, key in ipairs(Templates.LOOK_KEYS) do Templates.LOOK_KEYS_SORTED[i] = key end
 table.sort(Templates.LOOK_KEYS_SORTED)
 
--- Forever: today's defaults, read from the registry (per size where they
--- differ), so it stays the default when a default changes.
-local function defaults()
+-- The defaults of the keys, each size's own (a BySize value; one value
+-- where every size has the same). Forever is the look keys' defaults,
+-- read from the registry, so it stays the default when a default changes.
+local function sameValue(a, b)
+    if type(a) == "table" and type(b) == "table" then
+        for i = 1, 4 do if a[i] ~= b[i] then return false end end
+        return true
+    end
+    return a == b
+end
+
+function Templates.SizeDefaults(keys)
     local RS, values = ns.RaidSettings, {}
-    for _, key in ipairs(Templates.LOOK_KEYS) do
+    for _, key in ipairs(keys) do
         local def = RS.Get(key)
         local v10, v20, v40 = RS.Default(def, "r10"), RS.Default(def, "r20"), RS.Default(def, "r40")
-        if type(v10) ~= "table" and (v10 ~= v20 or v10 ~= v40) then
-            values[key] = BySize(v10, v20, v40)
-        else
+        if sameValue(v10, v20) and sameValue(v10, v40) then
             values[key] = v10
+        else
+            values[key] = BySize(v10, v20, v40)
         end
     end
     return values
@@ -108,7 +117,7 @@ end
 
 local WHITE, BLACK = { 1, 1, 1, 1 }, { 0, 0, 0, 1 }
 Templates.LOOKS = {
-    { id = "forever", kind = "look", values = defaults() },
+    { id = "forever", kind = "look", values = Templates.SizeDefaults(Templates.LOOK_KEYS) },
     -- No ring: a thin flat border, square corners, flat bars.
     { id = "flat", kind = "look", values = {
         cellBorder = true, cellBorderStyle = "FLAT", cellBorderSize = 1, cellBorderColor = BLACK,
@@ -164,8 +173,10 @@ local function specRole()
     end
     local ok, index = pcall(spec.GetSpecialization)
     if not ok or ns.Secrets.IsSecret(index) or type(index) ~= "number" or index < 1 then return nil end
-    local okInfo, _, _, _, _, role = pcall(spec.GetSpecializationInfo, index)
+    local okInfo, _, _, _, _, role, _, points = pcall(spec.GetSpecializationInfo, index)
     if not okInfo then return nil end
+    -- No point spent in it (a plain 0): the specialization says nothing.
+    if not ns.Secrets.IsSecret(points) and points == 0 then return nil end
     return roleOf(role)
 end
 

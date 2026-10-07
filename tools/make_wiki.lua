@@ -454,8 +454,9 @@ do
     end
     local ROLE_TEXT = {
         healer = "Wider cells with the missing health, heals, overheal and shields, the debuff row and the dispel"
-            .. " icon, range fading. A class with group buffs also gets the buff watch window, and the heals over"
-            .. " time of its class that your spell book knows show as corner indicators (your own casts):",
+            .. " icon, range fading. A class with group buffs also gets the buff watch window, and its helpful"
+            .. " spells that last on a member, as far as your spell book knows them, show as corner indicators"
+            .. " (your own casts): heals over time, and shields such as Power Word: Shield and Earth Shield:",
         tank = "Compact cells, the aggro border, the main tanks panel. No filter for boss debuffs exists: the debuff"
             .. " row stays off and the centre icon shows any dispellable debuff. No heal prediction.",
         dps = "Small cells by group, every group in one line, no second line, no heal prediction, only the debuffs"

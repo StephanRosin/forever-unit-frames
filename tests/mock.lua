@@ -2051,8 +2051,10 @@ function M.Reset()
     M.known = {}
     -- The player's specialization (SpecializationInfoDocumentation.lua):
     -- GetSpecialization's index (not nilable; 0 here for none), and per
-    -- index { id =, name =, role = } for GetSpecializationInfo (role
-    -- nilable). M.specSecret hands the role back secret (guarded anyway).
+    -- index { id =, name =, role =, points = } for GetSpecializationInfo
+    -- (role nilable; pointsSpent, the 7th return, 0 unless given, its
+    -- documented default). M.specSecret hands the role back secret
+    -- (guarded anyway).
     M.specIndex, M.specs, M.specSecret = 0, {}, false
     _G.C_SpecializationInfo = {
         GetSpecialization = function() return M.specIndex end,
@@ -2061,7 +2063,7 @@ function M.Reset()
             if not s then return 0 end
             local role = s.role
             if M.specSecret then role = M.Secret(role) end
-            return s.id, s.name, "", 1, role, 1, 0, nil, 0, true
+            return s.id, s.name, "", 1, role, 1, s.points or 0, nil, 0, true
         end,
     }
     -- M.spellRangeError makes IsSpellInRange raise; M.spellRangeSecret

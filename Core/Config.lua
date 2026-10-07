@@ -139,6 +139,7 @@ function ns.NewConfig(Settings, event, notCopied)
     -- nil).
     function Config.Snapshot(scope, keys)
         local saved = {}
+        if not profile[scope] then return saved end
         for i, key in ipairs(keys) do saved[i] = { key, copyValue(profile[scope][key]) } end
         return saved
     end
