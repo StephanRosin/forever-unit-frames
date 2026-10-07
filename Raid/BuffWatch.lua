@@ -190,7 +190,7 @@ local function scanEntry(entry, members, secret, threshold, missingUnits)
     end
     if st.unknown then return st end
     local ok = pcall(function()
-        for _, member in ipairs(members) do
+        for order, member in ipairs(members) do
             if applies(entry, member) and not absent(member.unit) then
                 local hasSingle, leftSingle = readForm(member.unit, entry.single)
                 local hasGroup, leftGroup = readForm(member.unit, entry.group)
@@ -200,10 +200,10 @@ local function scanEntry(entry, members, secret, threshold, missingUnits)
                 elseif hasGroup then left = leftGroup end
                 if not (hasSingle or hasGroup) then
                     st.missing = st.missing + 1
-                    st.needs[#st.needs + 1] = { unit = member.unit, member = member, left = -1 }
+                    st.needs[#st.needs + 1] = { unit = member.unit, member = member, left = -1, order = order }
                 elseif left ~= nil and left < threshold then
                     st.expiring = st.expiring + 1
-                    st.needs[#st.needs + 1] = { unit = member.unit, member = member, left = left }
+                    st.needs[#st.needs + 1] = { unit = member.unit, member = member, left = left, order = order }
                 end
             end
         end
@@ -211,7 +211,10 @@ local function scanEntry(entry, members, secret, threshold, missingUnits)
     if not ok then
         return { entry = entry, missing = 0, expiring = 0, needs = {}, unknown = true }
     end
-    table.sort(st.needs, function(a, b) return a.left < b.left end)
+    table.sort(st.needs, function(a, b)
+        if a.left ~= b.left then return a.left < b.left end
+        return a.order < b.order
+    end)
     for _, need in ipairs(st.needs) do
         if need.left < 0 then missingUnits[need.unit] = true end
     end
@@ -231,6 +234,80 @@ function BuffWatch.Scan()
     BuffWatch.scans = BuffWatch.scans + 1
     BuffWatch.dirty, BuffWatch.since = false, 0
     ns.Fire("RAID_BUFFS_CHANGED")
+end
+
+-- The next cast ------------------------------------------------------------------------
+
+-- Whether a spell reaches the unit: only a plain "no" says it does not
+-- (unknown: in range, the cast fails visibly at worst).
+local function inRange(spell, unit)
+    return plain(C_Spell.IsSpellInRange, spell, unit) ~= false
+end
+
+-- Whether the group form can be cast: a known rank and its reagent in
+-- the bags.
+local function groupReady(entry)
+    local form = entry.group
+    if not (form and form.id) then return false end
+    local reagent = entry.reagents and entry.reagents[form.id]
+    if not reagent then return true end
+    local count = plain(C_Item.GetItemCount, reagent)
+    return type(count) == "number" and count > 0
+end
+
+local function groupKey(entry, member)
+    if entry.by == "CLASS" then return member.class end
+    return member.group
+end
+
+-- The group (raid group, or class) with the most members needing the
+-- buff, at least buffGroupMin of them; nil when none has that many.
+local function crowdedGroup(entry, needs)
+    local counts, best = {}, nil
+    for _, need in ipairs(needs) do
+        local key = groupKey(entry, need.member)
+        if key ~= nil then
+            counts[key] = (counts[key] or 0) + 1
+            if best == nil or counts[key] > counts[best] then best = key end
+        end
+    end
+    if best ~= nil and counts[best] >= (general("buffGroupMin") or 3) then return best end
+    return nil
+end
+
+-- The best cast of one watched buff's state, or nil: { entry, spell (a
+-- rank's ID), name, unit, groupForm, group (the raid group or class the
+-- group form is for) }.
+function BuffWatch.Best(st)
+    if not st or st.unknown or #st.needs == 0 then return nil end
+    local entry = st.entry
+    if groupReady(entry) then
+        local key = crowdedGroup(entry, st.needs)
+        if key ~= nil then
+            for _, need in ipairs(st.needs) do
+                if groupKey(entry, need.member) == key and inRange(entry.group.id, need.unit) then
+                    return { entry = entry, spell = entry.group.id, name = entry.group.name, unit = need.unit,
+                        groupForm = true, group = key }
+                end
+            end
+        end
+    end
+    for _, need in ipairs(st.needs) do
+        if inRange(entry.single.id, need.unit) then
+            return { entry = entry, spell = entry.single.id, name = entry.single.name, unit = need.unit,
+                groupForm = false }
+        end
+    end
+    return nil
+end
+
+-- The next cast of all watched buffs, in their order, or nil.
+function BuffWatch.Next()
+    for _, st in ipairs(BuffWatch.state.entries) do
+        local cast = BuffWatch.Best(st)
+        if cast then return cast end
+    end
+    return nil
 end
 
 -- Throttle ----------------------------------------------------------------------------
