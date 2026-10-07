@@ -120,9 +120,12 @@ function ClickCast.Clique()
     return false
 end
 
--- On: switched on, or automatic while no Clique is loaded.
+-- On: switched on, or automatic while no Clique is loaded. The raid
+-- frames' own switch is not asked: the party (and the other unit frames)
+-- take bindings while the raid frames are off (decision 74); the cells
+-- follow the raid frames (takes).
 function ClickCast.On()
-    if not ns.RaidPanel.Enabled() then return false end
+    if not ns.RaidConfig.Profile() then return false end
     local mode = ns.RaidConfig.Get("general", "clickCast")
     return mode == "ON" or (mode == "AUTO" and not ClickCast.Clique())
 end
@@ -130,7 +133,7 @@ end
 -- Whether a frame takes the bindings: a raid cell a header made, a party
 -- member while the party switch is on.
 local function takes(frame)
-    if ns.RaidCell.Is(frame) then return true end
+    if ns.RaidCell.Is(frame) then return ns.RaidPanel.Enabled() end
     return frame.key == ns.Party.KEY and ns.RaidConfig.Get("general", "clickCastParty") == true
 end
 

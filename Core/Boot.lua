@@ -45,6 +45,10 @@ ns.On("PLAYER_LOGIN", function()
     ns.RaidMinimapButton.Create()
     ns.RaidSize.Update()
     raidReady = true
+    -- Click-casting on the unit frames works with the raid frames off
+    -- (decision 74): only these two, nothing else of the raid side.
+    ns.AfterCombat("clickCast", ns.ClickCast.ApplyAll)
+    ns.AfterCombat("clickKeys", ns.ClickKeys.Update)
     startRaid()
     ns.Blizzard.HideRaid()
     -- What's new follows once the loading screen is gone (Core/News.lua).

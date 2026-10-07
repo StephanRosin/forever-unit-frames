@@ -52,7 +52,8 @@ local function partyShows()
 end
 
 -- Whether the keys are bound: click-casting on, and the raid frames
--- showing, or the party frames showing while they take the bindings.
+-- showing, or the party frames showing while they take the bindings (the
+-- raid frames on or off, decision 74).
 function ClickKeys.Wanted()
     if not ns.ClickCast.On() then return false end
     if ns.RaidPanel.Active() then return true end
@@ -75,9 +76,9 @@ end
 -- Out of combat only: the bindings anew.
 function ClickKeys.Update()
     if InCombatLockdown() or not ns.RaidConfig.Profile() then return end
-    -- The raid frames off: no keys, nothing made.
-    if not ns.RaidPanel.Enabled() then
-        if owner then ClearOverrideBindings(owner) end
+    -- Nothing wanted and nothing bound: nothing made.
+    if not owner and not ClickKeys.Wanted() then
+        watchParty()
         return
     end
     watchParty()

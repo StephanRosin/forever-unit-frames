@@ -89,13 +89,13 @@ H.check("a sign after a modifier", Keys.Taken("CTRL--"), nil)
 H.check("nothing blocked at all", #M.blocked, 0)
 
 -- Keys only while our frames show: the raid frames, or the party frames
--- (not merely being in a group). The raid frames off take every key
--- with them (their emergency switch, /fuf raid off), the party's too.
+-- (not merely being in a group). The raid frames off leave the party's
+-- keys (decision 74, which revised 73).
 RC.Set("general", "clickCastParty", true)
 H.check("party frames shown: bound", GetBindingAction("T", true), "CLICK ForeverUnitFramesClickKey1:LeftButton")
 RC.Set("general", "enabled", false)
 M.RunTimers()
-H.check("party, raid frames off: none", GetBindingAction("T", true), "")
+H.check("party, raid frames off: still bound", GetBindingAction("T", true), "CLICK ForeverUnitFramesClickKey1:LeftButton")
 RC.Set("general", "enabled", true)
 M.RunTimers()
 ns.Config.Set("party", "enabled", false)

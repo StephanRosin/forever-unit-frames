@@ -22,7 +22,7 @@ The **General** tab of the raid options window (`/fuf raid`), under **General** 
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
-<tr><td><b>Show raid frames</b></td><td>Off: none of it runs, click-casting included</td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Show raid frames</b></td><td>Off: none of it runs; unit frames keep click-casting</td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Raid view in a party</b></td><td>A 5-player group as a raid; party frames hide</td><td>On, Off</td><td>Off</td></tr>
 <tr><td><b>Hide Blizzard's raid frames</b></td><td>Needs /reload to show them again</td><td>On, Off</td><td>On</td></tr>
 </tbody>
