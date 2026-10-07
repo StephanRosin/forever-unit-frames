@@ -2126,6 +2126,17 @@ function M.Reset()
         return nil
     end
     _G.IsPlayerSpell = function(id) return M.known[id] == true end
+    -- Casting (protected): only secure code may; M.casts records
+    -- { spell, unit } of each cast.
+    M.casts = {}
+    _G.CastSpellByID = function(id, unit)
+        assert(M.secureDepth > 0, "mock: CastSpellByID outside secure code")
+        table.insert(M.casts, { id, unit })
+    end
+    _G.CastSpellByName = function(name, unit)
+        assert(M.secureDepth > 0, "mock: CastSpellByName outside secure code")
+        table.insert(M.casts, { name, unit })
+    end
     _G.IsSpellKnown = function(id) return M.known[id] == true end
     _G.GetReadyCheckStatus = function(unit) local d = u(unit); return d and d.readyCheck end
     _G.UnitHasIncomingResurrection = function(unit) local d = u(unit); return d and d.incomingRez or false end
@@ -2855,6 +2866,16 @@ local function toggleMenu(button, attr)
 end
 
 local SECURE_ACTIONS = {
+    -- SECURE_ACTIONS.spell: a number is a spell ID, else a name.
+    spell = function(_, attr)
+        local spell, unit = attr("spell"), attr("unit")
+        local id = tonumber(spell)
+        if id then
+            CastSpellByID(id, unit)
+        elseif spell then
+            CastSpellByName(spell, unit)
+        end
+    end,
     destroytotem = function(button, attr) DestroyTotem(attr("totem-slot")) end,
     togglemenu = toggleMenu,
     -- SECURE_ACTIONS.raidtarget.
@@ -2982,6 +3003,23 @@ end
 -- last one, if both strokes ran one), or nil.
 function M.SecureClick(button, mouseButton)
     if not button:IsVisible() or button._mouse == false then return nil end
+    local ran
+    for _, down in ipairs({ true, false }) do
+        if takesStroke(button, mouseButton, down) then
+            ran = secureStroke(button, mouseButton, down) or ran
+        end
+    end
+    return ran
+end
+
+-- A key with an override binding "CLICK name:button" (SetOverrideBindingClick)
+-- pressed and let go: the button's click, each stroke it is registered
+-- for; the mouse need not be on it. Stricter than the client: the button
+-- must be visible. Returns the type that ran, or nil.
+function M.PressBinding(key)
+    local name, mouseButton = GetBindingAction(key, true):match("^CLICK ([^:]+):(.+)$")
+    local button = name and rawget(_G, name)
+    if not button or not button:IsVisible() then return nil end
     local ran
     for _, down in ipairs({ true, false }) do
         if takesStroke(button, mouseButton, down) then

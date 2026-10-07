@@ -44,6 +44,8 @@ ns.On("PLAYER_LOGIN", function()
     -- Click-casting on the cells just made and the party members.
     ns.AfterCombat("clickCast", ns.ClickCast.ApplyAll)
     ns.AfterCombat("clickKeys", ns.ClickKeys.Update)
+    -- The smart buff key's button (Raid/SmartBuff.lua).
+    ns.AfterCombat("smartBuff", ns.SmartBuff.Update)
     ns.Blizzard.HideRaid()
     -- What's new follows once the loading screen is gone (Core/News.lua).
 end)
