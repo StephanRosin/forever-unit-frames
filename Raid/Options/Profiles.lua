@@ -17,6 +17,9 @@ local Style, Widgets, L = ns.Style, ns.Widgets, ns.L
 local RaidOptions, Templates, Profiles, Raid = ns.RaidOptions, ns.RaidTemplates, ns.RaidProfiles, ns.Raid
 
 local GAP, BUTTON_W, NAME_W, MESSAGE_H, TEXT_AREA_H = 8, 120, 200, 20, 70
+-- A message takes up to two lines (wrapped, then cut inside the page);
+-- the pickers that list names are wider than the others.
+local MESSAGE_LINES_H, WIDE_W = 28, 400
 local NONE = "NONE"
 
 local state = {}
@@ -67,10 +70,14 @@ end
 
 local function messageRow(page)
     local row = CreateFrame("Frame", nil, page)
-    row:SetHeight(MESSAGE_H)
+    row:SetHeight(MESSAGE_LINES_H)
     local message = Style.Text(row, 11, "accent")
-    message:SetPoint("LEFT", row, "LEFT", Widgets.CONTROL_X, 0)
+    message:SetPoint("TOPLEFT", row, "TOPLEFT", Widgets.CONTROL_X, -2)
+    message:SetPoint("TOPRIGHT", row, "TOPRIGHT", -RaidOptions.PAGE.inset, -2)
+    message:SetHeight(MESSAGE_LINES_H - 2)
     message:SetJustifyH("LEFT")
+    message:SetJustifyV("TOP")
+    message:SetWordWrap(true)
     function row:Refresh() end
     function row:SetEnabled() end
     return row, message
@@ -177,7 +184,7 @@ end
 local function ownSection(page, stack)
     header(page, stack, L.RAID_PROFILES_SECTION_OWN)
     Page.picker = dropdown(page, {
-        label = L.RAID_PROFILES_PICK, items = ownItems, get = pickedId,
+        label = L.RAID_PROFILES_PICK, items = ownItems, get = pickedId, width = WIDE_W,
         set = function(v)
             if v ~= NONE then state.own = v end
             Page.deleteButton.Disarm()
@@ -314,7 +321,7 @@ end
 local function characterSection(page, stack)
     header(page, stack, L.RAID_PROFILES_SECTION_CHARACTER)
     Page.character = dropdown(page, {
-        label = L.RAID_PROFILES_CHARACTER, items = characterItems, get = characterSource,
+        label = L.RAID_PROFILES_CHARACTER, items = characterItems, get = characterSource, width = WIDE_W,
         set = function(v) if v ~= NONE then state.character = v end; Page.characterButton.Disarm() end,
     })
     stack.add(Page.character)
@@ -450,12 +457,16 @@ local function importSection(page, stack)
     b:SetPoint("TOPLEFT", area, "BOTTOMLEFT", 0, -GAP)
     local message = Style.Text(block, 11, "muted")
     message:SetPoint("TOPLEFT", b, "BOTTOMLEFT", 0, -6)
+    message:SetPoint("TOPRIGHT", area, "BOTTOMRIGHT", 0, -(GAP + b:GetHeight() + 6))
+    message:SetHeight(MESSAGE_LINES_H - 2)
     message:SetJustifyH("LEFT")
+    message:SetJustifyV("TOP")
+    message:SetWordWrap(true)
     function block:Refresh() hint:SetText(L.RAID_IMPORT_ANY_HINT:format(sizeText(picked("importTo")))) end
     function block:SetEnabled(on) b:SetEnabled(on); area.edit:SetEnabled(on) end
     Page.importHint, Page.importArea, Page.importButton, Page.importMessage = hint, area, b, message
     Page.importBlock = block
-    stack.add(block, MESSAGE_H + 2 + TEXT_AREA_H + GAP + 24 + 6 + MESSAGE_H)
+    stack.add(block, MESSAGE_H + 2 + TEXT_AREA_H + GAP + b:GetHeight() + 6 + MESSAGE_LINES_H)
 end
 
 -- Page --------------------------------------------------------------------------------

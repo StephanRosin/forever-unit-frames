@@ -168,7 +168,52 @@ for _, code in ipairs({ "enUS", "deDE", "esES", "frFR" }) do
             H.checkTrue(code .. " choice fits: " .. item.text, fs:GetStringWidth() <= ns.Widgets.CONTROL_W - 32)
         end
     end
-    H.checkTrue(code .. " tab word fits", RO.profilesTab.text:GetStringWidth() < RO.profilesTab:GetWidth())
+    -- Own profiles' names: the longest name and the longest "what it
+    -- holds" in the picker's button.
+    local longest = string.rep("W", T.OWN_NAME_LETTERS)
+    for _, key in ipairs({ "RAID_PROFILES_OWN_ALL", "RAID_PROFILES_OWN_ONE" }) do
+        local fs = M.newWidget("FontString")
+        fs:SetFont("x", 12, "")
+        fs:SetText(L[key]:format(longest))
+        H.checkTrue(code .. " own name fits: " .. key, fs:GetStringWidth() <= P.picker.button:GetWidth() - 32)
+    end
+    -- A character's name and realm and a size in its picker.
+    local fs = M.newWidget("FontString")
+    fs:SetFont("x", 12, "")
+    fs:SetText(L.RAID_COPY_CHARACTER:format(string.rep("W", 12) .. "-" .. string.rep("W", 20), "40 " .. L.RAID_PROFILES_TAB))
+    H.checkTrue(code .. " character fits", fs:GetStringWidth() <= P.character.button:GetWidth() - 32)
+    -- The page's messages stay inside the page: both edges anchored, two
+    -- lines at most for the longest of them.
+    local available = RO.PAGE.width - ns.Widgets.CONTROL_X - RO.PAGE.inset
+    for _, message in ipairs({ P.ownMessage, P.copyMessage, P.characterMessage, P.resetMessage, P.importMessage }) do
+        H.check(code .. " message: both edges", message:GetNumPoints(), 2)
+        H.checkTrue(code .. " message: wraps", message:GetWordWrap())
+    end
+    for _, text in ipairs({
+        L.RAID_PROFILES_COPIED:format(L.RAID_COPY_CHARACTER:format(string.rep("W", 12) .. "-" .. string.rep("W", 20),
+            "40"), "40"),
+        L.RAID_IMPORT_ALL_SKIPPED:format("10, 20, 40", 99), L.RAID_TEMPLATE_APPLIED:format(longest, "10, 20, 40"),
+        L.RAID_TEMPLATE_NAME_TOO_LONG:format(32), L.RAID_TEMPLATE_REFUSED, L.RAID_PROFILES_COPY_REFUSED,
+    }) do
+        local f = M.newWidget("FontString")
+        f:SetFont("x", 11, "")
+        f:SetText(text)
+        H.checkTrue(code .. " message in two lines: " .. text, f:GetStringWidth() <= 2 * available)
+    end
+    -- The size bar: the size tabs (one of them "shown") and Profiles left
+    -- of the size mode's label and dropdown, against the bar's width.
+    local sizeOf = ns.RaidCell.Size
+    for _, shown in ipairs({ 10, 20, 40 }) do
+        ns.RaidCell.Size = function() return shown end
+        ns.Fire("RAID_SIZE_CHANGED")
+        local used = RO.SIZE_BAR_LEFT
+        for _, size in ipairs(ns.Raid.SIZES) do used = used + RO.sizeTabs[size]:GetWidth() end
+        used = used + RO.profilesTab:GetWidth()
+        local right = RO.SIZE_BAR_RIGHT + RO.sizeModeRow:GetWidth() + RO.SIZE_BAR_GAP
+            + RO.sizeModeLabel:GetStringWidth() + RO.SIZE_BAR_GAP
+        H.checkTrue(code .. " size bar fits, " .. shown .. " shown", used + right <= RO.frame:GetWidth())
+    end
+    ns.RaidCell.Size = sizeOf
     RO.Close()
 end
 ns.Config.Set("general", "language", "AUTO")

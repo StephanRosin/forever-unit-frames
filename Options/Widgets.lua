@@ -630,9 +630,9 @@ local function drawArrow(button)
     end
 end
 
-local function newDropdownButton(row)
+local function newDropdownButton(row, width)
     local b = CreateFrame("Button", nil, row)
-    b:SetSize(Widgets.CONTROL_W, 22)
+    b:SetSize(width or Widgets.CONTROL_W, 22)
     b:SetPoint("LEFT", row, "LEFT", Widgets.CONTROL_X, 0)
     controlBox(b)
     b.text = Style.Text(b, 12, "text")
@@ -650,7 +650,7 @@ function Widgets.Dropdown(parent, opts)
     local row = newRow(parent, opts)
     if not list then createList() end
     row.opts, row.list = opts, list
-    row.button = newDropdownButton(row)
+    row.button = newDropdownButton(row, opts.width)
     row.button:SetScript("OnClick", function() toggleList(row) end)
     -- Hiding the window (or the tab) closes a list this row opened.
     row:SetScript("OnHide", function(self)

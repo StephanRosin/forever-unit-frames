@@ -955,6 +955,7 @@ local function newWidget(kind, name, parent)
         table.insert(self._points, { point, ... })
     end
     function w:GetPoint(i) local p = self._points[i or 1]; if p then return unpack(p) end end
+    function w:GetNumPoints() return #self._points end
     function w:GetCenter() return self._cx or 0, self._cy or 0 end
     -- Shown, and every parent shown too.
     function w:IsVisible()
@@ -1139,6 +1140,7 @@ local function newWidget(kind, name, parent)
     end
     function w:SetShadowOffset(x, y) self._shadow = { x, y } end
     function w:SetJustifyH(v) self._justifyH = v end
+    function w:SetJustifyV(v) self._justifyV = v end
     function w:SetWordWrap(v) self._wordWrap = not not v end
     function w:GetWordWrap() return self._wordWrap ~= false end
     -- Rough text width: half the font size per character.

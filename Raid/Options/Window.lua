@@ -436,6 +436,10 @@ end
 -- Header bar ----------------------------------------------------------------------
 
 -- A dropdown that is only its button: the size the panel shows.
+-- The size bar's margins: the tabs from the left, the size mode's
+-- dropdown from the right, the gap before its label.
+RaidOptions.SIZE_BAR_LEFT, RaidOptions.SIZE_BAR_RIGHT, RaidOptions.SIZE_BAR_GAP = 8, 12, GAP
+
 local function sizeModeRow(bar)
     local def = ns.RaidSettings.Get("sizeMode")
     local row = ns.Options.Control(bar, def, {
@@ -448,10 +452,11 @@ local function sizeModeRow(bar)
     row.hover:SetAlpha(0)
     row.button:ClearAllPoints()
     row.button:SetAllPoints(row)
-    row:SetPoint("RIGHT", bar, "RIGHT", -12, 0)
+    row:SetPoint("RIGHT", bar, "RIGHT", -RaidOptions.SIZE_BAR_RIGHT, 0)
     local label = Style.Text(bar, 12, "muted")
-    label:SetPoint("RIGHT", row, "LEFT", -GAP, 0)
+    label:SetPoint("RIGHT", row, "LEFT", -RaidOptions.SIZE_BAR_GAP, 0)
     label:SetText(Schema.Label("sizeMode"))
+    RaidOptions.sizeModeLabel = label
     row:Refresh()
     return row
 end
@@ -468,7 +473,9 @@ local function createSizeBar(parent, titleBar)
     for _, size in ipairs(Raid.SIZES) do
         local b = tabButton(bar, SIZE_BAR_H)
         b:SetScript("OnClick", function() RaidOptions.SelectSize(size) end)
-        if previous then b:SetPoint("LEFT", previous, "RIGHT", 0, 0) else b:SetPoint("LEFT", bar, "LEFT", 8, 0) end
+        if previous then b:SetPoint("LEFT", previous, "RIGHT", 0, 0) else
+            b:SetPoint("LEFT", bar, "LEFT", RaidOptions.SIZE_BAR_LEFT, 0)
+        end
         RaidOptions.sizeTabs[size] = b
         previous = b
     end
