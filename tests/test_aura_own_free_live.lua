@@ -170,4 +170,33 @@ H.check("refused: yours with the rest", pet.auraContainers.debuffs.container._gr
 C.Set("pet", "debuffsOwnX", 8)
 H.check("refused: not tried again", #M.errors - errors, 1)
 
+-- The refusal counts as "with the rest" everywhere: the drawn side, the
+-- test mode samples and the options rows of that frame.
+local pd = pet.auras.debuffs
+H.check("refused: not free", pd.ownFree, false)
+ns.TestMode.Set(true)
+H.check("refused, test: no own block", pd.free.count, 0)
+H.check("refused, test: yours first in the group", pd.own, Auras.OWN_SAMPLES)
+ns.TestMode.Set(false)
+local ACTIVE = ns.Options.ROW_ACTIVE
+H.check("refused: x greyed", ACTIVE.debuffsOwnX("pet"), false)
+H.check("refused: same rows active", ACTIVE.debuffsOwnSameRow("pet"), true)
+H.check("refused: placement still active", ACTIVE.debuffsOwnPlacement("pet"), true)
+H.check("refused: other frames untouched", ACTIVE.debuffsOwnX("target"), true)
+
+-- A hidden own container (yours with the rest) is not refreshed; it takes
+-- the frame's unit again when it is used next.
+C.Set("target", "debuffsOwnPlacement", "WITH")
+updates = oc._updates
+M.FireEvent("PLAYER_TARGET_CHANGED")
+H.check("hidden: not refreshed", oc._updates, updates)
+M.units.target = nil
+M.FireEvent("PLAYER_TARGET_CHANGED")
+H.check("hidden: unit kept", oc:GetUnit(), "target")
+M.units.target = { name = "Foe", hostile = true, health = 5, healthMax = 10, auras = { aura(6, { mine = true }) } }
+M.FireEvent("PLAYER_TARGET_CHANGED")
+C.Set("target", "debuffsOwnPlacement", "FREE")
+H.checkTrue("used again: refreshed", oc._updates > updates)
+H.check("used again: yours now", table.concat(M.AuraContainerShows(oc, "own"), ","), "9006")
+
 H.check("nothing blocked", #M.blocked, 0)

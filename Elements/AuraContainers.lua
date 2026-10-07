@@ -271,6 +271,21 @@ local function ownContainer(frame, entry, group)
     return container
 end
 
+-- Whether the client refused the container for yours placed freely on
+-- frame (group key): yours stay with the rest there (Auras readFree).
+function AuraContainers.OwnRefused(frame, key)
+    local entry = frame.auraContainers and frame.auraContainers[key]
+    return entry and entry.ownFailed or false
+end
+
+-- The same for any frame of a scope (the options grey its place rows).
+function AuraContainers.OwnRefusedOn(scope, key)
+    for frame in pairs(all) do
+        if frame.key == scope and AuraContainers.OwnRefused(frame, key) then return true end
+    end
+    return false
+end
+
 -- Sizes and fonts of every button made so far; buttons made later get
 -- them in InitButton. Refused while auras are secret: tried again later.
 local function restyle(entry, group)
@@ -353,13 +368,25 @@ local function setPart(container, part, p)
     container:SetAuraGroupEnabled(part, p.enabled)
 end
 
+-- A container onto unit: a new unit is read by SetUnit; the same token
+-- read again unless the container's own UNIT_AURA brought it.
+local function refreshOne(container, unit, event)
+    if container:GetUnit() ~= unit then
+        container:SetUnit(unit)
+    elseif event ~= "UNIT_AURA" then
+        container:UpdateAllAuras()
+    end
+end
+
 -- Settings (read by Auras.Style into frame.auras) onto the containers.
 local function apply(frame)
     local live = not testing()
     stale[frame] = nil
+    local refusedNow = false
     for _, key in ipairs(groupKeys(frame)) do
         local group, entry = frame.auras[key], frame.auraContainers[key]
-        local own = ownContainer(frame, entry, group)
+        local own, was = ownContainer(frame, entry, group), entry.apart
+        refusedNow = refusedNow or (entry.ownFailed and group.ownFree)
         entry.apart = own ~= nil and group.ownFree or false
         local container, flow = entry.container, AuraContainers.Flow(group)
         setFlow(container, flow, lineSize(frame, key, flow))
@@ -370,6 +397,8 @@ local function apply(frame)
             setPart(own, "own", AuraContainers.FreePart(group))
             own:SetFrameLevel(frame:GetFrameLevel() + ns.Auras.LEVELS)
             own:SetShown(live and group.enabled and entry.apart)
+            -- Not refreshed while hidden: the frame's unit again now.
+            if entry.apart and not was then refreshOne(own, frame.unit or "none", "APPLY") end
         end
         if restyle(entry, group) then stale[frame] = true end
         container:SetFrameLevel(frame:GetFrameLevel() + ns.Auras.LEVELS)
@@ -386,6 +415,8 @@ local function apply(frame)
         if frame.auraContainers[key].ownContainer then placeOwn(frame, key) end
     end
     if ns.WeaponEnchants then ns.WeaponEnchants.Layout(frame) end
+    -- Refused just now: read again, yours with the rest (applies again).
+    if refusedNow then ns.Auras.Style(frame) end
 end
 
 -- Makes both containers of a frame. On a refusal nothing made is kept
@@ -458,22 +489,15 @@ end)
 -- The containers take UNIT_AURA for their unit themselves. What they cannot
 -- know: the frame's unit changed (party slots, test mode), or the same
 -- token now means someone else (a new target or focus) or has no aura
--- events at all (target of target, on the frame's timer).
-local function refreshOne(container, unit, event)
-    if container:GetUnit() ~= unit then
-        container:SetUnit(unit)
-    elseif event ~= "UNIT_AURA" then
-        container:UpdateAllAuras()
-    end
-end
-
+-- events at all (target of target, on the frame's timer). A hidden own
+-- container (yours with the rest) is left alone until apply uses it.
 function AuraContainers.Refresh(frame, event)
     if not frame.auraContainers then return end
     local unit = frame.unit or "none"
     for _, key in ipairs(groupKeys(frame)) do
         local entry = frame.auraContainers[key]
         refreshOne(entry.container, unit, event)
-        if entry.ownContainer then refreshOne(entry.ownContainer, unit, event) end
+        if entry.apart then refreshOne(entry.ownContainer, unit, event) end
     end
 end
 

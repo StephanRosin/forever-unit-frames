@@ -219,7 +219,8 @@ end
 -- at the own size, its own growth and icons per row. Otherwise the block
 -- stays empty.
 local function readFree(frame, group)
-    group.ownFree = group.highlightOwn and get(frame, group, "OwnPlacement") == "FREE" or false
+    group.ownFree = group.highlightOwn and get(frame, group, "OwnPlacement") == "FREE"
+        and not AuraContainers.OwnRefused(frame, group.key) or false
     local free = group.free
     free.filter, free.max, free.showTime, free.spacing = group.filter, group.max, group.showTime, group.spacing
     free.size, free.ownSize, free.ownSameRow = group.ownSize, group.ownSize, false
@@ -453,7 +454,8 @@ local function readGroup(frame, group)
     end
     group.hasUnknownIDs, group.free.hasUnknownIDs = false, false
     if group.ownFree then
-        -- Yours in their own block; the maximum counts both.
+        -- Yours in their own block; drawn, the maximum counts both (live each
+        -- container takes it: the hint says per place).
         local mine = own and fill(frame, group, own, 0, true, group.free) or 0
         local count = other and fill(frame, group, other, 0, false, group, group.max - mine) or 0
         settle(group.free, mine, 0)

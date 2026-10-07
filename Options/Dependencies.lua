@@ -77,6 +77,18 @@ local function ownRows(group, first)
     return keys
 end
 
+-- Yours placed freely (want true) or with the rest (false) on a page:
+-- Free counts only where the client did not refuse its own container
+-- (Elements/AuraContainers.lua), elsewhere yours stay with the rest.
+local function placedFreely(group, want)
+    local key = group .. "OwnPlacement"
+    return anywhere({ key }, function(scope)
+        if not applies(scope, key) then return true end
+        local free = Config.Get(scope, key) == "FREE" and not ns.AuraContainers.OwnRefusedOn(scope, group)
+        return free == want
+    end)
+end
+
 local function iconRows(prefix, extra)
     local keys = { prefix .. "Size", prefix .. "FramePoint", prefix .. "Point", prefix .. "X", prefix .. "Y" }
     for _, key in ipairs(extra or {}) do keys[#keys + 1] = key end
@@ -130,10 +142,10 @@ local RULES = {
     { on("debuffsHighlightOwn"), ownRows("debuffs", { "OwnSize", "OwnSameRow", "OwnPlacement" }) },
     -- Elements/Auras.lua: placed freely, yours share no rows with the rest,
     -- and their own place means something only then.
-    { isNot("buffsOwnPlacement", "FREE"), { "buffsOwnSameRow" } },
-    { isNot("debuffsOwnPlacement", "FREE"), { "debuffsOwnSameRow" } },
-    { is("buffsOwnPlacement", "FREE"), ownRows("buffs") },
-    { is("debuffsOwnPlacement", "FREE"), ownRows("debuffs") },
+    { placedFreely("buffs", false), { "buffsOwnSameRow" } },
+    { placedFreely("debuffs", false), { "debuffsOwnSameRow" } },
+    { placedFreely("buffs", true), ownRows("buffs") },
+    { placedFreely("debuffs", true), ownRows("debuffs") },
     -- Elements/AuraButton.lua: without a border its colours are not seen;
     -- the caster border still puts your own buffs first (Elements/Auras.lua).
     { on("auraBorder"), { "auraBorderSize", "buffsOwnBorderColor", "buffsOtherBorderColor" } },
