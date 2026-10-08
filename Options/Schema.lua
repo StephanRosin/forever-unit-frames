@@ -93,7 +93,7 @@ Schema.FRAME = {
         { id = "powerColors", keys = { "powerColorMana", "powerColorRage", "powerColorFocus", "powerColorEnergy" } },
         { id = "powerCost", keys = { "powerCostPrediction", "powerCostColor" } },
         { id = "druidMana", keys = { "druidMana", "druidManaHeight" } },
-        { id = "fiveSecondRule", keys = { "fsrEnabled", "fsrSpark", "fsrSparkDirection", "fsrSparkWidth", "fsrText",
+        { id = "fiveSecondRule", keys = { "fsrEnabled", "fsrSpark", "fsrSparkDirection", "fsrSparkWidth", "fsrSparkColor", "fsrText",
             "fsrTextPoint", "fsrTextTenths", "fsrDim", "fsrDimAlpha" } },
     } },
     -- The note: what "Info" shows, said once for every text.

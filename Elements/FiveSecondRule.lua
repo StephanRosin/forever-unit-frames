@@ -2,8 +2,8 @@ local _, ns = ...
 
 -- The five-second rule on the player's mana bar: after a spell that costs
 -- mana, mana regenerates fully again only five seconds later. While that
--- runs, a white spark crosses the power bar (left to right or right to
--- left), and optionally a countdown text shows and the bar's fill is
+-- runs, a glowing spark runs along the bottom of the power bar (left to
+-- right or right to left), and optionally a countdown text shows and the bar's fill is
 -- dimmed. Only while the power bar shows mana (a druid's strip in forms is
 -- out of scope).
 --
@@ -35,7 +35,10 @@ FiveSecondRule.TEXT_INSET = 2
 -- Test mode: the countdown's sample.
 FiveSecondRule.SAMPLE = 3
 local MANA = Enum and Enum.PowerType and Enum.PowerType.Mana or 0
-local SPARK_COLOR = { 1, 1, 1, 1 }
+-- The spark: Blizzard's cast bar spark as added light along the bar's
+-- bottom, in the fsrSparkColor colour; its height grows with its size.
+local FUSE_HEIGHT = 2
+local SPARK_TEXTURE = "Interface\\CastingBar\\UI-CastingBar-Spark"
 
 local function setting(key) return Config.Get(FiveSecondRule.SCOPE, key) end
 
@@ -62,10 +65,14 @@ end
 
 function FiveSecondRule.Build(frame)
     if frame.key ~= FiveSecondRule.SCOPE or not frame.power then return end
-    local spark = CreateFrame("Frame", nil, frame.power)
-    local sparkTexture = spark:CreateTexture(nil, "OVERLAY")
-    sparkTexture:SetAllPoints(spark)
-    sparkTexture:SetColorTexture(SPARK_COLOR[1], SPARK_COLOR[2], SPARK_COLOR[3], SPARK_COLOR[4])
+    -- A glowing spark along the bottom of the bar. A clipping frame over
+    -- the bar keeps the glow inside the bar's width.
+    local clip = CreateFrame("Frame", nil, frame.power)
+    clip:SetClipsChildren(true)
+    local spark = CreateFrame("Frame", nil, clip)
+    local glow = spark:CreateTexture(nil, "OVERLAY")
+    glow:SetTexture(SPARK_TEXTURE)
+    glow:SetBlendMode("ADD")
     spark:Hide()
     local run = spark:CreateAnimationGroup()
     local move = run:CreateAnimation("Translation")
@@ -76,8 +83,8 @@ function FiveSecondRule.Build(frame)
     textLayer:SetAllPoints(frame.power)
     local text = textLayer:CreateFontString(nil, "OVERLAY")
     text:Hide()
-    frame.fsr = { spark = spark, sparkTexture = sparkTexture, run = run, move = move, textLayer = textLayer,
-        text = text }
+    frame.fsr = { clip = clip, spark = spark, sparkTexture = glow, run = run, move = move,
+        textLayer = textLayer, text = text }
     -- A hidden frame pauses its animation: the rule ends with it.
     frame:HookScript("OnHide", function() if not frame.fsr.preview then FiveSecondRule.Stop(frame) end end)
 end
@@ -87,10 +94,19 @@ local function placeSpark(frame)
     local barWidth = math.max(frame.powerWidth or frame.power:GetWidth() or 0, width)
     local leftToRight = setting("fsrSparkDirection") == "LEFT_TO_RIGHT"
     local side = leftToRight and "LEFT" or "RIGHT"
+    local glowH = FUSE_HEIGHT * 2 + width * 3
+    -- The clip reaches a little below the bar so the glow is not cut off.
+    fsr.clip:ClearAllPoints()
+    fsr.clip:SetPoint("TOPLEFT", frame.power, "TOPLEFT", 0, 0)
+    fsr.clip:SetPoint("BOTTOMRIGHT", frame.power, "BOTTOMRIGHT", 0, -glowH / 2)
     fsr.spark:ClearAllPoints()
-    fsr.spark:SetPoint("TOP" .. side, frame.power, "TOP" .. side, 0, 0)
+    fsr.spark:SetSize(width, FUSE_HEIGHT)
     fsr.spark:SetPoint("BOTTOM" .. side, frame.power, "BOTTOM" .. side, 0, 0)
-    fsr.spark:SetWidth(width)
+    fsr.sparkTexture:ClearAllPoints()
+    fsr.sparkTexture:SetSize(width * 4, glowH)
+    fsr.sparkTexture:SetPoint("CENTER", fsr.spark, "CENTER", 0, 0)
+    local c = setting("fsrSparkColor")
+    fsr.sparkTexture:SetVertexColor(c[1], c[2], c[3], c[4] or 1)
     local distance = barWidth - width
     fsr.move:SetOffset(leftToRight and distance or -distance, 0)
 end
@@ -144,6 +160,8 @@ local function applyParts(frame)
     fsr.sparkTexture:SetShown(setting("fsrSpark") == true)
     local wantsText = fsr.startedAt ~= nil and setting("fsrText") == true
     fsr.text:SetShown(wantsText)
+    -- Test mode shows a fixed sample: a real countdown's ticker stops.
+    if fsr.preview then stopTicker(fsr) end
     if wantsText and not fsr.preview and not fsr.ticker then
         fsr.ticker = C_Timer.NewTicker(FiveSecondRule.TICK, function() refreshText(frame) end)
     elseif not wantsText then
@@ -178,6 +196,7 @@ function FiveSecondRule.Style(frame)
     local fsr = frame.fsr
     if not fsr then return end
     local level = frame.power:GetFrameLevel()
+    fsr.clip:SetFrameLevel(level + FiveSecondRule.SPARK_LEVELS)
     fsr.spark:SetFrameLevel(level + FiveSecondRule.SPARK_LEVELS)
     fsr.textLayer:SetFrameLevel(level + ns.Texts.POWER_TEXT_LEVELS)
     placeSpark(frame)

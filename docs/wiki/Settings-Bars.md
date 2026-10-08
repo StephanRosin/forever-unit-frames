@@ -100,7 +100,8 @@ After a spell that costs mana, your mana regenerates fully again only five secon
 <tr><td><b>Five-second rule</b></td><td>After a spell that costs mana: 5 s until mana regenerates fully again</td><td>On, Off</td><td>On</td><td>Player</td></tr>
 <tr><td><b>Spark</b></td><td></td><td>On, Off</td><td>On</td><td>Player</td></tr>
 <tr><td><b>Spark direction</b></td><td></td><td>Left to right, Right to left</td><td>Left to right</td><td>Player</td></tr>
-<tr><td><b>Spark width</b></td><td></td><td>2 – 8</td><td>3</td><td>Player</td></tr>
+<tr><td><b>Spark size</b></td><td></td><td>2 – 16</td><td>3</td><td>Player</td></tr>
+<tr><td><b>Spark color</b></td><td></td><td>Color</td><td><code>#ffe680</code></td><td>Player</td></tr>
 <tr><td><b>Countdown</b></td><td></td><td>On, Off</td><td>Off</td><td>Player</td></tr>
 <tr><td><b>Countdown place</b></td><td></td><td>Left, Center, Right</td><td>Center</td><td>Player</td></tr>
 <tr><td><b>Tenths in the last second</b></td><td></td><td>On, Off</td><td>On</td><td>Player</td></tr>

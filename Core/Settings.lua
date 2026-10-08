@@ -784,8 +784,11 @@ Settings.Define({ key = "fsrEnabled", code = "FE", scope = "frame", only = FSR, 
 Settings.Define({ key = "fsrSpark", code = "FK", scope = "frame", only = FSR, type = "bool", default = true })
 Settings.Define({ key = "fsrSparkDirection", code = "FD", scope = "frame", only = FSR, type = "enum",
     values = { "LEFT_TO_RIGHT", "RIGHT_TO_LEFT" }, default = "LEFT_TO_RIGHT" })
-Settings.Define({ key = "fsrSparkWidth", code = "FW", scope = "frame", only = FSR, type = "int", min = 2, max = 8,
+Settings.Define({ key = "fsrSparkWidth", code = "FW", scope = "frame", only = FSR, type = "int", min = 2, max = 16,
     default = 3 })
+-- The spark's colour (a warm glow by default).
+Settings.Define({ key = "fsrSparkColor", code = "FC", scope = "frame", only = FSR, type = "color",
+    default = { 1, 0.9, 0.5, 1 } })
 Settings.Define({ key = "fsrText", code = "FT", scope = "frame", only = FSR, type = "bool", default = false })
 Settings.Define({ key = "fsrTextPoint", code = "FP", scope = "frame", only = FSR, type = "enum",
     values = { "LEFT", "CENTER", "RIGHT" }, default = "CENTER" })

@@ -15,23 +15,28 @@ local EXPECTED = {
     fsrText = { "FT", "bool", false },
     fsrTextPoint = { "FP", "enum", "CENTER" },
     fsrTextTenths = { "FN", "bool", true },
+    fsrSparkColor = { "FC", "color", { 1, 0.9, 0.5, 1 } },
     fsrDim = { "FM", "bool", false },
     fsrDimAlpha = { "FA", "int", 70 },
 }
-local ORDER = { "fsrEnabled", "fsrSpark", "fsrSparkDirection", "fsrSparkWidth", "fsrText", "fsrTextPoint",
+local ORDER = { "fsrEnabled", "fsrSpark", "fsrSparkDirection", "fsrSparkWidth", "fsrSparkColor", "fsrText", "fsrTextPoint",
     "fsrTextTenths", "fsrDim", "fsrDimAlpha" }
 for _, key in ipairs(ORDER) do
     local def, want = S.Get(key), EXPECTED[key]
     H.checkTrue(key .. " defined", def)
     H.check(key .. " code", def and def.code, want[1])
     H.check(key .. " type", def and def.type, want[2])
-    H.check(key .. " default", def and S.Default(def, "player"), want[3])
+    local default = def and S.Default(def, "player")
+    if type(default) == "table" then default = table.concat(default, ",") end
+    local wanted = want[3]
+    if type(wanted) == "table" then wanted = table.concat(wanted, ",") end
+    H.check(key .. " default", default, wanted)
     H.check(key .. " player only", def and S.AppliesTo(def, "target"), false)
     H.check(key .. " label", type(rawget(ns.Locales.enUS, "SETTING_" .. key)), "string")
 end
 H.check("directions", table.concat(S.Get("fsrSparkDirection").values, ","), "LEFT_TO_RIGHT,RIGHT_TO_LEFT")
 H.check("text places", table.concat(S.Get("fsrTextPoint").values, ","), "LEFT,CENTER,RIGHT")
-H.check("spark width", S.Get("fsrSparkWidth").min .. "-" .. S.Get("fsrSparkWidth").max, "2-8")
+H.check("spark width", S.Get("fsrSparkWidth").min .. "-" .. S.Get("fsrSparkWidth").max, "2-16")
 local keys
 for _, tab in ipairs(ns.Schema.Tabs("player")) do
     for _, sec in ipairs(tab.sections or {}) do
@@ -63,7 +68,7 @@ H.check("not on the target", ns.Frames.target.fsr, nil)
 H.check("rest: no spark", fsr.spark:IsShown(), false)
 H.check("rest: no text", fsr.text:IsShown(), false)
 H.check("rest: the fill in full", fill:GetAlpha(), 1)
-H.check("spark: white", table.concat(fsr.sparkTexture._color or {}, ","), "1,1,1,1")
+H.check("spark: a warm glow", table.concat(fsr.sparkTexture._color or {}, ","), "1,0.9,0.5,1")
 H.check("spark: width", fsr.spark:GetWidth(), 3)
 H.check("spark: the bar's height", select(2, fsr.spark:GetPoint(1)), f.power)
 H.checkTrue("spark above the fill", fsr.spark:GetFrameLevel() > f.power:GetFrameLevel())
@@ -74,7 +79,7 @@ H.check("animation: 5 s", fsr.move._duration, 5)
 -- A mana spell: the rule runs --------------------------------------------------
 M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-1", 116)
 H.checkTrue("mana spell: the spark runs", running())
-H.check("left to right: from the left edge", (fsr.spark:GetPoint(1)), "TOPLEFT")
+H.check("left to right: from the bottom left", (fsr.spark:GetPoint(1)), "BOTTOMLEFT")
 H.check("left to right: across the bar", (fsr.move:GetOffset()), f.powerWidth - 3)
 H.check("dimming off: fill in full", fill:GetAlpha(), 1)
 H.check("text off: none", fsr.text:IsShown(), false)
@@ -112,7 +117,7 @@ M.FinishAnimations()
 -- Right to left.
 C.Set("player", "fsrSparkDirection", "RIGHT_TO_LEFT")
 M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-10", 116)
-H.check("right to left: from the right edge", (fsr.spark:GetPoint(1)), "TOPRIGHT")
+H.check("right to left: from the bottom right", (fsr.spark:GetPoint(1)), "BOTTOMRIGHT")
 H.check("right to left: leftwards", (fsr.move:GetOffset()), -(f.powerWidth - 3))
 M.FinishAnimations()
 C.Set("player", "fsrSparkDirection", "LEFT_TO_RIGHT")
@@ -209,3 +214,35 @@ H.check("test mode over: no text", fsr.text:IsShown(), false)
 H.check("test mode over: fill in full", fill:GetAlpha(), 1)
 H.check("test mode over: no repeat", fsr.run._looping, "NONE")
 C.ResetScope("player")
+
+-- Test mode entered while a real countdown runs: its ticker stops and the
+-- sample stays.
+do
+    local ns2 = H.LoadAddon()
+    _G.ForeverUnitFramesDB = nil
+    H.M.units.player = { name = "Me", level = 60, class = "PRIEST", className = "PRIEST", isPlayer = true,
+        health = 5, healthMax = 10, power = 50, powerMax = 100, powerType = 0 }
+    H.M.FireEvent("PLAYER_LOGIN")
+    H.M.RunTimers()
+    ns2.Config.Set("player", "fsrText", true)
+    local f = ns2.Frames.player
+    ns2.FiveSecondRule.Start(f)
+    H.checkTrue("live countdown: a ticker", f.fsr.ticker ~= nil)
+    ns2.TestMode.Set(true)
+    H.check("test mode: no ticker", f.fsr.ticker, nil)
+    ns2.TestMode.Set(false)
+end
+
+-- The spark's colour comes from its setting.
+do
+    local ns3 = H.LoadAddon()
+    _G.ForeverUnitFramesDB = nil
+    H.M.units.player = { name = "Me", level = 60, class = "PRIEST", className = "PRIEST", isPlayer = true,
+        health = 5, healthMax = 10, power = 50, powerMax = 100, powerType = 0 }
+    H.M.FireEvent("PLAYER_LOGIN")
+    H.M.RunTimers()
+    local f = ns3.Frames.player
+    H.check("spark colour: default", table.concat(f.fsr.sparkTexture._color or {}, ","), "1,0.9,0.5,1")
+    ns3.Config.Set("player", "fsrSparkColor", { 0.2, 0.6, 1, 1 })
+    H.check("spark colour: set", table.concat(f.fsr.sparkTexture._color or {}, ","), "0.2,0.6,1,1")
+end
