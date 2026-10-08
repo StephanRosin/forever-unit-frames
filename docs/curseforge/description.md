@@ -75,6 +75,7 @@ In a "Status" tab per frame.
 - "Always show" keeps an empty bar in the frame so nothing below it jumps.
 - The player castbar can run alongside Blizzard's, or hide it.
 - **Five-second rule** on the player's mana bar: a glowing spark runs along the bar for five seconds after you spend mana (direction, size and color selectable), with an optional countdown and dimming.
+- **Shield watch** (player): icons of your active shields (Power Word: Shield, Ice Barrier, Mana Shield, wards, Sacrifice, protection potions and absorb items) and the exact total of all your absorbs, live in combat, freely placed.
 - Combat numbers placed left, center or right with their own font, size and outline; the player and pet frames can stay in full while you are in a group.
 
 ## Threat bar
