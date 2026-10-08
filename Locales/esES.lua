@@ -1077,6 +1077,7 @@ L.RAID_BUFF_COUNTS = "falta: %d, se agota: %d"
 L.RAID_BUFF_UNKNOWN = "desconocido"
 L.RAID_BUFF_NEXT = "Siguiente: %s"
 L.RAID_BUFF_NOTHING = "Nada que renovar"
+L.RAID_BUFF_OUT_OF_RANGE = "Falta, pero nadie al alcance"
 
 -- Raid templates (Raid/Templates.lua, Raid/Options/Templates.lua).
 L.RAID_SECTION_templates = "Plantillas"

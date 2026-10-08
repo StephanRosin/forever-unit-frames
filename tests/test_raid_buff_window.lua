@@ -56,6 +56,19 @@ row:GetScript("OnEnter")(row)
 H.check("tooltip", M.tooltipLines[1], "Power Word: Fortitude: Ann")
 row:GetScript("OnLeave")(row)
 
+-- Ann too far away (Bob is fine for now): someone misses it, but no cast
+-- reaches them; the window says so instead of "nothing to buff".
+M.units.party2.auras = { fortAura(1700) }
+M.units.party1.distance = 100
+M.FireEvent("UNIT_AURA", "party2")
+M.Tick(1)
+H.check("out of range: still counted", row.count:GetText(), L.RAID_BUFF_COUNTS:format(1, 0))
+H.check("out of range: said so", Win.next:GetText(), L.RAID_BUFF_OUT_OF_RANGE)
+row:GetScript("OnEnter")(row)
+H.check("out of range: the tooltip too", M.tooltipLines[1], L.RAID_BUFF_OUT_OF_RANGE)
+row:GetScript("OnLeave")(row)
+M.units.party1.distance = 10
+
 -- Everyone buffed: the row says so, a click casts nothing.
 M.units.party1.auras = { fortAura(1700) }
 M.units.party2.auras = { fortAura(1700) }

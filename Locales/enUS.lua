@@ -1102,6 +1102,7 @@ L.RAID_BUFF_COUNTS = "missing: %d, expiring: %d"
 L.RAID_BUFF_UNKNOWN = "unknown"
 L.RAID_BUFF_NEXT = "Next: %s"
 L.RAID_BUFF_NOTHING = "Nothing to buff"
+L.RAID_BUFF_OUT_OF_RANGE = "Missing, but nobody in range"
 
 -- Raid templates (Raid/Templates.lua, Raid/Options/Templates.lua).
 L.RAID_SECTION_templates = "Templates"

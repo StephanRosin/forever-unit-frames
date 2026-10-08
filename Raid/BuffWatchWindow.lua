@@ -86,15 +86,22 @@ end
 
 -- Rows ------------------------------------------------------------------------------
 
+-- What no cast means: someone misses it but none is in range, or nothing
+-- to buff.
+local function noCast(needed)
+    return needed and L.RAID_BUFF_OUT_OF_RANGE or L.RAID_BUFF_NOTHING
+end
+
 -- On whom a click casts; in combat nothing (the rows cast nothing then,
 -- and no range is asked), nor on a preview row (test mode: it casts
 -- nothing).
 local function tooltip(row)
     row:SetScript("OnEnter", function(self)
-        local text
-        if self.state and not self.state.preview and not InCombatLockdown() then text = SmartBuff.Describe(Watch.Best(self.state)) end
+        local st, text = self.state, nil
+        local live = st and not st.preview and not InCombatLockdown()
+        if live then text = SmartBuff.Describe(Watch.Best(st)) end
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:SetText(text or L.RAID_BUFF_NOTHING, 1, 1, 1)
+        GameTooltip:SetText(text or noCast(live and #st.needs > 0), 1, 1, 1)
         GameTooltip:Show()
     end)
     row:SetScript("OnLeave", function(self)
@@ -162,7 +169,7 @@ local function render()
         end
     end
     local next = Watch.Next()
-    Window.next:SetText(next and L.RAID_BUFF_NEXT:format(SmartBuff.Describe(next)) or L.RAID_BUFF_NOTHING)
+    Window.next:SetText(next and L.RAID_BUFF_NEXT:format(SmartBuff.Describe(next)) or noCast(anyNeeded()))
     paint("text")
 end
 
