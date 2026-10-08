@@ -126,7 +126,7 @@ local RULES = {
     -- Elements/ShieldWatch.lua: everything with the watch; each text's
     -- look with that text.
     { on("shieldsEnabled"), { "shieldsPriest", "shieldsMage", "shieldsWarlock", "shieldsItems", "shieldsExtra",
-        "shieldsOnlyMine", "shieldsHideInBuffs", "shieldsSize", "shieldsSpacing", "shieldsGrowth", "shieldsX",
+        "shieldsHideInBuffs", "shieldsSize", "shieldsSpacing", "shieldsGrowth", "shieldsX",
         "shieldsY", "shieldsAmount", "shieldsAbbreviate", "shieldsAmountPoint", "shieldsAmountX", "shieldsAmountY",
         "shieldsAmountFont", "shieldsAmountSize", "shieldsAmountOutline", "shieldsAmountColor", "shieldsSwipe",
         "shieldsTime", "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY", "shieldsTimeFont", "shieldsTimeSize",

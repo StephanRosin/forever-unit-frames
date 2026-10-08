@@ -118,12 +118,11 @@ local CASES = {
     { "player", "shieldsEnabled", false, true, { "shieldsPriest", "shieldsItems", "shieldsExtra",
         "shieldsHideInBuffs", "shieldsSize", "shieldsGrowth", "shieldsX", "shieldsAmount", "shieldsAmountColor",
         "shieldsSwipe", "shieldsTime", "shieldsTimeColor" }, { shieldsTime = true } },
-    { "target", "shieldsEnabled", false, true, { "shieldsOnlyMine", "shieldsMage" } },
-    { "focus", "shieldsEnabled", false, true, { "shieldsOnlyMine", "shieldsWarlock" } },
+    { "player", "shieldsEnabled", false, true, { "shieldsMage", "shieldsWarlock" } },
     { "player", "shieldsAmount", false, true, { "shieldsAbbreviate", "shieldsAmountPoint", "shieldsAmountX",
         "shieldsAmountY", "shieldsAmountFont", "shieldsAmountSize", "shieldsAmountOutline", "shieldsAmountColor" },
         { shieldsEnabled = true } },
-    { "target", "shieldsTime", false, true, { "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY", "shieldsTimeFont",
+    { "player", "shieldsTime", false, true, { "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY", "shieldsTimeFont",
         "shieldsTimeSize", "shieldsTimeOutline", "shieldsTimeColor" }, { shieldsEnabled = true } },
 }
 

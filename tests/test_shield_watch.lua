@@ -1,5 +1,5 @@
 -- The shield watch (0.25.0): an icon per active absorb shield on the
--- player, target and focus frames, with the absorb it has left; off by
+-- player frame, with the absorb it has left; off by
 -- default. Exact amounts only: points[1] of the aura, else the total of
 -- the unit's absorbs while exactly one watched shield is known to be up.
 local M = H.M
@@ -32,20 +32,13 @@ for key, want in pairs(EXPECTED) do
     local default = def and S.Default(def, "player")
     if type(default) == "table" then default = table.concat(default, ",") end
     H.check(key .. " default", default, want[3])
-    for _, scope in ipairs({ "player", "target", "focus" }) do
-        H.check(key .. " on " .. scope, def and S.AppliesTo(def, scope), true)
-    end
-    for _, scope in ipairs({ "targettarget", "pet", "party", "general" }) do
+    H.check(key .. " on the player", def and S.AppliesTo(def, "player"), true)
+    for _, scope in ipairs({ "target", "focus", "targettarget", "pet", "party", "general" }) do
         H.check(key .. " not on " .. scope, def and S.AppliesTo(def, scope), false)
     end
     H.check(key .. " label", type(rawget(ns.Locales.enUS, "SETTING_" .. key)), "string")
 end
-local mine = S.Get("shieldsOnlyMine")
-H.check("only mine: code", mine.code, "VM")
-H.check("only mine: off", S.Default(mine, "target"), false)
-H.check("only mine: not on the player", S.AppliesTo(mine, "player"), false)
-H.check("only mine: target", S.AppliesTo(mine, "target"), true)
-H.check("only mine: focus", S.AppliesTo(mine, "focus"), true)
+H.check("no only mine (target and focus are gone)", S.Get("shieldsOnlyMine"), nil)
 H.check("text places", table.concat(S.Get("shieldsAmountPoint").values, ","), "TOP,BOTTOM,LEFT,RIGHT,CENTER")
 H.check("growth", table.concat(S.Get("shieldsGrowth").values, ","), "RIGHT,LEFT,UP,DOWN")
 H.check("extras: the spell list editor", S.Get("shieldsExtra").spellList, true)
@@ -98,13 +91,11 @@ M.RunTimers()
 
 H.check("player (mage): priest, own class, items", names(SW.Watched("player")),
     "Power Word: Shield,Ice Barrier,Mana Shield,Fire Protection")
-H.check("target: every group", names(SW.Watched("target")),
-    "Power Word: Shield,Ice Barrier,Mana Shield,Shadow Ward,Fire Protection")
 local pws = SW.Watched("player")[1]
 H.check("all ranks the client knows", table.concat(pws.ids, ","), "17,10901")
-C.Set("target", "shieldsMage", false)
-H.check("a group switched off", names(SW.Watched("target")), "Power Word: Shield,Shadow Ward,Fire Protection")
-C.Set("target", "shieldsMage", true)
+C.Set("player", "shieldsItems", false)
+H.check("a group switched off", names(SW.Watched("player")), "Power Word: Shield,Ice Barrier,Mana Shield")
+C.Set("player", "shieldsItems", true)
 C.Set("player", "shieldsExtra", "555, 17")
 H.check("additions last, once", names(SW.Watched("player")),
     "Power Word: Shield,Ice Barrier,Mana Shield,Fire Protection,Some Barrier")
@@ -120,7 +111,8 @@ C.Set("player", "shieldsSize", 32)
 local f = ns.Frames.player
 local sw = f.shields
 H.checkTrue("built on the player", sw)
-H.checkTrue("built on the target", ns.Frames.target.shields)
+H.check("not on the target", ns.Frames.target.shields, nil)
+H.check("not on the focus", ns.Frames.focus and ns.Frames.focus.shields, nil)
 H.check("not on the pet", ns.Frames.pet.shields, nil)
 H.check("off: hidden", sw.holder:IsShown(), false)
 H.checkTrue("a mover", sw.holder.mover)
@@ -284,47 +276,12 @@ C.Set("player", "auraBlock", "5019")
 C.Set("player", "shieldsEnabled", true)
 H.checkTrue("with the frame's hidden auras", buffs.blockSet[5019] and buffs.blockSet[10901])
 H.check("the container's filters", ns.AuraContainers.CandidateFilters(buffs).excludeSpellIDs[10901], true)
-H.check("the target's own set", SW.HiddenSet("target"), nil)
+H.check("not for the target", SW.HiddenSet("target"), nil)
 H.check("not for the party", SW.HiddenSet("party"), nil)
 
--- Target and focus ---------------------------------------------------------------------------------
-local enemy = { name = "Priest", class = "PRIEST", isPlayer = true, health = 100, healthMax = 100, absorbs = 400,
-    auras = { aura(201, "Power Word: Shield", nil, { mine = false }) } }
-enemy.auras[1].spellId = 10901
-M.units.target = enemy
-C.Set("target", "shieldsEnabled", true)
-M.FireEvent("PLAYER_TARGET_CHANGED")
-local tw = ns.Frames.target.shields
-H.check("target: its shield", tw.shown, 1)
-H.check("target: the total stands in", tw.icons[1].amount:GetText(), "400")
-C.Set("target", "shieldsOnlyMine", true)
-H.check("only mine: someone else's left out", tw.shown, 0)
-enemy.auras[1].mine = true
-M.FireEvent("UNIT_AURA", "target")
-H.check("only mine: mine shows", tw.shown, 1)
-H.check("only mine, the only one: the total", tw.icons[1].amount:GetText(), "400")
-enemy.auras[2] = aura(202, "Shadow Ward", nil, { mine = false })
-M.FireEvent("UNIT_AURA", "target")
-H.check("only mine: still one icon", tw.shown, 1)
-H.check("only mine, another's shield up too: no total", tw.icons[1].amount:GetText(), "")
-C.Set("target", "shieldsOnlyMine", false)
-H.check("all: two icons", tw.shown, 2)
-H.check("all, two up: no total", tw.icons[1].amount:GetText(), "")
-M.units.target = nil
-M.FireEvent("PLAYER_TARGET_CHANGED")
-M.units.target = { name = "Other", health = 10, healthMax = 10, auras = {} }
-M.FireEvent("PLAYER_TARGET_CHANGED")
-H.check("a new target: its shields", tw.shown, 0)
-
--- Test mode: two samples on each of the three ----------------------------------------------------------
-C.Set("focus", "shieldsEnabled", true)
+-- Test mode: two samples -----------------------------------------------------------------------------
 ns.TestMode.Set(true)
-for _, scope in ipairs({ "player", "target", "focus" }) do
-    local block = ns.Frames[scope] and ns.Frames[scope].shields
-    if block then
-        H.check(scope .. ": test mode samples", block.shown, 2)
-        H.check(scope .. ": a sample amount", block.icons[1].amount:GetText(), "1250")
-    end
-end
+H.check("test mode samples", sw.shown, 2)
+H.check("a sample amount", sw.icons[1].amount:GetText(), "1250")
 ns.TestMode.Set(false)
 H.check("test mode over: the player's own again", sw.shown, 2)

@@ -601,20 +601,20 @@ Settings.Define({ key = "comboY", code = "XY", scope = "frame", only = COMBO, ty
 
 -- The shield watch (Elements/ShieldWatch.lua): one icon per active absorb
 -- shield with the absorb it has left, in a block of its own with a mover,
--- on the player, target and focus frames. Off by default. The watched
+-- on the player frame. Off by default. The watched
 -- spells come in groups (each switchable) plus the frame's own additions
 -- (spell IDs, validated like the hidden auras). Texts: the amount (on by
 -- default) and the time left (the cooldown's own numbers, off by default),
 -- each placed at a side of the icon with an offset, a font (empty: the
 -- frame's), a size (0: Automatic, from the icon size), a font style
 -- (FRAME: the frame's) and a colour.
-local SHIELDS = { player = true, target = true, focus = true }
+local SHIELDS = { player = true }
 Settings.SHIELD_GROUPS = { "Priest", "Mage", "Warlock", "Items" }
 -- Where a text sits: at that side of the icon, outside it (CENTER: on it).
 Settings.SHIELD_TEXT_POINTS = { "TOP", "BOTTOM", "LEFT", "RIGHT", "CENTER" }
 local SHIELD_OUTLINES = { "FRAME", "NONE", "OUTLINE", "THICKOUTLINE", "MONOCHROME", "SOFT" }
 local function shields(def)
-    def.scope, def.only = "frame", def.only or SHIELDS
+    def.scope, def.only = "frame", SHIELDS
     Settings.Define(def)
 end
 shields({ key = "shieldsEnabled", code = "VB", type = "bool", default = false })
@@ -625,9 +625,6 @@ shields({ key = "shieldsItems", code = "VJ", type = "bool", default = true })
 -- Spell IDs, "1234, 5678": more shields to watch (the hidden auras' editor).
 shields({ key = "shieldsExtra", code = "VL", type = "text", maxLetters = ns.AuraBlocklist.LETTERS,
     check = ns.AuraBlocklist.Check, blocklist = true, spellList = true, default = "" })
--- Target and focus: only shields you cast (the client's PLAYER filter).
-shields({ key = "shieldsOnlyMine", code = "VM", only = { target = true, focus = true }, type = "bool",
-    default = false })
 -- The watched shields leave the frame's buffs while the watch is on.
 shields({ key = "shieldsHideInBuffs", code = "VN", type = "bool", default = true })
 shields({ key = "shieldsSize", code = "VO", type = "int", min = 12, max = 64, default = 32 })
@@ -636,10 +633,8 @@ shields({ key = "shieldsSpacing", code = "VP", type = "int", min = 0, max = 20, 
 shields({ key = "shieldsGrowth", code = "VQ", type = "enum", values = { "RIGHT", "LEFT", "UP", "DOWN" },
     default = "RIGHT" })
 -- The block's centre, from the screen's centre (its mover).
-shields({ key = "shieldsX", code = "VR", type = "int", min = -4000, max = 4000,
-    default = { player = -300, target = 300, focus = -300, _ = 0 } })
-shields({ key = "shieldsY", code = "VS", type = "int", min = -4000, max = 4000,
-    default = { player = -140, target = -140, focus = -50, _ = 0 } })
+shields({ key = "shieldsX", code = "VR", type = "int", min = -4000, max = 4000, default = -300 })
+shields({ key = "shieldsY", code = "VS", type = "int", min = -4000, max = 4000, default = -140 })
 shields({ key = "shieldsAmount", code = "VT", type = "bool", default = true })
 shields({ key = "shieldsAbbreviate", code = "VU", type = "bool", default = true })
 shields({ key = "shieldsAmountPoint", code = "VV", type = "enum", values = Settings.SHIELD_TEXT_POINTS,

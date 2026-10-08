@@ -1,18 +1,16 @@
 local _, ns = ...
 
 -- The shield watch: one icon per active absorb shield on the player,
--- target or focus, with the absorb it has left, in a block of its own that
+-- with the absorb it has left, in a block of its own that
 -- has a mover. Off by default (shieldsEnabled).
 --
 -- The watched shields are shipped groups of spells (all Classic ranks)
 -- and the frame's own additions. The aura is looked up by name
 -- (C_UnitAuras.GetAuraDataBySpellName), so every rank and every spell of
 -- the same name is found; names come from the client (an ID it does not
--- know is dropped). The player's block watches the player's class's group,
--- the Priest group (a priest's shield lands on anyone) and the potions and
--- items; target and focus watch every group. "Only my shields" (target and
--- focus) asks with the filter HELPFUL|PLAYER: the client decides whose
--- shield it is.
+-- know is dropped). The block watches the player's class's group, the
+-- Priest group (a priest's shield lands on anyone) and the potions and
+-- items.
 --
 -- A shield is active (a plain AuraData), absent (nil while the spell's
 -- aura is not secret) or unknown (a refusal, a secret answer, or nil while
@@ -20,8 +18,7 @@ local _, ns = ...
 -- aura's points[1], handed to the text as it is (secret or not). When it
 -- cannot be read, the total of the unit's absorbs (UnitGetTotalAbsorbs)
 -- stands in, but only while exactly one watched shield is known to be
--- active (with "only mine": exactly one from any caster); otherwise no
--- number. Nothing secret is compared, added or tested.
+-- active; otherwise no number. Nothing secret is compared, added or tested.
 --
 -- Icons are aura icons (Elements/AuraButton.lua): the texture, the swipe
 -- (readable times or the client's duration object) and the client's
@@ -33,13 +30,11 @@ ns.ShieldWatch = ShieldWatch
 
 local Config, Secrets, Pixel, AuraButton = ns.Config, ns.Secrets, ns.Pixel, ns.AuraButton
 
-ShieldWatch.SCOPES = { player = true, target = true, focus = true }
+ShieldWatch.SCOPES = { player = true }
 ShieldWatch.FILTER = "HELPFUL"
-ShieldWatch.FILTER_MINE = "HELPFUL|PLAYER"
 
--- The shipped shields, Classic spell IDs (every rank). class: the group
--- the player's block watches only for that class; anyone: on every
--- player's block.
+-- The shipped shields, Classic spell IDs (every rank). class: a group
+-- watched only for that class; anyone: for every class.
 ShieldWatch.GROUPS = {
     { key = "Priest", class = "PRIEST", anyone = true, spells = {
         -- Power Word: Shield, ranks 1-10.
@@ -96,11 +91,11 @@ local function spellName(id)
     return ns.AuraBlocklist.Name(id)
 end
 
--- Whether a group is watched on a frame: switched on, and on the player's
--- block only the player's class's and those for anyone.
+-- Whether a group is watched: switched on, and the player's class's or
+-- one for anyone.
 function ShieldWatch.GroupWatched(scope, group)
     if setting(scope, "shields" .. group.key) ~= true then return false end
-    if scope ~= "player" or group.anyone then return true end
+    if group.anyone then return true end
     return group.class == playerClass()
 end
 
@@ -191,28 +186,13 @@ end
 -- ({ entry, aura }), and whether exactly one watched shield is known to
 -- be active (the total may stand in for an unreadable amount).
 function ShieldWatch.Scan(scope, unit)
-    local watched = ShieldWatch.Watched(scope)
-    local onlyMine = scope ~= "player" and setting(scope, "shieldsOnlyMine") == true
-    local filter = onlyMine and ShieldWatch.FILTER_MINE or ShieldWatch.FILTER
     local active, unknown = {}, false
-    for _, entry in ipairs(watched) do
-        local state, aura = ShieldWatch.Read(unit, entry, filter)
+    for _, entry in ipairs(ShieldWatch.Watched(scope)) do
+        local state, aura = ShieldWatch.Read(unit, entry, ShieldWatch.FILTER)
         if state == "active" then active[#active + 1] = { entry = entry, aura = aura } end
         if state == "unknown" then unknown = true end
     end
-    local single = not unknown and #active == 1
-    -- Only mine: the total holds everyone's shields; it stands in only
-    -- while exactly one is active from any caster.
-    if single and onlyMine then
-        local any = 0
-        for _, entry in ipairs(watched) do
-            local state = ShieldWatch.Read(unit, entry, ShieldWatch.FILTER)
-            if state == "unknown" then any = math.huge break end
-            if state == "active" then any = any + 1 end
-        end
-        single = any == 1
-    end
-    return active, single
+    return active, not unknown and #active == 1
 end
 
 -- The aura's remaining absorb as the client gives it (a number or a
@@ -428,8 +408,7 @@ end
 local function showActive(frame)
     local sw, scope, unit = frame.shields, frame.key, frame.unit
     local active, single = ShieldWatch.Scan(scope, unit)
-    local filter = scope ~= "player" and setting(scope, "shieldsOnlyMine") == true and ShieldWatch.FILTER_MINE
-        or ShieldWatch.FILTER
+    local filter = ShieldWatch.FILTER
     local abbreviate = setting(scope, "shieldsAbbreviate") == true
     local n = 0
     for _, shield in ipairs(active) do
@@ -468,7 +447,7 @@ function ShieldWatch.Update(frame)
     if frame.shields then ShieldWatch.Refresh(frame) end
 end
 
--- Test mode: the two samples on each of the three frames.
+-- Test mode: the two samples.
 function ShieldWatch.Preview(frame, on)
     local sw = frame.shields
     if not sw then return end

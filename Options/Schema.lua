@@ -127,9 +127,9 @@ Schema.FRAME = {
         { id = "dispels", keys = { "dispelsEnabled", "dispelsShowTime", "dispelsAnchor", "dispelsFramePoint",
             "dispelsPoint", "dispelsX", "dispelsY", "dispelsGrowth", "dispelsRowGrowth", "dispelsSize",
             "dispelsSpacing", "dispelsPerRow", "dispelsMax" } },
-        -- The shield watch (Elements/ShieldWatch.lua): player, target, focus.
+        -- The shield watch (Elements/ShieldWatch.lua): the player only.
         { id = "shields", keys = { "shieldsEnabled", "shieldsPriest", "shieldsMage", "shieldsWarlock", "shieldsItems",
-            "shieldsExtra", "shieldsOnlyMine", "shieldsHideInBuffs", "shieldsSize", "shieldsSpacing", "shieldsGrowth",
+            "shieldsExtra", "shieldsHideInBuffs", "shieldsSize", "shieldsSpacing", "shieldsGrowth",
             "shieldsX", "shieldsY", "shieldsAmount", "shieldsAbbreviate", "shieldsAmountPoint", "shieldsAmountX",
             "shieldsAmountY", "shieldsAmountFont", "shieldsAmountSize", "shieldsAmountOutline", "shieldsAmountColor",
             "shieldsSwipe", "shieldsTime", "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY", "shieldsTimeFont",
