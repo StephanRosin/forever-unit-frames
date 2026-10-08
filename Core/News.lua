@@ -51,7 +51,7 @@ News.ENTRIES = {
         action = { text = "NEWS_OPEN_FSR", run = function() ns.Options.Open("player", "bars") end },
     },
     -- The shield watch is off by default: the button opens where it is
-    -- switched on (each frame's Auras tab, section Shields).
+    -- switched on (the player frame's Auras tab, section Shields).
     ["0.25.0"] = {
         lines = { "NEWS_0_25_0_SHIELDS", "NEWS_0_25_0_SHIELDS_MORE" },
         action = { text = "NEWS_OPEN_SHIELDS", run = function() ns.Options.Open("player", "auras") end },
