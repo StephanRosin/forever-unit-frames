@@ -1254,3 +1254,9 @@ L.SECTION_clickCast = "Klickzauber"
 L.CLICK_CAST_EDIT = "Belegung bearbeiten…"
 L.NEWS_0_23_0_CLICK = "Klickzauber aus dem Schlachtzugsfenster wirken jetzt auf allen Einheitenrahmen (Spieler, Begleiter, Ziel, Ziel des Ziels, Fokus, Gruppe), auch bei ausgeschalteten Schlachtzugsrahmen. Eine schon vorhandene Belegung wirkt damit auch auf den Spieler-, Ziel- und Fokusrahmen: pro Rahmen im Reiter Anordnung abschalten, oder für alle unter Allgemein > Rahmen."
 L.NEWS_0_23_0_TOOLS = "Werkzeugleiste: an ihrem Griff, mit /fuf tools oder per Rechtsklick auf den Minikartenknopf des Schlachtzugs aus- und einklappen."
+
+-- News of 0.24.0.
+L.NEWS_0_24_0_FSR = "Fünf-Sekunden-Regel: Nach einem Zauber, der Mana kostet, läuft ein Funke über den Manabalken des Spielerrahmens, die fünf Sekunden lang, bis dein Mana wieder voll regeneriert; Countdown und abgedunkelter Balken lassen sich dazuschalten. Sie ist standardmäßig an: abschalten unter Spieler > Leisten, „Fünf-Sekunden-Regel“."
+L.NEWS_0_24_0_GROUP = "Spielerrahmen: „In einer Gruppe nie abblenden“ hält ihn in Gruppe oder Schlachtzug voll sichtbar, für Heiler, die per Mausüber heilen (Spieler > Status, Außerhalb des Kampfes)."
+L.NEWS_0_24_0_COMBAT = "Kampfzahlen: Platz (links, Mitte, rechts) mit Versatz, eigene Schriftart, Größe und eigener Schriftstil (Reiter Texte jedes Rahmens)."
+L.NEWS_OPEN_FSR = "Fünf-Sekunden-Regel öffnen"

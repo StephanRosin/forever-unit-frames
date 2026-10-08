@@ -1255,3 +1255,9 @@ L.SECTION_clickCast = "Lanzamiento con clic"
 L.CLICK_CAST_EDIT = "Editar asignaciones…"
 L.NEWS_0_23_0_CLICK = "El lanzamiento con clic de la ventana de banda funciona ahora en todos los marcos de unidad (jugador, mascota, objetivo, objetivo del objetivo, foco, grupo), también con los marcos de banda apagados. Tus asignaciones actuales actúan ahora también en los marcos del jugador, del objetivo y del foco: desactívalo por marco en su pestaña Diseño, o para todos en General > Marcos."
 L.NEWS_0_23_0_TOOLS = "Barra de herramientas: despliégala y recógela con su asa, /fuf tools o un clic derecho en el botón del minimapa de banda."
+
+-- News of 0.24.0.
+L.NEWS_0_24_0_FSR = "Regla de los cinco segundos: tras un hechizo que cuesta maná, una chispa recorre la barra de maná del marco del jugador durante los cinco segundos hasta que el maná vuelve a regenerarse del todo; se pueden añadir una cuenta atrás y una barra atenuada. Está activada por defecto: desactívala en Jugador > Barras, «Regla de los 5 segundos»."
+L.NEWS_0_24_0_GROUP = "Marco del jugador: «Nunca atenuar en grupo» lo mantiene entero en grupo o banda, para sanadores que sanan con el ratón encima (Jugador > Estado, Fuera de combate)."
+L.NEWS_0_24_0_COMBAT = "Números de combate: posición (izquierda, centro, derecha) con desplazamiento, fuente, tamaño y estilo propios (pestaña Textos de cada marco)."
+L.NEWS_OPEN_FSR = "Abrir la regla de los 5 segundos"

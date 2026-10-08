@@ -1282,3 +1282,9 @@ L.SECTION_clickCast = "Click-casting"
 L.CLICK_CAST_EDIT = "Edit bindings…"
 L.NEWS_0_23_0_CLICK = "Click-casting from the raid window now works on every unit frame (player, pet, target, target of target, focus, party), also with the raid frames off. Bindings you already have now act on the player, target and focus frames too: switch it off per frame on its Layout tab, or for all on General > Frames."
 L.NEWS_0_23_0_TOOLS = "Tools bar: fold it from its handle, /fuf tools or a right-click on the raid minimap button."
+
+-- News of 0.24.0.
+L.NEWS_0_24_0_FSR = "Five-second rule: after a spell that costs mana, a spark crosses the player frame's mana bar for the five seconds until your mana regenerates fully again; a countdown and a dimmed bar can be added. It is on by default: switch it off on Player > Bars, \"Five-second rule\"."
+L.NEWS_0_24_0_GROUP = "Player frame: \"Never fade in a group\" keeps it in full in a party or raid, for healers who heal by mouse-over (Player > Status, Out of combat)."
+L.NEWS_0_24_0_COMBAT = "Combat numbers: place (left, center, right) with an offset, font, size and font style of their own (each frame's Text tab)."
+L.NEWS_OPEN_FSR = "Open the five-second rule"

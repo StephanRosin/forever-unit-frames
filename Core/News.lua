@@ -44,6 +44,12 @@ News.ENTRIES = {
             "NEWS_0_23_0_ELITE", "NEWS_0_23_0_TOOLS", "NEWS_0_23_0_LOOK" },
         action = { text = "NEWS_OPEN_HIDDEN", run = function() ns.Options.Open("general", "appearance") end },
     },
+    -- The five-second rule is on by default: its button opens where it is
+    -- switched off (the player frame's Bars tab).
+    ["0.24.0"] = {
+        lines = { "NEWS_0_24_0_FSR", "NEWS_0_24_0_GROUP", "NEWS_0_24_0_COMBAT" },
+        action = { text = "NEWS_OPEN_FSR", run = function() ns.Options.Open("player", "bars") end },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

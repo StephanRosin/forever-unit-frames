@@ -1254,3 +1254,9 @@ L.SECTION_clickCast = "Sorts au clic"
 L.CLICK_CAST_EDIT = "Modifier les raccourcis…"
 L.NEWS_0_23_0_CLICK = "Les sorts au clic de la fenêtre de raid agissent maintenant sur tous les cadres d’unité (joueur, familier, cible, cible de la cible, focalisation, groupe), même cadres de raid désactivés. Vos raccourcis existants agissent donc aussi sur les cadres du joueur, de la cible et de la focalisation : à désactiver par cadre dans son onglet Disposition, ou pour tous dans Général > Cadres."
 L.NEWS_0_23_0_TOOLS = "Barre d'outils : dépliez-la et repliez-la par sa poignée, /fuf tools ou un clic droit sur le bouton de minicarte du raid."
+
+-- News of 0.24.0.
+L.NEWS_0_24_0_FSR = "Règle des cinq secondes : après un sort qui coûte du mana, une étincelle parcourt la barre de mana du cadre du joueur pendant les cinq secondes avant que votre mana se régénère pleinement ; un compte à rebours et une barre assombrie peuvent s'y ajouter. Elle est activée par défaut : désactivez-la dans Joueur > Barres, « Règle des 5 secondes »."
+L.NEWS_0_24_0_GROUP = "Cadre du joueur : « Jamais estomper en groupe » le garde entier en groupe ou en raid, pour les soigneurs qui soignent au survol (Joueur > État, Hors combat)."
+L.NEWS_0_24_0_COMBAT = "Chiffres de combat : position (gauche, centre, droite) avec décalage, police, taille et style propres (onglet Textes de chaque cadre)."
+L.NEWS_OPEN_FSR = "Ouvrir la règle des 5 secondes"
