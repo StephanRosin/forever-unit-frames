@@ -248,6 +248,10 @@ function Party.StyleAll()
     if not header then return end
     setAttributes(header, headerAttributes())
     place(header)
+    -- Every slot's button made now, out of combat (Units/Units.lua): one
+    -- made for someone joining in combat would get its aura containers
+    -- only after combat.
+    if ns.FrameEnabled(Party.KEY) then ns.Units.PrebuildButtons(header, Party.Slots()) end
     -- The header only SetPoints the buttons it shows; an anchor on the
     -- other orientation's point would stay. Clear them all first.
     for _, button in ipairs(Party.buttons) do
@@ -283,6 +287,9 @@ function Party.InitButton(button)
         button:SetSize(Single.Size(Party.KEY))
     end
     Single.StyleContent(button)
+    -- Made out of combat (ahead of time, Party.StyleAll): its aura
+    -- containers now, so a member joining in combat shows auras at once.
+    ns.Units.Prepare(button)
     -- Click-casting (Raid/ClickCast.lua), now or after combat.
     ns.ClickCast.Added(button)
 end

@@ -51,7 +51,13 @@ H.check("fake 2 below fake 1", select(5, P.fakes[2]:GetPoint(1)),
 H.check("fake health: the sample", P.fakes[3].health:GetValue(), ns.Health.SAMPLE)
 H.check("fake on the player", P.fakes[3].unit, "player")
 H.checkTrue("fake sample cast", P.fakes[1].castbar:IsShown())
-H.check("fakes are not header buttons", #P.buttons, 1)
+-- The header's own buttons (made ahead of time, one per slot) are apart.
+local mixed = false
+for _, b in ipairs(P.buttons) do
+    for _, f in ipairs(P.fakes) do mixed = mixed or b == f end
+end
+H.check("fakes are not header buttons", mixed, false)
+H.check("header buttons: one per slot", #P.buttons, P.Slots())
 
 -- Party settings apply to the pretend party at once.
 C.Set("party", "partyOrientation", "HORIZONTAL")

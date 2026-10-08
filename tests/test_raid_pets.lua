@@ -55,7 +55,15 @@ H.check("the main panel's cells unchanged", ns.RaidHeader.headers[1]:GetAttribut
 H.check("the panel", P.width .. "x" .. P.height, (2 * 96 + 2) .. "x" .. (14 + 24))
 H.check("title", P.decor[1].title:GetText(), "Pets")
 H.checkTrue("the raid cell's parts", wolf.raidAuras and wolf.raidStates and wolf.raidRole)
-H.check("listed with the cells", Cell.buttons[#Cell.buttons] == wolf or Cell.buttons[#Cell.buttons - 1] == wolf, true)
+-- Listed with the cells (more pet cells are made ahead of time, so not
+-- necessarily among the last).
+local listed = false
+for _, b in ipairs(Cell.buttons) do listed = listed or b == wolf end
+H.check("listed with the cells", listed, true)
+-- Ahead of time: the pets there are and everyone who could still join
+-- at this size (10 - 3 members), each cell without a pet idle.
+H.checkTrue("pet cells made ahead", h:GetAttribute("child9") ~= nil and h:GetAttribute("child10") == nil)
+H.check("an idle pet cell", h:GetAttribute("child9").raidAuras.container:GetUnit(), "none")
 
 -- Its height, per size.
 RC.Set("r10", "petsCellHeight", 30)

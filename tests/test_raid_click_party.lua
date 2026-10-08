@@ -17,7 +17,8 @@ RC.Set("general", "click1Ctrl", "assist")
 H.check("a binding reaches the party", b1:GetAttribute("ctrl-type1"), "assist")
 H.check("left still targets", b1:GetAttribute("*type1"), "target")
 
--- A member who joins later gets them at once; in combat after combat.
+-- A member who joins later gets them at once; in combat too, as the
+-- button was made ahead of time, out of combat (Units/Units.lua).
 M.units.party2 = { name = "Bob", health = 5, healthMax = 10 }
 M.SetGroup({ "party1", "party2" })
 H.check("a new member's button", header:GetAttribute("child2"):GetAttribute("ctrl-type1"), "assist")
@@ -25,7 +26,7 @@ M.units.party3 = { name = "Cid", health = 5, healthMax = 10 }
 M.SetCombat(true)
 M.SetGroup({ "party1", "party2", "party3" })
 local b3 = header:GetAttribute("child3")
-H.check("made in combat: the XML's", b3:GetAttribute("ctrl-type1"), nil)
+H.check("joined in combat: made ahead, bound", b3:GetAttribute("ctrl-type1"), "assist")
 M.SetCombat(false)
 H.check("after combat: the binding", b3:GetAttribute("ctrl-type1"), "assist")
 H.check("nothing blocked", #M.blocked, 0)

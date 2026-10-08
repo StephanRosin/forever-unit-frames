@@ -75,9 +75,10 @@ M.SetCombat(true)
 M.SetGroup({ "party2", "party3" })
 H.check("combat: slot 1 follows", b1.auraContainers.debuffs.container:GetUnit(), "party2")
 local b2 = P.header:GetAttribute("child2")
-H.check("combat: new member waits", b2.auraContainers, nil)
+-- Its button and containers were made ahead of time, out of combat
+-- (Units/Units.lua): they look at the new member at once.
+H.check("combat: new member at once", b2.auraContainers.debuffs.container:GetUnit(), "party3")
 M.SetCombat(false)
-H.checkTrue("after combat: new member's containers", b2.auraContainers)
 H.check("new member unit", b2.auraContainers.debuffs.container:GetUnit(), "party3")
 H.check("party: still no reads", M.auraQueries, 0)
 

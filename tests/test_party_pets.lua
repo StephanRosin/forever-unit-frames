@@ -223,21 +223,22 @@ H.check("horizontal: anchored left", b2:GetPoint(1), "LEFT")
 C.Set("party", "partyOrientation", "VERTICAL")
 H.check("vertical again: anchored top", b2:GetPoint(1), "TOP")
 
--- A pet summoned in combat: XML size until combat ends.
--- (You and three pets so far use four buttons; the fifth is new.)
+-- A pet summoned in combat: its button was made ahead of time, out of
+-- combat (one per slot: showing yourself makes the fifth), so it has the
+-- settings size at once.
 C.Set("party", "partyShowPlayer", true)
 C.Set("party", "width", 180)
-H.check("four buttons so far", pets:GetAttribute("child5"), nil)
+H.checkTrue("five buttons, made ahead", pets:GetAttribute("child5") ~= nil and pets:GetAttribute("child6") == nil)
 M.combat = true
 M.units.party4 = { name = "Dan", health = 5, healthMax = 10 }
 M.units.partypet4 = { name = "Bat", health = 2, healthMax = 4 }
 M.SetGroup({ "party1", "party2", "party3", "party4" })
 local b5 = pets:GetAttribute("child5")
-H.check("combat: button made", b5:GetAttribute("unit"), "partypet4")
-H.check("combat: xml width", b5:GetWidth(), 160)
+H.check("combat: the pet's button", b5:GetAttribute("unit"), "partypet4")
+H.check("combat: settings width at once", b5:GetWidth(), 180)
 H.check("combat: data already shown", b5.health:GetValue(), 2)
 M.SetCombat(false)
-H.check("after combat: sized", b5:GetWidth(), 180)
+H.check("after combat: same size", b5:GetWidth(), 180)
 C.Set("party", "partyShowPlayer", false)
 
 -- Party off or pets off: the pet header hides.

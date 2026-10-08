@@ -488,6 +488,12 @@ function CellAuras.Update(frame)
     end
 end
 
+-- A cell made ahead of time (Units/Units.lua): its container now, out of
+-- combat, holding no unit until the header hands it one.
+function CellAuras.Prepare(frame)
+    ready(frame)
+end
+
 -- The cell lost its unit: its container stops looking at the old one.
 -- In combat too: SetUnit only re-registers the container's events.
 -- A cell without a container yet gets none for it.

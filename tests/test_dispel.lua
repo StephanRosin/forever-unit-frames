@@ -113,17 +113,18 @@ do
     H.check("on again", dispelContainer(b):IsShown(), true)
 end
 
--- Made in combat: waits for the end of combat.
+-- Joined in combat: the button and its container were made ahead of
+-- time, out of combat (Units/Units.lua); the container looks at once.
 do
     local ns = boot()
+    local b = ns.Party.buttons[1]
+    H.check("before: made, idle", dispelContainer(b):GetUnit(), "none")
     M.combat = true
     M.units.party1 = { name = "Ann", health = 5, healthMax = 10 }
     M.SetGroup({ "party1" })
-    local b = ns.Party.buttons[1]
-    H.check("combat: not made yet", dispelContainer(b), nil)
+    H.check("combat: its unit at once", dispelContainer(b):GetUnit(), "party1")
     H.check("combat: nothing blocked", #M.blocked, 0)
     M.SetCombat(false)
-    H.checkTrue("after combat: made", dispelContainer(b))
     H.check("after combat: its unit", dispelContainer(b):GetUnit(), "party1")
     -- Restyled in combat: the buttons refuse us while auras are secret;
     -- tried again after combat.

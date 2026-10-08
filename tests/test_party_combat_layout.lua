@@ -1,8 +1,7 @@
--- Party members (and pets) whose buttons the header makes in combat keep
--- the XML size until the relayout after combat. Until then their bars
--- and texts are laid out from that actual size, so the rows fill the
--- button without overlapping; after combat everything takes the
--- configured size.
+-- Party members (and pets) who join in combat: their buttons were made
+-- ahead of time, out of combat (Units/Units.lua PrebuildButtons), so
+-- they have the configured size at once and their rows fill it. (Until
+-- 0.25.1 the header made them in combat at the XML size.)
 local M = H.M
 
 local function boot()
@@ -40,7 +39,7 @@ do
     M.units.party1 = { name = "Ann", health = 5, healthMax = 10 }
     M.units.partypet1 = { name = "Cat", health = 5, healthMax = 10 }
     M.SetGroup({ "party1" })
-    H.check("one pet button out of combat", #ns.PartyPets.buttons, 1)
+    H.check("a pet button per slot out of combat", #ns.PartyPets.buttons, ns.Party.Slots())
     local first = ns.Party.buttons[1]
     H.check("out of combat: configured size", first:GetHeight(), 65)
     checkFits("member made out of combat", first, 192, 65)
@@ -51,14 +50,15 @@ do
     M.units.party3 = { name = "Cid", health = 5, healthMax = 10 }
     M.units.partypet3 = { name = "Wolf", health = 5, healthMax = 10 }
     M.SetGroup({ "party1", "party2", "party3" })
-    local late = ns.Party.buttons[3]
-    H.checkTrue("button made in combat", late)
-    H.check("combat: still the XML size", late:GetHeight(), 46)
-    checkFits("member made in combat", late, 160, 46)
-    H.check("a second pet button in combat", #ns.PartyPets.buttons, 2)
-    local pet = ns.PartyPets.buttons[2]
-    H.check("pet made in combat: the XML size", pet:GetHeight(), 20)
-    checkFits("pet made in combat", pet, 160, 20)
+    local late = ns.Party.header:GetAttribute("child3")
+    H.check("joined in combat: its button", late.unit, "party3")
+    H.check("combat: configured size at once", late:GetHeight(), 65)
+    checkFits("member joined in combat", late, 192, 65)
+    H.check("no pet button made in combat", #ns.PartyPets.buttons, ns.Party.Slots())
+    local pet = ns.PartyPets.header:GetAttribute("child2")
+    H.check("pet in combat: its button", pet.unit, "partypet3")
+    H.check("pet in combat: configured size at once", pet:GetHeight(), 30)
+    checkFits("pet in combat", pet, 192, 30)
     H.check("combat: nothing blocked", #M.blocked, 0)
 
     -- After combat: the configured size and a layout to match.

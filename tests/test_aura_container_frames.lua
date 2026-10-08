@@ -19,7 +19,11 @@ H.check("level above the bars", dc:GetFrameLevel(), t:GetFrameLevel() + Auras.LE
 H.checkTrue("shown", dc:IsShown())
 H.check("made once", AC.Ensure(t), true)
 H.check("still the same", t.auraContainers.debuffs.container, dc)
-H.check("two containers plus the test one", #M.auraContainers, 3)
+local onTarget = 0
+for _, c in ipairs(M.auraContainers) do
+    if c:GetParent() == t then onTarget = onTarget + 1 end
+end
+H.check("two containers on the target", onTarget, 2)
 
 -- Target debuffs: yours first (default) at 26, the rest at 20 on a new line.
 H.check("own on", dc._groups.own.enabled, true)

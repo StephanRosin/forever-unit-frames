@@ -375,6 +375,24 @@ function Panel.New(spec)
         if P.panel then P.panel:SetShown(P.Enabled() and (Panel.Active() or testing())) end
     end
 
+    -- How many cells block i should have before combat: a group block its
+    -- capacity (a full group); any other the cells it holds plus everyone
+    -- who could still join at this size, never more than the size.
+    local function ahead(block, i, size)
+        if block.capacity then return block.capacity end
+        local free = math.max(0, size - GetNumGroupMembers())
+        return math.min(size, P.Count(i) + free)
+    end
+
+    -- Out of combat, while the panel shows a group: every block's cells
+    -- made ahead of time (Units/Units.lua), each with its aura container,
+    -- so a member joining in combat shows auras at once. A header shown
+    -- lays out its members again.
+    function P.Prebuild(size)
+        if not (P.Enabled() and Panel.Active()) or testing() then return end
+        for i, block in ipairs(P.blocks) do ns.Units.PrebuildButtons(P.headers[i], ahead(block, i, size)) end
+    end
+
     -- Out of combat only: the whole layout for the active size. Every
     -- header shows again (Hide + Show lays its cells out anew, OnShow);
     -- the cells it does not use lose their anchors (it only SetPoints the
@@ -388,6 +406,7 @@ function Panel.New(spec)
         for i, block in ipairs(P.blocks) do
             setAttributes(header(i), headerAttributes(s, size), block.filter)
         end
+        P.Prebuild(size)
         for _, button in ipairs(P.Cells()) do
             Cell.Style(button)
             button:ClearAllPoints()
@@ -487,6 +506,7 @@ ns.Listen("RAID_CELLS_CHANGED", function()
             if testing() then return end
             for _, P in ipairs(Panel.list) do
                 if P.anchor and P.Enabled() then
+                    P.Prebuild(Cell.Size())
                     P.Place(P.LiveCounts())
                     P.PlaceAnchor()
                 end

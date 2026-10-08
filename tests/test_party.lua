@@ -63,17 +63,18 @@ H.check("other member untouched", b1.health:GetValue(), 5)
 H.check("left click", b1:GetAttribute("*type1"), "target")
 H.check("second stacked below the first", select(2, b2:GetPoint(1)), b1)
 
--- Someone joins in combat: the header makes the button (XML size), the
--- settings size follows after combat.
+-- Someone joins in combat: the button was made ahead of time, out of
+-- combat (Units/Units.lua PrebuildButtons), so it has the settings size
+-- at once.
 M.units.party3 = { name = "Cid", health = 9, healthMax = 10 }
 M.combat = true
 M.SetGroup({ "party1", "party2", "party3" })
 local b3 = header:GetAttribute("child3")
-H.check("combat join: button made", b3:GetAttribute("unit"), "party3")
-H.check("combat join: xml width until combat ends", b3:GetWidth(), 160)
+H.check("combat join: button has the unit", b3:GetAttribute("unit"), "party3")
+H.check("combat join: settings width at once", b3:GetWidth(), 180)
 H.check("combat join: data already shown", b3.health:GetValue(), 9)
 M.SetCombat(false)
-H.check("combat join: sized after combat", b3:GetWidth(), 180)
+H.check("combat join: same size after combat", b3:GetWidth(), 180)
 
 -- Settings changes restyle every button; disabling hides the block.
 ns.Config.Set("party", "height", 40)

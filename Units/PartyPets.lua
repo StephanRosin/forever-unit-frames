@@ -228,6 +228,9 @@ function Pets.StyleAll(testing)
         header:ClearAllPoints()
         local dx, dy = Pets.ListOffset()
         header:SetPoint("TOPLEFT", Party.header, "BOTTOMLEFT", dx, -Party.PetListOffset() + dy)
+        -- A button per slot made now, out of combat (Units/Units.lua), as
+        -- for the members: a pet appearing in combat shows auras at once.
+        if on and not Pets.Beside() then ns.Units.PrebuildButtons(header, Party.Slots()) end
         -- The header only SetPoints the buttons it shows.
         for _, button in ipairs(Pets.buttons) do
             style(button)
@@ -255,6 +258,8 @@ function Pets.InitButton(button)
     -- Made in combat it keeps the XML size until the relayout after combat.
     if not InCombatLockdown() then button:SetSize(Single.Size(Pets.KEY)) end
     Single.StyleContent(button)
+    -- Made out of combat (ahead of time): its aura containers now.
+    ns.Units.Prepare(button)
 end
 
 -- The header assigns or clears a unit, in or out of combat.
@@ -287,6 +292,8 @@ function Pets.InitBeside(button)
     ns.Units.EnableTooltip(button)
     ns.Units.EnableClickCast(button)
     Single.StyleContent(button)
+    -- Made with its member, ahead of time: its aura containers now.
+    ns.Units.Prepare(button)
     if InCombatLockdown() then ns.AfterCombat("partyStyle", Party.StyleAll) end
 end
 

@@ -56,6 +56,9 @@ News.ENTRIES = {
         lines = { "NEWS_0_25_0_SHIELDS", "NEWS_0_25_0_SHIELDS_MORE" },
         action = { text = "NEWS_OPEN_SHIELDS", run = function() ns.Options.Open("player", "auras") end },
     },
+    ["0.25.1"] = {
+        lines = { "NEWS_0_25_1_COMBAT_JOIN" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

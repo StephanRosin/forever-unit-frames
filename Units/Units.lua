@@ -85,3 +85,53 @@ function ns.Units.UpdateElement(element, event)
         if frame.unit and UnitExists(frame.unit) then element.Update(frame, event) end
     end)
 end
+
+-- Buttons made ahead of time --------------------------------------------------------
+-- A group header (SecureGroupHeaderTemplate) makes a button when it first
+-- needs one, in combat too when someone joins then; such a button cannot
+-- get its aura containers until combat ends (Elements/AuraContainers.lua).
+-- So the party header and the raid blocks make theirs out of combat, and
+-- each button prepares its containers as it is made (ns.Units.Prepare).
+--
+-- How (configureChildren in Blizzard_RestrictedAddOnEnvironment/
+-- SecureGroupHeaders.lua): it makes buttons up to the number it displays,
+-- numDisplayed = loopFinish - (startingIndex - 1). With startingIndex
+-- 1 - n, unitsPerColumn n and maxColumns 1, loopFinish is
+-- min(startingIndex - 1 + n, unitCount) = 0 whatever the roster, so it
+-- displays exactly n, and every one of them at an index <= 0: no unit. The
+-- header lays out once so (on show, hidden at once again: nothing is
+-- drawn in between), takes its own attributes back and is shown again as
+-- it was, which lays out the real members. Out of combat only; nothing
+-- happens when the header has n buttons already.
+ns.Units.PREBUILD_KEYS = { "startingIndex", "unitsPerColumn", "maxColumns" }
+
+local function setQuietly(header, values)
+    header:SetAttribute("_ignore", "attributeChanges")
+    for _, name in ipairs(ns.Units.PREBUILD_KEYS) do header:SetAttribute(name, values[name]) end
+    header:SetAttribute("_ignore", nil)
+end
+
+-- Returns whether buttons were made.
+function ns.Units.PrebuildButtons(header, n)
+    if not header or n < 1 or InCombatLockdown() or header:GetAttribute("child" .. n) then return false end
+    local saved = {}
+    for _, name in ipairs(ns.Units.PREBUILD_KEYS) do saved[name] = header:GetAttribute(name) end
+    local shown = header:IsShown()
+    header:Hide()
+    setQuietly(header, { startingIndex = 1 - n, unitsPerColumn = n, maxColumns = 1 })
+    header:Show()
+    header:Hide()
+    setQuietly(header, saved)
+    if shown then header:Show() end
+    return true
+end
+
+-- A unit button just made, out of combat: what each element would
+-- otherwise make the first time it shows a unit, made now (Prepare, an
+-- optional element call), so a unit handed out in combat finds it ready.
+function ns.Units.Prepare(frame)
+    if InCombatLockdown() then return end
+    for _, el in ipairs(ns.Elements) do
+        if el.Prepare then el.Prepare(frame) end
+    end
+end

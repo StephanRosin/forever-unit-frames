@@ -24,7 +24,10 @@ local c = cell.raidAuras.container
 H.checkTrue("cell: container", c)
 H.check("container on the cell", c:GetParent(), cell)
 H.check("a custom aura container", c._template, "CustomAuraContainerTemplate")
-H.check("the second block's empty cell: none", Header.headers[2]:GetAttribute("child1").raidAuras.container, nil)
+-- Cells are made ahead of time (Units/Units.lua): an empty one's
+-- container looks at no unit.
+H.check("the second block's empty cell: idle", Header.headers[2]:GetAttribute("child1").raidAuras.container:GetUnit(),
+    "none")
 H.check("container: the cell's unit", c:GetUnit(), "raid1")
 H.check("container: no edit mode samples", c:IsEditModePreviewEnabled(), false)
 H.check("container: above the texts", c:GetFrameLevel(), cell:GetFrameLevel() + CellAuras.LEVELS)
@@ -84,13 +87,15 @@ local updates = c._updates
 M.SetRaidRoster({ member("Cid", "PRIEST", 1), member("Bob", "MAGE", 1) })
 H.checkTrue("same unit, someone else: updated", c._updates > updates)
 
--- In combat: settings wait, and a cell made now gets its slots after it.
+-- In combat: settings wait; a member joining finds their cell made ahead,
+-- container and slot included, and it looks at them at once.
 M.combat = true
 RC.Set("r10", "dispelFilter", "ALL")
 H.check("combat: filter unchanged", slot.filter, "HARMFUL|RAID")
 M.SetRaidRoster({ member("Cid", "PRIEST", 1), member("Bob", "MAGE", 1), member("Dan", "ROGUE", 1) })
 local late = header:GetAttribute("child3")
-H.check("combat join: no container yet", late.raidAuras.container, nil)
+H.check("combat join: container looks at them", late.raidAuras.container:GetUnit(), "raid3")
+H.check("combat join: filter waits there too", late.raidAuras.container._slots.dispel.filter, "HARMFUL|RAID")
 M.SetCombat(false)
 H.check("after combat: filter", slot.filter, "HARMFUL|DISPELLABLE")
 local lateContainer = late.raidAuras.container

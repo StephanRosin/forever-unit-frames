@@ -251,6 +251,12 @@ function Dispel.Update(frame, event)
     readPlain(frame)
 end
 
+-- A party button made ahead of time (Units/Units.lua): its container
+-- now, out of combat, holding no unit until the header hands it one.
+function Dispel.Prepare(frame)
+    if frame.dispel and frame.dispel.sample == nil then ensure(frame) end
+end
+
 -- In test mode d.sample is the frame's sample dispel type, false for none.
 function Dispel.Preview(frame, on)
     local d = frame.dispel

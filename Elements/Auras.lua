@@ -618,6 +618,12 @@ function Auras.Update(frame, event, _, info)
     readAll(frame, event == "UNIT_AURA")
 end
 
+-- A party button made ahead of time (Units/Units.lua): its containers
+-- now, out of combat, holding no unit until the header hands it one.
+function Auras.Prepare(frame)
+    if frame.auras then AuraContainers.Ensure(frame) end
+end
+
 -- After combat every shown frame that reads its auras itself reads again:
 -- reads refused in combat left icons out of date.
 ns.On("PLAYER_REGEN_ENABLED", function()

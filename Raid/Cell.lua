@@ -221,6 +221,9 @@ function Cell.InitButton(button)
     -- Made in combat it keeps the XML size until the relayout after combat.
     if not InCombatLockdown() then button:SetSize(ns.Single.Size(button.key)) end
     ns.Single.StyleContent(button)
+    -- Made out of combat (ahead of time, Raid/Panel.lua): its aura
+    -- container now, so a member joining in combat shows auras at once.
+    ns.Units.Prepare(button)
     -- Our click-casting (Raid/ClickCast.lua), now or after combat.
     ns.ClickCast.Added(button)
 end
