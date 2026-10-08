@@ -7,7 +7,9 @@ local _, ns = ...
 -- and name, a "Remove", and a mark where the client will not hide it
 -- everywhere on this list's frames. Long lists scroll with the wheel.
 -- opts as for the other rows (get, set, label, hint), plus opts.scope: the
--- unit frames' page it is on (none: a raid size).
+-- unit frames' page it is on (none: a raid size). A setting with
+-- def.spellList (the shield watch's additions) is a plain list of spells:
+-- its own note and empty text, no marks (nothing is hidden by it).
 local Editor = {}
 ns.AuraBlockEditor = Editor
 
@@ -75,7 +77,7 @@ function Editor.Row(parent, def, opts)
     row.note:SetPoint("TOPRIGHT", row, "TOPRIGHT", -LABEL_X, -(Widgets.ROW_H + 2))
     row.note:SetJustifyH("LEFT")
     row.note:SetWordWrap(true)
-    row.note:SetText(L.AURA_BLOCK_NOTE)
+    row.note:SetText(def.spellList and L.SPELL_LIST_NOTE or L.AURA_BLOCK_NOTE)
     row.lines = {}
     for i = 1, Editor.LINES do row.lines[i] = newLine(row, i) end
     row.count = Style.Text(row, 10, "muted")
@@ -93,10 +95,11 @@ function Editor.Row(parent, def, opts)
             line.id = id
             if id then
                 line.text:SetText(("%d  %s"):format(id, Blocklist.Name(id) or "?"))
-                local mark = Blocklist.Mark(id, context)
+                local mark = not def.spellList and Blocklist.Mark(id, context)
                 line.mark:SetText(mark and L["AURA_BLOCK_MARK_" .. mark] or "")
             else
-                line.text:SetText(i == 1 and #ids == 0 and L.AURA_BLOCK_EMPTY or "")
+                local empty = def.spellList and L.SPELL_LIST_EMPTY or L.AURA_BLOCK_EMPTY
+                line.text:SetText(i == 1 and #ids == 0 and empty or "")
                 line.mark:SetText("")
             end
             line.remove:SetShown(id ~= nil)

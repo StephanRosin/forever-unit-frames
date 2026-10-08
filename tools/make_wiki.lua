@@ -179,6 +179,17 @@ local SECTION_NOTE = {
         .. " It starts when the game lists a mana cost for the spell; nothing shows at rest, and nothing while the"
         .. " power bar shows rage or energy (a druid in a form). A new spell restarts the five seconds. Test mode"
         .. " shows a running sample. Switch it off with **Five-second rule**.",
+    shields = "An icon per active absorb shield on the player, target or focus, with the absorb it has left,"
+        .. " like a WeakAura: Power Word: Shield, the mage's barriers and wards, the warlock's Shadow Ward and"
+        .. " Sacrifice, protection potions and absorbing items, plus spells you add. Off by default: switch it on"
+        .. " with **Shield watch**. The block has its own mover (unlock the frames to place it); test mode shows"
+        .. " two samples. The amount is exact: the shield's own remaining absorb, or, when the game does not"
+        .. " tell it, the total of all absorbs on the unit, but only while exactly one watched shield is up;"
+        .. " otherwise no number is shown. Shields the game keeps secret (often in combat) are not shown rather"
+        .. " than guessed. Your frame watches your own class's shields, a priest's shield and the potions and"
+        .. " items; target and focus watch them all. **Only my shields** (target and focus) leaves out other"
+        .. " players' shields. **Hide them in the buffs** leaves the watched shields out of the frame's buffs;"
+        .. " the game allows that on you, your group and pets, not on enemies.",
     auraBlock = "Auras hidden by spell, such as a campfire or a food buff: the list under General > Appearance"
         .. " hides them on every frame and raid cell, each frame's own list on that frame (both apply; each raid"
         .. " size has one too, on the raid window's Debuffs tab). Type spell IDs or names (several, separated by"

@@ -127,6 +127,13 @@ Schema.FRAME = {
         { id = "dispels", keys = { "dispelsEnabled", "dispelsShowTime", "dispelsAnchor", "dispelsFramePoint",
             "dispelsPoint", "dispelsX", "dispelsY", "dispelsGrowth", "dispelsRowGrowth", "dispelsSize",
             "dispelsSpacing", "dispelsPerRow", "dispelsMax" } },
+        -- The shield watch (Elements/ShieldWatch.lua): player, target, focus.
+        { id = "shields", keys = { "shieldsEnabled", "shieldsPriest", "shieldsMage", "shieldsWarlock", "shieldsItems",
+            "shieldsExtra", "shieldsOnlyMine", "shieldsHideInBuffs", "shieldsSize", "shieldsSpacing", "shieldsGrowth",
+            "shieldsX", "shieldsY", "shieldsAmount", "shieldsAbbreviate", "shieldsAmountPoint", "shieldsAmountX",
+            "shieldsAmountY", "shieldsAmountFont", "shieldsAmountSize", "shieldsAmountOutline", "shieldsAmountColor",
+            "shieldsSwipe", "shieldsTime", "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY", "shieldsTimeFont",
+            "shieldsTimeSize", "shieldsTimeOutline", "shieldsTimeColor" } },
         -- The spells this frame hides (with the account's list).
         { id = "auraBlock", keys = { "auraBlock" } },
         { id = "totems", keys = { "totemsEnabled", "totemsSize", "totemsSpacing", "totemsDirection", "totemsFramePoint", "totemsPoint",

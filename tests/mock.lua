@@ -2355,7 +2355,25 @@ function M.Reset()
         assert(M.secureDepth > 0, "mock: ClearRaidMarker outside secure code")
         if index == nil then M.worldMarkers = {} else M.worldMarkers[index] = nil end
     end
-    _G.UnitGetTotalAbsorbs = function(unit) local d = u(unit); return d and d.absorbs or 0 end
+    -- UnitDocumentation.lua: SecretReturns, never nil. M.absorbsSecret
+    -- hands the total back secret.
+    M.absorbsSecret = false
+    _G.UnitGetTotalAbsorbs = function(unit)
+        local d = u(unit)
+        local v = d and d.absorbs or 0
+        if M.absorbsSecret and not M.IsSecret(v) then return M.Secret(v) end
+        return v
+    end
+    -- LocalizationDocumentation.lua: takes a secret number
+    -- (AllowedWhenTainted); a secret gives a secret text. The client's
+    -- abbreviation is not modelled: the mock writes "<n>~".
+    _G.AbbreviateNumbers = function(n)
+        local v = M.Reveal(n)
+        assert(type(v) == "number", "AbbreviateNumbers: number")
+        local text = ("%d~"):format(v)
+        if M.IsSecret(n) then return M.Secret(text) end
+        return text
+    end
     _G.UnitGetIncomingHeals = function(unit, healer)
         local d = u(unit)
         if not d then return nil end
@@ -2440,7 +2458,9 @@ function M.Reset()
 
     -- Auras: M.units[unit].auras lists { auraInstanceID, icon, applications,
     -- dispelName, dispelType (the client's number), duration,
-    -- expirationTime, isHelpful, mine, dispellable }; any field may be a
+    -- expirationTime, isHelpful, mine, dispellable, name, spellId, points
+    -- (AuraData.points: a list of numbers; an absorb's first is what it
+    -- has left) }; any field may be a
     -- secret. M.auraError makes every aura query raise, as the client does
     -- when auras are locked for addons. A secret aura instance ID handed
     -- back to the client raises too (tainted callers may not pass secrets).

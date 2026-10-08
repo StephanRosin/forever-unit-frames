@@ -6,7 +6,7 @@ Buffs, debuffs, the party's dispellable debuffs and the player's totems.
 
 The **Auras** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
 
-**On this page:** [Aura icons](#aura-icons) · [Buffs](#buffs) · [Debuffs](#debuffs) · [Dispellable debuffs](#dispellable-debuffs) · [Hidden auras](#hidden-auras) · [Totems](#totems)
+**On this page:** [Aura icons](#aura-icons) · [Buffs](#buffs) · [Debuffs](#debuffs) · [Dispellable debuffs](#dispellable-debuffs) · [Shields](#shields) · [Hidden auras](#hidden-auras) · [Totems](#totems)
 
 ## Aura icons
 
@@ -111,6 +111,47 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <tr><td><b>Spacing</b></td><td></td><td>0 – 20</td><td>2</td><td>Party</td></tr>
 <tr><td><b>Icons per row</b></td><td>Auto: as many as fit the frame</td><td>0 – 40 (0: Auto)</td><td>Auto</td><td>Party</td></tr>
 <tr><td><b>Maximum icons</b></td><td></td><td>1 – 40</td><td>3</td><td>Party</td></tr>
+</tbody>
+</table>
+
+## Shields
+
+An icon per active absorb shield on the player, target or focus, with the absorb it has left, like a WeakAura: Power Word: Shield, the mage's barriers and wards, the warlock's Shadow Ward and Sacrifice, protection potions and absorbing items, plus spells you add. Off by default: switch it on with **Shield watch**. The block has its own mover (unlock the frames to place it); test mode shows two samples. The amount is exact: the shield's own remaining absorb, or, when the game does not tell it, the total of all absorbs on the unit, but only while exactly one watched shield is up; otherwise no number is shown. Shields the game keeps secret (often in combat) are not shown rather than guessed. Your frame watches your own class's shields, a priest's shield and the potions and items; target and focus watch them all. **Only my shields** (target and focus) leaves out other players' shields. **Hide them in the buffs** leaves the watched shields out of the frame's buffs; the game allows that on you, your group and pets, not on enemies.
+
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Shield watch</b></td><td>An icon per active shield with the absorb it has left</td><td>On, Off</td><td>Off</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Priest shields</b></td><td>Power Word: Shield</td><td>On, Off</td><td>On</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Mage shields</b></td><td>Ice Barrier, Mana Shield, the wards; on yours only as a mage</td><td>On, Off</td><td>On</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Warlock shields</b></td><td>Shadow Ward, Sacrifice; on yours only as a warlock</td><td>On, Off</td><td>On</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Potions and items</b></td><td>Protection potions, absorbing trinkets and belts</td><td>On, Off</td><td>On</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>More shields</b></td><td>Spell IDs or names; Enter adds</td><td>Spell IDs or names, up to 100 spells</td><td>(none)</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Only my shields</b></td><td>Shields you cast; the total stands in only if one shield is up</td><td>On, Off</td><td>Off</td><td>Target, Focus</td></tr>
+<tr><td><b>Hide them in the buffs</b></td><td>Not on enemies: the game shows their buffs as they are</td><td>On, Off</td><td>On</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Icon size</b></td><td></td><td>12 – 64</td><td>32</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Spacing</b></td><td></td><td>0 – 20</td><td>4</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Growth</b></td><td></td><td>Right, Left, Up, Down</td><td>Right</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Position X</b></td><td></td><td>-4000 – 4000</td><td>Player, Focus: -300; Target: 300</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Position Y</b></td><td></td><td>-4000 – 4000</td><td>Player, Target: -140; Focus: -50</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Amount left</b></td><td>Exact; unreadable: the total, only while one shield is up</td><td>On, Off</td><td>On</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Abbreviate (12.3k)</b></td><td></td><td>On, Off</td><td>On</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Amount place</b></td><td></td><td>Top, Bottom, Left, Right, Center</td><td>Center</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Amount offset X</b></td><td></td><td>-64 – 64</td><td>0</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Amount offset Y</b></td><td></td><td>-64 – 64</td><td>0</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Amount font</b></td><td></td><td>Font, or the frame's font</td><td>The frame's font</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Amount size</b></td><td></td><td>6 – 48 (0: Auto)</td><td>Auto</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Amount font style</b></td><td></td><td>The frame's style, None, Outline, Thick outline, Monochrome, Soft outline</td><td>The frame's style</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Amount color</b></td><td></td><td>Color</td><td><code>#ffffff</code></td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Swipe</b></td><td></td><td>On, Off</td><td>On</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Time left</b></td><td></td><td>On, Off</td><td>Off</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Time place</b></td><td></td><td>Top, Bottom, Left, Right, Center</td><td>Top</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Time offset X</b></td><td></td><td>-64 – 64</td><td>0</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Time offset Y</b></td><td></td><td>-64 – 64</td><td>0</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Time font</b></td><td></td><td>Font, or the frame's font</td><td>The frame's font</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Time size</b></td><td></td><td>6 – 48 (0: Auto)</td><td>Auto</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Time font style</b></td><td></td><td>The frame's style, None, Outline, Thick outline, Monochrome, Soft outline</td><td>The frame's style</td><td>Player, Target, Focus</td></tr>
+<tr><td><b>Time color</b></td><td></td><td>Color</td><td><code>#ffffff</code></td><td>Player, Target, Focus</td></tr>
 </tbody>
 </table>
 

@@ -269,6 +269,11 @@ local function readSettings(frame, group)
     group.hideTracking = not group.isDebuff and get(frame, group, "HideTracking") or false
     -- Hidden auras: the account's list and the frame's (Core/AuraBlocklist.lua).
     group.blockSet = ns.AuraBlocklist.ForFrame(frame.key)
+    -- The shield watch's shields leave the buffs while it shows them
+    -- (Elements/ShieldWatch.lua: shieldsHideInBuffs).
+    if not group.isDebuff and ns.ShieldWatch then
+        group.blockSet = ns.AuraBlocklist.Merge(group.blockSet, ns.ShieldWatch.HiddenSet(frame.key))
+    end
     group.enabled = get(frame, group, "Enabled")
     -- Only dispellable debuffs, and those moved out: nothing is left.
     if moved and dispellableOnly then group.enabled = false end

@@ -123,6 +123,18 @@ local RULES = {
     { on("fsrText"), { "fsrTextPoint", "fsrTextTenths" } },
     { on("fsrDim"), { "fsrDimAlpha" } },
     { isNot("portraitMode", "OFF"), { "portraitStyle" } },
+    -- Elements/ShieldWatch.lua: everything with the watch; each text's
+    -- look with that text.
+    { on("shieldsEnabled"), { "shieldsPriest", "shieldsMage", "shieldsWarlock", "shieldsItems", "shieldsExtra",
+        "shieldsOnlyMine", "shieldsHideInBuffs", "shieldsSize", "shieldsSpacing", "shieldsGrowth", "shieldsX",
+        "shieldsY", "shieldsAmount", "shieldsAbbreviate", "shieldsAmountPoint", "shieldsAmountX", "shieldsAmountY",
+        "shieldsAmountFont", "shieldsAmountSize", "shieldsAmountOutline", "shieldsAmountColor", "shieldsSwipe",
+        "shieldsTime", "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY", "shieldsTimeFont", "shieldsTimeSize",
+        "shieldsTimeOutline", "shieldsTimeColor" } },
+    { on("shieldsAmount"), { "shieldsAbbreviate", "shieldsAmountPoint", "shieldsAmountX", "shieldsAmountY",
+        "shieldsAmountFont", "shieldsAmountSize", "shieldsAmountOutline", "shieldsAmountColor" } },
+    { on("shieldsTime"), { "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY", "shieldsTimeFont", "shieldsTimeSize",
+        "shieldsTimeOutline", "shieldsTimeColor" } },
     -- Elements/Classification.lua: the ring has a size, the marker a
     -- place; its own point only at a point of the frame.
     { on("eliteMarker"), { "eliteMarkerStyle", "eliteBorderSize", "eliteMarkerFramePoint", "eliteMarkerPoint",

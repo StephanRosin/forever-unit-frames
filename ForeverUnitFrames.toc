@@ -57,6 +57,7 @@ Elements\Classification.lua
 Elements\CombatFeedback.lua
 Elements\Shape.lua
 Elements\Totems.lua
+Elements\ShieldWatch.lua
 Elements\ComboPoints.lua
 Elements\CombatAnimation.lua
 Elements\StatusIcons.lua
