@@ -74,6 +74,8 @@ In a "Status" tab per frame.
 - Docked below or above the frame, or detached with its own position.
 - "Always show" keeps an empty bar in the frame so nothing below it jumps.
 - The player castbar can run alongside Blizzard's, or hide it.
+- **Five-second rule** on the player's mana bar: a glowing spark runs along the bar for five seconds after you spend mana (direction, size and color selectable), with an optional countdown and dimming.
+- Combat numbers placed left, center or right with their own font, size and outline; the player and pet frames can stay in full while you are in a group.
 
 ## Threat bar
 - An optional row below the player frame and its docked castbar, inside the same border: your threat on your target (a healer with a friendly target: on the target's target).
