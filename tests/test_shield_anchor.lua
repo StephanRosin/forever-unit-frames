@@ -76,6 +76,18 @@ M.RunTimers()
 H.check("after combat: placed", select(4, sw.holder:GetPoint(1)), 7)
 H.check("nothing blocked", #M.blocked, 0)
 
+-- On the frame, size and offset sit on the frame's pixel grid (its
+-- effective scale; here a frame drawn at 0.4: one pixel is 2.5 units).
+local effectiveScale = f.GetEffectiveScale
+f.GetEffectiveScale = function() return 0.4 end
+C.Set("player", "shieldsFrameY", 3)
+M.RunTimers()
+H.check("frame scale: offset on its grid", select(4, sw.holder:GetPoint(1)) .. " " .. select(5, sw.holder:GetPoint(1)),
+    "7.5 2.5")
+local sw2 = sw.holder:GetWidth() / 2.5
+H.check("frame scale: width whole pixels", sw2, math.floor(sw2))
+f.GetEffectiveScale = effectiveScale
+
 -- Free again: back on the mover.
 C.Set("player", "shieldsAnchor", "FREE")
 M.RunTimers()

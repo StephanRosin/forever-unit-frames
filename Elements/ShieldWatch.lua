@@ -243,9 +243,10 @@ local function place(frame)
     holder:ClearAllPoints()
     if ShieldWatch.OnFrame(scope) then
         if holder.mover then ns.Movers.Sync(holder) end
-        holder:SetSize(Pixel.Snap(w), Pixel.Snap(h))
+        -- Size and offset in the frame's units: on its pixel grid.
+        holder:SetSize(Pixel.Snap(w, frame), Pixel.Snap(h, frame))
         holder:SetPoint(setting(scope, "shieldsPoint"), frame, setting(scope, "shieldsFramePoint"),
-            Pixel.Snap(setting(scope, "shieldsFrameX")), Pixel.Snap(setting(scope, "shieldsFrameY")))
+            Pixel.Snap(setting(scope, "shieldsFrameX"), frame), Pixel.Snap(setting(scope, "shieldsFrameY"), frame))
     elseif holder.mover then
         ns.Movers.Sync(holder)
         holder:SetAllPoints(holder.mover)
