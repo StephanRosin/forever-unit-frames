@@ -30,6 +30,7 @@ local function frameName(scope) return label("FRAME_" .. scope, scope) end
 -- A value as the options window shows it; enumText (optional): the words
 -- of an enum's choices, the unit frames' by default.
 local function valueText(def, v, enumText)
+    if v == "" and def.emptyText then return label(def.emptyText, "(none)") end
     if v == nil or v == "" then return "(none)" end
     local t = def.type
     if t == "bool" then return v and "On" or "Off" end
@@ -65,6 +66,9 @@ local function choices(def, raid)
         return table.concat(list, ", ")
     end
     if t == "color" then return "Color" end
+    if t == "media" and def.emptyText then
+        return (def.mediaKind == "font" and "Font" or "Texture") .. ", or " .. label(def.emptyText, ""):lower()
+    end
     if t == "media" then return def.mediaKind == "font" and "Font" or "Texture" end
     if t == "text" and def.blocklist then
         return ("Spell IDs or names, up to %d spells"):format(ns.AuraBlocklist.MAX)

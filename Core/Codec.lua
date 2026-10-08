@@ -59,8 +59,8 @@ function ns.NewCodec(Settings)
             return { tonumber(r, 16) / 255, tonumber(g, 16) / 255, tonumber(b, 16) / 255, tonumber(a, 16) / 255 }
         end
         if t == "media" then
-            local name = raw:match("^'(.+)$")
-            return name and unescape(name)
+            local name = raw:match("^'(.*)$")
+            return name and Settings.Validate(def, unescape(name))
         end
         if t == "text" then
             local text = raw:match("^'(.*)$")

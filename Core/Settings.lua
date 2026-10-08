@@ -197,6 +197,25 @@ Settings.Define({ key = "eliteMarkerSize", code = "MZ", scope = "frame", only = 
 -- player and pet frames).
 Settings.Define({ key = "combatFeedback", code = "CF", scope = "frame", type = "bool",
     default = { player = true, pet = true, _ = false } })
+-- Their place on the frame: CENTER is where they always were (over the
+-- portrait when there is one, else mid health bar); LEFT and RIGHT are the
+-- health bar's edges. Plus an offset.
+Settings.Define({ key = "combatFeedbackPoint", code = "CG", scope = "frame", type = "enum",
+    values = { "LEFT", "CENTER", "RIGHT" }, default = "CENTER" })
+Settings.Define({ key = "combatFeedbackX", code = "CJ", scope = "frame", type = "int", min = -200, max = 200,
+    default = 0 })
+Settings.Define({ key = "combatFeedbackY", code = "CM", scope = "frame", type = "int", min = -200, max = 200,
+    default = 0 })
+-- Their font: empty is the frame's font (fontFace).
+Settings.Define({ key = "combatFeedbackFont", code = "CO", scope = "frame", type = "media", mediaKind = "font",
+    emptyText = "FONT_OF_FRAME", default = "" })
+-- The size of a plain number; a critical one is half again as big. 0,
+-- Automatic, is the size it always had: half again the frame's font size.
+Settings.Define({ key = "combatFeedbackSize", code = "CS", scope = "frame", type = "int", min = 0, lowest = 6,
+    max = 48, default = 0, zeroText = "AUTO" })
+-- FRAME: the frame's outline (fontOutline).
+Settings.Define({ key = "combatFeedbackOutline", code = "CU", scope = "frame", type = "enum",
+    values = { "FRAME", "NONE", "OUTLINE", "THICKOUTLINE", "MONOCHROME", "SOFT" }, default = "FRAME" })
 
 -- Party block (party only)
 local PARTY = { party = true }

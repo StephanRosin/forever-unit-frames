@@ -68,15 +68,37 @@ function CombatFeedback.Clear(frame)
     frame.feedback:Hide()
 end
 
--- Font size of the numbers: half again the frame's font size.
+-- Font size of a plain number: its own size, or (0, Automatic) half
+-- again the frame's font size.
 function CombatFeedback.Size(scope)
+    local own = Config.Get(scope, "combatFeedbackSize")
+    if own > 0 then return own end
     return math.floor(Config.Get(scope, "fontSize") * 1.5 + 0.5)
 end
 
+-- Its own font and outline, or (empty, FRAME) the frame's.
+local function fontOf(scope)
+    local face = Config.Get(scope, "combatFeedbackFont")
+    if face == "" then face = Config.Get(scope, "fontFace") end
+    local outline = Config.Get(scope, "combatFeedbackOutline")
+    if outline == "FRAME" then outline = Config.Get(scope, "fontOutline") end
+    return ns.Media.Font(face), outline
+end
+
 local function setFont(frame, size)
-    local scope = frame.key
-    ns.Texts.SetFont(frame.feedbackText, ns.Media.Font(Config.Get(scope, "fontFace")), size,
-        Config.Get(scope, "fontOutline"))
+    local font, outline = fontOf(frame.key)
+    ns.Texts.SetFont(frame.feedbackText, font, size, outline)
+end
+
+-- CENTER: over the portrait when there is one, like Blizzard's, else mid
+-- health bar (where it always was); LEFT and RIGHT: the health bar's edge.
+local function place(frame)
+    local scope, text = frame.key, frame.feedbackText
+    local point = Config.Get(scope, "combatFeedbackPoint")
+    local anchor = frame.health
+    if point == "CENTER" and Config.Get(scope, "portraitMode") ~= "OFF" then anchor = frame.portraitBg end
+    text:ClearAllPoints()
+    text:SetPoint(point, anchor, point, Config.Get(scope, "combatFeedbackX"), Config.Get(scope, "combatFeedbackY"))
 end
 
 local function paint(text, color)
@@ -86,10 +108,7 @@ end
 function CombatFeedback.Style(frame)
     local scope, text = frame.key, frame.feedbackText
     setFont(frame, CombatFeedback.Size(scope))
-    text:ClearAllPoints()
-    -- Over the portrait when there is one, like Blizzard's; else mid bar.
-    local anchor = Config.Get(scope, "portraitMode") == "OFF" and frame.health or frame.portraitBg
-    text:SetPoint("CENTER", anchor, "CENTER", 0, 0)
+    place(frame)
     local shadow = Config.Get(scope, "fontShadow")
     text:SetShadowOffset(shadow and 1 or 0, shadow and -1 or 0)
     local on = Config.Get(scope, "combatFeedback")

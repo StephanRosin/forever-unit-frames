@@ -59,6 +59,12 @@ Each row (title, health and power) can have a center text as well. While one is 
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
 <tr><td><b>Damage and heal numbers</b></td><td>Shown briefly inside the frame</td><td>On, Off</td><td>Player, Target, Focus, Pet, Party: On; Target of Target: Off</td><td>all</td></tr>
+<tr><td><b>Place</b></td><td>Center: as always; left and right: the health bar's edge</td><td>Left, Center, Right</td><td>Center</td><td>all</td></tr>
+<tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>0</td><td>all</td></tr>
+<tr><td><b>Offset Y</b></td><td></td><td>-200 – 200</td><td>0</td><td>all</td></tr>
+<tr><td><b>Font</b></td><td></td><td>Font, or the frame's font</td><td>The frame's font</td><td>all</td></tr>
+<tr><td><b>Size</b></td><td>A plain number; a critical one is half again as big. Auto: from the frame's font size</td><td>6 – 48 (0: Auto)</td><td>Auto</td><td>all</td></tr>
+<tr><td><b>Font style</b></td><td></td><td>The frame's style, None, Outline, Thick outline, Monochrome, Soft outline</td><td>The frame's style</td><td>all</td></tr>
 </tbody>
 </table>
 

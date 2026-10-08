@@ -1192,6 +1192,16 @@ L.RAID_HINT_buffWatchOnlyMissing = "Ou sur le point d'expirer ; sinon toujours v
 L.SECTION_highlights = "Surbrillances"
 L.SECTION_eliteMarker = "Marque élite / rare"
 L.SECTION_combatFeedback = "Chiffres de combat"
+L.SETTING_combatFeedbackPoint = "Position"
+L.HINT_combatFeedbackPoint = "Centre : comme toujours ; gauche et droite : bord de la barre de vie"
+L.SETTING_combatFeedbackX = "Décalage X"
+L.SETTING_combatFeedbackY = "Décalage Y"
+L.SETTING_combatFeedbackFont = "Police"
+L.FONT_OF_FRAME = "La police du cadre"
+L.SETTING_combatFeedbackSize = "Taille"
+L.HINT_combatFeedbackSize = "Un chiffre normal ; un critique est une fois et demie plus grand. Auto : d'après la taille de police du cadre"
+L.SETTING_combatFeedbackOutline = "Style de police"
+L.ENUM_combatFeedbackOutline_FRAME = "Le style du cadre"
 -- The raid window's size bar on a tab of the character's settings.
 
 -- Hidden auras (Core/AuraBlocklist.lua)

@@ -141,6 +141,7 @@ end
 local function mediaItems(def)
     return function()
         local items = {}
+        if def.emptyText then items[1] = { value = "", text = L[def.emptyText] } end
         for _, name in ipairs(ns.Media.List(def.mediaKind)) do
             items[#items + 1] = { value = name, text = name, font = def.mediaKind == "font" and name or nil }
         end

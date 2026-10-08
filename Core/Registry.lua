@@ -40,6 +40,9 @@ local function validate(def, v)
         end
         return { v[1], v[2], v[3], v[4] }
     elseif t == "media" then
+        -- def.emptyText (optional): empty stands for another setting's
+        -- choice, named by that locale key.
+        if v == "" and def.emptyText then return v end
         if type(v) ~= "string" or v == "" then return nil end
         return v
     elseif t == "text" then

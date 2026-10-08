@@ -101,7 +101,8 @@ Schema.FRAME = {
         { id = "healthText", keys = { "textHealthLeft", "textHealthCenter", "textHealthRight" } },
         { id = "powerText", keys = { "textPowerLeft", "textPowerCenter", "textPowerRight" } },
         -- The damage and heal numbers shown inside the frame.
-        { id = "combatFeedback", keys = { "combatFeedback" } },
+        { id = "combatFeedback", keys = { "combatFeedback", "combatFeedbackPoint", "combatFeedbackX",
+            "combatFeedbackY", "combatFeedbackFont", "combatFeedbackSize", "combatFeedbackOutline" } },
         -- How the texts read, on every bar: colours, level colour, compact
         -- values, the secondary name.
         { id = "display", keys = { "levelColorMode", "barNameColorMode", "infoClassColor", "textCompact",
