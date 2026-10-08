@@ -109,6 +109,12 @@ C.Set("player", "shieldsExtra", "555, 17")
 H.check("additions last, once", names(SW.Watched("player")),
     "Power Word: Shield,Ice Barrier,Mana Shield,Fire Protection,Some Barrier")
 C.Set("player", "shieldsExtra", "")
+-- Kept between aura events; built again after a settings change.
+local first = SW.Watched("player")
+H.check("kept", SW.Watched("player"), first)
+C.Set("player", "shieldsSize", 30)
+H.checkTrue("rebuilt after a change", SW.Watched("player") ~= first)
+C.Set("player", "shieldsSize", 32)
 
 -- Off by default: nothing ------------------------------------------------------------
 local f = ns.Frames.player

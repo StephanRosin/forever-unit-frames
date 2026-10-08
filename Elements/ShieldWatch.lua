@@ -106,8 +106,11 @@ end
 
 -- The watched shields of a frame, in order: { name, ids } per name, the
 -- IDs those the client knows (the first one names the shield). The
--- frame's additions come last.
-function ShieldWatch.Watched(scope)
+-- frame's additions come last. Kept until the settings change or a new
+-- world loads: UNIT_AURA comes often, the names do not change.
+local watchedCache = {}
+
+local function buildWatched(scope)
     local list, byName = {}, {}
     local function add(ids)
         for _, id in ipairs(ids) do
@@ -131,6 +134,19 @@ function ShieldWatch.Watched(scope)
     add(ns.AuraBlocklist.Parse(setting(scope, "shieldsExtra")) or {})
     return list
 end
+
+function ShieldWatch.Watched(scope)
+    local list = watchedCache[scope]
+    if not list then
+        list = buildWatched(scope)
+        watchedCache[scope] = list
+    end
+    return list
+end
+
+local function forgetWatched() watchedCache = {} end
+ns.Listen("CONFIG_CHANGED", forgetWatched)
+ns.On("PLAYER_ENTERING_WORLD", forgetWatched)
 
 -- The spell IDs the frame's buffs leave out (Elements/Auras.lua): every
 -- watched ID while the watch and "hide them in the buffs" are on; nil
