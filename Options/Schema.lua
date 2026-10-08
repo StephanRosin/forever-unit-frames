@@ -130,7 +130,8 @@ Schema.FRAME = {
         -- The shield watch (Elements/ShieldWatch.lua): the player only.
         { id = "shields", keys = { "shieldsEnabled", "shieldsPriest", "shieldsMage", "shieldsWarlock", "shieldsItems",
             "shieldsExtra", "shieldsHideInBuffs", "shieldsSize", "shieldsSpacing", "shieldsGrowth",
-            "shieldsX", "shieldsY", "shieldsTotal", "shieldsTotalPoint", "shieldsTotalX",
+            "shieldsAnchor", "shieldsX", "shieldsY", "shieldsFramePoint", "shieldsPoint", "shieldsFrameX",
+            "shieldsFrameY", "shieldsTotal", "shieldsTotalPoint", "shieldsTotalX",
             "shieldsTotalY", "shieldsTotalFont", "shieldsTotalSize", "shieldsTotalOutline", "shieldsTotalColor",
             "shieldsSwipe", "shieldsTime", "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY", "shieldsTimeFont",
             "shieldsTimeSize", "shieldsTimeOutline", "shieldsTimeColor" } },

@@ -627,7 +627,7 @@ shields({ key = "shieldsExtra", code = "VL", type = "text", maxLetters = ns.Aura
     check = ns.AuraBlocklist.Check, blocklist = true, spellList = true, default = "" })
 -- The watched shields leave the frame's buffs while the watch is on.
 shields({ key = "shieldsHideInBuffs", code = "VN", type = "bool", default = true })
-shields({ key = "shieldsSize", code = "VO", type = "int", min = 12, max = 64, default = 32 })
+shields({ key = "shieldsSize", code = "VO", type = "int", min = 8, max = 96, default = 32 })
 shields({ key = "shieldsSpacing", code = "VP", type = "int", min = 0, max = 20, default = 4 })
 -- Stored by index: append only.
 shields({ key = "shieldsGrowth", code = "VQ", type = "enum", values = { "RIGHT", "LEFT", "UP", "DOWN" },
@@ -635,6 +635,15 @@ shields({ key = "shieldsGrowth", code = "VQ", type = "enum", values = { "RIGHT",
 -- The block's centre, from the screen's centre (its mover).
 shields({ key = "shieldsX", code = "VR", type = "int", min = -4000, max = 4000, default = -300 })
 shields({ key = "shieldsY", code = "VS", type = "int", min = -4000, max = 4000, default = -140 })
+-- Where the block is: free on its mover (shieldsX / Y), or on the player
+-- frame (FRAME): its own point at a point of the frame, offset by
+-- shieldsFrameX / Y (a small offset, not a screen position, so separate
+-- settings). Stored by index: append only.
+shields({ key = "shieldsAnchor", code = "KD", type = "enum", values = { "FREE", "FRAME" }, default = "FREE" })
+shields({ key = "shieldsFramePoint", code = "KE", type = "enum", values = Settings.POINTS, default = "TOPLEFT" })
+shields({ key = "shieldsPoint", code = "KF", type = "enum", values = Settings.POINTS, default = "BOTTOMLEFT" })
+shields({ key = "shieldsFrameX", code = "KG", type = "int", min = -400, max = 400, default = 0 })
+shields({ key = "shieldsFrameY", code = "KH", type = "int", min = -400, max = 400, default = 4 })
 -- The total: before the icons by default (they grow away from it).
 shields({ key = "shieldsTotal", code = "VT", type = "bool", default = true })
 shields({ key = "shieldsTotalPoint", code = "VV", type = "enum", values = Settings.SHIELD_TEXT_POINTS,

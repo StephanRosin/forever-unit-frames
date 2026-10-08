@@ -989,7 +989,11 @@ local function newWidget(kind, name, parent)
     function w:SetHeight(v) resize(self, self._w, v) end
     function w:GetWidth() return self._w end
     function w:GetHeight() return self._h end
-    function w:ClearAllPoints() self._points = {} end
+    -- Also the anchors SetAllPoints made (in the client: two points).
+    function w:ClearAllPoints()
+        self._points = {}
+        self._allPoints = nil
+    end
     -- Setting a point that is already anchored replaces that anchor.
     -- Anchoring to an aura container that has groups needs the
     -- UntrustedLayoutScriptExecution aspect (Blizzard_CustomAuraContainer.lua);

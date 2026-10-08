@@ -126,11 +126,14 @@ local RULES = {
     -- Elements/ShieldWatch.lua: everything with the watch; each text's
     -- look with that text.
     { on("shieldsEnabled"), { "shieldsPriest", "shieldsMage", "shieldsWarlock", "shieldsItems", "shieldsExtra",
-        "shieldsHideInBuffs", "shieldsSize", "shieldsSpacing", "shieldsGrowth", "shieldsX",
-        "shieldsY", "shieldsTotal", "shieldsTotalPoint", "shieldsTotalX", "shieldsTotalY",
+        "shieldsHideInBuffs", "shieldsSize", "shieldsSpacing", "shieldsGrowth", "shieldsAnchor", "shieldsX",
+        "shieldsY", "shieldsFramePoint", "shieldsPoint", "shieldsFrameX", "shieldsFrameY", "shieldsTotal", "shieldsTotalPoint", "shieldsTotalX", "shieldsTotalY",
         "shieldsTotalFont", "shieldsTotalSize", "shieldsTotalOutline", "shieldsTotalColor", "shieldsSwipe",
         "shieldsTime", "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY", "shieldsTimeFont", "shieldsTimeSize",
         "shieldsTimeOutline", "shieldsTimeColor" } },
+    -- Free on its mover, or on the player frame: each mode's place rows.
+    { is("shieldsAnchor", "FREE"), { "shieldsX", "shieldsY" } },
+    { is("shieldsAnchor", "FRAME"), { "shieldsFramePoint", "shieldsPoint", "shieldsFrameX", "shieldsFrameY" } },
     { on("shieldsTotal"), { "shieldsTotalPoint", "shieldsTotalX", "shieldsTotalY",
         "shieldsTotalFont", "shieldsTotalSize", "shieldsTotalOutline", "shieldsTotalColor" } },
     { on("shieldsTime"), { "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY", "shieldsTimeFont", "shieldsTimeSize",

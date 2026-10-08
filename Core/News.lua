@@ -57,7 +57,7 @@ News.ENTRIES = {
         action = { text = "NEWS_OPEN_SHIELDS", run = function() ns.Options.Open("player", "auras") end },
     },
     ["0.25.1"] = {
-        lines = { "NEWS_0_25_1_COMBAT_JOIN" },
+        lines = { "NEWS_0_25_1_COMBAT_JOIN", "NEWS_0_25_1_SHIELDS_PLACE" },
     },
 }
 

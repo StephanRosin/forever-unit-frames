@@ -2,7 +2,8 @@ local _, ns = ...
 
 -- The shield watch on the player frame: the icons of your active absorb
 -- shields and the exact total of all your absorbs, in a block of its own
--- that has a mover. Off by default (shieldsEnabled).
+-- that has a mover, or hangs from the player frame (shieldsAnchor FRAME,
+-- the mover inactive then). Off by default (shieldsEnabled).
 --
 -- The icons come from a Blizzard aura container (CustomAuraContainerTemplate,
 -- the machinery of Elements/AuraContainers.lua): one group, filter HELPFUL,
@@ -207,6 +208,11 @@ local function enabled(scope)
     return ns.FrameEnabled(scope) and setting(scope, "shieldsEnabled") == true
 end
 
+-- On the player frame (shieldsAnchor FRAME) rather than free on its mover.
+function ShieldWatch.OnFrame(scope)
+    return setting(scope, "shieldsAnchor") == "FRAME"
+end
+
 -- Inside the screen: the block's centre at most half the screen minus half
 -- the block from the middle.
 local function clamp(scope, axis, v)
@@ -222,18 +228,25 @@ function ShieldWatch.MoverSpec(frame)
         id = "shields:" .. scope, scope = scope, xKey = "shieldsX", yKey = "shieldsY", anchor = false,
         label = function() return ns.L.MOVER_SHIELDS:format(ns.L["FRAME_" .. scope]) end,
         size = function() return ShieldWatch.Size(scope) end,
-        active = function() return enabled(scope) end,
+        active = function() return enabled(scope) and not ShieldWatch.OnFrame(scope) end,
         clamp = function(axis, v) return clamp(scope, axis, v) end,
     }
 end
 
--- The block on its handle, or (no handle yet) where the handle would be.
+-- The block on its handle, or (no handle yet) where the handle would be;
+-- on the frame: its point at the frame's point (it is the frame's child,
+-- so it moves and scales with it). Out of combat, like every restyle.
 local function place(frame)
     local sw, scope = frame.shields, frame.key
     local holder = sw.holder
     local w, h = ShieldWatch.Size(scope)
     holder:ClearAllPoints()
-    if holder.mover then
+    if ShieldWatch.OnFrame(scope) then
+        if holder.mover then ns.Movers.Sync(holder) end
+        holder:SetSize(Pixel.Snap(w), Pixel.Snap(h))
+        holder:SetPoint(setting(scope, "shieldsPoint"), frame, setting(scope, "shieldsFramePoint"),
+            Pixel.Snap(setting(scope, "shieldsFrameX")), Pixel.Snap(setting(scope, "shieldsFrameY")))
+    elseif holder.mover then
         ns.Movers.Sync(holder)
         holder:SetAllPoints(holder.mover)
     else
