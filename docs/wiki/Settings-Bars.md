@@ -6,7 +6,7 @@ Colors and textures of the bars, shields, incoming heals, power colors and the d
 
 The **Bars** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
 
-**On this page:** [Health bar](#health-bar) · [Textures](#textures) · [Absorb shields](#absorb-shields) · [Incoming heals](#incoming-heals) · [Power colors](#power-colors) · [Spell cost](#spell-cost) · [Druid mana](#druid-mana)
+**On this page:** [Health bar](#health-bar) · [Textures](#textures) · [Absorb shields](#absorb-shields) · [Incoming heals](#incoming-heals) · [Power colors](#power-colors) · [Spell cost](#spell-cost) · [Druid mana](#druid-mana) · [Five-second rule](#five-second-rule)
 
 ## Health bar
 
@@ -87,6 +87,25 @@ The **Bars** tab on each frame's page in `/fuf`. The last column says which fram
 <tbody>
 <tr><td><b>Show mana in forms</b></td><td>Bear and cat form: a strip under the power bar</td><td>On, Off</td><td>On</td><td>Player</td></tr>
 <tr><td><b>Strip height</b></td><td></td><td>2 – 20</td><td>4</td><td>Player</td></tr>
+</tbody>
+</table>
+
+## Five-second rule
+
+After a spell that costs mana, your mana regenerates fully again only five seconds later. While that runs, a white spark crosses the power bar; a countdown text and a dimmed bar can be added. It starts when the game lists a mana cost for the spell; nothing shows at rest, and nothing while the power bar shows rage or energy (a druid in a form). A new spell restarts the five seconds. Test mode shows a running sample. Switch it off with **Five-second rule**.
+
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Five-second rule</b></td><td>After a spell that costs mana: 5 s until mana regenerates fully again</td><td>On, Off</td><td>On</td><td>Player</td></tr>
+<tr><td><b>Spark</b></td><td></td><td>On, Off</td><td>On</td><td>Player</td></tr>
+<tr><td><b>Spark direction</b></td><td></td><td>Left to right, Right to left</td><td>Left to right</td><td>Player</td></tr>
+<tr><td><b>Spark width</b></td><td></td><td>2 – 8</td><td>3</td><td>Player</td></tr>
+<tr><td><b>Countdown</b></td><td></td><td>On, Off</td><td>Off</td><td>Player</td></tr>
+<tr><td><b>Countdown place</b></td><td></td><td>Left, Center, Right</td><td>Center</td><td>Player</td></tr>
+<tr><td><b>Tenths in the last second</b></td><td></td><td>On, Off</td><td>On</td><td>Player</td></tr>
+<tr><td><b>Dim the bar</b></td><td></td><td>On, Off</td><td>Off</td><td>Player</td></tr>
+<tr><td><b>Opacity while dimmed (%)</b></td><td></td><td>0 – 100</td><td>70</td><td>Player</td></tr>
 </tbody>
 </table>
 

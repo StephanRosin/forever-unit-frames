@@ -44,6 +44,7 @@ Elements\Power.lua
 Elements\DruidMana.lua
 Elements\PowerCost.lua
 Elements\Texts.lua
+Elements\FiveSecondRule.lua
 Elements\Portrait.lua
 Elements\Castbar.lua
 Elements\ThreatBar.lua

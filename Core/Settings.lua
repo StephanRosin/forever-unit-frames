@@ -775,6 +775,26 @@ Settings.Define({ key = "druidMana", code = "MD", scope = "frame", only = { play
     default = true })
 Settings.Define({ key = "druidManaHeight", code = "MH", scope = "frame", only = { player = true }, type = "int",
     min = 2, max = 20, default = 4 })
+-- The five-second rule on the player's mana bar (Elements/FiveSecondRule.lua):
+-- after a spell that costs mana, a spark runs across the power bar in 5 s;
+-- optional a countdown text and a dimmed fill. On with the spark by default
+-- (it shows only while the rule runs).
+local FSR = { player = true }
+Settings.Define({ key = "fsrEnabled", code = "FE", scope = "frame", only = FSR, type = "bool", default = true })
+Settings.Define({ key = "fsrSpark", code = "FK", scope = "frame", only = FSR, type = "bool", default = true })
+Settings.Define({ key = "fsrSparkDirection", code = "FD", scope = "frame", only = FSR, type = "enum",
+    values = { "LEFT_TO_RIGHT", "RIGHT_TO_LEFT" }, default = "LEFT_TO_RIGHT" })
+Settings.Define({ key = "fsrSparkWidth", code = "FW", scope = "frame", only = FSR, type = "int", min = 2, max = 8,
+    default = 3 })
+Settings.Define({ key = "fsrText", code = "FT", scope = "frame", only = FSR, type = "bool", default = false })
+Settings.Define({ key = "fsrTextPoint", code = "FP", scope = "frame", only = FSR, type = "enum",
+    values = { "LEFT", "CENTER", "RIGHT" }, default = "CENTER" })
+-- The last second in tenths (0.9 ... 0.1).
+Settings.Define({ key = "fsrTextTenths", code = "FN", scope = "frame", only = FSR, type = "bool", default = true })
+Settings.Define({ key = "fsrDim", code = "FM", scope = "frame", only = FSR, type = "bool", default = false })
+-- The fill's opacity during the rule (%).
+Settings.Define({ key = "fsrDimAlpha", code = "FA", scope = "frame", only = FSR, type = "int", min = 0, max = 100,
+    default = 70 })
 -- Back in full while you have a target: see your resources before a pull.
 Settings.Define({ key = "playerFadeTarget", code = "WT", scope = "frame", only = { player = true }, type = "bool",
     default = true })

@@ -115,6 +115,13 @@ local RULES = {
         "druidManaHeight", "textPowerLeft", "textPowerCenter", "textPowerRight" } },
     { on("powerCostPrediction"), { "powerCostColor" } },
     { on("druidMana"), { "druidManaHeight" } },
+    { on("powerEnabled"), { "fsrEnabled", "fsrSpark", "fsrSparkDirection", "fsrSparkWidth", "fsrText", "fsrTextPoint",
+        "fsrTextTenths", "fsrDim", "fsrDimAlpha" } },
+    { on("fsrEnabled"), { "fsrSpark", "fsrSparkDirection", "fsrSparkWidth", "fsrText", "fsrTextPoint",
+        "fsrTextTenths", "fsrDim", "fsrDimAlpha" } },
+    { on("fsrSpark"), { "fsrSparkDirection", "fsrSparkWidth" } },
+    { on("fsrText"), { "fsrTextPoint", "fsrTextTenths" } },
+    { on("fsrDim"), { "fsrDimAlpha" } },
     { isNot("portraitMode", "OFF"), { "portraitStyle" } },
     -- Elements/Classification.lua: the ring has a size, the marker a
     -- place; its own point only at a point of the frame.

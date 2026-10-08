@@ -1317,6 +1317,15 @@ local function newWidget(kind, name, parent)
             function anim:SetDuration(v) self._duration = v end
             function anim:SetStartDelay(v) self._delay = v end
             function anim:SetOrder(v) self._order = v end
+            -- Translation (SimpleAnimTranslationAPI)
+            function anim:SetOffset(x, y)
+                assert(type(x) == "number" and type(y) == "number", "SetOffset: offsetX, offsetY")
+                self._offset = { x, y }
+            end
+            function anim:GetOffset()
+                local o = self._offset or { 0, 0 }
+                return o[1], o[2]
+            end
             -- Scale (SimpleAnimScaleAPI)
             function anim:SetScaleFrom(x, y) self._scaleFrom = { x, y } end
             function anim:SetScaleTo(x, y) self._scaleTo = { x, y } end
@@ -2204,6 +2213,28 @@ function M.Reset()
                 "GetSpellIDForSpellIdentifier: spellIdentifier")
             return spellID(identifier)
         end,
+        -- SpellDocumentation.lua / SpellSharedDocumentation.lua: one
+        -- SpellPowerCostInfo per power type the spell costs (M.spells[id].costs:
+        -- { type =, name =, cost = }); nothing when the spell is not found or
+        -- costs nothing (MayReturnNothing). Takes a secret ID too
+        -- (AllowedWhenTainted). M.spellCostSecret: every field secret.
+        GetSpellPowerCost = function(identifier)
+            if M.IsSecret(identifier) then identifier = M.Reveal(identifier) end
+            local id = spellID(identifier)
+            local costs = id and M.spells[id].costs
+            if not costs or #costs == 0 then return nil end
+            local out = {}
+            for i, c in ipairs(costs) do
+                local info = { type = c.type, name = c.name, cost = c.cost or 0, minCost = c.minCost or c.cost or 0,
+                    costPercent = c.costPercent or 0, costPerSec = c.costPerSec or 0, requiredAuraID = 0,
+                    hasRequiredAura = false }
+                if M.spellCostSecret then
+                    for k, v in pairs(info) do info[k] = M.Secret(v) end
+                end
+                out[i] = info
+            end
+            return out
+        end,
         GetSpellTexture = function(identifier)
             local id = spellID(identifier)
             if id then return 100000 + id, 100000 + id end
@@ -2332,7 +2363,21 @@ function M.Reset()
         return d.healsAll
     end
 
-    _G.C_Timer = { After = function(sec, fn) table.insert(M.timers, { sec = sec, fn = fn }) end }
+    -- UITimerDocumentation.lua. A ticker (NewTicker: seconds, callback,
+    -- iterations nilable = forever) runs as M.Tick advances the clock; its
+    -- object has Cancel and IsCancelled, as Blizzard's code uses it.
+    M.tickers = {}
+    _G.C_Timer = {
+        After = function(sec, fn) table.insert(M.timers, { sec = sec, fn = fn }) end,
+        NewTicker = function(sec, fn, iterations)
+            assert(type(sec) == "number" and type(fn) == "function", "NewTicker: seconds, callback")
+            local ticker = { sec = sec, fn = fn, left = iterations, elapsed = 0 }
+            function ticker:Cancel() self.cancelled = true; M.tickers[self] = nil end
+            function ticker:IsCancelled() return self.cancelled == true end
+            M.tickers[ticker] = true
+            return ticker
+        end,
+    }
 
     -- Curves: Evaluate passes secrets through as secrets.
     _G.C_CurveUtil = {
@@ -2908,11 +2953,20 @@ function M.SetRaidRoster(members)
 end
 
 -- Every playing animation group runs to its end: the animated frame takes
--- the last alpha (SetToFinalAlpha), then OnFinished runs.
+-- the last alpha (SetToFinalAlpha), then OnFinished runs. A looping group
+-- (REPEAT, BOUNCE) never ends by itself: it keeps playing.
 function M.FinishAnimations()
     local groups = M.playing
     M.playing = {}
+    local ending = {}
     for group in pairs(groups) do
+        if group._looping == "REPEAT" or group._looping == "BOUNCE" then
+            M.playing[group] = true
+        else
+            ending[#ending + 1] = group
+        end
+    end
+    for _, group in ipairs(ending) do
         group._playing = false
         local last = group._anims[#group._anims]
         if group._toFinal and last then group:GetParent():SetAlpha(last._to) end
@@ -3303,6 +3357,19 @@ end
 -- Advances the clock and runs OnUpdate of every shown created frame once.
 function M.Tick(seconds)
     M.now = M.now + seconds
+    local tickers = {}
+    for ticker in pairs(M.tickers) do tickers[#tickers + 1] = ticker end
+    for _, ticker in ipairs(tickers) do
+        ticker.elapsed = ticker.elapsed + seconds
+        while M.tickers[ticker] and ticker.elapsed >= ticker.sec - 1e-9 do
+            ticker.elapsed = ticker.elapsed - ticker.sec
+            ticker.fn(ticker)
+            if ticker.left then
+                ticker.left = ticker.left - 1
+                if ticker.left <= 0 then ticker:Cancel() end
+            end
+        end
+    end
     for _, f in ipairs(M.frames) do
         local script = f._scripts.OnUpdate
         if script and f:IsShown() then script(f, seconds) end

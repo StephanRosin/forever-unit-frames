@@ -174,6 +174,11 @@ local SECTION_NOTE = {
         .. " it is back whenever something keeps the player frame in full (combat, a cast, a target, test mode,"
         .. " unlocked frames, a group with the next option). With **Never fade in a group** the frames stay in"
         .. " full while you are in a party or raid, for healers who heal by mouse-over without a target.",
+    fiveSecondRule = "After a spell that costs mana, your mana regenerates fully again only five seconds later."
+        .. " While that runs, a white spark crosses the power bar; a countdown text and a dimmed bar can be added."
+        .. " It starts when the game lists a mana cost for the spell; nothing shows at rest, and nothing while the"
+        .. " power bar shows rage or energy (a druid in a form). A new spell restarts the five seconds. Test mode"
+        .. " shows a running sample. Switch it off with **Five-second rule**.",
     auraBlock = "Auras hidden by spell, such as a campfire or a food buff: the list under General > Appearance"
         .. " hides them on every frame and raid cell, each frame's own list on that frame (both apply; each raid"
         .. " size has one too, on the raid window's Debuffs tab). Type spell IDs or names (several, separated by"
