@@ -111,9 +111,47 @@ local function setQuietly(header, values)
     header:SetAttribute("_ignore", nil)
 end
 
+--
+-- The header only lays out on show while it can be seen (OnShow): with its
+-- parent hidden (UIParent during a loading screen, at login too) Show
+-- makes nothing, so then nothing is tried and false returned; the
+-- request waits for UIParent's next OnShow and runs then, out of combat.
+--
+-- The hidden layout chains every button to the one before, and
+-- configureChildren never clears the points of a button it shows again
+-- (only those of the ones it hides): a button starting a new column
+-- would keep the chain anchor beside its column anchor. So all n lose
+-- their points before the real layout.
+--
+-- On a header that shows members, their buttons lose their units for the
+-- hidden layout and get them back at once in the real one (one unit
+-- change each, same frame, nothing drawn between): harmless, and only
+-- when the header lacks buttons, so at most once per growth.
+--
 -- Returns whether buttons were made.
+local waiting, hooked = {}, false
+local function whenUIParentShows(header, n)
+    waiting[header] = math.max(waiting[header] or 0, n)
+    if hooked then return end
+    hooked = true
+    UIParent:HookScript("OnShow", function()
+        C_Timer.After(0, function()
+            ns.AfterCombat("prebuildButtons", function()
+                local list = waiting
+                waiting = {}
+                for h, k in pairs(list) do ns.Units.PrebuildButtons(h, k) end
+            end)
+        end)
+    end)
+end
+
 function ns.Units.PrebuildButtons(header, n)
     if not header or n < 1 or InCombatLockdown() or header:GetAttribute("child" .. n) then return false end
+    local parent = header:GetParent()
+    if parent and not parent:IsVisible() then
+        if parent == UIParent then whenUIParentShows(header, n) end
+        return false
+    end
     local saved = {}
     for _, name in ipairs(ns.Units.PREBUILD_KEYS) do saved[name] = header:GetAttribute(name) end
     local shown = header:IsShown()
@@ -121,9 +159,13 @@ function ns.Units.PrebuildButtons(header, n)
     setQuietly(header, { startingIndex = 1 - n, unitsPerColumn = n, maxColumns = 1 })
     header:Show()
     header:Hide()
+    for i = 1, n do
+        local button = header:GetAttribute("child" .. i)
+        if button then button:ClearAllPoints() end
+    end
     setQuietly(header, saved)
     if shown then header:Show() end
-    return true
+    return header:GetAttribute("child" .. n) ~= nil
 end
 
 -- A unit button just made, out of combat: what each element would
