@@ -22,6 +22,60 @@ local function type_(row, text)
     row.edit:GetScript("OnEnterPressed")(row.edit)
 end
 
+-- The editor's height follows its list: one line while empty (the empty
+-- text), one per entry up to Editor.LINES, then the count line; the rows
+-- below move with it and the page's scroll range follows.
+local E, W = ns.AuraBlockEditor, ns.Widgets
+local function heightFor(lines) return W.ROW_H + E.NOTE_H + (lines + 1) * E.LINE_H end
+-- The row's offset on its page (none below the last row: a fixed 0).
+local function yOf(r) return r and select(5, r:GetPoint(1)) or 0 end
+local function rowBelow(rows, r)
+    for i, x in ipairs(rows) do if x == r then return rows[i + 1] end end
+end
+local function checkGrows(name, win, key, set)
+    local r = rowOf(win.rows, key)
+    local page, below = win.page, rowBelow(win.rows, r)
+    H.check(name .. ": empty, one line", r:GetHeight(), W.ROW_H + E.NOTE_H + 2 * E.LINE_H)
+    H.check(name .. ": empty text shown", r.lines[1]:IsShown(), true)
+    H.check(name .. ": second line hidden", r.lines[2]:IsShown(), false)
+    H.check(name .. ": count after the line", select(5, r.count:GetPoint(1)), -(W.ROW_H + E.NOTE_H + E.LINE_H + 2))
+    local y0, h0 = yOf(below), page.height
+    local ids = {}
+    for i = 1, E.LINES + 2 do
+        ids[i] = 60000 + i
+        M.spells[ids[i]] = { name = "Grow " .. i }
+        set(ns.AuraBlocklist.Text(ids))
+        r:Refresh()
+        local lines = math.min(i, E.LINES)
+        H.check(name .. ": " .. i .. " entries", r:GetHeight(), heightFor(lines))
+        if below then H.check(name .. ": row below moved " .. i, yOf(below), y0 - (lines - 1) * E.LINE_H) end
+        H.check(name .. ": page grew " .. i, page.height, h0 + (lines - 1) * E.LINE_H)
+        H.check(name .. ": scroll child follows " .. i, win.frame.scrollChild:GetHeight(), page.height)
+    end
+    H.check(name .. ": last line shown", r.lines[E.LINES]:IsShown(), true)
+    H.check(name .. ": count below the cap", select(5, r.count:GetPoint(1)), -(W.ROW_H + E.NOTE_H + E.LINES * E.LINE_H + 2))
+    set("")
+    r:Refresh()
+    H.check(name .. ": emptied, one line again", r:GetHeight(), heightFor(1))
+    H.check(name .. ": row below back", yOf(below), y0)
+    H.check(name .. ": page back", page.height, h0)
+end
+Options.Open("player", "auras")
+checkGrows("more shields", Options, "shieldsExtra", function(v) C.Set("player", "shieldsExtra", v) end)
+checkGrows("player list", Options, "auraBlock", function(v) C.Set("player", "auraBlock", v) end)
+-- The scroll range follows the page while it is shown.
+local scroll = Options.frame.scroll
+scroll:SetHeight(200)
+local editor = rowOf(Options.rows, "auraBlock")
+C.Set("player", "auraBlock", "7353, 57724")
+editor:Refresh()
+local range0 = scroll:GetVerticalScrollRange()
+C.Set("player", "auraBlock", "7353, 57724, 19705")
+editor:Refresh()
+H.check("scroll range follows", scroll:GetVerticalScrollRange(), range0 + E.LINE_H)
+C.Set("player", "auraBlock", "")
+Options.Close()
+
 -- A frame's Auras tab.
 Options.Open("target", "auras")
 local row = rowOf(Options.rows, "auraBlock")
@@ -95,4 +149,7 @@ type_(row, "Well Fed")
 H.check("raid: stored on the size", RC.Get("r20", "auraBlock"), "19705")
 H.check("raid: other sizes untouched", RC.Get("r10", "auraBlock"), "")
 H.check("raid: group mark", row.lines[1].mark:GetText(), L.AURA_BLOCK_MARK_GROUP)
+RC.Set("r20", "auraBlock", "")
+row:Refresh()
+checkGrows("raid", RO, "auraBlock", function(v) RC.Set("r20", "auraBlock", v) end)
 H.check("no errors", #M.errors, 0)

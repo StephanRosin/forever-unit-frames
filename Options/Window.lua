@@ -221,11 +221,27 @@ end
 
 -- Pages -------------------------------------------------------------------------
 
+-- The page's rows laid out anew with their gaps, after a row changed its
+-- height (the hidden-auras editor's list); the scroll range follows.
+local function restack(page)
+    local y = PAGE_TOP
+    for _, row in ipairs(page.rows) do
+        y = y + row.stackGap
+        row:ClearAllPoints()
+        row:SetPoint("TOPLEFT", page, "TOPLEFT", 0, -y)
+        row:SetPoint("TOPRIGHT", page, "TOPRIGHT", 0, -y)
+        y = y + row:GetHeight()
+    end
+    page.height = y + PAGE_BOTTOM
+    Options.PageResized(page)
+end
+
 -- Stacks rows top to bottom; a section header after other rows gets a gap.
 local function newStack(page)
     local stack = { y = PAGE_TOP, rows = {} }
     function stack.add(row, height)
-        if row.isSection and #stack.rows > 0 then stack.y = stack.y + SECTION_GAP end
+        row.stackGap = (row.isSection and #stack.rows > 0) and SECTION_GAP or 0
+        stack.y = stack.y + row.stackGap
         row:SetPoint("TOPLEFT", page, "TOPLEFT", 0, -stack.y)
         row:SetPoint("TOPRIGHT", page, "TOPRIGHT", 0, -stack.y)
         row:SetHeight(height or row:GetHeight())
@@ -234,6 +250,7 @@ local function newStack(page)
     end
     function stack.finish()
         page.rows, page.height = stack.rows, stack.y + PAGE_BOTTOM
+        page.Restack = function() restack(page) end
     end
     return stack
 end
@@ -466,6 +483,20 @@ local function updateScrollbar()
     thumb:ClearAllPoints()
     thumb:SetPoint("TOPRIGHT", scroll, "TOPRIGHT", SCROLLBAR_W - 3, -(view - thumbH) * scroll:GetVerticalScroll() / range)
     thumb:Show()
+end
+
+-- A page that changed its height (a row grew or shrank, Restack): the
+-- scroll range follows while it is shown, and a scroll beyond the new
+-- range moves back to its end.
+function Options.PageResized(page)
+    page:SetHeight(page.height)
+    if not frame or Options.page ~= page then return end
+    frame.scrollChild:SetHeight(page.height)
+    local scroll = frame.scroll
+    scroll:UpdateScrollChildRect()
+    local range = math.max(0, scroll:GetVerticalScrollRange())
+    if scroll:GetVerticalScroll() > range then scroll:SetVerticalScroll(range) end
+    updateScrollbar()
 end
 
 local function onWheel(scroll, delta)

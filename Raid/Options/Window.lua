@@ -170,10 +170,26 @@ RaidOptions.SettingRow = settingRow
 
 -- Pages -------------------------------------------------------------------------
 
+-- The page's rows laid out anew with their gaps, after a row changed its
+-- height (the hidden-auras editor's list); the scroll range follows.
+local function restack(page)
+    local y = PAGE_TOP
+    for _, row in ipairs(page.rows) do
+        y = y + row.stackGap
+        row:ClearAllPoints()
+        row:SetPoint("TOPLEFT", page, "TOPLEFT", 0, -y)
+        row:SetPoint("TOPRIGHT", page, "TOPRIGHT", 0, -y)
+        y = y + row:GetHeight()
+    end
+    page.height = y + PAGE_BOTTOM
+    RaidOptions.PageResized(page)
+end
+
 local function newStack(page)
     local stack = { y = PAGE_TOP, rows = {} }
     function stack.add(row, height)
-        if row.isSection and #stack.rows > 0 then stack.y = stack.y + SECTION_GAP end
+        row.stackGap = (row.isSection and #stack.rows > 0) and SECTION_GAP or 0
+        stack.y = stack.y + row.stackGap
         row:SetPoint("TOPLEFT", page, "TOPLEFT", 0, -stack.y)
         row:SetPoint("TOPRIGHT", page, "TOPRIGHT", 0, -stack.y)
         row:SetHeight(height or row:GetHeight())
@@ -182,6 +198,7 @@ local function newStack(page)
     end
     function stack.finish()
         page.rows, page.height = stack.rows, stack.y + PAGE_BOTTOM
+        page.Restack = function() restack(page) end
     end
     return stack
 end

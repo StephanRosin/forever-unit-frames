@@ -5,7 +5,8 @@ local _, ns = ...
 -- that takes spell IDs or names (several, separated by commas; Enter adds
 -- them), a note on what the client allows, and the list: each entry's ID
 -- and name, a "Remove", and a mark where the client will not hide it
--- everywhere on this list's frames. Long lists scroll with the wheel.
+-- everywhere on this list's frames. The row is as tall as its list, up
+-- to Editor.LINES lines; longer lists scroll with the wheel.
 -- opts as for the other rows (get, set, label, hint), plus opts.scope: the
 -- unit frames' page it is on (none: a raid size). A setting with
 -- def.spellList (the shield watch's additions) is a plain list of spells:
@@ -81,9 +82,22 @@ function Editor.Row(parent, def, opts)
     row.lines = {}
     for i = 1, Editor.LINES do row.lines[i] = newLine(row, i) end
     row.count = Style.Text(row, 10, "muted")
-    row.count:SetPoint("TOPLEFT", row, "TOPLEFT", LABEL_X,
-        -(Widgets.ROW_H + Editor.NOTE_H + Editor.LINES * Editor.LINE_H + 2))
-    row:SetHeight(Widgets.ROW_H + Editor.NOTE_H + (Editor.LINES + 1) * Editor.LINE_H)
+
+    -- As many lines as the list has entries (one for the empty text), at
+    -- most Editor.LINES; the count right after them. A changed height
+    -- lays the page out anew (its Restack, once it is stacked).
+    local shownLines
+    local function fitLines(count)
+        local lines = math.max(1, math.min(count, Editor.LINES))
+        if lines == shownLines then return end
+        shownLines = lines
+        for i, line in ipairs(row.lines) do line:SetShown(i <= lines) end
+        row.count:ClearAllPoints()
+        row.count:SetPoint("TOPLEFT", row, "TOPLEFT", LABEL_X,
+            -(Widgets.ROW_H + Editor.NOTE_H + lines * Editor.LINE_H + 2))
+        row:SetHeight(Widgets.ROW_H + Editor.NOTE_H + (lines + 1) * Editor.LINE_H)
+        if parent.Restack then parent.Restack() end
+    end
 
     local enabled = true
     function row:Refresh()
@@ -106,6 +120,7 @@ function Editor.Row(parent, def, opts)
             line.remove:SetEnabled(enabled)
         end
         row.count:SetText(L.AURA_BLOCK_COUNT:format(#ids, Blocklist.MAX))
+        fitLines(#ids)
     end
     function row:SetEnabled(on)
         enabled = on
