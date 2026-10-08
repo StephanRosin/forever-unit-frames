@@ -57,17 +57,17 @@ ns.Single.SetUnit(cell, "player")
 ns.Single.SetUnit(plain, "player")
 ns.Single.UpdateAll(cell)
 H.check("name", name:GetText(), "Me")
-H.check("missing health", second:GetText(), 50)
+H.check("missing health", second:GetText(), "50")
 M.units.player.afk = true
 M.FireEvent("PLAYER_FLAGS_CHANGED", "player")
 H.check("AFK in the second line", second:GetText(), "AFK")
-H.check("unit frame: no AFK word on the bar", plain.texts.healthRight:GetText(), 50)
+H.check("unit frame: no AFK word on the bar", plain.texts.healthRight:GetText(), "50")
 M.units.player.dead = true
 M.FireEvent("UNIT_HEALTH", "player")
 H.check("dead wins over AFK", second:GetText(), ns.L.STATUS_DEAD)
 M.units.player.dead, M.units.player.afk = nil, nil
 M.FireEvent("UNIT_HEALTH", "player")
-H.check("back to the value", second:GetText(), 50)
+H.check("back to the value", second:GetText(), "50")
 
 -- Samples: the frame's own class, name, health and status in test mode.
 cell.sample = { class = "DRUID", name = "Druid", health = 0.3, status = false }
@@ -77,7 +77,7 @@ local c = cell.health._color
 H.checkTrue("sample class colour", c[1] == 1 and c[2] == 0.49 and c[3] == 0.04)
 H.check("sample name", name:GetText(), "Druid")
 H.check("sample name in its class colour", name._color[2], 0.49)
-H.check("sample missing health", second:GetText(), 70)
+H.check("sample missing health", second:GetText(), "70")
 cell.sample.status = "OFFLINE"
 ns.Single.Preview(cell, true)
 H.check("sample status", second:GetText(), ns.L.STATUS_OFFLINE)

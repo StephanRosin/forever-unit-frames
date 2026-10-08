@@ -34,7 +34,8 @@ H.check("percent format", t.healthRight._fmt, "%.0f%%")
 
 -- Deficit via TruncateWhenZero
 ns.Config.Set("player", "textHealthRight", "DEFICIT")
-H.check("deficit passes through", t.healthRight._text, M.units.player.healthMissing)
+H.checkTrue("deficit: secret in, secret text out", M.IsSecret(t.healthRight._text))
+H.check("deficit: the client's whole number", M.Reveal(t.healthRight._text), "100")
 
 -- Level ?? for unknown (-1) level
 M.units.target = { name = "Boss", level = -1, health = 1, healthMax = 1 }

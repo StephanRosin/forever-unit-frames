@@ -84,7 +84,7 @@ H.check("left click targets", M.SecureClick(tank, "LeftButton"), "target")
 H.check("right click menu", M.SecureClick(tank, "RightButton"), "togglemenu")
 H.check("name centred", tank.texts.healthLeft._justifyH, "CENTER")
 H.check("name", tank.texts.healthLeft:GetText(), "Tank")
-H.check("missing health", tank.texts.healthRight:GetText(), 40)
+H.check("missing health", tank.texts.healthRight:GetText(), "40")
 H.check("health", tank.health:GetValue(), 60)
 local onCells = 0
 for _, container in ipairs(M.auraContainers) do

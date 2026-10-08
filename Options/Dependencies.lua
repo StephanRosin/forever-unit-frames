@@ -127,12 +127,12 @@ local RULES = {
     -- look with that text.
     { on("shieldsEnabled"), { "shieldsPriest", "shieldsMage", "shieldsWarlock", "shieldsItems", "shieldsExtra",
         "shieldsHideInBuffs", "shieldsSize", "shieldsSpacing", "shieldsGrowth", "shieldsX",
-        "shieldsY", "shieldsAmount", "shieldsAbbreviate", "shieldsAmountPoint", "shieldsAmountX", "shieldsAmountY",
-        "shieldsAmountFont", "shieldsAmountSize", "shieldsAmountOutline", "shieldsAmountColor", "shieldsSwipe",
+        "shieldsY", "shieldsTotal", "shieldsTotalPoint", "shieldsTotalX", "shieldsTotalY",
+        "shieldsTotalFont", "shieldsTotalSize", "shieldsTotalOutline", "shieldsTotalColor", "shieldsSwipe",
         "shieldsTime", "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY", "shieldsTimeFont", "shieldsTimeSize",
         "shieldsTimeOutline", "shieldsTimeColor" } },
-    { on("shieldsAmount"), { "shieldsAbbreviate", "shieldsAmountPoint", "shieldsAmountX", "shieldsAmountY",
-        "shieldsAmountFont", "shieldsAmountSize", "shieldsAmountOutline", "shieldsAmountColor" } },
+    { on("shieldsTotal"), { "shieldsTotalPoint", "shieldsTotalX", "shieldsTotalY",
+        "shieldsTotalFont", "shieldsTotalSize", "shieldsTotalOutline", "shieldsTotalColor" } },
     { on("shieldsTime"), { "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY", "shieldsTimeFont", "shieldsTimeSize",
         "shieldsTimeOutline", "shieldsTimeColor" } },
     -- Elements/Classification.lua: the ring has a size, the marker a

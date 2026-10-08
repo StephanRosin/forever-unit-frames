@@ -121,27 +121,26 @@ An icon per active absorb shield on the player, target or focus, with the absorb
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Shield watch</b></td><td>An icon per active shield with the absorb it has left</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
+<tr><td><b>Shield watch</b></td><td>Icons of your active shields and the total of your absorbs</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
 <tr><td><b>Priest shields</b></td><td>Power Word: Shield</td><td>On, Off</td><td>On</td><td>Player</td></tr>
-<tr><td><b>Mage shields</b></td><td>Ice Barrier, Mana Shield, the wards; on yours only as a mage</td><td>On, Off</td><td>On</td><td>Player</td></tr>
-<tr><td><b>Warlock shields</b></td><td>Shadow Ward, Sacrifice; on yours only as a warlock</td><td>On, Off</td><td>On</td><td>Player</td></tr>
+<tr><td><b>Mage shields</b></td><td>Ice Barrier, Mana Shield, the wards; only as a mage</td><td>On, Off</td><td>On</td><td>Player</td></tr>
+<tr><td><b>Warlock shields</b></td><td>Shadow Ward, Sacrifice; only as a warlock</td><td>On, Off</td><td>On</td><td>Player</td></tr>
 <tr><td><b>Potions and items</b></td><td>Protection potions, absorbing trinkets and belts</td><td>On, Off</td><td>On</td><td>Player</td></tr>
 <tr><td><b>More shields</b></td><td>Spell IDs or names; Enter adds</td><td>Spell IDs or names, up to 100 spells</td><td>(none)</td><td>Player</td></tr>
-<tr><td><b>Hide them in the buffs</b></td><td>Not on enemies: the game shows their buffs as they are</td><td>On, Off</td><td>On</td><td>Player</td></tr>
+<tr><td><b>Hide them in the buffs</b></td><td>The watched shields leave your buffs</td><td>On, Off</td><td>On</td><td>Player</td></tr>
 <tr><td><b>Icon size</b></td><td></td><td>12 – 64</td><td>32</td><td>Player</td></tr>
 <tr><td><b>Spacing</b></td><td></td><td>0 – 20</td><td>4</td><td>Player</td></tr>
 <tr><td><b>Growth</b></td><td></td><td>Right, Left, Up, Down</td><td>Right</td><td>Player</td></tr>
 <tr><td><b>Position X</b></td><td></td><td>-4000 – 4000</td><td>-300</td><td>Player</td></tr>
 <tr><td><b>Position Y</b></td><td></td><td>-4000 – 4000</td><td>-140</td><td>Player</td></tr>
-<tr><td><b>Amount left</b></td><td>Exact; unreadable: the total, only while one shield is up</td><td>On, Off</td><td>On</td><td>Player</td></tr>
-<tr><td><b>Abbreviate (12.3k)</b></td><td></td><td>On, Off</td><td>On</td><td>Player</td></tr>
-<tr><td><b>Amount place</b></td><td></td><td>Top, Bottom, Left, Right, Center</td><td>Center</td><td>Player</td></tr>
-<tr><td><b>Amount offset X</b></td><td></td><td>-64 – 64</td><td>0</td><td>Player</td></tr>
-<tr><td><b>Amount offset Y</b></td><td></td><td>-64 – 64</td><td>0</td><td>Player</td></tr>
-<tr><td><b>Amount font</b></td><td></td><td>Font, or the frame's font</td><td>The frame's font</td><td>Player</td></tr>
-<tr><td><b>Amount size</b></td><td></td><td>6 – 48 (0: Auto)</td><td>Auto</td><td>Player</td></tr>
-<tr><td><b>Amount font style</b></td><td></td><td>The frame's style, None, Outline, Thick outline, Monochrome, Soft outline</td><td>The frame's style</td><td>Player</td></tr>
-<tr><td><b>Amount color</b></td><td></td><td>Color</td><td><code>#ffffff</code></td><td>Player</td></tr>
+<tr><td><b>Total</b></td><td>All your absorbs, exact; shown while above zero</td><td>On, Off</td><td>On</td><td>Player</td></tr>
+<tr><td><b>Total place</b></td><td>At that side of the icons</td><td>Top, Bottom, Left, Right, Center</td><td>Left</td><td>Player</td></tr>
+<tr><td><b>Total offset X</b></td><td></td><td>-64 – 64</td><td>-3</td><td>Player</td></tr>
+<tr><td><b>Total offset Y</b></td><td></td><td>-64 – 64</td><td>0</td><td>Player</td></tr>
+<tr><td><b>Total font</b></td><td></td><td>Font, or the frame's font</td><td>The frame's font</td><td>Player</td></tr>
+<tr><td><b>Total size</b></td><td></td><td>6 – 48 (0: Auto)</td><td>Auto</td><td>Player</td></tr>
+<tr><td><b>Total font style</b></td><td></td><td>The frame's style, None, Outline, Thick outline, Monochrome, Soft outline</td><td>The frame's style</td><td>Player</td></tr>
+<tr><td><b>Total color</b></td><td></td><td>Color</td><td><code>#ffffff</code></td><td>Player</td></tr>
 <tr><td><b>Swipe</b></td><td></td><td>On, Off</td><td>On</td><td>Player</td></tr>
 <tr><td><b>Time left</b></td><td></td><td>On, Off</td><td>Off</td><td>Player</td></tr>
 <tr><td><b>Time place</b></td><td></td><td>Top, Bottom, Left, Right, Center</td><td>Top</td><td>Player</td></tr>

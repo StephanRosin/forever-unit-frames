@@ -1359,6 +1359,7 @@ local function newWidget(kind, name, parent)
     function w:SetCooldownFromDurationObject(duration) self._cooldown = { object = duration } end
     function w:Clear() self._cooldown = nil end
     function w:SetHideCountdownNumbers(v) self._hideNumbers = v end
+    function w:SetDrawSwipe(v) self._drawSwipe = v end
     function w:GetCountdownFontString()
         self._countdown = self._countdown or newWidget("FontString", nil, self)
         return self._countdown
@@ -1847,7 +1848,17 @@ function M.Reset()
     _G.C_DurationUtil = { CreateDuration = function() return { _empty = true } end }
     _G.UnitCastingDuration = function(unit) local d = u(unit); return d and d.castDuration end
     _G.UnitChannelDuration = function(unit) local d = u(unit); return d and d.castDuration end
-    _G.C_StringUtil = { TruncateWhenZero = function(n) return n end }
+    -- StringUtilDocumentation.lua: a number (secret allowed) as a whole
+    -- number, rounded down; zero gives an empty text. A secret in gives a
+    -- secret text.
+    _G.C_StringUtil = { TruncateWhenZero = function(n)
+        local v = M.Reveal(n)
+        assert(type(v) == "number", "TruncateWhenZero: number")
+        local whole = math.floor(v)
+        local text = whole == 0 and "" or ("%d"):format(whole)
+        if M.IsSecret(n) then return M.Secret(text) end
+        return text
+    end }
     _G.UnitPowerMissing = function(unit) local d = u(unit); return d and d.powerMissing or 0 end
     -- Shields and heals (UnitDocumentation.lua): the total absorb is never
     -- nil; incoming heals are nil when nothing is known. d.absorbs;

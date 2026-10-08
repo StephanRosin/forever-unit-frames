@@ -30,7 +30,7 @@ H.check("event: sample kept", right._args[1], 60)
 H.check("event: current kept", left._args[1], "60")
 -- Every value tag on the health bar, and on the title row.
 C.Set("player", "textHealthLeft", "DEFICIT")
-H.check("sample: deficit", left:GetText(), 40)
+H.check("sample: deficit", left:GetText(), "40")
 C.Set("player", "textHealthLeft", "CURRENT")
 H.check("sample: current alone", left:GetText(), "60")
 C.Set("player", "titleText", "PERCENT")

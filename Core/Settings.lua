@@ -599,18 +599,18 @@ Settings.Define({ key = "comboX", code = "XX", scope = "frame", only = COMBO, ty
 Settings.Define({ key = "comboY", code = "XY", scope = "frame", only = COMBO, type = "int", min = -400, max = 400,
     default = -3 })
 
--- The shield watch (Elements/ShieldWatch.lua): one icon per active absorb
--- shield with the absorb it has left, in a block of its own with a mover,
--- on the player frame. Off by default. The watched
--- spells come in groups (each switchable) plus the frame's own additions
--- (spell IDs, validated like the hidden auras). Texts: the amount (on by
--- default) and the time left (the cooldown's own numbers, off by default),
--- each placed at a side of the icon with an offset, a font (empty: the
--- frame's), a size (0: Automatic, from the icon size), a font style
--- (FRAME: the frame's) and a colour.
+-- The shield watch (Elements/ShieldWatch.lua): the icons of your active
+-- absorb shields (a Blizzard aura container) and the exact total of all
+-- your absorbs, in a block of its own with a mover, on the player frame.
+-- Off by default. The watched spells come in groups (each switchable) plus
+-- your own additions (spell IDs, validated like the hidden auras). Texts:
+-- the total (on by default), placed at a side of the icons, and the time
+-- left (the icons' own countdown, off by default), at a side of each icon;
+-- each with an offset, a font (empty: the frame's), a size (0: Automatic,
+-- from the icon size), a font style (FRAME: the frame's) and a colour.
 local SHIELDS = { player = true }
 Settings.SHIELD_GROUPS = { "Priest", "Mage", "Warlock", "Items" }
--- Where a text sits: at that side of the icon, outside it (CENTER: on it).
+-- Where a text sits: at that side, outside (CENTER: on it).
 Settings.SHIELD_TEXT_POINTS = { "TOP", "BOTTOM", "LEFT", "RIGHT", "CENTER" }
 local SHIELD_OUTLINES = { "FRAME", "NONE", "OUTLINE", "THICKOUTLINE", "MONOCHROME", "SOFT" }
 local function shields(def)
@@ -635,18 +635,18 @@ shields({ key = "shieldsGrowth", code = "VQ", type = "enum", values = { "RIGHT",
 -- The block's centre, from the screen's centre (its mover).
 shields({ key = "shieldsX", code = "VR", type = "int", min = -4000, max = 4000, default = -300 })
 shields({ key = "shieldsY", code = "VS", type = "int", min = -4000, max = 4000, default = -140 })
-shields({ key = "shieldsAmount", code = "VT", type = "bool", default = true })
-shields({ key = "shieldsAbbreviate", code = "VU", type = "bool", default = true })
-shields({ key = "shieldsAmountPoint", code = "VV", type = "enum", values = Settings.SHIELD_TEXT_POINTS,
-    default = "CENTER" })
-shields({ key = "shieldsAmountX", code = "VW", type = "int", min = -64, max = 64, default = 0 })
-shields({ key = "shieldsAmountY", code = "VX", type = "int", min = -64, max = 64, default = 0 })
-shields({ key = "shieldsAmountFont", code = "ZA", type = "media", mediaKind = "font", emptyText = "FONT_OF_FRAME",
+-- The total: before the icons by default (they grow away from it).
+shields({ key = "shieldsTotal", code = "VT", type = "bool", default = true })
+shields({ key = "shieldsTotalPoint", code = "VV", type = "enum", values = Settings.SHIELD_TEXT_POINTS,
+    default = "LEFT" })
+shields({ key = "shieldsTotalX", code = "VW", type = "int", min = -64, max = 64, default = -3 })
+shields({ key = "shieldsTotalY", code = "VX", type = "int", min = -64, max = 64, default = 0 })
+shields({ key = "shieldsTotalFont", code = "ZA", type = "media", mediaKind = "font", emptyText = "FONT_OF_FRAME",
     default = "" })
-shields({ key = "shieldsAmountSize", code = "ZB", type = "int", min = 0, lowest = 6, max = 48, default = 0,
+shields({ key = "shieldsTotalSize", code = "ZB", type = "int", min = 0, lowest = 6, max = 48, default = 0,
     zeroText = "AUTO" })
-shields({ key = "shieldsAmountOutline", code = "ZD", type = "enum", values = SHIELD_OUTLINES, default = "FRAME" })
-shields({ key = "shieldsAmountColor", code = "ZI", type = "color", default = { 1, 1, 1, 1 } })
+shields({ key = "shieldsTotalOutline", code = "ZD", type = "enum", values = SHIELD_OUTLINES, default = "FRAME" })
+shields({ key = "shieldsTotalColor", code = "ZI", type = "color", default = { 1, 1, 1, 1 } })
 shields({ key = "shieldsSwipe", code = "ZJ", type = "bool", default = true })
 shields({ key = "shieldsTime", code = "ZK", type = "bool", default = false })
 shields({ key = "shieldsTimePoint", code = "ZL", type = "enum", values = Settings.SHIELD_TEXT_POINTS,

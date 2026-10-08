@@ -1,37 +1,42 @@
 local _, ns = ...
 
--- The shield watch: one icon per active absorb shield on the player,
--- with the absorb it has left, in a block of its own that
--- has a mover. Off by default (shieldsEnabled).
+-- The shield watch on the player frame: the icons of your active absorb
+-- shields and the exact total of all your absorbs, in a block of its own
+-- that has a mover. Off by default (shieldsEnabled).
 --
--- The watched shields are shipped groups of spells (all Classic ranks)
--- and the frame's own additions. The aura is looked up by name
--- (C_UnitAuras.GetAuraDataBySpellName), so every rank and every spell of
--- the same name is found; names come from the client (an ID it does not
--- know is dropped). The block watches the player's class's group, the
--- Priest group (a priest's shield lands on anyone) and the potions and
--- items.
+-- The icons come from a Blizzard aura container (CustomAuraContainerTemplate,
+-- the machinery of Elements/AuraContainers.lua): one group, filter HELPFUL,
+-- whose candidate filter admits only the watched spell IDs
+-- (includeSpellIDs). The client reads the auras and fills the icons from
+-- secure code, in combat too; it allows filtering helpful auras by spell on
+-- the player (CanApplyIdentityCandidateFilters). Icon, swipe and countdown
+-- numbers are the container's own. The addon reads no shield itself.
+-- The container is made and configured out of combat only.
 --
--- A shield is active (a plain AuraData), absent (nil while the spell's
--- aura is not secret) or unknown (a refusal, a secret answer, or nil while
--- it may be secret). Unknown shields are not shown. The amount is the
--- aura's points[1], handed to the text as it is (secret or not). When it
--- cannot be read, the total of the unit's absorbs (UnitGetTotalAbsorbs)
--- stands in, but only while exactly one watched shield is known to be
--- active; otherwise no number. Nothing secret is compared, added or tested.
+-- The watched spells are shipped groups (all Classic ranks) and the
+-- player's additions: the player's class's group, the Priest group (a
+-- priest's shield lands on anyone) and the potions and items. Their IDs go
+-- to the container as they are: an ID the client does not know matches
+-- nothing.
 --
--- Icons are aura icons (Elements/AuraButton.lua): the texture, the swipe
--- (readable times or the client's duration object) and the client's
--- countdown numbers, which are the time text here. Plain frames: shown and
--- hidden in combat too; the block's place and size change out of combat
--- (Style runs there).
+-- The number is one text: UnitGetTotalAbsorbs("player"), every absorb on
+-- you. It may be secret, so it is never compared: the client writes it
+-- through C_StringUtil.TruncateWhenZero, which gives the whole number and
+-- an empty text for zero. So the text shows exactly while the total is
+-- above zero. It hangs at a side of the container (which the client sizes
+-- to its icons) from a frame with the untrusted-layout aspect, the only
+-- kind the client lets anchor to a container.
 local ShieldWatch = { name = "ShieldWatch", unitEvents = { "UNIT_AURA", "UNIT_ABSORB_AMOUNT_CHANGED" } }
 ns.ShieldWatch = ShieldWatch
 
-local Config, Secrets, Pixel, AuraButton = ns.Config, ns.Secrets, ns.Pixel, ns.AuraButton
+local Config, Pixel, AuraButton = ns.Config, ns.Pixel, ns.AuraButton
 
 ShieldWatch.SCOPES = { player = true }
 ShieldWatch.FILTER = "HELPFUL"
+-- The container's one group.
+ShieldWatch.GROUP = "shields"
+-- The total text's frame: may anchor to the container.
+ShieldWatch.TEXT_TEMPLATE = "DisableUntrustedLayoutScriptsTemplate"
 
 -- The shipped shields, Classic spell IDs (every rank). class: a group
 -- watched only for that class; anyone: for every class.
@@ -56,6 +61,7 @@ ShieldWatch.GROUPS = {
         { 7239, 17544 },                             -- Frost Protection
         { 7242, 17548 },                             -- Shadow Protection
         { 7254, 17546 },                             -- Nature Protection
+        { 7245, 17545 },                             -- Holy Protection
         { 17549 },                                   -- Arcane Protection
         { 23506 },                                   -- Aura of Protection (Arena Grand Master)
         { 29506 },                                   -- The Burrower's Shell
@@ -63,32 +69,36 @@ ShieldWatch.GROUPS = {
     } },
 }
 
--- Test mode: two shields so the block can be placed.
+-- Test mode: two shields and their total, so the block can be placed.
 ShieldWatch.SAMPLES = {
-    { icon = "Interface\\Icons\\Spell_Holy_PowerWordShield", amount = 1250, duration = 30 },
-    { icon = "Interface\\Icons\\Spell_Ice_Lament", amount = 818, duration = 60 },
+    { icon = "Interface\\Icons\\Spell_Holy_PowerWordShield", duration = 30 },
+    { icon = "Interface\\Icons\\Spell_Ice_Lament", duration = 60 },
 }
+ShieldWatch.SAMPLE_TOTAL = 2068
 -- The handle's length in icons.
 ShieldWatch.HANDLE_ICONS = 2
--- Automatic text size: this share of the icon size.
-ShieldWatch.AUTO_TEXT = 0.4
--- Where a text placed at a side of the icon hangs from: outside it.
+-- Automatic text sizes: this share of the icon size.
+ShieldWatch.AUTO_TIME = 0.4
+ShieldWatch.AUTO_TOTAL = 0.5
+-- Where a text placed at a side hangs from: outside it.
 local OPPOSITE = { TOP = "BOTTOM", BOTTOM = "TOP", LEFT = "RIGHT", RIGHT = "LEFT", CENTER = "CENTER" }
--- The icons' first corner and step per growth direction.
-local START = { RIGHT = "LEFT", LEFT = "RIGHT", UP = "BOTTOM", DOWN = "TOP" }
+-- Per growth direction: the corner icons start in, the step of the samples,
+-- and the container's flow.
+local CORNER = { RIGHT = "TOPLEFT", LEFT = "TOPRIGHT", UP = "BOTTOMLEFT", DOWN = "TOPLEFT" }
 local STEP = { RIGHT = { 1, 0 }, LEFT = { -1, 0 }, UP = { 0, 1 }, DOWN = { 0, -1 } }
+local FLOW = {
+    RIGHT = { horizontal = true, h = "Right", v = "Down" },
+    LEFT = { horizontal = true, h = "Left", v = "Down" },
+    UP = { horizontal = false, h = "Right", v = "Up" },
+    DOWN = { horizontal = false, h = "Right", v = "Down" },
+}
 
 local function setting(scope, key) return Config.Get(scope, key) end
 
 local function playerClass()
     local _, class = UnitClass("player")
-    if Secrets.IsSecret(class) then return nil end
+    if ns.Secrets.IsSecret(class) then return nil end
     return class
-end
-
--- The spell's name from the client; nil when it knows none.
-local function spellName(id)
-    return ns.AuraBlocklist.Name(id)
 end
 
 -- Whether a group is watched: switched on, and the player's class's or
@@ -99,159 +109,95 @@ function ShieldWatch.GroupWatched(scope, group)
     return group.class == playerClass()
 end
 
--- The watched shields of a frame, in order: { name, ids } per name, the
--- IDs those the client knows (the first one names the shield). The
--- frame's additions come last. Kept until the settings change or a new
--- world loads: UNIT_AURA comes often, the names do not change.
+-- The watched spell IDs, a map ID -> true (the container's includeSpellIDs).
+-- Kept until the settings change or a new world loads.
 local watchedCache = {}
 
 local function buildWatched(scope)
-    local list, byName = {}, {}
-    local function add(ids)
-        for _, id in ipairs(ids) do
-            local name = spellName(id)
-            if name then
-                local entry = byName[name]
-                if not entry then
-                    entry = { name = name, ids = {} }
-                    byName[name] = entry
-                    list[#list + 1] = entry
-                end
-                entry.ids[#entry.ids + 1] = id
+    local set = {}
+    for _, group in ipairs(ShieldWatch.GROUPS) do
+        if ShieldWatch.GroupWatched(scope, group) then
+            for _, ids in ipairs(group.spells) do
+                for _, id in ipairs(ids) do set[id] = true end
             end
         end
     end
-    for _, group in ipairs(ShieldWatch.GROUPS) do
-        if ShieldWatch.GroupWatched(scope, group) then
-            for _, ids in ipairs(group.spells) do add(ids) end
-        end
-    end
-    add(ns.AuraBlocklist.Parse(setting(scope, "shieldsExtra")) or {})
-    return list
+    for _, id in ipairs(ns.AuraBlocklist.Parse(setting(scope, "shieldsExtra")) or {}) do set[id] = true end
+    return set
 end
 
 function ShieldWatch.Watched(scope)
-    local list = watchedCache[scope]
-    if not list then
-        list = buildWatched(scope)
-        watchedCache[scope] = list
-    end
-    return list
-end
-
-local function forgetWatched() watchedCache = {} end
-ns.Listen("CONFIG_CHANGED", forgetWatched)
-ns.On("PLAYER_ENTERING_WORLD", forgetWatched)
-
--- The spell IDs the frame's buffs leave out (Elements/Auras.lua): every
--- watched ID while the watch and "hide them in the buffs" are on; nil
--- otherwise. A map, spell ID -> true, like the hidden auras.
-function ShieldWatch.HiddenSet(scope)
-    if not ShieldWatch.SCOPES[scope] then return nil end
-    if setting(scope, "shieldsEnabled") ~= true or setting(scope, "shieldsHideInBuffs") ~= true then return nil end
-    local set
-    for _, entry in ipairs(ShieldWatch.Watched(scope)) do
-        for _, id in ipairs(entry.ids) do
-            set = set or {}
-            set[id] = true
-        end
+    local set = watchedCache[scope]
+    if not set then
+        set = buildWatched(scope)
+        watchedCache[scope] = set
     end
     return set
 end
 
--- Reading ----------------------------------------------------------------------
-
--- Whether the client may hide the aura of any spell of this name right
--- now: a nil answer then does not mean absent. No C_Secrets: nothing is
--- secret.
-local function mayBeSecret(entry)
-    local secrets = C_Secrets
-    if not (secrets and secrets.ShouldSpellAuraBeSecret) then return false end
-    for _, id in ipairs(entry.ids) do
-        if Secrets.Call(secrets.ShouldSpellAuraBeSecret, id) ~= false then return true end
+local function copy(set)
+    local out
+    for id in pairs(set) do
+        out = out or {}
+        out[id] = true
     end
-    return false
+    return out
 end
 
--- One shield on a unit: "active" with its AuraData, "absent" or "unknown".
-function ShieldWatch.Read(unit, entry, filter)
-    local ok, aura = pcall(C_UnitAuras.GetAuraDataBySpellName, unit, entry.name, filter)
-    if not ok or Secrets.IsSecret(aura) then return "unknown" end
-    if type(aura) == "table" then return "active", aura end
-    if aura == nil and not mayBeSecret(entry) then return "absent" end
-    return "unknown"
+-- The spell IDs the frame's buffs leave out (Elements/Auras.lua): every
+-- watched ID while the watch and "hide them in the buffs" are on; nil
+-- otherwise.
+function ShieldWatch.HiddenSet(scope)
+    if not ShieldWatch.SCOPES[scope] then return nil end
+    if setting(scope, "shieldsEnabled") ~= true or setting(scope, "shieldsHideInBuffs") ~= true then return nil end
+    return copy(ShieldWatch.Watched(scope))
 end
 
--- The shields of a frame's unit: the active ones in watched order
--- ({ entry, aura }), and whether exactly one watched shield is known to
--- be active (the total may stand in for an unreadable amount).
-function ShieldWatch.Scan(scope, unit)
-    local active, unknown = {}, false
-    for _, entry in ipairs(ShieldWatch.Watched(scope)) do
-        local state, aura = ShieldWatch.Read(unit, entry, ShieldWatch.FILTER)
-        if state == "active" then active[#active + 1] = { entry = entry, aura = aura } end
-        if state == "unknown" then unknown = true end
+-- The total -------------------------------------------------------------------------
+-- Writes a total (plain or secret): the whole number, empty at zero, by
+-- the client. Nothing is compared; a refusal leaves the text empty.
+function ShieldWatch.SetTotal(fs, v)
+    local ok, text = pcall(C_StringUtil.TruncateWhenZero, v)
+    if ok then
+        fs:SetText(text)
+    else
+        fs:SetText("")
     end
-    return active, not unknown and #active == 1
 end
 
--- The aura's remaining absorb as the client gives it (a number or a
--- secret); nil when it cannot be read.
-local function pointsOf(aura)
-    local points = aura.points
-    if Secrets.IsSecret(points) or type(points) ~= "table" then return nil end
-    local v = points[1]
-    if Secrets.IsSecret(v) or type(v) == "number" then return v end
-    return nil
-end
-
-function ShieldWatch.Amount(aura)
-    local ok, v = pcall(pointsOf, aura)
-    if ok then return v end
-    return nil
-end
-
--- Writes an amount: a plain number like the health texts (abbreviated or
--- in full), a secret one through the client (AbbreviateNumbers takes it)
--- or as it is.
-function ShieldWatch.SetAmount(fs, v, abbreviate)
-    if Secrets.IsSecret(v) then
-        if abbreviate and AbbreviateNumbers then
-            local ok, text = pcall(AbbreviateNumbers, v)
-            if ok then return fs:SetText(text) end
-        end
-        return fs:SetText(v)
+local function writeTotal(sw, unit)
+    local ok, v = pcall(UnitGetTotalAbsorbs, unit)
+    if ok then
+        ShieldWatch.SetTotal(sw.total, v)
+    else
+        sw.total:SetText("")
     end
-    if abbreviate then return fs:SetText(Secrets.Abbreviate(v)) end
-    fs:SetFormattedText("%d", v)
 end
 
--- Building and styling -----------------------------------------------------------
-
-local function newIcon(sw)
-    local button = AuraButton.Create(sw.holder, false)
-    button.amount = button.cover:CreateFontString(nil, "OVERLAY")
-    sw.icons[#sw.icons + 1] = button
-    return button
-end
+-- Building ----------------------------------------------------------------------------
 
 function ShieldWatch.Build(frame)
     if not ShieldWatch.SCOPES[frame.key] then return end
     local holder = CreateFrame("Frame", nil, frame)
     holder:Hide()
-    frame.shields = { holder = holder, icons = {}, shown = 0 }
-    -- Two icons at once in test mode: made now, out of combat.
-    for _ = 1, #ShieldWatch.SAMPLES do newIcon(frame.shields) end
+    local sw = { holder = holder, samples = {}, buttons = {}, shown = 0 }
+    frame.shields = sw
+    for i = 1, #ShieldWatch.SAMPLES do sw.samples[i] = AuraButton.Create(holder, false) end
+    local ok, host = pcall(CreateFrame, "Frame", nil, holder, ShieldWatch.TEXT_TEMPLATE)
+    if not ok then host = CreateFrame("Frame", nil, holder) end
+    host:SetAllPoints(holder)
+    sw.textHost = host
+    sw.total = host:CreateFontString(nil, "OVERLAY")
 end
 
 local function iconSize(scope) return Pixel.Snap(setting(scope, "shieldsSize")) end
+local function spacing(scope) return Pixel.Snap(setting(scope, "shieldsSpacing")) end
 
 -- The handle's (and the block's) size: HANDLE_ICONS icons in the growth
 -- direction.
 function ShieldWatch.Size(scope)
-    local size, spacing = iconSize(scope), Pixel.Snap(setting(scope, "shieldsSpacing"))
-    local n = ShieldWatch.HANDLE_ICONS
-    local length = n * size + (n - 1) * spacing
+    local size, n = iconSize(scope), ShieldWatch.HANDLE_ICONS
+    local length = n * size + (n - 1) * spacing(scope)
     local growth = setting(scope, "shieldsGrowth")
     if growth == "UP" or growth == "DOWN" then return size, length end
     return length, size
@@ -303,10 +249,10 @@ local function fontOf(scope, key)
     return ns.Media.Font(face)
 end
 
-local function textSize(scope, key)
+local function textSize(scope, key, share)
     local own = setting(scope, key)
     if own > 0 then return own end
-    return math.max(6, math.floor(setting(scope, "shieldsSize") * ShieldWatch.AUTO_TEXT + 0.5))
+    return math.max(6, math.floor(setting(scope, "shieldsSize") * share + 0.5))
 end
 
 local function outlineOf(scope, key)
@@ -315,145 +261,203 @@ local function outlineOf(scope, key)
     return outline
 end
 
-local function placeText(fs, button, point, x, y)
-    fs:ClearAllPoints()
-    fs:SetPoint(OPPOSITE[point], button, point, x, y)
-end
-
-local function styleIcon(button, scope, size)
-    AuraButton.Style(button, scope, size, setting(scope, "shieldsTime") == true)
+-- Size, swipe and the countdown numbers (the time text) of an icon: a
+-- sample of ours or a container's button (managed). The client writes the
+-- numbers, so a soft outline becomes the plain one.
+local function styleButton(button, scope, managed)
+    local showTime = setting(scope, "shieldsTime") == true
+    if managed then
+        AuraButton.StyleManaged(button, scope, iconSize(scope), showTime)
+    else
+        AuraButton.Style(button, scope, iconSize(scope), showTime)
+    end
     button.cooldown:SetDrawSwipe(setting(scope, "shieldsSwipe") == true)
-    local amount = button.amount
-    ns.Texts.SetFont(amount, fontOf(scope, "shieldsAmountFont"), textSize(scope, "shieldsAmountSize"),
-        outlineOf(scope, "shieldsAmountOutline"))
-    local c = setting(scope, "shieldsAmountColor")
-    amount:SetTextColor(c[1], c[2], c[3], c[4])
-    placeText(amount, button, setting(scope, "shieldsAmountPoint"), setting(scope, "shieldsAmountX"),
-        setting(scope, "shieldsAmountY"))
-    amount:SetShown(setting(scope, "shieldsAmount") == true)
-    -- The time text is the client's countdown: it writes it, so a soft
-    -- outline (copies we would have to write) becomes the plain one.
     local numbers = button.cooldown:GetCountdownFontString()
     if numbers then
         local outline = outlineOf(scope, "shieldsTimeOutline")
         local flags = (outline == "SOFT" or outline == "NONE") and (outline == "SOFT" and "OUTLINE" or "") or outline
-        numbers:SetFont(fontOf(scope, "shieldsTimeFont"), textSize(scope, "shieldsTimeSize"), flags)
+        numbers:SetFont(fontOf(scope, "shieldsTimeFont"), textSize(scope, "shieldsTimeSize", ShieldWatch.AUTO_TIME),
+            flags)
         local t = setting(scope, "shieldsTimeColor")
         numbers:SetTextColor(t[1], t[2], t[3], t[4])
-        placeText(numbers, button, setting(scope, "shieldsTimePoint"), setting(scope, "shieldsTimeX"),
-            setting(scope, "shieldsTimeY"))
+        local point = setting(scope, "shieldsTimePoint")
+        numbers:ClearAllPoints()
+        numbers:SetPoint(OPPOSITE[point], button, point, setting(scope, "shieldsTimeX"), setting(scope, "shieldsTimeY"))
     end
 end
 
-local function layoutIcon(frame, button, i)
-    local scope, holder = frame.key, frame.shields.holder
-    local size, spacing = iconSize(scope), Pixel.Snap(setting(scope, "shieldsSpacing"))
+-- The samples in a row from the block's first corner.
+local function layoutSample(frame, button, i)
+    local scope = frame.key
     local growth = setting(scope, "shieldsGrowth")
-    local start, step = START[growth], STEP[growth]
-    local offset = (i - 1) * (size + spacing)
+    local corner, step = CORNER[growth], STEP[growth]
+    local offset = (i - 1) * (iconSize(scope) + spacing(scope))
     button:ClearAllPoints()
-    button:SetPoint(start, holder, start, step[1] * offset, step[2] * offset)
+    button:SetPoint(corner, frame.shields.holder, corner, step[1] * offset, step[2] * offset)
 end
 
+-- The container ----------------------------------------------------------------------------
+
+-- A container's button: our regions and look, then the regions the client
+-- fills (icon, swipe with its countdown, count). In initializeFrame only:
+-- afterwards it refuses us while auras are secret.
+local function initButton(frame, button)
+    AuraButton.Decorate(button, false)
+    styleButton(button, frame.key, true)
+    frame.shields.buttons[#frame.shields.buttons + 1] = button
+    ns.AuraContainers.Wire(button, false)
+end
+
+local function layout(scope)
+    local size, gap = iconSize(scope), spacing(scope)
+    return { elementWidth = size, elementHeight = size, elementSpacing = gap, lineSpacing = gap, groupSpacing = gap,
+        groupLineSpacing = gap }
+end
+
+local function candidateFilters(scope)
+    return { includeSpellIDs = ShieldWatch.Watched(scope) }
+end
+
+-- Made the first time the block is styled with the watch on (out of
+-- combat): with it off there is none. On a refusal nothing is kept: the
+-- block shows the total only.
+local function ensureContainer(frame)
+    local sw = frame.shields
+    if sw.container or sw.containerFailed or not enabled(frame.key) then return sw.container end
+    if not ns.AuraContainers.Supported() then return nil end
+    local container
+    local ok, err = pcall(function()
+        container = CreateFrame("AuraContainer", nil, sw.holder, ns.AuraContainers.TEMPLATE)
+        container:SetEditModePreviewEnabled(false)
+        container:AddAuraGroup(ShieldWatch.GROUP, ShieldWatch.FILTER, { layout = layout(frame.key),
+            candidateFilters = candidateFilters(frame.key),
+            initializeFrame = function(button) initButton(frame, button) end })
+        container:SetUnit(frame.unit or "none")
+    end)
+    if not ok then
+        if container then container:Hide() end
+        sw.containerFailed = true
+        geterrorhandler()(err)
+        return nil
+    end
+    sw.container = container
+    return container
+end
+
+-- The buttons made so far get the current look; refused while auras are
+-- secret (tried again after combat).
+local function restyle(frame)
+    local sw = frame.shields
+    sw.stale = false
+    for _, button in ipairs(sw.buttons) do
+        if not pcall(styleButton, button, frame.key, true) then sw.stale = true end
+    end
+end
+
+-- Settings onto the container: flow from the block's first corner, the
+-- icons' size and spacing, the watched spells; shown with the watch,
+-- hidden in test mode (it shows only real auras). Out of combat only.
+local function configure(frame)
+    local sw, scope = frame.shields, frame.key
+    local container = ensureContainer(frame)
+    if not container then return end
+    local growth = setting(scope, "shieldsGrowth")
+    local flow, corner = FLOW[growth], CORNER[growth]
+    container:SetFlowLayoutAxis(flow.horizontal and AnchorUtil.FlowLayoutAxis.Horizontal
+        or AnchorUtil.FlowLayoutAxis.Vertical)
+    container:SetFlowLayoutAnchorPoint(corner)
+    container:SetFlowLayoutGrowthDirection(AnchorUtil.FlowDirection[flow.h], AnchorUtil.FlowDirection[flow.v])
+    container:SetAuraGroupLayout(ShieldWatch.GROUP, layout(scope))
+    container:SetAuraGroupCandidateFilters(ShieldWatch.GROUP, candidateFilters(scope))
+    restyle(frame)
+    container:ClearAllPoints()
+    container:SetPoint(corner, sw.holder, corner, 0, 0)
+    container:SetFrameLevel(sw.holder:GetFrameLevel() + 1)
+    container:SetShown(enabled(scope) and not sw.preview)
+    if container:GetUnit() ~= (frame.unit or "none") then container:SetUnit(frame.unit or "none") end
+end
+
+-- The total at its side of the icons: the container's (the client sizes it
+-- to its icons), or the handle's in test mode and without a container.
+local function placeTotal(frame)
+    local sw, scope = frame.shields, frame.key
+    local region = (not sw.preview and sw.container) or sw.holder
+    local point = setting(scope, "shieldsTotalPoint")
+    sw.total:ClearAllPoints()
+    sw.total:SetPoint(OPPOSITE[point], region, point, setting(scope, "shieldsTotalX"), setting(scope, "shieldsTotalY"))
+end
+
+local function styleTotal(frame)
+    local sw, scope = frame.shields, frame.key
+    ns.Texts.SetFont(sw.total, fontOf(scope, "shieldsTotalFont"),
+        textSize(scope, "shieldsTotalSize", ShieldWatch.AUTO_TOTAL), outlineOf(scope, "shieldsTotalOutline"))
+    local c = setting(scope, "shieldsTotalColor")
+    sw.total:SetTextColor(c[1], c[2], c[3], c[4])
+    sw.textHost:SetFrameLevel(sw.holder:GetFrameLevel() + 2)
+end
+
+-- Out of combat (the unit frames restyle there).
 function ShieldWatch.Style(frame)
     local sw = frame.shields
     if not sw then return end
     local scope = frame.key
     place(frame)
     sw.holder:SetFrameLevel(frame:GetFrameLevel() + ns.Auras.LEVELS)
-    local size = iconSize(scope)
-    for i, button in ipairs(sw.icons) do
-        styleIcon(button, scope, size)
-        layoutIcon(frame, button, i)
+    for i, button in ipairs(sw.samples) do
+        styleButton(button, scope, false)
+        layoutSample(frame, button, i)
     end
+    configure(frame)
+    styleTotal(frame)
+    placeTotal(frame)
     sw.styled = true
     ShieldWatch.Refresh(frame)
 end
 
--- Showing ------------------------------------------------------------------------
+-- Showing ------------------------------------------------------------------------------------
 
--- An icon for the i-th shield: made when there is none yet (a plain
--- frame, fine in combat), styled and placed like the others.
-local function iconAt(frame, i)
-    local sw = frame.shields
-    local button = sw.icons[i]
-    if button then return button end
-    button = newIcon(sw)
-    styleIcon(button, frame.key, iconSize(frame.key))
-    layoutIcon(frame, button, i)
-    return button
-end
-
-local function hideFrom(sw, n)
-    for i = n + 1, #sw.icons do
-        local button = sw.icons[i]
-        AuraButton.Clear(button)
-        button.amount:SetText("")
-    end
-    sw.shown = n
-end
-
-local function showSamples(frame)
-    local sw = frame.shields
-    sw.sampleStart = sw.sampleStart or GetTime()
-    local abbreviate = setting(frame.key, "shieldsAbbreviate") == true
-    for i, sample in ipairs(ShieldWatch.SAMPLES) do
-        local button = iconAt(frame, i)
-        AuraButton.ShowSample(button, sample, sw.sampleStart)
-        ShieldWatch.SetAmount(button.amount, sample.amount, abbreviate)
-    end
-    hideFrom(sw, #ShieldWatch.SAMPLES)
-end
-
-local function showActive(frame)
-    local sw, scope, unit = frame.shields, frame.key, frame.unit
-    local active, single = ShieldWatch.Scan(scope, unit)
-    local filter = ShieldWatch.FILTER
-    local abbreviate = setting(scope, "shieldsAbbreviate") == true
-    local n = 0
-    for _, shield in ipairs(active) do
-        local button = iconAt(frame, n + 1)
-        if AuraButton.Show(button, unit, shield.aura, filter) then
-            n = n + 1
-            local amount = ShieldWatch.Amount(shield.aura)
-            if amount == nil and single then
-                local ok, total = pcall(UnitGetTotalAbsorbs, unit)
-                if ok then amount = total end
-            end
-            if amount ~= nil then
-                ShieldWatch.SetAmount(button.amount, amount, abbreviate)
-            else
-                button.amount:SetText("")
-            end
+local function showSamples(sw, on)
+    if not on and not sw.sampleStart then return end
+    sw.sampleStart = on and (sw.sampleStart or GetTime()) or nil
+    for i, button in ipairs(sw.samples) do
+        if on then
+            AuraButton.ShowSample(button, ShieldWatch.SAMPLES[i], sw.sampleStart)
+        else
+            AuraButton.Clear(button)
         end
     end
-    hideFrom(sw, n)
+    sw.shown = on and #sw.samples or 0
 end
 
--- Any time, combat included: the icons follow the unit's shields (or the
--- samples in test mode).
+-- Any time, combat included: the total and, in test mode, the samples.
+-- The container follows the player's auras by itself.
 function ShieldWatch.Refresh(frame)
     local sw = frame.shields
     if not (sw and sw.styled) then return end
-    local on = enabled(frame.key)
+    local scope = frame.key
+    local on = enabled(scope)
     sw.holder:SetShown(on)
-    if not on then return hideFrom(sw, 0) end
-    if sw.preview then return showSamples(frame) end
-    if not frame.unit or not UnitExists(frame.unit) then return hideFrom(sw, 0) end
-    showActive(frame)
+    showSamples(sw, on and sw.preview or false)
+    sw.total:SetShown(on and setting(scope, "shieldsTotal") == true)
+    if not on then return sw.total:SetText("") end
+    if sw.preview then return ShieldWatch.SetTotal(sw.total, ShieldWatch.SAMPLE_TOTAL) end
+    writeTotal(sw, frame.unit or "none")
 end
 
 function ShieldWatch.Update(frame)
     if frame.shields then ShieldWatch.Refresh(frame) end
 end
 
--- Test mode: the two samples.
+-- Test mode: the two samples and a sample total; the container hides.
 function ShieldWatch.Preview(frame, on)
     local sw = frame.shields
     if not sw then return end
     sw.preview = on or nil
-    if not on then sw.sampleStart = nil end
     ShieldWatch.Refresh(frame)
+    ns.AfterCombat("shieldsPreview:" .. frame.key, function()
+        if sw.container then sw.container:SetShown(enabled(frame.key) and not sw.preview) end
+        placeTotal(frame)
+    end)
 end
 
 -- The handle: made with the frames, out of combat.
@@ -464,13 +468,28 @@ function ShieldWatch.AttachMover(frame)
     ns.AfterCombat("shieldsStyle:" .. frame.key, function() ShieldWatch.Style(frame) end)
 end
 
--- Combat is over: data that was secret may be readable now, without an
--- aura event.
-ns.On("PLAYER_REGEN_ENABLED", function()
+local function forEachBlock(fn)
     for scope in pairs(ShieldWatch.SCOPES) do
         local frame = ns.Frames and ns.Frames[scope]
-        if frame then ShieldWatch.Refresh(frame) end
+        if frame and frame.shields and frame.shields.styled then fn(frame) end
     end
+end
+
+-- The watched list again after a settings change; after a new world the
+-- container gets it too (the class is known by then).
+ns.Listen("CONFIG_CHANGED", function() watchedCache = {} end)
+ns.On("PLAYER_ENTERING_WORLD", function()
+    watchedCache = {}
+    forEachBlock(function(frame)
+        ns.AfterCombat("shieldsStyle:" .. frame.key, function() ShieldWatch.Style(frame) end)
+    end)
+end)
+
+-- Buttons the client refused to restyle (auras were secret): again now.
+ns.On("PLAYER_REGEN_ENABLED", function()
+    forEachBlock(function(frame)
+        if frame.shields.stale then restyle(frame) end
+    end)
 end)
 
 ns.RegisterElement(ShieldWatch)

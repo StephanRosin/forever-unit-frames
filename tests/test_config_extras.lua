@@ -70,7 +70,7 @@ fs:SetText("stale")
 ns.Texts.Apply(fs, "SOMETHING_NEW", "player", "power")
 H.check("unknown tag clears", fs._text, "")
 ns.Texts.Apply(fs, "DEFICIT", "player", "power")
-H.check("power deficit", fs._text, 70)
+H.check("power deficit", fs._text, "70")
 
 -- Movers: locking mid-drag saves the position
 ns = H.LoadAddon()
