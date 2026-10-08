@@ -54,7 +54,7 @@ function Special.New(id, how)
     local cellKey = how.cellKey or Cell.KEY
     local P = Panel.New({
         id = id, name = frameName(id), xKey = id .. "X", yKey = id .. "Y", cellKey = cellKey,
-        template = how.template, maxUnits = Special.MAX_UNITS,
+        template = how.template, maxUnits = Special.MAX_UNITS, room = how.room,
         blocks = function(size) return { { kind = "PANEL", id = id, filter = how.filter(size) } } end,
         shape = function() return shape(id, cellKey) end,
         attributes = how.attributes,
@@ -85,7 +85,10 @@ Special.New("favourites", nameList("favourites"))
 -- Every pet of the raid's groups the size shows (the pet header lists
 -- the pets that exist, in raid order, in combat too), in cells of their
 -- own height.
+-- Ahead of time: a cell for each member who has no pet out yet (pets
+-- can be summoned in combat), counted as the members up to the size.
 Special.New("pets", {
     template = "SecureGroupPetHeaderTemplate", cellKey = Cell.PET_KEY,
+    room = function(count, size) return math.max(0, math.min(GetNumGroupMembers(), size) - count) end,
     filter = function(size) return { groupFilter = table.concat(ns.RaidLayout.Groups(size), ",") } end,
 })

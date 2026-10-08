@@ -35,6 +35,8 @@ local _, ns = ...
 --   shape(P)       the numbers Raid/Layout.lua works with
 --   attributes(a, size)  optional: adds to a header's attributes
 --   maxUnits       optional: the size a header's columns are counted for
+--   room(count, size)  optional: how many more cells a block holding count
+--                  could need in combat (default: the free places)
 --                  (default: the raid size shown)
 --   enabled()      whether the panel shows at all
 --   xKey, yKey     the settings of its position (per raid size)
@@ -376,12 +378,17 @@ function Panel.New(spec)
     end
 
     -- How many cells block i should have before combat: a group block its
-    -- capacity (a full group); any other the cells it holds plus everyone
-    -- who could still join at this size, never more than the size.
+    -- capacity (a full group); any other the cells it holds plus room for
+    -- those who could still come (spec.room, default: the free places at
+    -- this size), at most one line of cells more (a class block of a
+    -- small raid would otherwise make a cell for every free place: nine
+    -- class blocks at 20 made 92 cells for 11 members, now 56), never
+    -- more than the size.
     local function ahead(block, i, size)
         if block.capacity then return block.capacity end
-        local free = math.max(0, size - GetNumGroupMembers())
-        return math.min(size, P.Count(i) + free)
+        local count = P.Count(i)
+        local room = spec.room and spec.room(count, size) or math.max(0, size - GetNumGroupMembers())
+        return math.min(size, count + math.min(room, P.Shape().cellsPerLine))
     end
 
     -- Out of combat, while the panel shows a group: every block's cells

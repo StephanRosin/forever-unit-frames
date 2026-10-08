@@ -60,10 +60,10 @@ H.checkTrue("the raid cell's parts", wolf.raidAuras and wolf.raidStates and wolf
 local listed = false
 for _, b in ipairs(Cell.buttons) do listed = listed or b == wolf end
 H.check("listed with the cells", listed, true)
--- Ahead of time: the pets there are and everyone who could still join
--- at this size (10 - 3 members), each cell without a pet idle.
-H.checkTrue("pet cells made ahead", h:GetAttribute("child9") ~= nil and h:GetAttribute("child10") == nil)
-H.check("an idle pet cell", h:GetAttribute("child9").raidAuras.container:GetUnit(), "none")
+-- Ahead of time: the pets there are and one for each member without a
+-- pet out (3 members, 2 pets), each cell without a pet idle.
+H.checkTrue("pet cells made ahead", h:GetAttribute("child3") ~= nil and h:GetAttribute("child4") == nil)
+H.check("an idle pet cell", h:GetAttribute("child3").raidAuras.container:GetUnit(), "none")
 
 -- Its height, per size.
 RC.Set("r10", "petsCellHeight", 30)
