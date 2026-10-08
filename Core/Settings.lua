@@ -759,6 +759,10 @@ Settings.Define({ key = "druidManaHeight", code = "MH", scope = "frame", only = 
 -- Back in full while you have a target: see your resources before a pull.
 Settings.Define({ key = "playerFadeTarget", code = "WT", scope = "frame", only = { player = true }, type = "bool",
     default = true })
+-- Never faded in a party or raid: a healer healing by mouse-over without a
+-- target still sees the frame. Off by default.
+Settings.Define({ key = "playerFadeGroup", code = "WG", scope = "frame", only = { player = true }, type = "bool",
+    default = false })
 -- The pet frame fades with it (the same opacity); off by default.
 Settings.Define({ key = "playerFadePet", code = "WP", scope = "frame", only = { player = true }, type = "bool",
     default = false })

@@ -168,7 +168,8 @@ local SECTION_NOTE = {
     outOfCombat = "With **Pet frame fades too** the pet frame takes the player frame's opacity whenever that"
         .. " fades, and shows in full while you miss health. Meanwhile the pet frame's own range fading waits;"
         .. " it is back whenever something keeps the player frame in full (combat, a cast, a target, test mode,"
-        .. " unlocked frames).",
+        .. " unlocked frames, a group with the next option). With **Never fade in a group** the frames stay in"
+        .. " full while you are in a party or raid, for healers who heal by mouse-over without a target.",
     auraBlock = "Auras hidden by spell, such as a campfire or a food buff: the list under General > Appearance"
         .. " hides them on every frame and raid cell, each frame's own list on that frame (both apply; each raid"
         .. " size has one too, on the raid window's Debuffs tab). Type spell IDs or names (several, separated by"

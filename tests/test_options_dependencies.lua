@@ -105,7 +105,8 @@ local CASES = {
         { groupLeader = false, groupReadyCheck = false, groupResurrect = false } },
     { "party", "rangeFade", false, true, { "rangeAlpha" } },
     { "party", "targetHighlight", false, true, { "targetHighlightColor", "targetHighlightSize" } },
-    { "player", "playerFadeOOC", false, true, { "playerFadeAlpha", "playerFadeTarget", "playerFadePet" } },
+    { "player", "playerFadeOOC", false, true, { "playerFadeAlpha", "playerFadeTarget", "playerFadeGroup",
+        "playerFadePet" } },
     { "general", "minimapShow", false, true, { "minimapAngle" } },
 }
 

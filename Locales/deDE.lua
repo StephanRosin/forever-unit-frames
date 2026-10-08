@@ -458,6 +458,7 @@ L.FADE_UNLOCKED = "Rahmen sind entsperrt"
 L.FADE_COMBAT = "im Kampf"
 L.FADE_CASTING = "zaubert"
 L.FADE_TARGET = "du hast ein Ziel"
+L.FADE_GROUP = "du bist in einer Gruppe"
 
 -- Bar name colour, level/class/race text, shield position, power colours.
 L.SETTING_barNameColorMode = "Namensfarbe in Leistentexten"
@@ -601,6 +602,8 @@ L.HINT_tapDenied = "Jemand anderes hat zuerst angegriffen: keine Erfahrung, kein
 -- Player fade: back with a target.
 L.SETTING_playerFadeTarget = "Mit Ziel voll anzeigen"
 L.HINT_playerFadeTarget = "Blendet wieder ein, sobald du ein Ziel wählst"
+L.SETTING_playerFadeGroup = "In einer Gruppe nie abblenden"
+L.HINT_playerFadeGroup = "In Gruppe oder Schlachtzug bleibt der Rahmen immer voll sichtbar"
 L.SETTING_playerFadePet = "Begleiterrahmen blendet mit aus"
 L.HINT_playerFadePet = "Der Rahmen deines Begleiters wird gleich durchsichtig"
 

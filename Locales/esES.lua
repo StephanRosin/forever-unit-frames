@@ -459,6 +459,7 @@ L.FADE_UNLOCKED = "los marcos están desbloqueados"
 L.FADE_COMBAT = "en combate"
 L.FADE_CASTING = "lanzando"
 L.FADE_TARGET = "tienes un objetivo"
+L.FADE_GROUP = "estás en un grupo"
 
 -- Bar name colour, level/class/race text, shield position, power colours.
 L.SETTING_barNameColorMode = "Color del nombre en las barras"
@@ -602,6 +603,8 @@ L.HINT_tapDenied = "Otro atacó primero: sin experiencia ni botín"
 -- Player fade: back with a target.
 L.SETTING_playerFadeTarget = "Mostrar entero con objetivo"
 L.HINT_playerFadeTarget = "Vuelve a aparecer al elegir un objetivo"
+L.SETTING_playerFadeGroup = "Nunca atenuar en grupo"
+L.HINT_playerFadeGroup = "En grupo o banda el marco siempre se ve entero"
 L.SETTING_playerFadePet = "El marco de la mascota también"
 L.HINT_playerFadePet = "El marco de tu mascota toma la misma opacidad"
 

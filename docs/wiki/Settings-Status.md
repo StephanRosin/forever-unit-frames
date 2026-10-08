@@ -163,7 +163,7 @@ Where the marker (Marker style) sits: **Automatic** is its usual place, on the p
 
 ## Out of combat
 
-With **Pet frame fades too** the pet frame takes the player frame's opacity whenever that fades, and shows in full while you miss health. Meanwhile the pet frame's own range fading waits; it is back whenever something keeps the player frame in full (combat, a cast, a target, test mode, unlocked frames).
+With **Pet frame fades too** the pet frame takes the player frame's opacity whenever that fades, and shows in full while you miss health. Meanwhile the pet frame's own range fading waits; it is back whenever something keeps the player frame in full (combat, a cast, a target, test mode, unlocked frames, a group with the next option). With **Never fade in a group** the frames stay in full while you are in a party or raid, for healers who heal by mouse-over without a target.
 
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
@@ -171,6 +171,7 @@ With **Pet frame fades too** the pet frame takes the player frame's opacity when
 <tr><td><b>Fade out of combat</b></td><td>While idle: no combat, no cast, full health</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
 <tr><td><b>Opacity when faded (%)</b></td><td>0 = invisible</td><td>0 – 100</td><td>25</td><td>Player</td></tr>
 <tr><td><b>Show in full with a target</b></td><td>Fades back in when you select a target</td><td>On, Off</td><td>On</td><td>Player</td></tr>
+<tr><td><b>Never fade in a group</b></td><td>In a party or raid the frame always shows in full</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
 <tr><td><b>Pet frame fades too</b></td><td>Your pet's frame takes the same opacity</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
 </tbody>
 </table>

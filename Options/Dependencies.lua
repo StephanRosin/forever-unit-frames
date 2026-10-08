@@ -170,7 +170,7 @@ local RULES = {
     { anyOn({ "groupLeader", "groupReadyCheck", "groupResurrect", "groupRole" }), iconRows("groupIcon") },
     { on("rangeFade"), { "rangeAlpha" } },
     { on("targetHighlight"), { "targetHighlightColor", "targetHighlightSize" } },
-    { on("playerFadeOOC"), { "playerFadeAlpha", "playerFadeTarget", "playerFadePet" } },
+    { on("playerFadeOOC"), { "playerFadeAlpha", "playerFadeTarget", "playerFadeGroup", "playerFadePet" } },
     { on("minimapShow"), { "minimapAngle" } },
 }
 

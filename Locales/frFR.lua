@@ -458,6 +458,7 @@ L.FADE_UNLOCKED = "les cadres sont déverrouillés"
 L.FADE_COMBAT = "en combat"
 L.FADE_CASTING = "incantation"
 L.FADE_TARGET = "vous avez une cible"
+L.FADE_GROUP = "vous êtes en groupe"
 
 -- Bar name colour, level/class/race text, shield position, power colours.
 L.SETTING_barNameColorMode = "Couleur du nom dans les barres"
@@ -601,6 +602,8 @@ L.HINT_tapDenied = "Quelqu'un d'autre a attaqué en premier : ni expérience ni 
 -- Player fade: back with a target.
 L.SETTING_playerFadeTarget = "Afficher en entier avec une cible"
 L.HINT_playerFadeTarget = "Réapparaît dès que vous choisissez une cible"
+L.SETTING_playerFadeGroup = "Jamais estomper en groupe"
+L.HINT_playerFadeGroup = "En groupe ou en raid, le cadre reste toujours entier"
 L.SETTING_playerFadePet = "Le cadre du familier aussi"
 L.HINT_playerFadePet = "Le cadre de votre familier prend la même opacité"
 

@@ -482,6 +482,7 @@ L.FADE_UNLOCKED = "frames are unlocked"
 L.FADE_COMBAT = "in combat"
 L.FADE_CASTING = "casting"
 L.FADE_TARGET = "you have a target"
+L.FADE_GROUP = "you are in a group"
 
 -- Bar name colour, level/class/race text, shield position, power colours.
 L.SETTING_barNameColorMode = "Name color in bar texts"
@@ -625,6 +626,8 @@ L.HINT_tapDenied = "Someone else attacked it first: no experience or loot"
 -- Player fade: back with a target.
 L.SETTING_playerFadeTarget = "Show in full with a target"
 L.HINT_playerFadeTarget = "Fades back in when you select a target"
+L.SETTING_playerFadeGroup = "Never fade in a group"
+L.HINT_playerFadeGroup = "In a party or raid the frame always shows in full"
 L.SETTING_playerFadePet = "Pet frame fades too"
 L.HINT_playerFadePet = "Your pet's frame takes the same opacity"
 

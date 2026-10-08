@@ -21,7 +21,7 @@ for _, tab in ipairs(ns.Schema.Tabs("player")) do
         if sec.id == "outOfCombat" then keys = table.concat(sec.keys, ",") end
     end
 end
-H.check("in the player's fade section", keys, "playerFadeOOC,playerFadeAlpha,playerFadeTarget,playerFadePet")
+H.check("in the player's fade section", keys, "playerFadeOOC,playerFadeAlpha,playerFadeTarget,playerFadeGroup,playerFadePet")
 
 M.units.player = { name = "Me", health = 100, healthMax = 100, power = 50, powerMax = 50, powerType = 0 }
 _G.ForeverUnitFramesDB = nil
