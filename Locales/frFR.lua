@@ -1077,6 +1077,8 @@ L.RAID_BUFF_UNKNOWN = "inconnu"
 L.RAID_BUFF_NEXT = "Ensuite : %s"
 L.RAID_BUFF_NOTHING = "Rien à renouveler"
 L.RAID_BUFF_OUT_OF_RANGE = "Manquant, mais personne à portée"
+L.RAID_BUFF_MINUTES = "%d min"
+L.RAID_BUFF_MORE = "+%d"
 
 -- Raid templates (Raid/Templates.lua, Raid/Options/Templates.lua).
 L.RAID_SECTION_templates = "Modèles"

@@ -121,6 +121,7 @@ Raid\Options\Templates.lua
 Raid\Options\Profiles.lua
 Raid\Wizard.lua
 Raid\Tools.lua
+Raid\BuffWatchNames.lua
 Raid\BuffWatchWindow.lua
 Core\News.lua
 Options\News.lua
