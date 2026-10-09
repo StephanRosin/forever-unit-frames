@@ -286,6 +286,38 @@ function Window.Refresh()
 end
 
 -- Built once, out of combat, after the raid profile is attached.
+local function generalSwitch(key)
+    return function() return ns.RaidConfig.Get("general", key) == true end,
+        function() ns.RaidConfig.Set("general", key, not (ns.RaidConfig.Get("general", key) == true)) end
+end
+
+-- The gear's menu: every group buff of your class, as the options'
+-- Buffs tab lists them; one the spell book does not know yet greyed.
+function Window.OpenMenu(owner)
+    if InCombatLockdown() then return end
+    local class = Watch.PlayerClass()
+    MenuUtil.CreateContextMenu(owner, function(_, root)
+        root:CreateTitle(L.RAID_BUFF_WATCH_TITLE)
+        for _, buff in ipairs(Data.BUFFS) do
+            if buff.class == class then
+                local learned = Data.Highest(buff.single) ~= nil
+                local text = L["RAID_SETTING_" .. buff.key]
+                if not learned then text = text .. " (" .. L.RAID_BUFF_NOT_LEARNED .. ")" end
+                local box = root:CreateCheckbox(text, generalSwitch(buff.key))
+                if not learned then box:SetEnabled(false) end
+            end
+        end
+        if class == "PALADIN" then
+            local known = false
+            for _, spells in pairs(Data.BLESSING) do
+                if Data.Highest(spells.single) then known = true end
+            end
+            local box = root:CreateCheckbox(L.RAID_SETTING_buffBlessings, generalSwitch(Data.BLESSINGS_KEY))
+            if not known then box:SetEnabled(false) end
+        end
+    end)
+end
+
 function Window.Create()
     if Window.frame then return Window.frame end
     local f = CreateFrame("Frame", Window.NAME, UIParent)
@@ -295,13 +327,21 @@ function Window.Create()
     Window.title = Style.Text(f, 12, "text")
     Window.title:SetPoint("TOPLEFT", f, "TOPLEFT", Window.PADDING, -Window.PADDING)
     Window.title:SetText(L.RAID_BUFF_WATCH_TITLE)
-    -- Only its place and look here; the menu comes later.
     local gear = CreateFrame("Button", nil, f)
     gear:SetSize(14, 14)
     gear:SetPoint("LEFT", Window.title, "RIGHT", Window.GAP, 0)
     gear.icon = gear:CreateTexture(nil, "ARTWORK")
     gear.icon:SetAllPoints(gear)
     gear.icon:SetTexture("Interface\\Buttons\\UI-OptionsButton")
+    gear:SetScript("OnClick", function(self) Window.OpenMenu(self) end)
+    gear:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetText(L.RAID_BUFF_MENU_TIP, 1, 1, 1)
+        GameTooltip:Show()
+    end)
+    gear:SetScript("OnLeave", function(self)
+        if GameTooltip:IsOwned(self) then GameTooltip:Hide() end
+    end)
     Window.gear = gear
     Window.next = Style.Text(f, 11, "text")
     Window.next:SetPoint("LEFT", gear, "RIGHT", Window.GAP, 0)

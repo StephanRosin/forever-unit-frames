@@ -3049,6 +3049,17 @@ local function menuDescription(tag, contextData)
             table.insert(self.elements, e)
             return e
         end,
+        -- Blizzard_Menu: CreateCheckbox(text, isSelected, setSelected, data);
+        -- the element's SetEnabled greys it (a click then does nothing).
+        CreateCheckbox = function(self, text, isSelected, setSelected, data)
+            assert(type(text) == "string", "CreateCheckbox: text")
+            assert(type(isSelected) == "function" and type(setSelected) == "function", "CreateCheckbox: functions")
+            local e = { kind = "checkbox", text = text, isSelected = isSelected, setSelected = setSelected, data = data,
+                enabled = true }
+            function e:SetEnabled(v) self.enabled = v end
+            table.insert(self.elements, e)
+            return e
+        end,
     }
     return setmetatable(root, { __index = function(_, k)
         return methods[k] or error("mock: menu description has no " .. tostring(k), 2)
@@ -3082,7 +3093,12 @@ end
 -- A click on a menu button: its callback with its data; on a radio, its
 -- setSelected.
 function M.ClickMenu(element)
-    assert(element and (element.kind == "button" or element.kind == "radio"), "mock: not a menu button")
+    assert(element and (element.kind == "button" or element.kind == "radio" or element.kind == "checkbox"),
+        "mock: not a menu button")
+    if element.kind == "checkbox" then
+        if element.enabled == false then return end
+        return element.setSelected(element.data)
+    end
     if element.kind == "radio" then return element.setSelected(element.data) end
     return element.callback(element.data)
 end
