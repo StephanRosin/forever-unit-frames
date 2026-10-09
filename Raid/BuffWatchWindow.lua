@@ -177,11 +177,16 @@ local function row(i)
     if r then return r end
     r = CreateFrame("Button", nil, Window.frame, "SecureActionButtonTemplate")
     r:RegisterForClicks("AnyUp", "AnyDown")
-    -- ATTRIBUTE_NOOP: the right button casts nothing; its click stops watching.
-    r:SetAttribute("type2", "")
-    -- After the secure click; only the up stroke (rows take both).
+    -- ATTRIBUTE_NOOP: the right button casts nothing, under any modifier
+    -- ("*type2" beats the plain "type" the smart buff key sets); its plain
+    -- click stops watching.
+    r:SetAttribute("*type2", "")
+    -- After the secure click; only the up stroke (rows take both), and
+    -- not with Shift, Ctrl or Alt held.
     r:SetScript("PostClick", function(self, button, down)
-        if button == "RightButton" and not down then Window.SwitchOff(self.state) end
+        if button == "RightButton" and not down and not IsModifierKeyDown() then
+            Window.SwitchOff(self.state)
+        end
     end)
     -- Render places it (the blocks differ in height).
     r:SetSize(Window.WIDTH - 2 * Window.PADDING, Window.BlockHeight(0))
@@ -265,6 +270,12 @@ local function render()
     local next = Watch.Next()
     Window.next:SetText(next and L.RAID_BUFF_NEXT:format(SmartBuff.Describe(next)) or noCast(anyNeeded()))
     paint("text")
+    -- The colour codes in the count and the names ignore the grey of
+    -- combat; their alpha does not (see PLAYER_REGEN_DISABLED).
+    for _, r in ipairs(Window.rows) do
+        r.count:SetAlpha(1)
+        for _, line in ipairs(r.lines) do line:SetAlpha(1) end
+    end
 end
 
 -- Out of combat: its own mover holds it, the window moved back inside
@@ -295,10 +306,12 @@ function Window.Refresh()
     f:SetShown(Window.Shown())
 end
 
--- Built once, out of combat, after the raid profile is attached.
 local function generalSwitch(key)
     return function() return ns.RaidConfig.Get("general", key) == true end,
-        function() ns.RaidConfig.Set("general", key, not (ns.RaidConfig.Get("general", key) == true)) end
+        function()
+            if InCombatLockdown() then return end
+            ns.RaidConfig.Set("general", key, not (ns.RaidConfig.Get("general", key) == true))
+        end
 end
 
 -- The gear's menu: every group buff of your class, as the options'
@@ -328,6 +341,7 @@ function Window.OpenMenu(owner)
     end)
 end
 
+-- Built once, out of combat, after the raid profile is attached.
 function Window.Create()
     if Window.frame then return Window.frame end
     local f = CreateFrame("Frame", Window.NAME, UIParent)
@@ -381,6 +395,12 @@ ns.On("PLAYER_REGEN_DISABLED", function()
     if not Window.frame or InCombatLockdown() then return end
     for _, r in ipairs(Window.rows) do SmartBuff.Set(r, nil) end
     paint("muted")
+    -- The count's marks and numbers and the names carry their own colours:
+    -- only the alpha greys them.
+    for _, r in ipairs(Window.rows) do
+        r.count:SetAlpha(0.4)
+        for _, line in ipairs(r.lines) do line:SetAlpha(0.4) end
+    end
 end)
 ns.Listen("RAID_BUFFS_CHANGED", update)
 ns.On("GROUP_ROSTER_UPDATE", update)

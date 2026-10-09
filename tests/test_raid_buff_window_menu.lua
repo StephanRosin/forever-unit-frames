@@ -28,6 +28,11 @@ M.ClickMenu(fort)
 H.check("click: off", RC.Get("general", "buffFortitude"), false)
 M.ClickMenu(fort)
 H.check("click: on again", RC.Get("general", "buffFortitude"), true)
+-- A menu opened before combat does nothing when clicked in combat.
+M.SetCombat(true)
+M.ClickMenu(fort)
+H.check("in combat: click ignored", RC.Get("general", "buffFortitude"), true)
+M.SetCombat(false)
 -- The gear's click opens it; in combat it does not.
 M.menu = nil
 Win.gear:GetScript("OnClick")(Win.gear, "LeftButton")

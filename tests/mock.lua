@@ -1713,6 +1713,7 @@ function M.Reset()
     _G.IsShiftKeyDown = function() return M.shiftDown or false end
     _G.IsControlKeyDown = function() return M.ctrlDown or false end
     _G.IsAltKeyDown = function() return M.altDown or false end
+    _G.IsModifierKeyDown = function() return (M.shiftDown or M.ctrlDown or M.altDown) and true or false end
     -- MakeModifiers (InputDocumentation.lua): the held modifiers as a
     -- number. The client's bits are its own; the mock's are Shift 1, Ctrl
     -- 2, Alt 4 (an addon must not read them).

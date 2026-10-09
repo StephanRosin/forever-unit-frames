@@ -104,6 +104,8 @@ H.check("combat: no cast", row:GetAttribute("type"), nil)
 H.check("combat: a click does nothing", M.SecureClick(row, "LeftButton"), nil)
 local r, g, b = row.count:GetTextColor()
 H.check("combat: greyed", table.concat({ r, g, b }, ","), table.concat({ unpack(ns.Style.COLORS.muted, 1, 3) }, ","))
+H.check("combat: count dimmed", row.count:GetAlpha(), 0.4)
+H.check("combat: names dimmed", row.lines[1]:GetAlpha(), 0.4)
 -- The tooltip in combat: nothing to cast, no range asked.
 local rangeQueries = M.spellQueries
 row:GetScript("OnEnter")(row)
@@ -122,6 +124,8 @@ M.Tick(1)
 H.check("again: shown", f:IsShown(), true)
 r, g, b = row.count:GetTextColor()
 H.check("not grey any more", r, ns.Style.COLORS.text[1])
+H.check("count undimmed", row.count:GetAlpha(), 1)
+H.check("names undimmed", row.lines[1]:GetAlpha(), 1)
 
 -- Switched off; nothing watched.
 RC.Set("general", "buffWatchShow", false)

@@ -78,7 +78,7 @@ H.checkTrue("names: Ann", row.lines[1]:GetText():find("Ann", 1, true))
 H.check("names: one line only", row.lines[2]:IsShown(), false)
 H.check("height: the block grows by its line", row:GetHeight(), Win.BlockHeight(1))
 -- Right-click: nothing secure, and the buff is no longer watched.
-H.check("right button casts nothing", row:GetAttribute("type2"), "")
+H.check("right button casts nothing", row:GetAttribute("*type2"), "")
 local before = #M.casts
 H.check("right-click: no secure action", M.SecureClick(row, "RightButton"), nil)
 H.check("right-click: no cast", #M.casts, before)
@@ -87,6 +87,13 @@ M.Tick(1)
 H.check("right-click: switched off", ns.RaidConfig.Get("general", "buffFortitude"), false)
 ns.RaidConfig.Set("general", "buffFortitude", true)
 M.Tick(1)
+-- Shift + right-click: nothing secure, no cast, the buff stays watched.
+M.shiftDown = true
+H.check("shift right-click: no secure action", M.SecureClick(row, "RightButton"), nil)
+H.check("shift right-click: no cast", #M.casts, before)
+row:GetScript("PostClick")(row, "RightButton", false)
+H.check("shift right-click: still watched", ns.RaidConfig.Get("general", "buffFortitude"), true)
+M.shiftDown = false
 -- The tooltip: the cast, then every name, then the hint.
 row = Win.rows[1]
 row:GetScript("OnEnter")(row)
