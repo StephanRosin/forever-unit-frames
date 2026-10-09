@@ -37,6 +37,13 @@ H.check("test mode: three blocks' height", f:GetHeight(), 2 * Win.PADDING + Win.
 H.check("test mode: the size it says", f:GetHeight(), h3)
 H.check("test mode: rows", Win.rows[3] and Win.rows[3]:IsShown(), true)
 H.check("test mode: a row's name", Win.rows[2].name:GetText(), "Divine Spirit")
+H.checkTrue("test mode: sample name", Win.rows[1].lines[1]:GetText():find(L.RAID_BUFF_SAMPLE_MISSING, 1, true))
+ns.Config.Set("general", "language", "deDE")
+M.Tick(1)
+H.checkTrue("test mode: sample name follows the language", L.RAID_BUFF_SAMPLE_MISSING == "Fehlt"
+    and Win.rows[1].lines[1]:GetText():find("Fehlt", 1, true))
+ns.Config.Set("general", "language", "enUS")
+M.Tick(1)
 H.check("test mode: no counts", Win.rows[1].count:GetText(), "")
 H.check("test mode: no cast", Win.rows[1]:GetAttribute("type"), nil)
 -- Hovering a preview row names no target and raises nothing.

@@ -87,16 +87,19 @@ local function measure(text)
     return scratch:GetStringWidth()
 end
 
+-- Test mode shows two sample names, so the window has a realistic size.
+-- Built per call: the language can change while the window lives.
+local function sampleItems()
+    return {
+        { name = L.RAID_BUFF_SAMPLE_MISSING, missing = true, left = -1, reach = true },
+        { name = L.RAID_BUFF_SAMPLE_EXPIRING, missing = false, left = 120, reach = true },
+    }
+end
+
 -- The name lines of a state, packed to the room under the row. Size and
 -- render both ask here, so the height they use always agrees.
--- Test mode shows two sample names, so the window has a realistic size.
-local SAMPLE_ITEMS = {
-    { name = L.RAID_BUFF_SAMPLE_MISSING, missing = true, left = -1, reach = true },
-    { name = L.RAID_BUFF_SAMPLE_EXPIRING, missing = false, left = 120, reach = true },
-}
-
 local function linesOf(st)
-    local items = st.preview and SAMPLE_ITEMS or Names.Of(st)
+    local items = st.preview and sampleItems() or Names.Of(st)
     return Names.Pack(items, Window.WIDTH - 2 * Window.PADDING - Window.NAMES_INDENT, measure)
 end
 
