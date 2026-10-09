@@ -70,6 +70,29 @@ H.checkTrue("names: a line", row.lines[1]:IsShown())
 H.checkTrue("names: Ann", row.lines[1]:GetText():find("Ann", 1, true))
 H.check("names: one line only", row.lines[2]:IsShown(), false)
 H.check("height: the block grows by its line", row:GetHeight(), Win.BlockHeight(1))
+-- Right-click: nothing secure, and the buff is no longer watched.
+H.check("right button casts nothing", row:GetAttribute("type2"), "")
+local before = #M.casts
+H.check("right-click: no secure action", M.SecureClick(row, "RightButton"), nil)
+H.check("right-click: no cast", #M.casts, before)
+row:GetScript("PostClick")(row, "RightButton", false)
+M.Tick(1)
+H.check("right-click: switched off", ns.RaidConfig.Get("general", "buffFortitude"), false)
+ns.RaidConfig.Set("general", "buffFortitude", true)
+M.Tick(1)
+-- The tooltip: the cast, then every name, then the hint.
+row = Win.rows[1]
+row:GetScript("OnEnter")(row)
+local all = table.concat(M.tooltipLines or {}, "\n")
+H.checkTrue("tooltip: Ann", all:find("Ann", 1, true))
+H.checkTrue("tooltip: the right-click hint", all:find(L.RAID_BUFF_RIGHT_CLICK, 1, true))
+row:GetScript("OnLeave")(row)
+-- In combat a right-click does nothing.
+M.SetCombat(true)
+row:GetScript("PostClick")(row, "RightButton", false)
+H.check("in combat: still watched", ns.RaidConfig.Get("general", "buffFortitude"), true)
+M.SetCombat(false)
+M.Tick(1)
 -- The header: title and the next cast.
 H.check("title", Win.title:GetText(), L.RAID_BUFF_WATCH_TITLE)
 H.checkTrue("next cast in the header", Win.next:GetText() ~= nil)

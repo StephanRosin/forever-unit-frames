@@ -3199,6 +3199,8 @@ local function secureStroke(button, mouseButton, down)
         for _, k in ipairs({ prefix .. name .. suffix, "*" .. name .. suffix, prefix .. name .. "*",
             "*" .. name .. "*", name }) do
             local v = button._attr[k]
+            -- ATTRIBUTE_NOOP ("") ends the lookup with nothing.
+            if v == "" then return nil end
             if v ~= nil then return v end
         end
         return nil

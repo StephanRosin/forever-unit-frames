@@ -25,7 +25,7 @@ local _, ns = ...
 local Window = {}
 ns.RaidBuffWindow = Window
 
-local L, Style, Panel = ns.L, ns.Style, ns.RaidPanel
+local L, Style, Panel, Data = ns.L, ns.Style, ns.RaidPanel, ns.RaidBuffData
 local Watch, SmartBuff, Names = ns.RaidBuffWatch, ns.SmartBuff, ns.RaidBuffNames
 
 Window.NAME = "ForeverUnitFramesBuffWatch"
@@ -116,6 +116,21 @@ function Window.MoverSpec()
     }
 end
 
+-- The settings key of a state's buff (a blessing entry: the blessings').
+local function keyOf(entry)
+    if entry.classes then return Data.BLESSINGS_KEY end
+    for _, buff in ipairs(Data.BUFFS) do
+        if buff.id == entry.id then return buff.key end
+    end
+end
+
+-- Out of combat: the buff is no longer watched (the options' switch).
+function Window.SwitchOff(st)
+    if InCombatLockdown() or not st or st.preview then return end
+    local key = keyOf(st.entry)
+    if key then ns.RaidConfig.Set("general", key, false) end
+end
+
 -- Rows ------------------------------------------------------------------------------
 
 -- What no cast means: someone misses it but none is in range, or nothing
@@ -134,6 +149,10 @@ local function tooltip(row)
         if live then text = SmartBuff.Describe(Watch.Best(st)) end
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
         GameTooltip:SetText(text or noCast(live and #st.needs > 0), 1, 1, 1)
+        if live then
+            for _, item in ipairs(Names.Of(st)) do GameTooltip:AddLine(Names.Text(item)) end
+            GameTooltip:AddLine(L.RAID_BUFF_RIGHT_CLICK, 0.6, 0.6, 0.6)
+        end
         GameTooltip:Show()
     end)
     row:SetScript("OnLeave", function(self)
@@ -148,6 +167,12 @@ local function row(i)
     if r then return r end
     r = CreateFrame("Button", nil, Window.frame, "SecureActionButtonTemplate")
     r:RegisterForClicks("AnyUp", "AnyDown")
+    -- ATTRIBUTE_NOOP: the right button casts nothing; its click stops watching.
+    r:SetAttribute("type2", "")
+    -- After the secure click; only the up stroke (rows take both).
+    r:SetScript("PostClick", function(self, button, down)
+        if button == "RightButton" and not down then Window.SwitchOff(self.state) end
+    end)
     -- Render places it (the blocks differ in height).
     r:SetSize(Window.WIDTH - 2 * Window.PADDING, Window.BlockHeight(0))
     r.icon = r:CreateTexture(nil, "ARTWORK")
