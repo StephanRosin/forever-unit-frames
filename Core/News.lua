@@ -59,6 +59,10 @@ News.ENTRIES = {
     ["0.25.1"] = {
         lines = { "NEWS_0_25_1_COMBAT_JOIN", "NEWS_0_25_1_SHIELDS_PLACE" },
     },
+    ["0.26.0"] = {
+        lines = { "NEWS_0_26_0_NAMES", "NEWS_0_26_0_SWITCH", "NEWS_0_26_0_EXPIRING" },
+        action = { text = "NEWS_OPEN_RAID", run = function() ns.RaidOptions.Open() end },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).
