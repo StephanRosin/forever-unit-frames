@@ -36,7 +36,7 @@ H.check("a secure button", row._template, "SecureActionButtonTemplate")
 H.check("key down and up", table.concat(row._clicks, ","), "AnyUp,AnyDown")
 H.check("its name", row.name:GetText(), "Power Word: Fortitude")
 H.check("its icon", row.icon._texture, 100000 + 1243)
-H.check("its counts", row.count:GetText(), L.RAID_BUFF_COUNTS:format(1, 1))
+H.check("its counts", row.count:GetText(), Win.CountText({ missing = 1, expiring = 1 }))
 H.check("the next cast", Win.next:GetText(), L.RAID_BUFF_NEXT:format("Power Word: Fortitude: Ann"))
 -- A click casts it on Ann.
 H.check("a click casts", M.SecureClick(row, "LeftButton"), "spell")
@@ -62,7 +62,7 @@ M.units.party2.auras = { fortAura(1700) }
 M.units.party1.distance = 100
 M.FireEvent("UNIT_AURA", "party2")
 M.Tick(1)
-H.check("out of range: still counted", row.count:GetText(), L.RAID_BUFF_COUNTS:format(1, 0))
+H.check("out of range: still counted", row.count:GetText(), Win.CountText({ missing = 1, expiring = 0 }))
 H.check("out of range: said so", Win.next:GetText(), L.RAID_BUFF_OUT_OF_RANGE)
 row:GetScript("OnEnter")(row)
 H.check("out of range: the tooltip too", M.tooltipLines[1], L.RAID_BUFF_OUT_OF_RANGE)
@@ -74,7 +74,7 @@ M.units.party1.auras = { fortAura(1700) }
 M.units.party2.auras = { fortAura(1700) }
 M.FireEvent("UNIT_AURA", "party1")
 M.Tick(1)
-H.check("nothing missing", row.count:GetText(), L.RAID_BUFF_COUNTS:format(0, 0))
+H.check("nothing missing", row.count:GetText(), Win.CountText({ missing = 0, expiring = 0 }))
 H.check("nothing to cast", Win.next:GetText(), L.RAID_BUFF_NOTHING)
 H.check("a click casts nothing", M.SecureClick(row, "LeftButton"), nil)
 -- Only while something is missing: hidden now.

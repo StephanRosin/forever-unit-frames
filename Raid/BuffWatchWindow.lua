@@ -1,18 +1,21 @@
 local _, ns = ...
 
--- The buff watch window: a small panel with a row per watched buff
--- (Raid/BuffWatch.lua): its icon, its name, how many members miss it and
--- how many have it running out, or "unknown" while the client keeps auras
--- secret; above them, what the next cast of all would be (the smart buff
--- key's, Raid/SmartBuff.lua). Each row is a secure action button: a click
--- casts that buff on whoever needs it most (BuffWatch.Best), its spell and
--- unit set out of combat. It shows in a group while the raid frames are
--- on and a buff is watched (with "only when missing": while one is missing
--- or running out), and in raid test mode so it can be placed (solo: a
--- row per watched buff, without counts, so it has its size in a group);
--- its own mover (the raid window's lock), its top-left corner in the
--- character's settings; lifted or moved back inside the screen when it
--- grows beyond it (the setting stays).
+-- The buff watch window: a small panel with a header (its title, a gear
+-- for the settings, the next cast of all: the smart buff key's,
+-- Raid/SmartBuff.lua) and, below a rule, a block per watched buff
+-- (Raid/BuffWatch.lua): a row with its icon, its name and marks counting
+-- who misses it (red) and who has it running out (yellow), or "unknown"
+-- while the client keeps auras secret; under the row up to two lines
+-- with those members' names (Raid/BuffWatchNames.lua). Each row is a
+-- secure action button: a click casts that buff on whoever needs it most
+-- (BuffWatch.Best), its spell and unit set out of combat. It shows in a
+-- group while the raid frames are on and a buff is watched (with "only
+-- when missing": while one is missing or running out), and in raid test
+-- mode so it can be placed (solo: a block per watched buff, without
+-- counts or names, so it has its size in a group); its own mover (the
+-- raid window's lock), its top-left corner in the character's settings;
+-- lifted or moved back inside the screen when it grows beyond it (the
+-- setting stays).
 --
 -- The rows make the window protected: it is built, shown, hidden, sized
 -- and moved only out of combat (ns.AfterCombat). As combat starts
@@ -23,12 +26,14 @@ local Window = {}
 ns.RaidBuffWindow = Window
 
 local L, Style, Panel = ns.L, ns.Style, ns.RaidPanel
-local Watch, SmartBuff = ns.RaidBuffWatch, ns.SmartBuff
+local Watch, SmartBuff, Names = ns.RaidBuffWatch, ns.SmartBuff, ns.RaidBuffNames
 
 Window.NAME = "ForeverUnitFramesBuffWatch"
-Window.WIDTH, Window.ROW_H, Window.ICON, Window.PADDING, Window.LINE_H, Window.GAP = 260, 20, 16, 4, 16, 4
--- The room a buff's name keeps beside the widest counts in any language.
-Window.NAME_MIN = 80
+Window.WIDTH, Window.PADDING, Window.HEADER_H, Window.LINE_GAP = 260, 6, 18, 4
+Window.ROW_H, Window.ICON, Window.GAP = 20, 18, 4
+-- The name lines under a row: their height and size, indented under the name.
+Window.NAME_LINE_H, Window.NAME_SIZE = 14, 10
+Window.NAMES_INDENT = Window.ICON + Window.GAP
 -- Rows made at most (a paladin's six blessings).
 Window.MAX_ROWS = 6
 Window.POSITION_KEYS = { buffWatchX = "x", buffWatchY = "y" }
@@ -65,10 +70,37 @@ local function states()
     return list
 end
 
--- Its size: a line for the next cast, a row per watched buff.
+-- A buff's block: its row and its name lines.
+function Window.BlockHeight(lineCount)
+    return Window.ROW_H + lineCount * Window.NAME_LINE_H
+end
+
+-- Measures a text in the names' font; made on first use, as the mover asks
+-- for the size before the window is built.
+local scratch
+local function measure(text)
+    if not scratch then
+        scratch = Style.Text(UIParent, Window.NAME_SIZE, "text")
+        scratch:Hide()
+    end
+    scratch:SetText(text)
+    return scratch:GetStringWidth()
+end
+
+-- The name lines of a state, packed to the room under the row. Size and
+-- render both ask here, so the height they use always agrees.
+local function linesOf(st)
+    return Names.Pack(Names.Of(st), Window.WIDTH - 2 * Window.PADDING - Window.NAMES_INDENT, measure)
+end
+
+-- Its size: the header, a block per watched buff.
 function Window.Size()
-    local rows = math.min(#states(), Window.MAX_ROWS)
-    return Window.WIDTH, 2 * Window.PADDING + Window.LINE_H + rows * Window.ROW_H
+    local entries = states()
+    local h = 2 * Window.PADDING + Window.HEADER_H + Window.LINE_GAP
+    for i = 1, math.min(#entries, Window.MAX_ROWS) do
+        h = h + Window.BlockHeight(#linesOf(entries[i]))
+    end
+    return Window.WIDTH, h
 end
 
 function Window.Reachable(axis, v)
@@ -116,20 +148,29 @@ local function row(i)
     if r then return r end
     r = CreateFrame("Button", nil, Window.frame, "SecureActionButtonTemplate")
     r:RegisterForClicks("AnyUp", "AnyDown")
-    r:SetSize(Window.WIDTH - 2 * Window.PADDING, Window.ROW_H)
-    r:SetPoint("TOPLEFT", Window.frame, "TOPLEFT", Window.PADDING,
-        -(Window.PADDING + Window.LINE_H + (i - 1) * Window.ROW_H))
+    -- Render places it (the blocks differ in height).
+    r:SetSize(Window.WIDTH - 2 * Window.PADDING, Window.BlockHeight(0))
     r.icon = r:CreateTexture(nil, "ARTWORK")
     r.icon:SetSize(Window.ICON, Window.ICON)
-    r.icon:SetPoint("LEFT", r, "LEFT", 0, 0)
+    r.icon:SetPoint("TOPLEFT", r, "TOPLEFT", 0, -(Window.ROW_H - Window.ICON) / 2)
     r.count = Style.Text(r, 11, "text")
-    r.count:SetPoint("RIGHT", r, "RIGHT", 0, 0)
+    r.count:SetPoint("TOPRIGHT", r, "TOPRIGHT", 0, -(Window.ROW_H - 11) / 2)
     -- The name gives way to the counts: one line, cut where they begin.
     r.name = Style.Text(r, 11, "text")
     r.name:SetPoint("LEFT", r.icon, "RIGHT", Window.GAP, 0)
     r.name:SetPoint("RIGHT", r.count, "LEFT", -Window.GAP, 0)
     r.name:SetJustifyH("LEFT")
     r.name:SetWordWrap(false)
+    -- The members who need it, under the row, indented to the name.
+    r.lines = {}
+    for n = 1, Names.MAX_LINES do
+        local line = Style.Text(r, Window.NAME_SIZE, "text")
+        line:SetPoint("TOPLEFT", r, "TOPLEFT", Window.NAMES_INDENT, -(Window.ROW_H + (n - 1) * Window.NAME_LINE_H))
+        line:SetPoint("RIGHT", r, "RIGHT", 0, 0)
+        line:SetJustifyH("LEFT")
+        line:SetWordWrap(false)
+        r.lines[n] = line
+    end
     tooltip(r)
     Window.rows[i] = r
     return r
@@ -137,6 +178,7 @@ end
 
 local function paint(colorKey)
     if not Window.frame then return end
+    Style.Paint(Window.title, colorKey)
     Style.Paint(Window.next, colorKey)
     for _, r in ipairs(Window.rows) do
         Style.Paint(r.name, colorKey)
@@ -144,16 +186,24 @@ local function paint(colorKey)
     end
 end
 
--- A buff's counts in words (none on a preview).
-local function countText(st)
+-- A buff's counts as marks: who misses it (red), who has it running out
+-- (yellow), a check when none; nothing on a preview. The names carry
+-- their own colours, so only these numbers are coloured here.
+local MARK = "|A:%s:12:12|a"
+function Window.CountText(st)
     if st.preview then return "" end
     if st.unknown then return L.RAID_BUFF_UNKNOWN end
-    return L.RAID_BUFF_COUNTS:format(st.missing, st.expiring)
+    if st.missing == 0 and st.expiring == 0 then return MARK:format("UI-LFG-ReadyMark") end
+    local parts = {}
+    if st.missing > 0 then parts[#parts + 1] = MARK:format("UI-LFG-DeclineMark") .. " |cffe64d4d" .. st.missing .. "|r" end
+    if st.expiring > 0 then parts[#parts + 1] = MARK:format("UI-LFG-PendingMark") .. " |cffffd100" .. st.expiring .. "|r" end
+    return table.concat(parts, "  ")
 end
 
--- Out of combat: the rows of the state, their casts, the next one.
+-- Out of combat: the blocks of the state, top-down, their casts, the next one.
 local function render()
     local entries = states()
+    local y = Window.PADDING + Window.HEADER_H + Window.LINE_GAP
     for i = 1, math.max(#Window.rows, math.min(#entries, Window.MAX_ROWS)) do
         local st = i <= Window.MAX_ROWS and entries[i] or nil
         local r = st and row(i) or Window.rows[i]
@@ -161,9 +211,18 @@ local function render()
             r.state = st
             SmartBuff.Set(r, st and not st.preview and Watch.Best(st) or nil)
             if st then
+                local lines = linesOf(st)
                 r.icon:SetTexture(st.entry.single.icon)
                 r.name:SetText(st.entry.single.name)
-                r.count:SetText(countText(st))
+                r.count:SetText(Window.CountText(st))
+                for n = 1, Names.MAX_LINES do
+                    r.lines[n]:SetText(lines[n] or "")
+                    r.lines[n]:SetShown(lines[n] ~= nil)
+                end
+                r:SetHeight(Window.BlockHeight(#lines))
+                r:ClearAllPoints()
+                r:SetPoint("TOPLEFT", Window.frame, "TOPLEFT", Window.PADDING, -y)
+                y = y + Window.BlockHeight(#lines)
             end
             r:SetShown(st ~= nil)
         end
@@ -208,11 +267,29 @@ function Window.Create()
     local bg = f:CreateTexture(nil, "BACKGROUND")
     bg:SetAllPoints(f)
     bg:SetColorTexture(0, 0, 0, 0.6)
+    Window.title = Style.Text(f, 12, "text")
+    Window.title:SetPoint("TOPLEFT", f, "TOPLEFT", Window.PADDING, -Window.PADDING)
+    Window.title:SetText(L.RAID_BUFF_WATCH_TITLE)
+    -- Only its place and look here; the menu comes later.
+    local gear = CreateFrame("Button", nil, f)
+    gear:SetSize(14, 14)
+    gear:SetPoint("LEFT", Window.title, "RIGHT", Window.GAP, 0)
+    gear.icon = gear:CreateTexture(nil, "ARTWORK")
+    gear.icon:SetAllPoints(gear)
+    gear.icon:SetTexture("Interface\\Buttons\\UI-OptionsButton")
+    Window.gear = gear
     Window.next = Style.Text(f, 11, "text")
-    Window.next:SetPoint("TOPLEFT", f, "TOPLEFT", Window.PADDING, -Window.PADDING)
-    Window.next:SetPoint("TOPRIGHT", f, "TOPRIGHT", -Window.PADDING, -Window.PADDING)
-    Window.next:SetJustifyH("LEFT")
+    Window.next:SetPoint("LEFT", gear, "RIGHT", Window.GAP, 0)
+    Window.next:SetPoint("RIGHT", f, "TOPRIGHT", -Window.PADDING, -(Window.PADDING + Window.HEADER_H / 2))
+    Window.next:SetJustifyH("RIGHT")
     Window.next:SetWordWrap(false)
+    -- A rule between the header and the blocks.
+    local ruleY = -(Window.PADDING + Window.HEADER_H + Window.LINE_GAP / 2)
+    Window.rule = f:CreateTexture(nil, "ARTWORK")
+    Window.rule:SetColorTexture(1, 1, 1, 0.15)
+    Window.rule:SetHeight(1)
+    Window.rule:SetPoint("TOPLEFT", f, "TOPLEFT", Window.PADDING, ruleY)
+    Window.rule:SetPoint("TOPRIGHT", f, "TOPRIGHT", -Window.PADDING, ruleY)
     Window.frame = f
     f:Hide()
     ns.Movers.Attach(f, Window.MoverSpec())

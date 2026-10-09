@@ -1,5 +1,5 @@
 -- The buff watch window's rows (Raid/BuffWatchWindow.lua): the name gives
--- way to the counts (cut, one line) in every language; the counts in a
+-- way to the counts (cut, one line) in every language; the counts as marks;
 -- neutral form; at most MAX_ROWS rows; a paladin's blessing rows; its
 -- size in test mode (the watched buffs, before any group); kept inside the
 -- screen when it grows.
@@ -21,17 +21,10 @@ local function width(text, size)
     return fs:GetStringWidth()
 end
 
--- The counts' words: neutral forms, "missing: 1".
-H.check("counts: neutral", L.RAID_BUFF_COUNTS:format(1, 0), "missing: 1, expiring: 0")
--- The name's room beside the widest counts (two digits each), at least
--- NAME_MIN, in every language.
+-- The unknown note leaves the name room (at least 80 px) in every language.
 local room = Win.WIDTH - 2 * Win.PADDING - Win.ICON - 2 * Win.GAP
 for _, code in ipairs({ "enUS", "deDE", "esES", "frFR" }) do
-    local words = ns.Locales[code]
-    for _, key in ipairs({ "RAID_BUFF_COUNTS", "RAID_BUFF_UNKNOWN" }) do
-        local text = key == "RAID_BUFF_COUNTS" and words[key]:format(40, 40) or words[key]
-        H.checkTrue(code .. " " .. key .. " leaves the name room", room - width(text, 11) >= Win.NAME_MIN)
-    end
+    H.checkTrue(code .. " RAID_BUFF_UNKNOWN leaves the name room", room - width(ns.Locales[code].RAID_BUFF_UNKNOWN, 11) >= 80)
 end
 
 -- Test mode, solo: sized and laid out as in a group, a row per watched
@@ -40,7 +33,7 @@ ns.RaidTestMode.Set(true)
 M.Tick(1)
 H.check("test mode: shown", f:IsShown(), true)
 local _, h3 = Win.Size()
-H.check("test mode: three rows' height", f:GetHeight(), 2 * Win.PADDING + Win.LINE_H + 3 * Win.ROW_H)
+H.check("test mode: three blocks' height", f:GetHeight(), 2 * Win.PADDING + Win.HEADER_H + Win.LINE_GAP + 3 * Win.BlockHeight(0))
 H.check("test mode: the size it says", f:GetHeight(), h3)
 H.check("test mode: rows", Win.rows[3] and Win.rows[3]:IsShown(), true)
 H.check("test mode: a row's name", Win.rows[2].name:GetText(), "Divine Spirit")
@@ -65,7 +58,21 @@ M.SetGroup({ "party1" })
 M.Tick(1)
 local row = Win.rows[1]
 H.check("in a group: shown", f:IsShown(), true)
-H.check("counts", row.count:GetText(), L.RAID_BUFF_COUNTS:format(2, 0))
+H.check("counts: the missing mark", row.count:GetText(), Win.CountText({ missing = 2, expiring = 0 }))
+H.checkTrue("counts: red number", Win.CountText({ missing = 2, expiring = 0 }):find("|cffe64d4d2|r", 1, true))
+H.checkTrue("counts: decline mark", Win.CountText({ missing = 2, expiring = 0 }):find("UI-LFG-DeclineMark", 1, true))
+H.check("counts: running out only", Win.CountText({ missing = 0, expiring = 1 }):find("DeclineMark", 1, true), nil)
+H.checkTrue("counts: nothing needed, a check", Win.CountText({ missing = 0, expiring = 0 }):find("UI-LFG-ReadyMark", 1, true))
+H.check("counts: unknown", Win.CountText({ unknown = true }), L.RAID_BUFF_UNKNOWN)
+H.check("counts: preview none", Win.CountText({ preview = true }), "")
+-- The names under the row: who misses it (you and Ann miss Fortitude here).
+H.checkTrue("names: a line", row.lines[1]:IsShown())
+H.checkTrue("names: Ann", row.lines[1]:GetText():find("Ann", 1, true))
+H.check("names: one line only", row.lines[2]:IsShown(), false)
+H.check("height: the block grows by its line", row:GetHeight(), Win.BlockHeight(1))
+-- The header: title and the next cast.
+H.check("title", Win.title:GetText(), L.RAID_BUFF_WATCH_TITLE)
+H.checkTrue("next cast in the header", Win.next:GetText() ~= nil)
 local function anchor(region, i)
     local p, rel, relPoint, x = region:GetPoint(i)
     local name = rel == row.icon and "icon" or rel == row.count and "count" or rel == row and "row" or "?"
@@ -101,7 +108,8 @@ local shownRows = 0
 for _, r in ipairs(Win.rows) do if r:IsShown() then shownRows = shownRows + 1 end end
 H.check("rows: at most MAX_ROWS", shownRows, Win.MAX_ROWS)
 H.check("rows made: no more", #Win.rows, Win.MAX_ROWS)
-H.check("size: MAX_ROWS rows", select(2, Win.Size()), 2 * Win.PADDING + Win.LINE_H + Win.MAX_ROWS * Win.ROW_H)
+-- (each of these states has members missing it: one name line apiece)
+H.check("size: MAX_ROWS blocks", select(2, Win.Size()), 2 * Win.PADDING + Win.HEADER_H + Win.LINE_GAP + Win.MAX_ROWS * Win.BlockHeight(1))
 
 -- A paladin: a row per blessing chosen; three warriors without Might and
 -- Symbols of Kings in the bags: a click blesses them all at once.
@@ -118,7 +126,7 @@ M.Tick(1)
 H.check("paladin: might's row", Win.rows[1].name:GetText(), "Blessing of Might")
 H.check("paladin: wisdom's row", Win.rows[2].name:GetText(), "Blessing of Wisdom")
 H.check("paladin: two rows", Win.rows[3]:IsShown(), false)
-H.check("might: the three warriors", Win.rows[1].count:GetText(), L.RAID_BUFF_COUNTS:format(3, 0))
+H.check("might: the three warriors", Win.rows[1].count:GetText(), Win.CountText({ missing = 3, expiring = 0 }))
 H.check("a click: the greater blessing", M.SecureClick(Win.rows[1], "LeftButton"), "spell")
 H.check("cast", M.casts[#M.casts][1] .. "@" .. M.casts[#M.casts][2], "25782@party1")
 Win.rows[1]:GetScript("OnEnter")(Win.rows[1])
