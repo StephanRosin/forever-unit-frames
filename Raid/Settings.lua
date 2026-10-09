@@ -748,7 +748,7 @@ end
 -- one group (raid group, or class for a blessing) miss it or have it
 -- running out and its reagent is in your bags.
 RaidSettings.Define({ key = "buffExpiring", code = "BE", scope = "general", type = "int", min = 1, max = 30,
-    default = 5 })
+    default = 3 })
 RaidSettings.Define({ key = "buffGroupMin", code = "BN", scope = "general", type = "int", min = 1,
     max = Raid.GROUP_SIZE, default = 3 })
 -- The smart buff key: casts the next buff out of combat (a key as

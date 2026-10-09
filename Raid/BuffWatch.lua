@@ -254,7 +254,7 @@ end
 function BuffWatch.Scan()
     if InCombatLockdown() then return end
     local members, secret = BuffWatch.Members(), aurasSecret()
-    local threshold = (general("buffExpiring") or 5) * 60
+    local threshold = (general("buffExpiring") or 3) * 60
     local state = { entries = {}, missingUnits = {}, missingGUIDs = {} }
     -- Solo: nothing is watched.
     for _, entry in ipairs(IsInGroup() and BuffWatch.Watched() or {}) do
