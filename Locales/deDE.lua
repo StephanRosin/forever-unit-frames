@@ -1331,4 +1331,5 @@ L.NEWS_0_25_1_SHIELDS_PLACE = "Schildwache: sie kann am Spielerrahmen hängen (S
 L.NEWS_0_26_0_NAMES = "Buff-Übersicht: unter jedem Buff stehen die Namen derer, denen er fehlt, außer Reichweite grau."
 L.NEWS_0_26_0_SWITCH = "Buff-Übersicht: ein Zahnrad in der Kopfzeile und ein Rechtsklick auf einen Buff bestimmen, welche Buffs beobachtet werden."
 L.NEWS_0_26_0_EXPIRING = "Buff-Übersicht: Buffs gelten standardmäßig ab 3 Minuten als auslaufend."
+L.NEWS_0_27_0_SPELLS = "Klickzauber: „Zauber wirken“ wählt den Zauber jetzt aus einer Liste deiner Zauber, die auf andere wirken, und daneben den Rang: „Max“ wirkt den höchsten bekannten, ein gewählter Rang bleibt dieser Rang. „Anderer…“ nimmt wie bisher einen getippten Zauber. Deine Belegungen werden übernommen."
 L.NEWS_OPEN_SHIELDS = "Schildwache öffnen"

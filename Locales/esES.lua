@@ -1332,4 +1332,5 @@ L.NEWS_0_25_1_SHIELDS_PLACE = "Vigía de escudos: puede ir en el marco del jugad
 L.NEWS_0_26_0_NAMES = "Control de beneficios: bajo cada beneficio están los nombres de quienes les falta, en gris si están fuera de alcance."
 L.NEWS_0_26_0_SWITCH = "Control de beneficios: un engranaje en la cabecera y un clic derecho en un beneficio eligen cuáles se vigilan."
 L.NEWS_0_26_0_EXPIRING = "Control de beneficios: los beneficios se consideran por agotarse desde 3 minutos por defecto."
+L.NEWS_0_27_0_SPELLS = "Lanzar con clic: «Lanzar un hechizo» elige ahora el hechizo de una lista de los tuyos que se lanzan sobre otros, y al lado el rango: «Máx» lanza el más alto que conoces, un rango elegido se queda en ese rango. «Otro…» toma un hechizo escrito como antes. Tus asignaciones se conservan."
 L.NEWS_OPEN_SHIELDS = "Abrir el vigía de escudos"

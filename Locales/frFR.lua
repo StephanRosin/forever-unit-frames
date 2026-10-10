@@ -1331,4 +1331,5 @@ L.NEWS_0_25_1_SHIELDS_PLACE = "Veille des boucliers : elle peut s’accrocher au
 L.NEWS_0_26_0_NAMES = "Suivi des améliorations : sous chaque amélioration figurent les noms de ceux à qui elle manque, en gris hors de portée."
 L.NEWS_0_26_0_SWITCH = "Suivi des améliorations : un engrenage dans l’en-tête et un clic droit sur une amélioration choisissent lesquelles sont surveillées."
 L.NEWS_0_26_0_EXPIRING = "Suivi des améliorations : elles comptent comme expirant dès 3 minutes par défaut."
+L.NEWS_0_27_0_SPELLS = "Sorts au clic : « Lancer un sort » choisit maintenant le sort dans une liste des vôtres qui se lancent sur les autres, et à côté le rang : « Max » lance le plus haut connu, un rang choisi reste ce rang. « Autre… » prend un sort tapé comme avant. Vos raccourcis sont repris."
 L.NEWS_OPEN_SHIELDS = "Ouvrir la veille des boucliers"

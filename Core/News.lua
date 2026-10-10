@@ -63,6 +63,11 @@ News.ENTRIES = {
         lines = { "NEWS_0_26_0_NAMES", "NEWS_0_26_0_SWITCH", "NEWS_0_26_0_EXPIRING" },
         action = { text = "NEWS_OPEN_RAID", run = function() ns.RaidOptions.Open() end },
     },
+    -- Click-casting's spell and rank dropdowns: the button opens its tab.
+    ["0.27.0"] = {
+        lines = { "NEWS_0_27_0_SPELLS" },
+        action = { text = "NEWS_OPEN_RAID", run = function() ns.RaidOptions.Open(nil, "clickCast") end },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

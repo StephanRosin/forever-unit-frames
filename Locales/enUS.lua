@@ -1359,4 +1359,5 @@ L.NEWS_0_25_1_SHIELDS_PLACE = "Shield watch: it can hang from the player frame (
 L.NEWS_0_26_0_NAMES = "Buff watch: the names of who misses a buff stand under it, out of range in gray."
 L.NEWS_0_26_0_SWITCH = "Buff watch: a gear in the header and a right click on a buff choose which buffs are watched."
 L.NEWS_0_26_0_EXPIRING = "Buff watch: buffs count as running out from 3 minutes by default."
+L.NEWS_0_27_0_SPELLS = "Click-casting: \"Cast a spell\" now picks the spell from a list of yours that can be cast on others, and beside it the rank: Max casts the highest you know, a rank picked stays that rank. \"Other…\" takes a spell typed as before. Your bindings are taken over."
 L.NEWS_OPEN_SHIELDS = "Open the shield watch"
