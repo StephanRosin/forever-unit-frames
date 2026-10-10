@@ -15,7 +15,7 @@ For this character, at every raid size; changes apply out of combat. A modified 
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
-<tr><td><b>Click-casting</b></td><td>Automatic: off while Clique is loaded</td><td>Automatic, On, Off</td><td>Automatic</td></tr>
+<tr><td><b>Click-casting mode</b></td><td>Automatic: off while Clique is loaded</td><td>Automatic, On, Off</td><td>Automatic</td></tr>
 </tbody>
 </table>
 

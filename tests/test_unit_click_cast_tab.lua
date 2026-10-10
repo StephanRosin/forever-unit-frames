@@ -170,3 +170,12 @@ end
 H.check("off before login: stored", ns2.RaidConfig.Get("general", "click1Shift"), "spell:Renew")
 H.check("off before login: nothing blocked", #M.blocked, 0)
 ns2.Options.Close()
+
+-- Two different rows, two different names: the Frames tab's switch
+-- (which frames take the bindings) and the editor's mode (on, automatic,
+-- off); the switch's hint points to the tab.
+for _, code in ipairs({ "enUS", "deDE", "esES", "frFR" }) do
+    local LC = ns.Locales[code]
+    H.checkTrue(code .. " the mode row has its own name", LC.RAID_SETTING_clickCast ~= LC.SETTING_clickCast)
+    H.checkTrue(code .. " the hint names the tab", LC.HINT_clickCast:find(LC.TAB_clickCast, 1, true))
+end
