@@ -81,14 +81,35 @@ function Spellbook.Resolve(text)
     return table.concat(ids, ",")
 end
 
+-- Spells that target friend or foe, which the client does not answer as
+-- helpful (IsSpellHelpful false): one ID each, matched by the name the
+-- client gives it (its language), so every learned rank of that name
+-- counts. Dispel Magic (Priest), Holy Shock (Paladin).
+Spellbook.FRIEND_OR_FOE = { 527, 988, 20473, 20929, 20930 }
+
+-- The names of FRIEND_OR_FOE in the client's language, as a set (a name
+-- that cannot be read is left out).
+local function friendOrFoeNames()
+    local names = {}
+    local spell = C_Spell
+    if not (spell and spell.GetSpellInfo) then return names end
+    for _, id in ipairs(Spellbook.FRIEND_OR_FOE) do
+        local ok, info = pcall(spell.GetSpellInfo, id)
+        local name = ok and type(info) == "table" and Secrets.Plain(info.name, "string")
+        if name then names[name] = true end
+    end
+    return names
+end
+
 -- Whether a spell is cast on someone else: helpful (the client's
--- IsSpellHelpful: the player or a friendly target) and with a range
--- (GetSpellInfo's maxRange is 0 for self-only and self-centred spells).
--- A secret, missing or raising answer is a no.
-local function onOthers(id)
+-- IsSpellHelpful: the player or a friendly target) or one of the friend
+-- or foe spells (dual: a set of names), and with a range (GetSpellInfo's
+-- maxRange is 0 for self-only and self-centred spells). A secret, missing
+-- or raising answer is a no.
+local function onOthers(id, name, dual)
     local spell = C_Spell
     if not (spell and spell.IsSpellHelpful and spell.GetSpellInfo) then return false end
-    if Secrets.Bool(spell.IsSpellHelpful, id) ~= true then return false end
+    if not dual[name] and Secrets.Bool(spell.IsSpellHelpful, id) ~= true then return false end
     local ok, info = pcall(spell.GetSpellInfo, id)
     if not ok or type(info) ~= "table" then return false end
     local range = Secrets.Plain(info.maxRange, "number")
@@ -159,10 +180,11 @@ end
 
 -- The spells click-casting offers: every learned spell of the book that
 -- is no passive and is cast on someone else (heals, dispels, buffs,
--- resurrections), each name once as { name, ranks = { { id, subName },
--- ... } } with its learned ranks in spell book order (the highest last),
--- sorted by name in the client's language. Read only while the raid
--- window shows it, never in combat paths.
+-- resurrections; the friend or foe spells too), each name once as
+-- { name, ranks = { { id, subName }, ... } } with its learned ranks in
+-- spell book order (not rank order: Spellbook.HighestRank says which is
+-- Max), sorted by name in the client's language. Read only while an
+-- options window shows it or on a change, never in combat paths.
 function Spellbook.FriendlySpells()
     local book, list = C_SpellBook, {}
     if not (book and book.GetNumSpellBookSkillLines and book.GetSpellBookSkillLineInfo
@@ -171,11 +193,11 @@ function Spellbook.FriendlySpells()
     end
     local lines = book.GetNumSpellBookSkillLines()
     if not plain(lines, "number") then return list end
-    local spellType, byNames, seen = Enum.SpellBookItemType.Spell, {}, {}
+    local spellType, byNames, seen, dual = Enum.SpellBookItemType.Spell, {}, {}, friendOrFoeNames()
     for line = 1, lines do
         forEachItem(book, line, function(item)
             local s = learnedSpell(item, spellType)
-            if not s or seen[s.id] or not onOthers(s.id) then return end
+            if not s or seen[s.id] or not onOthers(s.id, s.name, dual) then return end
             seen[s.id] = true
             local entry = byNames[s.name]
             if not entry then

@@ -2164,7 +2164,12 @@ function M.Reset()
         -- (Raid/TemplateData.lua).
         [139] = { name = "Renew", maxRange = 40 }, [6074] = { name = "Renew", maxRange = 40 },
         [17] = { name = "Power Word: Shield", maxRange = 40 }, [2060] = { name = "Greater Heal", maxRange = 40 },
-        [527] = { name = "Dispel Magic", maxRange = 30 }, [528] = { name = "Cure Disease", maxRange = 30 },
+        -- Dispel Magic and Holy Shock target friend or foe: the client does
+        -- not answer them as helpful (IsSpellHelpful false, IsSpellHarmful
+        -- true: dual).
+        [527] = { name = "Dispel Magic", maxRange = 30, dual = true },
+        [988] = { name = "Dispel Magic", maxRange = 30, dual = true },
+        [20473] = { name = "Holy Shock", maxRange = 20, dual = true }, [528] = { name = "Cure Disease", maxRange = 30 },
         [552] = { name = "Abolish Disease", maxRange = 30 },
         [774] = { name = "Rejuvenation", maxRange = 40 }, [1058] = { name = "Rejuvenation", maxRange = 40 },
         [8936] = { name = "Regrowth", maxRange = 40 }, [33763] = { name = "Lifebloom", maxRange = 40 },
@@ -2187,7 +2192,7 @@ function M.Reset()
     -- The rank (M.spells[id].rank) and its text (SpellBookItemInfo.subName)
     -- of the spells that have ranks; "" for the rest, as the client writes
     -- it. Rank order is not ID order (Greater Heal).
-    for id, rank in pairs({ [2060] = 1, [25314] = 5, [25210] = 6, [2050] = 1, [2052] = 2, [2053] = 3, [2054] = 1, [2055] = 2, [585] = 1, [591] = 2,
+    for id, rank in pairs({ [2060] = 1, [25314] = 5, [25210] = 6, [527] = 1, [988] = 2, [2050] = 1, [2052] = 2, [2053] = 3, [2054] = 1, [2055] = 2, [585] = 1, [591] = 2,
         [598] = 3, [133] = 1, [143] = 2, [139] = 1, [6074] = 2, [1243] = 1, [1244] = 2, [1245] = 3, [2791] = 4,
         [10937] = 5, [10938] = 6, [21562] = 1, [21564] = 2, [774] = 1, [1058] = 2, [1459] = 1, [1460] = 2,
         [1126] = 1, [5232] = 2, [21849] = 1, [21850] = 2, [19740] = 1, [19834] = 2 }) do
@@ -2290,9 +2295,16 @@ function M.Reset()
         IsSpellHelpful = function(identifier)
             assert(type(identifier) == "number" or type(identifier) == "string", "IsSpellHelpful: spellIdentifier")
             local id = spellID(identifier)
-            local helpful = id ~= nil and M.spells[id].harmful ~= true
+            local helpful = id ~= nil and M.spells[id].harmful ~= true and M.spells[id].dual ~= true
             if id and M.spellHelpfulSecret[id] then return M.Secret(helpful) end
             return helpful
+        end,
+        -- SpellDocumentation.lua: whether the spell can be cast on hostile
+        -- targets (bool); false for a spell the client does not know.
+        IsSpellHarmful = function(identifier)
+            assert(type(identifier) == "number" or type(identifier) == "string", "IsSpellHarmful: spellIdentifier")
+            local id = spellID(identifier)
+            return id ~= nil and (M.spells[id].harmful == true or M.spells[id].dual == true)
         end,
         GetSpellTexture = function(identifier)
             local id = spellID(identifier)
