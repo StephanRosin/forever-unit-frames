@@ -78,7 +78,7 @@ Source: [GitHub](https://github.com/StephanRosin/forever-unit-frames)
 | `/fuf` | Opens the options |
 | `/fuf raid` | Opens the raid frames' options |
 | `/fuf raid off`, `/fuf raid on` | Switches the raid frames off (then `/reload`) or on, without the window |
-| `/fuf news` | Shows what's new in this version (shown once by itself after an update) |
+| `/fuf news` | Shows what's new in this version (shown once by itself after an update with bigger changes) |
 | `/fuf tools` | Folds the raid tools bar out or in |
 | `/fuf unlock`, `/fuf lock` | Lets you drag the unit frames, and locks them (and the raid panel) again |
 | `/fuf status` | Prints the client version and where the settings came from |

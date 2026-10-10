@@ -26,7 +26,8 @@ local function login(db, version, opts)
     return ns.NewsWindow.IsOpen()
 end
 local function logout() M.FireEvent("PLAYER_LOGOUT") end
-local NEWER = { ["0.23.0"] = { lines = { "NEWS_0_22_0_RAID" } } }
+-- An announced entry (Core/News.lua: only those show by themselves).
+local NEWER = { ["0.23.0"] = { lines = { "NEWS_0_22_0_RAID" }, announce = true } }
 
 -- Versions compare number by number.
 ns = H.LoadAddon()
