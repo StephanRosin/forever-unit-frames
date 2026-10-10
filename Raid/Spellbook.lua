@@ -80,3 +80,93 @@ function Spellbook.Resolve(text)
     end
     return table.concat(ids, ",")
 end
+
+-- Whether a spell is cast on someone else: helpful (the client's
+-- IsSpellHelpful: the player or a friendly target) and with a range
+-- (GetSpellInfo's maxRange is 0 for self-only and self-centred spells).
+-- A secret, missing or raising answer is a no.
+local function onOthers(id)
+    local spell = C_Spell
+    if not (spell and spell.IsSpellHelpful and spell.GetSpellInfo) then return false end
+    if Secrets.Bool(spell.IsSpellHelpful, id) ~= true then return false end
+    local ok, info = pcall(spell.GetSpellInfo, id)
+    if not ok or type(info) ~= "table" then return false end
+    local range = Secrets.Plain(info.maxRange, "number")
+    return range ~= nil and range > 0
+end
+
+-- A learned spell of the book (not passive) as { id, name, subName }, or
+-- nil when it is none or anything about it is secret.
+local function learnedSpell(item, spellType)
+    if not (plain(item.itemType, "number") and item.itemType == spellType) then return nil end
+    if not (plain(item.isPassive, "boolean") and item.isPassive == false) then return nil end
+    if not (plain(item.spellID, "number") and plain(item.name, "string") and plain(item.subName, "string")) then
+        return nil
+    end
+    return { id = item.spellID, name = item.name, subName = item.subName }
+end
+
+local function byName(a, b)
+    local compare = rawget(_G, "strcmputf8i")
+    if compare then return compare(a.name, b.name) < 0 end
+    return a.name:lower() < b.name:lower()
+end
+
+-- The spells click-casting offers: every learned spell of the book that
+-- is no passive and is cast on someone else (heals, dispels, buffs,
+-- resurrections), each name once as { name, ranks = { { id, subName },
+-- ... } } with its learned ranks in spell book order (the highest last),
+-- sorted by name in the client's language. Read only while the raid
+-- window shows it, never in combat paths.
+function Spellbook.FriendlySpells()
+    local book, list = C_SpellBook, {}
+    if not (book and book.GetNumSpellBookSkillLines and book.GetSpellBookSkillLineInfo
+        and book.GetSpellBookItemInfo and Enum and Enum.SpellBookSpellBank) then
+        return list
+    end
+    local lines = book.GetNumSpellBookSkillLines()
+    if not plain(lines, "number") then return list end
+    local spellType, byNames, seen = Enum.SpellBookItemType.Spell, {}, {}
+    for line = 1, lines do
+        forEachItem(book, line, function(item)
+            local s = learnedSpell(item, spellType)
+            if not s or seen[s.id] or not onOthers(s.id) then return end
+            seen[s.id] = true
+            local entry = byNames[s.name]
+            if not entry then
+                entry = { name = s.name, ranks = {} }
+                byNames[s.name] = entry
+                list[#list + 1] = entry
+            end
+            entry.ranks[#entry.ranks + 1] = { id = s.id, subName = s.subName }
+        end)
+    end
+    table.sort(list, byName)
+    return list
+end
+
+-- A spell of FriendlySpells by its name (case ignored), or nil. list:
+-- the spells (read anew when nil).
+function Spellbook.FriendlySpell(name, list)
+    local wanted = name:lower()
+    for _, spell in ipairs(list or Spellbook.FriendlySpells()) do
+        if spell.name:lower() == wanted then return spell end
+    end
+    return nil
+end
+
+-- The spell of FriendlySpells one of whose ranks has the ID, and that
+-- rank; nil when it is no such rank. list: as above.
+function Spellbook.FriendlyRank(id, list)
+    for _, spell in ipairs(list or Spellbook.FriendlySpells()) do
+        for _, rank in ipairs(spell.ranks) do
+            if rank.id == id then return spell, rank end
+        end
+    end
+    return nil
+end
+
+-- A spell's highest learned rank (the book lists it last).
+function Spellbook.HighestRank(spell)
+    return spell.ranks[#spell.ranks]
+end

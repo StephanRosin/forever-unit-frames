@@ -1703,6 +1703,15 @@ function M.Reset()
     -- Localised race and creature type (units: race, creatureType).
     -- d.guid ("Creature-0-1-2-3-<npcID>-4"), may be secret.
     _G.UnitGUID = function(unit) local d = u(unit); return d and d.guid end
+    -- The client's strcmputf8i (used by its lists to sort names): <0, 0 or
+    -- >0, case ignored. Only ASCII cases are folded here; the client folds
+    -- every letter.
+    _G.strcmputf8i = function(a, b)
+        assert(type(a) == "string" and type(b) == "string", "strcmputf8i(a, b)")
+        a, b = a:lower(), b:lower()
+        if a == b then return 0 end
+        return a < b and -1 or 1
+    end
     -- WoW's strsplit: the parts between the (single-character) delimiter.
     _G.strsplit = function(delim, str)
         local parts = {}
@@ -2167,7 +2176,18 @@ function M.Reset()
         [1064] = { name = "Chain Heal", maxRange = 40 }, [974] = { name = "Earth Shield", maxRange = 40 },
         [526] = { name = "Cure Poison", maxRange = 30 }, [2870] = { name = "Cure Disease", maxRange = 30 },
         [475] = { name = "Remove Lesser Curse", maxRange = 40 },
+        -- Self-only and self-centred spells (maxRange 0), a passive one.
+        [588] = { name = "Inner Fire" }, [596] = { name = "Prayer of Healing" }, [15237] = { name = "Holy Nova" },
+        [15270] = { name = "Spirit Tap", passive = true },
     }
+    -- The rank text (SpellBookItemInfo.subName) of the spells that have
+    -- ranks; "" for the rest, as the client writes it.
+    for id, rank in pairs({ [2050] = 1, [2052] = 2, [2053] = 3, [2054] = 1, [2055] = 2, [585] = 1, [591] = 2,
+        [598] = 3, [133] = 1, [143] = 2, [139] = 1, [6074] = 2, [1243] = 1, [1244] = 2, [1245] = 3, [2791] = 4,
+        [10937] = 5, [10938] = 6, [21562] = 1, [21564] = 2, [774] = 1, [1058] = 2, [1459] = 1, [1460] = 2,
+        [1126] = 1, [5232] = 2, [21849] = 1, [21850] = 2, [19740] = 1, [19834] = 2 }) do
+        M.spells[id].subName = "Rank " .. rank
+    end
     M.known = {}
     -- The player's specialization (SpecializationInfoDocumentation.lua):
     -- GetSpecialization's index (not nilable; 0 here for none), and per
@@ -2192,6 +2212,7 @@ function M.Reset()
     M.spellRangeError = false
     M.spellRangeSecret = false
     M.spellQueries = 0
+    M.spellHelpfulSecret = {}
     local function spellID(identifier)
         if type(identifier) == "number" then return M.spells[identifier] and identifier or nil end
         if type(identifier) ~= "string" then return nil end
@@ -2251,6 +2272,17 @@ function M.Reset()
             end
             return out
         end,
+        -- SpellDocumentation.lua: whether the spell can be cast on the
+        -- player or other friendly targets (bool, not nilable); false for a
+        -- spell the client does not know. M.spellHelpfulSecret[id]: that
+        -- answer secret (not documented as secret; guarded anyway).
+        IsSpellHelpful = function(identifier)
+            assert(type(identifier) == "number" or type(identifier) == "string", "IsSpellHelpful: spellIdentifier")
+            local id = spellID(identifier)
+            local helpful = id ~= nil and M.spells[id].harmful ~= true
+            if id and M.spellHelpfulSecret[id] then return M.Secret(helpful) end
+            return helpful
+        end,
         GetSpellTexture = function(identifier)
             local id = spellID(identifier)
             if id then return 100000 + id, 100000 + id end
@@ -2282,6 +2314,7 @@ function M.Reset()
     -- item of its own: the client's spell book window only hides the low
     -- ranks. Only the player's bank is modelled; the pet's is empty.
     M.futureSpells = {}
+    M.spellBookSecret = {}
     local function bookLines()
         local learned, future = {}, {}
         for id in pairs(M.known) do if M.spells[id] then learned[#learned + 1] = id end end
@@ -2304,9 +2337,16 @@ function M.Reset()
         for i, line in ipairs(bookLines()) do
             local id = line[slot]
             if id then
-                return { actionID = id, spellID = id, name = M.spells[id].name, subName = "", iconID = 1,
+                local s = M.spells[id]
+                local item = { actionID = id, spellID = id, name = s.name, subName = s.subName or "", iconID = 1,
                     itemType = i == 1 and Enum.SpellBookItemType.Spell or Enum.SpellBookItemType.FutureSpell,
-                    isPassive = false, isOffSpec = false, skillLineIndex = i }
+                    isPassive = s.passive == true, isOffSpec = false, skillLineIndex = i }
+                -- M.spellBookSecret[id]: the item's fields secret (not
+                -- documented as secret; guarded anyway).
+                if M.spellBookSecret[id] then
+                    for k, v in pairs(item) do item[k] = M.Secret(v) end
+                end
+                return item
             end
             slot = slot - #line
         end
