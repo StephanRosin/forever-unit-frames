@@ -37,8 +37,8 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 ## Raid frames
 - Raid frames for 10, 20 and 40 players in the look of the unit frames: a panel of blocks (raid groups, classes, roles, or one block for everyone), side by side or stacked, sorted by raid order, name or role. Blizzard's raid frames hide while ours are on; a 5-player group can be shown as a raid too.
 - A profile per raid size and character, each with a look of its own (texture, fonts, colours, border, rounded corners). The size follows the raid instance, or is fixed.
-- Health in the class colour, a fixed colour or a gradient; name and missing health in the middle; Dead, Ghost, Offline and AFK; a thin power strip; incoming heals, shields and damage and heal numbers.
-- Dispellable debuffs as an icon in the centre or a coloured square in a corner, and a debuff row. Up to five corner indicators for your heals over time and shields, by spell ID or by name from your spell book; they keep updating in combat.
+- Health in the class colour, a fixed colour or a gradient; name and missing health in the middle; Dead, Ghost, Offline and AFK; a power strip of adjustable height; incoming heals, shields and damage and heal numbers.
+- Dispellable debuffs as an icon in the centre or a coloured square in a corner, the cell tinted or bordered in the debuff's colour, and a debuff row. Up to five corner indicators for your heals over time and shields, by spell ID or by name from your spell book; they keep updating in combat.
 - Icons for role, raid marker, leader, master looter and ready check; members out of range fade; lines in the cell show aggro and your target.
 - **Special panels:** main tanks, main assists, your own tanks, favorites (right-click a cell to add a player) and the raid's pets, each in a panel of its own.
 - **Own panels:** up to nine panels of your own beside the main panel; drag a block from one panel to another (a "Healers" panel beside the groups).
