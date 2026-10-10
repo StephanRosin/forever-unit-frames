@@ -145,12 +145,16 @@ function Profiles.ClickKeys()
     return keys
 end
 
--- A copied binding as this character has it: a spell through its spell
--- book (as the book writes it), or nil and the spell's name when it does
--- not know it. Everything else as it is.
-local function ownBinding(binding)
+-- A copied binding as this character has it: a spell of the click-casting
+-- list as the list has it (ClickCast.NormaliseSpell: a fixed rank kept),
+-- another spell through its spell book (as the book writes it), or nil
+-- and the spell's name when it does not know it. Everything else as it is.
+-- list: the click-casting list (Spellbook.FriendlySpells).
+local function ownBinding(binding, list)
     local kind, value = Raid.ParseBinding(binding)
     if kind ~= "spell" or value == "" then return binding end
+    local listed, inList = ns.ClickCast.NormaliseSpell(value, list)
+    if inList then return "spell:" .. listed end
     local name = ns.ClickCast.TypedValue("spell", value)
     if name == nil then return nil, value end
     return "spell:" .. name
@@ -170,12 +174,13 @@ function Profiles.CopyClickCast(key)
     for _, slot in ipairs(Raid.CLICK_KEYS) do keySlots[slot.key] = true end
     local buffKey = RaidConfig.Get("general", "buffKey")
     local values, dropped, buffKeyDropped = {}, {}, false
+    local list = ns.RaidSpellbook.FriendlySpells()
     for _, k in ipairs(Profiles.ClickKeys()) do
         local default = RaidSettings.Default(RaidSettings.Get(k), "general")
         local v = general[k]
         if v == nil then v = default end
         if RaidSettings.Get(k).kinds then
-            local own, unknown = ownBinding(v)
+            local own, unknown = ownBinding(v, list)
             if own == nil then dropped[#dropped + 1] = unknown end
             v = own or default
         elseif keySlots[k] and v ~= "" and v == buffKey then
