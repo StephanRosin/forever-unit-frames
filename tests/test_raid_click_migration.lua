@@ -4,7 +4,7 @@
 -- list has it: a name as the spell book spells it (Max), a spell ID of a
 -- learned rank as that ID, the highest rank's ID as the name (Max);
 -- anything else stays as typed. Copying another character's bindings
--- does the same.
+-- does the same, except that a learned ID stays an ID (a rank picked).
 local M = H.M
 local ns = H.LoadAddon()
 M.units.player = { name = "Me", class = "PRIEST", health = 1, healthMax = 1 }
@@ -63,7 +63,8 @@ H.check("once only", get("click1Shift"), "spell:renew")
 ns.RaidProfiles.CopyClickCast("Alt-Realm")
 H.check("copied: a lower rank kept", get("click1"), "spell:139")
 H.check("copied: a name in the book's case", get("click2"), "spell:Renew")
-H.check("copied: the highest rank by name", get("click3"), "spell:Renew")
+-- A rank picked on the other character is a choice: kept, even the top one.
+H.check("copied: the top rank kept as a rank", get("click3"), "spell:6074")
 H.check("nothing blocked", #M.blocked, 0)
 
 -- Another character whose spell book reads empty at first: nothing

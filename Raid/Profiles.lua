@@ -146,14 +146,15 @@ function Profiles.ClickKeys()
 end
 
 -- A copied binding as this character has it: a spell of the click-casting
--- list as the list has it (ClickCast.NormaliseSpell: a fixed rank kept),
+-- list as the list has it (ClickCast.NormaliseSpell: a learned rank kept
+-- as a rank, even the top one),
 -- another spell through its spell book (as the book writes it), or nil
 -- and the spell's name when it does not know it. Everything else as it is.
 -- list: the click-casting list (Spellbook.FriendlySpells).
 local function ownBinding(binding, list)
     local kind, value = Raid.ParseBinding(binding)
     if kind ~= "spell" or value == "" then return binding end
-    local listed, inList = ns.ClickCast.NormaliseSpell(value, list)
+    local listed, inList = ns.ClickCast.NormaliseSpell(value, list, true)
     if inList then return "spell:" .. listed end
     local name = ns.ClickCast.TypedValue("spell", value)
     if name == nil then return nil, value end

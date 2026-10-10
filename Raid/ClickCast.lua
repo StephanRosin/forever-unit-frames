@@ -87,15 +87,16 @@ end
 -- highest rank known; a spell ID of a learned rank as it is (that rank),
 -- the highest one's as the name. Anything else (not learned, not cast on
 -- others, unknown, empty) as it is; so is an ID when the rank the name
--- casts cannot be read (Spellbook.HighestRank). Also whether the list
--- has it.
-function ClickCast.NormaliseSpell(value, list)
+-- casts cannot be read (Spellbook.HighestRank), and with keepIDs (a
+-- copy: an ID written since 0.27 is a rank picked, even the top one).
+-- Also whether the list has it.
+function ClickCast.NormaliseSpell(value, list, keepIDs)
     local Spellbook = ns.RaidSpellbook
     list = list or Spellbook.FriendlySpells()
     if value:match("^%d+$") then
         local spell, rank = Spellbook.FriendlyRank(tonumber(value), list)
         if not spell then return value, false end
-        if rank == Spellbook.HighestRank(spell) then return spell.name, true end
+        if not keepIDs and rank == Spellbook.HighestRank(spell) then return spell.name, true end
         return value, true
     end
     local spell = value ~= "" and Spellbook.FriendlySpell(value, list)
