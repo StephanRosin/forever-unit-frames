@@ -135,27 +135,33 @@ end
 
 -- Whether a spell ID is a learned spell of the player's book (every rank
 -- is an item there, a lower one too: C_SpellBook.IsSpellKnown is not
--- documented to say so for a rank a higher one supersedes).
-function Spellbook.InBook(id)
-    local book = C_SpellBook
+-- documented to say so for a rank a higher one supersedes). The book's
+-- learned IDs are read once and kept until SPELLS_CHANGED (every cell
+-- and slot asks; registered here, before the handlers that ask again).
+local learnedIDs
+local function readLearned()
+    local ids, book = {}, C_SpellBook
     if not (book and book.GetNumSpellBookSkillLines and book.GetSpellBookSkillLineInfo
         and book.GetSpellBookItemInfo and Enum and Enum.SpellBookSpellBank) then
-        return false
+        return ids
     end
     local lines = book.GetNumSpellBookSkillLines()
-    if not plain(lines, "number") then return false end
-    local spellType, found = Enum.SpellBookItemType.Spell, false
+    if not plain(lines, "number") then return ids end
+    local spellType = Enum.SpellBookItemType.Spell
     for line = 1, lines do
         forEachItem(book, line, function(item)
-            if not found and plain(item.itemType, "number") and item.itemType == spellType
-                and plain(item.spellID, "number") and item.spellID == id then
-                found = true
+            if plain(item.itemType, "number") and item.itemType == spellType and plain(item.spellID, "number") then
+                ids[item.spellID] = true
             end
         end)
-        if found then return true end
     end
-    return false
+    return ids
 end
+function Spellbook.InBook(id)
+    learnedIDs = learnedIDs or readLearned()
+    return learnedIDs[id] == true
+end
+ns.On("SPELLS_CHANGED", function() learnedIDs = nil end)
 
 -- Whether the player's book is read: a learned spell in a skill line
 -- after the first (the first is General: racials and the like; the

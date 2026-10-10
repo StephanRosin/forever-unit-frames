@@ -163,3 +163,25 @@ M.RunTimers(1)
 H.check("key 1 changed back: waits again", GetBindingAction("F", true), "")
 M.spellTextPending[139] = nil
 M.RunTimers()
+
+-- Whether an ID is in the book is read once per book change: many cells
+-- and slots ask, one scan answers (dropped on SPELLS_CHANGED).
+local itemReads, getItem = 0, C_SpellBook.GetSpellBookItemInfo
+C_SpellBook.GetSpellBookItemInfo = function(...) itemReads = itemReads + 1; return getItem(...) end
+local Book = ns.RaidSpellbook
+M.FireEvent("SPELLS_CHANGED")
+M.RunTimers()
+Book.InBook(139)
+local once = itemReads
+H.checkTrue("read", once > 0)
+for _ = 1, 10 do Book.InBook(139); Book.InBook(6074); Book.InBook(2061) end
+H.check("no more reads", itemReads, once)
+M.known[139] = nil
+M.FireEvent("SPELLS_CHANGED")
+H.check("after a change: read anew", Book.InBook(139), false)
+H.checkTrue("and it was read", itemReads > once)
+M.known[139] = true
+M.FireEvent("SPELLS_CHANGED")
+H.check("learned again", Book.InBook(139), true)
+C_SpellBook.GetSpellBookItemInfo = getItem
+M.RunTimers()
