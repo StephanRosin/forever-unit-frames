@@ -282,6 +282,12 @@ CellAuras.AddPart({
         samples.tint.texture:SetColorTexture(1, 1, 1, 1)
         samples.tint.texture:SetAllPoints(frame.health)
         samples.tint:Hide()
+        -- The border's ring on a frame of its own, shown or hidden whole.
+        samples.border = CreateFrame("Frame", nil, frame)
+        samples.border:SetSize(1, 1)
+        samples.border:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, 0)
+        samples.border.ring = ns.Border.NewInnerRing(samples.border)
+        samples.border:Hide()
     end,
     ShowSample = function(frame, samples, member, start)
         local centre, shows = sampleDebuffs(member), dispelShows()
@@ -299,6 +305,13 @@ CellAuras.AddPart({
         tint:SetFrameLevel(frame:GetFrameLevel() + CellAuras.TINT_LEVELS)
         if c then tint.texture:SetVertexColor(c[1], c[2], c[3], CellAuras.TINT_ALPHA) end
         tint:SetShown(c ~= nil and get("dispelTint") == true)
+        local border = samples.border
+        border:SetFrameLevel(frame:GetFrameLevel() + CellAuras.BORDER_LEVELS)
+        placeBorder(frame, border)
+        if c then
+            for _, piece in ipairs(ns.Border.InnerRingPieces(border.ring)) do piece:SetVertexColor(c[1], c[2], c[3], 1) end
+        end
+        border:SetShown(c ~= nil and get("dispelBorder") == true)
     end,
 })
 

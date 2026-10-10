@@ -51,10 +51,11 @@ local RULES = {
     { on("healPrediction"), { "overheal" } },
     -- Raid/Cell.lua: no strip, no height.
     { isNot("powerStrip", "OFF"), { "powerStripHeight" } },
-    -- Raid/CellAuras.lua: the tint is a switch of its own and takes the
-    -- filter too.
+    -- Raid/CellAuras.lua: the tint and the border are switches of their
+    -- own and take the filter too.
     { on("dispelIcon"), { "dispelStyle", "dispelIconSize", "dispelSquarePoint", "dispelSquareSize" } },
-    { anyOn({ "dispelIcon", "dispelTint" }), { "dispelFilter" } },
+    { anyOn({ "dispelIcon", "dispelTint", "dispelBorder" }), { "dispelFilter" } },
+    { on("dispelBorder"), { "dispelBorderSize" } },
     { is("dispelStyle", "ICON"), { "dispelIconSize" } },
     { is("dispelStyle", "SQUARE"), { "dispelSquarePoint", "dispelSquareSize" } },
     { on("debuffRow"), { "debuffCount", "debuffSize" } },
