@@ -103,9 +103,11 @@ local function spellControls(row, key)
     })
     row.rankDrop = Widgets.DropdownButton(row, {
         width = RANK_W, items = function() return rankItems(key) end,
+        -- A spell of one rank shows Max (its only rank, greyed).
         get = function()
-            local _, rank = listed((select(2, binding(key))))
-            return rank and rank.id or "MAX"
+            local spell, rank = listed((select(2, binding(key))))
+            if not rank or #spell.ranks <= 1 then return "MAX" end
+            return rank.id
         end,
         set = function(id)
             local spell = listed((select(2, binding(key))))

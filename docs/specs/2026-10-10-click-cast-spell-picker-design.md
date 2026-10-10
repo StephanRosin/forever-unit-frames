@@ -29,8 +29,9 @@ vorausgewählt; nur Zauber, die man auf Freunde wirken kann; bestehende Werte be
 4. **Keys** (Raid/ClickKeys.lua, macro `/cast [@mouseover,help,nodead] %s`): Max → the name as today; a fixed rank →
    `Name(<subName>)` from the spell book (e.g. `Renew(Rank 3)` / `Erneuerung(Rang 3)`). In-game check needed; if the
    client refuses the rank form, the keys offer Max only.
-5. **Migration** (once per character, flag in the character's settings, run when the spell book is ready —
-   SPELLS_CHANGED after login, never in combat): every `spell:` binding (mouse slots and keys) is normalised:
+5. **Migration** (once per character, flag in `ForeverUnitFramesDB.raidClickSpellsNormalised[character]` — the
+   raid profile keeps only settings —, run when the spell book is ready — SPELLS_CHANGED or the end of the login
+   loading screen, never in combat): every `spell:` binding (mouse slots and keys) is normalised:
    - a name in the list (case ignored) → the spell book's spelling (Max);
    - a number that is a learned rank → that ID (fixed rank); when it is the highest learned rank → the name (Max, as
      typing an ID meant until now);

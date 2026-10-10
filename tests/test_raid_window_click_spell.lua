@@ -166,3 +166,8 @@ H.check("pending: the rank by its ID", listed(r2.rankDrop), "Max,Rank 1,6074,Ran
 M.SpellTextArrives(6074)
 M.RunTimers()
 H.check("arrived: by its text", listed(r2.rankDrop), "Max,Rank 1,Rank 2,Rank 3")
+
+-- A spell of one rank stored by its ID (from elsewhere): the greyed rank
+-- says Max.
+RC.Set("general", "click1Shift", "spell:2061")
+H.check("one rank by ID: Max shown", rowFor("click1Shift").rankDrop.text:GetText(), "Max")

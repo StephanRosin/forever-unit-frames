@@ -31,7 +31,8 @@ ClickCast.MACRO_LETTERS = 255
 local function spellName(id)
     if not (C_Spell and C_Spell.GetSpellInfo) then return nil end
     local ok, info = pcall(C_Spell.GetSpellInfo, id)
-    return ok and type(info) == "table" and type(info.name) == "string" and info.name or nil
+    if not ok or type(info) ~= "table" then return nil end
+    return ns.Secrets.Plain(info.name, "string")
 end
 ClickCast.SpellName = spellName
 
