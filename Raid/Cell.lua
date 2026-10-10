@@ -49,15 +49,15 @@ local get = Cell.Get
 -- frames' aura icons (a cell's are its own, Raid/CellAuras.lua) or threat
 -- glow, no heals past the edge (the next cell sits there), no shadow (it
 -- would lie on the neighbours), no power or centre texts, a ring right
--- around the cell (the cell spacing keeps them apart). The rows: a thin
--- power strip under the health bar.
+-- around the cell (the cell spacing keeps them apart). The rows: the
+-- power strip (its height from the profile, MAPPED) under the health bar.
 local FIXED = {
     titlePercent = 0, portraitMode = "OFF", castbarEnabled = false,
     buffsEnabled = false, debuffsEnabled = false, threatGlow = false,
     titleClassIcon = false, healBeyond = false, shadowEnabled = false, groupResurrect = false, groupRole = false,
     textHealthLeft = "NAME", textPowerLeft = "NONE", textPowerRight = "NONE",
     titleTextCenter = "NONE", textHealthCenter = "NONE", textPowerCenter = "NONE",
-    healthPercent = 90, powerPercent = 10, borderPadding = 0,
+    borderPadding = 0,
 }
 
 -- An icon at one of the cell's points sits just inside it: a pixel in
@@ -95,6 +95,8 @@ local MAPPED = {
     barTexture = function() return get("barTexture") end,
     backgroundColor = function() return get("backgroundColor") end,
     powerEnabled = function() return get("powerStrip") ~= "OFF" end,
+    healthPercent = function() return 100 - get("powerStripHeight") end,
+    powerPercent = function() return get("powerStripHeight") end,
     healPrediction = function() return get("healPrediction") end,
     healOverflow = function() return get("overheal") end,
     absorbEnabled = function() return get("absorbs") end,

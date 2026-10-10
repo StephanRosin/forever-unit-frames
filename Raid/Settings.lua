@@ -194,6 +194,9 @@ RaidSettings.Define({ key = "combatText", code = "CT", scope = "frame", class = 
 -- The power strip at the bottom: everyone, mana users, healers, nobody.
 RaidSettings.Define({ key = "powerStrip", code = "PS", scope = "frame", class = "behaviour", type = "enum",
     values = { "ALL", "MANA", "HEALERS", "OFF" }, default = "MANA" })
+-- Its height, in percent of the cell's; the health bar takes the rest.
+RaidSettings.Define({ key = "powerStripHeight", code = "PH", scope = "frame", class = "layout", type = "int", min = 5,
+    max = 40, default = 10 })
 -- The line under the name: missing health, percent, current health, none.
 -- Dead, ghost, offline and AFK replace it.
 RaidSettings.Define({ key = "secondLine", code = "SL", scope = "frame", class = "behaviour", type = "enum",
