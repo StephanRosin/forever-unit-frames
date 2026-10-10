@@ -166,7 +166,18 @@ function Spellbook.FriendlyRank(id, list)
     return nil
 end
 
--- A spell's highest learned rank (the book lists it last).
+-- The rank of a spell (FriendlySpells) its name casts: the client's
+-- CastSpellByName takes the highest rank known, which is what
+-- C_Spell.GetSpellInfo resolves the name to (the book's order is not
+-- the ranks', nor are the IDs). nil when that cannot be read (missing,
+-- raising, secret) or is none of the spell's ranks.
 function Spellbook.HighestRank(spell)
-    return spell.ranks[#spell.ranks]
+    if not (C_Spell and C_Spell.GetSpellInfo) then return nil end
+    local ok, info = pcall(C_Spell.GetSpellInfo, spell.name)
+    if not ok or type(info) ~= "table" then return nil end
+    local id = Secrets.Plain(info.spellID, "number")
+    for _, rank in ipairs(spell.ranks) do
+        if rank.id == id then return rank end
+    end
+    return nil
 end

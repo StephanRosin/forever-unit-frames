@@ -2179,14 +2179,17 @@ function M.Reset()
         -- Self-only and self-centred spells (maxRange 0), a passive one.
         [588] = { name = "Inner Fire" }, [596] = { name = "Prayer of Healing" }, [15237] = { name = "Holy Nova" },
         [15270] = { name = "Spirit Tap", passive = true },
+        -- Greater Heal's higher ranks: rank 6 has the lower ID.
+        [25314] = { name = "Greater Heal", maxRange = 40 }, [25210] = { name = "Greater Heal", maxRange = 40 },
     }
-    -- The rank text (SpellBookItemInfo.subName) of the spells that have
-    -- ranks; "" for the rest, as the client writes it.
-    for id, rank in pairs({ [2050] = 1, [2052] = 2, [2053] = 3, [2054] = 1, [2055] = 2, [585] = 1, [591] = 2,
+    -- The rank (M.spells[id].rank) and its text (SpellBookItemInfo.subName)
+    -- of the spells that have ranks; "" for the rest, as the client writes
+    -- it. Rank order is not ID order (Greater Heal).
+    for id, rank in pairs({ [2060] = 1, [25314] = 5, [25210] = 6, [2050] = 1, [2052] = 2, [2053] = 3, [2054] = 1, [2055] = 2, [585] = 1, [591] = 2,
         [598] = 3, [133] = 1, [143] = 2, [139] = 1, [6074] = 2, [1243] = 1, [1244] = 2, [1245] = 3, [2791] = 4,
         [10937] = 5, [10938] = 6, [21562] = 1, [21564] = 2, [774] = 1, [1058] = 2, [1459] = 1, [1460] = 2,
         [1126] = 1, [5232] = 2, [21849] = 1, [21850] = 2, [19740] = 1, [19834] = 2 }) do
-        M.spells[id].subName = "Rank " .. rank
+        M.spells[id].rank, M.spells[id].subName = rank, "Rank " .. rank
     end
     M.known = {}
     -- The player's specialization (SpecializationInfoDocumentation.lua):
@@ -2213,13 +2216,19 @@ function M.Reset()
     M.spellRangeSecret = false
     M.spellQueries = 0
     M.spellHelpfulSecret = {}
+    -- A name resolves to the highest known rank (by rank, not by ID).
+    local function higher(a, b)
+        local ra, rb = M.spells[a].rank or 0, M.spells[b].rank or 0
+        if ra ~= rb then return ra > rb end
+        return a > b
+    end
     local function spellID(identifier)
         if type(identifier) == "number" then return M.spells[identifier] and identifier or nil end
         if type(identifier) ~= "string" then return nil end
         local best, lowest
         for id, s in pairs(M.spells) do
             if s.name == identifier then
-                if M.known[id] and (not best or id > best) then best = id end
+                if M.known[id] and (not best or higher(id, best)) then best = id end
                 if not lowest or id < lowest then lowest = id end
             end
         end

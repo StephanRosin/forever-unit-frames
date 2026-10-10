@@ -61,7 +61,9 @@ end
 -- anew when nil): a name (any case) as the spell book spells it, for the
 -- highest rank known; a spell ID of a learned rank as it is (that rank),
 -- the highest one's as the name. Anything else (not learned, not cast on
--- others, unknown, empty) as it is. Also whether the list has it.
+-- others, unknown, empty) as it is; so is an ID when the rank the name
+-- casts cannot be read (Spellbook.HighestRank). Also whether the list
+-- has it.
 function ClickCast.NormaliseSpell(value, list)
     local Spellbook = ns.RaidSpellbook
     list = list or Spellbook.FriendlySpells()
