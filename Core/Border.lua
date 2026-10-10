@@ -368,7 +368,8 @@ end
 -- A ring inside a box (the raid cells' debuff border, Raid/CellAuras.lua):
 -- edges along the box's sides, corner squares in its corners. Its pieces
 -- are white; whoever made it colours and shows them (the client does
--- for the debuff border), so placing never shows or hides a piece.
+-- for the debuff border), so placing never shows or hides a piece. Only
+-- the inner masks are shown and hidden here.
 function Border.NewInnerRing(owner)
     local ring = { corners = {}, inner = {} }
     for i = 1, 4 do
@@ -377,7 +378,7 @@ function Border.NewInnerRing(owner)
     end
     for i = 1, 4 do
         ring.corners[i] = owner:CreateTexture(nil, "OVERLAY")
-        ring.corners[i]:SetColorTexture(1, 1, 1, 1)
+        ring.inner[i] = ns.Corners.NewInnerMask(owner, i)
     end
     return ring
 end
@@ -388,9 +389,17 @@ function Border.InnerRingPieces(ring)
     return ringPieces(ring)
 end
 
--- size thick, inside box.
-function Border.PlaceInnerRing(ring, box, size)
-    local corner = size
+-- size thick, inside box, whose corners are rounded by radius (0:
+-- square). Round, a corner square shows the outer arc as large as the
+-- box's radius, so ring and box are concentric, and is cut by the inner
+-- arc a border's thickness in: one mask. A border as thick as the radius
+-- or thicker leaves no inner arc: the corner square is as large as the
+-- border and all of it border (its arc then a little rounder than the
+-- box's, by a pixel or two at most).
+function Border.PlaceInnerRing(ring, box, size, radius)
+    local round = radius > 0
+    local corner = round and math.max(radius, size) or size
+    local cut = round and corner > size
     ring[1]:ClearAllPoints()
     ring[1]:SetPoint("TOPLEFT", box, "TOPLEFT", corner, 0)
     ring[1]:SetPoint("TOPRIGHT", box, "TOPRIGHT", -corner, 0)
@@ -408,10 +417,16 @@ function Border.PlaceInnerRing(ring, box, size)
     ring[4]:SetPoint("BOTTOMRIGHT", box, "BOTTOMRIGHT", 0, corner)
     ring[4]:SetWidth(size)
     for i, point in ipairs(ns.Corners.POINTS) do
-        local piece = ring.corners[i]
+        local piece, inner = ring.corners[i], ring.inner[i]
         piece:ClearAllPoints()
         piece:SetPoint(point, box, point, 0, 0)
         piece:SetSize(corner, corner)
+        cornerArt(piece, i, round)
+        inner:ClearAllPoints()
+        inner:SetPoint(point, piece, point, -OUT[i][1] * size, -OUT[i][2] * size)
+        inner:SetSize(math.max(corner - size, 1), math.max(corner - size, 1))
+        inner:SetShown(cut)
+        ns.Corners.SetMasked(piece, inner, cut)
     end
 end
 

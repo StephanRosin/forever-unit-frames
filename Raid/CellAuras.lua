@@ -207,13 +207,14 @@ local function initTint(frame, button)
 end
 
 -- The border: a slot frame of one pixel with no mouse, like the tint's;
--- its ring lies inside the cell.
+-- its ring lies inside the cell and follows the cell's rounding
+-- (Elements/Shape.lua).
 local function borderSize()
     return Pixel.Snap(get("dispelBorderSize"), nil, 1)
 end
 
 local function placeBorder(frame, button)
-    ns.Border.PlaceInnerRing(button.ring, frame, borderSize())
+    ns.Border.PlaceInnerRing(button.ring, frame, borderSize(), ns.Shape.Radius(frame))
 end
 
 local function initBorder(frame, button)
