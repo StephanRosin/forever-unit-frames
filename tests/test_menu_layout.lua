@@ -47,7 +47,7 @@ local function tabIds(scope)
     for _, tab in ipairs(ns.Schema.Tabs(scope)) do ids[#ids + 1] = tab.id end
     return table.concat(ids, ",")
 end
-H.check("General tabs", tabIds("general"), "frames,appearance,bars,status,profile")
+H.check("General tabs", tabIds("general"), "frames,clickCast,appearance,bars,status,profile")
 H.check("General: master switch in Frames", where("general", "unitFrames"), "frames:frames")
 H.check("General: textures on Bars", keysOf("general", "bars", "textures"), "barTexture,backgroundColor,titleBackground")
 H.check("General: Bars in a frame page's order", (function()
