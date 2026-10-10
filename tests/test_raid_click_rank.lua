@@ -71,3 +71,29 @@ M.spellTextPending[2061] = nil
 M.spellTextPending[6074] = true
 H.check("pending words", ns.RaidSchema.BindingText("spell:6074"), "Cast a spell: Renew (6074)")
 M.spellTextPending[6074] = nil
+
+-- A fixed rank no longer known (a respec, a copied value): the cell and
+-- the key both cast the spell's name (Max), the cell once the book says so.
+RC.Set("general", "click1Shift", "spell:139")
+H.check("known: the cell casts the ID", cell:GetAttribute("shift-spell1"), "139")
+M.known[139] = nil
+M.FireEvent("SPELLS_CHANGED")
+M.RunTimers()
+H.check("unknown rank: the cell casts the name", cell:GetAttribute("shift-spell1"), "Renew")
+H.check("unknown rank: the key too", Keys.MacroText("spell:139"), "/cast [@mouseover,help,nodead] Renew")
+M.known[139] = true
+M.FireEvent("SPELLS_CHANGED")
+M.RunTimers()
+H.check("learned again: the ID", cell:GetAttribute("shift-spell1"), "139")
+RC.Set("general", "click1Shift", "spell:999999")
+H.check("an ID the client does not know: nothing", cell:GetAttribute("shift-type1"), nil)
+
+-- The keys read the spell list once per update, however many hold a rank.
+RC.Set("general", "clickKey2", "G")
+RC.Set("general", "clickKey3", "H")
+RC.Set("general", "clickKey3Bind", "spell:6074")
+local reads, friendly = 0, ns.RaidSpellbook.FriendlySpells
+ns.RaidSpellbook.FriendlySpells = function(...) reads = reads + 1; return friendly(...) end
+RC.Set("general", "clickKey2Bind", "spell:139")
+H.check("one read per update", reads, 1)
+ns.RaidSpellbook.FriendlySpells = friendly

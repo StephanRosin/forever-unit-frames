@@ -35,6 +35,31 @@ local function spellName(id)
 end
 ClickCast.SpellName = spellName
 
+-- Whether the player knows a spell ID (C_SpellBook.IsSpellKnown; a
+-- missing, raising or secret answer is a no).
+local function knows(id)
+    local book = C_SpellBook
+    if not (book and book.IsSpellKnown) then return false end
+    return ns.Secrets.Call(book.IsSpellKnown, id) == true
+end
+
+-- What a stored spell casts, the cells and the keys alike: a name as it
+-- is; a spell ID the player knows as it is (that rank); an ID no longer
+-- known (a respec, a copied value) as its name (the highest rank known,
+-- Max); nil for an ID the client does not know.
+function ClickCast.CastValue(value)
+    if not value:match("^%d+$") then return value end
+    local id = tonumber(value)
+    if knows(id) then return value end
+    return spellName(id)
+end
+
+-- Whether a binding holds a spell ID (a fixed rank).
+function ClickCast.HoldsRank(binding)
+    local kind, value = Raid.ParseBinding(binding or "")
+    return kind == "spell" and value:match("^%d+$") ~= nil
+end
+
 -- What a typed value of a kind is stored as, or nil and why (for the
 -- chat). A spell by its name as the spell book writes it (the client casts
 -- the highest rank it knows; a rank learned later is cast without
@@ -168,6 +193,8 @@ local function slotAttributes(slot, binding)
         if kind == "item" and value:match("^%d+$") then value = "item:" .. value end
         -- A spell ID (a fixed rank) stays a number's text: the client
         -- casts it with CastSpellByID, a name with CastSpellByName.
+        if kind == "spell" then value = ClickCast.CastValue(value) end
+        if not value then return {} end
         return { type = ACTION_TYPE[kind], [attr] = value }
     end
     return { type = ACTION_TYPE[kind] }
@@ -333,6 +360,16 @@ for key in pairs(ClickCast.KEYS) do ns.RaidPanel.UNRELATED_KEYS[key] = true end
 ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
     if scope ~= nil and scope ~= "general" then return end
     if key == nil or key == "enabled" or ClickCast.KEYS[key] then applyAfterCombat() end
+end)
+-- A fixed rank learned or forgotten: what the cells cast follows
+-- (ClickCast.CastValue).
+ns.On("SPELLS_CHANGED", function()
+    for _, slot in ipairs(Raid.CLICK_SLOTS) do
+        if ClickCast.HoldsRank(ns.RaidConfig.Profile() and ns.RaidConfig.Get("general", slot.key)) then
+            applyAfterCombat()
+            return
+        end
+    end
 end)
 -- The unit frames' clickCast (any scope: a frame's own or General's).
 ns.Listen("CONFIG_CHANGED", function(_, key)

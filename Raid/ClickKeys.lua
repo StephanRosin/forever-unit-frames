@@ -21,17 +21,20 @@ ClickKeys.BUTTON_NAME = "ForeverUnitFramesClickKey"
 ClickKeys.buttons = {}
 local owner
 
--- A spell as /cast takes it: a name as stored (the highest rank known);
--- a spell ID (a fixed rank) as "Name(Rank 3)" with the spell book's rank
--- text, the name alone when the spell has one rank without text or the
--- rank is no longer learned; nil for an ID the client does not know, and
--- while the rank's text is not loaded (never the name: that would cast
--- Max; the key waits for SPELL_TEXT_UPDATE).
-local function castName(value)
-    if not value:match("^%d+$") then return value end
-    local id = tonumber(value)
+-- A spell as /cast takes it (ClickCast.CastValue): a name as stored (the
+-- highest rank known); a known spell ID (a fixed rank) as "Name(Rank 3)"
+-- with the spell book's rank text, the name alone when the spell has one
+-- rank without text or is not in the click-casting list; an ID no longer
+-- known as its name (Max, as the cells); nil for an ID the client does
+-- not know, and while the rank's text is not loaded (never the name: that
+-- would cast Max; the key waits for SPELL_TEXT_UPDATE). list: the
+-- click-casting list (Spellbook.FriendlySpells; read when nil).
+local function castName(value, list)
+    local cast = ns.ClickCast.CastValue(value)
+    if not cast or not cast:match("^%d+$") then return cast end
+    local id = tonumber(cast)
     local Spellbook = ns.RaidSpellbook
-    local spell, rank = Spellbook.FriendlyRank(id)
+    local spell, rank = Spellbook.FriendlyRank(id, list)
     if not spell then return ns.ClickCast.SpellName(id) end
     local text = Spellbook.RankText(spell, rank)
     if text == nil then return nil end
@@ -41,14 +44,14 @@ end
 
 -- The macro a key runs for a binding (Raid.ParseBinding), or nil when it
 -- does nothing: a spell or an item on the friendly, living unit under
--- the mouse; a macro text as written.
+-- the mouse; a macro text as written. list: as castName's.
 local MACRO = { spell = "/cast [@mouseover,help,nodead] %s", item = "/use [@mouseover,help,nodead] %s" }
-function ClickKeys.MacroText(binding)
+function ClickKeys.MacroText(binding, list)
     local kind, value = Raid.ParseBinding(binding or "")
     if not value or value == "" then return nil end
     if kind == "macro" then return value end
     if kind == "item" and value:match("^%d+$") then value = "item:" .. value end
-    if kind == "spell" then value = castName(value) end
+    if kind == "spell" then value = castName(value, list) end
     return value and MACRO[kind] and MACRO[kind]:format(value)
 end
 
@@ -106,9 +109,17 @@ function ClickKeys.Update()
     owner = owner or CreateFrame("Frame", nil, UIParent)
     ClearOverrideBindings(owner)
     if not ClickKeys.Wanted() then return end
+    -- The spell list once for every key with a fixed rank.
+    local list
+    for _, slot in ipairs(Raid.CLICK_KEYS) do
+        if ns.ClickCast.HoldsRank(ns.RaidConfig.Get("general", slot.bind)) then
+            list = ns.RaidSpellbook.FriendlySpells()
+            break
+        end
+    end
     for i, slot in ipairs(Raid.CLICK_KEYS) do
         local key = ns.RaidConfig.Get("general", slot.key)
-        local text = ClickKeys.MacroText(ns.RaidConfig.Get("general", slot.bind))
+        local text = ClickKeys.MacroText(ns.RaidConfig.Get("general", slot.bind), list)
         if key ~= "" and text then
             local b = button(i)
             b:SetAttribute("macrotext", text)
