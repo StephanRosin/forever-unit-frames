@@ -556,8 +556,8 @@ RaidSettings.Define({ key = "toolsLoot", code = "IL", scope = "general", type = 
 -- A binding is stored as text: "" (nothing of its own: a modified click
 -- does what the plain click of its button does, the client's fallback; a
 -- plain click or a key does nothing), "target", "focus", "assist",
--- "menu", or "spell:<name>", "item:<name or item ID>", "macro:<macro
--- text>". The kinds go by name, never by index. An empty value
+-- "menu", or "spell:<name>" (the highest rank known) or "spell:<spell
+-- ID>" (that rank), "item:<name or item ID>", "macro:<macro text>". The kinds go by name, never by index. An empty value
 -- ("spell:") counts as "". Returns the kind and the value (nil for a
 -- kind without one), or nil when the text is no binding.
 local PLAIN_BINDINGS = { [""] = true, target = true, focus = true, assist = true, menu = true }

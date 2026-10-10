@@ -21,6 +21,19 @@ ClickKeys.BUTTON_NAME = "ForeverUnitFramesClickKey"
 ClickKeys.buttons = {}
 local owner
 
+-- A spell as /cast takes it: a name as stored (the highest rank known);
+-- a spell ID (a fixed rank) as "Name(Rank 3)" with the spell book's rank
+-- text, the name alone when the rank has no text or is no longer learned;
+-- nil for an ID the client does not know.
+local function castName(value)
+    if not value:match("^%d+$") then return value end
+    local id = tonumber(value)
+    local spell, rank = ns.RaidSpellbook.FriendlyRank(id)
+    if not spell then return ns.ClickCast.SpellName(id) end
+    if rank.subName == "" then return spell.name end
+    return spell.name .. "(" .. rank.subName .. ")"
+end
+
 -- The macro a key runs for a binding (Raid.ParseBinding), or nil when it
 -- does nothing: a spell or an item on the friendly, living unit under
 -- the mouse; a macro text as written.
@@ -30,7 +43,8 @@ function ClickKeys.MacroText(binding)
     if not value or value == "" then return nil end
     if kind == "macro" then return value end
     if kind == "item" and value:match("^%d+$") then value = "item:" .. value end
-    return MACRO[kind] and MACRO[kind]:format(value)
+    if kind == "spell" then value = castName(value) end
+    return value and MACRO[kind] and MACRO[kind]:format(value)
 end
 
 -- Out of combat: key i's button, made once. Keys act on key down or up
@@ -139,6 +153,9 @@ ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
     if key == nil or KEYS[key] then update() end
 end)
 ns.On("GROUP_ROSTER_UPDATE", update)
+-- A key's fixed rank is written by its rank text, read from the spell
+-- book: set again once the book is read or changes.
+ns.On("SPELLS_CHANGED", update)
 -- The party's clickCast (decision 76; General's or the party's own).
 ns.Listen("CONFIG_CHANGED", function(_, key)
     if key == nil or key == "clickCast" then update() end

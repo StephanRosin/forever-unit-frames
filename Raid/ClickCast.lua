@@ -33,6 +33,7 @@ local function spellName(id)
     local ok, info = pcall(C_Spell.GetSpellInfo, id)
     return ok and type(info) == "table" and type(info.name) == "string" and info.name or nil
 end
+ClickCast.SpellName = spellName
 
 -- What a typed value of a kind is stored as, or nil and why (for the
 -- chat). A spell by its name as the spell book writes it (the client casts
@@ -87,6 +88,8 @@ local function slotAttributes(slot, binding)
     if attr then
         if value == "" then return {} end
         if kind == "item" and value:match("^%d+$") then value = "item:" .. value end
+        -- A spell ID (a fixed rank) stays a number's text: the client
+        -- casts it with CastSpellByID, a name with CastSpellByName.
         return { type = ACTION_TYPE[kind], [attr] = value }
     end
     return { type = ACTION_TYPE[kind] }
