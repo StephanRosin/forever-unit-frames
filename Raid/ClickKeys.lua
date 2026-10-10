@@ -63,8 +63,11 @@ end
 -- again TEXT_TRIES times, TEXT_WAIT seconds apart (out of combat, as
 -- every update), then cast the bare name rather than stay unbound until
 -- the next change. A text arriving later is taken at the next update.
+-- The tries count per key and value (tries["clickKey1Bind=spell:139"]):
+-- one key that never gets its text does not cut another's wait short,
+-- and a key given another value waits afresh.
 local TEXT_WAIT, TEXT_TRIES = 2, 5
-local textTries, retryQueued = 0, false
+local tries, retryQueued = {}, false
 
 -- Out of combat: key i's button, made once. Keys act on key down or up
 -- as the ActionButtonUseKeyDown option says, so it takes both.
@@ -128,25 +131,29 @@ function ClickKeys.Update()
             break
         end
     end
-    local waiting = false
+    local waiting, stillWaiting = {}, false
     for i, slot in ipairs(Raid.CLICK_KEYS) do
-        local key = ns.RaidConfig.Get("general", slot.key)
-        local text, pending = ClickKeys.MacroText(ns.RaidConfig.Get("general", slot.bind), list,
-            textTries >= TEXT_TRIES)
-        if key ~= "" and pending then waiting = true end
+        local key, binding = ns.RaidConfig.Get("general", slot.key), ns.RaidConfig.Get("general", slot.bind)
+        local id = slot.bind .. "=" .. binding
+        local done = tries[id] or 0
+        local text, pending = ClickKeys.MacroText(binding, list, done >= TEXT_TRIES)
+        if key ~= "" and pending then
+            waiting[id] = done
+            if done < TEXT_TRIES then stillWaiting = true end
+        end
         if key ~= "" and text then
             local b = button(i)
             b:SetAttribute("macrotext", text)
             SetOverrideBindingClick(owner, false, key, b:GetName(), "LeftButton")
         end
     end
-    if not waiting then
-        textTries = 0
-    elseif textTries < TEXT_TRIES and not retryQueued then
+    -- Only the keys waiting now keep their count.
+    tries = waiting
+    if stillWaiting and not retryQueued then
         retryQueued = true
         C_Timer.After(TEXT_WAIT, function()
             retryQueued = false
-            textTries = textTries + 1
+            for id, done in pairs(tries) do tries[id] = done + 1 end
             update()
         end)
     end

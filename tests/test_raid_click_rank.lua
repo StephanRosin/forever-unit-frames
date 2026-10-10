@@ -138,3 +138,28 @@ H.check("a new wait: unbound again", GetBindingAction("F", true), "")
 M.spellTextPending[139] = nil
 M.RunTimers()
 H.checkTrue("the text event registered (inspectable)", ns.RaidSpellbook.textEventRegistered)
+
+-- The wait counts per key and value: one key whose text never comes uses
+-- up its own tries, not another's. A second key given a rank later still
+-- waits for its text instead of casting the bare name at once.
+RC.Set("general", "clickKey1Bind", "spell:139")
+M.spellTextPending[139] = true
+M.FireEvent("SPELLS_CHANGED")
+M.RunTimers()
+H.check("key 1 gave up: the bare name", b1:GetAttribute("macrotext"), "/cast [@mouseover,help,nodead] Renew")
+RC.Set("general", "clickKey2", "G")
+M.spellTextPending[6074] = true
+RC.Set("general", "clickKey2Bind", "spell:6074")
+M.RunTimers(1)
+H.check("key 2 waits for its own text", GetBindingAction("G", true), "")
+M.SpellTextArrives(6074)
+M.RunTimers(1)
+H.check("key 2: its rank", _G.ForeverUnitFramesClickKey2:GetAttribute("macrotext"),
+    "/cast [@mouseover,help,nodead] Renew(Rank 2)")
+-- A key's value changed: its wait starts afresh.
+RC.Set("general", "clickKey1Bind", "spell:Renew")
+RC.Set("general", "clickKey1Bind", "spell:139")
+M.RunTimers(1)
+H.check("key 1 changed back: waits again", GetBindingAction("F", true), "")
+M.spellTextPending[139] = nil
+M.RunTimers()
