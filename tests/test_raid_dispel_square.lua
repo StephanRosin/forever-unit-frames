@@ -114,14 +114,15 @@ for _, t in ipairs(ns.RaidSchema.TABS) do
     if t.id == "debuffs" then tab = t end
 end
 H.check("dispel section", table.concat(tab.sections[1].keys, ","),
-    "dispelIcon,dispelFilter,dispelStyle,dispelIconSize,dispelSquarePoint,dispelSquareSize,dispelTint")
+    "dispelIcon,dispelFilter,dispelStyle,dispelIconSize,dispelSquarePoint,dispelSquareSize,dispelTint,dispelBorder,"
+    .. "dispelBorderSize")
 H.check("row section", table.concat(tab.sections[2].keys, ","), "debuffRow,debuffCount,debuffSize")
 ns.RaidOptions.Open(10, "debuffs")
 local sliders = {}
 for _, row in ipairs(ns.RaidOptions.rows) do
     if row.slider then sliders[#sliders + 1] = row.key end
 end
-H.check("sliders", table.concat(sliders, ","), "dispelIconSize,dispelSquareSize,debuffCount,debuffSize")
+H.check("sliders", table.concat(sliders, ","), "dispelIconSize,dispelSquareSize,dispelBorderSize,debuffCount,debuffSize")
 ns.RaidOptions.Close()
 H.check("square word", ns.RaidSchema.EnumText(RS.Get("dispelStyle"), "SQUARE"), "Square in a corner")
 H.check("nothing blocked", #M.blocked, 0)

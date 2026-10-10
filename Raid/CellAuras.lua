@@ -19,6 +19,10 @@ local _, ns = ...
 --   texture over the health bar, coloured by the client from a curve of
 --   the same colours at a lower opacity. Its own slot, so switching it is
 --   a container call (SetAuraSlotEnabled), never a touch of a button;
+-- * the border: one more slot with the same filter whose regions are a
+--   ring of textures inside the cell (Core/Border.lua), coloured by the
+--   client from the borders' curve at full opacity; tint and border
+--   combine;
 -- * the debuff row: an aura group along the bottom of the health bar
 --   with every debuff ("HARMFUL"). The centre slot shows one aura only, so
 --   a negated filter would hide every dispellable debuff after the first;
@@ -60,6 +64,8 @@ CellAuras.LEVELS = 12
 -- The tint lies on the health bar, under its texts.
 CellAuras.TINT_LEVELS = 2
 CellAuras.TINT_ALPHA = 0.35
+-- The border lies on the bars and the tint, under the texts and icons.
+CellAuras.BORDER_LEVELS = 3
 -- Everything a container must take before a cell uses it.
 CellAuras.METHODS = { "SetUnit", "GetUnit", "UpdateAllAuras", "SetEditModePreviewEnabled", "AddAuraSlot",
     "SetAuraSlotEnabled", "SetAuraSlotFilterString", "SetAuraSlotCandidateFilters", "AddAuraGroup",
@@ -200,6 +206,31 @@ local function initTint(frame, button)
         customDispelColorCurve = AuraButton.DispelCurve(CellAuras.TINT_ALPHA) })
 end
 
+-- The border: a slot frame of one pixel with no mouse, like the tint's;
+-- its ring lies inside the cell.
+local function borderSize()
+    return Pixel.Snap(get("dispelBorderSize"), nil, 1)
+end
+
+local function placeBorder(frame, button)
+    ns.Border.PlaceInnerRing(button.ring, frame, borderSize())
+end
+
+local function initBorder(frame, button)
+    pcall(button.SetMouseClickEnabled, button, false)
+    pcall(button.SetMouseMotionEnabled, button, false)
+    button:SetSize(1, 1)
+    button:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, 0)
+    button:SetFrameLevel(frame:GetFrameLevel() + CellAuras.BORDER_LEVELS)
+    button.ring = ns.Border.NewInnerRing(button)
+    placeBorder(frame, button)
+    local curve = AuraButton.DispelCurve()
+    for _, piece in ipairs(ns.Border.InnerRingPieces(button.ring)) do
+        button:AddDispelTypeTexture(piece, { style = Enum.CustomAuraButtonDispelTypeTextureStyle.PreserveAsset,
+            customDispelColorCurve = curve })
+    end
+end
+
 -- A pretend member's debuffs, in its order.
 local function memberDebuffs(member)
     local list = {}
@@ -230,8 +261,10 @@ CellAuras.AddPart({
         local icon = CellAuras.SetSlot(frame, container, "dispel", filter, shows == "ICON", initIcon)
         local square = CellAuras.SetSlot(frame, container, "square", filter, shows == "SQUARE", initSquare)
         CellAuras.SetSlot(frame, container, "tint", filter, get("dispelTint"), initTint)
+        local border = CellAuras.SetSlot(frame, container, "border", filter, get("dispelBorder"), initBorder)
         local refused = icon ~= nil and not pcall(AuraButton.StyleManaged, icon, frame.key, dispelSize(), false)
         if square ~= nil and not pcall(placeSquare, frame, square) then refused = true end
+        if border ~= nil and not pcall(placeBorder, frame, border) then refused = true end
         return refused
     end,
     BuildSample = function(frame, samples)

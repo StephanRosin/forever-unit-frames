@@ -688,6 +688,10 @@ local function newAuraButton(container, group)
             assert(isEnumValue(Enum.CustomAuraButtonDispelTypeTextureStyle, options.style), "invalid style")
         end
         table.insert(self._dispelTextures, { texture = texture, options = options })
+        -- UpdateAuraDisplay at once: the mock's buttons hold no aura, and
+        -- without aura data the client hides the texture
+        -- (ShouldShowDispelTypeForAura).
+        texture:Hide()
     end
     function b:SetTooltipAnchorPoint(point, x, y)
         assert(TOOLTIP_ANCHORS[point], "point must be a valid tooltip anchor point name")

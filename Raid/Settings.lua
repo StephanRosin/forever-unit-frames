@@ -240,6 +240,11 @@ RaidSettings.Define({ key = "dispelSquareSize", code = "DQ", scope = "frame", cl
     default = 6 })
 -- The whole cell tinted in the debuff type's colour.
 RaidSettings.Define({ key = "dispelTint", code = "DT", scope = "frame", class = "behaviour", type = "bool", default = false })
+-- A border inside the cell in the debuff type's colour, and its
+-- thickness; with the tint or without.
+RaidSettings.Define({ key = "dispelBorder", code = "DB", scope = "frame", class = "behaviour", type = "bool", default = false })
+RaidSettings.Define({ key = "dispelBorderSize", code = "DW", scope = "frame", class = "layout", type = "int", min = 1, max = 6,
+    default = 2 })
 -- A row along the bottom of the cell with every debuff ("HARMFUL"); the
 -- one in the centre may show in it as well.
 RaidSettings.Define({ key = "debuffRow", code = "DR", scope = "frame", class = "behaviour", type = "bool", default = false })

@@ -365,6 +365,56 @@ function Border.HideRing(owner)
     if owner.plainRing then showRing(owner.plainRing, false) end
 end
 
+-- A ring inside a box (the raid cells' debuff border, Raid/CellAuras.lua):
+-- edges along the box's sides, corner squares in its corners. Its pieces
+-- are white; whoever made it colours and shows them (the client does
+-- for the debuff border), so placing never shows or hides a piece.
+function Border.NewInnerRing(owner)
+    local ring = { corners = {}, inner = {} }
+    for i = 1, 4 do
+        ring[i] = owner:CreateTexture(nil, "OVERLAY")
+        ring[i]:SetColorTexture(1, 1, 1, 1)
+    end
+    for i = 1, 4 do
+        ring.corners[i] = owner:CreateTexture(nil, "OVERLAY")
+        ring.corners[i]:SetColorTexture(1, 1, 1, 1)
+    end
+    return ring
+end
+
+-- Edges first (top, bottom, left, right), then corners in Corners.POINTS
+-- order.
+function Border.InnerRingPieces(ring)
+    return ringPieces(ring)
+end
+
+-- size thick, inside box.
+function Border.PlaceInnerRing(ring, box, size)
+    local corner = size
+    ring[1]:ClearAllPoints()
+    ring[1]:SetPoint("TOPLEFT", box, "TOPLEFT", corner, 0)
+    ring[1]:SetPoint("TOPRIGHT", box, "TOPRIGHT", -corner, 0)
+    ring[1]:SetHeight(size)
+    ring[2]:ClearAllPoints()
+    ring[2]:SetPoint("BOTTOMLEFT", box, "BOTTOMLEFT", corner, 0)
+    ring[2]:SetPoint("BOTTOMRIGHT", box, "BOTTOMRIGHT", -corner, 0)
+    ring[2]:SetHeight(size)
+    ring[3]:ClearAllPoints()
+    ring[3]:SetPoint("TOPLEFT", box, "TOPLEFT", 0, -corner)
+    ring[3]:SetPoint("BOTTOMLEFT", box, "BOTTOMLEFT", 0, corner)
+    ring[3]:SetWidth(size)
+    ring[4]:ClearAllPoints()
+    ring[4]:SetPoint("TOPRIGHT", box, "TOPRIGHT", 0, -corner)
+    ring[4]:SetPoint("BOTTOMRIGHT", box, "BOTTOMRIGHT", 0, corner)
+    ring[4]:SetWidth(size)
+    for i, point in ipairs(ns.Corners.POINTS) do
+        local piece = ring.corners[i]
+        piece:ClearAllPoints()
+        piece:SetPoint(point, box, point, 0, 0)
+        piece:SetSize(corner, corner)
+    end
+end
+
 -- The plain ring's pieces, for the tests.
 function Border.RingPieces(owner)
     return owner.plainRing and ringPieces(owner.plainRing) or {}
