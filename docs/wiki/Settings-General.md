@@ -9,6 +9,7 @@ The **Profile** tab's export, import and reset are explained on the [[Home]] pag
 **On this page:**
 
 - **[Frames](#frames):** [Which frames are shown](#which-frames-are-shown) · [Click-casting](#click-casting)
+- **[Click-casting](#click-casting-1)**
 - **[Appearance](#appearance):** [Font](#font) · [Presentation](#presentation) · [Title row](#title-row) · [Aura icons](#aura-icons) · [Hidden auras](#hidden-auras) · [Border and corners](#border-and-corners) · [Shadow](#shadow)
 - **[Bars](#bars):** [Health bar](#health-bar) · [Textures](#textures) · [Absorb shields](#absorb-shields) · [Incoming heals](#incoming-heals) · [Power colors](#power-colors)
 - **[Status](#status):** [Combat icon](#combat-icon) · [Highlights](#highlights) · [Range](#range)
@@ -29,9 +30,7 @@ Below **Use unit frames**, one switch per frame: the frame's own, as on its page
 
 ### Click-casting
 
-The raid window's click-casting bindings (`/fuf raid` > General > Click-casting) on this frame: one switch on General for every unit frame, each frame can differ on its Layout tab. Works while the raid frames are off. With the default bindings nothing changes (left click targets, right click opens the menu).
-
-Button: **Edit bindings…** (opens the raid window's click-casting tab).
+The click-casting bindings (General > Click-casting here, or `/fuf raid` > General > Click-casting) on this frame: one switch on General for every unit frame, each frame can differ on its Layout tab. Works while the raid frames are off. With the default bindings nothing changes (left click targets, right click opens the menu).
 
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
@@ -39,6 +38,10 @@ Button: **Edit bindings…** (opens the raid window's click-casting tab).
 <tr><td><b>Click-casting</b></td><td>Clicks use the raid window's bindings</td><td>On, Off</td><td>On</td></tr>
 </tbody>
 </table>
+
+## Click-casting
+
+The click-casting editor, the same as the raid window's (`/fuf raid` > General > Click-casting) and bound to the same bindings of this character: a change in either window shows in the other. It works while the raid frames are off (the unit frames use the bindings too). The mouse slots, the 16 keys, the spell and rank dropdowns, **Copy from** and **Clear all** are described on [[Click-casting|Raid-Click-casting]].
 
 ## Appearance
 

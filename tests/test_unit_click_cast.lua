@@ -103,13 +103,13 @@ RC.Set("general", "clickCast", "AUTO")
 M.RunTimers()
 H.check("mode back", frameOf("pet"):GetAttribute("ctrl-type1"), "assist")
 
--- Options: General shows it with the button; each frame as an inherited row.
+-- Options: General shows the switch (the bindings have a tab of their
+-- own, test_unit_click_cast_tab.lua); each frame as an inherited row.
 local Options = ns.Options
 Options.Open("general", "frames")
-local row, button
+local row
 for _, r in ipairs(Options.rows) do
     if r.key == "clickCast" then row = r end
-    if r.editBindings then button = r.editBindings end
 end
 H.checkTrue("general: the row", row)
 H.check("general: label", row and row.label:GetText(), L.SETTING_clickCast)
@@ -128,20 +128,10 @@ H.check("on with Clique: active", row.enabledState, true)
 M.loadedAddons.Clique = nil
 RC.Set("general", "clickCast", "AUTO")
 H.check("without Clique: active", row.enabledState, true)
-H.checkTrue("general: the button", button)
-H.check("its text", button and button.text:GetText(), L.CLICK_CAST_EDIT)
--- The raid window was last on a size: the button still opens General's tab.
-ns.RaidOptions.Open(10)
-H.check("raid window on a size", ns.RaidOptions.view, "size")
-ns.RaidOptions.Close()
-Options.Open("general", "frames")
+-- No button to the raid window any more: the editor is a tab here.
+local button
 for _, r in ipairs(Options.rows) do if r.editBindings then button = r.editBindings end end
-button:GetScript("OnClick")(button)
-H.check("the unit window closes", Options.IsOpen(), false)
-H.check("the raid window opens", ns.RaidOptions.IsOpen(), true)
-H.check("on the click-casting tab", ns.RaidOptions.currentTab, "clickCast")
-H.check("in the window's General", ns.RaidOptions.view, "general")
-ns.RaidOptions.Close()
+H.check("general: no button to the raid window", button, nil)
 for _, key in ipairs({ "player", "pet", "target", "targettarget", "focus", "party" }) do
     Options.Open(key, "layout")
     local r

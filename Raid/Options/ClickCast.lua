@@ -1,20 +1,30 @@
 local _, ns = ...
 
--- The raid window's Click-casting tab (Raid/Options/Window.lua builds the
--- window; Raid/ClickCast.lua and Raid/ClickKeys.lua do the casting): the
--- tab's note, the switches, copy from another character and Clear all,
--- then a section per mouse button with a row per set of modifiers (what
--- the click does, and the spell, item or macro it takes), then the
--- sixteen keys (the key, what it casts, and a warning when the key is
--- bound to something else). Every change goes through ns.RaidConfig,
--- per character; the rows lock in combat like every row of the window.
+-- The click-casting editor (Raid/ClickCast.lua and Raid/ClickKeys.lua do
+-- the casting), one page each in two windows: the raid window's
+-- Click-casting tab and the unit frames window's General > Click-casting
+-- tab (Options/Window.lua), built by ClickCastPage.Build with the
+-- window's measures (layout). The tab's note, the switches, copy from
+-- another character and Clear all, then a section per mouse button with a
+-- row per set of modifiers (what the click does, and the spell, item or
+-- macro it takes), then the sixteen keys (the key, what it casts, and a
+-- warning when the key is bound to something else). Every change goes
+-- through ns.RaidConfig, per character: one source for both windows, and
+-- every page built refreshes on its changes. The rows lock in combat like
+-- every row of their window.
 local ClickCastPage = {}
 ns.RaidClickCastPage = ClickCastPage
 
 local Widgets, Schema, Raid, L = ns.Widgets, ns.RaidSchema, ns.Raid, ns.L
 local RaidOptions, RaidConfig = ns.RaidOptions, ns.RaidConfig
 
-local KIND_W, VALUE_W, KEY_W, RANK_W, GAP, KEYS_NOTE_H = 170, 400, 120, 100, 8, 34
+local GAP, KEYS_NOTE_H, COPY_W, LABEL_X, LABEL_GAP = 8, 34, 100, 16, 12
+
+-- The raid window's measures (its page: RaidOptions.PAGE): where the
+-- binding's controls start, the kind's width, the value's (a spell and its
+-- rank together), a key's box, the rank's, the gap before Clear all.
+ClickCastPage.RAID_LAYOUT = { controlX = Widgets.CONTROL_X, kindW = 170, valueW = 400, keyW = 120, rankW = 100,
+    clearGap = GAP * 3 }
 
 local function get(key) return RaidConfig.Get("general", key) end
 local function set(key, value) return RaidConfig.Set("general", key, value) end
@@ -78,7 +88,7 @@ end
 -- The spell and rank dropdowns of a row (shown for a spell instead of the
 -- box). A spell picked is stored by name (Max: the highest rank known); a
 -- rank picked by its spell ID; Other... keeps the value and shows the box.
-local function spellControls(row, key)
+local function spellControls(row, key, layout)
     row.spellDrop = Widgets.DropdownButton(row, {
         items = function()
             local items = {}
@@ -102,7 +112,7 @@ local function spellControls(row, key)
         end,
     })
     row.rankDrop = Widgets.DropdownButton(row, {
-        width = RANK_W, items = function() return rankItems(key) end,
+        width = layout.rankW, items = function() return rankItems(key) end,
         -- A spell of one rank shows Max (its only rank, greyed).
         get = function()
             local spell, rank = listed((select(2, binding(key))))
@@ -127,7 +137,7 @@ end
 -- Places the value's controls for its mode, in valueWidth after the
 -- kind's button: the box alone; the spell (wide) and the rank (narrow);
 -- or Other... (narrow) and the box.
-local function placeValue(row, mode, valueWidth)
+local function placeValue(row, mode, valueWidth, rankW)
     local box, spell, rank = row.value, row.spellDrop, row.rankDrop
     box:SetShown(mode ~= "list")
     spell:SetShown(mode ~= "text")
@@ -137,11 +147,11 @@ local function placeValue(row, mode, valueWidth)
         box:SetWidth(valueWidth)
         box:SetPoint("LEFT", row.button, "RIGHT", GAP, 0)
     elseif mode == "other" then
-        spell:SetWidth(RANK_W)
-        box:SetWidth(valueWidth - RANK_W - GAP)
+        spell:SetWidth(rankW)
+        box:SetWidth(valueWidth - rankW - GAP)
         box:SetPoint("LEFT", spell, "RIGHT", GAP, 0)
     else
-        spell:SetWidth(valueWidth - RANK_W - GAP)
+        spell:SetWidth(valueWidth - rankW - GAP)
     end
 end
 
@@ -150,11 +160,11 @@ end
 -- a spell typed under Other...), the spell and its rank for a spell. A
 -- new kind starts without a value; a typed value is checked
 -- (ClickCast.TypedValue).
-local function bindingControls(row, key, x, valueWidth)
+local function bindingControls(row, key, x, valueWidth, layout)
     local button = row.button
     button:ClearAllPoints()
     button:SetPoint("LEFT", row, "LEFT", x, 0)
-    button:SetWidth(KIND_W)
+    button:SetWidth(layout.kindW)
     row.value = Widgets.TextBox(row, {
         width = valueWidth, maxLetters = Raid.CLICK_BINDING_LETTERS,
         get = function() return (select(2, binding(key))) end,
@@ -168,12 +178,12 @@ local function bindingControls(row, key, x, valueWidth)
             return set(key, kind .. ":" .. value)
         end,
     })
-    spellControls(row, key)
+    spellControls(row, key, layout)
     row.spellDrop:SetPoint("LEFT", button, "RIGHT", GAP, 0)
     row.rankDrop:SetPoint("LEFT", row.spellDrop, "RIGHT", GAP, 0)
     local function lock(on)
         local mode = valueMode(row, key)
-        placeValue(row, mode, valueWidth)
+        placeValue(row, mode, valueWidth, layout.rankW)
         row.value:SetEnabled(on and Raid.BindingHasValue((binding(key))))
         row.spellDrop:SetUsable(on)
         row.rankDrop:SetUsable(on and hasRanks(key), on and not hasRanks(key))
@@ -194,6 +204,16 @@ local function bindingControls(row, key, x, valueWidth)
     end
 end
 
+-- A label and hint end before controls that start left of the usual
+-- column (a narrower window): cut there (the row's tooltip shows them in
+-- full).
+local function fitLabel(row, controlX)
+    local room = controlX - LABEL_X - LABEL_GAP
+    if room >= Widgets.LABEL_MAX_W then return end
+    if row.label:GetStringWidth() > room then row.label:SetWidth(room) end
+    if row.hintText then row.hintText:SetWidth(room) end
+end
+
 local function bindingDropdown(page, key, kinds, label, hint)
     local row
     row = Widgets.Dropdown(page, {
@@ -209,9 +229,10 @@ local function bindingDropdown(page, key, kinds, label, hint)
 end
 
 -- A mouse slot's row.
-local function slotRow(page, slot)
+local function slotRow(page, slot, layout)
     local row = bindingDropdown(page, slot.key, Raid.SlotKinds(slot), Schema.Label(slot.key))
-    bindingControls(row, slot.key, Widgets.CONTROL_X, VALUE_W)
+    bindingControls(row, slot.key, layout.controlX, layout.valueW, layout)
+    fitLabel(row, layout.controlX)
     row.key = slot.key
     return row
 end
@@ -243,16 +264,18 @@ local function takenText(slot)
 end
 
 -- A key slot's row: the key's box, then the binding.
-local function keyRow(page, slot)
+local function keyRow(page, slot, layout)
     local row = bindingDropdown(page, slot.bind, Raid.CLICK_KEY_KINDS, L.RAID_CLICK_KEY_N:format(slot.index),
         function() return takenText(slot) end)
     row.keyBox = Widgets.TextBox(row, {
-        width = KEY_W, maxLetters = Raid.CLICK_KEY_LETTERS,
+        width = layout.keyW, maxLetters = Raid.CLICK_KEY_LETTERS,
         get = function() return get(slot.key) end,
         set = function(text) return storeKey(slot, text) end,
     })
-    bindingControls(row, slot.bind, Widgets.CONTROL_X + KEY_W + GAP,
-        VALUE_W - KEY_W - GAP)
+    row.keyBox:ClearAllPoints()
+    row.keyBox:SetPoint("LEFT", row, "LEFT", layout.controlX, 0)
+    bindingControls(row, slot.bind, layout.controlX + layout.keyW + GAP, layout.valueW - layout.keyW - GAP, layout)
+    fitLabel(row, layout.controlX)
     local refresh, setEnabled = row.Refresh, row.SetEnabled
     function row:Refresh()
         refresh(self)
@@ -280,7 +303,7 @@ end
 
 -- Copy from another character (pick it, then Copy) and Clear all (two
 -- clicks): both back to what the character has, or the defaults.
-local function actionsRow(page)
+local function actionsRow(page, layout)
     local pending
     local row, copy, clear
     row = Widgets.Dropdown(page, {
@@ -297,8 +320,11 @@ local function actionsRow(page)
             return true
         end,
     })
-    row.button:SetWidth(KIND_W)
-    copy = Widgets.Button(row, { text = L.RAID_CLICK_COPY_BUTTON, width = 100, onClick = function()
+    row.button:ClearAllPoints()
+    row.button:SetPoint("LEFT", row, "LEFT", layout.controlX, 0)
+    row.button:SetWidth(layout.kindW)
+    fitLabel(row, layout.controlX)
+    copy = Widgets.Button(row, { text = L.RAID_CLICK_COPY_BUTTON, width = COPY_W, onClick = function()
         local key = pending
         pending = nil
         copy:SetEnabled(false)
@@ -309,7 +335,7 @@ local function actionsRow(page)
     copy:SetEnabled(false)
     clear = ns.Chrome.ConfirmButton(row, L.RAID_CLICK_CLEAR,
         function() RaidConfig.ResetKeys("general", ns.RaidProfiles.ClickKeys()) end)
-    clear:SetPoint("LEFT", copy, "RIGHT", GAP * 3, 0)
+    clear:SetPoint("LEFT", copy, "RIGHT", layout.clearGap, 0)
     local setEnabled = row.SetEnabled
     function row:SetEnabled(on)
         self.enabled = on
@@ -318,7 +344,7 @@ local function actionsRow(page)
         clear:SetEnabled(on)
         if not on then clear.Disarm() end
     end
-    RaidOptions.clickCopyRow, RaidOptions.clickCopyButton, RaidOptions.clickClearButton = row, copy, clear
+    page.clickCopyRow, page.clickCopyButton, page.clickClearButton = row, copy, clear
     return row
 end
 
@@ -329,62 +355,87 @@ local function header(page, id)
 end
 
 -- Every row of the page, in its order.
-local function rows(page, tab)
-    local P = RaidOptions.PAGE
+local function rows(page, tab, layout)
     local list = {}
     local note = RaidOptions.NoteBlock(page, Schema.Note(tab.note))
-    note:SetHeight(P.noteHeight)
+    note:SetHeight(layout.noteHeight)
     list[1] = note
     list[#list + 1] = header(page, "clickCastGeneral")
     list[#list + 1] = modeRow(page)
-    list[#list + 1] = actionsRow(page)
+    list[#list + 1] = actionsRow(page, layout)
     for _, b in ipairs(Raid.CLICK_BUTTONS) do
         list[#list + 1] = header(page, "click" .. b.name)
         for _, slot in ipairs(Raid.CLICK_SLOTS) do
-            if slot.button == b.button then list[#list + 1] = slotRow(page, slot) end
+            if slot.button == b.button then list[#list + 1] = slotRow(page, slot, layout) end
         end
     end
     list[#list + 1] = header(page, "clickKeys")
     local keysNote = RaidOptions.NoteBlock(page, L.RAID_CLICK_KEYS_NOTE)
     keysNote:SetHeight(KEYS_NOTE_H)
     list[#list + 1] = keysNote
-    for _, slot in ipairs(Raid.CLICK_KEYS) do list[#list + 1] = keyRow(page, slot) end
+    for _, slot in ipairs(Raid.CLICK_KEYS) do list[#list + 1] = keyRow(page, slot, layout) end
     -- The page's note is the tab's (NoteBlock sets the last one built).
     page.note = note.text
+    -- The editor's rows lock by their own rules (the switches' dependencies
+    -- of the window around them do not apply).
+    for _, row in ipairs(list) do row.clickCastRow = true end
     return list
 end
 
-function ClickCastPage.Build(page, tab)
-    local P = RaidOptions.PAGE
-    local y = P.top
-    page.rows = rows(page, tab)
+-- Every page built, in either window: each follows the values and the
+-- spell book.
+ClickCastPage.pages = {}
+
+-- page: a frame as wide as the window's page; tab: its note (tab.note, a
+-- raid note id); layout: the window's measures, those of RAID_LAYOUT and
+-- top, bottom, sectionGap, noteHeight (RaidOptions.PAGE's names). Sets
+-- page.rows, page.height, page.onShow (the window calls it when it shows
+-- the page) and page.clickCopyRow, clickCopyButton, clickClearButton.
+function ClickCastPage.Build(page, tab, layout)
+    local y = layout.top
+    page.rows = rows(page, tab, layout)
     for i, row in ipairs(page.rows) do
-        if row.isSection and i > 1 then y = y + P.sectionGap end
+        if row.isSection and i > 1 then y = y + layout.sectionGap end
         row:SetPoint("TOPLEFT", page, "TOPLEFT", 0, -y)
         row:SetPoint("TOPRIGHT", page, "TOPRIGHT", 0, -y)
         y = y + row:GetHeight()
     end
-    page.height = y + P.bottom
+    page.height = y + layout.bottom
     -- Shown anew: the spell book read again, no Other... left picked.
     page.onShow = function()
         spellCache = nil
         for _, row in ipairs(page.rows) do row.otherFor = nil end
     end
-    ClickCastPage.page = page
+    ClickCastPage.pages[#ClickCastPage.pages + 1] = page
 end
 
--- A spell or rank learned (or the book read at login) while the page
--- shows: its rows offer it.
+-- Every page built that shows: its rows read the values again.
+function ClickCastPage.RefreshShown()
+    for _, page in ipairs(ClickCastPage.pages) do
+        if page:IsVisible() then
+            for _, row in ipairs(page.rows) do row:Refresh() end
+        end
+    end
+end
+
+-- A spell or rank learned (or the book read at login) while a page shows:
+-- its rows offer it.
 local function bookChanged()
     spellCache = nil
-    local page = ClickCastPage.page
-    if page and page:IsVisible() then
-        for _, row in ipairs(page.rows) do row:Refresh() end
-    end
+    ClickCastPage.RefreshShown()
 end
 ns.On("SPELLS_CHANGED", bookChanged)
 -- A rank's text loaded later (Spellbook.RankText): the rank dropdowns
 -- name it.
 ns.RaidSpellbook.OnTextUpdate(bookChanged)
 
-RaidOptions.CUSTOM_PAGES.clickCast = ClickCastPage.Build
+-- The raid window's tab: its measures; its copy row and Clear all for the
+-- window (disarmed when it hides) and the tests.
+RaidOptions.CUSTOM_PAGES.clickCast = function(page, tab)
+    local layout = {}
+    for k, v in pairs(RaidOptions.PAGE) do layout[k] = v end
+    for k, v in pairs(ClickCastPage.RAID_LAYOUT) do layout[k] = v end
+    ClickCastPage.Build(page, tab, layout)
+    RaidOptions.clickCopyRow, RaidOptions.clickCopyButton, RaidOptions.clickClearButton =
+        page.clickCopyRow, page.clickCopyButton, page.clickClearButton
+end

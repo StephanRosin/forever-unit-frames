@@ -281,23 +281,6 @@ local function frameSwitches(page, stack)
     end
 end
 
--- Click-casting (decision 76): a button that opens the raid window on its
--- click-casting tab, where the bindings are.
-Options.CLICK_CAST_TAB = "clickCast"
-local function editBindingsBlock(page)
-    local block = CreateFrame("Frame", nil, page)
-    function block:Refresh() end
-    local button = Widgets.Button(block, { text = L.CLICK_CAST_EDIT, width = WIDE_BUTTON_W, onClick = function()
-        Options.Close()
-        ns.RaidOptions.Open(nil, Options.CLICK_CAST_TAB)
-    end })
-    button:SetPoint("TOPLEFT", block, "TOPLEFT", INSET, -6)
-    block.editBindings = button
-    function block:SetEnabled(on) button:SetEnabled(on) end
-    block:SetHeight(BUTTON_H + 12)
-    return block
-end
-
 -- A tab's sections onto the stack: those with a setting of the page.
 local function addSections(page, stack, scope, tab)
     for _, section in ipairs(tab.sections or {}) do
@@ -307,7 +290,6 @@ local function addSections(page, stack, scope, tab)
             for _, key in ipairs(keys) do stack.add(settingRow(page, scope, key)) end
             if section.frames then frameSwitches(page, stack) end
             if section.action then stack.add(actionBlock(page, section.action)) end
-            if section.editBindings and scope == "general" then stack.add(editBindingsBlock(page)) end
         end
     end
 end
@@ -455,6 +437,12 @@ local function buildProfilePage(page, scope, tab)
     stack.finish()
 end
 
+-- General > Click-casting: the raid window's editor (Raid/Options/
+-- ClickCast.lua) in this window's measures: the binding's controls start
+-- left of the usual column to fit the narrower page.
+local CLICK_CAST_LAYOUT = { top = PAGE_TOP, bottom = PAGE_BOTTOM, sectionGap = SECTION_GAP, noteHeight = NOTE_H,
+    controlX = 170, kindW = 130, valueW = 290, keyW = 80, rankW = 80, clearGap = FOOTER_GAP }
+
 local function pageFor(scope, tab)
     local id = scope .. ":" .. tab.id
     if pages[id] then return pages[id] end
@@ -463,6 +451,9 @@ local function pageFor(scope, tab)
     page:SetWidth(CONTENT_W)
     if tab.custom == "profile" then
         buildProfilePage(page, scope, tab)
+    elseif tab.custom == "clickCast" then
+        ns.RaidClickCastPage.Build(page, tab, CLICK_CAST_LAYOUT)
+        page.clickCast = true
     else
         buildSettingsPage(page, scope, tab)
     end
@@ -559,7 +550,9 @@ Options.ROW_ACTIVE = ROW_ACTIVE
 local function setRowStates()
     local scope = Options.currentScope
     forEachRow(function(row)
-        local active = ROW_ACTIVE[row.key]
+        -- The click-casting editor's rows share keys with settings here
+        -- (its mode row is "clickCast"), not their rules.
+        local active = not row.clickCastRow and ROW_ACTIVE[row.key]
         local on = not inCombat and (not active or active(scope))
         row.enabledState = on
         row:SetEnabled(on)
@@ -837,6 +830,8 @@ local function createWindow()
         Options.resetFrameButton.Disarm()
         if Options.resetAllButton then Options.resetAllButton.Disarm() end
         for _, button in pairs(Options.actionButtons) do button.Disarm() end
+        local clickPage = pages["general:clickCast"]
+        if clickPage then clickPage.clickClearButton.Disarm() end
     end)
     frame:Hide()
     for _, name in ipairs(UISpecialFrames) do
@@ -863,6 +858,7 @@ function Options.SelectTab(id)
             Widgets.CloseList()
             if Options.page then Options.page:Hide() end
             local page = pageFor(scope, tab)
+            if page.onShow then page.onShow() end
             Options.page, Options.currentTab, Options.rows = page, id, page.rows
             frame.scrollChild:SetHeight(page.height)
             frame.scroll:SetVerticalScroll(0)
@@ -927,8 +923,11 @@ end)
 
 -- The raid window's click-casting mode greys the switch here (Clique is
 -- loaded or not before the window can open).
+-- The click-casting tab shows the raid profile's bindings: a change from
+-- either window (or Copy, Clear all) shows here.
 ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
     if not Options.IsOpen() or (scope ~= nil and scope ~= "general") then return end
+    if Options.page and Options.page.clickCast then forEachRow(function(row) row:Refresh() end) end
     if key == nil or key == "clickCast" then setRowStates() end
 end)
 

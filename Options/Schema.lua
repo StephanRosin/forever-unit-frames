@@ -16,10 +16,14 @@ Schema.GENERAL = {
     -- Layout tab (Options/Window.lua builds them).
     { id = "frames", sections = {
         { id = "frames", keys = { "unitFrames" }, frames = true },
-        -- Click-casting (decision 76): the switch and, on General, a
-        -- button to the bindings in the raid window.
-        { id = "clickCast", keys = { "clickCast" }, editBindings = true },
+        -- Click-casting (decision 76): the unit frames' switch; the
+        -- bindings are on the next tab.
+        { id = "clickCast", keys = { "clickCast" } },
     } },
+    -- The click-casting editor, the raid window's own (Raid/Options/
+    -- ClickCast.lua builds both; the bindings belong to the character, as
+    -- there). note: the raid tab's.
+    { id = "clickCast", custom = "clickCast", note = "clickCast", sections = {} },
     { id = "appearance", sections = {
         -- action: a two-click button under the rows (Options/Window.lua).
         { id = "font", keys = { "fontFace", "fontSize", "valueFontSize", "fontOutline", "fontShadow" },

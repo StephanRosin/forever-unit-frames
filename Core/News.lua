@@ -65,7 +65,7 @@ News.ENTRIES = {
     },
     -- Click-casting's spell and rank dropdowns: the button opens its tab.
     ["0.27.0"] = {
-        lines = { "NEWS_0_27_0_SPELLS" },
+        lines = { "NEWS_0_27_0_SPELLS", "NEWS_0_27_0_UNIT_TAB" },
         action = { text = "NEWS_OPEN_RAID", run = function() ns.RaidOptions.Open(nil, "clickCast") end },
     },
 }

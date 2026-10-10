@@ -202,7 +202,7 @@ local SECTION_NOTE = {
         .. " where a spell can be hidden: buffs on you, your group, pets and other friendly units; debuffs only on"
         .. " enemies, except spells the game never keeps secret (those everywhere). The list marks entries that"
         .. " will not hide everywhere on its frames.",
-    clickCast = "The raid window's click-casting bindings (`/fuf raid` > General > Click-casting) on this frame:"
+    clickCast = "The click-casting bindings (General > Click-casting here, or `/fuf raid` > General > Click-casting) on this frame:"
         .. " one switch on General for every unit frame, each frame can differ on its Layout tab. Works while the"
         .. " raid frames are off. With the default bindings nothing changes (left click targets, right click opens"
         .. " the menu).",
@@ -218,11 +218,6 @@ local function section(lines, sec, keys, scopesFor, showFrames, level)
     end
     if sec.action then
         lines[#lines + 1] = ("Button: **%s**."):format(label("ACTION_" .. sec.action, sec.action))
-        lines[#lines + 1] = ""
-    end
-    if sec.editBindings and showFrames == false then
-        lines[#lines + 1] = ("Button: **%s** (opens the raid window's click-casting tab)."):format(
-            label("CLICK_CAST_EDIT", "Edit bindings"))
         lines[#lines + 1] = ""
     end
     tableStart(lines, showFrames and 5 or 4)
@@ -253,7 +248,21 @@ do
         "The **Profile** tab's export, import and reset are explained on the [[Home]] page.", "" }
     local body, toc = {}, { "**On this page:**", "" }
     for _, tab in ipairs(Schema.Tabs("general")) do
-        if tab.sections then
+        if tab.custom == "clickCast" then
+            -- The raid window's editor, on a tab here too.
+            local title = label("TAB_" .. tab.id, tab.id)
+            body[#body + 1] = "## " .. title
+            body[#body + 1] = ""
+            body[#body + 1] = "The click-casting editor, the same as the raid window's (`/fuf raid` > General >"
+                .. " Click-casting) and bound to the same bindings of this character: a change in either window"
+                .. " shows in the other. It works while the raid frames are off (the unit frames use the"
+                .. " bindings too). The mouse slots, the 16 keys, the spell and rank dropdowns, **Copy from** and"
+                .. " **Clear all** are described on [[Click-casting|Raid-Click-casting]]."
+            body[#body + 1] = ""
+            -- The Frames tab's section of the same name comes first: this
+            -- heading's anchor is the second one ("-1").
+            toc[#toc + 1] = ("- **[%s](#%s-1)**"):format(title, anchor(title))
+        elseif tab.sections then
             local title = label("TAB_" .. tab.id, tab.id)
             body[#body + 1] = "## " .. title
             body[#body + 1] = ""
@@ -364,7 +373,8 @@ local RAID_TAB_INTRO = {
         .. " the rank dropdown is gray for a spell with one rank. **Other…**, the spell list's last item, shows"
         .. " a box for a spell typed by name (one not in the list: a racial, a self-centred spell); a typed ID is"
         .. " kept by its name (Max). Bindings"
-        .. " of earlier versions are taken over once per character. A key with"
+        .. " of earlier versions are taken over once per character. The same editor is on the unit frames'"
+        .. " window (`/fuf` > General > Click-casting), bound to the same bindings. A key with"
         .. " a spell or an item casts it on the friendly raid member under the mouse; a key with a macro runs it"
         .. " as written, so add [@mouseover] to it yourself. While the raid frames (or, with click-casting on the party, the"
         .. " party frames) show, a key is taken from what it is bound to otherwise (the window warns), so pick"
