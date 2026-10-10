@@ -64,8 +64,9 @@ CellAuras.LEVELS = 12
 -- The tint lies on the health bar, under its texts.
 CellAuras.TINT_LEVELS = 2
 CellAuras.TINT_ALPHA = 0.35
--- The border lies on the bars and the tint, under the texts and icons.
-CellAuras.BORDER_LEVELS = 3
+-- The border lies on the bars, the tint, the incoming heals (health + 1
+-- .. + 3) and the shields (health + 4), under the texts (+10) and icons.
+CellAuras.BORDER_LEVELS = 6
 -- Everything a container must take before a cell uses it.
 CellAuras.METHODS = { "SetUnit", "GetUnit", "UpdateAllAuras", "SetEditModePreviewEnabled", "AddAuraSlot",
     "SetAuraSlotEnabled", "SetAuraSlotFilterString", "SetAuraSlotCandidateFilters", "AddAuraGroup",
@@ -309,7 +310,9 @@ CellAuras.AddPart({
         border:SetFrameLevel(frame:GetFrameLevel() + CellAuras.BORDER_LEVELS)
         placeBorder(frame, border)
         if c then
-            for _, piece in ipairs(ns.Border.InnerRingPieces(border.ring)) do piece:SetVertexColor(c[1], c[2], c[3], 1) end
+            for _, piece in ipairs(ns.Border.InnerRingPieces(border.ring)) do
+                piece:SetVertexColor(c[1], c[2], c[3], 1)
+            end
         end
         border:SetShown(c ~= nil and get("dispelBorder") == true)
     end,

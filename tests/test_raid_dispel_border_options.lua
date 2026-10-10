@@ -35,6 +35,7 @@ RC.Set("r10", "dispelBorder", true)
 H.checkTrue("member 2 (magic): shown", s2.border:IsShown())
 H.check("member 1 (no debuff): hidden", f1.raidAuras.samples.border:IsShown(), false)
 H.check("above the tint", s2.border:GetFrameLevel(), f2:GetFrameLevel() + CellAuras.BORDER_LEVELS)
+H.checkTrue("sample above the shields", s2.border:GetFrameLevel() > f2.absorbClip:GetFrameLevel())
 local pieces = ns.Border.InnerRingPieces(s2.border.ring)
 H.check("eight pieces", #pieces, 8)
 local magic = ns.AuraButton.DISPEL_COLORS.Magic

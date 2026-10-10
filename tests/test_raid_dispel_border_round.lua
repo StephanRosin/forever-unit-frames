@@ -26,7 +26,8 @@ local R, px = ns.Shape.Radius(cell), Pixel.Snap(2, nil, 1)
 H.check("the cell is rounded", R, 6)
 for i = 5, 8 do
     local corner = pieces[i]
-    H.check("corner " .. i .. ": as large as the cell's radius", corner:GetWidth() .. "x" .. corner:GetHeight(), R .. "x" .. R)
+    H.check("corner " .. i .. ": as large as the cell's radius", corner:GetWidth() .. "x" .. corner:GetHeight(),
+        R .. "x" .. R)
     H.check("corner " .. i .. ": the outer arc", corner._texture, Corners.TEXTURE)
     H.check("corner " .. i .. ": one mask", corner:GetNumMaskTextures(), 1)
     local mask = b.ring.inner[i - 4]

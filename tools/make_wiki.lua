@@ -358,7 +358,8 @@ local RAID_TAB_INTRO = {
     texts = "The name and the second line in the middle of each cell: their colors and fonts.",
     debuffs = "The most important dispellable debuff, as an icon in the center or a square in a corner, the"
         .. " cell tinted or bordered in its type's color (the border lies inside the cell and follows rounded"
-        .. " corners; tint and border combine), and a row that shows every debuff (the one in the center may appear there too). Hidden auras: spells this"
+        .. " corners; tint and border combine), and a row that shows every debuff (the one in the center may"
+        .. " appear there too). Hidden auras: spells this"
         .. " size leaves out of the debuff row and the corner indicators, together with the unit frames' list"
         .. " for everywhere (General > Appearance); on your group the game hides debuffs only for spells it never"
         .. " keeps secret.",

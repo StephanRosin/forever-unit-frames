@@ -39,6 +39,11 @@ H.check("no clicks", b._clickEnabled, false)
 H.check("no mouse over", b._motionEnabled, false)
 H.check("above the tint", b:GetFrameLevel(), cell:GetFrameLevel() + CellAuras.BORDER_LEVELS)
 H.checkTrue("above the bars and the tint", CellAuras.BORDER_LEVELS > CellAuras.TINT_LEVELS)
+-- Incoming heals (health + 1 .. + 3) and shields (health + 4) lie under it.
+local level = b:GetFrameLevel()
+H.checkTrue("above the incoming heals", level > cell.health:GetFrameLevel() + 3)
+H.checkTrue("above the shields", level > cell.absorbClip:GetFrameLevel())
+H.checkTrue("under the texts", level < cell.overlay:GetFrameLevel())
 H.checkTrue("under the icons", CellAuras.BORDER_LEVELS < CellAuras.LEVELS)
 
 local pieces = ns.Border.InnerRingPieces(b.ring)
@@ -71,7 +76,8 @@ local function checkPlaced(label, px)
     for i = 5, 8 do
         local corner = pieces[i]
         p, rel, rp, x, y = corner:GetPoint(1)
-        H.check(label .. ": corner " .. i .. " in the cell's corner", p == rp and rel == cell and x == 0 and y == 0, true)
+        H.check(label .. ": corner " .. i .. " in the cell's corner",
+            p == rp and rel == cell and x == 0 and y == 0, true)
         H.check(label .. ": corner " .. i .. " size", corner:GetWidth() .. "x" .. corner:GetHeight(), px .. "x" .. px)
         H.check(label .. ": corner " .. i .. " square", corner:GetNumMaskTextures(), 0)
     end
