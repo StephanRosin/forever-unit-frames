@@ -1037,6 +1037,8 @@ L.RAID_HINT_clickKeyBind = "On the friendly unit under the mouse"
 -- What a binding does (the kinds of Raid.ParseBinding).
 L.RAID_CLICK_NOTHING = "Nothing"
 L.RAID_CLICK_LIKE_PLAIN = "Like the plain click"
+L.RAID_CLICK_OTHER = "Other…"
+L.RAID_CLICK_RANK_MAX = "Max"
 L.RAID_CLICK_target = "Target"
 L.RAID_CLICK_focus = "Focus"
 L.RAID_CLICK_assist = "Assist"

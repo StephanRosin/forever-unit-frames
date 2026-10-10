@@ -673,6 +673,35 @@ function Widgets.Dropdown(parent, opts)
     return row
 end
 
+-- A dropdown of its own in a row, beside other controls (the raid window's
+-- click-casting rows): opts.items, opts.get, opts.set, opts.width, as a
+-- Dropdown row's. Placed by the caller. b:Refresh() shows the current
+-- item; b:SetUsable(on, grey) locks it (closing its list) and greys it
+-- when grey is true (a row dimmed as a whole leaves its controls as they
+-- are: grey false).
+function Widgets.DropdownButton(row, opts)
+    if not list then createList() end
+    local b = newDropdownButton(row, opts.width)
+    b.opts, b.button = opts, b
+    b:SetScript("OnClick", function() toggleList(b) end)
+    b:SetScript("OnHide", function(self)
+        if list.owner == self then Widgets.CloseList() end
+    end)
+    function b:Refresh()
+        local items = opts.items()
+        local item = items[indexOf(items, opts.get()) or 0]
+        b.text:SetText(item and item.text or "")
+        applyFont(b.text, item and item.font)
+        if list.owner == b then renderList() end
+    end
+    function b:SetUsable(on, grey)
+        if not on and list.owner == b then Widgets.CloseList() end
+        b:SetEnabled(on)
+        b:SetAlpha(grey and DISABLED_ALPHA or 1)
+    end
+    return b
+end
+
 -- Color ---------------------------------------------------------------------
 
 local function sameColor(a, b)

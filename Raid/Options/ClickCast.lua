@@ -14,7 +14,7 @@ ns.RaidClickCastPage = ClickCastPage
 local Widgets, Schema, Raid, L = ns.Widgets, ns.RaidSchema, ns.Raid, ns.L
 local RaidOptions, RaidConfig = ns.RaidOptions, ns.RaidConfig
 
-local KIND_W, VALUE_W, KEY_W, GAP, KEYS_NOTE_H = 170, 400, 120, 8, 34
+local KIND_W, VALUE_W, KEY_W, RANK_W, GAP, KEYS_NOTE_H = 170, 400, 120, 100, 8, 34
 
 local function get(key) return RaidConfig.Get("general", key) end
 local function set(key, value) return RaidConfig.Set("general", key, value) end
@@ -32,9 +32,122 @@ local function kindItems(key, kinds)
     end
 end
 
--- A binding's two controls in a row: the kind's dropdown (the row's own
--- button, moved to x) and the value's box after it. A new kind starts
--- without a value; a typed value is checked (ClickCast.TypedValue).
+-- The spells the rows offer (Spellbook.FriendlySpells), read once while
+-- the page shows and again when the spell book changes.
+local spellCache
+local function spells()
+    spellCache = spellCache or ns.RaidSpellbook.FriendlySpells()
+    return spellCache
+end
+
+-- The spell dropdown's last item: a spell typed in the box instead.
+local OTHER = {}
+
+-- A stored spell (the value of "spell:<value>") as the list has it: the
+-- spell and the rank picked (nil: Max); nil for one not in the list.
+local function listed(value)
+    if value:match("^%d+$") then
+        local spell, rank = ns.RaidSpellbook.FriendlyRank(tonumber(value), spells())
+        return spell, rank
+    end
+    return ns.RaidSpellbook.FriendlySpell(value, spells())
+end
+
+-- How a row shows its value: "text" (an item or a macro: the box), "list"
+-- (a spell from the list, or none yet: the spell and rank dropdowns),
+-- "other" (a spell typed in the box: Other... picked, or a stored spell
+-- the list does not hold).
+local function valueMode(row, key)
+    local kind, value = binding(key)
+    if kind ~= "spell" then return "text" end
+    if row.otherFor == get(key) then return "other" end
+    if value == "" or listed(value) then return "list" end
+    return "other"
+end
+
+-- The rank dropdown's items: Max, then every learned rank by its text.
+local function rankItems(key)
+    local items = { { value = "MAX", text = L.RAID_CLICK_RANK_MAX } }
+    local spell = listed((select(2, binding(key))))
+    for _, rank in ipairs(spell and spell.ranks or {}) do
+        items[#items + 1] = { value = rank.id, text = rank.subName ~= "" and rank.subName or tostring(rank.id) }
+    end
+    return items
+end
+
+-- The spell and rank dropdowns of a row (shown for a spell instead of the
+-- box). A spell picked is stored by name (Max: the highest rank known); a
+-- rank picked by its spell ID; Other... keeps the value and shows the box.
+local function spellControls(row, key)
+    row.spellDrop = Widgets.DropdownButton(row, {
+        items = function()
+            local items = {}
+            for _, spell in ipairs(spells()) do items[#items + 1] = { value = spell.name, text = spell.name } end
+            items[#items + 1] = { value = OTHER, text = L.RAID_CLICK_OTHER }
+            return items
+        end,
+        get = function()
+            if valueMode(row, key) == "other" then return OTHER end
+            local spell = listed((select(2, binding(key))))
+            return spell and spell.name
+        end,
+        set = function(name)
+            if name == OTHER then
+                row.otherFor = get(key)
+                row:Refresh()
+                return true
+            end
+            row.otherFor = nil
+            return set(key, "spell:" .. name)
+        end,
+    })
+    row.rankDrop = Widgets.DropdownButton(row, {
+        width = RANK_W, items = function() return rankItems(key) end,
+        get = function()
+            local _, rank = listed((select(2, binding(key))))
+            return rank and rank.id or "MAX"
+        end,
+        set = function(id)
+            local spell = listed((select(2, binding(key))))
+            if not spell then return false end
+            return set(key, "spell:" .. (id == "MAX" and spell.name or id))
+        end,
+    })
+end
+
+-- Whether the rank can be picked: a spell of the list with more than one
+-- rank.
+local function hasRanks(key)
+    local spell = listed((select(2, binding(key))))
+    return spell ~= nil and #spell.ranks > 1
+end
+
+-- Places the value's controls for its mode, in valueWidth after the
+-- kind's button: the box alone; the spell (wide) and the rank (narrow);
+-- or Other... (narrow) and the box.
+local function placeValue(row, mode, valueWidth)
+    local box, spell, rank = row.value, row.spellDrop, row.rankDrop
+    box:SetShown(mode ~= "list")
+    spell:SetShown(mode ~= "text")
+    rank:SetShown(mode == "list")
+    box:ClearAllPoints()
+    if mode == "text" then
+        box:SetWidth(valueWidth)
+        box:SetPoint("LEFT", row.button, "RIGHT", GAP, 0)
+    elseif mode == "other" then
+        spell:SetWidth(RANK_W)
+        box:SetWidth(valueWidth - RANK_W - GAP)
+        box:SetPoint("LEFT", spell, "RIGHT", GAP, 0)
+    else
+        spell:SetWidth(valueWidth - RANK_W - GAP)
+    end
+end
+
+-- A binding's controls in a row: the kind's dropdown (the row's own
+-- button, moved to x), then the value: a box for an item or a macro (and
+-- a spell typed under Other...), the spell and its rank for a spell. A
+-- new kind starts without a value; a typed value is checked
+-- (ClickCast.TypedValue).
 local function bindingControls(row, key, x, valueWidth)
     local button = row.button
     button:ClearAllPoints()
@@ -53,31 +166,44 @@ local function bindingControls(row, key, x, valueWidth)
             return set(key, kind .. ":" .. value)
         end,
     })
-    row.value:ClearAllPoints()
-    row.value:SetPoint("LEFT", button, "RIGHT", GAP, 0)
+    spellControls(row, key)
+    row.spellDrop:SetPoint("LEFT", button, "RIGHT", GAP, 0)
+    row.rankDrop:SetPoint("LEFT", row.spellDrop, "RIGHT", GAP, 0)
+    local function lock(on)
+        local mode = valueMode(row, key)
+        placeValue(row, mode, valueWidth)
+        row.value:SetEnabled(on and Raid.BindingHasValue((binding(key))))
+        row.spellDrop:SetUsable(on)
+        row.rankDrop:SetUsable(on and hasRanks(key), on and not hasRanks(key))
+    end
     local refresh, setEnabled = row.Refresh, row.SetEnabled
     function row:Refresh()
         refresh(self)
         if not self.value:HasFocus() then self.value.ShowValue() end
-        self.value:SetEnabled(self.enabled ~= false and Raid.BindingHasValue((binding(key))))
+        self.spellDrop:Refresh()
+        self.rankDrop:Refresh()
+        lock(self.enabled ~= false)
     end
     function row:SetEnabled(on)
         self.enabled = on
         setEnabled(self, on)
         if not on then self.value:ClearFocus() end
-        self.value:SetEnabled(on and Raid.BindingHasValue((binding(key))))
+        lock(on)
     end
 end
 
 local function bindingDropdown(page, key, kinds, label, hint)
-    return Widgets.Dropdown(page, {
+    local row
+    row = Widgets.Dropdown(page, {
         label = label, hint = hint, items = kindItems(key, kinds),
         get = function() return (binding(key)) end,
         set = function(kind)
             if kind == binding(key) then return true end
+            row.otherFor = nil
             return set(key, Raid.BindingHasValue(kind) and (kind .. ":") or kind)
         end,
     })
+    return row
 end
 
 -- A mouse slot's row.
@@ -237,6 +363,22 @@ function ClickCastPage.Build(page, tab)
         y = y + row:GetHeight()
     end
     page.height = y + P.bottom
+    -- Shown anew: the spell book read again, no Other... left picked.
+    page.onShow = function()
+        spellCache = nil
+        for _, row in ipairs(page.rows) do row.otherFor = nil end
+    end
+    ClickCastPage.page = page
 end
+
+-- A spell or rank learned (or the book read at login) while the page
+-- shows: its rows offer it.
+ns.On("SPELLS_CHANGED", function()
+    spellCache = nil
+    local page = ClickCastPage.page
+    if page and page:IsVisible() then
+        for _, row in ipairs(page.rows) do row:Refresh() end
+    end
+end)
 
 RaidOptions.CUSTOM_PAGES.clickCast = ClickCastPage.Build

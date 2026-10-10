@@ -234,7 +234,8 @@ function Schema.PerCharacter(tab)
 end
 
 -- What a binding (Raid.ParseBinding) does, in words: the kind's, and the
--- value after it ("Cast a spell: Renew"); nil for no binding. key: the
+-- value after it ("Cast a spell: Renew", "Cast a spell: Renew (Rank 3)");
+-- nil for no binding. key: the
 -- setting it is for (optional): an empty modified mouse slot does what
 -- the plain click does (the client's fallback), and says so.
 function Schema.KindText(kind, key)
@@ -245,10 +246,22 @@ function Schema.KindText(kind, key)
     end
     return word("RAID_CLICK_", kind) or kind
 end
+-- A spell's words: its name; a fixed rank (a spell ID) with the spell
+-- book's rank text ("Renew (Rank 3)"), read when shown; the ID's name
+-- when that rank is no longer learned.
+local function spellText(value)
+    if not value:match("^%d+$") then return value end
+    local id = tonumber(value)
+    local spell, rank = ns.RaidSpellbook.FriendlyRank(id)
+    if not spell then return ns.ClickCast.SpellName(id) or value end
+    if rank.subName == "" then return spell.name end
+    return spell.name .. " (" .. rank.subName .. ")"
+end
 function Schema.BindingText(text, key)
     local kind, value = ns.Raid.ParseBinding(text)
     if kind == nil then return nil end
     if value == nil or value == "" then return Schema.KindText(kind, key) end
+    if kind == "spell" then value = spellText(value) end
     return Schema.KindText(kind, key) .. ": " .. value
 end
 
