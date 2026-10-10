@@ -20,7 +20,10 @@ H.check("max: the name", cell:GetAttribute("shift-spell1"), "Renew")
 M.shiftDown = true
 H.check("max: a spell cast", M.SecureClick(cell, "LeftButton"), "spell")
 H.check("by name", M.casts[#M.casts][1], "Renew")
--- A fixed rank: its ID, cast by ID.
+-- A fixed rank: its ID, cast by ID. The client's IsSpellKnown may say no
+-- for a rank a higher one supersedes (the mock does): the spell book
+-- decides.
+H.check("the mock: a lower rank not known", C_SpellBook.IsSpellKnown(139), false)
 RC.Set("general", "click1Shift", "spell:139")
 H.check("rank: the ID", cell:GetAttribute("shift-spell1"), "139")
 M.SecureClick(cell, "LeftButton")

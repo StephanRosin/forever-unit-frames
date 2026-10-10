@@ -36,12 +36,11 @@ local function spellName(id)
 end
 ClickCast.SpellName = spellName
 
--- Whether the player knows a spell ID (C_SpellBook.IsSpellKnown; a
--- missing, raising or secret answer is a no).
+-- Whether the player knows a spell ID: a learned item of the spell book
+-- (Spellbook.InBook, the source the dropdowns read), not IsSpellKnown,
+-- which may say no for a lower rank.
 local function knows(id)
-    local book = C_SpellBook
-    if not (book and book.IsSpellKnown) then return false end
-    return ns.Secrets.Call(book.IsSpellKnown, id) == true
+    return ns.RaidSpellbook.InBook(id)
 end
 
 -- What a stored spell casts, the cells and the keys alike: a name as it

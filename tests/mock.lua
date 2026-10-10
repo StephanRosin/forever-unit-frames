@@ -2318,7 +2318,21 @@ function M.Reset()
     }
     -- The old globals come from Blizzard_DeprecatedSpellBook (only with
     -- the loadDeprecationFallbacks CVar); a test may remove either side.
-    _G.C_SpellBook = { IsSpellKnown = function(id) return M.known[id] == true end }
+    -- IsSpellKnown: whether a lower rank, with a higher one of its name
+    -- learned, counts as known is not documented; classic clients have
+    -- answered no. The mock answers no (never more permissive): only a
+    -- learned spell no learned spell of its name outranks.
+    local function knownTop(id)
+        local s = M.known[id] and M.spells[id]
+        if not s then return M.known[id] == true end
+        for other in pairs(M.known) do
+            local o = M.spells[other]
+            if other ~= id and o and o.name == s.name and higher(other, id) then return false end
+        end
+        return true
+    end
+    M.KnownTop = knownTop
+    _G.C_SpellBook = { IsSpellKnown = function(id) return knownTop(id) end }
     -- The spell book (SpellBookDocumentation.lua): skill line 1, General,
     -- holds the learned spells marked general (racials:
     -- M.spells[id].general), line 2, the class's, the other learned spells
@@ -2394,7 +2408,7 @@ function M.Reset()
         assert(M.secureDepth > 0, "mock: CastSpellByName outside secure code")
         table.insert(M.casts, { name, unit })
     end
-    _G.IsSpellKnown = function(id) return M.known[id] == true end
+    _G.IsSpellKnown = function(id) return knownTop(id) end
     _G.GetReadyCheckStatus = function(unit) local d = u(unit); return d and d.readyCheck end
     _G.UnitHasIncomingResurrection = function(unit) local d = u(unit); return d and d.incomingRez or false end
     _G.HasLFGRestrictions = function() return M.lfgRestricted end
