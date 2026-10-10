@@ -112,6 +112,27 @@ local function byName(a, b)
     return a.name:lower() < b.name:lower()
 end
 
+-- Whether the player's book is read: a learned spell in a skill line
+-- after the first (the first is General: racials and the like; the
+-- class's lines follow). Answers nothing about the rank texts.
+function Spellbook.Ready()
+    local book = C_SpellBook
+    if not (book and book.GetNumSpellBookSkillLines and book.GetSpellBookSkillLineInfo
+        and book.GetSpellBookItemInfo and Enum and Enum.SpellBookSpellBank) then
+        return false
+    end
+    local lines = book.GetNumSpellBookSkillLines()
+    if not plain(lines, "number") then return false end
+    local spellType, found = Enum.SpellBookItemType.Spell, false
+    for line = 2, lines do
+        forEachItem(book, line, function(item)
+            if plain(item.itemType, "number") and item.itemType == spellType then found = true end
+        end)
+        if found then return true end
+    end
+    return false
+end
+
 -- The spells click-casting offers: every learned spell of the book that
 -- is no passive and is cast on someone else (heals, dispels, buffs,
 -- resurrections), each name once as { name, ranks = { { id, subName },

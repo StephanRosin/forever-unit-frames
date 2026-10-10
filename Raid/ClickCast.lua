@@ -88,11 +88,14 @@ end
 
 -- Spells stored before the tab's dropdowns (up to 0.26) are written once
 -- per character as the list has them (NormaliseSpell), so the dropdowns
--- show them: when the spell book is read after login (SPELLS_CHANGED),
--- never in combat. A book without a spell for the list (not read yet)
--- leaves it for the next time.
--- ForeverUnitFramesDB.raidClickSpellsNormalised[character] marks it done:
--- the profile itself keeps only settings (RaidSettings.Sanitise).
+-- show them: once the spell book is read (SPELLS_CHANGED, or the end of
+-- the login loading screen, whichever finds it read), never in combat.
+-- Done at once when no binding casts a spell (nothing to normalise); else
+-- only when the book is read as a whole (Spellbook.Ready: a racial
+-- alone is not the book) and the values are stored.
+-- ForeverUnitFramesDB.raidClickSpellsNormalised[character] marks it done
+-- (the profile itself keeps only settings, RaidSettings.Sanitise); after
+-- that nothing is read again.
 local function normalisedTable()
     local db = ForeverUnitFramesDB
     if type(db) ~= "table" then return nil end
@@ -100,25 +103,36 @@ local function normalisedTable()
     return db.raidClickSpellsNormalised
 end
 
+-- The spell bindings with a value: { key, value } pairs.
+local function spellBindings()
+    local list = {}
+    for _, key in ipairs(bindingKeys()) do
+        local kind, value = Raid.ParseBinding(ns.RaidConfig.Get("general", key))
+        if kind == "spell" and value ~= "" then list[#list + 1] = { key, value } end
+    end
+    return list
+end
+
 function ClickCast.NormaliseStored()
     if InCombatLockdown() or not ns.RaidConfig.Profile() then return end
     local done, me = normalisedTable(), ns.RaidProfiles.CharKey()
     if not done or done[me] then return end
-    local list = ns.RaidSpellbook.FriendlySpells()
-    if #list == 0 then return end
-    local values = {}
-    for _, key in ipairs(bindingKeys()) do
-        local kind, value = Raid.ParseBinding(ns.RaidConfig.Get("general", key))
-        if kind == "spell" then
-            local normalised = ClickCast.NormaliseSpell(value, list)
-            if normalised ~= value then values[#values + 1] = { key, "spell:" .. normalised } end
+    local bindings = spellBindings()
+    if #bindings > 0 then
+        if not ns.RaidSpellbook.Ready() then return end
+        local list, values = ns.RaidSpellbook.FriendlySpells(), {}
+        for _, pair in ipairs(bindings) do
+            local normalised = ClickCast.NormaliseSpell(pair[2], list)
+            if normalised ~= pair[2] then values[#values + 1] = { pair[1], "spell:" .. normalised } end
         end
+        if #values > 0 and not ns.RaidConfig.SetKeys("general", values) then return end
     end
-    if #values > 0 then ns.RaidConfig.SetKeys("general", values) end
     done[me] = true
 end
 
-ns.On("SPELLS_CHANGED", function() ns.AfterCombat("clickSpells", ClickCast.NormaliseStored) end)
+local function normaliseAfterCombat() ns.AfterCombat("clickSpells", ClickCast.NormaliseStored) end
+ns.On("SPELLS_CHANGED", normaliseAfterCombat)
+ns.On("LOADING_SCREEN_DISABLED", normaliseAfterCombat)
 
 -- Every binding as stored, by setting key.
 function ClickCast.Values()

@@ -81,3 +81,57 @@ M.known[139], M.known[6074] = true, true
 M.FireEvent("SPELLS_CHANGED")
 M.RunTimers()
 H.check("then normalised", ns2.RaidConfig.Get("general", "click1Shift"), "spell:Renew")
+
+-- Readiness is the book's, not the list's: a book that has only a racial
+-- read (the General line) is not the character's whole book.
+local function boot(general)
+    local n = H.LoadAddon()
+    M.units.player = { name = "Me", class = "PRIEST", health = 1, healthMax = 1 }
+    M.known = {}
+    ForeverUnitFramesDB = { raid = { [me] = { general = general } } }
+    M.FireEvent("PLAYER_LOGIN")
+    M.RunTimers()
+    return n
+end
+local ns3 = boot({ click1Shift = "spell:renew" })
+M.known[28880] = true
+M.FireEvent("SPELLS_CHANGED")
+M.RunTimers()
+H.check("racial only: not normalised", ns3.RaidConfig.Get("general", "click1Shift"), "spell:renew")
+H.check("racial only: not remembered", ForeverUnitFramesDB.raidClickSpellsNormalised[me], nil)
+M.known[139], M.known[6074] = true, true
+M.FireEvent("SPELLS_CHANGED")
+M.RunTimers()
+H.check("class line read: normalised", ns3.RaidConfig.Get("general", "click1Shift"), "spell:Renew")
+H.checkTrue("and remembered", ForeverUnitFramesDB.raidClickSpellsNormalised[me])
+
+-- Nothing to normalise (no spell binding, a rogue say): remembered at
+-- once, and the book never read for it again.
+local ns4 = boot({ click3 = "assist" })
+M.FireEvent("SPELLS_CHANGED")
+M.RunTimers()
+H.checkTrue("no spell binding: remembered", ForeverUnitFramesDB.raidClickSpellsNormalised[me])
+local reads = 0
+local friendly = ns4.RaidSpellbook.FriendlySpells
+ns4.RaidSpellbook.FriendlySpells = function(...) reads = reads + 1; return friendly(...) end
+M.FireEvent("SPELLS_CHANGED")
+M.RunTimers()
+H.check("done: no rescans", reads, 0)
+ns4.RaidSpellbook.FriendlySpells = friendly
+
+-- A refused write leaves it for the next time.
+local ns5 = boot({ click1Shift = "spell:renew" })
+M.known[139], M.known[6074] = true, true
+local setKeys = ns5.RaidConfig.SetKeys
+ns5.RaidConfig.SetKeys = function() return false end
+M.FireEvent("SPELLS_CHANGED")
+M.RunTimers()
+H.check("refused: not remembered", ForeverUnitFramesDB.raidClickSpellsNormalised[me], nil)
+ns5.RaidConfig.SetKeys = setKeys
+
+-- Also once the login loading screen is gone (the login SPELLS_CHANGED
+-- may come before the profile is there).
+M.FireEvent("LOADING_SCREEN_DISABLED")
+M.RunTimers()
+H.check("at the end of the loading screen", ns5.RaidConfig.Get("general", "click1Shift"), "spell:Renew")
+H.checkTrue("remembered then", ForeverUnitFramesDB.raidClickSpellsNormalised[me])

@@ -6,9 +6,11 @@ local ns = H.LoadAddon()
 local Book, Raid = ns.RaidSpellbook, ns.Raid
 M.known[2050], M.known[2052] = true, true
 
--- The mock's spell book: learned spells in line 1, every rank an item.
+-- The mock's spell book: General (racials) in line 1, the class's
+-- learned spells in line 2, every rank an item.
 H.check("two skill lines", C_SpellBook.GetNumSpellBookSkillLines(), 2)
-local line = C_SpellBook.GetSpellBookSkillLineInfo(1)
+H.check("no racial learned", C_SpellBook.GetSpellBookSkillLineInfo(1).numSpellBookItems, 0)
+local line = C_SpellBook.GetSpellBookSkillLineInfo(2)
 H.check("learned spells", line.numSpellBookItems, 2)
 local item = C_SpellBook.GetSpellBookItemInfo(line.itemIndexOffset + 1, Enum.SpellBookSpellBank.Player)
 H.check("an item", item.name .. " " .. item.spellID .. " " .. item.itemType, "Lesser Heal 2050 1")

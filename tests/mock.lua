@@ -2179,6 +2179,8 @@ function M.Reset()
         -- Self-only and self-centred spells (maxRange 0), a passive one.
         [588] = { name = "Inner Fire" }, [596] = { name = "Prayer of Healing" }, [15237] = { name = "Holy Nova" },
         [15270] = { name = "Spirit Tap", passive = true },
+        -- A racial (the General line): helpful, with a range.
+        [28880] = { name = "Gift of the Naaru", maxRange = 40, general = true },
         -- Greater Heal's higher ranks: rank 6 has the lower ID.
         [25314] = { name = "Greater Heal", maxRange = 40 }, [25210] = { name = "Greater Heal", maxRange = 40 },
     }
@@ -2317,11 +2319,14 @@ function M.Reset()
     -- The old globals come from Blizzard_DeprecatedSpellBook (only with
     -- the loadDeprecationFallbacks CVar); a test may remove either side.
     _G.C_SpellBook = { IsSpellKnown = function(id) return M.known[id] == true end }
-    -- The spell book (SpellBookDocumentation.lua): skill line 1 holds the
-    -- learned spells (M.known) by ID, line 2 those still to learn
-    -- (M.futureSpells[id] = true) as FutureSpell items. Every rank is an
-    -- item of its own: the client's spell book window only hides the low
-    -- ranks. Only the player's bank is modelled; the pet's is empty.
+    -- The spell book (SpellBookDocumentation.lua): skill line 1, General,
+    -- holds the learned spells marked general (racials:
+    -- M.spells[id].general), line 2, the class's, the other learned spells
+    -- (M.known) by ID and then those still to learn (M.futureSpells[id] =
+    -- true) as FutureSpell items. Every rank is an item of its own: the
+    -- client's spell book window only hides the low ranks. The book's
+    -- order is not rank order (IDs). Only the player's bank is modelled;
+    -- the pet's is empty.
     M.futureSpells = {}
     M.spellBookSecret = {}
     -- SpellBookItemInfo.subName "may be empty ... if spell's data isn't
@@ -2333,12 +2338,17 @@ function M.Reset()
         M.FireEvent("SPELL_TEXT_UPDATE", id)
     end
     local function bookLines()
-        local learned, future = {}, {}
-        for id in pairs(M.known) do if M.spells[id] then learned[#learned + 1] = id end end
+        local general, learned, future = {}, {}, {}
+        for id in pairs(M.known) do
+            local s = M.spells[id]
+            if s and s.general then general[#general + 1] = id elseif s then learned[#learned + 1] = id end
+        end
         for id in pairs(M.futureSpells) do if M.spells[id] then future[#future + 1] = id end end
+        table.sort(general)
         table.sort(learned)
         table.sort(future)
-        return { learned, future }
+        for _, id in ipairs(future) do learned[#learned + 1] = id end
+        return { general, learned }
     end
     C_SpellBook.GetNumSpellBookSkillLines = function() return 2 end
     C_SpellBook.GetSpellBookSkillLineInfo = function(index)
@@ -2357,8 +2367,9 @@ function M.Reset()
                 local s = M.spells[id]
                 local subName = s.subName or ""
                 if M.spellTextPending[id] then subName = "" end
+                local future = not M.known[id]
                 local item = { actionID = id, spellID = id, name = s.name, subName = subName, iconID = 1,
-                    itemType = i == 1 and Enum.SpellBookItemType.Spell or Enum.SpellBookItemType.FutureSpell,
+                    itemType = future and Enum.SpellBookItemType.FutureSpell or Enum.SpellBookItemType.Spell,
                     isPassive = s.passive == true, isOffSpec = false, skillLineIndex = i }
                 -- M.spellBookSecret[id]: the item's fields secret (not
                 -- documented as secret; guarded anyway).
