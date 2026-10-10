@@ -115,3 +115,58 @@ H.check("cleared", RC.Get("general", "click1Shift"), "")
 H.check("the row follows", shift.button.text:GetText(), L.RAID_CLICK_LIKE_PLAIN)
 H.check("nothing blocked", #M.blocked, 0)
 Options.Close()
+
+-- The mode row lines up with the other controls of the narrower page.
+Options.Open("general", "clickCast")
+local modeRow = rowIn(Options.rows, "clickCast")
+H.check("mode row's control at the page's column", select(4, modeRow.button:GetPoint(1)),
+    select(4, rowIn(Options.rows, "click1").button:GetPoint(1)))
+
+-- Clear all is disarmed when the user leaves the tab (either window) or
+-- the raid window hides.
+local clear = Options.page.clickClearButton
+click(clear)
+H.check("armed", clear.text:GetText(), L.CONFIRM)
+Options.SelectTab("frames")
+H.check("unit window: another tab disarms", clear.text:GetText(), L.RAID_CLICK_CLEAR)
+Options.Close()
+RO.Open(nil, "clickCast")
+click(RO.clickClearButton)
+H.check("raid: armed", RO.clickClearButton.text:GetText(), L.CONFIRM)
+RO.SelectTab("buffs")
+H.check("raid window: another tab disarms", RO.clickClearButton.text:GetText(), L.RAID_CLICK_CLEAR)
+RO.SelectTab("clickCast")
+click(RO.clickClearButton)
+RO.Close()
+H.check("raid window: hiding disarms", RO.clickClearButton.text:GetText(), L.RAID_CLICK_CLEAR)
+
+-- One page per window, also after a rebuild (a language change).
+Options.Open("general", "clickCast")
+Options.Rebuild()
+Options.Open("general", "clickCast")
+local count = 0
+for _ in pairs(ns.RaidClickCastPage.pages) do count = count + 1 end
+H.check("one page per window", count, 2)
+Options.Close()
+
+-- The raid frames switched off before this login (the raid side never
+-- starts): the tab shows and stores the bindings all the same.
+local ns2 = H.LoadAddon()
+M.units.player = { name = "Me", class = "PRIEST", health = 1, healthMax = 1 }
+for _, id in ipairs({ 139, 6074 }) do M.known[id] = true end
+ForeverUnitFramesDB = { raid = { [ns2.RaidProfiles.CharKey()] = { general = { enabled = false,
+    click1Shift = "spell:139" } } } }
+M.FireEvent("PLAYER_LOGIN")
+M.RunTimers()
+H.check("raid frames off", ns2.RaidConfig.Get("general", "enabled"), false)
+ns2.Options.Open("general", "clickCast")
+local row2 = rowIn(ns2.Options.rows, "click1Shift")
+H.check("off before login: the spell", row2.spellDrop.text:GetText(), "Renew")
+H.check("off before login: the rank", row2.rankDrop.text:GetText(), "Rank 1")
+click(row2.rankDrop)
+for _, r in ipairs(ns2.Widgets.list.rows) do
+    if r:IsShown() and r.item and r.item.text == "Max" then click(r) break end
+end
+H.check("off before login: stored", ns2.RaidConfig.Get("general", "click1Shift"), "spell:Renew")
+H.check("off before login: nothing blocked", #M.blocked, 0)
+ns2.Options.Close()

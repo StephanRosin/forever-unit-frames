@@ -452,7 +452,7 @@ local function pageFor(scope, tab)
     if tab.custom == "profile" then
         buildProfilePage(page, scope, tab)
     elseif tab.custom == "clickCast" then
-        ns.RaidClickCastPage.Build(page, tab, CLICK_CAST_LAYOUT)
+        ns.RaidClickCastPage.Build(page, tab, CLICK_CAST_LAYOUT, "unit")
         page.clickCast = true
     else
         buildSettingsPage(page, scope, tab)
@@ -856,7 +856,11 @@ function Options.SelectTab(id)
     for _, tab in ipairs(Schema.Tabs(scope)) do
         if tab.id == id then
             Widgets.CloseList()
-            if Options.page then Options.page:Hide() end
+            if Options.page then
+                -- Leaving the click-casting tab disarms its Clear all.
+                if Options.page.clickClearButton then Options.page.clickClearButton.Disarm() end
+                Options.page:Hide()
+            end
             local page = pageFor(scope, tab)
             if page.onShow then page.onShow() end
             Options.page, Options.currentTab, Options.rows = page, id, page.rows

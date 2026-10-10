@@ -291,8 +291,11 @@ local function keyRow(page, slot, layout)
 end
 
 -- The mode's row: its hint says so while Clique is loaded.
-local function modeRow(page)
+local function modeRow(page, layout)
     local row = RaidOptions.SettingRow(page, "clickCast")
+    row.button:ClearAllPoints()
+    row.button:SetPoint("LEFT", row, "LEFT", layout.controlX, 0)
+    fitLabel(row, layout.controlX)
     local refresh = row.Refresh
     function row:Refresh()
         refresh(self)
@@ -361,7 +364,7 @@ local function rows(page, tab, layout)
     note:SetHeight(layout.noteHeight)
     list[1] = note
     list[#list + 1] = header(page, "clickCastGeneral")
-    list[#list + 1] = modeRow(page)
+    list[#list + 1] = modeRow(page, layout)
     list[#list + 1] = actionsRow(page, layout)
     for _, b in ipairs(Raid.CLICK_BUTTONS) do
         list[#list + 1] = header(page, "click" .. b.name)
@@ -382,16 +385,19 @@ local function rows(page, tab, layout)
     return list
 end
 
--- Every page built, in either window: each follows the values and the
--- spell book.
+-- The page of each window (owner: "raid", "unit"), the one built last
+-- (a window rebuilt for a new language builds it anew): each follows the
+-- values and the spell book.
 ClickCastPage.pages = {}
 
 -- page: a frame as wide as the window's page; tab: its note (tab.note, a
 -- raid note id); layout: the window's measures, those of RAID_LAYOUT and
 -- top, bottom, sectionGap, noteHeight (RaidOptions.PAGE's names). Sets
 -- page.rows, page.height, page.onShow (the window calls it when it shows
--- the page) and page.clickCopyRow, clickCopyButton, clickClearButton.
-function ClickCastPage.Build(page, tab, layout)
+-- the page) and page.clickCopyRow, clickCopyButton, clickClearButton (the
+-- window disarms Clear all when it leaves the page or hides). owner: the
+-- window's name in ClickCastPage.pages.
+function ClickCastPage.Build(page, tab, layout, owner)
     local y = layout.top
     page.rows = rows(page, tab, layout)
     for i, row in ipairs(page.rows) do
@@ -406,12 +412,12 @@ function ClickCastPage.Build(page, tab, layout)
         spellCache = nil
         for _, row in ipairs(page.rows) do row.otherFor = nil end
     end
-    ClickCastPage.pages[#ClickCastPage.pages + 1] = page
+    ClickCastPage.pages[owner] = page
 end
 
 -- Every page built that shows: its rows read the values again.
 function ClickCastPage.RefreshShown()
-    for _, page in ipairs(ClickCastPage.pages) do
+    for _, page in pairs(ClickCastPage.pages) do
         if page:IsVisible() then
             for _, row in ipairs(page.rows) do row:Refresh() end
         end
@@ -429,13 +435,15 @@ ns.On("SPELLS_CHANGED", bookChanged)
 -- name it.
 ns.RaidSpellbook.OnTextUpdate(bookChanged)
 
--- The raid window's tab: its measures; its copy row and Clear all for the
--- window (disarmed when it hides) and the tests.
+-- The raid window's tab: its measures; Clear all disarmed when the
+-- window hides (RaidOptions.DISARM; leaving the tab: Raid/Options/
+-- Window.lua); its copy row and Clear all for the tests.
 RaidOptions.CUSTOM_PAGES.clickCast = function(page, tab)
     local layout = {}
     for k, v in pairs(RaidOptions.PAGE) do layout[k] = v end
     for k, v in pairs(ClickCastPage.RAID_LAYOUT) do layout[k] = v end
-    ClickCastPage.Build(page, tab, layout)
+    ClickCastPage.Build(page, tab, layout, "raid")
+    RaidOptions.DISARM[#RaidOptions.DISARM + 1] = function() page.clickClearButton.Disarm() end
     RaidOptions.clickCopyRow, RaidOptions.clickCopyButton, RaidOptions.clickClearButton =
         page.clickCopyRow, page.clickCopyButton, page.clickClearButton
 end

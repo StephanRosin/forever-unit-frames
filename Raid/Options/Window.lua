@@ -732,7 +732,11 @@ end
 -- window; page.onShow (optional) runs first.
 local function showPage(page)
     Widgets.CloseList()
-    if RaidOptions.page then RaidOptions.page:Hide() end
+    if RaidOptions.page then
+        -- Leaving the click-casting tab disarms its Clear all.
+        if RaidOptions.page.clickClearButton then RaidOptions.page.clickClearButton.Disarm() end
+        RaidOptions.page:Hide()
+    end
     if page.onShow then page.onShow() end
     RaidOptions.page, RaidOptions.rows = page, page.rows
     frame.scrollChild:SetHeight(page.height)
