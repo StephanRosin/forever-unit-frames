@@ -156,3 +156,13 @@ M.known[139] = nil
 H.check("words: unlearned rank", Schema.BindingText("spell:139"), "Cast a spell: Renew")
 H.check("words: unknown ID", Schema.BindingText("spell:999999"), "Cast a spell: 999999")
 M.known[139] = true
+
+-- A rank's text arriving late (SPELL_TEXT_UPDATE): the open page names it.
+local r2 = rowFor("click1Shift")
+pick(r2.spellDrop, "Renew")
+M.spellTextPending[6074] = true
+M.FireEvent("SPELLS_CHANGED")
+H.check("pending: the rank by its ID", listed(r2.rankDrop), "Max,Rank 1,6074,Rank 3")
+M.SpellTextArrives(6074)
+M.RunTimers()
+H.check("arrived: by its text", listed(r2.rankDrop), "Max,Rank 1,Rank 2,Rank 3")

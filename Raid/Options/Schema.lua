@@ -247,15 +247,16 @@ function Schema.KindText(kind, key)
     return word("RAID_CLICK_", kind) or kind
 end
 -- A spell's words: its name; a fixed rank (a spell ID) with the spell
--- book's rank text ("Renew (Rank 3)"), read when shown; the ID's name
--- when that rank is no longer learned.
+-- book's rank text ("Renew (Rank 3)"), read when shown, its ID while the
+-- text is not loaded; the ID's name when that rank is no longer learned.
 local function spellText(value)
     if not value:match("^%d+$") then return value end
     local id = tonumber(value)
     local spell, rank = ns.RaidSpellbook.FriendlyRank(id)
     if not spell then return ns.ClickCast.SpellName(id) or value end
-    if rank.subName == "" then return spell.name end
-    return spell.name .. " (" .. rank.subName .. ")"
+    local text = ns.RaidSpellbook.RankText(spell, rank) or value
+    if text == "" then return spell.name end
+    return spell.name .. " (" .. text .. ")"
 end
 function Schema.BindingText(text, key)
     local kind, value = ns.Raid.ParseBinding(text)

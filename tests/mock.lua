@@ -2324,6 +2324,14 @@ function M.Reset()
     -- ranks. Only the player's bank is modelled; the pet's is empty.
     M.futureSpells = {}
     M.spellBookSecret = {}
+    -- SpellBookItemInfo.subName "may be empty ... if spell's data isn't
+    -- loaded yet; Listen for SPELL_TEXT_UPDATE": M.spellTextPending[id]
+    -- hands "" until M.SpellTextArrives(id) fires that event.
+    M.spellTextPending = {}
+    M.SpellTextArrives = function(id)
+        M.spellTextPending[id] = nil
+        M.FireEvent("SPELL_TEXT_UPDATE", id)
+    end
     local function bookLines()
         local learned, future = {}, {}
         for id in pairs(M.known) do if M.spells[id] then learned[#learned + 1] = id end end
@@ -2347,7 +2355,9 @@ function M.Reset()
             local id = line[slot]
             if id then
                 local s = M.spells[id]
-                local item = { actionID = id, spellID = id, name = s.name, subName = s.subName or "", iconID = 1,
+                local subName = s.subName or ""
+                if M.spellTextPending[id] then subName = "" end
+                local item = { actionID = id, spellID = id, name = s.name, subName = subName, iconID = 1,
                     itemType = i == 1 and Enum.SpellBookItemType.Spell or Enum.SpellBookItemType.FutureSpell,
                     isPassive = s.passive == true, isOffSpec = false, skillLineIndex = i }
                 -- M.spellBookSecret[id]: the item's fields secret (not

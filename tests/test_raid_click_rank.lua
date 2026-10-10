@@ -49,3 +49,25 @@ M.FireEvent("SPELLS_CHANGED")
 M.RunTimers()
 H.check("after SPELLS_CHANGED: the rank", b1:GetAttribute("macrotext"), "/cast [@mouseover,help,nodead] Renew(Rank 1)")
 H.check("nothing blocked", #M.blocked, 0)
+
+-- The rank text not loaded yet (the client hands "" until
+-- SPELL_TEXT_UPDATE): a fixed rank never falls back to the name (Max);
+-- the key waits, unbound, until the text arrives.
+M.spellTextPending[139] = true
+H.check("pending: no macro", Keys.MacroText("spell:139"), nil)
+H.check("pending: max unaffected", Keys.MacroText("spell:Renew"), "/cast [@mouseover,help,nodead] Renew")
+M.FireEvent("SPELLS_CHANGED")
+M.RunTimers()
+H.check("pending: the key not bound", GetBindingAction("F", true), "")
+M.SpellTextArrives(139)
+M.RunTimers()
+H.check("text arrived: the rank", b1:GetAttribute("macrotext"), "/cast [@mouseover,help,nodead] Renew(Rank 1)")
+H.check("text arrived: bound", GetBindingAction("F", true), "CLICK ForeverUnitFramesClickKey1:LeftButton")
+-- A spell of one rank has no rank text to wait for.
+M.spellTextPending[2061] = true
+H.check("one rank: the name", Keys.MacroText("spell:2061"), "/cast [@mouseover,help,nodead] Flash Heal")
+M.spellTextPending[2061] = nil
+-- The words while pending: the ID instead of the text.
+M.spellTextPending[6074] = true
+H.check("pending words", ns.RaidSchema.BindingText("spell:6074"), "Cast a spell: Renew (6074)")
+M.spellTextPending[6074] = nil

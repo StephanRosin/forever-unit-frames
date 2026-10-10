@@ -181,3 +181,29 @@ function Spellbook.HighestRank(spell)
     end
     return nil
 end
+
+-- A rank's text (FriendlySpells), "" for a spell of one rank without
+-- one, nil while it is not loaded: the client hands "" for a spell whose
+-- data is not loaded yet and sends SPELL_TEXT_UPDATE when it is, so an
+-- empty text of a spell with several ranks is not read as "no rank".
+function Spellbook.RankText(spell, rank)
+    if rank.subName ~= "" then return rank.subName end
+    if #spell.ranks > 1 then return nil end
+    return ""
+end
+
+-- SPELL_TEXT_UPDATE (SpellDocumentation.lua) fires once per spell whose
+-- text arrives, many at a time after login: fn runs once, a moment after
+-- the last of a burst. Registered guarded (an unknown event raises).
+function Spellbook.OnTextUpdate(fn)
+    local queued = false
+    local ok = pcall(ns.On, "SPELL_TEXT_UPDATE", function()
+        if queued then return end
+        queued = true
+        C_Timer.After(0.2, function()
+            queued = false
+            fn()
+        end)
+    end)
+    return ok
+end

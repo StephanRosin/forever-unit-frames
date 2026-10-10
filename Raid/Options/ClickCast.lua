@@ -373,12 +373,16 @@ end
 
 -- A spell or rank learned (or the book read at login) while the page
 -- shows: its rows offer it.
-ns.On("SPELLS_CHANGED", function()
+local function bookChanged()
     spellCache = nil
     local page = ClickCastPage.page
     if page and page:IsVisible() then
         for _, row in ipairs(page.rows) do row:Refresh() end
     end
-end)
+end
+ns.On("SPELLS_CHANGED", bookChanged)
+-- A rank's text loaded later (Spellbook.RankText): the rank dropdowns
+-- name it.
+ns.RaidSpellbook.OnTextUpdate(bookChanged)
 
 RaidOptions.CUSTOM_PAGES.clickCast = ClickCastPage.Build
