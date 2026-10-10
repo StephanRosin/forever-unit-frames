@@ -60,10 +60,10 @@ M.spellTextPending[139] = true
 H.check("pending: no macro", Keys.MacroText("spell:139"), nil)
 H.check("pending: max unaffected", Keys.MacroText("spell:Renew"), "/cast [@mouseover,help,nodead] Renew")
 M.FireEvent("SPELLS_CHANGED")
-M.RunTimers()
+M.RunTimers(1)
 H.check("pending: the key not bound", GetBindingAction("F", true), "")
 M.SpellTextArrives(139)
-M.RunTimers()
+M.RunTimers(1)
 H.check("text arrived: the rank", b1:GetAttribute("macrotext"), "/cast [@mouseover,help,nodead] Renew(Rank 1)")
 H.check("text arrived: bound", GetBindingAction("F", true), "CLICK ForeverUnitFramesClickKey1:LeftButton")
 -- A spell of one rank has no rank text to wait for.
@@ -100,3 +100,41 @@ ns.RaidSpellbook.FriendlySpells = function(...) reads = reads + 1; return friend
 RC.Set("general", "clickKey2Bind", "spell:139")
 H.check("one read per update", reads, 1)
 ns.RaidSpellbook.FriendlySpells = friendly
+
+-- The text never arrives (no SPELL_TEXT_UPDATE, or two spells of one
+-- name without rank texts): the key tries again a few times over about
+-- ten seconds, then casts the bare name rather than stay unbound; once the
+-- text comes it casts the rank again. Nothing is said in the chat.
+RC.Set("general", "clickKey2Bind", "")
+RC.Set("general", "clickKey3Bind", "")
+RC.Set("general", "clickKey1Bind", "spell:139")
+local chat = #M.chat
+M.spellTextPending[139] = true
+M.FireEvent("SPELLS_CHANGED")
+M.RunTimers(1)
+H.check("waiting: unbound", GetBindingAction("F", true), "")
+-- One retry (a 2 s timer) alone.
+for i, t in ipairs(M.timers) do
+    if t.sec == 2 then
+        table.remove(M.timers, i)
+        t.fn()
+        break
+    end
+end
+M.RunTimers(1)
+H.check("still waiting after a retry", GetBindingAction("F", true), "")
+M.RunTimers()
+H.check("given up: the bare name", b1:GetAttribute("macrotext"), "/cast [@mouseover,help,nodead] Renew")
+H.check("given up: bound", GetBindingAction("F", true), "CLICK ForeverUnitFramesClickKey1:LeftButton")
+H.check("nothing in the chat", #M.chat, chat)
+M.SpellTextArrives(139)
+M.RunTimers()
+H.check("text at last: the rank", b1:GetAttribute("macrotext"), "/cast [@mouseover,help,nodead] Renew(Rank 1)")
+-- And the next wait starts afresh.
+M.spellTextPending[139] = true
+M.FireEvent("SPELLS_CHANGED")
+M.RunTimers(1)
+H.check("a new wait: unbound again", GetBindingAction("F", true), "")
+M.spellTextPending[139] = nil
+M.RunTimers()
+H.checkTrue("the text event registered (inspectable)", ns.RaidSpellbook.textEventRegistered)

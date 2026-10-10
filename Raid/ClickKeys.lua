@@ -26,10 +26,11 @@ local owner
 -- with the spell book's rank text, the name alone when the spell has one
 -- rank without text or is not in the click-casting list; an ID no longer
 -- known as its name (Max, as the cells); nil for an ID the client does
--- not know, and while the rank's text is not loaded (never the name: that
--- would cast Max; the key waits for SPELL_TEXT_UPDATE). list: the
--- click-casting list (Spellbook.FriendlySpells; read when nil).
-local function castName(value, list)
+-- not know. While the rank's text is not loaded: nil (never the name, that
+-- would cast Max) and "pending", or with bare (the wait given up) the name
+-- and "pending". list: the click-casting list (Spellbook.FriendlySpells;
+-- read when nil).
+local function castName(value, list, bare)
     local cast = ns.ClickCast.CastValue(value)
     if not cast or not cast:match("^%d+$") then return cast end
     local id = tonumber(cast)
@@ -37,23 +38,33 @@ local function castName(value, list)
     local spell, rank = Spellbook.FriendlyRank(id, list)
     if not spell then return ns.ClickCast.SpellName(id) end
     local text = Spellbook.RankText(spell, rank)
-    if text == nil then return nil end
+    if text == nil then return bare and spell.name or nil, "pending" end
     if text == "" then return spell.name end
     return spell.name .. "(" .. text .. ")"
 end
 
 -- The macro a key runs for a binding (Raid.ParseBinding), or nil when it
 -- does nothing: a spell or an item on the friendly, living unit under
--- the mouse; a macro text as written. list: as castName's.
+-- the mouse; a macro text as written. Also "pending" while a rank's text
+-- is not loaded. list, bare: as castName's.
 local MACRO = { spell = "/cast [@mouseover,help,nodead] %s", item = "/use [@mouseover,help,nodead] %s" }
-function ClickKeys.MacroText(binding, list)
+function ClickKeys.MacroText(binding, list, bare)
     local kind, value = Raid.ParseBinding(binding or "")
     if not value or value == "" then return nil end
     if kind == "macro" then return value end
     if kind == "item" and value:match("^%d+$") then value = "item:" .. value end
-    if kind == "spell" then value = castName(value, list) end
-    return value and MACRO[kind] and MACRO[kind]:format(value)
+    local pending
+    if kind == "spell" then value, pending = castName(value, list, bare) end
+    return value and MACRO[kind] and MACRO[kind]:format(value), pending
 end
+
+-- A rank's text that does not come (SPELL_TEXT_UPDATE not sent, or not
+-- registered; two spells of one name without rank texts): the keys try
+-- again TEXT_TRIES times, TEXT_WAIT seconds apart (out of combat, as
+-- every update), then cast the bare name rather than stay unbound until
+-- the next change. A text arriving later is taken at the next update.
+local TEXT_WAIT, TEXT_TRIES = 2, 5
+local textTries, retryQueued = 0, false
 
 -- Out of combat: key i's button, made once. Keys act on key down or up
 -- as the ActionButtonUseKeyDown option says, so it takes both.
@@ -117,14 +128,27 @@ function ClickKeys.Update()
             break
         end
     end
+    local waiting = false
     for i, slot in ipairs(Raid.CLICK_KEYS) do
         local key = ns.RaidConfig.Get("general", slot.key)
-        local text = ClickKeys.MacroText(ns.RaidConfig.Get("general", slot.bind), list)
+        local text, pending = ClickKeys.MacroText(ns.RaidConfig.Get("general", slot.bind), list,
+            textTries >= TEXT_TRIES)
+        if key ~= "" and pending then waiting = true end
         if key ~= "" and text then
             local b = button(i)
             b:SetAttribute("macrotext", text)
             SetOverrideBindingClick(owner, false, key, b:GetName(), "LeftButton")
         end
+    end
+    if not waiting then
+        textTries = 0
+    elseif textTries < TEXT_TRIES and not retryQueued then
+        retryQueued = true
+        C_Timer.After(TEXT_WAIT, function()
+            retryQueued = false
+            textTries = textTries + 1
+            update()
+        end)
     end
 end
 

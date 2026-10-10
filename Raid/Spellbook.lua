@@ -238,8 +238,11 @@ function Spellbook.RankText(spell, rank)
 end
 
 -- SPELL_TEXT_UPDATE (SpellDocumentation.lua) fires once per spell whose
--- text arrives, many at a time after login: fn runs once, a moment after
--- the last of a burst. Registered guarded (an unknown event raises).
+-- text arrives, many at a time after login: fn runs once, 0.2 s after
+-- the first of a burst (the texts of the later ones are loaded by then;
+-- their events in that time are let go). Registered guarded (an unknown
+-- event raises): Spellbook.textEventRegistered says whether it took,
+-- nothing is printed (the keys' retries, Raid/ClickKeys.lua, cover it).
 function Spellbook.OnTextUpdate(fn)
     local queued = false
     local ok = pcall(ns.On, "SPELL_TEXT_UPDATE", function()
@@ -250,5 +253,6 @@ function Spellbook.OnTextUpdate(fn)
             fn()
         end)
     end)
+    Spellbook.textEventRegistered = ok and Spellbook.textEventRegistered ~= false
     return ok
 end
