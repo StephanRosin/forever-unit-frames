@@ -19,9 +19,10 @@
 Copies one size onto another as it shows. **Everything** copies every setting; **Without layout and sizes** copies how the cells behave and look but keeps the target's layout and sizes: the settings below stay as they are. Click-casting, the buff watch, the name lists and the minimap button belong to the character and are the same at every size: there is nothing to copy.
 
 - **Size**: Cell width, Cell height
+- **Bars**: Power strip height (%)
 - **Border and corners**: Border size, Corner radius
 - **Font**: Name size, Second line size
-- **Dispellable debuff**: Icon size, Corner of the square, Square size
+- **Dispellable debuff**: Icon size, Corner of the square, Square size, Debuff border size
 - **Debuff row**: Icon size
 - **Top left corner**: Size
 - **Top right corner**: Size

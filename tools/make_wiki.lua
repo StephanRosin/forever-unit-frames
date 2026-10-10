@@ -352,11 +352,13 @@ local RAID_TAB_INTRO = {
     panels = "Panels of their own beside the main panel, each with its own position per raid size: the main tanks"
         .. " and the main assists of the raid, your own lists of tanks and of favorites, and the raid's pets in"
         .. " smaller cells. Their players stay in their groups as well.",
-    cell = "The size of a cell, its bars and colors, its border and corners, heals and shields.",
+    cell = "The size of a cell, its bars and colors (the power strip's height too), its border and corners, heals"
+        .. " and shields.",
     tools = "The raid tools bar, in place of Blizzard's raid manager: where it is and which tools it holds.",
     texts = "The name and the second line in the middle of each cell: their colors and fonts.",
-    debuffs = "The most important dispellable debuff, as an icon in the center or a square in a corner, and a"
-        .. " row that shows every debuff (the one in the center may appear there too). Hidden auras: spells this"
+    debuffs = "The most important dispellable debuff, as an icon in the center or a square in a corner, the"
+        .. " cell tinted or bordered in its type's color (the border lies inside the cell and follows rounded"
+        .. " corners; tint and border combine), and a row that shows every debuff (the one in the center may appear there too). Hidden auras: spells this"
         .. " size leaves out of the debuff row and the corner indicators, together with the unit frames' list"
         .. " for everywhere (General > Appearance); on your group the game hides debuffs only for spells it never"
         .. " keeps secret.",

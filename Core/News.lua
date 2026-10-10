@@ -77,6 +77,12 @@ News.ENTRIES = {
         lines = { "NEWS_0_27_0_SPELLS", "NEWS_0_27_0_UNIT_TAB" },
         action = { text = "NEWS_OPEN_RAID", run = function() ns.RaidOptions.Open(nil, "clickCast") end },
     },
+    -- The debuff-coloured cell border and the power strip's height: the
+    -- button opens the Debuffs tab.
+    ["0.28.0"] = {
+        lines = { "NEWS_0_28_0_DISPEL_BORDER", "NEWS_0_28_0_POWER_HEIGHT" },
+        action = { text = "NEWS_OPEN_RAID", run = function() ns.RaidOptions.Open(nil, "debuffs") end },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

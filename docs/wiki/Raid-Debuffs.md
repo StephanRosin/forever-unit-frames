@@ -2,7 +2,7 @@
 
 # Raid frames: Debuffs
 
-The most important dispellable debuff, as an icon in the center or a square in a corner, and a row that shows every debuff (the one in the center may appear there too). Hidden auras: spells this size leaves out of the debuff row and the corner indicators, together with the unit frames' list for everywhere (General > Appearance); on your group the game hides debuffs only for spells it never keeps secret.
+The most important dispellable debuff, as an icon in the center or a square in a corner, the cell tinted or bordered in its type's color (the border lies inside the cell and follows rounded corners; tint and border combine), and a row that shows every debuff (the one in the center may appear there too). Hidden auras: spells this size leaves out of the debuff row and the corner indicators, together with the unit frames' list for everywhere (General > Appearance); on your group the game hides debuffs only for spells it never keeps secret.
 
 The **Debuffs** tab of the raid options window (`/fuf raid`), under a raid size in the top bar (General | 10 | 20 | 40 | Profiles). Each raid size (10, 20, 40) has a profile of its own: the size picked at the top is the one you edit; a default that differs per size is listed per size.
 
@@ -20,6 +20,8 @@ The **Debuffs** tab of the raid options window (`/fuf raid`), under a raid size 
 <tr><td><b>Corner of the square</b></td><td>Beside a corner indicator in the same corner</td><td>Top left, Top right, Bottom left, Bottom right</td><td>Top right</td></tr>
 <tr><td><b>Square size</b></td><td>In pixels, from 1</td><td>1 – 16</td><td>6</td></tr>
 <tr><td><b>Tint the cell</b></td><td>The whole cell in the debuff type's color</td><td>On, Off</td><td>Off</td></tr>
+<tr><td><b>Border in the debuff color</b></td><td>Inside the cell, in the debuff type's color; with the tint or on its own</td><td>On, Off</td><td>Off</td></tr>
+<tr><td><b>Debuff border size</b></td><td>In pixels</td><td>1 – 6</td><td>2</td></tr>
 </tbody>
 </table>
 

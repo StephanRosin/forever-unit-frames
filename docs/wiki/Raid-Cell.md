@@ -2,7 +2,7 @@
 
 # Raid frames: Cell
 
-The size of a cell, its bars and colors, its border and corners, heals and shields.
+The size of a cell, its bars and colors (the power strip's height too), its border and corners, heals and shields.
 
 The **Cell** tab of the raid options window (`/fuf raid`), under a raid size in the top bar (General | 10 | 20 | 40 | Profiles). Each raid size (10, 20, 40) has a profile of its own: the size picked at the top is the one you edit; a default that differs per size is listed per size.
 
@@ -30,6 +30,7 @@ Heals, shields and the power strip keep the unit frames' standard colors.
 <tr><td><b>Bar texture</b></td><td></td><td>Texture</td><td>Raid</td></tr>
 <tr><td><b>Background color</b></td><td></td><td>Color</td><td><code>#000000</code>, 60 % opaque</td></tr>
 <tr><td><b>Power strip</b></td><td></td><td>Everyone, Mana users, Healers, Off</td><td>Mana users</td></tr>
+<tr><td><b>Power strip height (%)</b></td><td>Share of the cell's height; the health bar takes the rest</td><td>5 – 40</td><td>10</td></tr>
 </tbody>
 </table>
 
