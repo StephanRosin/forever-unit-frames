@@ -28,6 +28,8 @@ local testing = false
 
 local function get(key) return Config.Get(Party.KEY, key) end
 
+function Party.Horizontal() return get("partyOrientation") == "HORIZONTAL" end
+
 -- Slots in a full block: four members, plus the player if shown.
 function Party.Slots()
     return Party.MEMBERS + (get("partyShowPlayer") and 1 or 0)
@@ -38,7 +40,7 @@ end
 -- the next member starts past the castbar's border.
 function Party.Spacing()
     local spacing = Pixel.Snap(get("partySpacing"))
-    if get("partyOrientation") == "HORIZONTAL" then return spacing end
+    if Party.Horizontal() then return spacing end
     return spacing + ns.Castbar.DockedDepth(Party.KEY)
 end
 
@@ -47,7 +49,7 @@ end
 function Party.BlockSize()
     local w, h = Single.Size(Party.KEY)
     local s, n = Party.Spacing(), Party.Slots()
-    if get("partyOrientation") == "HORIZONTAL" then
+    if Party.Horizontal() then
         return n * w + (n - 1) * s, h
     end
     return w, n * h + (n - 1) * s
@@ -76,19 +78,31 @@ function Party.PetStep()
     return Party.PetGap() + 2 * ns.Border.Extent(Party.PET_KEY)
 end
 
+-- The corner the block grows away from, where member 1 sits: top-left,
+-- or bottom-left (growing up) / top-right (growing left).
+function Party.Corner()
+    if not get("partyGrowReverse") then return "TOPLEFT" end
+    return Party.Horizontal() and "TOPRIGHT" or "BOTTOMLEFT"
+end
+
 -- Offset of slot i (1-based) from the block's top-left corner.
 function Party.SlotOffset(i)
     local step = i - 1
     local w, h = Single.Size(Party.KEY)
-    if get("partyOrientation") == "HORIZONTAL" then
-        return step * (w + Party.Spacing()), 0
+    local reverse = get("partyGrowReverse")
+    local blockW, blockH = Party.BlockSize()
+    if Party.Horizontal() then
+        local x = step * (w + Party.Spacing())
+        return reverse and blockW - w - x or x, 0
     end
-    return 0, -step * (h + Party.Spacing())
+    local y = step * (h + Party.Spacing())
+    return 0, -(reverse and blockH - h - y or y)
 end
 
--- No handle while the party frame is switched off.
+-- No handle while the party frame is switched off. The header hangs from
+-- the mover at its growth corner (place re-anchors on every restyle).
 function Party.MoverSpec()
-    return { scope = Party.KEY, point = "TOPLEFT", size = Party.BlockSize, label = function() return ns.L.FRAME_party end,
+    return { scope = Party.KEY, point = Party.Corner(), size = Party.BlockSize, label = function() return ns.L.FRAME_party end,
         active = function() return ns.FrameEnabled(Party.KEY) end }
 end
 
@@ -123,14 +137,17 @@ local function setAttributes(header, attributes)
 end
 
 local function headerAttributes()
-    local horizontal = get("partyOrientation") == "HORIZONTAL"
+    local horizontal = Party.Horizontal()
+    local reverse = get("partyGrowReverse")
     local spacing = Party.Spacing()
+    local point
+    if horizontal then point = reverse and "RIGHT" or "LEFT" else point = reverse and "BOTTOM" or "TOP" end
     return {
         template = Party.TEMPLATE, templateType = "Button", sortMethod = "INDEX",
         showParty = true, showPlayer = get("partyShowPlayer"), showSolo = get("partyShowSolo"),
-        point = horizontal and "LEFT" or "TOP",
-        xOffset = horizontal and spacing or 0,
-        yOffset = horizontal and 0 or -spacing,
+        point = point,
+        xOffset = horizontal and (reverse and -spacing or spacing) or 0,
+        yOffset = horizontal and 0 or (reverse and spacing or -spacing),
     }
 end
 
@@ -142,15 +159,21 @@ local function blockCorner()
     return Pixel.Centre(get("x"), w) - w / 2, Pixel.Centre(get("y"), h) + h / 2
 end
 
--- The block hangs from its top-left corner. With a mover the header
--- follows the mover.
+-- The header hangs from the block's growth corner, so it fills from
+-- there as members join. With a mover the header follows the mover.
 local function place(header)
+    local corner = Party.Corner()
+    header:ClearAllPoints()
     if header.mover then
         ns.Movers.Sync(header)
+        header:SetPoint(corner, header.mover, corner, 0, 0)
         return
     end
-    header:ClearAllPoints()
-    header:SetPoint("TOPLEFT", UIParent, "CENTER", blockCorner())
+    local x, y = blockCorner()
+    local w, h = Party.BlockSize()
+    if corner == "TOPRIGHT" then x = x + Pixel.Snap(w) end
+    if corner == "BOTTOMLEFT" then y = y - Pixel.Snap(h) end
+    header:SetPoint(corner, UIParent, "CENTER", x, y)
 end
 
 function Party.StyleButton(button)

@@ -221,6 +221,9 @@ Settings.Define({ key = "combatFeedbackOutline", code = "CU", scope = "frame", t
 local PARTY = { party = true }
 Settings.Define({ key = "partyOrientation", code = "OR", scope = "frame", only = PARTY, type = "enum",
     values = { "VERTICAL", "HORIZONTAL" }, default = "VERTICAL" })
+-- Grow the other way: up from the block's bottom edge (left from its
+-- right edge when horizontal). Member 1 then sits at that edge.
+Settings.Define({ key = "partyGrowReverse", code = "GR", scope = "frame", only = PARTY, type = "bool", default = false })
 Settings.Define({ key = "partySpacing", code = "GS", scope = "frame", only = PARTY, type = "int", min = 0, max = 60, default = 12 })
 Settings.Define({ key = "partyShowPlayer", code = "SP", scope = "frame", only = PARTY, type = "bool", default = false })
 Settings.Define({ key = "partyShowSolo", code = "SO", scope = "frame", only = PARTY, type = "bool", default = false })

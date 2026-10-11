@@ -16,6 +16,7 @@ Click-casting on the party: Layout tab (or General > Frames); the bindings are i
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
 <tr><td><b>Orientation</b></td><td></td><td>Vertical, Horizontal</td><td>Vertical</td><td>Party</td></tr>
+<tr><td><b>Grow upward</b></td><td>From the bottom up; from right to left when horizontal</td><td>On, Off</td><td>Off</td><td>Party</td></tr>
 <tr><td><b>Spacing</b></td><td></td><td>0 – 60</td><td>27</td><td>Party</td></tr>
 <tr><td><b>Show yourself</b></td><td></td><td>On, Off</td><td>Off</td><td>Party</td></tr>
 <tr><td><b>Show when solo</b></td><td>Shows your own frame outside a group</td><td>On, Off</td><td>Off</td><td>Party</td></tr>

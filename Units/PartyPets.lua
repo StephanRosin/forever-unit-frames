@@ -97,7 +97,7 @@ Config.Derive(Pets.KEY, Party.KEY, resolve)
 -- equal it). In a column the pets are a list of their own below the
 -- block, with PetStep between them.
 function Pets.Gap()
-    if get("partyOrientation") == "HORIZONTAL" then
+    if Party.Horizontal() then
         -- Narrower (or wider) pets than members: the gap makes up the
         -- difference, so each pet still starts under its owner.
         local memberW = Single.Size(Party.KEY)
@@ -115,12 +115,20 @@ function Pets.ListOffset()
     return ns.Pixel.Snap(get("partyPetsX")), ns.Pixel.Snap(get("partyPetsY"))
 end
 
--- Offset of pet i (1-based) from the pet list's top-left corner.
+-- A row growing left (Party.Corner): pet 1 under the rightmost member.
+local function rowFromRight()
+    return Party.Horizontal() and get("partyGrowReverse")
+end
+
+-- Offset of pet i (1-based) from the pet list's top-left corner (the
+-- block's left edge).
 function Pets.SlotOffset(i)
     local w, h = Single.Size(Pets.KEY)
     local step = (i - 1) * Pets.Gap()
-    if get("partyOrientation") == "HORIZONTAL" then
-        return (i - 1) * w + step, 0
+    if Party.Horizontal() then
+        local x = (i - 1) * w + step
+        if rowFromRight() then x = Party.BlockSize() - w - x end
+        return x, 0
     end
     return 0, -((i - 1) * h + step)
 end
@@ -134,13 +142,14 @@ end
 -- Mirrors the party header's attributes, so pets show exactly when
 -- their owners' block does.
 local function headerAttributes()
-    local horizontal = get("partyOrientation") == "HORIZONTAL"
+    local horizontal = Party.Horizontal()
     local step = Pets.Gap()
+    local fromRight = rowFromRight()
     return {
         template = Pets.TEMPLATE, templateType = "Button", sortMethod = "INDEX",
         showParty = true, showPlayer = get("partyShowPlayer"), showSolo = get("partyShowSolo"),
-        point = horizontal and "LEFT" or "TOP",
-        xOffset = horizontal and step or 0,
+        point = horizontal and (fromRight and "RIGHT" or "LEFT") or "TOP",
+        xOffset = horizontal and (fromRight and -step or step) or 0,
         yOffset = horizontal and 0 or -step,
     }
 end
@@ -227,7 +236,8 @@ function Pets.StyleAll(testing)
         setAttributes(header, headerAttributes())
         header:ClearAllPoints()
         local dx, dy = Pets.ListOffset()
-        header:SetPoint("TOPLEFT", Party.header, "BOTTOMLEFT", dx, -Party.PetListOffset() + dy)
+        local side = rowFromRight() and "RIGHT" or "LEFT"
+        header:SetPoint("TOP" .. side, Party.header, "BOTTOM" .. side, dx, -Party.PetListOffset() + dy)
         -- A button per slot made now, out of combat (Units/Units.lua), as
         -- for the members: a pet appearing in combat shows auras at once.
         if on and not Pets.Beside() then ns.Units.PrebuildButtons(header, Party.Slots()) end
