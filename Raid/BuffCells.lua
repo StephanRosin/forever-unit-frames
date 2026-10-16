@@ -80,12 +80,33 @@ function Cells.Refresh()
     end
 end
 
+-- Only shown or hidden: the scan's result changed (twice a second at
+-- most), or a cell kept its unit while another member took it.
+function Cells.Paint()
+    if not ns.RaidConfig.Profile() then return end
+    local on = general("buffCellIcon") == true
+    for _, cell in ipairs(Cell.buttons) do paint(cell, on) end
+end
+
+-- Cells come and go one at a time (about 40 RAID_CELLS_CHANGED on joining
+-- a raid): placed once, on the next frame, not once per cell.
+local pending = false
+function Cells.Schedule()
+    if pending then return end
+    pending = true
+    C_Timer.After(0, function()
+        pending = false
+        Cells.Refresh()
+    end)
+end
+
 local KEYS = { buffCellIcon = true, buffCellIconPoint = true, iconSize = true }
-ns.Listen("RAID_BUFFS_CHANGED", Cells.Refresh)
-ns.Listen("RAID_CELLS_CHANGED", Cells.Refresh)
-ns.Listen("RAID_SIZE_CHANGED", Cells.Refresh)
--- A cell can keep its unit while another member takes it.
-ns.On("GROUP_ROSTER_UPDATE", Cells.Refresh)
+ns.Listen("RAID_BUFFS_CHANGED", Cells.Paint)
+ns.Listen("RAID_CELLS_CHANGED", Cells.Schedule)
+ns.Listen("RAID_SIZE_CHANGED", Cells.Schedule)
+-- What changed in combat is placed after it.
+ns.On("PLAYER_REGEN_ENABLED", Cells.Schedule)
+ns.On("GROUP_ROSTER_UPDATE", Cells.Paint)
 ns.Listen("RAID_CONFIG_CHANGED", function(_, key)
     if key == nil or KEYS[key] then Cells.Refresh() end
 end)

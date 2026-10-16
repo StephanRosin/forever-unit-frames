@@ -196,6 +196,11 @@ O.Open("general", "profile")
 click(O.resetAllButton)
 H.check("reset all asks to confirm", O.resetAllButton.text:GetText(), L.CONFIRM)
 H.check("reset all waits", ns.Config.Get("target", "width"), 333)
+-- Another setting changed meanwhile (a slider on the same page): the
+-- armed button keeps saying so.
+ns.Config.Set("player", "height", 47)
+H.check("still armed: still says so", O.resetAllButton.text:GetText(), L.CONFIRM)
+H.check("still armed: still red", O.resetAllButton.text._color[2], ns.Style.COLORS.error[2])
 click(O.resetAllButton)
 H.check("reset all applied", ns.Config.Get("target", "width"), 220)
 H.check("reset all label restored", O.resetAllButton.text:GetText(), L.RESET_ALL)

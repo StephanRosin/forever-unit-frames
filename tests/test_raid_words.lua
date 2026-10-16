@@ -7,7 +7,7 @@ H.check("German: the arrangement section is not the tab's word", de.RAID_SECTION
 H.check("German: arrangement", de.RAID_SECTION_arrangement, "Blöcke und Zellen")
 H.check("German: target line", de.RAID_SETTING_targetBorder, "Helle Linie bei deinem Ziel")
 H.check("Spanish: only with Group by: Class", es.RAID_HINT_classOrder,
-    "Solo con Agrupar por: Clase; p. ej. Guerrero, Sacerdote, Paladín, Druida")
+    "Solo con Agrupar por: Clase (principal o propio); p. ej. Guerrero, Sacerdote, Paladín, Druida")
 H.check("Spanish: from the screen's centre (x)", es.RAID_HINT_x, "Esquina sup. izquierda, desde el centro de la pantalla")
 H.check("Spanish: from the screen's centre (y)", es.RAID_HINT_y, es.RAID_HINT_x)
 H.check("French: from the screen's centre (x)", fr.RAID_HINT_x, "Coin sup. gauche, depuis le centre de l'écran")

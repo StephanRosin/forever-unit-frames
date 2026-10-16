@@ -16,7 +16,7 @@ local function on() local row = rowFor("classOrder"); return row.edit:IsEnabled(
 
 RO.Open(10, "layout")
 H.check("group by group: locked", on(), false)
-H.check("hint", rowFor("classOrder").hintText:GetText(), "Only with Group by: Class; e.g. Warrior, Priest, Paladin, Druid")
+H.check("hint", rowFor("classOrder").hintText:GetText(), "Only with Group by: Class (main or an own panel); e.g. Warrior, Priest, Paladin, Druid")
 H.checkTrue("the other rows stay usable", rowFor("sortBy").button:IsEnabled())
 
 -- Picked in the window's dropdown: at once.
@@ -47,11 +47,19 @@ H.checkTrue("after combat: usable", on())
 RC.Set("r10", "groupBy", "GROUP")
 H.check("back to groups: locked", on(), false)
 
+-- An own panel grouping by class is ordered by it too: usable then.
+RC.Set("r10", "panel2Show", true)
+RC.Set("r10", "panel2GroupBy", "CLASS")
+H.checkTrue("own panel by class: usable", on())
+RC.Set("r10", "panel2GroupBy", "GROUP")
+H.check("own panel by group: locked", on(), false)
+RC.Set("r10", "panel2Show", false)
+
 -- The hint in every language.
 for code, text in pairs({
-    deDE = "Nur mit Gruppieren nach: Klasse; z. B. Krieger, Priester, Paladin, Druide",
-    esES = "Solo con Agrupar por: Clase; p. ej. Guerrero, Sacerdote, Paladín, Druida",
-    frFR = "Actif si Regrouper par : Classe ; ex. Guerrier, Prêtre, Paladin, Druide" }) do
+    deDE = "Nur mit Gruppieren nach: Klasse (Haupt- oder eigenes Panel); z. B. Krieger, Priester, Paladin, Druide",
+    esES = "Solo con Agrupar por: Clase (principal o propio); p. ej. Guerrero, Sacerdote, Paladín, Druida",
+    frFR = "Actif si Regrouper par : Classe (principal ou propre) ; ex. Guerrier, Prêtre, Paladin, Druide" }) do
     H.check(code .. ": hint", ns.Locales[code].RAID_HINT_classOrder, text)
 end
 ns.Config.Set("general", "language", "deDE")

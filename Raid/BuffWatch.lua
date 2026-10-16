@@ -253,17 +253,28 @@ end
 -- Out of combat: the state anew; in combat nothing (the last one stays).
 function BuffWatch.Scan()
     if InCombatLockdown() then return end
-    local members, secret = BuffWatch.Members(), aurasSecret()
-    local threshold = (general("buffExpiring") or 3) * 60
-    local state = { entries = {}, missingUnits = {}, missingGUIDs = {} }
     -- Solo: nothing is watched.
-    for _, entry in ipairs(IsInGroup() and BuffWatch.Watched() or {}) do
-        state.entries[#state.entries + 1] = scanEntry(entry, members, secret, threshold, state)
-    end
-    BuffWatch.state = state
+    local watched = IsInGroup() and BuffWatch.Watched() or {}
+    local wasEmpty = #BuffWatch.state.entries == 0
     BuffWatch.armed = true
     BuffWatch.scans = BuffWatch.scans + 1
     BuffWatch.dirty, BuffWatch.since = false, 0
+    -- Nothing to watch (alone, or a class without buffs): no roster read,
+    -- and no event while it stays that way (it would redraw the window
+    -- and every cell twice a second).
+    if #watched == 0 then
+        if wasEmpty then return end
+        BuffWatch.state = { entries = {}, missingUnits = {}, missingGUIDs = {} }
+        ns.Fire("RAID_BUFFS_CHANGED")
+        return
+    end
+    local members, secret = BuffWatch.Members(), aurasSecret()
+    local threshold = (general("buffExpiring") or 3) * 60
+    local state = { entries = {}, missingUnits = {}, missingGUIDs = {} }
+    for _, entry in ipairs(watched) do
+        state.entries[#state.entries + 1] = scanEntry(entry, members, secret, threshold, state)
+    end
+    BuffWatch.state = state
     ns.Fire("RAID_BUFFS_CHANGED")
 end
 

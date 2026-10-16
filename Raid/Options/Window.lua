@@ -548,8 +548,20 @@ local paintFooter
 -- bar's position while it is free (it folds docked and free).
 local function toolsFree() return RaidConfig.Get("general", "toolsMode") ~= "DOCKED" end
 -- Other tabs' files add theirs (Raid/Options/Buffs.lua).
+-- The class order also orders a shown own panel's blocks when that panel
+-- groups by class (Raid/OwnPanels.lua).
+local function groupsByClass()
+    local scope = Raid.Scope(RaidOptions.Size())
+    if RaidConfig.Get(scope, "groupBy") == "CLASS" then return true end
+    for _, slot in ipairs(Raid.OWN_PANELS) do
+        if RaidConfig.Get(scope, slot.id .. "Show") == true and RaidConfig.Get(scope, slot.id .. "GroupBy") == "CLASS" then
+            return true
+        end
+    end
+    return false
+end
 local ROW_ACTIVE = {
-    classOrder = function() return RaidConfig.Get(Raid.Scope(RaidOptions.Size()), "groupBy") == "CLASS" end,
+    classOrder = groupsByClass,
     toolsX = toolsFree, toolsY = toolsFree,
 }
 RaidOptions.ROW_ACTIVE = ROW_ACTIVE

@@ -565,8 +565,12 @@ local function setRowStates()
         -- (its mode row is "clickCast"), not their rules.
         local active = not row.clickCastRow and ROW_ACTIVE[row.key]
         local on = not inCombat and (not active or active(scope))
-        row.enabledState = on
-        row:SetEnabled(on)
+        -- Only a row whose state changes: SetEnabled repaints a button as
+        -- idle, which would hide an armed two-click button's "Confirm".
+        if row.enabledState ~= on then
+            row.enabledState = on
+            row:SetEnabled(on)
+        end
     end)
 end
 

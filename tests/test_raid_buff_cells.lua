@@ -96,3 +96,18 @@ RC.Set("general", "buffCellIcon", false)
 H.check("off: gone", shown(b), false)
 H.check("nothing blocked", #M.blocked, 0)
 H.check("no error", #M.errors, 0)
+
+-- Cells changing one by one (joining a raid): placed once, not per cell;
+-- a scan's result only repaints.
+RC.Set("general", "buffCellIcon", true)
+local placed = 0
+local icon = b.buffIcon.icon
+local realSetPoint = icon.SetPoint
+icon.SetPoint = function(...) placed = placed + 1; return realSetPoint(...) end
+for _ = 1, 10 do ns.Fire("RAID_CELLS_CHANGED") end
+M.RunTimers()
+H.check("ten cell changes: placed once", placed, 1)
+ns.Fire("RAID_BUFFS_CHANGED")
+M.RunTimers()
+H.check("a scan only repaints", placed, 1)
+icon.SetPoint = realSetPoint

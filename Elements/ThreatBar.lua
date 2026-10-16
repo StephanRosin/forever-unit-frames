@@ -189,8 +189,9 @@ end
 local function detailed(unit, mob)
     local ok, tanking, status, scaled, raw, value = pcall(UnitDetailedThreatSituation, unit, mob)
     if not ok then return nil end
-    for _, v in ipairs({ tanking, status, scaled, raw, value }) do
-        if Secrets.IsSecret(v) then return "secret" end
+    local IsSecret = Secrets.IsSecret
+    if IsSecret(tanking) or IsSecret(status) or IsSecret(scaled) or IsSecret(raw) or IsSecret(value) then
+        return "secret"
     end
     if status == nil then return nil end
     return tanking and true or false, status, scaled or 0, raw or 0, value or 0
@@ -467,8 +468,11 @@ driver:SetScript("OnUpdate", function(_, dt)
         if frame and frame.threatBar and frame.threatBar:IsShown() then ThreatBar.Refresh(frame) end
     end
 end)
-for _, event in ipairs({ "UNIT_THREAT_LIST_UPDATE", "UNIT_THREAT_SITUATION_UPDATE", "PLAYER_TARGET_CHANGED",
-    "GROUP_ROSTER_UPDATE", "PLAYER_REGEN_ENABLED", "PLAYER_REGEN_DISABLED" }) do
+-- Not the threat events: they come for every mob, dozens a second in a
+-- raid, each a scan of the whole group, while the timer above already
+-- refreshes every INTERVAL in combat.
+for _, event in ipairs({ "PLAYER_TARGET_CHANGED", "GROUP_ROSTER_UPDATE", "PLAYER_REGEN_ENABLED",
+    "PLAYER_REGEN_DISABLED" }) do
     pcall(driver.RegisterEvent, driver, event)
 end
 driver:SetScript("OnEvent", function(_, event)

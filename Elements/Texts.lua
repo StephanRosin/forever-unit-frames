@@ -793,15 +793,22 @@ local function isHealthValue(frame, slot)
     return slot.bar == "health" and SAMPLE_TAGS[Config.Get(frame.key, slot.setting)] ~= nil
 end
 
-function Texts.Update(frame)
+-- Events that only change one bar's numbers: while the status word stays,
+-- only that bar's value texts are set again (they come on every tick of
+-- every frame; names, colours, badge and class icon stay as they are).
+Texts.VALUE_EVENTS = { UNIT_HEALTH = "health", UNIT_MAXHEALTH = "health",
+    UNIT_POWER_FREQUENT = "power", UNIT_MAXPOWER = "power" }
+
+function Texts.Update(frame, event)
     local showSurname = Config.Get(frame.key, "showSurname")
-    local opts = {
-        levelColored = Config.Get(frame.key, "levelColorMode") == "DIFFICULTY",
-        compact = Config.Get(frame.key, "textCompact"),
-        infoColor = Config.Get(frame.key, "infoClassColor"),
-        scope = frame.key,
-        sampleName = ns.Health.Sample(frame) and ns.Health.Sample(frame).name,
-    }
+    -- One table per frame, filled anew: no garbage per event.
+    local opts = frame.textOpts or {}
+    frame.textOpts = opts
+    opts.levelColored = Config.Get(frame.key, "levelColorMode") == "DIFFICULTY"
+    opts.compact = Config.Get(frame.key, "textCompact")
+    opts.infoColor = Config.Get(frame.key, "infoClassColor")
+    opts.scope = frame.key
+    opts.sampleName = ns.Health.Sample(frame) and ns.Health.Sample(frame).name
     local sample = sampleHealth(frame)
     local word = ns.UnitStatus.Word(ns.UnitStatus.Of(frame))
     -- A cell's second line also says AFK (the badge's word; the badge
@@ -812,6 +819,18 @@ function Texts.Update(frame)
         word = "AFK"
     end
     local wordSlot = word and statusSlot(frame)
+    local only = Texts.VALUE_EVENTS[event]
+    if only and frame.textWord == (word or false) then
+        for _, slot in ipairs(SLOTS) do
+            local tag = Config.Get(frame.key, slot.setting)
+            if (slot.kind or slot.bar) == only and SAMPLE_TAGS[tag] and slot.field ~= wordSlot
+                and not (word and isHealthValue(frame, slot)) then
+                Texts.Apply(frame.texts[slot.field], tag, frame.unit, only, showSurname, sample, opts)
+            end
+        end
+        return
+    end
+    frame.textWord = word or false
     for _, slot in ipairs(SLOTS) do
         local fs = frame.texts[slot.field]
         if slot.field == wordSlot then
