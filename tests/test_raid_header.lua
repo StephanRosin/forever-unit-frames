@@ -149,8 +149,12 @@ RC.Set("r20", "cellSpacing", 2)
 RC.Set("general", "enabled", false)
 H.check("off: headers hidden", Header.headers[1]:IsShown(), false)
 H.check("off: panel hidden", Header.panel:IsShown(), false)
+local bound = 0
+for _, cell in ipairs(Cell.buttons) do if cell.unit then bound = bound + 1 end end
+H.check("off: hidden cells let go of their units", bound, 0)
 RC.Set("general", "enabled", true)
 H.checkTrue("on again", Header.headers[1]:IsShown() and Header.panel:IsShown())
+H.check("on again: units back", Header.headers[1]:GetAttribute("child1").unit ~= nil, true)
 
 -- A party: shown only with the raid view in party on.
 M.SetRaidRoster({})

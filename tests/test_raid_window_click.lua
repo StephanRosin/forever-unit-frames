@@ -122,6 +122,7 @@ H.check("copied: middle", RC.Get("general", "click3"), "assist")
 H.check("copied: key", RC.Get("general", "clickKey1"), "Q")
 H.check("copied: what it casts", RC.Get("general", "clickKey1Bind"), "item:1251")
 H.check("copied: the rest back to the defaults", RC.Get("general", "click1Shift"), "")
+H.checkTrue("copy can be undone", ns.RaidTemplates.CanUndo())
 -- Spells go through this character's spell book: a known one as it
 -- writes it, an unknown one is left out (the slot keeps its default) and
 -- named in the chat.

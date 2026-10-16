@@ -191,7 +191,8 @@ function Profiles.CopyClickCast(key)
     end
     if #dropped > 0 then ns.Print(ns.L.RAID_CLICK_COPY_DROPPED:format(table.concat(dropped, ", "))) end
     if buffKeyDropped then ns.Print(ns.L.RAID_CLICK_COPY_BUFF_KEY:format(buffKey)) end
-    return RaidConfig.SetKeys("general", values)
+    -- One change that Undo takes back (Raid/Templates.lua); refused in combat.
+    return ns.RaidTemplates.ApplyChanges({ { scope = "general", values = values } })
 end
 
 function Profiles.ResetSize(size)
@@ -243,27 +244,6 @@ function Profiles.ImportSizes(str)
     return sizes, nil, decoded, rejected
 end
 
--- Puts an exported size on `size`, replacing everything that size had.
--- A string without any size is refused (RAID_NO_SIZE), unless it is
--- exactly what a size left at the defaults exports: the format version
--- alone, which resets the size; one of several sizes too
--- (RAID_SEVERAL_SIZES: Profiles.ImportAll takes it). Returns true and how
--- many entries the codec could not read (they are left out); or nil and
--- an error key.
-function Profiles.Import(str, size)
-    local sizes, err, decoded, rejected = Profiles.ImportSizes(str)
-    if not sizes then return nil, err end
-    if #sizes > 1 then return nil, "RAID_SEVERAL_SIZES" end
-    local target = Raid.Scope(size)
-    if #sizes == 1 then
-        RaidConfig.CopyScopeFrom(decoded, Raid.Scope(sizes[1]), target)
-        return true, rejected
-    end
-    if str ~= tostring(RaidCodec.VERSION) then return nil, "RAID_NO_SIZE" end
-    RaidConfig.ResetScope(target)
-    return true, rejected
-end
-
 -- Every per-size setting of size `to` as a size `from` of a decoded
 -- profile shows it: its own values, that size's defaults for the rest.
 local function sizeValues(decoded, from, to)
@@ -276,6 +256,32 @@ local function sizeValues(decoded, from, to)
         end
     end
     return values
+end
+
+-- Puts an exported size on `size`, replacing everything that size had.
+-- A string without any size is refused (RAID_NO_SIZE), unless it is
+-- exactly what a size left at the defaults exports: the format version
+-- alone, which resets the size; one of several sizes too
+-- (RAID_SEVERAL_SIZES: Profiles.ImportAll takes it). Returns true and how
+-- many entries the codec could not read (they are left out); or nil and
+-- an error key (also RAID_COMBAT, RAID_REFUSED). One change that Undo
+-- takes back (Raid/Templates.lua), as ImportAll.
+function Profiles.Import(str, size)
+    local sizes, err, decoded, rejected = Profiles.ImportSizes(str)
+    if not sizes then return nil, err end
+    if #sizes > 1 then return nil, "RAID_SEVERAL_SIZES" end
+    local target = Raid.Scope(size)
+    local values
+    if #sizes == 1 then
+        values = sizeValues(decoded, Raid.Scope(sizes[1]), target)
+    elseif str == tostring(RaidCodec.VERSION) then
+        values = sizeValues({ [target] = {} }, target, target)
+    else
+        return nil, "RAID_NO_SIZE"
+    end
+    if InCombatLockdown() then return nil, "RAID_COMBAT" end
+    if not ns.RaidTemplates.ApplyChanges({ { scope = target, values = values } }) then return nil, "RAID_REFUSED" end
+    return true, rejected
 end
 
 -- Another character's size onto one of ours, as one change that Undo

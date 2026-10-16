@@ -387,14 +387,24 @@ end
 
 local function runImport()
     local text = Options.importArea:GetText() or ""
-    local profile, err = ns.Codec.Decode(text:match("^%s*(.-)%s*$"))
+    local profile, err, rejected = ns.Codec.Decode(text:match("^%s*(.-)%s*$"))
     if not profile then
         showImportMessage(L["IMPORT_" .. err], "error")
         return
     end
+    -- Import replaces every frame: a text of which nothing could be read
+    -- would reset them all. Only the bare version ("1") is a real all-defaults profile.
+    local empty = true
+    for _, values in pairs(profile) do
+        if next(values) then empty = false end
+    end
+    if empty and rejected > 0 then
+        showImportMessage(L.IMPORT_CODEC_FORMAT, "error")
+        return
+    end
     Config.Import(profile)
     Options.importArea:SetText("")
-    showImportMessage(L.IMPORT_DONE, "accent")
+    showImportMessage(rejected > 0 and L.IMPORT_SKIPPED:format(rejected) or L.IMPORT_DONE, "accent")
 end
 
 local function importBlock(page)

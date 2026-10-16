@@ -84,6 +84,8 @@ for _, b in ipairs(Cell.fakes) do
 end
 H.checkTrue("test cells exist", fakes > 0)
 ns.RaidTestMode.Set(false)
+-- Leaving test mode hands the cells their units again and lays out.
+M.RunTimers()
 
 -- Bindings are not the panel's business: no relayout.
 local placed = 0

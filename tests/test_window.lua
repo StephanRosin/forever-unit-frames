@@ -87,6 +87,16 @@ H.check("import applied", ns.Config.Get("player", "width"), 222)
 ns.Options.importArea:SetText("9;xx")
 ns.Options.importButton:GetScript("OnClick")(ns.Options.importButton)
 H.check("bad import keeps settings", ns.Config.Get("player", "width"), 222)
+-- Nothing readable: refused, not an all-defaults profile.
+ns.Options.importArea:SetText("1;garbage")
+ns.Options.importButton:GetScript("OnClick")(ns.Options.importButton)
+H.check("unreadable import keeps settings", ns.Config.Get("player", "width"), 222)
+H.check("unreadable import: refused", ns.Options.importMessage:GetText(), ns.L.IMPORT_CODEC_FORMAT)
+-- Partly readable: imported, the rest named.
+ns.Options.importArea:SetText("1;pW224;garbage")
+ns.Options.importButton:GetScript("OnClick")(ns.Options.importButton)
+H.check("partial import applied", ns.Config.Get("player", "width"), 224)
+H.check("partial import: skipped named", ns.Options.importMessage:GetText(), ns.L.IMPORT_SKIPPED:format(1))
 
 -- Position saved
 local f = ns.Options.frame

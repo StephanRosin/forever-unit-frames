@@ -423,7 +423,19 @@ function Panel.New(spec)
         local on = enabled and not test
         for i, h in ipairs(P.headers) do
             h:Hide()
-            if on and i <= #P.blocks then h:Show() end
+            if on and i <= #P.blocks then
+                h:Show()
+            else
+                -- A hidden header keeps its children's units (Blizzard's
+                -- header never clears them), and so their events: let go.
+                -- Showing it again assigns them anew.
+                local j, child = 1, h:GetAttribute("child1")
+                while child do
+                    if child:GetAttribute("unit") then child:SetAttribute("unit", nil) end
+                    j = j + 1
+                    child = h:GetAttribute("child" .. j)
+                end
+            end
         end
         if not enabled then
             -- Off: nothing to lay out (its plain frames hide below); laid
