@@ -30,7 +30,7 @@ H.checkTrue("sanitise: every scope present", type(clean.general) == "table" and 
 
 -- The unit-frame registry is one of them and unchanged.
 local S = ns.Settings
-H.check("unit frames: scopes", table.concat(S.SCOPES, ","), "general,player,target,targettarget,pet,focus,party")
+H.check("unit frames: scopes", table.concat(S.SCOPES, ","), "general,player,target,targettarget,pet,pettarget,focus,party")
 H.check("unit frames: party prefix", S.PREFIX.party, "y")
 H.check("unit frames: width code", S.Get("width").code, "W")
 H.check("unit frames: text max", S.TEXT_MAX, 64)

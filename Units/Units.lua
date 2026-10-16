@@ -20,6 +20,9 @@ ns.Units.List = {
       eventUnit = { UNIT_TARGET = "target" }, poll = 0.2 },
     { key = "pet", unit = "pet", events = { "PLAYER_ENTERING_WORLD", "UNIT_PET" },
       eventUnit = { UNIT_PET = "player" } },
+    -- Like the target of target: no unit events of its own, so a timer too.
+    { key = "pettarget", unit = "pettarget", events = { "PLAYER_ENTERING_WORLD", "UNIT_PET", "UNIT_TARGET" },
+      eventUnit = { UNIT_PET = "player", UNIT_TARGET = "pet" }, poll = 0.2 },
     { key = "focus", unit = "focus", events = { "PLAYER_FOCUS_CHANGED" }, available = ns.Units.FocusAvailable },
     -- Built by Units/Party.lua from a group header, not as a single frame.
     { key = "party", group = true },

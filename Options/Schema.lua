@@ -46,7 +46,7 @@ Schema.GENERAL = {
         { id = "textures", keys = { "barTexture", "backgroundColor", "titleBackground" } },
         { id = "absorbs", keys = { "absorbMode", "absorbColor" } },
         { id = "healPrediction", keys = { "healMyColor", "healOtherColor" } },
-        { id = "powerColors", keys = { "powerColorMana", "powerColorRage", "powerColorFocus", "powerColorEnergy" } },
+        { id = "powerColors", keys = { "powerColorMode", "powerColorMana", "powerColorRage", "powerColorFocus", "powerColorEnergy" } },
     } },
     -- The combat swords, the target highlight's colour; how range fading
     -- measures and how strongly it fades; the switches
@@ -71,7 +71,7 @@ Schema.FRAME = {
         { id = "size", keys = { "width", "height" } },
         { id = "position", keys = { "x", "y" } },
         { id = "barHeights", keys = { "titlePercent", "healthPercent", "powerPercent", "powerEnabled", "powerHideEmpty" } },
-        { id = "portrait", keys = { "portraitMode", "portraitStyle" } },
+        { id = "portrait", keys = { "portraitMode", "portraitStyle", "portraitHeight", "portraitZoom", "portraitOffsetY" } },
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },
         -- General's switch, overridable here (decision 76).
@@ -94,7 +94,7 @@ Schema.FRAME = {
         { id = "textures", keys = { "barTexture", "backgroundColor", "titleBackground" } },
         { id = "absorbs", keys = { "absorbEnabled", "absorbMode", "absorbColor" } },
         { id = "healPrediction", keys = { "healPrediction", "healOverflow", "healBeyond", "powerMatchesHealth", "healMyColor", "healOtherColor" } },
-        { id = "powerColors", keys = { "powerColorMana", "powerColorRage", "powerColorFocus", "powerColorEnergy" } },
+        { id = "powerColors", keys = { "powerColorMode", "powerColorMana", "powerColorRage", "powerColorFocus", "powerColorEnergy" } },
         { id = "powerCost", keys = { "powerCostPrediction", "powerCostColor" } },
         { id = "druidMana", keys = { "druidMana", "druidManaHeight" } },
         { id = "fiveSecondRule", keys = { "fsrEnabled", "fsrSpark", "fsrSparkDirection", "fsrSparkWidth", "fsrSparkColor", "fsrText",

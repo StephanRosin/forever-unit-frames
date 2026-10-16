@@ -143,12 +143,63 @@ function Debug.Auras()
     end
 end
 
+-- /fuf threatdebug: what the threat bars get for you and your pet. Plain
+-- values only, checked as such; a secret one is named, never printed.
+local function show(v)
+    if isSecret(v) then return "secret" end
+    return tostring(v)
+end
+
+local function pack(...) return { n = select("#", ...), ... } end
+
+local function threatLine(unit, mob)
+    local values = pack(pcall(UnitDetailedThreatSituation, unit, mob))
+    local out = {}
+    for i = 2, math.max(values.n, 6) do out[#out + 1] = show(values[i]) end
+    local status = pack(pcall(UnitThreatSituation, unit, mob))
+    local secrets = C_Secrets or {}
+    local valuesSecret = secrets.ShouldUnitThreatValuesBeSecret
+        and yesNo(secrets.ShouldUnitThreatValuesBeSecret, unit, mob) or "missing"
+    local stateSecret = secrets.ShouldUnitThreatStateBeSecret
+        and yesNo(secrets.ShouldUnitThreatStateBeSecret, unit, mob) or "missing"
+    return ("%s on %s: detailed %s (%s) status %s; values secret=%s state secret=%s")
+        :format(unit, mob, values[1] and "ok" or "error", table.concat(out, ","),
+            status[1] and show(status[2]) or "error", valuesSecret, stateSecret)
+end
+
+function Debug.Threat()
+    ns.Print("threatdebug: combat=" .. yesNo(InCombatLockdown) .. " pet=" .. yesNo(UnitExists, "pet")
+        .. " pettarget=" .. yesNo(UnitExists, "pettarget") .. " hostile=" .. yesNo(UnitCanAttack, "player", "pettarget"))
+    ns.Print(threatLine("pet", "pettarget"))
+    ns.Print(threatLine("player", "pettarget"))
+    ns.Print(threatLine("pet", "target"))
+    ns.Print(threatLine("player", "target"))
+    local okR, role = pcall(ns.ThreatBar.PetRole)
+    ns.Print("pet NPC ID " .. show(ns.Portrait.CreatureID("pet")) .. ", role " .. (okR and show(role) or "error"))
+    local ok, shown = pcall(ns.ThreatBar.EvaluatePet)
+    if not ok then
+        ns.Print("EvaluatePet: " .. errorText(shown))
+    elseif not shown then
+        ns.Print("EvaluatePet: nothing")
+    else
+        local color = type(shown.color) == "table" and "curve" or show(shown.color)
+        ns.Print(("EvaluatePet: color %s fill %s left %s right %s")
+            :format(color, show(shown.fill), show(shown.left), show(shown.right)))
+    end
+    local bar = ns.Frames.pettarget and ns.Frames.pettarget.threatBar
+    ns.Print("bar: " .. (bar and ("shown=" .. yesNo(bar.IsShown, bar) .. " visible=" .. yesNo(bar.IsVisible, bar)) or "none"))
+end
+
 -- Hooked in front of the regular /fuf handler so this file can go again
 -- without touching the command code.
 local handler = SlashCmdList.FOREVERUNITFRAMES
 SlashCmdList.FOREVERUNITFRAMES = function(msg)
     if type(msg) == "string" and msg:lower():match("^%s*auradebug%s*$") then
         Debug.Auras()
+        return
+    end
+    if type(msg) == "string" and msg:lower():match("^%s*threatdebug%s*$") then
+        Debug.Threat()
         return
     end
     return handler(msg)

@@ -63,6 +63,7 @@ The **Bars** tab on each frame's page in `/fuf`. The last column says which fram
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
+<tr><td><b>Power color</b></td><td>Class: players in their class color, everyone else by power type</td><td>By power type, Class (players)</td><td>By power type</td><td>all</td></tr>
 <tr><td><b>Mana</b></td><td></td><td>Color</td><td><code>#4080ff</code></td><td>all</td></tr>
 <tr><td><b>Rage</b></td><td></td><td>Color</td><td><code>#d93333</code></td><td>all</td></tr>
 <tr><td><b>Focus</b></td><td></td><td>Color</td><td><code>#ff8040</code></td><td>all</td></tr>

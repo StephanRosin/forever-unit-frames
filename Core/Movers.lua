@@ -56,7 +56,7 @@ function Movers.FrameSpec(frame)
     local key = frame.key
     return {
         scope = key, label = function() return L["FRAME_" .. key] end,
-        size = function() return ns.Config.Get(key, "width"), ns.Config.Get(key, "height") end,
+        size = function() return ns.Single.Size(key) end,
     }
 end
 

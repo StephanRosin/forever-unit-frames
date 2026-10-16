@@ -202,7 +202,8 @@ local DYNAMIC_HINTS = {
 local function hintFor(scope, key)
     if DYNAMIC_HINTS[key] then return DYNAMIC_HINTS[key] end
     if HINT_SCOPES[key] and not HINT_SCOPES[key][scope] then return nil end
-    return localized("HINT_" .. key)
+    -- A page's own wording where one setting means something else there.
+    return localized("HINT_" .. key .. "_" .. scope) or localized("HINT_" .. key)
 end
 
 local function settingRow(parent, scope, key)

@@ -183,6 +183,7 @@ Auras hidden by spell, such as a campfire or a food buff: the list under General
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
+<tr><td><b>Power color</b></td><td>Class: players in their class color, everyone else by power type</td><td>By power type, Class (players)</td><td>By power type</td></tr>
 <tr><td><b>Mana</b></td><td></td><td>Color</td><td><code>#4080ff</code></td></tr>
 <tr><td><b>Rage</b></td><td></td><td>Color</td><td><code>#d93333</code></td></tr>
 <tr><td><b>Focus</b></td><td></td><td>Color</td><td><code>#ff8040</code></td></tr>

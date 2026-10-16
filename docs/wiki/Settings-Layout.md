@@ -55,8 +55,11 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Portrait</b></td><td>Square as tall as the frame</td><td>Off, Left, Right</td><td>Player, Target: Left; Target of Target, Focus, Pet, Party: Off</td><td>all</td></tr>
+<tr><td><b>Portrait</b></td><td>Left/right: a square as tall as the frame. Above health: a full-width strip; the frame grows by its height</td><td>Off, Left, Right, Above health bar</td><td>Player, Target: Left; Target of Target, Focus, Pet, Party: Off</td><td>all</td></tr>
 <tr><td><b>Portrait style</b></td><td></td><td>2D, 3D (model)</td><td>Player, Target: 3D (model); Target of Target, Focus, Pet, Party: 2D</td><td>all</td></tr>
+<tr><td><b>Strip height</b></td><td></td><td>10 – 120</td><td>30</td><td>all</td></tr>
+<tr><td><b>3D zoom (%)</b></td><td>100: the game's portrait framing; more zooms in on the face</td><td>100 – 400</td><td>100</td><td>all</td></tr>
+<tr><td><b>3D offset Y</b></td><td>Moves the model up or down, e.g. to bring the eyes into the strip. Models differ</td><td>-100 – 100</td><td>0</td><td>all</td></tr>
 </tbody>
 </table>
 

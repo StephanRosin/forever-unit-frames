@@ -122,7 +122,9 @@ local RULES = {
     { on("fsrSpark"), { "fsrSparkDirection", "fsrSparkWidth", "fsrSparkColor" } },
     { on("fsrText"), { "fsrTextPoint", "fsrTextTenths" } },
     { on("fsrDim"), { "fsrDimAlpha" } },
-    { isNot("portraitMode", "OFF"), { "portraitStyle" } },
+    { isNot("portraitMode", "OFF"), { "portraitStyle", "portraitHeight", "portraitZoom", "portraitOffsetY" } },
+    { is("portraitMode", "TOP"), { "portraitHeight" } },
+    { is("portraitStyle", "3D"), { "portraitZoom", "portraitOffsetY" } },
     -- Elements/ShieldWatch.lua: everything with the watch; each text's
     -- look with that text.
     { on("shieldsEnabled"), { "shieldsPriest", "shieldsMage", "shieldsWarlock", "shieldsItems", "shieldsExtra",

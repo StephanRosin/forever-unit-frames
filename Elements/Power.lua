@@ -72,9 +72,18 @@ function Power.Update(frame)
     local powerType = UnitPowerType(unit)
     local key = Power.COLOR_KEYS[ns.Secrets.Number(powerType) or -1]
     local c = key and Config.Get(frame.key, key) or DEFAULT
+    local r, g, b = c[1], c[2], c[3]
+    -- By class: players only (the colour may be secret, so presence by type()).
+    if Config.Get(frame.key, "powerColorMode") == "CLASS" then
+        local cr, cg, cb = ns.Health.ClassColor(unit)
+        if type(cr) ~= "nil" then r, g, b = cr, cg, cb end
+    end
     -- Dead, ghost and offline units (Elements/UnitStatus.lua) are grey.
-    if ns.UnitStatus.Of(frame) then c = ns.UnitStatus.GREY end
-    frame.power:SetStatusBarColor(c[1], c[2], c[3])
+    if ns.UnitStatus.Of(frame) then
+        c = ns.UnitStatus.GREY
+        r, g, b = c[1], c[2], c[3]
+    end
+    frame.power:SetStatusBarColor(r, g, b)
     frame.power:SetMinMaxValues(0, UnitPowerMax(unit))
     frame.power:SetValue(UnitPower(unit))
 end

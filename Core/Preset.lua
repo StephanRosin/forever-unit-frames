@@ -130,6 +130,13 @@ local PRESET = {
         x = -624,
         y = -328,
     },
+    pettarget = {
+        healthColorMode = "CLASS",
+        showSurname = false,
+        width = 115,
+        x = -499,
+        y = -328,
+    },
     focus = {
         combatFeedback = true,
         powerPercent = 21,

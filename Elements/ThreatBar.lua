@@ -1,8 +1,12 @@
 local _, ns = ...
 
--- Threat bar (player frame only): one more row of the unit's block, below
--- the frame and below a castbar docked there, inside the unit's border and
--- rounded with it (Elements/Shape.lua).
+-- Threat bar (player frame, and the pet's target frame): one more row of
+-- the unit's block, below the frame and below a castbar docked there,
+-- inside the unit's border and rounded with it (Elements/Shape.lua).
+--
+-- On the pet's target frame it shows the pet's threat there, read by the
+-- pet's role (ThreatBar.PetRole): a tanking pet as a tank, any other as
+-- damage. There is always company there (the pet), so no solo setting.
 --
 -- It shows your threat on your target (a healer without a hostile target:
 -- on the target's target):
@@ -50,7 +54,8 @@ ThreatBar.INTERVAL = 0.2
 -- Test mode.
 ThreatBar.SAMPLE = { color = "yellow", fill = 88, left = "88%", right = "-240 Tank" }
 
-function ThreatBar.Applies(scope) return scope == "player" end
+ThreatBar.PET_SCOPE = "pettarget"
+function ThreatBar.Applies(scope) return scope == "player" or scope == ThreatBar.PET_SCOPE end
 
 -- Someone to share threat with: a group, or a pet out; or the bar is
 -- wanted alone too.
@@ -66,6 +71,7 @@ local present
 -- Is the row there? Height 0 without it.
 function ThreatBar.Active(scope)
     if not (ThreatBar.Applies(scope) and Config.Get(scope, "threatBar") == true) then return false end
+    if scope == ThreatBar.PET_SCOPE then return true end
     if present == nil or not InCombatLockdown() then present = company() end
     return present
 end
@@ -136,6 +142,21 @@ function ThreatBar.Role()
     return lastRole
 end
 
+-- The pet's role: the setting, else a Voidwalker tanks everywhere, a
+-- hunter's pet outside dungeons and raids, every other pet does damage.
+ThreatBar.PET_TANKS = { [1860] = true } -- Voidwalker (NPC ID)
+function ThreatBar.PetRole()
+    local setting = Config.Get(ThreatBar.PET_SCOPE, "threatBarRole")
+    if setting == "TANK" then return "tank" end
+    if setting == "DPS" then return "dps" end
+    if ThreatBar.PET_TANKS[ns.Portrait.CreatureID("pet")] then return "tank" end
+    local okI, _, kind = pcall(IsInInstance)
+    if okI and (kind == "party" or kind == "raid") then return "dps" end
+    local _, class = UnitClass("player")
+    if class == "HUNTER" then return "tank" end
+    return "dps"
+end
+
 -- Is unit a tank? For purple: the one who took aggro from you.
 local function isTank(unit)
     local ok, assigned = pcall(UnitGroupRolesAssigned or function() end, unit)
@@ -175,12 +196,14 @@ local function detailed(unit, mob)
     return tanking and true or false, status, scaled or 0, raw or 0, value or 0
 end
 
--- Everyone in the group but you, pets included.
-local function groupUnits()
+-- Everyone in the group but me (default you), pets included.
+local function groupUnits(me)
+    me = me or "player"
     local units = {}
     local function add(u)
-        if Secrets.Bool(UnitExists, u) and not Secrets.Bool(UnitIsUnit, u, "player") then units[#units + 1] = u end
+        if Secrets.Bool(UnitExists, u) and not Secrets.Bool(UnitIsUnit, u, me) then units[#units + 1] = u end
     end
+    add("player")
     if IsInRaid and IsInRaid() then
         for i = 1, (GetNumGroupMembers and GetNumGroupMembers() or 0) do
             add("raid" .. i)
@@ -232,9 +255,15 @@ function ThreatBar.Evaluate()
         return { color = "grey", fill = 0, left = "0", right = tank and nameOf(tank) or "" }
     end
 
-    local warn = Config.Get("player", "threatBarWarn")
+    return ThreatBar.View(ThreatBar.Role(), Config.Get("player", "threatBarWarn"), myTanking, myScaled, myRaw,
+        myValue, top, topValue, topScaled, tank, tankValue)
+end
+
+-- What the bar shows for one unit's threat (mine: you or the pet) by role,
+-- given the one with the most threat besides it (top) and the one tanking.
+function ThreatBar.View(role, warn, myTanking, myScaled, myRaw, myValue, top, topValue, topScaled, tank, tankValue)
     local short = ThreatBar.Short
-    if ThreatBar.Role() == "tank" then
+    if role == "tank" then
         if myTanking then
             local closest = topScaled or 0
             return {
@@ -266,6 +295,31 @@ function ThreatBar.Evaluate()
     }
 end
 
+-- The pet's threat on its target, as a tank's: what the pet's target
+-- frame's bar shows, or nil.
+-- The client hands out threat on a mob only when asked by the token
+-- "target" (measured in game: the same mob as "pettarget" is secret, and
+-- nil while it is not your target). So the bar shows something only while
+-- the pet attacks your target.
+function ThreatBar.EvaluatePet()
+    if not hostile("pettarget") or not Secrets.Bool(UnitExists, "pet") then return nil end
+    if Secrets.Bool(UnitIsUnit, "pettarget", "target") ~= true then return nil end
+    local mob = "target"
+    local petTanking, _, petScaled, petRaw, petValue = detailed("pet", mob)
+    if petTanking == "secret" then return ThreatBar.FromStatus(mob, "pet", ThreatBar.PetRole()) end
+    if petTanking == nil then return nil end
+    local top, topValue, topScaled, tank, tankValue
+    for _, u in ipairs(groupUnits("pet")) do
+        local t, _, sc, _, v = detailed(u, mob)
+        if t ~= nil and t ~= "secret" then
+            if t then tank, tankValue = u, v end
+            if not topValue or v > topValue then top, topValue, topScaled = u, v, sc end
+        end
+    end
+    return ThreatBar.View(ThreatBar.PetRole(), Config.Get(ThreatBar.PET_SCOPE, "threatBarWarn"), petTanking,
+        petScaled, petRaw, petValue, top, topValue, topScaled, tank, tankValue)
+end
+
 -- Status 0..3 as colours, per role: what a secret status maps to.
 ThreatBar.STATUS_COLORS = {
     tank = { [0] = "red", [1] = "red", [2] = "yellow", [3] = "green" },
@@ -289,11 +343,12 @@ local function statusCurve(role)
     return curves[role] or nil
 end
 
--- Numbers hidden: only the status, mapped to a colour by the client.
-function ThreatBar.FromStatus(mob)
-    local ok, status = pcall(UnitThreatSituation, "player", mob)
+-- Numbers hidden: only the status of unit (default you), mapped to a
+-- colour by the client.
+function ThreatBar.FromStatus(mob, unit, role)
+    local ok, status = pcall(UnitThreatSituation, unit or "player", mob)
     if not ok or status == nil then return nil end
-    local role = ThreatBar.Role()
+    role = role or ThreatBar.Role()
     if not Secrets.IsSecret(status) then
         return { color = ThreatBar.STATUS_COLORS[role][status] or "grey", fill = 100, left = "", right = "" }
     end
@@ -345,7 +400,8 @@ function ThreatBar.Refresh(frame)
         paint(bar, ThreatBar.SAMPLE)
         return
     end
-    local ok, shown = pcall(ThreatBar.Evaluate)
+    local evaluate = frame.key == ThreatBar.PET_SCOPE and ThreatBar.EvaluatePet or ThreatBar.Evaluate
+    local ok, shown = pcall(evaluate)
     paint(bar, ok and shown or nil)
 end
 
@@ -405,9 +461,10 @@ driver:SetScript("OnUpdate", function(_, dt)
     elapsed = elapsed + dt
     if elapsed < ThreatBar.INTERVAL then return end
     elapsed = 0
-    local frame = ns.Frames and ns.Frames.player
-    if frame and frame.threatBar and frame.threatBar:IsShown() and UnitAffectingCombat("player") then
-        ThreatBar.Refresh(frame)
+    if not UnitAffectingCombat("player") then return end
+    for _, key in ipairs({ "player", ThreatBar.PET_SCOPE }) do
+        local frame = ns.Frames and ns.Frames[key]
+        if frame and frame.threatBar and frame.threatBar:IsShown() then ThreatBar.Refresh(frame) end
     end
 end)
 for _, event in ipairs({ "UNIT_THREAT_LIST_UPDATE", "UNIT_THREAT_SITUATION_UPDATE", "PLAYER_TARGET_CHANGED",
@@ -415,8 +472,10 @@ for _, event in ipairs({ "UNIT_THREAT_LIST_UPDATE", "UNIT_THREAT_SITUATION_UPDAT
     pcall(driver.RegisterEvent, driver, event)
 end
 driver:SetScript("OnEvent", function(_, event)
-    local frame = ns.Frames and ns.Frames.player
-    if frame then ThreatBar.Refresh(frame) end
+    for _, key in ipairs({ "player", ThreatBar.PET_SCOPE }) do
+        local frame = ns.Frames and ns.Frames[key]
+        if frame then ThreatBar.Refresh(frame) end
+    end
     if event == "GROUP_ROSTER_UPDATE" then recheck() end
 end)
 ns.On("UNIT_PET", function(_, unit) if unit == "player" then recheck() end end)

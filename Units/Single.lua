@@ -9,9 +9,16 @@ ns.Frames = {}
 
 local Config, Layout, Pixel = ns.Config, ns.Layout, ns.Pixel
 
+-- The portrait strip's height (portraitMode TOP), on the pixel grid; 0
+-- without one. It is added to the frame's configured height.
+function Single.PortraitStrip(scope)
+    if Config.Get(scope, "portraitMode") ~= "TOP" then return 0 end
+    return Pixel.Snap(Config.Get(scope, "portraitHeight"))
+end
+
 -- Width and height of a unit frame of scope, on the pixel grid.
 function Single.Size(scope)
-    return Pixel.Snap(Config.Get(scope, "width")), Pixel.Snap(Config.Get(scope, "height"))
+    return Pixel.Snap(Config.Get(scope, "width")), Pixel.Snap(Config.Get(scope, "height")) + Single.PortraitStrip(scope)
 end
 
 -- The size a frame's contents are laid out for: its configured size, or
@@ -50,11 +57,13 @@ end
 local function layoutBars(frame)
     local scope = frame.key
     local frameWidth, height = Single.LayoutSize(frame)
-    frame.layoutHeight = height
-    -- The rows are shares of the configured height, or of the actual one
-    -- while that differs (see Single.LayoutSize).
     local _, configured = Single.Size(scope)
-    local rowsHeight = height == configured and Config.Get(scope, "height") or height
+    -- The rows are shares of the configured height, or of the actual one
+    -- while that differs (see Single.LayoutSize); a portrait strip is not theirs.
+    local strip = Single.PortraitStrip(scope)
+    local rowsHeight = height == configured and Config.Get(scope, "height") or height - strip
+    height = height - strip
+    frame.layoutHeight, frame.portraitStrip = height, strip
     -- Hidden for a unit without power (Elements/Power.lua): health takes the row.
     local powerOn = Config.Get(scope, "powerEnabled") and not frame.powerEmpty
     local th, _, ph = Layout.Rows(rowsHeight, Config.Get(scope, "titlePercent"),
@@ -84,8 +93,8 @@ local function layoutBars(frame)
     end
     frame.healthWidth, frame.overhealLane = width - lane, lane
     frame.health:ClearAllPoints()
-    frame.health:SetPoint("TOPLEFT", frame, "TOPLEFT", left, -titleH)
-    frame.health:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -(right + lane), -titleH)
+    frame.health:SetPoint("TOPLEFT", frame, "TOPLEFT", left, -(titleH + strip))
+    frame.health:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -(right + lane), -(titleH + strip))
     frame.health:SetHeight(healthH)
     if frame.power then
         frame.power:ClearAllPoints()

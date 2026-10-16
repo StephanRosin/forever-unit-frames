@@ -13,12 +13,12 @@ The **Castbar** tab on each frame's page in `/fuf`. The last column says which f
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Show castbar</b></td><td></td><td>On, Off</td><td>On</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
-<tr><td><b>Always show</b></td><td>Keep an empty bar while nothing is cast</td><td>On, Off</td><td>Player, Target, Party: On; Target of Target, Focus: Off</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Show castbar</b></td><td></td><td>On, Off</td><td>Player, Target, Target of Target, Focus, Party: On; Pet: Off</td><td>all</td></tr>
+<tr><td><b>Always show</b></td><td>Keep an empty bar while nothing is cast</td><td>On, Off</td><td>Player, Target, Party: On; Target of Target, Focus, Pet: Off</td><td>all</td></tr>
 <tr><td><b>Hide Blizzard cast bar</b></td><td>Needs /reload to show it again</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
-<tr><td><b>Castbar position</b></td><td>Detached: set its place under Detached position, or unlock the frames</td><td>Below the frame, Above the frame, Detached</td><td>Below the frame</td><td>Player, Target, Target of Target, Focus</td></tr>
+<tr><td><b>Castbar position</b></td><td>Detached: set its place under Detached position, or unlock the frames</td><td>Below the frame, Above the frame, Detached</td><td>Below the frame</td><td>Player, Target, Target of Target, Focus, Pet</td></tr>
 <tr><td><b>Castbar position</b></td><td></td><td>Below the frame, Above the frame</td><td>Below the frame</td><td>Party</td></tr>
-<tr><td><b>Castbar height</b></td><td></td><td>4 – 60</td><td>Player: 18; Target, Focus: 16; Target of Target, Party: 12</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Castbar height</b></td><td></td><td>4 – 60</td><td>Player: 18; Target, Focus: 16; Target of Target, Pet, Party: 12</td><td>all</td></tr>
 </tbody>
 </table>
 
@@ -27,9 +27,9 @@ The **Castbar** tab on each frame's page in `/fuf`. The last column says which f
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Spell icon</b></td><td></td><td>On, Off</td><td>On</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
-<tr><td><b>Spell name</b></td><td></td><td>On, Off</td><td>On</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
-<tr><td><b>Cast time</b></td><td></td><td>On, Off</td><td>On</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Spell icon</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
+<tr><td><b>Spell name</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
+<tr><td><b>Cast time</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
 </tbody>
 </table>
 
@@ -38,8 +38,8 @@ The **Castbar** tab on each frame's page in `/fuf`. The last column says which f
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Detached X</b></td><td>Used when detached</td><td>-4000 – 4000</td><td>Player: -4; Target: 366; Target of Target: 480; Focus: -300</td><td>Player, Target, Target of Target, Focus</td></tr>
-<tr><td><b>Detached Y</b></td><td>Used when detached</td><td>-4000 – 4000</td><td>Player: -160; Target, Target of Target: -300; Focus: -170</td><td>Player, Target, Target of Target, Focus</td></tr>
+<tr><td><b>Detached X</b></td><td>Used when detached</td><td>-4000 – 4000</td><td>Player: -4; Target: 366; Target of Target: 480; Focus: -300; Pet: -352</td><td>Player, Target, Target of Target, Focus, Pet</td></tr>
+<tr><td><b>Detached Y</b></td><td>Used when detached</td><td>-4000 – 4000</td><td>Player: -160; Target, Target of Target, Pet: -300; Focus: -170</td><td>Player, Target, Target of Target, Focus, Pet</td></tr>
 </tbody>
 </table>
 

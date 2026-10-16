@@ -6,7 +6,7 @@ local S, C = ns.Settings, ns.Config
 -- unit casts nothing, so whatever sits below it keeps its place.
 H.checkTrue("always-show applies to target", S.AppliesTo(S.Get("castbarAlwaysShow"), "target"))
 H.checkTrue("always-show applies to party", S.AppliesTo(S.Get("castbarAlwaysShow"), "party"))
-H.check("not on the pet", S.AppliesTo(S.Get("castbarAlwaysShow"), "pet"), false)
+H.check("on the pet too (0.29.0)", S.AppliesTo(S.Get("castbarAlwaysShow"), "pet"), true)
 C.Use({})
 H.check("off by default", C.Get("target", "castbarAlwaysShow"), false)
 

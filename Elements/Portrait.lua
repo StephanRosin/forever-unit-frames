@@ -2,7 +2,8 @@ local _, ns = ...
 
 -- Unit portrait, off or on the left/right of the frame, as a 2D picture or
 -- a 3D model. Takes a square as tall as the frame; the bars make room for
--- it (Layout.PortraitInsets).
+-- it (Layout.PortraitInsets). TOP: a strip as wide as the frame between
+-- title row and health bar, the frame grown by its height (Single.Size).
 local Portrait = { name = "Portrait", unitEvents = { "UNIT_PORTRAIT_UPDATE", "UNIT_MODEL_CHANGED" } }
 ns.Portrait = Portrait
 
@@ -31,28 +32,51 @@ function Portrait.Style(frame)
     local on = mode ~= "OFF"
     local bg = frame.portraitBg
     bg:ClearAllPoints()
-    if on then
+    frame.portrait2D:SetTexCoord(0, 1, 0, 1)
+    if mode == "TOP" then
+        local top = -(frame.titleHeight or 0)
+        bg:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, top)
+        bg:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, top)
+        local strip = frame.portraitStrip or 0
+        bg:SetHeight(strip)
+        -- The square picture's middle band, as wide as the strip.
+        local w = ns.Single.Size(scope)
+        local band = math.min(1, strip / w) / 2
+        frame.portrait2D:SetTexCoord(0, 1, 0.5 - band, 0.5 + band)
+    elseif on then
         local point = mode == "LEFT" and "TOPLEFT" or "TOPRIGHT"
         -- As tall as the frame is laid out (Single.LayoutSize).
         local size = frame.layoutHeight or ns.Pixel.Snap(Config.Get(scope, "height"))
         bg:SetPoint(point, frame, point, 0, 0)
         bg:SetSize(size, size)
+    end
+    if on then
         local c = Config.Get(scope, "backgroundColor")
         bg:SetColorTexture(c[1], c[2], c[3], c[4])
     end
     bg:SetShown(on)
     frame.portrait2D:SetShown(on and (not threeD or not frame.portrait3D.ready))
     frame.portrait3D:SetShown(on and threeD)
+    if frame.portrait3D.ready then Portrait.Frame(frame) end
+end
+
+-- The camera: the client's portrait framing, zoomed in (portraitZoom
+-- percent) and the view shifted up or down (portraitOffsetY pixels).
+-- How the face sits differs by model; the shift is there to fix that.
+function Portrait.Frame(frame)
+    local model, scope = frame.portrait3D, frame.key
+    -- As oUF frames it: the clear resets the camera, so all of it.
+    model:SetCamDistanceScale(100 / Config.Get(scope, "portraitZoom"))
+    model:SetPortraitZoom(1)
+    model:SetPosition(0, 0, 0)
+    if model.SetViewTranslation then model:SetViewTranslation(0, Config.Get(scope, "portraitOffsetY")) end
 end
 
 -- The model has arrived: framed as a portrait, and the 2D stand-in goes.
 function Portrait.ModelReady(frame)
     local model = frame.portrait3D
     model.ready = true
-    -- As oUF frames it: the clear resets the camera, so all three.
-    model:SetCamDistanceScale(1)
-    model:SetPortraitZoom(1)
-    model:SetPosition(0, 0, 0)
+    Portrait.Frame(frame)
     if Config.Get(frame.key, "portraitStyle") == "3D" then frame.portrait2D:Hide() end
 end
 

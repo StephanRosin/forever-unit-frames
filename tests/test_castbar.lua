@@ -6,7 +6,7 @@ local S, C = ns.Settings, ns.Config
 for _, scope in ipairs({ "player", "target", "targettarget", "focus", "party" }) do
     H.checkTrue("castbar on " .. scope, S.AppliesTo(S.Get("castbarEnabled"), scope))
 end
-H.check("no castbar on the pet", S.AppliesTo(S.Get("castbarEnabled"), "pet"), false)
+H.check("castbar on the pet (0.29.0)", S.AppliesTo(S.Get("castbarEnabled"), "pet"), true)
 C.Use({})
 H.check("player castbar off by default", C.Get("player", "castbarEnabled"), false)
 H.checkTrue("target castbar on by default", C.Get("target", "castbarEnabled"))
@@ -15,7 +15,7 @@ ns.Single.CreateAll()
 local t = ns.Frames.target
 local bar = t.castbar
 H.checkTrue("target has a castbar", bar)
-H.check("pet has none", ns.Frames.pet.castbar, nil)
+H.checkTrue("pet has one", ns.Frames.pet.castbar)
 H.check("hidden while idle", bar:IsShown(), false)
 H.check("parented to the frame", bar:GetParent(), t)
 

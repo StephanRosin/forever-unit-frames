@@ -1417,6 +1417,7 @@ local function newWidget(kind, name, parent)
     function w:SetPortraitZoom(z) self._zoom = z end
     function w:SetCamDistanceScale(v) self._camScale = v end
     function w:SetPosition(x, y, z) self._position = { x, y, z } end
+    function w:SetViewTranslation(x, y) self._view = { x, y } end
     -- Movable
     function w:SetMovable(v) self._movable = v end
     function w:RegisterForDrag(...) self._drag = { ... } end
@@ -1707,6 +1708,9 @@ function M.Reset()
     -- Localised race and creature type (units: race, creatureType).
     -- d.guid ("Creature-0-1-2-3-<npcID>-4"), may be secret.
     _G.UnitGUID = function(unit) local d = u(unit); return d and d.guid end
+    -- M.instanceType: "party", "raid", ... or nil outside instances.
+    M.instanceType = nil
+    _G.IsInInstance = function() return M.instanceType ~= nil, M.instanceType or "none" end
     -- The client's strcmputf8i (used by its lists to sort names): <0, 0 or
     -- >0, case ignored. Only ASCII cases are folded here; the client folds
     -- every letter.

@@ -27,7 +27,7 @@ end
 
 -- Tabs per frame: no castbar for the pet.
 H.check("player tabs", tabIds("player"), "layout,bars,text,auras,status,castbar")
-H.check("pet tabs", tabIds("pet"), "layout,bars,text,auras,status")
+H.check("pet tabs", tabIds("pet"), "layout,bars,text,auras,status,castbar")
 H.check("party tabs", tabIds("party"), "layout,group,bars,text,auras,status,castbar")
 
 -- Party layout only on the party page; portrait everywhere.
@@ -68,7 +68,7 @@ H.checkTrue("party castbar: dock", rows.castbarDock)
 H.check("party castbar: no detached X", rows.castbarX, nil)
 H.check("party castbar: no position", rows.castbarPosition, nil)
 O.Select("pet")
-H.check("pet falls back to its first tab", O.currentTab, "layout")
+H.check("tab kept on the pet", O.currentTab, "castbar")
 
 -- Selecting Party outlines the whole block, not the raw header: solo
 -- without "show when solo" the header is a sliver of a pixel tall.
