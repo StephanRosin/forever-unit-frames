@@ -125,6 +125,7 @@ local RULES = {
     { isNot("portraitMode", "OFF"), { "portraitStyle", "portraitHeight", "portraitZoom", "portraitOffsetY" } },
     { is("portraitMode", "TOP"), { "portraitHeight" } },
     { is("portraitStyle", "3D"), { "portraitZoom", "portraitOffsetY" } },
+    { isNot("footerHeight", 0), { "footerTextLeft", "footerTextCenter", "footerTextRight" } },
     -- Elements/ShieldWatch.lua: everything with the watch; each text's
     -- look with that text.
     { on("shieldsEnabled"), { "shieldsPriest", "shieldsMage", "shieldsWarlock", "shieldsItems", "shieldsExtra",

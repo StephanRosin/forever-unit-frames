@@ -14,7 +14,9 @@ ns.Settings = Settings
 
 -- Stored by index: new tags go at the end. INFO: level, class and race
 -- ("60 Mage Gnome"); creatures: level and type ("60 Humanoid").
-local TEXT_TAGS = { "NONE", "NAME", "NAME_LEVEL", "LEVEL", "CURRENT", "CURRENT_MAX", "PERCENT", "DEFICIT", "INFO" }
+-- POWER_CURRENT_MAX: power on any row; ROLE: the group role's icon.
+local TEXT_TAGS = { "NONE", "NAME", "NAME_LEVEL", "LEVEL", "CURRENT", "CURRENT_MAX", "PERCENT", "DEFICIT", "INFO",
+    "POWER_CURRENT_MAX", "ROLE" }
 Settings.TEXT_TAGS = TEXT_TAGS
 -- The anchor points a placed icon or group chooses from.
 Settings.POINTS = { "TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT" }
@@ -309,11 +311,11 @@ Settings.Define({ key = "castbarEnabled", code = "CE", scope = "frame", only = C
 -- castbarEnabled -- some players want both cast bars shown at once.
 Settings.Define({ key = "hideBlizzardCastbar", code = "CB", scope = "frame", only = { player = true },
     type = "bool", default = false })
--- Single frames may detach their castbar (own mover); party castbars
--- dock above or below each member.
+-- Single frames may detach their castbar (own mover) or lay it over their
+-- portrait; party castbars dock above or below each member.
 local CASTBAR_SINGLE = { player = true, target = true, targettarget = true, pet = true, pettarget = true, focus = true }
 Settings.Define({ key = "castbarPosition", code = "CP", scope = "frame", only = CASTBAR_SINGLE, type = "enum",
-    values = { "BELOW", "ABOVE", "DETACHED" }, default = "BELOW" })
+    values = { "BELOW", "ABOVE", "DETACHED", "PORTRAIT" }, default = "BELOW" })
 Settings.Define({ key = "castbarDock", code = "CD", scope = "frame", only = PARTY, type = "enum",
     values = { "BELOW", "ABOVE" }, default = "BELOW" })
 Settings.Define({ key = "castbarX", code = "CX", scope = "frame", only = CASTBAR_SINGLE, type = "int", min = -4000, max = 4000,
@@ -370,6 +372,16 @@ Settings.Define({ key = "titleTextCenter", code = "NM", scope = "frame", type = 
 Settings.Define({ key = "textHealthCenter", code = "TM", scope = "frame", type = "enum", values = TEXT_TAGS,
     default = "NONE" })
 Settings.Define({ key = "textPowerCenter", code = "UC", scope = "frame", type = "enum", values = TEXT_TAGS,
+    default = "NONE" })
+-- Footer row below the power bar, as wide as the frame: its own height
+-- (0: none), the frame grows by it. Its values are health's, like the
+-- title row's.
+Settings.Define({ key = "footerHeight", code = "FY", scope = "frame", type = "int", min = 0, max = 40, default = 0 })
+Settings.Define({ key = "footerTextLeft", code = "FL", scope = "frame", type = "enum", values = TEXT_TAGS,
+    default = "NONE" })
+Settings.Define({ key = "footerTextCenter", code = "FX", scope = "frame", type = "enum", values = TEXT_TAGS,
+    default = "NONE" })
+Settings.Define({ key = "footerTextRight", code = "FR", scope = "frame", type = "enum", values = TEXT_TAGS,
     default = "NONE" })
 
 -- The border around every aura icon (plain colour on buffs, the dispel

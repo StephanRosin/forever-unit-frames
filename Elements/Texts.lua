@@ -19,11 +19,15 @@ local SLOTS = {
     { field = "healthRight", setting = "textHealthRight", bar = "health", point = "RIGHT", x = -4 },
     { field = "powerLeft", setting = "textPowerLeft", bar = "power", point = "LEFT", x = 4, before = "powerRight" },
     { field = "powerRight", setting = "textPowerRight", bar = "power", point = "RIGHT", x = -4 },
+    { field = "footerLeft", setting = "footerTextLeft", bar = "footer", kind = "health", point = "LEFT", x = 4,
+        before = "footerRight" },
+    { field = "footerRight", setting = "footerTextRight", bar = "footer", kind = "health", point = "RIGHT", x = -4 },
     -- Centre texts, empty by default (placeCentres): last, so the left and
     -- right texts keep their order everywhere else.
     { field = "titleCenter", setting = "titleTextCenter", bar = "title", kind = "health", center = true },
     { field = "healthCenter", setting = "textHealthCenter", bar = "health", center = true },
     { field = "powerCenter", setting = "textPowerCenter", bar = "power", center = true },
+    { field = "footerCenter", setting = "footerTextCenter", bar = "footer", kind = "health", center = true },
 }
 
 -- Each row's left, centre and right text, and the width of its bar (plain
@@ -32,8 +36,9 @@ local ROWS = {
     title = { left = "title", center = "titleCenter", right = "titleRight", width = "titleWidth" },
     health = { left = "healthLeft", center = "healthCenter", right = "healthRight", width = "healthWidth" },
     power = { left = "powerLeft", center = "powerCenter", right = "powerRight", width = "powerWidth" },
+    footer = { left = "footerLeft", center = "footerCenter", right = "footerRight", width = "footerWidth" },
 }
-local ROW_ORDER = { "title", "health", "power" }
+local ROW_ORDER = { "title", "health", "power", "footer" }
 local SLOT_OF = {}
 for _, slot in ipairs(SLOTS) do SLOT_OF[slot.field] = slot end
 
@@ -218,6 +223,25 @@ local function applySample(fs, tag, sample, compact)
     end
 end
 local SAMPLE_TAGS = { CURRENT = true, CURRENT_MAX = true, PERCENT = true, DEFICIT = true }
+-- Value tags that name their bar, whatever row they are on: the tag they
+-- stand for and its kind.
+local OWN_KIND = { POWER_CURRENT_MAX = { tag = "CURRENT_MAX", kind = "power" } }
+
+-- Whose numbers a slot's tag shows (health or power), nil for no value.
+local function valueKind(slot, tag)
+    if OWN_KIND[tag] then return OWN_KIND[tag].kind end
+    if SAMPLE_TAGS[tag] then return slot.kind or slot.bar end
+    return nil
+end
+
+-- The group role's icon (Elements/GroupIcons.lua's art) as inline markup,
+-- as tall as the font; empty without a role.
+local function setRole(fs, unit, opts)
+    local role = opts.sampleRole or ns.GroupIcons.UnitRole(unit)
+    local atlas = role and ns.GroupIcons.ROLE_ATLAS[role]
+    local size = opts.roleSize or 0
+    fs:SetText(atlas and ("|A:%s:%d:%d|a"):format(atlas, size, size) or "")
+end
 
 -- sample (optional): plain health numbers that replace the unit's for
 -- the value tags of health texts (test mode).
@@ -227,6 +251,8 @@ local SAMPLE_TAGS = { CURRENT = true, CURRENT_MAX = true, PERCENT = true, DEFICI
 local NO_OPTS = {}
 function Texts.Apply(fs, tag, unit, kind, showSurname, sample, opts)
     opts = opts or NO_OPTS
+    local own = OWN_KIND[tag]
+    if own then tag, kind = own.tag, own.kind end
     if sample and kind == "health" and SAMPLE_TAGS[tag] then
         applySample(fs, tag, sample, opts.compact)
     elseif tag == "NONE" then
@@ -241,6 +267,8 @@ function Texts.Apply(fs, tag, unit, kind, showSurname, sample, opts)
         fs:SetText(levelText(unit, opts.levelColored))
     elseif tag == "INFO" then
         setInfo(fs, unit, opts)
+    elseif tag == "ROLE" then
+        setRole(fs, unit, opts)
     elseif tag == "CURRENT" then
         fs:SetText(Secrets.Abbreviate(current(unit, kind)))
     elseif tag == "CURRENT_MAX" then
@@ -687,7 +715,7 @@ function Texts.Style(frame)
     for _, slot in ipairs(SLOTS) do
         local fs = frame.texts[slot.field]
         -- Value texts (numbers, percent) may have a size of their own.
-        local isValue = SAMPLE_TAGS[Config.Get(scope, slot.setting)] ~= nil
+        local isValue = valueKind(slot, Config.Get(scope, slot.setting)) ~= nil
         Texts.SetFont(fs, font, (isValue and valueSize > 0) and valueSize or size, outline)
         fs:SetShadowOffset(shadow and 1 or 0, shadow and -1 or 0)
         fs:ClearAllPoints()
@@ -714,6 +742,10 @@ function Texts.Style(frame)
     frame.texts.titleRight:SetWordWrap(false)
     frame.texts.titleRight:SetShown(frame.titleHeight > 0)
     frame.texts.titleCenter:SetShown(frame.titleHeight > 0 and frame.centerShown.title)
+    local footerOn = (frame.footerHeight or 0) > 0
+    frame.texts.footerLeft:SetShown(footerOn)
+    frame.texts.footerRight:SetShown(footerOn)
+    frame.texts.footerCenter:SetShown(footerOn and frame.centerShown.footer)
     styleBadge(frame)
     if not classIconWanted(frame) then
         showClassIcon(frame, false)
@@ -812,6 +844,8 @@ function Texts.Update(frame, event)
     opts.infoColor = Config.Get(frame.key, "infoClassColor")
     opts.scope = frame.key
     opts.sampleName = ns.Health.Sample(frame) and ns.Health.Sample(frame).name
+    opts.roleSize = Config.Get(frame.key, "fontSize")
+    opts.sampleRole = frame.health.preview and ns.GroupIcons.SampleRole(frame) or nil
     local sample = sampleHealth(frame)
     local word = ns.UnitStatus.Word(ns.UnitStatus.Of(frame))
     -- A cell's second line also says AFK (the badge's word; the badge
@@ -826,7 +860,7 @@ function Texts.Update(frame, event)
     if only and frame.textWord == (word or false) then
         for _, slot in ipairs(SLOTS) do
             local tag = Config.Get(frame.key, slot.setting)
-            if (slot.kind or slot.bar) == only and SAMPLE_TAGS[tag] and slot.field ~= wordSlot
+            if valueKind(slot, tag) == only and slot.field ~= wordSlot
                 and not (word and isHealthValue(frame, slot)) then
                 Texts.Apply(frame.texts[slot.field], tag, frame.unit, only, showSurname, sample, opts)
             end
@@ -856,5 +890,10 @@ end
 function Texts.Preview(frame)
     if frame.unit and UnitExists(frame.unit) then Texts.Update(frame) end
 end
+
+-- The role tag follows the group's roles.
+local function updateAll(event) ns.Units.UpdateElement(Texts, event) end
+ns.On("GROUP_ROSTER_UPDATE", updateAll)
+ns.On("PLAYER_ROLES_ASSIGNED", updateAll)
 
 ns.RegisterElement(Texts)

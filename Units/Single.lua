@@ -16,9 +16,16 @@ function Single.PortraitStrip(scope)
     return Pixel.Snap(Config.Get(scope, "portraitHeight"))
 end
 
+-- The footer row's height on the pixel grid, 0 without one; also added to
+-- the configured height.
+function Single.Footer(scope)
+    return Pixel.Snap(Config.Get(scope, "footerHeight"))
+end
+
 -- Width and height of a unit frame of scope, on the pixel grid.
 function Single.Size(scope)
-    return Pixel.Snap(Config.Get(scope, "width")), Pixel.Snap(Config.Get(scope, "height")) + Single.PortraitStrip(scope)
+    return Pixel.Snap(Config.Get(scope, "width")),
+        Pixel.Snap(Config.Get(scope, "height")) + Single.PortraitStrip(scope) + Single.Footer(scope)
 end
 
 -- The size a frame's contents are laid out for: its configured size, or
@@ -59,11 +66,12 @@ local function layoutBars(frame)
     local frameWidth, height = Single.LayoutSize(frame)
     local _, configured = Single.Size(scope)
     -- The rows are shares of the configured height, or of the actual one
-    -- while that differs (see Single.LayoutSize); a portrait strip is not theirs.
-    local strip = Single.PortraitStrip(scope)
-    local rowsHeight = height == configured and Config.Get(scope, "height") or height - strip
-    height = height - strip
-    frame.layoutHeight, frame.portraitStrip = height, strip
+    -- while that differs (see Single.LayoutSize); a portrait strip and the
+    -- footer row are not theirs.
+    local strip, footer = Single.PortraitStrip(scope), Single.Footer(scope)
+    local rowsHeight = height == configured and Config.Get(scope, "height") or height - strip - footer
+    height = height - strip - footer
+    frame.layoutHeight, frame.portraitStrip, frame.footerHeight = height, strip, footer
     -- Hidden for a unit without power (Elements/Power.lua): health takes the row.
     local powerOn = Config.Get(scope, "powerEnabled") and not frame.powerEmpty
     local th, _, ph = Layout.Rows(rowsHeight, Config.Get(scope, "titlePercent"),
@@ -82,6 +90,12 @@ local function layoutBars(frame)
     title:SetShown(titleH > 0)
     frame.titleHeight = titleH
     frame.titleLeft, frame.titleRight = left, right
+    frame.footer:ClearAllPoints()
+    frame.footer:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", 0, 0)
+    frame.footer:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", 0, 0)
+    frame.footer:SetHeight(math.max(footer, pixel))
+    frame.footer:SetShown(footer > 0)
+    frame.footerWidth = frameWidth
     local width = frameWidth - left - right
     frame.titleWidth = width
     -- The overheal lane (Elements/HealPrediction.lua) takes the end of
@@ -98,9 +112,9 @@ local function layoutBars(frame)
     frame.health:SetHeight(healthH)
     if frame.power then
         frame.power:ClearAllPoints()
-        frame.power:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", left, 0)
+        frame.power:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", left, footer)
         local powerLane = Config.Get(scope, "powerMatchesHealth") and lane or 0
-        frame.power:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -(right + powerLane), 0)
+        frame.power:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -(right + powerLane), footer)
         frame.powerWidth = width - powerLane
         frame.power:SetHeight(powerShown and powerH or pixel)
         frame.power:SetShown(powerShown)

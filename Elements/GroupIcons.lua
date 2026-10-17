@@ -258,6 +258,12 @@ local function sample(frame)
     return GroupIcons.SAMPLES[frame.key]
 end
 
+-- Test mode's role of frame, or nil (Elements/Texts.lua's role tag).
+function GroupIcons.SampleRole(frame)
+    local s = sample(frame)
+    return s and s.role
+end
+
 function GroupIcons.Preview(frame, on)
     local g = frame.groupIcons
     if not g then return end

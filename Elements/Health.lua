@@ -133,6 +133,8 @@ function Health.Build(frame)
     -- The title row: its own background above the health bar; its text
     -- is Elements/Texts.lua's.
     frame.title = frame:CreateTexture(nil, "BACKGROUND")
+    -- The footer row below the power bar, in the title row's look.
+    frame.footer = frame:CreateTexture(nil, "BACKGROUND")
     frame.health = CreateFrame("StatusBar", nil, frame)
     -- Above the bars, their overlays (shields, heals) and a 3D portrait:
     -- title and health texts live here. Below the class badge.
@@ -142,6 +144,7 @@ function Health.Build(frame)
     frame.healthBg = frame.health:CreateTexture(nil, "BACKGROUND")
     frame.healthBg:SetAllPoints(frame.health)
     ns.Corners.Add(frame, frame.title)
+    ns.Corners.Add(frame, frame.footer)
     ns.Corners.Add(frame, frame.healthBg)
     ns.Corners.Add(frame, function() return frame.health:GetStatusBarTexture() end)
 end
@@ -155,7 +158,10 @@ function Health.Style(frame)
     frame.healthBg:SetVertexColor(bg[1], bg[2], bg[3], bg[4])
     frame.title:SetTexture(tex)
     -- Clear when the title row has no background: the bars keep theirs.
-    frame.title:SetVertexColor(bg[1], bg[2], bg[3], Config.Get(scope, "titleBackground") and bg[4] or 0)
+    local titleAlpha = Config.Get(scope, "titleBackground") and bg[4] or 0
+    frame.title:SetVertexColor(bg[1], bg[2], bg[3], titleAlpha)
+    frame.footer:SetTexture(tex)
+    frame.footer:SetVertexColor(bg[1], bg[2], bg[3], titleAlpha)
 end
 
 -- Test mode: 60 % health, so sample heals and shield show inside the bar

@@ -36,9 +36,8 @@ end
 -- "BELOW" or "ABOVE" while the frame has a docked castbar, else nil.
 local function dockSide(frame)
     if not frame.castbar or not Config.Get(frame.key, "castbarEnabled") then return nil end
-    local placement = ns.Castbar.Placement(frame.key)
-    if placement == "DETACHED" then return nil end
-    return placement
+    if not ns.Castbar.Docked(frame.key) then return nil end
+    return ns.Castbar.Placement(frame.key)
 end
 
 -- The unit's corner radius, clamped to the frame (the smaller of its two

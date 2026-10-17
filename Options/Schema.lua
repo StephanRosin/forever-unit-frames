@@ -106,6 +106,7 @@ Schema.FRAME = {
             "classIconX", "classIconY", "classIconRing", "classIconRingColor" } },
         { id = "healthText", keys = { "textHealthLeft", "textHealthCenter", "textHealthRight" } },
         { id = "powerText", keys = { "textPowerLeft", "textPowerCenter", "textPowerRight" } },
+        { id = "footerText", keys = { "footerHeight", "footerTextLeft", "footerTextCenter", "footerTextRight" } },
         -- The damage and heal numbers shown inside the frame.
         { id = "combatFeedback", keys = { "combatFeedback", "combatFeedbackPoint", "combatFeedbackX",
             "combatFeedbackY", "combatFeedbackFont", "combatFeedbackSize", "combatFeedbackOutline" } },

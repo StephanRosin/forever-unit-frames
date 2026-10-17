@@ -1,7 +1,8 @@
 local _, ns = ...
 
 -- Castbar of a unit frame: docked below or above it, or (single frames)
--- detached with a mover of its own.
+-- detached with a mover of its own, or over the frame's portrait (seen only
+-- while casting, unless "Always show").
 --
 -- Another unit's cast can arrive as secret values: name, icon, start and
 -- end time. They are only ever handed to widgets: the bar's range is the
@@ -141,7 +142,7 @@ Castbar.StopTimer = stopTimer
 -- (Elements/ThreatBar.lua): nothing may move in combat.
 local function holdsPlace(scope)
     if Config.Get(scope, "castbarAlwaysShow") then return true end
-    return ns.ThreatBar and ns.ThreatBar.Active(scope) and Castbar.Placement(scope) ~= "DETACHED" or false
+    return ns.ThreatBar and ns.ThreatBar.Active(scope) and Castbar.Docked(scope) or false
 end
 
 function Castbar.Stop(bar)
@@ -238,19 +239,27 @@ function Castbar.Build(frame)
     frame.castbar = bar
 end
 
--- BELOW, ABOVE or DETACHED. Party castbars only dock.
+-- BELOW, ABOVE, DETACHED or PORTRAIT; PORTRAIT without a portrait is
+-- BELOW. Party castbars only dock.
 function Castbar.Placement(scope)
     if Settings.AppliesTo(Settings.Get("castbarPosition"), scope) then
-        return Config.Get(scope, "castbarPosition")
+        local placement = Config.Get(scope, "castbarPosition")
+        if placement == "PORTRAIT" and Config.Get(scope, "portraitMode") == "OFF" then return "BELOW" end
+        return placement
     end
     return Config.Get(scope, "castbarDock")
 end
 
+-- Docked: a row of its own outside the frame, below or above it.
+function Castbar.Docked(scope)
+    local placement = Castbar.Placement(scope)
+    return placement == "BELOW" or placement == "ABOVE"
+end
+
 -- Room a docked castbar takes next to its frame: the bar and the unit's
--- outer border beyond it. Zero when the castbar is off or detached.
+-- outer border beyond it. Zero when the castbar is off or not docked.
 function Castbar.DockedDepth(scope)
-    if not Castbar.Applies(scope) or not Config.Get(scope, "castbarEnabled")
-        or Castbar.Placement(scope) == "DETACHED" then
+    if not Castbar.Applies(scope) or not Config.Get(scope, "castbarEnabled") or not Castbar.Docked(scope) then
         return 0
     end
     return barHeight(scope) + ns.Border.Extent(scope)
@@ -259,6 +268,13 @@ end
 -- Whole castbar size, icon included: the frame's width.
 local function size(scope)
     return ns.Pixel.Snap(Config.Get(scope, "width")), barHeight(scope)
+end
+
+-- Over the portrait: along its bottom edge, at most as tall as it (the
+-- strip, or the square as tall as the frame's bars; Elements/Portrait.lua).
+local function portraitHeight(frame, scope)
+    if Config.Get(scope, "portraitMode") == "TOP" then return frame.portraitStrip or 0 end
+    return frame.layoutHeight or ns.Pixel.Snap(Config.Get(scope, "height"))
 end
 
 -- The icon sits left of the bar, inside the castbar's own rectangle.
@@ -280,6 +296,9 @@ local function anchor(bar, frame, scope, inset)
                 Pixel.Centre(Config.Get(scope, "castbarY"), h) + h / 2)
             bar:SetWidth(w - inset)
         end
+    elseif placement == "PORTRAIT" then
+        bar:SetPoint("BOTTOMLEFT", frame.portraitBg, "BOTTOMLEFT", inset, 0)
+        bar:SetPoint("BOTTOMRIGHT", frame.portraitBg, "BOTTOMRIGHT", 0, 0)
     elseif placement == "ABOVE" then
         bar:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", inset, 0)
         bar:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", 0, 0)
@@ -315,9 +334,14 @@ function Castbar.Style(frame)
     local bar = frame.castbar
     if not bar then return end
     local scope = frame.key
+    local placement = Castbar.Placement(scope)
     local height = barHeight(scope)
+    if placement == "PORTRAIT" then height = math.min(height, portraitHeight(frame, scope)) end
     local showIcon = Config.Get(scope, "castbarIcon")
     anchor(bar, frame, scope, showIcon and height or 0)
+    -- Above the 3D portrait (a frame of its own), laid over it or moved
+    -- there detached.
+    bar:SetFrameLevel(frame.portrait3D:GetFrameLevel() + 1)
     bar:SetHeight(height)
     local tex = ns.Media.StatusBar(Config.Get(scope, "barTexture"))
     bar:SetStatusBarTexture(tex)
@@ -337,7 +361,7 @@ function Castbar.Style(frame)
     -- Docked, the castbar is part of the unit's block: rounded with it and
     -- inside its border (Elements/Shape.lua). Detached, it is a block of
     -- its own with its own border.
-    if Castbar.Placement(scope) == "DETACHED" then
+    if placement == "DETACHED" then
         local w, h = size(scope)
         local radius = ns.Corners.Clamp(ns.Corners.Radius(scope), w, h)
         ns.Corners.Fit(bar.clip, bar.box, radius)

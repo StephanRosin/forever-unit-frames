@@ -18,7 +18,7 @@ for key, code in pairs(codes) do
     H.check("code of " .. key, S.Get(key).code, code)
     H.checkTrue(key .. " labelled", L["SETTING_" .. key] ~= "SETTING_" .. key)
 end
-H.check("INFO appended (stored by index)", S.TEXT_TAGS[#S.TEXT_TAGS], "INFO")
+H.check("INFO appended (stored by index)", S.TEXT_TAGS[9], "INFO")
 H.check("INFO labelled", L.ENUM_INFO, "Level, class and race")
 H.check("names white by default", C.Get("party", "barNameColorMode"), "WHITE")
 H.check("shield after the health by default", C.Get("player", "absorbMode"), "AFTER")
