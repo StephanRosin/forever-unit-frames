@@ -240,6 +240,7 @@ L.ENUM_DEFICIT = "Deficit"
 L.ENUM_VERTICAL = "Vertical"; L.ENUM_HORIZONTAL = "Horizontal"
 L.ENUM_OFF = "Off"; L.ENUM_LEFT = "Left"; L.ENUM_RIGHT = "Right"
 L.ENUM_2D = "2D"; L.ENUM_3D = "3D (model)"
+L.ENUM_portraitStyle_CLASS = "Class icon"
 L.ENUM_BELOW = "Below the frame"; L.ENUM_ABOVE = "Above the frame"; L.ENUM_DETACHED = "Detached"
 L.ENUM_fontOutline_NONE = "None"
 

@@ -160,8 +160,9 @@ Settings.Define({ key = "y", code = "Y", scope = "frame", type = "int", min = -4
 -- Portrait
 Settings.Define({ key = "portraitMode", code = "PM", scope = "frame", type = "enum",
     values = { "OFF", "LEFT", "RIGHT", "TOP" }, default = "OFF" })
+-- CLASS: a player's class icon; units without a class get the 2D picture.
 Settings.Define({ key = "portraitStyle", code = "PS", scope = "frame", type = "enum",
-    values = { "2D", "3D" }, default = "2D" })
+    values = { "2D", "3D", "CLASS" }, default = "2D" })
 -- TOP: a strip as wide as the frame between title row and health bar; the
 -- frame grows by its height.
 Settings.Define({ key = "portraitHeight", code = "QH", scope = "frame", type = "int", min = 10, max = 120, default = 30 })

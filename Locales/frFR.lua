@@ -219,6 +219,7 @@ L.ENUM_DEFICIT = "Déficit"
 L.ENUM_VERTICAL = "Vertical"; L.ENUM_HORIZONTAL = "Horizontal"
 L.ENUM_OFF = "Désactivé"; L.ENUM_LEFT = "Gauche"; L.ENUM_RIGHT = "Droite"
 L.ENUM_2D = "2D"; L.ENUM_3D = "3D (modèle)"
+L.ENUM_portraitStyle_CLASS = "Icône de classe"
 L.ENUM_BELOW = "Sous le cadre"; L.ENUM_ABOVE = "Au-dessus du cadre"; L.ENUM_DETACHED = "Détachée"
 L.ENUM_fontOutline_NONE = "Aucun"
 

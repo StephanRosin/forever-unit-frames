@@ -369,6 +369,9 @@ local function drawClassIcon(tex, token)
     return true
 end
 
+-- Also the portrait's class icon (Elements/Portrait.lua).
+Texts.ClassToken, Texts.DrawClassIcon = classToken, drawClassIcon
+
 local function classIconWanted(frame)
     return frame.titleHeight > 0 and Config.Get(frame.key, "titleClassIcon") == true
 end

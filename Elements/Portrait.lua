@@ -1,7 +1,7 @@
 local _, ns = ...
 
--- Unit portrait, off or on the left/right of the frame, as a 2D picture or
--- a 3D model. Takes a square as tall as the frame; the bars make room for
+-- Unit portrait, off or on the left/right of the frame, as a 2D picture, a
+-- 3D model or a player's class icon (the 2D picture for anyone else). Takes a square as tall as the frame; the bars make room for
 -- it (Layout.PortraitInsets). TOP: a strip as wide as the frame between
 -- title row and health bar, the frame grown by its height (Single.Size).
 local Portrait = { name = "Portrait", unitEvents = { "UNIT_PORTRAIT_UPDATE", "UNIT_MODEL_CHANGED" } }
@@ -28,11 +28,15 @@ end
 function Portrait.Style(frame)
     local scope = frame.key
     local mode = Config.Get(scope, "portraitMode")
-    local threeD = Config.Get(scope, "portraitStyle") == "3D"
+    local style = Config.Get(scope, "portraitStyle")
+    local threeD, class = style == "3D", style == "CLASS"
     local on = mode ~= "OFF"
-    local bg = frame.portraitBg
+    local bg, pic = frame.portraitBg, frame.portrait2D
     bg:ClearAllPoints()
-    frame.portrait2D:SetTexCoord(0, 1, 0, 1)
+    pic:ClearAllPoints()
+    pic:SetAllPoints(bg)
+    -- The class icon keeps its own coords (the class sheet's cell).
+    if not class then pic:SetTexCoord(0, 1, 0, 1) end
     if mode == "TOP" then
         local top = -(frame.titleHeight or 0)
         bg:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, top)
@@ -40,9 +44,16 @@ function Portrait.Style(frame)
         local strip = frame.portraitStrip or 0
         bg:SetHeight(strip)
         -- The square picture's middle band, as wide as the strip.
-        local w = ns.Single.Size(scope)
-        local band = math.min(1, strip / w) / 2
-        frame.portrait2D:SetTexCoord(0, 1, 0.5 - band, 0.5 + band)
+        if class then
+            -- Whole, as a square in the strip's middle.
+            pic:ClearAllPoints()
+            pic:SetPoint("CENTER", bg, "CENTER", 0, 0)
+            pic:SetSize(strip, strip)
+        else
+            local w = ns.Single.Size(scope)
+            local band = math.min(1, strip / w) / 2
+            pic:SetTexCoord(0, 1, 0.5 - band, 0.5 + band)
+        end
     elseif on then
         local point = mode == "LEFT" and "TOPLEFT" or "TOPRIGHT"
         -- As tall as the frame is laid out (Single.LayoutSize).
@@ -95,6 +106,14 @@ end
 local function updatePicture(frame)
     frame.portrait2D:SetTexture(nil)
     pcall(SetPortraitTexture, frame.portrait2D, frame.unit)
+end
+
+-- The class icon; the 2D picture, uncropped, for a unit without a class.
+local function updateClassIcon(frame)
+    local token = ns.Texts.ClassToken(frame.unit)
+    if token and ns.Texts.DrawClassIcon(frame.portrait2D, token) then return end
+    frame.portrait2D:SetTexCoord(0, 1, 0, 1)
+    updatePicture(frame)
 end
 
 -- A creature's NPC ID from its GUID ("Creature-0-realm-map-instance-npcID-
@@ -163,8 +182,11 @@ function Portrait.Update(frame, event)
     if event == ns.Single.POLL then return end
     local scope = frame.key
     if Config.Get(scope, "portraitMode") == "OFF" then return end
-    if Config.Get(scope, "portraitStyle") == "3D" then
+    local style = Config.Get(scope, "portraitStyle")
+    if style == "3D" then
         updateModel(frame)
+    elseif style == "CLASS" then
+        updateClassIcon(frame)
     else
         updatePicture(frame)
     end
