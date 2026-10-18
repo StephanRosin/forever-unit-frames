@@ -67,7 +67,7 @@ Schema.GENERAL = {
 
 Schema.FRAME = {
     { id = "layout", sections = {
-        { id = "frame", keys = { "enabled" } },
+        { id = "frame", keys = { "enabled", "hideBlizzardFrame" } },
         { id = "size", keys = { "width", "height" } },
         { id = "position", keys = { "x", "y" } },
         { id = "barHeights", keys = { "titlePercent", "healthPercent", "powerPercent", "powerEnabled", "powerHideEmpty" } },

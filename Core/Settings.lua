@@ -118,6 +118,10 @@ Settings.Define({ key = "clickCast", code = "CK", scope = "inherit", type = "boo
 -- Frame layout
 -- The pet's target is new in 0.29.0: off until switched on, so an update shows nothing new.
 Settings.Define({ key = "enabled", code = "E", scope = "frame", type = "bool", default = { pettarget = false, _ = true } })
+-- With ours off, Blizzard's frame comes back unless this is set (e.g. the
+-- player shown in the party frames instead). Frames Blizzard has one of.
+Settings.Define({ key = "hideBlizzardFrame", code = "HB", scope = "frame", type = "bool", default = false,
+    only = { player = true, target = true, targettarget = true, pet = true, focus = true, party = true } })
 Settings.Define({ key = "width", code = "W", scope = "frame", type = "int", min = 40, max = 600,
     default = { player = 220, target = 220, focus = 160, party = 160, _ = 120 } })
 Settings.Define({ key = "height", code = "H", scope = "frame", type = "int", min = 8, max = 200,

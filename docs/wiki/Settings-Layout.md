@@ -14,6 +14,7 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
 <tr><td><b>Enabled</b></td><td>Needs /reload after re-enabling</td><td>On, Off</td><td>On</td><td>all</td></tr>
+<tr><td><b>Hide Blizzard's frame</b></td><td>While this frame is off: needs /reload to show it again</td><td>On, Off</td><td>Off</td><td>all</td></tr>
 </tbody>
 </table>
 

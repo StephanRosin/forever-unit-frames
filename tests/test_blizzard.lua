@@ -56,6 +56,30 @@ _G.PlayerFrame = M.newWidget("Frame", "PlayerFrame")
 ns.Blizzard.HideDefaults()
 H.check("kept when ours is disabled", PlayerFrame:GetAlpha(), 1)
 
+-- Ours off and Blizzard's switched off too: it stays hidden (player shown
+-- in the party frames instead).
+ns = H.LoadAddon()
+ns.Config.Use({ player = { enabled = false, hideBlizzardFrame = true } })
+_G.PlayerFrame = M.newWidget("Frame", "PlayerFrame")
+_G.PlayerFrame._protected = true
+ns.Blizzard.HideDefaults()
+H.check("off and hidden: alpha 0", PlayerFrame:GetAlpha(), 0)
+H.check("off and hidden: hidden", PlayerFrame:IsShown(), false)
+H.check("setting code", ns.Settings.Get("hideBlizzardFrame").code, "HB")
+H.check("off by default", ns.Settings.Default(ns.Settings.Get("hideBlizzardFrame"), "player"), false)
+H.check("not on frames Blizzard lacks", ns.Settings.AppliesTo(ns.Settings.Get("hideBlizzardFrame"), "pettarget"), false)
+
+-- Switched on later: hidden at once, no /reload.
+ns = H.LoadAddon()
+ns.Config.Use({ pet = { enabled = false } })
+_G.PetFrame = M.newWidget("Frame", "PetFrame")
+_G.PetFrame._protected = true
+ns.Blizzard.HideDefaults()
+H.check("pet off: Blizzard's kept", PetFrame:GetAlpha(), 1)
+ns.Config.Set("pet", "hideBlizzardFrame", true)
+H.check("switched on: hidden", PetFrame:GetAlpha(), 0)
+_G.PetFrame = nil
+
 -- Missing Blizzard frames are ignored.
 ns = H.LoadAddon()
 ns.Config.Use({})

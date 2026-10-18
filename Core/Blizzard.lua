@@ -92,11 +92,15 @@ local function concealParty()
     Blizzard.Conceal(_G.CompactPartyFrame)
 end
 
-local function enabled(scope) return ns.FrameEnabled(scope) end
+-- Blizzard's frame of scope goes: ours replaces it, or it is switched off
+-- (hideBlizzardFrame).
+local function enabled(scope)
+    return ns.FrameEnabled(scope) or ns.Config.Get(scope, "hideBlizzardFrame")
+end
 
--- Only frames we replace are hidden. Running again is harmless, so newly
--- enabled frames are covered at once; getting a Blizzard frame back needs
--- a /reload.
+-- Only frames we replace or that are switched off are hidden. Running
+-- again is harmless, so newly enabled frames are covered at once; getting
+-- a Blizzard frame back needs a /reload.
 function Blizzard.HideDefaults()
     ns.AfterCombat("hideBlizzard", function()
         if enabled("player") then
@@ -116,7 +120,8 @@ function Blizzard.HideDefaults()
 end
 
 ns.Listen("CONFIG_CHANGED", function(_, key)
-    if key == nil or key == "enabled" or key == "unitFrames" or key == "hideBlizzardCastbar" then
+    if key == nil or key == "enabled" or key == "unitFrames" or key == "hideBlizzardCastbar"
+        or key == "hideBlizzardFrame" then
         Blizzard.HideDefaults()
     end
 end)
