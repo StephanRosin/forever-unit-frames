@@ -6,8 +6,19 @@ _G.PlayerFrame = M.newWidget("Frame", "PlayerFrame")
 _G.PlayerFrame._protected = true
 _G.PlayerFrame:RegisterEvent("UNIT_HEALTH")
 _G.TargetFrame = M.newWidget("Frame", "TargetFrame")
+_G.TargetFrame._protected = true
+_G.TargetFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
+local targetChild = M.newWidget("Frame", "TargetFrameSpellBar", _G.TargetFrame)
+targetChild:EnableMouse(true)
+_G.ComboFrame = M.newWidget("Frame", "ComboFrame")
+local blizzardMenu = M.newWidget("Frame", "Menu")
+_G.TargetFrame_OpenMenu = function(owner)
+    M.openMenu = blizzardMenu
+    blizzardMenu:ClearAllPoints()
+    blizzardMenu:SetPoint("LEFT", owner, "RIGHT")
+end
 local reparented
-_G.TargetFrame.SetParent = function(self, p) reparented = p end
+_G.ComboFrame.SetParent = function(self, p) reparented = p end
 
 ns.Blizzard.HideDefaults()
 H.check("protected: alpha 0", PlayerFrame:GetAlpha(), 0)
@@ -15,6 +26,28 @@ H.check("protected: mouse off", PlayerFrame._mouse, false)
 H.check("protected: events off", next(PlayerFrame._events), nil)
 H.check("protected: hidden out of combat", PlayerFrame:IsShown(), false)
 H.checkTrue("unprotected: reparented", reparented ~= nil and reparented ~= UIParent)
+
+-- TargetFrame: the controller's unit menu needs it visible (menu owner).
+H.checkTrue("target: kept shown", TargetFrame:IsShown())
+H.check("target: alpha 0", TargetFrame:GetAlpha(), 0)
+H.check("target: mouse off", TargetFrame._mouse, false)
+H.check("target: events off", next(TargetFrame._events), nil)
+H.check("target: child hidden", targetChild:IsShown(), false)
+H.checkTrue("target: child moved away", targetChild:GetParent() ~= TargetFrame)
+-- The controller's menu: moved above our target frame.
+ns.Frames.target = M.newWidget("Button", "FUFTarget")
+TargetFrame_OpenMenu(TargetFrame)
+local point, rel, relPoint, _, y = blizzardMenu:GetPoint(1)
+H.check("menu above ours", point .. relPoint, "BOTTOMLEFTTOPLEFT")
+H.check("menu on ours", rel, ns.Frames.target)
+H.check("menu gap", y, 4)
+ns.Frames.target:Hide()
+TargetFrame_OpenMenu(TargetFrame)
+H.check("ours hidden: Blizzard's place", (blizzardMenu:GetPoint(1)), "LEFT")
+ns.Frames.target = nil
+TargetFrame:Hide()
+M.RunTimers()
+H.checkTrue("target: shown again after a hide", TargetFrame:IsShown())
 
 -- A disabled frame keeps Blizzard's.
 ns = H.LoadAddon()

@@ -36,6 +36,42 @@ function Blizzard.Conceal(frame)
     end
 end
 
+-- Blizzard's TargetFrame stays shown, invisible and inert, its children
+-- concealed: the controller's unit menu (Inspect on the gamepad action
+-- bar) opens with it as the owner (TargetFrame_OpenMenu,
+-- Blizzard_GamepadActionBars/MainActionBarFrame.lua), and a menu closes
+-- while its owner is not visible (MenuManagerMixin, Blizzard_Menu/Menu.lua).
+-- Blizzard anchors that menu beside TargetFrame; it is moved above ours.
+local targetHooked
+
+local function placeMenu(owner)
+    local ours = ns.Frames.target
+    if owner ~= _G.TargetFrame or not ours or not ours:IsVisible() then return end
+    local menu = Menu and Menu.GetManager and Menu.GetManager():GetOpenMenu()
+    if not menu then return end
+    menu:ClearAllPoints()
+    menu:SetPoint("BOTTOMLEFT", ours, "TOPLEFT", 0, 4)
+end
+local function concealTarget()
+    local frame = _G.TargetFrame
+    if not frame then return end
+    for _, child in ipairs({ frame:GetChildren() }) do Blizzard.Conceal(child) end
+    frame:UnregisterAllEvents()
+    frame:SetAlpha(0)
+    frame:EnableMouse(false)
+    frame:Show()
+    if targetHooked then return end
+    targetHooked = true
+    -- A global function, not a frame method: safe to post-hook.
+    if _G.TargetFrame_OpenMenu then
+        hooksecurefunc("TargetFrame_OpenMenu", function(owner) pcall(placeMenu, owner) end)
+    end
+    -- Edit Mode may hide it again: shown once more, next frame.
+    frame:HookScript("OnHide", function()
+        C_Timer.After(0, function() ns.AfterCombat("targetMenuOwner", function() frame:Show() end) end)
+    end)
+end
+
 -- Blizzard's party: the member buttons live in a pool on PartyFrame; the
 -- raid-style CompactPartyFrame is created on demand as its child. Each
 -- member carries a secure pet button (PetFrame, PartyMemberPetFrameTemplate)
@@ -68,7 +104,7 @@ function Blizzard.HideDefaults()
             if ns.Config.Get("player", "hideBlizzardCastbar") then Blizzard.Conceal(_G.PlayerCastingBarFrame) end
         end
         if enabled("target") then
-            Blizzard.Conceal(_G.TargetFrame)
+            concealTarget()
             Blizzard.Conceal(_G.ComboFrame)
         end
         if enabled("targettarget") then Blizzard.Conceal(_G.TargetFrameToT) end

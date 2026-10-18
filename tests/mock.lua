@@ -956,6 +956,7 @@ local function newWidget(kind, name, parent)
         self._level = level
     end
     function w:GetFrameLevel() return self._level end
+    function w:GetChildren() return unpack(rawget(self, "_children") or {}) end
     function w:GetName() return self._name end
     function w:GetObjectType() return self._kind end
     function w:SetScript(s, fn) self._scripts[s] = fn end
@@ -2904,7 +2905,10 @@ function M.Reset()
     -- button whose type is togglemenu).
     M.menuMods = {}
     M.menu = nil
+    -- Menu.GetManager():GetOpenMenu() answers M.openMenu.
+    M.openMenu = nil
     _G.Menu = {
+        GetManager = function() return { GetOpenMenu = function() return M.openMenu end } end,
         ModifyMenu = function(tag, callback)
             assert(type(tag) == "string", "Menu.ModifyMenu: tag must be a string")
             assert(type(callback) == "function", "Menu.ModifyMenu: callback must be a function")
