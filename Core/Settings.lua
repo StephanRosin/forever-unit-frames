@@ -906,6 +906,10 @@ Settings.Define({ key = "fsrDimAlpha", code = "FA", scope = "frame", only = FSR,
 -- Back in full while you have a target: see your resources before a pull.
 Settings.Define({ key = "playerFadeTarget", code = "WT", scope = "frame", only = { player = true }, type = "bool",
     default = true })
+-- Back in full while hurt (the health below full); on by default. Off,
+-- health is not looked at.
+Settings.Define({ key = "playerFadeHurt", code = "WH", scope = "frame", only = { player = true }, type = "bool",
+    default = true })
 -- Never faded in a party or raid: a healer healing by mouse-over without a
 -- target still sees the frame. Off by default.
 Settings.Define({ key = "playerFadeGroup", code = "WG", scope = "frame", only = { player = true }, type = "bool",

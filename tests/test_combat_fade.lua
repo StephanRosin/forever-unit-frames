@@ -50,6 +50,17 @@ M.units.target = nil
 M.units.player.health = 60
 M.FireEvent("UNIT_HEALTH", "player")
 H.check("hurt: full", f:GetAlpha(), 1)
+H.check("hurt: back in full by default", C.Get("player", "playerFadeHurt"), true)
+H.check("hurt code", S.Get("playerFadeHurt").code, "WH")
+-- Off: faded whatever the health, also as a secret.
+C.Set("player", "playerFadeHurt", false)
+H.check("hurt, option off: faded", f:GetAlpha(), 0.2)
+M.units.player.health = M.Secret(60)
+M.FireEvent("UNIT_HEALTH", "player")
+H.check("secret hurt, option off: faded", f:GetAlpha(), 0.2)
+M.units.player.health = 60
+C.Set("player", "playerFadeHurt", true)
+H.check("option back on: full", f:GetAlpha(), 1)
 M.units.player.health = 100
 M.FireEvent("UNIT_HEALTH", "player")
 -- Power is not looked at.

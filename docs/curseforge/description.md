@@ -15,7 +15,7 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 - Party pets: a list directly below the party block, showing only the pets that exist, without gaps (can be turned off). Their buffs and debuffs in one row beside each pet, with their own icon size, count, side and offset. Pets can stand in a list below the group or each one beside its owner (left or right), with their own width, height, spacing and X/Y offset.
 - Party targets: beside each member a small frame with what that member has targeted, right, left, above or below; size and X/Y offset adjustable (off by default).
 - Party frames hide while you are in a raid group (can be turned off).
-- Player frame can fade out of combat while nothing is going on (out of combat, not casting, full health, no target); opacity configurable. Selecting a target brings it back so you see your resources before a pull.
+- Player frame can fade out of combat while nothing is going on (out of combat, not casting, full health, no target — the health and target checks can be switched off); opacity configurable. Selecting a target brings it back so you see your resources before a pull.
 - A three-row layout: a title row with name and level in class colour, health, and power. Each row's height is set in percent of the frame.
 - Round class badge, and a secondary name (surname) that can be turned on or off.
 - A small gold **AFK** or red **DND** badge right after the name of anyone who is away or busy.

@@ -199,7 +199,7 @@ local RULES = {
     { on("targetHighlight"), { "targetHighlightColor", "targetHighlightSize" } },
     { on("combatFeedback"), { "combatFeedbackPoint", "combatFeedbackX", "combatFeedbackY", "combatFeedbackFont",
         "combatFeedbackSize", "combatFeedbackOutline" } },
-    { on("playerFadeOOC"), { "playerFadeAlpha", "playerFadeTarget", "playerFadeGroup", "playerFadePet" } },
+    { on("playerFadeOOC"), { "playerFadeAlpha", "playerFadeTarget", "playerFadeHurt", "playerFadeGroup", "playerFadePet" } },
     { on("minimapShow"), { "minimapAngle" } },
 }
 

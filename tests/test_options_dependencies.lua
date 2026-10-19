@@ -112,7 +112,7 @@ local CASES = {
     { "player", "fsrDim", false, true, { "fsrDimAlpha" } },
     { "player", "combatFeedback", false, true, { "combatFeedbackPoint", "combatFeedbackX", "combatFeedbackY",
         "combatFeedbackFont", "combatFeedbackSize", "combatFeedbackOutline" } },
-    { "player", "playerFadeOOC", false, true, { "playerFadeAlpha", "playerFadeTarget", "playerFadeGroup",
+    { "player", "playerFadeOOC", false, true, { "playerFadeAlpha", "playerFadeTarget", "playerFadeHurt", "playerFadeGroup",
         "playerFadePet" } },
     { "general", "minimapShow", false, true, { "minimapAngle" } },
     { "player", "shieldsEnabled", false, true, { "shieldsPriest", "shieldsItems", "shieldsExtra",

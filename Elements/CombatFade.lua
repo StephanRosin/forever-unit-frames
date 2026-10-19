@@ -1,7 +1,8 @@
 local _, ns = ...
 
 -- Player frame out of combat (optional): faded to a set opacity while
--- nothing is going on -- no combat, no cast, full health, and (optional)
+-- nothing is going on -- no combat, no cast, (optional, on by default)
+-- full health, and (optional)
 -- no target, so a target brings it back before the pull; and (optional)
 -- not in a party or raid, where a healer heals by mouse-over. Test mode and
 -- unlocked frames always show it in full. Only the opacity changes:
@@ -96,8 +97,12 @@ function CombatFade.Apply()
         return
     end
     local alpha = Config.Get("player", "playerFadeAlpha") / 100
-    local ok, value = pcall(UnitHealthPercent, "player", false, healthCurve(alpha))
-    if not ok or type(value) == "nil" then value = 1 end
+    local value = alpha
+    if Config.Get("player", "playerFadeHurt") then
+        local ok
+        ok, value = pcall(UnitHealthPercent, "player", false, healthCurve(alpha))
+        if not ok or type(value) == "nil" then value = 1 end
+    end
     setAlpha(frame, value)
     applyPet(value)
 end

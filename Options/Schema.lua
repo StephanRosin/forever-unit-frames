@@ -172,8 +172,8 @@ Schema.FRAME = {
             "dispelHighlight" } },
         -- Fading comes last: how the frame behaves, not what it shows.
         { id = "range", keys = { "rangeFade", "rangeAlpha" } },
-        { id = "outOfCombat", keys = { "playerFadeOOC", "playerFadeAlpha", "playerFadeTarget", "playerFadeGroup",
-            "playerFadePet" } },
+        { id = "outOfCombat", keys = { "playerFadeOOC", "playerFadeAlpha", "playerFadeTarget",
+            "playerFadeHurt", "playerFadeGroup", "playerFadePet" } },
     } },
     { id = "castbar", sections = {
         { id = "castbar", keys = { "castbarEnabled", "castbarAlwaysShow", "hideBlizzardCastbar", "castbarPosition", "castbarDock",
