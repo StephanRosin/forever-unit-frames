@@ -7,7 +7,7 @@
 		Core/Settings.lua; tests/test_party_pets.lua checks that this file and the
 		test mock agree.
 	-->
-	<Button name="ForeverUnitFramesPartyPetButtonTemplate" virtual="true" inherits="SecureUnitButtonTemplate" registerForClicks="AnyUp">
+	<Button name="ForeverUnitFramesPartyPetButtonTemplate" virtual="true" inherits="SecureUnitButtonTemplate, PingableUnitFrameTemplate" registerForClicks="AnyUp">
 		<Size x="160" y="20"/>
 		<Attributes>
 			<Attribute name="*type1" type="string" value="target"/>

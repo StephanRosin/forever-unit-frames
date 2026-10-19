@@ -6,7 +6,7 @@
 		to the party width/height defaults in Core/Settings.lua; tests/test_party.lua
 		checks that this file and the test mock agree.
 	-->
-	<Button name="ForeverUnitFramesPartyButtonTemplate" virtual="true" inherits="SecureUnitButtonTemplate" registerForClicks="AnyUp">
+	<Button name="ForeverUnitFramesPartyButtonTemplate" virtual="true" inherits="SecureUnitButtonTemplate, PingableUnitFrameTemplate" registerForClicks="AnyUp">
 		<Size x="160" y="46"/>
 		<Attributes>
 			<Attribute name="*type1" type="string" value="target"/>
@@ -19,7 +19,7 @@
 				(useparent-unit, unitsuffix), so it follows the member in
 				combat too. Hidden until the unit watch shows it.
 			-->
-			<Button parentKey="targetButton" inherits="SecureUnitButtonTemplate" registerForClicks="AnyUp" hidden="true">
+			<Button parentKey="targetButton" inherits="SecureUnitButtonTemplate, PingableUnitFrameTemplate" registerForClicks="AnyUp" hidden="true">
 				<Size x="100" y="24"/>
 				<Attributes>
 					<Attribute name="useparent-unit" type="boolean" value="true"/>
@@ -36,7 +36,7 @@
 				Unit: the parent's plus "pet" (party1pet -> partypet1 in the
 				secure code). Hidden until the unit watch shows it.
 			-->
-			<Button parentKey="petButton" inherits="SecureUnitButtonTemplate" registerForClicks="AnyUp" hidden="true">
+			<Button parentKey="petButton" inherits="SecureUnitButtonTemplate, PingableUnitFrameTemplate" registerForClicks="AnyUp" hidden="true">
 				<Size x="160" y="20"/>
 				<Attributes>
 					<Attribute name="useparent-unit" type="boolean" value="true"/>

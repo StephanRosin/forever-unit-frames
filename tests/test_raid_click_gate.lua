@@ -13,7 +13,7 @@ for template, file in pairs({ ForeverUnitFramesRaidButtonTemplate = "Raid/Cell.x
     ForeverUnitFramesPartyButtonTemplate = "Units/Party.xml",
     ForeverUnitFramesPartyPetButtonTemplate = "Units/PartyPets.xml" }) do
     H.checkTrue(template .. " is a unit button", M.UNIT_BUTTON_TEMPLATES[template]
-        and H.ReadFile(file):find('name="' .. template .. '" virtual="true" inherits="SecureUnitButtonTemplate"', 1,
+        and H.ReadFile(file):find('name="' .. template .. '" virtual="true" inherits="SecureUnitButtonTemplate', 1,
             true))
 end
 

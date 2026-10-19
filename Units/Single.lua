@@ -170,6 +170,10 @@ function Single.Create(def)
     frame:SetAttribute("unit", def.unit)
     frame:SetAttribute("*type1", "target")
     frame:SetAttribute("*type2", "togglemenu")
+    -- The ping key over the frame pings its unit, as PingableUnitFrameTemplate
+    -- does for the XML buttons (Blizzard_SharedXML/PingAttributes.xml).
+    Mixin(frame, PingableType_UnitFrameMixin)
+    frame:SetAttribute("ping-receiver", true)
     frame:RegisterForClicks("AnyUp")
     for _, el in ipairs(ns.Elements) do el.Build(frame) end
     ns.UnitEvents.Bind(frame)

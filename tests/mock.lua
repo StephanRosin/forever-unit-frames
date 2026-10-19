@@ -1530,6 +1530,19 @@ function M.Reset()
         assert(type(msg) == "string", "chat message must be a plain string")
         table.insert(M.chat, msg)
     end }
+    -- Mixin (Blizzard_SharedXMLBase/Mixin.lua) and the unit frame ping mixin
+    -- (Blizzard_SharedXML/PingableType.lua).
+    _G.Mixin = function(object, ...)
+        for i = 1, select("#", ...) do
+            for k, v in pairs((select(i, ...))) do object[k] = v end
+        end
+        return object
+    end
+    _G.PingableType_UnitFrameMixin = {
+        GetIsPingable = function() return true end,
+        GetAllowRadialWheel = function() return true end,
+        GetTargetInfo = function(self) return { guid = UnitGUID(self.unit or self:GetAttribute("unit")) } end,
+    }
     _G.CreateFrame = function(kind, name, parent, template)
         if kind == "AuraContainer" and M.auraContainerMissing then
             error("CreateFrame: Unknown frame type 'AuraContainer'", 2)

@@ -4,7 +4,7 @@ local ns = H.LoadAddon()
 -- The XML template and the mock mirror of it agree.
 local xml = H.ReadFile("Units/Party.xml")
 H.checkTrue("xml: template name", xml:find('name="ForeverUnitFramesPartyButtonTemplate"', 1, true))
-H.checkTrue("xml: secure unit button", xml:find('inherits="SecureUnitButtonTemplate"', 1, true))
+H.checkTrue("xml: secure unit button", xml:find('inherits="SecureUnitButtonTemplate', 1, true))
 H.checkTrue("xml: clicks", xml:find('registerForClicks="AnyUp"', 1, true))
 H.checkTrue("xml: size = party defaults", xml:find('<Size x="160" y="46"/>', 1, true))
 H.checkTrue("xml: left click targets", xml:find('<Attribute name="*type1" type="string" value="target"/>', 1, true))
