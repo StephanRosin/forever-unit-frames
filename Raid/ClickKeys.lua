@@ -99,6 +99,8 @@ function ClickKeys.Wanted()
 end
 
 local update
+-- What the last Update found wanted (a roster update rarely changes it).
+local lastWanted
 
 -- The party header shows and hides by its visibility driver (and by the
 -- unit frames' settings): the keys follow, after combat if need be.
@@ -114,15 +116,13 @@ end
 -- Out of combat only: the bindings anew.
 function ClickKeys.Update()
     if InCombatLockdown() or not ns.RaidConfig.Profile() then return end
-    -- Nothing wanted and nothing bound: nothing made.
-    if not owner and not ClickKeys.Wanted() then
-        watchParty()
-        return
-    end
+    lastWanted = ClickKeys.Wanted()
     watchParty()
+    -- Nothing wanted and nothing bound: nothing made.
+    if not owner and not lastWanted then return end
     owner = owner or CreateFrame("Frame", nil, UIParent)
     ClearOverrideBindings(owner)
-    if not ClickKeys.Wanted() then return end
+    if not lastWanted then return end
     -- The spell list once for every key with a fixed rank.
     local list
     for _, slot in ipairs(Raid.CLICK_KEYS) do
@@ -199,7 +199,11 @@ ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
     if scope ~= nil and scope ~= "general" then return end
     if key == nil or KEYS[key] then update() end
 end)
-ns.On("GROUP_ROSTER_UPDATE", update)
+-- Joining or leaving a raid or party; the party header's own showing is
+-- watched above.
+ns.On("GROUP_ROSTER_UPDATE", function()
+    if ClickKeys.Wanted() ~= lastWanted then update() end
+end)
 -- A key's fixed rank is written by its rank text, read from the spell
 -- book: set again once the book is read or changes.
 ns.On("SPELLS_CHANGED", update)

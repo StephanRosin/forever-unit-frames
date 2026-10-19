@@ -20,3 +20,13 @@ H.check("no raid size in it", err, "RAID_NO_SIZE")
 H.check("the size kept", RC.Get("r10", "cellWidth"), 120)
 H.check("the raid button kept", RC.Get("general", "minimapShow"), true)
 H.check("the message", ns.L["IMPORT_" .. err], "This text holds no raid size.")
+
+-- One with only pet's target entries ("a", raid 10's letter) and a frame
+-- the raid has not: refused too, not read as size 10.
+C.Set("pettarget", "width", 90)
+local mixed = ns.Codec.Encode(C.Profile())
+H.checkTrue("pet's target in it", mixed:find(";aW90", 1, true))
+ok, err = P.Import(mixed, 10)
+H.check("mixed: refused", ok, nil)
+H.check("mixed: no raid size", err, "RAID_NO_SIZE")
+H.check("mixed: the size kept", RC.Get("r10", "cellWidth"), 120)

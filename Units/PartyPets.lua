@@ -42,9 +42,9 @@ local FIXED = {
 -- both growing away from the pet in one row.
 local OPPOSITE = { RIGHT = "LEFT", LEFT = "RIGHT" }
 local function auraLayout(key)
-    local side = get("partyPetAuraSide")
     local group, rest = key:match("^(%l*buffs)(%u%a*)$")
     if not group then return nil end
+    local side = get("partyPetAuraSide")
     if rest == "Size" or rest == "OwnSize" then return get("partyPetAuraSize") end
     if rest == "Max" then
         local max = get("partyPetAuraMax")
@@ -133,11 +133,7 @@ function Pets.SlotOffset(i)
     return 0, -((i - 1) * h + step)
 end
 
-local function setAttributes(header, attributes)
-    header:SetAttribute("_ignore", "attributeChanges")
-    for name, value in pairs(attributes) do header:SetAttribute(name, value) end
-    header:SetAttribute("_ignore", nil)
-end
+local setAttributes = ns.Units.SetAttributes
 
 -- Mirrors the party header's attributes, so pets show exactly when
 -- their owners' block does.

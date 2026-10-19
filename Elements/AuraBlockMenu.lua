@@ -55,7 +55,7 @@ end
 -- The group's auras as { id, name }, and how many readable ones the
 -- client would keep showing; readable ones only, each spell once,
 -- none already on the list, and only those the client would leave out on
--- this unit (Core/AuraBlocklist.lua, Applies: a debuff on a unit you can
+-- this unit (Core/AuraBlocklist.lua, RowApplies: a debuff on a unit you can
 -- assist stays shown unless its spell is never-secret).
 function BlockMenu.Candidates(frame, group, listed)
     local ok, list = pcall(C_UnitAuras.GetUnitAuras, frame.unit, group.filter, BlockMenu.MAX)

@@ -240,7 +240,8 @@ function Window.CountText(st)
     return table.concat(parts, "  ")
 end
 
--- Out of combat: the blocks of the state, top-down, their casts, the next one.
+-- Out of combat: the blocks of the state, top-down, their casts, the next
+-- one. Returns the window's height, as Window.Size counts it.
 local function render()
     local entries = states()
     local y = Window.PADDING + Window.HEADER_H + Window.LINE_GAP
@@ -276,16 +277,17 @@ local function render()
         r.count:SetAlpha(1)
         for _, line in ipairs(r.lines) do line:SetAlpha(1) end
     end
+    return y + Window.PADDING
 end
 
 -- Out of combat: its own mover holds it, the window moved back inside
 -- the screen where its size would leave it (the setting stays: it fits
 -- again when the window shrinks); before the mover is there, its
 -- position, inside the screen as well.
-local function place()
+local function place(w, h)
     local f = Window.frame
     local x, y = general("buffWatchX"), general("buffWatchY")
-    local dx, dy = Window.Reachable("x", x) - x, Window.Reachable("y", y) - y
+    local dx, dy = Panel.Reach(w, h, "x", x) - x, Panel.Reach(w, h, "y", y) - y
     f:ClearAllPoints()
     if f.mover then
         ns.Movers.Sync(f)
@@ -299,9 +301,10 @@ end
 function Window.Refresh()
     local f = Window.frame
     if not f or InCombatLockdown() then return end
-    render()
-    f:SetSize(Window.Size())
-    place()
+    -- Measured once: every block's names are a range check per member.
+    local h = render()
+    f:SetSize(Window.WIDTH, h)
+    place(Window.WIDTH, h)
     ns.Border.Draw(f, Panel.PANEL_SCOPE, f, 0)
     f:SetShown(Window.Shown())
 end

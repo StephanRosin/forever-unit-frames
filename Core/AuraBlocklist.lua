@@ -174,11 +174,6 @@ function Blocklist.RowApplies(unit, helpful)
     return assist == (helpful == true)
 end
 
--- The same for one spell: never-secret ones everywhere.
-function Blocklist.Applies(unit, id, helpful)
-    return Blocklist.NeverSecret(id) or Blocklist.RowApplies(unit, helpful)
-end
-
 -- What the options say about an entry in a context: nil when the client
 -- hides it everywhere; "GROUP" (here only as a buff: debuffs on your
 -- group stay); "MIXED" (buffs on friends, debuffs on enemies).

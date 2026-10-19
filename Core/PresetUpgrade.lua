@@ -179,18 +179,7 @@ local PRESET_0_22 = {
 }
 Upgrade.PRESET_0_22 = PRESET_0_22
 
-local function same(a, b)
-    if type(a) == "table" and type(b) == "table" then
-        for i = 1, 4 do if a[i] ~= b[i] then return false end end
-        return true
-    end
-    return a == b
-end
-
-local function copy(v)
-    if type(v) == "table" then return { v[1], v[2], v[3], v[4] } end
-    return v
-end
+local same, copy = ns.SameValue, ns.CopyValue
 
 -- Whether a shipped look is loaded at all.
 function Upgrade.Active()

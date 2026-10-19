@@ -360,8 +360,11 @@ M.units.target.cast = nil
 M.FireEvent("UNIT_SPELLCAST_STOP", "target", "c1", 1)
 f:Show()
 H.checkTrue("hidden while the cast ended: the frame alone", apart())
+-- A cast begun while the frame was hidden: the frame catches up when it
+-- shows (Units/Events.lua) and joins its castbar.
 f:Hide()
-bar:Show() -- a castbar shown while its frame was hidden
+M.units.target.cast = { name = "Bolt", texture = 1, startMs = 1000000, endMs = 1002000 }
+M.FireEvent("UNIT_SPELLCAST_START", "target", "c2", 1)
 f:Show()
 H.checkTrue("frame shown again: follows the castbar", joined())
 ns.Castbar.Stop(bar)

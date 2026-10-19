@@ -32,14 +32,9 @@ Header = Panel.New({
 })
 ns.RaidHeader = Header
 
-Header.NAME = "ForeverUnitFramesRaid"
 Header.PANEL_SCOPE = Panel.PANEL_SCOPE
 Header.BLOCK_SCOPE = Panel.BLOCK_SCOPE
-Header.TITLE_SIZE = Panel.TITLE_SIZE
-Header.TITLE_HEIGHT = Panel.TITLE_HEIGHT
-Header.TITLE_COLOR = Panel.TITLE_COLOR
 Header.Enabled = Panel.Enabled
-Header.Active = Panel.Active
 
 -- The raid view in party: a 5-player group shows here, the party frames
 -- hide (Units/Party.lua asks).

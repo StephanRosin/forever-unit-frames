@@ -7,6 +7,8 @@ local _, ns = ...
 -- `event` is the internal event fired on every change; `notCopied` lists
 -- the keys CopyScope leaves with the target.
 
+-- Setting values: plain, or a colour (four numbers). Shared with the
+-- preset upgrade and the raid templates.
 local function sameValue(a, b)
     if type(a) == "table" and type(b) == "table" then
         for i = 1, 4 do if a[i] ~= b[i] then return false end end
@@ -19,6 +21,7 @@ local function copyValue(v)
     if type(v) == "table" then return { v[1], v[2], v[3], v[4] } end
     return v
 end
+ns.SameValue, ns.CopyValue = sameValue, copyValue
 
 function ns.NewConfig(Settings, event, notCopied)
     local Config = {}
@@ -71,7 +74,7 @@ function ns.NewConfig(Settings, event, notCopied)
     -- A value of profile p (any profile, not only the one in use), with
     -- the current defaults or the given ones (see fallbackIn).
     function Config.ValueIn(p, scope, key, default)
-        return valueIn(p, scope, assert(Settings.Get(key), "unknown setting " .. tostring(key)), default)
+        return valueIn(p, scope, Settings.Get(key) or error("unknown setting " .. tostring(key), 2), default)
     end
 
     -- Derived scopes have no profile and no options page of their own: a
@@ -85,7 +88,8 @@ function ns.NewConfig(Settings, event, notCopied)
     end
 
     function Config.Get(scope, key)
-        local def = assert(Settings.Get(key), "unknown setting " .. tostring(key))
+        -- Not assert: its message would be built on every call, the hottest path there is.
+        local def = Settings.Get(key) or error("unknown setting " .. tostring(key), 2)
         local d = derived[scope]
         if d then
             local v = d.resolve(key)

@@ -18,3 +18,18 @@ H.check("no scan per threat event", scans, 0)
 M.FireEvent("PLAYER_TARGET_CHANGED")
 H.check("a new target: one scan", scans, 1)
 T.Evaluate = real
+
+-- The frame poll (Units/Single.lua) leaves it to that timer in combat.
+local refreshes = 0
+local realRefresh = T.Refresh
+T.Refresh = function() refreshes = refreshes + 1 end
+local frame = ns.Frames.player
+T.Update(frame, ns.Single.POLL)
+H.check("poll out of combat: refreshed", refreshes, 1)
+M.units.player.combat = true
+M.SetCombat(true)
+T.Update(frame, ns.Single.POLL)
+H.check("poll in combat: left to the timer", refreshes, 1)
+T.Update(frame, "UNIT_TARGET")
+H.check("an event in combat: refreshed", refreshes, 2)
+T.Refresh = realRefresh

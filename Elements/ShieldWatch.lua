@@ -288,10 +288,8 @@ local function styleButton(button, scope, managed)
     button.cooldown:SetDrawSwipe(setting(scope, "shieldsSwipe") == true)
     local numbers = button.cooldown:GetCountdownFontString()
     if numbers then
-        local outline = outlineOf(scope, "shieldsTimeOutline")
-        local flags = (outline == "SOFT" or outline == "NONE") and (outline == "SOFT" and "OUTLINE" or "") or outline
         numbers:SetFont(fontOf(scope, "shieldsTimeFont"), textSize(scope, "shieldsTimeSize", ShieldWatch.AUTO_TIME),
-            flags)
+            ns.Texts.CountdownFlags(outlineOf(scope, "shieldsTimeOutline")))
         local t = setting(scope, "shieldsTimeColor")
         numbers:SetTextColor(t[1], t[2], t[3], t[4])
         local point = setting(scope, "shieldsTimePoint")

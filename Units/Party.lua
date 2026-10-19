@@ -129,12 +129,7 @@ function Party.ShowHeader(header, want)
     end
 end
 
--- Header attributes are set in one go; a single relayout follows.
-local function setAttributes(header, attributes)
-    header:SetAttribute("_ignore", "attributeChanges")
-    for name, value in pairs(attributes) do header:SetAttribute(name, value) end
-    header:SetAttribute("_ignore", nil)
-end
+local setAttributes = ns.Units.SetAttributes
 
 local function headerAttributes()
     local horizontal = Party.Horizontal()
@@ -319,6 +314,7 @@ end
 
 -- The header assigns or clears a unit, in or out of combat.
 function Party.OnUnitChanged(button, unit)
+    if ns.Units.SamePerson(button, unit) then return end
     button.unit = unit
     ns.UnitEvents.Bind(button)
     ns.PartyTargets.OnMemberUnit(button, unit)
@@ -360,3 +356,4 @@ ns.Listen("CONFIG_CHANGED", function(scope)
     ns.AfterCombat("partyStyle", Party.StyleAll)
 end)
 ns.Listen("PIXEL_GRID_CHANGED", function() ns.AfterCombat("partyStyle", Party.StyleAll) end)
+ns.Listen("UNITS_PREBUILT", Party.StyleAll)

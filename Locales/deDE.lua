@@ -252,6 +252,7 @@ L.IMPORT_DONE = "Profil importiert."
 L.IMPORT_CODEC_EMPTY = "Nichts zu importieren."
 L.IMPORT_CODEC_VERSION = "Dieses Profil stammt aus einer neueren Version."
 L.IMPORT_CODEC_FORMAT = "Das ist kein Profil von Forever Unit Frames."
+L.IMPORT_RAID_STRING = "Das ist ein Profil der Raid-Frames: importiere es im Raid-Fenster."
 
 -- Auras (both groups share the wording; the section says which).
 L.TAB_auras = "Auren"

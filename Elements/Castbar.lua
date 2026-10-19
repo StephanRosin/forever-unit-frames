@@ -135,7 +135,6 @@ local function stopTimer(bar)
         pcall(bar.SetTimerDuration, bar, C_DurationUtil.CreateDuration())
     end
 end
-Castbar.StopTimer = stopTimer
 
 -- Idle: hidden, or with "Always show" an empty bar that holds its place.
 -- A docked castbar holds it too while a threat bar sits below or beside it

@@ -27,7 +27,7 @@ RC.Set("r20", "panel2CellsPerLine", 2)
 RC.Set("r20", "panel2X", 480)
 
 -- Copied from another size: the panels, their blocks, title and layout.
-Profiles.CopySize(20, 10)
+Profiles.CopySizeMode(20, 10, "ALL")
 H.check("10: panel 2 shown", RC.Get("r10", "panel2Show"), true)
 H.check("10: its blocks", RC.Get("r10", "panel2Blocks"), "3,4")
 H.check("10: its title", RC.Get("r10", "panel2Title"), "Ranged; back")

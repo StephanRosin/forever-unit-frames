@@ -50,7 +50,7 @@ H.check("raid event", raidEvents, 1)
 H.check("no unit-frame event", unitEvents, 0)
 
 -- Copy between sizes: everything, position included.
-P.CopySize(10, 40)
+P.CopySizeMode(10, 40, "ALL")
 H.check("copy size: x", RC.Get("r40", "x"), -250)
 P.ResetSize(40)
 H.check("reset size", RC.Get("r40", "x"), -600)

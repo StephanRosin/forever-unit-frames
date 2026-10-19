@@ -12,12 +12,12 @@ PATTERNS="$HOME/.config/forever-unit-frames/private-patterns"
 
 "$HERE/tools/make_wiki" >/dev/null
 
-if [ -f "$PATTERNS" ]; then
-    pat=$(grep -v '^#' "$PATTERNS" | grep -v '^$' | paste -sd'|')
-    if grep -r -I -n -i -E "$pat" "$HERE/docs/wiki"; then
-        echo "publish_wiki: private details found in docs/wiki, nothing published." >&2
-        exit 1
-    fi
+# The wiki is pushed from a fresh clone without the pre-push hook: this is its only check.
+[ -s "$PATTERNS" ] || { echo "publish_wiki: $PATTERNS missing, nothing published." >&2; exit 1; }
+pat=$(grep -v '^#' "$PATTERNS" | grep -v '^$' | paste -sd'|')
+if grep -r -I -n -i -E "$pat" "$HERE/docs/wiki"; then
+    echo "publish_wiki: private details found in docs/wiki, nothing published." >&2
+    exit 1
 fi
 
 WORK="$(mktemp -d)"

@@ -8,7 +8,6 @@ local H = dofile("harness.lua")
 local shipped = H.LoadShipped()
 dofile(assert(os.getenv("SV"), "SV=<saved variables file> required"))
 local profile = ForeverUnitFramesDB.profile
-profile.window = nil
 shipped.Config.Use(profile)
 local S = shipped.Settings
 

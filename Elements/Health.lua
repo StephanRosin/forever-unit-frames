@@ -51,21 +51,24 @@ end
 -- target in combat): it cannot index RAID_CLASS_COLORS, but the client's
 -- C_ClassColor takes it as it is. Its colour may then be secret too and
 -- is only ever handed to widgets.
+-- Not a closure: this runs on every health event of every frame.
+local function classRGB(unit)
+    local _, class = UnitClass(unit)
+    if type(class) == "nil" then return end
+    if not Secrets.IsSecret(class) then
+        local c = RAID_CLASS_COLORS[class]
+        if c then return c.r, c.g, c.b end
+        return
+    end
+    if C_ClassColor and C_ClassColor.GetClassColor then
+        local c = C_ClassColor.GetClassColor(class)
+        return c.r, c.g, c.b
+    end
+end
+
 function Health.ClassColor(unit)
     if not Secrets.Bool(UnitIsPlayer, unit) then return end
-    local ok, r, g, b = pcall(function()
-        local _, class = UnitClass(unit)
-        if type(class) == "nil" then return end
-        if not Secrets.IsSecret(class) then
-            local c = RAID_CLASS_COLORS[class]
-            if c then return c.r, c.g, c.b end
-            return
-        end
-        if C_ClassColor and C_ClassColor.GetClassColor then
-            local c = C_ClassColor.GetClassColor(class)
-            return c.r, c.g, c.b
-        end
-    end)
+    local ok, r, g, b = pcall(classRGB, unit)
     if ok and type(r) ~= "nil" then return r, g, b end
 end
 

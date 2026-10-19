@@ -234,11 +234,13 @@ end
 -- hears of it (RAID_CELLS_CHANGED): blocks may have grown or emptied.
 -- The header sets every cell's unit on each roster update; a cell that
 -- keeps its unit keeps its events and the panel its layout, but the
--- person behind the same raid unit may have changed, so it shows anew.
+-- person behind the same raid unit may have changed, so it shows anew
+-- (unless it is known to be the same, ns.Units.SamePerson).
 -- A cleared cell's aura container looks at no unit any more.
 function Cell.OnUnitChanged(button, unit)
+    local same = ns.Units.SamePerson(button, unit)
     if button.unit == unit then
-        if unit then ns.Single.UpdateAll(button) end
+        if unit and not same then ns.Single.UpdateAll(button) end
         return
     end
     button.unit = unit

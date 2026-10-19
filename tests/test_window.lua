@@ -97,6 +97,18 @@ ns.Options.importArea:SetText("1;pW224;garbage")
 ns.Options.importButton:GetScript("OnClick")(ns.Options.importButton)
 H.check("partial import applied", ns.Config.Get("player", "width"), 224)
 H.check("partial import: skipped named", ns.Options.importMessage:GetText(), ns.L.IMPORT_SKIPPED:format(1))
+-- A raid size's export (Raid/Profiles.lua) is refused: one of 20 or 40
+-- reads as nothing, one of 10 as the pet's target ("a").
+ns.RaidConfig.Set("r20", "cellWidth", 120)
+ns.RaidConfig.Set("r10", "cellWidth", 120)
+ns.RaidConfig.Set("r10", "cellHeight", 40)
+for _, size in ipairs({ 20, 10 }) do
+    ns.Options.importArea:SetText(ns.RaidProfiles.Export(size))
+    ns.Options.importButton:GetScript("OnClick")(ns.Options.importButton)
+    H.check("raid " .. size .. " export: settings kept", ns.Config.Get("player", "width"), 224)
+    H.check("raid " .. size .. " export: pet's target untouched", next(ns.Config.Profile().pettarget or {}), nil)
+    H.check("raid " .. size .. " export: refused", ns.Options.importMessage:GetText(), ns.L.IMPORT_RAID_STRING)
+end
 
 -- Position saved
 local f = ns.Options.frame

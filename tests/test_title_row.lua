@@ -28,7 +28,6 @@ H.check("three rows", rows(46, 30, 45, 25, true), "14,21,11")
 H.check("no title: two rows", rows(40, 0, 75, 25, true), "0,30,10")
 H.check("power off: health takes the rest", rows(46, 30, 45, 25, false), "14,32,0")
 H.check("too much: title gives way", rows(20, 60, 50, 50, true), "9,1,10")
-H.check("two-row helper unchanged", table.concat({ Lay.Bars(46, 75, 25, true) }, ","), "35,11")
 
 _G.ForeverUnitFramesDB = nil
 M.FireEvent("PLAYER_LOGIN")

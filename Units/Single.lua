@@ -40,11 +40,6 @@ function Single.LayoutSize(frame)
     return w, h
 end
 
--- Border thickness of scope on the pixel grid (ns.Border.Size).
-function Single.BorderSize(scope)
-    return ns.Border.Size(scope)
-end
-
 local function place(frame)
     local scope = frame.key
     local w, h = Single.Size(scope)

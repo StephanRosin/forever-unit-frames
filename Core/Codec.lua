@@ -24,6 +24,15 @@ local function hexByte(c) return ("%02x"):format(math.floor(c * 255 + 0.5)) end
 function ns.NewCodec(Settings)
     local Codec = { VERSION = VERSION }
 
+    -- The scope letters a string's entries use (a set). The two registries
+    -- share the format and "g", so these tell a unit frames' string from
+    -- a raid one before it is read.
+    function Codec.Letters(str)
+        local letters = {}
+        for letter in (str .. ";"):gmatch(";(%l)%u") do letters[letter] = true end
+        return letters
+    end
+
     local scopeByPrefix = {}
     for scope, prefix in pairs(Settings.PREFIX) do scopeByPrefix[prefix] = scope end
 

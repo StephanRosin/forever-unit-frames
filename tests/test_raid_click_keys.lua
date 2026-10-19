@@ -37,6 +37,18 @@ H.check("runs a macro", b1:GetAttribute("type"), "macro")
 H.check("its text", b1:GetAttribute("macrotext"), "/cast [@mouseover,help,nodead] Renew")
 H.check("key down and up", table.concat(b1._clicks, ","), "AnyUp,AnyDown")
 H.check("no mouse on it", b1._mouse, false)
+-- A roster update that leaves the raid frames as they were binds nothing anew.
+do
+    local clears = 0
+    local real = _G.ClearOverrideBindings
+    _G.ClearOverrideBindings = function(...) clears = clears + 1; return real(...) end
+    M.SetRaidRoster({ { name = "A", class = "PRIEST", subgroup = 1, unit = { health = 1, healthMax = 1 } },
+        { name = "B", class = "MAGE", subgroup = 1, unit = { health = 1, healthMax = 1 } } })
+    M.RunTimers()
+    _G.ClearOverrideBindings = real
+    H.check("roster update, still a raid: not bound anew", clears, 0)
+    H.check("still bound", GetBindingAction("F", true) ~= "", true)
+end
 
 -- A change re-binds; a key taken away is free again.
 RC.Set("general", "clickKey1", "R")
@@ -117,3 +129,4 @@ RC.Set("general", "enabled", true)
 M.RunTimers()
 H.check("raid frames on: bound", GetBindingAction("T", true), "CLICK ForeverUnitFramesClickKey1:LeftButton")
 H.check("nothing blocked at the end", #M.blocked, 0)
+

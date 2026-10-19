@@ -22,7 +22,6 @@ for _, h in ipairs({ 8, 13, 46, 65, 200 }) do
         H.checkTrue(("health at least 1 (%d)"):format(h), hh >= 1)
     end
 end
-H.check("two-row helper", table.concat({ Lay.Bars(48, 70, 20, true) }, ","), "38,10")
 
 M.FireEvent("PLAYER_LOGIN")
 M.RunTimers()

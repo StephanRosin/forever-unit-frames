@@ -89,7 +89,6 @@ local function recheck()
     ThreatBar.Active("player")
     if before ~= present then ns.Single.StyleAll(frame) end
 end
-ThreatBar.Recheck = recheck
 
 function ThreatBar.Height(scope)
     if not ThreatBar.Active(scope) then return 0 end
@@ -443,7 +442,10 @@ function ThreatBar.Style(frame)
     ThreatBar.Refresh(frame)
 end
 
-function ThreatBar.Update(frame)
+function ThreatBar.Update(frame, event)
+    -- In combat the driver below refreshes it already; a second scan of
+    -- the group per frame poll (Units/Single.lua) would only repeat it.
+    if event == ns.Single.POLL and UnitAffectingCombat("player") then return end
     ThreatBar.Refresh(frame)
 end
 

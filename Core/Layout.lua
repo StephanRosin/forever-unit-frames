@@ -30,12 +30,6 @@ function Layout.Rows(height, titlePercent, healthPercent, powerPercent, powerEna
     return titleH, math.max(1, rest - powerH), powerH
 end
 
--- The two-row split (no title row): health, power.
-function Layout.Bars(height, healthPercent, powerPercent, powerEnabled)
-    local _, healthH, powerH = Layout.Rows(height, 0, healthPercent, powerPercent, powerEnabled)
-    return healthH, powerH
-end
-
 -- Width of the overheal lane at the end of a health bar of barWidth: 8 %,
 -- at least 4.
 function Layout.OverhealLane(barWidth)

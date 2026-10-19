@@ -14,6 +14,8 @@ local RaidConfig = ns.NewConfig(RaidSettings, "RAID_CONFIG_CHANGED", {})
 ns.RaidConfig = RaidConfig
 local RaidCodec = ns.NewCodec(RaidSettings)
 ns.RaidCodec = RaidCodec
+local RAID_LETTERS = {}
+for _, letter in pairs(RaidSettings.PREFIX) do RAID_LETTERS[letter] = true end
 
 local store     -- ForeverUnitFramesDB.raid
 local charKey   -- this character's key in it
@@ -109,10 +111,6 @@ function Profiles.Characters()
     end
     table.sort(keys)
     return keys
-end
-
-function Profiles.CopySize(fromSize, toSize)
-    RaidConfig.CopyScope(Raid.Scope(fromSize), Raid.Scope(toSize))
 end
 
 -- Copy between sizes as one change that Undo takes back (Raid/Templates
@@ -237,6 +235,11 @@ end
 function Profiles.ImportSizes(str)
     local decoded, err, rejected, all = decode(str)
     if not decoded then return nil, err end
+    -- A unit frames' export (Core/Codec.lua) has letters the raid has not:
+    -- its "a" entries (the pet's target) are no raid size.
+    for letter in pairs(RaidCodec.Letters(str)) do
+        if not RAID_LETTERS[letter] then return nil, "RAID_NO_SIZE" end
+    end
     local sizes = {}
     for _, size in ipairs(Raid.SIZES) do
         if all or next(decoded[Raid.Scope(size)]) then sizes[#sizes + 1] = size end

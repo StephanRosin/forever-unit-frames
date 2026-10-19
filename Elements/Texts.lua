@@ -342,6 +342,14 @@ local function makeCopies(fs)
     for _, method in ipairs({ "SetShown", "Show", "Hide" }) do follow(fs, method) end
 end
 
+-- The flags for numbers the client writes itself (cooldown countdowns): a
+-- soft outline cannot follow them, so it is the plain outline there.
+function Texts.CountdownFlags(outline)
+    if outline == "SOFT" then return "OUTLINE" end
+    if outline == "NONE" then return "" end
+    return outline
+end
+
 -- Sets font, size and outline style of a text. Returns nothing.
 function Texts.SetFont(fs, font, size, outline)
     local soft = outline == "SOFT"
@@ -706,6 +714,13 @@ end
 
 function Texts.Style(frame)
     local scope = frame.key
+    -- The value kinds the slots show (Texts.Update skips the others' ticks).
+    local kinds = {}
+    for _, slot in ipairs(SLOTS) do
+        local kind = valueKind(slot, Config.Get(scope, slot.setting))
+        if kind then kinds[kind] = true end
+    end
+    frame.textKinds = kinds
     frame.powerTextLayer:SetFrameLevel(frame.power:GetFrameLevel() + Texts.POWER_TEXT_LEVELS)
     local font = ns.Media.Font(Config.Get(scope, "fontFace"))
     local size = Config.Get(scope, "fontSize")
@@ -835,6 +850,9 @@ Texts.VALUE_EVENTS = { UNIT_HEALTH = "health", UNIT_MAXHEALTH = "health",
     UNIT_POWER_FREQUENT = "power", UNIT_MAXPOWER = "power" }
 
 function Texts.Update(frame, event)
+    -- A power tick changes neither the status word nor any text but a
+    -- power value: nothing to do on a frame that shows none (raid cells).
+    if Texts.VALUE_EVENTS[event] == "power" and frame.textKinds and not frame.textKinds.power then return end
     local showSurname = Config.Get(frame.key, "showSurname")
     -- One table per frame, filled anew: no garbage per event.
     local opts = frame.textOpts or {}

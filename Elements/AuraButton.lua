@@ -120,13 +120,8 @@ local function shape(button, scope, size, showTime)
     button.count:ClearAllPoints()
     button.count:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, 0)
     button.count:SetJustifyH("RIGHT")
-    -- The client writes the countdown itself: a soft outline cannot follow
-    -- it, so it gets the plain outline.
     local numbers = button.cooldown:GetCountdownFontString()
-    if numbers then
-        local flags = (outline == "SOFT" or outline == "NONE") and "OUTLINE" or outline
-        numbers:SetFont(font, fontSize, flags)
-    end
+    if numbers then numbers:SetFont(font, fontSize, ns.Texts.CountdownFlags(outline)) end
     button.cooldown:SetHideCountdownNumbers(not showTime)
     button.plainBorder = Config.Get(scope, "borderColor")
     -- A buff whose border shows its caster (button.casterBorder, set by the

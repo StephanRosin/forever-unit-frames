@@ -30,13 +30,7 @@ function Templates.PlayerClass()
     return ok and Secrets.Plain(token, "string") or nil
 end
 
-local function sameValue(a, b)
-    if type(a) == "table" and type(b) == "table" then
-        for i = 1, 4 do if a[i] ~= b[i] then return false end end
-        return true
-    end
-    return a == b
-end
+local sameValue = ns.SameValue
 
 -- Whether a value is one the setting stores as it is (a value the
 -- registry would clamp or change is a mistake in the template).

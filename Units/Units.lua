@@ -109,6 +109,13 @@ end
 -- happens when the header has n buttons already.
 ns.Units.PREBUILD_KEYS = { "startingIndex", "unitsPerColumn", "maxColumns" }
 
+-- Header attributes are set in one go; a single relayout follows.
+function ns.Units.SetAttributes(header, attributes)
+    header:SetAttribute("_ignore", "attributeChanges")
+    for name, value in pairs(attributes) do header:SetAttribute(name, value) end
+    header:SetAttribute("_ignore", nil)
+end
+
 local function setQuietly(header, values)
     header:SetAttribute("_ignore", "attributeChanges")
     for _, name in ipairs(ns.Units.PREBUILD_KEYS) do header:SetAttribute(name, values[name]) end
@@ -144,6 +151,8 @@ local function whenUIParentShows(header, n)
                 local list = waiting
                 waiting = {}
                 for h, k in pairs(list) do ns.Units.PrebuildButtons(h, k) end
+                -- Their owners styled them before they existed.
+                ns.Fire("UNITS_PREBUILT")
             end)
         end)
     end)
@@ -180,4 +189,18 @@ function ns.Units.Prepare(frame)
     for _, el in ipairs(ns.Elements) do
         if el.Prepare then el.Prepare(frame) end
     end
+end
+
+-- A group header sets every button's unit again on each roster or name
+-- update, mostly to the same person. True when button keeps its unit and
+-- that unit is still the same person (GUID and name, both readable);
+-- remembers them for the next call.
+function ns.Units.SamePerson(button, unit)
+    local Secrets = ns.Secrets
+    local guid = unit and Secrets.Plain(Secrets.Call(UnitGUID, unit), "string")
+    local name = unit and Secrets.Plain(Secrets.Call(UnitName, unit), "string")
+    local who = guid and name and guid .. name
+    local same = who ~= nil and button.unit == unit and button.person == who
+    button.person = who
+    return same
 end

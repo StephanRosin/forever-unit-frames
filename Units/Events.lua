@@ -25,7 +25,9 @@ end
 
 local function onEvent(listener, event, ...)
     local frame = listener.owner
-    if not frame.unit or not UnitExists(frame.unit) then return end
+    -- A hidden frame (switched off, a party header hidden in a raid, pets
+    -- beside in list mode) catches up when it shows (Bind).
+    if not frame:IsVisible() or not frame.unit or not UnitExists(frame.unit) then return end
     for _, el in ipairs(byEvent[event]) do el.Update(frame, event, ...) end
 end
 
@@ -39,6 +41,7 @@ function UnitEvents.Bind(frame)
         listener.owner = frame
         listener:SetScript("OnEvent", onEvent)
         frame.eventListener = listener
+        frame:HookScript("OnShow", function(f) ns.Single.UpdateAll(f) end)
     end
     listener:UnregisterAllEvents()
     if not frame.unit then return end

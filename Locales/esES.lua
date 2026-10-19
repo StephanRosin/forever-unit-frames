@@ -253,6 +253,7 @@ L.IMPORT_DONE = "Perfil importado."
 L.IMPORT_CODEC_EMPTY = "No hay nada que importar."
 L.IMPORT_CODEC_VERSION = "Este perfil se creó con una versión más reciente."
 L.IMPORT_CODEC_FORMAT = "Esto no es un perfil de Forever Unit Frames."
+L.IMPORT_RAID_STRING = "Es un perfil de los marcos de banda: impórtalo en la ventana de banda."
 
 -- Auras (both groups share the wording; the section says which).
 L.TAB_auras = "Auras"

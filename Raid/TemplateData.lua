@@ -9,6 +9,7 @@ local _, ns = ...
 -- every rank the spell book knows of the spell's name.
 local Templates = ns.RaidTemplates
 local BySize, Data = Templates.BySize, ns.RaidBuffData
+local sameValue = ns.SameValue
 
 -- Heals over time per class, each on a corner indicator.
 Templates.HOTS = {
@@ -93,14 +94,6 @@ table.sort(Templates.LOOK_KEYS_SORTED)
 -- The defaults of the keys, each size's own (a BySize value; one value
 -- where every size has the same). Forever is the look keys' defaults,
 -- read from the registry, so it stays the default when a default changes.
-local function sameValue(a, b)
-    if type(a) == "table" and type(b) == "table" then
-        for i = 1, 4 do if a[i] ~= b[i] then return false end end
-        return true
-    end
-    return a == b
-end
-
 function Templates.SizeDefaults(keys)
     local RS, values = ns.RaidSettings, {}
     for _, key in ipairs(keys) do

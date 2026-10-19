@@ -385,12 +385,20 @@ local function showImportMessage(text, colorKey)
     Style.Paint(Options.importMessage, colorKey)
 end
 
+local RAID_LETTERS = { a = true, b = true, c = true }
 local function runImport()
-    local text = Options.importArea:GetText() or ""
-    local profile, err, rejected = ns.Codec.Decode(text:match("^%s*(.-)%s*$"))
+    local text = (Options.importArea:GetText() or ""):match("^%s*(.-)%s*$")
+    local profile, err, rejected = ns.Codec.Decode(text)
     if not profile then
         showImportMessage(L["IMPORT_" .. err], "error")
         return
+    end
+    -- A raid size's export (Raid/Profiles.lua) has only its size letter:
+    -- a, b or c, and "a" is the pet's target here. It is not read as one.
+    local letters = ns.Codec.Letters(text)
+    local raid = next(letters) ~= nil
+    for letter in pairs(letters) do
+        if not RAID_LETTERS[letter] then raid = false end
     end
     -- Import replaces every frame: a text of which nothing could be read
     -- would reset them all. Only the bare version ("1") is a real all-defaults profile.
@@ -398,8 +406,8 @@ local function runImport()
     for _, values in pairs(profile) do
         if next(values) then empty = false end
     end
-    if empty and rejected > 0 then
-        showImportMessage(L.IMPORT_CODEC_FORMAT, "error")
+    if raid or empty and text ~= tostring(ns.Codec.VERSION) then
+        showImportMessage(raid and L.IMPORT_RAID_STRING or L.IMPORT_CODEC_FORMAT, "error")
         return
     end
     Config.Import(profile)
