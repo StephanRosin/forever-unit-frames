@@ -24,6 +24,7 @@ Core\PresetUpgrade.lua
 Core\Locale.lua
 Core\Codec.lua
 Core\MacroBackup.lua
+Core\UnitProfiles.lua
 Core\Storage.lua
 Raid\BuffData.lua
 Raid\Settings.lua

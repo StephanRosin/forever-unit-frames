@@ -170,7 +170,7 @@ H.check("party mover in German", ns.Party.header.mover.label:GetText(), "Gruppe"
 H.check("castbar mover in German", ns.Frames.target.castbar.mover.label:GetText(), "Zauberleiste: Ziel")
 ns.Config.Set("general", "language", "frFR")
 M.FireEvent("PLAYER_LOGOUT")
-H.check("choice saved", ForeverUnitFramesDB.profile.general.language, "frFR")
+H.check("choice saved", ForeverUnitFramesDB.profiles.Default.general.language, "frFR")
 H.check("movers relabelled", ns.Frames.target.mover.label:GetText(), "Cible")
 H.check("castbar mover relabelled", ns.Frames.target.castbar.mover.label:GetText(), "Barre d'incantation : Cible")
 

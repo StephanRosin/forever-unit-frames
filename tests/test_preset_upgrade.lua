@@ -94,13 +94,13 @@ H.checkTrue("its overrides now hold the old values", next(ns.Config.Profile().pl
 M.FireEvent("PLAYER_LOGOUT")
 H.check("marked once saved", db.presetVersion, "0.23.0")
 -- Saved: once. The next login reads it as it is and changes nothing.
-local saved = copy(db.profile)
+local saved = copy(db.profiles.Default)
 local again
 ns, again = boot(db)
 compare("next login: the same look", again, OLD_LOOK)
 M.FireEvent("PLAYER_LOGOUT")
 local changedAgain = 0
-for scope, list in pairs(db.profile) do
+for scope, list in pairs(db.profiles.Default) do
     for key, v in pairs(list) do if not same(saved[scope][key], v) then changedAgain = changedAgain + 1 end end
     for key in pairs(saved[scope] or {}) do if list[key] == nil then changedAgain = changedAgain + 1 end end
 end

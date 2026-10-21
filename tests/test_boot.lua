@@ -27,7 +27,7 @@ H.check("waiting source is localised", ns.L.SOURCE_Waiting, "defaults (looking f
 ns.Config.Set("player", "width", 290)
 M.RunTimers()
 H.check("timeout without backup: defaults", ns.Storage.Source(), "Defaults")
-H.check("SV table created", ForeverUnitFramesDB.profile.player.width, 290)
+H.check("SV table created", ForeverUnitFramesDB.profiles.Default.player.width, 290)
 H.check("no macro written", M.macroWrites, 0)
 run("status")
 H.checkTrue("status shows defaults", table.concat(M.chat, "\n"):find("Settings loaded from: defaults", 1, true))
@@ -78,7 +78,7 @@ H.checkTrue("login with invalid SV", pcall(M.FireEvent, "PLAYER_LOGIN"))
 H.check("invalid SV width falls back", ns.Config.Get("player", "width"), 220)
 H.checkTrue("set after invalid SV", ns.Config.Set("player", "height", 50))
 M.RunTimers()
-H.check("saved after invalid SV", ForeverUnitFramesDB.profile.player.height, 50)
+H.check("saved after invalid SV", ForeverUnitFramesDB.profiles.Default.player.height, 50)
 
 -- While waiting for an old backup nothing is written anywhere: not
 -- SavedVariables, not providers.
@@ -96,11 +96,11 @@ M.RunTimers(1)
 ns.Storage.Flush()
 M.FireEvent("PLAYER_LOGOUT")
 H.check("waiting: no provider save", #providerSaves, 0)
-H.check("waiting: no SavedVariables profile", ForeverUnitFramesDB.profile, nil)
+H.check("waiting: no SavedVariables profile", ForeverUnitFramesDB.profiles.Default, nil)
 H.check("waiting: change kept in memory", ns.Config.Get("player", "width"), 290)
 M.RunTimers()
 H.check("waiting over: provider saved", providerSaves[#providerSaves], "1;pW290")
-H.check("waiting over: SavedVariables saved", ForeverUnitFramesDB.profile.player.width, 290)
+H.check("waiting over: SavedVariables saved", ForeverUnitFramesDB.profiles.Default.player.width, 290)
 
 local timeoutTimer
 ns = H.LoadAddon()

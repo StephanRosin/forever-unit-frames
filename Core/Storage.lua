@@ -28,13 +28,6 @@ function ns.api.RegisterStorageProvider(name, provider)
     providers[#providers + 1] = { name = name, load = provider.load, save = provider.save }
 end
 
-local function copy(v)
-    if type(v) ~= "table" then return v end
-    local t = {}
-    for k, x in pairs(v) do t[k] = copy(x) end
-    return t
-end
-
 local function fromString(str)
     if type(str) ~= "string" then return nil end
     return (ns.Codec.Decode(str))
@@ -59,8 +52,10 @@ local function from(name, isProvider, profile)
 end
 
 function Storage.Load(db)
-    if type(db) == "table" and type(db.profile) == "table" then
-        local profile = ns.Settings.Sanitise(db.profile)
+    ns.UnitProfiles.Attach(db)
+    local stored = ns.UnitProfiles.Stored()
+    if type(stored) == "table" then
+        local profile = ns.Settings.Sanitise(stored)
         -- Saved before the revised look of 0.23.0: it keeps the look it had.
         if ns.PresetUpgrade.Due(db) then ns.PresetUpgrade.Apply(profile) end
         return from("SavedVariables", false, profile)
@@ -121,7 +116,7 @@ function Storage.Save()
     lastSaved = encoded
     if attached then
         attached.version = ns.Codec.VERSION
-        attached.profile = copy(profile)
+        ns.UnitProfiles.Write(profile)
         -- The shipped look this profile is relative to (PresetUpgrade).
         if ns.PresetUpgrade.Active() then attached.presetVersion = ns.PresetUpgrade.VERSION end
     end
@@ -149,7 +144,7 @@ end
 -- macros hold nothing that SavedVariables do not.
 local function handOver()
     Storage.Save()
-    if attached and attached.profile then startCleanup() end
+    if attached and ns.UnitProfiles.Stored() then startCleanup() end
 end
 
 -- Waiting for an old backup ----------------------------------------------------

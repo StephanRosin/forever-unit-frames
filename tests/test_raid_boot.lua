@@ -15,7 +15,7 @@ H.check("unit frames untouched", ns.Config.Get("player", "width"), 290)
 ns.RaidConfig.Set("r20", "x", 33)
 M.RunTimers()
 H.check("raid value saved", ForeverUnitFramesDB.raid["Tester-Testrealm"].r20.x, 33)
-H.check("unit-frame profile still the loaded one", ForeverUnitFramesDB.profile.player.width, 290)
+H.check("unit-frame profile still the loaded one", ForeverUnitFramesDB.profiles.Default.player.width, 290)
 
 -- Next session: the raid profile comes back.
 local saved = ForeverUnitFramesDB

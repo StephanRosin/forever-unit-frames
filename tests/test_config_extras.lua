@@ -55,10 +55,10 @@ H.check("nothing saved before the timer", #saves, 0)
 M.RunTimers()
 H.check("one save after the timer", #saves, 1)
 H.check("last value saved", saves[#saves], "1;pW240")
-H.check("last value in SavedVariables", ForeverUnitFramesDB.profile.player.width, 240)
+H.check("last value in SavedVariables", ForeverUnitFramesDB.profiles.Default.player.width, 240)
 ns.Config.Set("player", "width", 250)
 M.FireEvent("PLAYER_LOGOUT")
-H.check("flush on logout", ForeverUnitFramesDB.profile.player.width, 250)
+H.check("flush on logout", ForeverUnitFramesDB.profiles.Default.player.width, 250)
 
 -- Texts: unknown tag clears, power deficit uses UnitPowerMissing
 ns = H.LoadAddon()

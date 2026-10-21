@@ -127,7 +127,7 @@ end
 function News.Begin(saved)
     db = saved
     waiting = true
-    hadSettings = type(saved.profile) == "table" or type(saved.raid) == "table"
+    hadSettings = type(saved.profile) == "table" or type(saved.profiles) == "table" or type(saved.raid) == "table"
     local current = News.Current()
     if not hadSettings and not seenVersion() and News.Entry(current) then db.newsSeen = current end
 end

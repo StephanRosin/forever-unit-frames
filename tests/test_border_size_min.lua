@@ -43,8 +43,8 @@ H.check("no border drawn on the target", ns.Border.Size("target"), 0)
 H.check("the player's as before", ns.Border.Size("player"), 3)
 -- Saved so: the next load finds nothing to change.
 ns.Storage.Save()
-H.check("saved: off", ForeverUnitFramesDB.profile.general.borderShow, false)
-H.check("saved: the size", ForeverUnitFramesDB.profile.general.borderSize, S.Default(def, "general"))
+H.check("saved: off", ForeverUnitFramesDB.profiles.Default.general.borderShow, false)
+H.check("saved: the size", ForeverUnitFramesDB.profiles.Default.general.borderSize, S.Default(def, "general"))
 
 -- An import of 0 likewise; a size of 2 stays.
 local profile = ns.Codec.Decode("1;gBS0;pBS2;tBS0;tBV1")
