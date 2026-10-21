@@ -43,7 +43,7 @@ sidebar on the right lists them all.
 ### How do I get my frames back in place after a mistake?
 
 `/fuf reset <frame>` resets one frame (player, target, targettarget, pet, focus, party),
-`/fuf reset all` everything. Export your profile first (**General** > **Profile**) if you want to keep
+`/fuf reset all` everything. Export your profile first (**Profiles**, the last entry of the list on the left) if you want to keep
 a copy.
 
 ### Where are Blizzard's own frames?
