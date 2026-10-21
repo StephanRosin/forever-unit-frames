@@ -47,7 +47,7 @@ local function tabIds(scope)
     for _, tab in ipairs(ns.Schema.Tabs(scope)) do ids[#ids + 1] = tab.id end
     return table.concat(ids, ",")
 end
-H.check("General tabs", tabIds("general"), "frames,clickCast,appearance,bars,status,profile")
+H.check("General tabs", tabIds("general"), "frames,clickCast,appearance,bars,status")
 H.check("General: master switch in Frames", where("general", "unitFrames"), "frames:frames")
 H.check("General: textures on Bars", keysOf("general", "bars", "textures"), "barTexture,backgroundColor,titleBackground")
 H.check("General: Bars in a frame page's order", (function()
@@ -60,7 +60,7 @@ H.check("General: Bars in a frame page's order", (function()
     end
 end)(), "health,textures,absorbs,healPrediction,powerColors")
 H.check("General: health colors on Bars", where("general", "healthColorMode"), "bars:health")
-H.check("General: minimap button with the profile", where("general", "minimapShow"), "profile:minimap")
+H.check("General: minimap button on Frames", where("general", "minimapShow"), "frames:minimap")
 H.check("General: no textures left in Appearance", keysOf("general", "appearance", "bars"), nil)
 
 -- The restructure (decision 66) on the frame pages: the elite marker

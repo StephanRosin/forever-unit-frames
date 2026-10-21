@@ -9,7 +9,7 @@ local BORDER_KEYS = { "borderShow", "borderStyle", "borderSize", "borderPadding"
 local SHADOW_KEYS = { "shadowEnabled", "shadowAlpha", "shadowSize" }
 
 -- Structured like a frame's page: the switches, the look, the bars, the
--- status, then the profile.
+-- status.
 Schema.GENERAL = {
     -- The master switch (Core/Settings.lua: unitFrames), then one switch
     -- per frame (section.frames): the same "enabled" as on each frame's
@@ -19,6 +19,7 @@ Schema.GENERAL = {
         -- Click-casting (decision 76): the unit frames' switch; the
         -- bindings are on the next tab.
         { id = "clickCast", keys = { "clickCast" } },
+        { id = "minimap", keys = { "minimapShow", "minimapAngle" } },
     } },
     -- The click-casting editor, the raid window's own (Raid/Options/
     -- ClickCast.lua builds both; the bindings belong to the character, as
@@ -59,10 +60,12 @@ Schema.GENERAL = {
         { id = "range", keys = { "rangeAlpha", "rangeFriendlyMode", "rangeFriendlySpell", "rangeFriendlyYards",
             "rangeHostileMode", "rangeHostileSpell", "rangeHostileYards" } },
     } },
-    -- Export, import, reset (Options/Window.lua), then the minimap button.
-    { id = "profile", custom = "profile", sections = {
-        { id = "minimap", keys = { "minimapShow", "minimapAngle" } },
-    } },
+}
+
+-- The navigation's last entry: the named profiles, export, import, reset
+-- (Options/Window.lua builds the page).
+Schema.PROFILES = {
+    { id = "profiles", custom = "profiles", sections = {} },
 }
 
 Schema.FRAME = {
@@ -200,7 +203,7 @@ function Schema.SectionKeys(section, scope)
 end
 
 local function applicable(tab, scope)
-    if tab.custom then return scope == "general" end
+    if tab.custom then return true end
     for _, sec in ipairs(tab.sections) do
         for _, key in ipairs(sec.keys) do
             if ns.Settings.AppliesTo(ns.Settings.Get(key), scope) then return true end
@@ -210,7 +213,7 @@ local function applicable(tab, scope)
 end
 
 function Schema.Tabs(scope)
-    local source = scope == "general" and Schema.GENERAL or Schema.FRAME
+    local source = scope == "general" and Schema.GENERAL or scope == "profiles" and Schema.PROFILES or Schema.FRAME
     local tabs = {}
     for _, tab in ipairs(source) do
         if applicable(tab, scope) then tabs[#tabs + 1] = tab end

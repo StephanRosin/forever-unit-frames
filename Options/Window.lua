@@ -40,7 +40,7 @@ local function forEachRow(fn)
     for _, row in ipairs(Options.rows or {}) do fn(row) end
 end
 
-local function isFrameScope(scope) return scope ~= "general" end
+local function isFrameScope(scope) return scope ~= "general" and scope ~= "profiles" end
 
 -- Position --------------------------------------------------------------------
 
@@ -443,16 +443,96 @@ local CUSTOM_BLOCKS = {
     { header = "RESET", build = resetBlock },
 }
 
--- Export, import, reset, then the tab's sections (the minimap button).
-local function buildProfilePage(page, scope, tab)
+-- The profile rows: the same widgets and two-click button as the raid
+-- window's own profiles (Raid/Options/Profiles.lua).
+local PROFILE_WHY = {
+    EMPTY = function() return L.PROFILE_NAME_EMPTY end,
+    TOO_LONG = function() return L.PROFILE_NAME_TOO_LONG:format(ns.UnitProfiles.NAME_LETTERS) end,
+    TAKEN = function() return L.PROFILE_NAME_TAKEN end,
+    DEFAULT = function() return L.PROFILE_DEFAULT_FIXED end,
+    GONE = function() return L.PROFILE_GONE end,
+    COMBAT = function() return L.PROFILE_COMBAT end,
+}
+
+local function profileText(name)
+    return name == ns.UnitProfiles.DEFAULT and L.PROFILE_DEFAULT or name
+end
+
+local function profileSay(ok, why, done)
+    Options.profileMessage:SetText(ok and done or PROFILE_WHY[why]())
+    Style.Paint(Options.profileMessage, ok and "accent" or "error")
+end
+
+-- Rename and Delete are never for Default, and never in combat (a
+-- Refresh must not undo the combat lock).
+local function renamable() return ns.UnitProfiles.Active() ~= ns.UnitProfiles.DEFAULT and not inCombat end
+
+local function profileRows(page, stack)
+    local P = ns.UnitProfiles
+    local picker = Widgets.Dropdown(page, {
+        label = L.PROFILE_ACTIVE,
+        items = function()
+            local items = {}
+            for _, name in ipairs(P.Names()) do items[#items + 1] = { value = name, text = profileText(name) } end
+            return items
+        end,
+        get = P.Active,
+        set = function(name)
+            local ok, why = P.Switch(name)
+            profileSay(ok, why, L.PROFILE_SWITCHED:format(profileText(name)))
+        end,
+    })
+    stack.add(picker)
+    local nameRow = Widgets.NewRow(page, { label = L.PROFILE_NAME })
+    local box = Widgets.TextBox(nameRow, { width = BUTTON_W + 40, maxLetters = P.NAME_LETTERS,
+        get = function() return "" end, set = function() return true end })
+    local function act(fn, done)
+        box:ClearFocus()
+        local name = (box:GetText() or ""):match("^%s*(.-)%s*$")
+        local ok, why = fn(name)
+        if ok then box:SetText("") end
+        profileSay(ok, why, done:format(name))
+    end
+    local save = Widgets.Button(nameRow, { text = L.PROFILE_SAVE_AS, width = BUTTON_W,
+        onClick = function() act(P.SaveAs, L.PROFILE_SAVED) end })
+    save:SetPoint("LEFT", box, "RIGHT", FOOTER_GAP, 0)
+    local rename = Widgets.Button(nameRow, { text = L.PROFILE_RENAME, width = BUTTON_W,
+        onClick = function() act(P.Rename, L.PROFILE_RENAMED) end })
+    rename:SetPoint("LEFT", save, "RIGHT", FOOTER_GAP, 0)
+    function nameRow:Refresh() rename:SetEnabled(renamable()) end
+    function nameRow:SetEnabled(on) box:SetEnabled(on); save:SetEnabled(on); rename:SetEnabled(on and renamable()) end
+    stack.add(nameRow)
+    local deleteBlock = newBlock(page)
+    local delete = confirmButton(deleteBlock, L.PROFILE_DELETE, function()
+        local name = P.Active()
+        local ok, why = P.Delete()
+        profileSay(ok, why, L.PROFILE_DELETED:format(profileText(name)))
+    end)
+    delete:SetPoint("TOPLEFT", deleteBlock, "TOPLEFT", INSET, -6)
+    local message = Style.Text(deleteBlock, 11, "muted")
+    message:SetPoint("LEFT", delete, "RIGHT", FOOTER_GAP, 0)
+    message:SetJustifyH("LEFT")
+    function deleteBlock:Refresh() delete:SetEnabled(renamable()) end
+    function deleteBlock:SetEnabled(on) delete:SetEnabled(on and renamable()) end
+    stack.add(deleteBlock, BUTTON_H + 12)
+    Options.profilePicker, Options.profileName, Options.profileSaveButton = picker, box, save
+    Options.profileRenameButton, Options.profileDeleteButton, Options.profileMessage = rename, delete, message
+end
+
+-- The Profiles page: the named profiles, then export, import, reset
+-- (they act on the active profile).
+local function buildProfilePage(page)
     local stack = newStack(page)
+    local header = Widgets.Header(page, L.PROFILES_SECTION)
+    header.isSection = true
+    stack.add(header)
+    profileRows(page, stack)
     for _, entry in ipairs(CUSTOM_BLOCKS) do
-        local header = Widgets.Header(page, L[entry.header])
+        header = Widgets.Header(page, L[entry.header])
         header.isSection = true
         stack.add(header)
         stack.add(entry.build(page))
     end
-    addSections(page, stack, scope, tab)
     stack.finish()
 end
 
@@ -468,8 +548,8 @@ local function pageFor(scope, tab)
     local page = CreateFrame("Frame", nil, frame.scrollChild)
     page:SetPoint("TOPLEFT", frame.scrollChild, "TOPLEFT", 0, 0)
     page:SetWidth(CONTENT_W)
-    if tab.custom == "profile" then
-        buildProfilePage(page, scope, tab)
+    if tab.custom == "profiles" then
+        buildProfilePage(page)
     elseif tab.custom == "clickCast" then
         ns.RaidClickCastPage.Build(page, tab, CLICK_CAST_LAYOUT, "unit")
         page.clickCast = true
@@ -661,6 +741,13 @@ local function createNav(parent)
         navButton(nav, def.key, L["FRAME_" .. def.key], y)
         y = y + NAV_ROW_H
     end
+    y = y + 6
+    local below = line(nav, "border")
+    below:SetHeight(1)
+    below:SetPoint("TOPLEFT", nav, "TOPLEFT", INSET, -y)
+    below:SetPoint("TOPRIGHT", nav, "TOPRIGHT", -INSET, -y)
+    y = y + 7
+    navButton(nav, "profiles", L.NAV_PROFILES, y)
     languageRow(nav)
     return nav
 end
@@ -946,6 +1033,13 @@ ns.Listen("CONFIG_CHANGED", function()
     forEachRow(function(row) row:Refresh() end)
     setRowStates()
     Options.languageRow:Refresh()
+end)
+
+-- The profile list and the buttons follow a switch, save, rename or delete.
+ns.Listen("UNIT_PROFILES_CHANGED", function()
+    if Options.IsOpen() and Options.currentScope == "profiles" then
+        forEachRow(function(row) row:Refresh() end)
+    end
 end)
 
 -- The raid window's click-casting mode greys the switch here (Clique is

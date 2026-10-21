@@ -59,7 +59,7 @@ H.check("import: focus' on without a size over a general 0 turns off", switched.
 H.check("import: focus no size made up", switched.focus.borderSize, nil)
 local alone = ns.Codec.Decode("1;pBS2")
 H.check("import without a general 0: nothing added", alone.player.borderShow, nil)
-ns.Options.Open("general", "profile")
+ns.Options.Open("profiles")
 ns.Options.importArea:SetText("1;fBS0")
 ns.Options.importButton:GetScript("OnClick")(ns.Options.importButton)
 H.check("import button: focus off", C.Get("focus", "borderShow"), false)

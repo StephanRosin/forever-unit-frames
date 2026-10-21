@@ -78,8 +78,7 @@ targetSwitch.box:GetScript("OnClick")(targetSwitch.box)
 H.check("switch on again", ns.Config.Get("target", "enabled"), true)
 
 -- Export / import
-ns.Options.Select("general")
-ns.Options.SelectTab("profile")
+ns.Options.Select("profiles")
 H.checkTrue("export filled", ns.Options.exportArea:GetText():match("^1;"))
 ns.Options.importArea:SetText("1;pW222")
 ns.Options.importButton:GetScript("OnClick")(ns.Options.importButton)
@@ -134,7 +133,7 @@ local function hasAccentBorder(button)
 end
 
 -- Messages under the import button
-O.Open("general", "profile")
+O.Open("profiles")
 O.importArea:SetText("1;pW230")
 click(O.importButton)
 H.check("import success message", O.importMessage:GetText(), L.IMPORT_DONE)
@@ -204,7 +203,7 @@ H.check("player reset only armed", ns.Config.Get("target", "width"), 333)
 M.RunTimers()
 
 -- Reset all: two clicks
-O.Open("general", "profile")
+O.Open("profiles")
 click(O.resetAllButton)
 H.check("reset all asks to confirm", O.resetAllButton.text:GetText(), L.CONFIRM)
 H.check("reset all waits", ns.Config.Get("target", "width"), 333)
@@ -295,7 +294,7 @@ H.check("window strata", ns.Options.frame:GetFrameStrata(), "HIGH")
 
 -- Every header on the profile page is translated.
 O = ns.Options
-O.Open("general", "profile")
+O.Open("profiles")
 local headers = {}
 for _, f in ipairs(M.frames) do
     if f.label and f.line and f.label:GetText() then headers[f.label:GetText()] = true end

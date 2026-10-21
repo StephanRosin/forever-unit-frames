@@ -31,7 +31,7 @@ end
 -- The tab: after Frames, on General only.
 local ids = {}
 for i, tab in ipairs(ns.Schema.Tabs("general")) do ids[i] = tab.id end
-H.check("General's tabs", table.concat(ids, ","), "frames,clickCast,appearance,bars,status,profile")
+H.check("General's tabs", table.concat(ids, ","), "frames,clickCast,appearance,bars,status")
 local frameTabs = {}
 for _, tab in ipairs(ns.Schema.Tabs("player")) do frameTabs[#frameTabs + 1] = tab.id end
 H.checkTrue("not on a frame's page", not table.concat(frameTabs, ","):find("clickCast", 1, true))
