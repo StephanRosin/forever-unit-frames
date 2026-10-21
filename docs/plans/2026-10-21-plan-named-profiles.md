@@ -623,12 +623,11 @@ git commit -m "Options: Profiles page at the bottom of the navigation; minimap b
 - Modify: `Core/News.lua` (entry `0.32.0`), the four locales (its lines), `ForeverUnitFrames.toc` (`## Version: 0.32.0`)
 - Modify: `docs/wiki/Home.md` (section "Profiles", line ~69), `docs/wiki/Settings-General.md` (Profile section → minimap on Frames)
 
-- [ ] **Step 1: What's New entry** (announced: it changes where things are)
+- [ ] **Step 1: What's New entry** — NOT announced (maintainer: no announcement); it only shows via `/fuf news`
 
 ```lua
-    -- Named unit frame profiles; the Profiles page (decision 78).
+    -- Named unit frame profiles; the Profiles page (decision 78). Not announced.
     ["0.32.0"] = {
-        announce = true,
         lines = { "NEWS_0_32_0_PROFILES", "NEWS_0_32_0_PAGE" },
     },
 ```
