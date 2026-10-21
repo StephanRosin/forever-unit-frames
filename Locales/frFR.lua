@@ -1380,4 +1380,6 @@ L.NEWS_0_27_0_SPELLS = "Sorts au clic : « Lancer un sort » choisit maintenant 
 L.NEWS_0_27_0_UNIT_TAB = "La fenêtre des cadres d’unité (/fuf) a aussi tout l’éditeur des sorts au clic : Général > Sorts au clic, les mêmes raccourcis que la fenêtre de raid, même cadres de raid désactivés."
 L.NEWS_0_28_0_DISPEL_BORDER = "Cellules de raid : « Bordure couleur d'affaiblissement » (onglet Affaiblissements) trace une bordure dans la cellule à la couleur du type d'un affaiblissement dissipable, de 1 à 6 pixels, arrondie sur les cellules arrondies ; avec la teinte ou seule."
 L.NEWS_0_28_0_POWER_HEIGHT = "La hauteur de la bande de ressource se règle, de 5 à 40 pour cent de la cellule (onglet Cellule, près de la bande de ressource) ; 10 pour cent comme avant."
+L.NEWS_0_32_0_PROFILES = "Profils nommés : enregistrez vos réglages sous un nom et choisissez-les sur n'importe quel personnage, p. ex. une disposition par classe."
+L.NEWS_0_32_0_PAGE = "Profils, export, import et réinitialisation se trouvent désormais en bas de la navigation ; le bouton de la minicarte a été déplacé vers Général > Cadres."
 L.NEWS_OPEN_SHIELDS = "Ouvrir la veille des boucliers"

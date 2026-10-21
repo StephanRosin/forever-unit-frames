@@ -4,16 +4,15 @@
 
 The **General** page (top of the list on the left in `/fuf`) sets the look for every frame at once.
 Most of these can be overridden on a frame's own page; the frame then keeps its own value.
-The **Profile** tab's export, import and reset are explained on the [[Home]] page.
+Profiles, export, import and reset are on the **Profiles** page at the bottom of the list; see [[Home]].
 
 **On this page:**
 
-- **[Frames](#frames):** [Which frames are shown](#which-frames-are-shown) · [Click-casting](#click-casting)
+- **[Frames](#frames):** [Which frames are shown](#which-frames-are-shown) · [Click-casting](#click-casting) · [Minimap button](#minimap-button)
 - **[Click-casting](#click-casting-1)**
 - **[Appearance](#appearance):** [Font](#font) · [Presentation](#presentation) · [Title row](#title-row) · [Aura icons](#aura-icons) · [Hidden auras](#hidden-auras) · [Border and corners](#border-and-corners) · [Shadow](#shadow)
 - **[Bars](#bars):** [Health bar](#health-bar) · [Textures](#textures) · [Absorb shields](#absorb-shields) · [Incoming heals](#incoming-heals) · [Power colors](#power-colors)
 - **[Status](#status):** [Combat icon](#combat-icon) · [Highlights](#highlights) · [Range](#range)
-- **[Profile](#profile):** [Minimap button](#minimap-button)
 
 ## Frames
 
@@ -36,6 +35,16 @@ The click-casting bindings (General > Click-casting here, or `/fuf raid` > Gener
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
 <tr><td><b>Click-casting</b></td><td>Clicks use the bindings on the Click-casting tab</td><td>On, Off</td><td>On</td></tr>
+</tbody>
+</table>
+
+### Minimap button
+
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Show the button</b></td><td></td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Button position</b></td><td>Degrees around the minimap; or drag it</td><td>0 – 359</td><td>27</td></tr>
 </tbody>
 </table>
 
@@ -223,18 +232,6 @@ Auras hidden by spell, such as a campfire or a food buff: the list under General
 <tr><td><b>Enemies: measure by</b></td><td></td><td>Automatic (spell), Spell, Yards, Off</td><td>Automatic (spell)</td></tr>
 <tr><td><b>Spell for enemies</b></td><td></td><td>Text (a spell name or ID)</td><td>(none)</td></tr>
 <tr><td><b>Hostile range (yards)</b></td><td></td><td>5 – 40</td><td>40</td></tr>
-</tbody>
-</table>
-
-## Profile
-
-### Minimap button
-
-<table>
-<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
-<tbody>
-<tr><td><b>Show the button</b></td><td></td><td>On, Off</td><td>On</td></tr>
-<tr><td><b>Button position</b></td><td>Degrees around the minimap; or drag it</td><td>0 – 359</td><td>27</td></tr>
 </tbody>
 </table>
 

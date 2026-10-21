@@ -1381,4 +1381,6 @@ L.NEWS_0_27_0_SPELLS = "Lanzar con clic: «Lanzar un hechizo» elige ahora el he
 L.NEWS_0_27_0_UNIT_TAB = "La ventana de los marcos de unidad (/fuf) tiene también todo el editor de lanzar con clic: General > Lanzar con clic, las mismas asignaciones que la ventana de banda, también con los marcos de banda apagados."
 L.NEWS_0_28_0_DISPEL_BORDER = "Celdas de banda: «Borde del color del perjuicio» (pestaña Perjuicios) dibuja un borde dentro de la celda en el color del tipo de un perjuicio disipable, de 1 a 6 píxeles, redondeado en celdas redondeadas; con el tinte o solo."
 L.NEWS_0_28_0_POWER_HEIGHT = "La altura de la franja de recurso se puede ajustar, del 5 al 40 por ciento de la celda (pestaña Celda, junto a la franja de recurso); 10 por ciento como antes."
+L.NEWS_0_32_0_PROFILES = "Perfiles con nombre: guarda tus ajustes con un nombre y elígelos en cualquier personaje, p. ej. un diseño por clase."
+L.NEWS_0_32_0_PAGE = "Perfiles, exportar, importar y restablecer están ahora al final de la navegación; el botón del minimapa se ha movido a General > Marcos."
 L.NEWS_OPEN_SHIELDS = "Abrir el vigía de escudos"

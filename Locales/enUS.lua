@@ -1408,4 +1408,6 @@ L.NEWS_0_27_0_SPELLS = "Click-casting: \"Cast a spell\" now picks the spell from
 L.NEWS_0_27_0_UNIT_TAB = "The unit frames' window (/fuf) has the whole click-casting editor too: General > Click-casting, the same bindings as the raid window, also with the raid frames off."
 L.NEWS_0_28_0_DISPEL_BORDER = "Raid cells: \"Border in the debuff color\" (Debuffs tab) draws a border inside the cell in a dispellable debuff's type color, 1 to 6 pixels, round on rounded cells; with the tint or on its own."
 L.NEWS_0_28_0_POWER_HEIGHT = "The power strip's height can be set, 5 to 40 percent of the cell (Cell tab, beside the power strip); 10 percent as before."
+L.NEWS_0_32_0_PROFILES = "Named profiles: save your settings under a name and pick them on any character, e.g. one layout per class."
+L.NEWS_0_32_0_PAGE = "Profiles, export, import and reset are now at the bottom of the navigation; the minimap button moved to General > Frames."
 L.NEWS_OPEN_SHIELDS = "Open the shield watch"

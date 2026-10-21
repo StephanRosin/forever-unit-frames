@@ -68,8 +68,13 @@ Source: [GitHub](https://github.com/StephanRosin/forever-unit-frames)
 
 ## Profiles
 
-**General** > **Profile**: *Export* gives a text you can copy to share or back up your whole setup,
-*Import* takes such a text, *Reset all settings* goes back to the defaults.
+The **Profiles** page (last entry of the list on the left in `/fuf`) keeps your unit frame settings under
+names. Every character uses one profile; **Default** always exists. Pick the **Active profile** to switch,
+type a name and press *Save as* to copy the active profile under it, *Rename* to rename it and *Delete
+profile* (a second click confirms) to remove it. Profiles are shared by the whole account, so you can give
+each class its own layout and pick it on that class. *Export* gives a text you can copy to share or back up
+the active profile, *Import* takes such a text, *Reset all settings* sets it back to the defaults. The raid
+frames keep their own profiles per character (see below), and click-casting stays per character.
 
 ## Commands
 

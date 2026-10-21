@@ -83,6 +83,10 @@ News.ENTRIES = {
         lines = { "NEWS_0_28_0_DISPEL_BORDER", "NEWS_0_28_0_POWER_HEIGHT" },
         action = { text = "NEWS_OPEN_RAID", run = function() ns.RaidOptions.Open(nil, "debuffs") end },
     },
+    -- Named unit frame profiles; the Profiles page (decision 78). Not announced.
+    ["0.32.0"] = {
+        lines = { "NEWS_0_32_0_PROFILES", "NEWS_0_32_0_PAGE" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

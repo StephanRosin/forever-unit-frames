@@ -245,7 +245,7 @@ do
     local lines = { GENERATED, "", "# Settings: General", "",
         "The **General** page (top of the list on the left in `/fuf`) sets the look for every frame at once.",
         "Most of these can be overridden on a frame's own page; the frame then keeps its own value.",
-        "The **Profile** tab's export, import and reset are explained on the [[Home]] page.", "" }
+        "Profiles, export, import and reset are on the **Profiles** page at the bottom of the list; see [[Home]].", "" }
     local body, toc = {}, { "**On this page:**", "" }
     for _, tab in ipairs(Schema.Tabs("general")) do
         if tab.custom == "clickCast" then

@@ -1380,4 +1380,6 @@ L.NEWS_0_27_0_SPELLS = "Klickzauber: „Zauber wirken“ wählt den Zauber jetzt
 L.NEWS_0_27_0_UNIT_TAB = "Das Fenster der Einheitenrahmen (/fuf) hat jetzt auch den ganzen Klickzauber-Editor: Allgemein > Klickzauber, dieselbe Belegung wie im Schlachtzugsfenster, auch bei ausgeschalteten Schlachtzugsrahmen."
 L.NEWS_0_28_0_DISPEL_BORDER = "Schlachtzugszellen: „Rand in der Debufffarbe“ (Reiter Debuffs) zeichnet einen Rand innen in der Zelle in der Typfarbe eines entfernbaren Debuffs, 1 bis 6 Pixel, bei runden Zellen rund; mit der Einfärbung oder allein."
 L.NEWS_0_28_0_POWER_HEIGHT = "Die Höhe des Ressourcenstreifens ist einstellbar, 5 bis 40 Prozent der Zelle (Reiter Zelle, beim Ressourcenstreifen); 10 Prozent wie bisher."
+L.NEWS_0_32_0_PROFILES = "Benannte Profile: Speichere deine Einstellungen unter einem Namen und wähle sie auf jedem Charakter, z. B. ein Layout pro Klasse."
+L.NEWS_0_32_0_PAGE = "Profile, Export, Import und Zurücksetzen stehen jetzt unten in der Navigation; die Minimap-Schaltfläche ist nach Allgemein > Rahmen umgezogen."
 L.NEWS_OPEN_SHIELDS = "Schildwache öffnen"
