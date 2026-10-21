@@ -653,5 +653,5 @@ git commit -m "0.32.0: named profiles — news, wiki"
 ```
 
 - [ ] **Step 5: Hand over** — install into Forever (`./install "<AddOns folder of _classic_beta_>"`) for the maintainer
-to try in game; update the vault page `10-Projekte/WoW/Eigene-Addons/ForeverUnitFrames.md` (Profiles, decision 78).
+to try in game.
 No push or release without the maintainer's go.
