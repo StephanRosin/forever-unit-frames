@@ -17,7 +17,8 @@ raid store) stay as they are; the options window's position and `newsSeen` stay 
 - `ForeverUnitFramesDB.profiles = { [name] = profile }` (account-wide) and
   `ForeverUnitFramesDB.active = { ["Name-Realm"] = name }` (key from `ns.RaidProfiles.CharKey()`).
 - Migration, once: an existing `profile` becomes `profiles["Default"]` (localised display name, stored key `Default`);
-  `profile` is removed. The look does not change (`presetVersion` stays account-wide; `PresetUpgrade` runs on the
+  `profile` stays as a mirror of Default so an older version still reads it; at login a `profile` that is there
+  becomes Default again (our mirror, or what an older version edited). The look does not change (`presetVersion` stays account-wide; `PresetUpgrade` runs on the
   migrated profile as today).
 - A character without an entry, or whose profile was deleted, uses `Default`. `Default` always exists and cannot be
   deleted or renamed.

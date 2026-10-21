@@ -37,13 +37,14 @@ end
 
 -- At login, before Storage reads the profile. The old single profile
 -- becomes Default; it wins over a Default already there, since only an
--- older version (which knows one profile) writes it.
+-- older version (which knows one profile) writes it besides our mirror.
 function UnitProfiles.Attach(saved)
     db = type(saved) == "table" and saved or { }
     if type(db.profiles) ~= "table" then db.profiles = {} end
     if type(db.active) ~= "table" then db.active = {} end
+    -- db.profile stays as a mirror of Default (see Write): it is our own copy
+    -- or what an older version edited since.
     if type(db.profile) == "table" then db.profiles[UnitProfiles.DEFAULT] = db.profile end
-    db.profile = nil
     for name, p in pairs(db.profiles) do
         if type(name) ~= "string" or type(p) ~= "table" then db.profiles[name] = nil end
     end
@@ -67,6 +68,8 @@ end
 
 function UnitProfiles.Write(profile)
     db.profiles[active] = copy(profile)
+    -- An older version reads only this key; the mirror keeps its Default.
+    if active == UnitProfiles.DEFAULT then db.profile = copy(profile) end
 end
 
 local function setActive(name)
@@ -89,7 +92,9 @@ local function changed() ns.Fire("UNIT_PROFILES_CHANGED") return true end
 -- that may keep it (renaming changes only the case).
 local function refuse(name, except)
     if name == "" then return "EMPTY" end
-    if #name > UnitProfiles.NAME_LETTERS then return "TOO_LONG" end
+    if select(2, name:gsub("[^\128-\191]", "")) > UnitProfiles.NAME_LETTERS then return "TOO_LONG" end
+    -- It would look identical to Default in the dropdown.
+    if name:lower() == ns.L.PROFILE_DEFAULT:lower() then return "TAKEN" end
     local taken = find(name)
     if taken and taken ~= except then return "TAKEN" end
     return nil
@@ -97,7 +102,9 @@ end
 
 function UnitProfiles.Switch(name)
     if InCombatLockdown() then return nil, "COMBAT" end
-    if not db.profiles[name] then return nil, "GONE" end
+    if ns.Storage.IsWaiting() then return nil, "WAITING" end
+    -- Default may not be written yet (fresh install); load() copes.
+    if not db.profiles[name] and name ~= UnitProfiles.DEFAULT then return nil, "GONE" end
     if name == active then return true end
     load(name)
     return changed()
@@ -107,6 +114,7 @@ end
 -- the old profile keeps what it last saved. Written at once: Storage.Save
 -- skips a text equal to the last one.
 function UnitProfiles.SaveAs(name)
+    if ns.Storage.IsWaiting() then return nil, "WAITING" end
     name = trimmed(name)
     local why = refuse(name)
     if why then return nil, why end
@@ -116,6 +124,7 @@ function UnitProfiles.SaveAs(name)
 end
 
 function UnitProfiles.Rename(name)
+    if ns.Storage.IsWaiting() then return nil, "WAITING" end
     name = trimmed(name)
     if active == UnitProfiles.DEFAULT then return nil, "DEFAULT" end
     local why = refuse(name, active)
@@ -131,6 +140,7 @@ function UnitProfiles.Rename(name)
 end
 
 function UnitProfiles.Delete()
+    if ns.Storage.IsWaiting() then return nil, "WAITING" end
     if active == UnitProfiles.DEFAULT then return nil, "DEFAULT" end
     if InCombatLockdown() then return nil, "COMBAT" end
     local old = active

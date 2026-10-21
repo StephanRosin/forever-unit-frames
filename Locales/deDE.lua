@@ -147,6 +147,7 @@ L.PROFILE_NAME_EMPTY = "Zuerst einen Namen eingeben."; L.PROFILE_NAME_TOO_LONG =
 L.PROFILE_NAME_TAKEN = "Ein Profil mit diesem Namen gibt es schon."
 L.PROFILE_DEFAULT_FIXED = "Standard lässt sich weder umbenennen noch löschen."
 L.PROFILE_GONE = "Dieses Profil gibt es nicht mehr."; L.PROFILE_COMBAT = "Nicht im Kampf."
+L.PROFILE_WAITING = "Die Einstellungen werden noch geladen, gleich nochmals versuchen."
 L.TAB_layout = "Anordnung"; L.TAB_bars = "Leisten"; L.TAB_text = "Texte"; L.TAB_castbar = "Zauberleiste"
 L.TAB_group = "Gruppe"
 L.SECTION_font = "Schrift"; L.SECTION_border = "Rand und Ecken"

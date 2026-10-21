@@ -168,6 +168,7 @@ L.PROFILE_NAME_EMPTY = "Type a name first."; L.PROFILE_NAME_TOO_LONG = "At most 
 L.PROFILE_NAME_TAKEN = "A profile with this name exists."
 L.PROFILE_DEFAULT_FIXED = "Default cannot be renamed or deleted."
 L.PROFILE_GONE = "This profile no longer exists."; L.PROFILE_COMBAT = "Not in combat."
+L.PROFILE_WAITING = "Settings are still loading; try again in a moment."
 L.TAB_layout = "Layout"; L.TAB_bars = "Bars"; L.TAB_text = "Text"; L.TAB_castbar = "Castbar"
 L.TAB_group = "Group"
 L.SECTION_font = "Font"; L.SECTION_border = "Border and corners"

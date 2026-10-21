@@ -452,6 +452,7 @@ local PROFILE_WHY = {
     DEFAULT = function() return L.PROFILE_DEFAULT_FIXED end,
     GONE = function() return L.PROFILE_GONE end,
     COMBAT = function() return L.PROFILE_COMBAT end,
+    WAITING = function() return L.PROFILE_WAITING end,
 }
 
 local function profileText(name)
@@ -469,6 +470,7 @@ local function renamable() return ns.UnitProfiles.Active() ~= ns.UnitProfiles.DE
 
 local function profileRows(page, stack)
     local P = ns.UnitProfiles
+    local typed, delete = ""
     local picker = Widgets.Dropdown(page, {
         label = L.PROFILE_ACTIVE,
         items = function()
@@ -478,6 +480,7 @@ local function profileRows(page, stack)
         end,
         get = P.Active,
         set = function(name)
+            delete.Disarm()   -- one click must not delete the profile just switched to
             local ok, why = P.Switch(name)
             profileSay(ok, why, L.PROFILE_SWITCHED:format(profileText(name)))
         end,
@@ -485,12 +488,12 @@ local function profileRows(page, stack)
     stack.add(picker)
     local nameRow = Widgets.NewRow(page, { label = L.PROFILE_NAME })
     local box = Widgets.TextBox(nameRow, { width = BUTTON_W + 40, maxLetters = P.NAME_LETTERS,
-        get = function() return "" end, set = function() return true end })
+        get = function() return typed end, set = function(t) typed = t; return true end })
     local function act(fn, done)
-        box:ClearFocus()
-        local name = (box:GetText() or ""):match("^%s*(.-)%s*$")
+        box:ClearFocus()   -- commits the text into typed
+        local name = typed:match("^%s*(.-)%s*$")
         local ok, why = fn(name)
-        if ok then box:SetText("") end
+        if ok then typed = ""; box:SetText("") end
         profileSay(ok, why, done:format(name))
     end
     local save = Widgets.Button(nameRow, { text = L.PROFILE_SAVE_AS, width = BUTTON_W,
@@ -503,7 +506,7 @@ local function profileRows(page, stack)
     function nameRow:SetEnabled(on) box:SetEnabled(on); save:SetEnabled(on); rename:SetEnabled(on and renamable()) end
     stack.add(nameRow)
     local deleteBlock = newBlock(page)
-    local delete = confirmButton(deleteBlock, L.PROFILE_DELETE, function()
+    delete = confirmButton(deleteBlock, L.PROFILE_DELETE, function()
         local name = P.Active()
         local ok, why = P.Delete()
         profileSay(ok, why, L.PROFILE_DELETED:format(profileText(name)))
@@ -512,8 +515,13 @@ local function profileRows(page, stack)
     local message = Style.Text(deleteBlock, 11, "muted")
     message:SetPoint("LEFT", delete, "RIGHT", FOOTER_GAP, 0)
     message:SetJustifyH("LEFT")
-    function deleteBlock:Refresh() delete:SetEnabled(renamable()) end
-    function deleteBlock:SetEnabled(on) delete:SetEnabled(on and renamable()) end
+    -- Only when the state changes: SetEnabled repaints an armed button as idle.
+    local deleteOn
+    local function setDelete(on)
+        if deleteOn ~= on then deleteOn = on; delete:SetEnabled(on) end
+    end
+    function deleteBlock:Refresh() setDelete(renamable()) end
+    function deleteBlock:SetEnabled(on) setDelete(on and renamable()) end
     stack.add(deleteBlock, BUTTON_H + 12)
     Options.profilePicker, Options.profileName, Options.profileSaveButton = picker, box, save
     Options.profileRenameButton, Options.profileDeleteButton, Options.profileMessage = rename, delete, message
@@ -1038,6 +1046,7 @@ end)
 -- The profile list and the buttons follow a switch, save, rename or delete.
 ns.Listen("UNIT_PROFILES_CHANGED", function()
     if Options.IsOpen() and Options.currentScope == "profiles" then
+        Options.profileDeleteButton.Disarm()
         forEachRow(function(row) row:Refresh() end)
     end
 end)

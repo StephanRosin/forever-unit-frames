@@ -6,7 +6,7 @@ local db = { profile = { player = { width = 300 } } }
 local p, src = ns.Storage.Load(db)
 H.check("migrated: source", src, "SavedVariables")
 H.check("migrated: value", p.player.width, 300)
-H.check("migrated: old key gone", db.profile, nil)
+H.check("migrated: key stays as mirror", db.profile.player.width, 300)
 H.check("migrated: Default", db.profiles.Default.player.width, 300)
 H.check("migrated: active", ns.UnitProfiles.Active(), "Default")
 
@@ -75,3 +75,45 @@ H.check("delete: other character back to Default", db.active["Alt-Testrealm"], n
 -- Default cannot be renamed or deleted.
 H.check("default: no rename", select(2, ns.UnitProfiles.Rename("X")), "DEFAULT")
 H.check("default: no delete", select(2, ns.UnitProfiles.Delete()), "DEFAULT")
+
+-- Downgrade round trip: the old key mirrors Default; an older version's edit wins.
+ns = H.LoadAddon()
+db = { profile = { player = { width = 300 } } }
+ns.Config.Use(ns.Storage.Load(db))
+ns.Storage.Attach(db)
+ns.Config.Set("player", "width", 310)
+ns.Storage.Save()
+H.check("mirror: follows Default", db.profile.player.width, 310)
+ns.UnitProfiles.SaveAs("Healer")
+ns.Config.Set("player", "width", 400)
+ns.Storage.Save()
+H.check("mirror: not from another profile", db.profile.player.width, 310)
+db.profile = { player = { width = 350 } }   -- an older version edited it
+ns = H.LoadAddon()
+db.active[ns.RaidProfiles.CharKey()] = nil
+ns.Config.Use(ns.Storage.Load(db))
+H.check("round trip: old edit becomes Default", ns.Config.Get("player", "width"), 350)
+H.check("round trip: named profile survives", db.profiles.Healer.player.width, 400)
+
+-- Default not written yet (fresh install): Save as, then back.
+ns = H.LoadAddon()
+db = {}
+ns.Config.Use(ns.Storage.Load(db))
+ns.Storage.Attach(db)
+db.profiles.Default = nil
+H.checkTrue("fresh: save as", ns.UnitProfiles.SaveAs("Healer"))
+H.checkTrue("fresh: back to Default", ns.UnitProfiles.Switch("Default"))
+H.check("fresh: on Default", ns.UnitProfiles.Active(), "Default")
+
+-- Name length counts letters, not bytes.
+H.checkTrue("umlauts: 40 letters", ns.UnitProfiles.SaveAs(("\195\164"):rep(40)))
+H.check("umlauts: 41 letters", select(2, ns.UnitProfiles.SaveAs(("\195\164"):rep(41))), "TOO_LONG")
+
+-- The localised Default text is taken.
+H.check("localised Default taken", select(2, ns.UnitProfiles.SaveAs(ns.L.PROFILE_DEFAULT:upper())), "TAKEN")
+
+-- Not while an old macro backup is awaited.
+ns.Storage.IsWaiting = function() return true end
+for _, call in ipairs({ { "Switch", "Default" }, { "SaveAs", "Zed" }, { "Rename", "Zed" }, { "Delete" } }) do
+    H.check("waiting: " .. call[1], select(2, ns.UnitProfiles[call[1]](call[2])), "WAITING")
+end

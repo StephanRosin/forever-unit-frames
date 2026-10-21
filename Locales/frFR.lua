@@ -147,6 +147,7 @@ L.PROFILE_NAME_EMPTY = "Saisissez d’abord un nom."; L.PROFILE_NAME_TOO_LONG = 
 L.PROFILE_NAME_TAKEN = "Un profil portant ce nom existe déjà."
 L.PROFILE_DEFAULT_FIXED = "Par défaut ne peut être ni renommé ni supprimé."
 L.PROFILE_GONE = "Ce profil n’existe plus."; L.PROFILE_COMBAT = "Pas en combat."
+L.PROFILE_WAITING = "Les réglages sont encore en cours de chargement ; réessayez dans un instant."
 L.TAB_layout = "Disposition"; L.TAB_bars = "Barres"; L.TAB_text = "Textes"; L.TAB_castbar = "Incantation"
 L.TAB_group = "Groupe"
 L.SECTION_font = "Police"; L.SECTION_border = "Bordure et coins"
