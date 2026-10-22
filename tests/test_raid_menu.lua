@@ -13,7 +13,7 @@ local RC, Lists, Header, Special = ns.RaidConfig, ns.RaidLists, ns.RaidHeader, n
 for _, tag in ipairs({ "MENU_UNIT_RAID_PLAYER", "MENU_UNIT_PARTY", "MENU_UNIT_SELF" }) do
     H.check("registered: " .. tag, M.menuMods[tag] and M.menuMods[tag][1], ns.RaidMenu.Modify)
 end
-H.check("not on pets' menus", M.menuMods.MENU_UNIT_OTHERPET, nil)
+H.check("the cells' entries not on pets' menus", #M.menuMods.MENU_UNIT_OTHERPET, 1)
 
 local function member(name, subgroup)
     return { name = name, class = "WARRIOR", subgroup = subgroup, unit = { health = 100, healthMax = 100, powerType = 1 } }
@@ -42,25 +42,25 @@ local bob = cell("raid2")
 H.check("a right click opens the unit menu", M.SecureClick(bob, "RightButton"), "togglemenu")
 H.check("a raid member's menu", M.menu.tag, "MENU_UNIT_RAID_PLAYER")
 H.check("the cell owns it", M.menu.contextData.ownerFrame, bob)
-H.check("panels off: nothing added", texts(M.menu), "")
+H.check("panels off: only Edit frame", texts(M.menu), "Edit Frame")
 
 -- Favourites on: add and remove.
 RC.Set("r10", "favouritesShow", true)
 M.SecureClick(bob, "RightButton")
-H.check("favourites", texts(M.menu), "-|Forever Unit Frames|Add to favorites")
+H.check("favourites", texts(M.menu), "Edit Frame|-|Forever Unit Frames|Add to favorites")
 M.ClickMenu(button(M.menu, "Add to favorites"))
 H.check("added", RC.Get("general", "favouriteNames"), "Bob")
 M.RunTimers()
 H.check("the panel follows at once", Special.panels.favourites.Count(1), 1)
 M.SecureClick(bob, "RightButton")
-H.check("on the list: remove", texts(M.menu), "-|Forever Unit Frames|Remove from favorites")
+H.check("on the list: remove", texts(M.menu), "Edit Frame|-|Forever Unit Frames|Remove from favorites")
 M.ClickMenu(button(M.menu, "Remove from favorites"))
 H.check("removed", RC.Get("general", "favouriteNames"), "")
 
 -- My tanks on as well: favourites first.
 RC.Set("r10", "myTanksShow", true)
 M.SecureClick(bob, "RightButton")
-H.check("both", texts(M.menu), "-|Forever Unit Frames|Add to favorites|Mark as my tank")
+H.check("both", texts(M.menu), "Edit Frame|-|Forever Unit Frames|Add to favorites|Mark as my tank")
 M.ClickMenu(button(M.menu, "Mark as my tank"))
 H.check("my tank", RC.Get("general", "myTankNames"), "Bob")
 H.check("not a favourite", RC.Get("general", "favouriteNames"), "")
@@ -96,7 +96,7 @@ M.ClickMenu(button(M.menu, "Mark as my tank"))
 H.checkTrue("full: the chat says so", M.chat[chat + 1] and M.chat[chat + 1]:find("The list is full", 1, true))
 RC.Set("general", "myTankNames", "")
 
--- Not ours, pretend, or a name that cannot be read: nothing added.
+-- Not ours: nothing added; pretend, or a name that cannot be read: no list entries.
 local root = M.OpenUnitMenu("RAID_PLAYER", { ownerFrame = UIParent, unit = "raid2" })
 H.check("another frame's menu", texts(root), "")
 root = M.OpenUnitMenu("RAID_PLAYER", { unit = "raid2" })
@@ -104,7 +104,7 @@ H.check("no owner", texts(root), "")
 M.units.raid2.name = M.Secret("Bob")
 M.raid[2].name = M.units.raid2.name
 root = M.OpenUnitMenu("RAID_PLAYER", { ownerFrame = bob, unit = "raid2" })
-H.check("a secret name", texts(root), "")
+H.check("a secret name: no list entries", texts(root), "Edit Frame")
 H.check("the name of a unit", Lists.UnitName("raid3"), "Cid")
 H.check("a secret name is none", Lists.UnitName("raid2"), nil)
 H.check("no unit", Lists.UnitName(nil), nil)
@@ -112,7 +112,7 @@ M.raid[2].name, M.units.raid2.name = "Bob", "Bob"
 ns.RaidTestMode.Set(true)
 local fake = ns.RaidCell.fakes[1]
 root = M.OpenUnitMenu("SELF", { ownerFrame = fake, unit = "player" })
-H.check("a pretend cell", texts(root), "")
+H.check("a pretend cell: Edit frame only", texts(root), "Edit Frame")
 ns.RaidTestMode.Set(false)
 
 -- A party with the raid view: the name as the header compares it.

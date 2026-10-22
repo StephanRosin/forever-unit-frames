@@ -10,7 +10,7 @@ local _, ns = ...
 -- their own handlers, ours only change our lists (plain data,
 -- Raid/Lists.lua) and never call a protected function. Only menus opened
 -- from one of our cells (contextData.ownerFrame; not a pretend one) get
--- the entries, for a player whose name can be read, and each only while
+-- the list entries, for a player whose name can be read, and each only while
 -- its panel is switched on for the size shown. Out of combat the panel
 -- follows at once, in combat after combat (the chat says so).
 local RaidMenu = {}
@@ -41,10 +41,14 @@ local function toggle(id, name)
     end
 end
 
--- Menu.ModifyMenu's callback: our entries at the end of the menu.
+-- Menu.ModifyMenu's callback: "Edit Frame" under Blizzard's Other
+-- Options (Options/FrameMenu.lua), on a pretend cell too; then our list
+-- entries under our title.
 function RaidMenu.Modify(_, root, contextData)
-    if not (contextData and ours(contextData.ownerFrame)) then return end
-    local name = Lists.UnitName(contextData.unit)
+    local cell = contextData and contextData.ownerFrame
+    if not (type(cell) == "table" and Cell.Is(cell)) then return end
+    ns.FrameMenu.AddEdit(root, cell)
+    local name = ours(cell) and Lists.UnitName(contextData.unit)
     if not name then return end
     local entries = {}
     for _, entry in ipairs(RaidMenu.ENTRIES) do

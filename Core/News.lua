@@ -87,6 +87,10 @@ News.ENTRIES = {
     ["0.32.0"] = {
         lines = { "NEWS_0_32_0_PROFILES", "NEWS_0_32_0_PAGE" },
     },
+    -- "Edit Frame" in the unit menu. Not announced.
+    ["0.33.0"] = {
+        lines = { "NEWS_0_33_0_EDIT", "NEWS_0_33_0_FIXES" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).
