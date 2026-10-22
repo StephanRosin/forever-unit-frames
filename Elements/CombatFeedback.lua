@@ -130,12 +130,14 @@ end
 -- UNIT_COMBAT: unit, action, flags, amount, school. Other events are
 -- whole frame refreshes: the unit may have changed (target, party slot),
 -- so an old number goes; a timer refresh (target of target) is none.
-function CombatFeedback.Update(frame, event, _, action, flags, amount)
+-- Registered for pettarget or targettarget, the client delivers the base
+-- unit's (pet, target) UNIT_COMBAT: only the frame's own unit counts.
+function CombatFeedback.Update(frame, event, unit, action, flags, amount)
     if event ~= "UNIT_COMBAT" then
         if event ~= ns.Single.POLL then CombatFeedback.Clear(frame) end
         return
     end
-    if frame.feedback.preview then return end
+    if frame.feedback.preview or plain(unit) ~= frame.unit then return end
     local scope = frame.key
     if not Config.Get(scope, "combatFeedback") then return end
     local kind, flag = plain(action), plain(flags)

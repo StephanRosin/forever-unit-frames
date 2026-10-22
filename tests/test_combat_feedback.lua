@@ -39,6 +39,10 @@ C.Set("player", "fontShadow", true)
 H.check("font shadow", text._shadow[1] .. "," .. text._shadow[2], "1,-1")
 C.Set("player", "fontShadow", false)
 
+-- Another unit's event (pettarget gets the pet's): no number.
+CF.Update(f, "UNIT_COMBAT", "pet", "HEAL", "", 300, 2)
+H.check("other unit: nothing", holder:IsShown(), false)
+
 -- A secret hit: passed through untouched, red.
 local hit = M.Secret(532)
 M.FireEvent("UNIT_COMBAT", "player", "WOUND", "", hit, 1)
