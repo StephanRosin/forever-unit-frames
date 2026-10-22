@@ -28,7 +28,7 @@ H.check("protected: hidden out of combat", PlayerFrame:IsShown(), false)
 H.checkTrue("unprotected: reparented", reparented ~= nil and reparented ~= UIParent)
 
 -- TargetFrame: the controller's unit menu needs it visible (menu owner).
-H.checkTrue("target: kept shown", TargetFrame:IsShown())
+H.checkTrue("target: shown and hidden with the target", TargetFrame._unitWatch)
 H.check("target: alpha 0", TargetFrame:GetAlpha(), 0)
 H.check("target: mouse off", TargetFrame._mouse, false)
 H.check("target: events off", next(TargetFrame._events), nil)
@@ -45,9 +45,14 @@ ns.Frames.target:Hide()
 TargetFrame_OpenMenu(TargetFrame)
 H.check("ours hidden: Blizzard's place", (blizzardMenu:GetPoint(1)), "LEFT")
 ns.Frames.target = nil
+M.units.target = { name = "Boar" }
 TargetFrame:Hide()
 M.RunTimers()
 H.checkTrue("target: shown again after a hide", TargetFrame:IsShown())
+M.units.target = nil
+TargetFrame:Hide()
+M.RunTimers()
+H.check("no target: stays hidden", TargetFrame:IsShown(), false)
 
 -- A disabled frame keeps Blizzard's.
 ns = H.LoadAddon()

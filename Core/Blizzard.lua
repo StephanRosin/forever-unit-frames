@@ -36,12 +36,14 @@ function Blizzard.Conceal(frame)
     end
 end
 
--- Blizzard's TargetFrame stays shown, invisible and inert, its children
--- concealed: the controller's unit menu (Inspect on the gamepad action
+-- Blizzard's TargetFrame stays shown while there is a target, invisible
+-- and inert, its children concealed: the controller's unit menu (Inspect on the gamepad action
 -- bar) opens with it as the owner (TargetFrame_OpenMenu,
 -- Blizzard_GamepadActionBars/MainActionBarFrame.lua), and a menu closes
 -- while its owner is not visible (MenuManagerMixin, Blizzard_Menu/Menu.lua).
 -- Blizzard anchors that menu beside TargetFrame; it is moved above ours.
+-- Without a target it hides (unit watch): shown, it blocked camera drags
+-- at its place on some setups.
 local targetHooked
 
 local function placeMenu(owner)
@@ -59,16 +61,20 @@ local function concealTarget()
     frame:UnregisterAllEvents()
     frame:SetAlpha(0)
     frame:EnableMouse(false)
-    frame:Show()
+    RegisterUnitWatch(frame)
     if targetHooked then return end
     targetHooked = true
     -- A global function, not a frame method: safe to post-hook.
     if _G.TargetFrame_OpenMenu then
         hooksecurefunc("TargetFrame_OpenMenu", function(owner) pcall(placeMenu, owner) end)
     end
-    -- Edit Mode may hide it again: shown once more, next frame.
+    -- Edit Mode may hide it with a target: shown once more, next frame.
     frame:HookScript("OnHide", function()
-        C_Timer.After(0, function() ns.AfterCombat("targetMenuOwner", function() frame:Show() end) end)
+        C_Timer.After(0, function()
+            ns.AfterCombat("targetMenuOwner", function()
+                if UnitExists("target") then frame:Show() end
+            end)
+        end)
     end)
 end
 
