@@ -42,11 +42,13 @@ local function rightClick()
     return M.menu
 end
 
--- A plain right-click: Blizzard's unit menu as before, not ours.
+-- A plain right-click: Blizzard's unit menu as before, not ours; only
+-- "Edit Frame" at its end (Options/FrameMenu.lua).
 buffs._mouseOver = true
 local menu = rightClick()
 H.check("plain: the unit menu", menu and menu.tag, "MENU_UNIT_PLAYER")
-H.check("plain: nothing of ours", #ours(menu), 0)
+H.check("plain: only Edit Frame", #ours(menu), 1)
+H.check("plain: Edit Frame", ours(menu)[1] and ours(menu)[1].text, "Edit Frame")
 -- Shift alone runs no secure action (no click binding for it).
 M.shiftDown = true
 H.check("shift: no secure action", M.SecureClick(t, "RightButton"), nil)
