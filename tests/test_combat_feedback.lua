@@ -128,11 +128,11 @@ M.FireEvent("PLAYER_TARGET_CHANGED")
 H.check("new target: number gone", tf.feedback:IsShown(), false)
 H.check("new target: fade stopped", tf.feedbackFade:IsPlaying(), false)
 -- A timer refresh is no unit change.
-C.Set("targettarget", "combatFeedback", true)
-local tot = ns.Frames.targettarget
-M.units.targettarget = { name = "Add", health = 1, healthMax = 1 }
-M.FireEvent("UNIT_COMBAT", "targettarget", "WOUND", "", 10, 1)
-M.Tick(0.25)
+H.check("not on the target of target", ns.Settings.AppliesTo(ns.Settings.Get("combatFeedback"), "targettarget"), false)
+H.check("not on the pet's target", ns.Settings.AppliesTo(ns.Settings.Get("combatFeedback"), "pettarget"), false)
+local tot = tf
+M.FireEvent("UNIT_COMBAT", "target", "WOUND", "", 10, 1)
+CF.Update(tot, ns.Single.POLL)
 H.checkTrue("poll: number kept", tot.feedback:IsShown())
 H.checkTrue("poll: still fading", tot.feedbackFade:IsPlaying())
 -- A hidden frame drops its number, so no paused fade resumes later.
