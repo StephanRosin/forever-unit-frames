@@ -176,8 +176,9 @@ local SECTION_NOTE = {
         .. " full while you are in a party or raid, for healers who heal by mouse-over without a target.",
     fiveSecondRule = "After a spell that costs mana, your mana regenerates fully again only five seconds later."
         .. " While that runs, a white spark crosses the power bar; a countdown text and a dimmed bar can be added."
-        .. " It starts when the game lists a mana cost for the spell; nothing shows at rest, and nothing while the"
-        .. " power bar shows rage or energy (a druid in a form). A new spell restarts the five seconds. Test mode"
+        .. " It starts when a spell that lists a mana cost really takes mana, so a free cast (Inner Focus,"
+        .. " Clearcasting) leaves it alone; nothing shows at rest, and nothing while the power bar shows rage or"
+        .. " energy (a druid in a form). A new paid spell restarts the five seconds. Test mode"
         .. " shows a running sample. Switch it off with **Five-second rule**.",
     shields = "The icons of your active absorb shields and the exact total of all your absorbs, like a"
         .. " WeakAura: Power Word: Shield, the mage's barriers and wards, the warlock's Shadow Ward and Sacrifice,"

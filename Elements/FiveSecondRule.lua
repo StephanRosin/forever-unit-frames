@@ -7,11 +7,15 @@ local _, ns = ...
 -- dimmed. Only while the power bar shows mana (a druid's strip in forms is
 -- out of scope).
 --
--- It starts on UNIT_SPELLCAST_SUCCEEDED when C_Spell.GetSpellPowerCost
--- lists a mana entry for the spell (the payload's ID goes to the client as
--- it comes, secret or not). The amount is never looked at; a secret answer
--- starts nothing rather than a guess. A new spell restarts the five
--- seconds.
+-- It starts when C_Spell.GetSpellPowerCost lists a mana entry for a spell
+-- from UNIT_SPELLCAST_SUCCEEDED (the payload's ID goes to the client as it
+-- comes, secret or not; a secret answer starts nothing rather than a guess)
+-- and the mana really falls close to it, in either order. A free cast (Inner
+-- Focus, Clearcasting) still lists its cost but spends nothing, so it neither
+-- starts nor restarts the rule. Unreadable mana starts on the listed cost.
+-- A new paid spell restarts the five seconds.
+-- shortcut: a paid spell whose cost a regen tick outweighs in the same update
+-- shows no fall and starts nothing; rare enough to leave.
 --
 -- No Lua counts time for the spark: a Translation animation moves it in
 -- five seconds and its OnFinished ends the rule. The spark's frame shows
@@ -19,7 +23,7 @@ local _, ns = ...
 -- animation only runs on a shown frame and the end comes from it. Only the
 -- countdown text uses a light ticker while the rule runs. Plain frames:
 -- shown and hidden in combat too.
-local FiveSecondRule = { name = "FiveSecondRule", unitEvents = { "UNIT_SPELLCAST_SUCCEEDED", "UNIT_DISPLAYPOWER" } }
+local FiveSecondRule = { name = "FiveSecondRule", unitEvents = { "UNIT_SPELLCAST_SUCCEEDED", "UNIT_DISPLAYPOWER", "UNIT_POWER_FREQUENT" } }
 ns.FiveSecondRule = FiveSecondRule
 
 local Config, Secrets = ns.Config, ns.Secrets
@@ -27,6 +31,8 @@ local Config, Secrets = ns.Config, ns.Secrets
 FiveSecondRule.SCOPE = "player"
 FiveSecondRule.DURATION = 5
 FiveSecondRule.TICK = 0.1
+-- How far apart a spell and the fall of mana may lie to belong together.
+FiveSecondRule.SPEND_WINDOW = 0.5
 -- Above the power bar's fill and the spell cost (PowerCost.LEVELS), below
 -- the power texts (Texts.POWER_TEXT_LEVELS); the countdown level with them.
 FiveSecondRule.SPARK_LEVELS = 3
@@ -206,13 +212,26 @@ function FiveSecondRule.Style(frame)
     if fsr.startedAt then applyParts(frame) end
 end
 
+local function recent(at) return at ~= nil and GetTime() - at <= FiveSecondRule.SPEND_WINDOW end
+
 function FiveSecondRule.Update(frame, event, _, _, spellID)
     local fsr = frame.fsr
-    if not fsr or fsr.preview then return end
+    if not fsr then return end
+    local mana = Secrets.Number(UnitPower("player", MANA))
+    if mana and fsr.mana and mana < fsr.mana then fsr.droppedAt = GetTime() end
+    fsr.mana = mana
+    if fsr.preview then return end
     if event == "UNIT_SPELLCAST_SUCCEEDED" then
-        if enabled() and showsMana() and FiveSecondRule.CostsMana(spellID) then FiveSecondRule.Start(frame) end
+        if enabled() and showsMana() and FiveSecondRule.CostsMana(spellID) then
+            if not mana then return FiveSecondRule.Start(frame) end
+            fsr.castAt = GetTime()
+        end
     elseif event == "UNIT_DISPLAYPOWER" and fsr.startedAt and not showsMana() then
         FiveSecondRule.Stop(frame)
+    end
+    if recent(fsr.droppedAt) and recent(fsr.castAt) then
+        fsr.droppedAt, fsr.castAt = nil, nil
+        FiveSecondRule.Start(frame)
     end
 end
 

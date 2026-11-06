@@ -61,6 +61,12 @@ local f = ns.Frames.player
 local fsr = f.fsr
 local fill = f.power:GetStatusBarTexture()
 local function running() return fsr.spark:IsShown() and fsr.run:IsPlaying() end
+-- A paid spell: the mana falls, then the cast succeeds.
+local function cast(guid, spellID)
+    M.units.player.power = M.units.player.power - 1
+    M.FireEvent("UNIT_POWER_FREQUENT", "player", "MANA")
+    M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", guid, spellID)
+end
 
 -- At rest ---------------------------------------------------------------------
 H.checkTrue("built on the player", fsr)
@@ -77,7 +83,7 @@ H.check("animation: a translation", fsr.move:GetObjectType(), "Translation")
 H.check("animation: 5 s", fsr.move._duration, 5)
 
 -- A mana spell: the rule runs --------------------------------------------------
-M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-1", 116)
+cast("Cast-1", 116)
 H.checkTrue("mana spell: the spark runs", running())
 H.check("left to right: from the bottom left", (fsr.spark:GetPoint(1)), "BOTTOMLEFT")
 H.check("left to right: across the bar", (fsr.move:GetOffset()), f.powerWidth - 3)
@@ -92,31 +98,73 @@ M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-3", 6603)
 H.check("free: nothing", fsr.spark:IsShown(), false)
 M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-4", 4242)
 H.check("unknown spell: nothing", fsr.spark:IsShown(), false)
-M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-5", 999)
+cast("Cast-5", 999)
 H.checkTrue("two costs, one mana: runs", running())
 M.FinishAnimations()
 
 -- Secrets: a secret ID goes to the client; a secret answer starts nothing.
-M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", M.Secret("Cast-6"), M.Secret(116))
+cast(M.Secret("Cast-6"), M.Secret(116))
 H.checkTrue("secret spell ID: runs", running())
 M.FinishAnimations()
 M.spellCostSecret = true
-M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-7", 116)
+cast("Cast-7", 116)
 H.check("secret costs: nothing", fsr.spark:IsShown(), false)
 M.spellCostSecret = false
 
 -- A new spell restarts the five seconds.
-M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-8", 116)
+cast("Cast-8", 116)
 local started = fsr.startedAt
 M.Tick(2)
-M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-9", 116)
+cast("Cast-9", 116)
 H.check("restart: from now", fsr.startedAt, started + 2)
 H.checkTrue("restart: still running", running())
 M.FinishAnimations()
 
+-- A free cast (Inner Focus, Clearcasting) lists its cost but takes no mana.
+M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Free-1", 116)
+H.check("free cast at rest: nothing", fsr.spark:IsShown(), false)
+M.Tick(1)
+cast("Paid-1", 116)
+started = fsr.startedAt
+M.Tick(2)
+M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Free-2", 116)
+H.check("free cast: no restart", fsr.startedAt, started)
+M.Tick(1)
+M.FinishAnimations()
+-- The mana may fall just after the cast, but only just.
+M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Late-1", 116)
+M.Tick(0.2)
+M.units.player.power = M.units.player.power - 1
+M.FireEvent("UNIT_POWER_FREQUENT", "player", "MANA")
+H.checkTrue("mana falls after the cast: runs", running())
+M.FinishAnimations()
+M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Late-2", 116)
+M.Tick(1)
+M.units.player.power = M.units.player.power - 1
+M.FireEvent("UNIT_POWER_FREQUENT", "player", "MANA")
+H.check("mana falls long after: nothing", fsr.spark:IsShown(), false)
+M.Tick(1)
+M.units.player.power = M.units.player.power - 1
+M.FireEvent("UNIT_POWER_FREQUENT", "player", "MANA")
+H.check("mana lost without a spell: nothing", fsr.spark:IsShown(), false)
+M.Tick(1)
+M.units.player.power = M.units.player.power + 5
+M.FireEvent("UNIT_POWER_FREQUENT", "player", "MANA")
+M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Regen-1", 116)
+H.check("mana rising with a free cast: nothing", fsr.spark:IsShown(), false)
+M.Tick(1)
+-- Unreadable mana: the listed cost decides, as nothing else can.
+local readable = M.units.player.power
+M.units.player.power = M.Secret(readable)
+M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Secret-1", 116)
+H.checkTrue("secret mana: runs on the listed cost", running())
+M.FinishAnimations()
+M.units.player.power = readable
+M.FireEvent("UNIT_POWER_FREQUENT", "player", "MANA")
+
 -- Right to left.
 C.Set("player", "fsrSparkDirection", "RIGHT_TO_LEFT")
-M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-10", 116)
+cast("Cast-10", 116)
 H.check("right to left: from the bottom right", (fsr.spark:GetPoint(1)), "BOTTOMRIGHT")
 H.check("right to left: leftwards", (fsr.move:GetOffset()), -(f.powerWidth - 3))
 M.FinishAnimations()
@@ -128,7 +176,7 @@ C.Set("player", "fsrSparkWidth", 3)
 
 -- Countdown text -----------------------------------------------------------------
 C.Set("player", "fsrText", true)
-M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-11", 116)
+cast("Cast-11", 116)
 H.checkTrue("text: shown", fsr.text:IsShown())
 H.check("text: whole seconds", fsr.text:GetText(), "5")
 M.Tick(0.1)
@@ -152,7 +200,7 @@ C.Set("player", "fsrTextPoint", "CENTER")
 
 -- Dimming -------------------------------------------------------------------------
 C.Set("player", "fsrDim", true)
-M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-12", 116)
+cast("Cast-12", 116)
 H.check("dimmed to 70 %", fill:GetAlpha(), 0.7)
 C.Set("player", "fsrDimAlpha", 40)
 H.check("dimmed to 40 %", fill:GetAlpha(), 0.4)
@@ -165,7 +213,7 @@ H.check("dim: back in full at the end", fill:GetAlpha(), 1)
 
 -- Only while the bar shows mana; spark off still times text and dimming.
 C.Set("player", "fsrSpark", false)
-M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-13", 116)
+cast("Cast-13", 116)
 H.check("spark off: no spark drawn", fsr.sparkTexture:IsShown(), false)
 H.check("spark off: dimming still on", fill:GetAlpha(), 0.4)
 H.checkTrue("spark off: still timed by the animation", fsr.run:IsPlaying())
@@ -173,21 +221,21 @@ M.FinishAnimations()
 H.check("spark off: the end", fill:GetAlpha(), 1)
 C.Set("player", "fsrSpark", true)
 
-M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-14", 116)
+cast("Cast-14", 116)
 M.units.player.powerType = 1
 M.FireEvent("UNIT_DISPLAYPOWER", "player")
 H.check("no longer mana: stopped", fsr.spark:IsShown(), false)
 H.check("no longer mana: fill in full", fill:GetAlpha(), 1)
-M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-15", 999)
+cast("Cast-15", 999)
 H.check("rage bar: nothing", fsr.spark:IsShown(), false)
 M.units.player.powerType = 0
 M.FireEvent("UNIT_DISPLAYPOWER", "player")
 
 C.Set("player", "fsrEnabled", false)
-M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-16", 116)
+cast("Cast-16", 116)
 H.check("master off: nothing", fsr.spark:IsShown(), false)
 C.Set("player", "fsrEnabled", true)
-M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-17", 116)
+cast("Cast-17", 116)
 C.Set("player", "fsrEnabled", false)
 H.check("master off mid rule: stopped", fsr.spark:IsShown(), false)
 H.check("master off mid rule: fill in full", fill:GetAlpha(), 1)
@@ -195,7 +243,7 @@ C.Set("player", "fsrEnabled", true)
 
 -- In combat: plain frames only, nothing refused.
 M.SetCombat(true)
-M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-18", 116)
+cast("Cast-18", 116)
 H.checkTrue("in combat: runs", running())
 M.FinishAnimations()
 H.check("in combat: ends", fsr.spark:IsShown(), false)
