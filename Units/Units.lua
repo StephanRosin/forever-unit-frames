@@ -18,6 +18,9 @@ ns.Units.List = {
     { key = "target", unit = "target", events = { "PLAYER_TARGET_CHANGED" } },
     { key = "targettarget", unit = "targettarget", events = { "PLAYER_TARGET_CHANGED", "UNIT_TARGET" },
       eventUnit = { UNIT_TARGET = "target" }, poll = 0.2 },
+    -- One step further: the client has no event for this unit, the timer does the work.
+    { key = "targettargettarget", unit = "targettargettarget", events = { "PLAYER_TARGET_CHANGED", "UNIT_TARGET" },
+      eventUnit = { UNIT_TARGET = "target" }, poll = 0.2 },
     { key = "pet", unit = "pet", events = { "PLAYER_ENTERING_WORLD", "UNIT_PET" },
       eventUnit = { UNIT_PET = "player" } },
     -- Like the target of target: no unit events of its own, so a timer too.

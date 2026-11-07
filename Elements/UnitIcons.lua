@@ -42,6 +42,7 @@ UnitIcons.SAMPLES = {
     player = { pvpIcon = "PLAYER_FACTION" },
     target = { combatIcon = true, pvpIcon = "Horde" },
     targettarget = { combatIcon = true, pvpIcon = "Alliance" },
+    targettargettarget = { combatIcon = true, pvpIcon = "Horde" },
     pettarget = { combatIcon = true, pvpIcon = "Horde" },
     focus = { combatIcon = true, pvpIcon = "Horde" },
 }

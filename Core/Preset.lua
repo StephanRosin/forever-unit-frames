@@ -123,6 +123,12 @@ local PRESET = {
         x = 536,
         y = -304,
     },
+    targettargettarget = {
+        healthColorMode = "CLASS",
+        showSurname = false,
+        x = 660,
+        y = -304,
+    },
     pet = {
         textHealthRight = "PERCENT",
         textPowerRight = "PERCENT",
