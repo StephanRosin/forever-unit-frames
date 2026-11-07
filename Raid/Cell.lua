@@ -99,6 +99,7 @@ local MAPPED = {
     healthPercent = function() return 100 - get("powerStripHeight") end,
     powerPercent = function() return get("powerStripHeight") end,
     healPrediction = function() return get("healPrediction") end,
+    healHotEnabled = function() return get("healHotEnabled") end,
     healOverflow = function() return get("overheal") end,
     absorbEnabled = function() return get("absorbs") end,
     combatFeedback = function() return get("combatText") end,

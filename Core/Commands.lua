@@ -108,6 +108,10 @@ SlashCmdList.FOREVERUNITFRAMES = function(msg)
         ns.RaidTools.Fold()
     elseif cmd == "news" then
         Commands.ShowNews()
+    elseif cmd == "hotdebug" then
+        if ns.HoTEstimate and ns.HoTEstimate.DebugLines then
+            for _, line in ipairs(ns.HoTEstimate.DebugLines()) do ns.Print(line) end
+        end
     elseif cmd == "auras" and rest:lower() == "undo" then
         -- The last aura hidden from a frame's menu (Core/AuraBlocklist.lua).
         ns.AuraBlocklist.Undo()

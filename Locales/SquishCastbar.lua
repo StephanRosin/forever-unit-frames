@@ -1,0 +1,9 @@
+local _, ns = ...
+local L = ns.Locales.enUS
+L.ENUM_castbarPosition_SQUISH = "Squish health bar"
+L.ENUM_castbarDock_SQUISH = "Squish health bar"
+L.SETTING_portraitAvoidCastbar = "Castbar avoids portrait"
+L.HINT_portraitAvoidCastbar = "When castbar placement is Squish, keep its icons and text beside a side portrait. Each row can reserve the portrait independently."
+L.HINT_castbarHeight = "In Squish mode the castbar is limited to about 60% of the health row, leaving health visible."
+L.HINT_castbarPosition = "Squish places the castbar inside the bottom of the health row, only while casting, shrinking the health bar temporarily. Detached uses its own mover; Portrait overlays the portrait."
+L.HINT_castbarDock = "Squish temporarily divides the health row between health and cast. Above/Below keep their separate row outside the frame."

@@ -188,6 +188,7 @@ RaidSettings.Define({ key = "backgroundColor", code = "BG", scope = "frame", cla
 -- past full health; never past the cell's edge), absorb shields, and the
 -- damage and heal numbers in the cell.
 RaidSettings.Define({ key = "healPrediction", code = "IH", scope = "frame", class = "behaviour", type = "bool", default = true })
+RaidSettings.Define({ key = "healHotEnabled", code = "HHE", scope = "frame", class = "behaviour", type = "bool", default = false })
 RaidSettings.Define({ key = "overheal", code = "OV", scope = "frame", class = "behaviour", type = "bool", default = false })
 RaidSettings.Define({ key = "absorbs", code = "AS", scope = "frame", class = "behaviour", type = "bool", default = true })
 RaidSettings.Define({ key = "combatText", code = "CT", scope = "frame", class = "behaviour", type = "bool", default = false })

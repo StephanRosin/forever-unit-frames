@@ -1,0 +1,13 @@
+local _, ns = ...
+local L = ns.Locales.enUS
+L.SECTION_portraitBarWidths = "Bar widths around portrait"
+L.SETTING_portraitAvoidTitle = "Title row avoids portrait"
+L.SETTING_portraitAvoidHealth = "Health bar avoids portrait"
+L.SETTING_portraitAvoidPower = "Power bar avoids portrait"
+L.SETTING_portraitAvoidFooter = "Footer row avoids portrait"
+L.SETTING_portraitAvoidDruidMana = "Druid mana strip avoids portrait"
+L.HINT_portraitAvoidTitle = "Disable to use the full frame width. The portrait moves or scales to avoid covering rows that are full-width. Only applies to LEFT/RIGHT portraits."
+L.HINT_portraitAvoidHealth = L.HINT_portraitAvoidTitle
+L.HINT_portraitAvoidPower = L.HINT_portraitAvoidTitle
+L.HINT_portraitAvoidFooter = L.HINT_portraitAvoidTitle
+L.HINT_portraitAvoidDruidMana = "The alternate mana strip can reserve the portrait width independently of the main power bar."

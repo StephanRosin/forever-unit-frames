@@ -48,7 +48,7 @@ local RULES = {
     { function() return get("nameClassColor") ~= true end, { "nameColor" } },
     { isNot("secondLine", "NONE"), { "secondFontSize" } },
     -- Units/Single.lua: the lane only with heal prediction.
-    { on("healPrediction"), { "overheal" } },
+    { on("healPrediction"), { "overheal", "healHotEnabled" } },
     -- Raid/Cell.lua: no strip, no height.
     { isNot("powerStrip", "OFF"), { "powerStripHeight" } },
     -- Raid/CellAuras.lua: the tint and the border are switches of their

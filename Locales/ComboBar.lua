@@ -1,0 +1,17 @@
+local _, ns = ...
+local L = ns.Locales.enUS
+L.SECTION_comboBar = "Segmented combo-point bar"
+L.SETTING_comboBarEnabled = "Integrated combo-points bar"
+L.SETTING_comboBarHeight = "Combo bar height"
+L.SETTING_comboBarSpacing = "Segment spacing"
+L.SETTING_comboBarGrowth = "Segment fill direction"
+L.SETTING_comboBarColor = "Combo-point colour"
+L.SETTING_comboBarBackground = "Show empty segments"
+L.SETTING_comboBarHideEmpty = "Hide bar at zero points"
+L.SETTING_portraitAvoidComboBar = "Combo bar avoids portrait"
+L.HINT_comboBarEnabled = "Adds a fixed-height row below XP/reputation, above the squish castbar. Tracks your combo points on the current target. The old target-frame combo icons are unaffected."
+L.HINT_comboBarHideEmpty = "At zero combo points, remove the entire row and return its height proportionally to health and power. Reclaim the row when points appear. Test Mode still shows a three-point sample."
+L.HINT_comboBarBackground = "Empty segments show a darkened background. Turn this off to show filled segments only."
+L.HINT_portraitAvoidComboBar = "Give the segmented combo row its own left/right portrait inset."
+L.ENUM_comboBarGrowth_RIGHT = "Left to right"
+L.ENUM_comboBarGrowth_LEFT = "Right to left"

@@ -3,7 +3,8 @@ local _, ns = ...
 local Texts = {
     name = "Texts",
     unitEvents = { "UNIT_HEALTH", "UNIT_MAXHEALTH", "UNIT_POWER_FREQUENT", "UNIT_MAXPOWER", "UNIT_DISPLAYPOWER",
-        "UNIT_NAME_UPDATE", "UNIT_LEVEL", "PLAYER_FLAGS_CHANGED" },
+        "UNIT_NAME_UPDATE", "UNIT_LEVEL", "PLAYER_FLAGS_CHANGED", "UNIT_FLAGS", "UNIT_FACTION",
+        "UNIT_CONNECTION", "UNIT_THREAT_LIST_UPDATE", "UNIT_THREAT_SITUATION_UPDATE" },
 }
 ns.Texts = Texts
 
@@ -87,6 +88,7 @@ local function levelText(unit, colored)
     local r, g, b = Texts.DifficultyColor(level)
     return ("|cff%02x%02x%02x%s|r"):format(r * 255, g * 255, b * 255, text)
 end
+Texts.LevelText = levelText
 
 -- INFO: "60 Mage Gnome" for players, "60 Humanoid" for creatures. Class,
 -- race and type may be secret: passed to the font string untouched,
@@ -169,6 +171,8 @@ local function firstName(name)
     if at and at > 1 then return string.sub(name, 1, at - 1) end
     return name
 end
+-- Share the existing WoW Forever name parser with custom expressions.
+Texts.Separator, Texts.MayHoldSurname, Texts.FirstName = separator, mayHoldSurname, firstName
 
 -- Writes the unit's name into fs, after `prefix` (the level) if given.
 -- Every text that shows a name goes through here; soft-outline copies
@@ -712,13 +716,53 @@ local function placeCentres(frame)
     end
 end
 
+-- A custom slot may depend on both bars. Preset slots depend on at most
+-- one: both cases use the same event filtering to avoid needless redraws.
+local function customPlan(frame, slot)
+    return frame.customTextPlans and frame.customTextPlans[slot.field]
+end
+local function slotDepends(frame, slot, kind)
+    local tag = Config.Get(frame.key, slot.setting)
+    if tag == "CUSTOM" then
+        local plan = customPlan(frame, slot)
+        return plan and plan.depends[kind] or false
+    end
+    return valueKind(slot, tag) == kind
+end
+local function applySlot(frame, slot, showSurname, sample, opts)
+    local tag = Config.Get(frame.key, slot.setting)
+    local fs = frame.texts[slot.field]
+    if tag == "CUSTOM" then
+        ns.TextResolver.Render(fs, customPlan(frame, slot), frame.unit, showSurname, sample, opts)
+    else
+        Texts.Apply(fs, tag, frame.unit, slot.kind or slot.bar, showSurname, sample, opts)
+    end
+end
+
 function Texts.Style(frame)
     local scope = frame.key
     -- The value kinds the slots show (Texts.Update skips the others' ticks).
     local kinds = {}
+    frame.customTextPlans = frame.customTextPlans or {}
     for _, slot in ipairs(SLOTS) do
-        local kind = valueKind(slot, Config.Get(scope, slot.setting))
-        if kind then kinds[kind] = true end
+        local tag = Config.Get(scope, slot.setting)
+        if tag == "CUSTOM" then
+            local expression = Config.Get(scope, slot.setting .. "Custom")
+            local old = frame.customTextPlans[slot.field]
+            local plan = old and old.expression == expression and old or ns.TextResolver.Compile(expression)
+            frame.customTextPlans[slot.field] = plan
+            if plan then
+                if plan.depends.health then kinds.health = true end
+                if plan.depends.power then kinds.power = true end
+                for _, extra in ipairs({ "progress", "combo", "threat", "state", "guild" }) do
+                    if plan.depends[extra] then kinds[extra] = true end
+                end
+            end
+        else
+            frame.customTextPlans[slot.field] = nil
+            local kind = valueKind(slot, tag)
+            if kind then kinds[kind] = true end
+        end
     end
     frame.textKinds = kinds
     frame.powerTextLayer:SetFrameLevel(frame.power:GetFrameLevel() + Texts.POWER_TEXT_LEVELS)
@@ -730,7 +774,10 @@ function Texts.Style(frame)
     for _, slot in ipairs(SLOTS) do
         local fs = frame.texts[slot.field]
         -- Value texts (numbers, percent) may have a size of their own.
-        local isValue = valueKind(slot, Config.Get(scope, slot.setting)) ~= nil
+        local tag = Config.Get(scope, slot.setting)
+        local plan = customPlan(frame, slot)
+        local isValue = tag == "CUSTOM" and plan and plan.numericOnly
+            or (tag ~= "CUSTOM" and valueKind(slot, tag) ~= nil)
         Texts.SetFont(fs, font, (isValue and valueSize > 0) and valueSize or size, outline)
         fs:SetShadowOffset(shadow and 1 or 0, shadow and -1 or 0)
         fs:ClearAllPoints()
@@ -771,6 +818,16 @@ function Texts.Style(frame)
     placeTitleEnd(frame)
 end
 
+-- Name-bearing custom expressions take the same colour as name presets.
+local function isNameSetting(frame, field, setting)
+    local tag = Config.Get(frame.key, setting)
+    if tag == "CUSTOM" then
+        local plan = frame.customTextPlans and frame.customTextPlans[field]
+        return plan and plan.depends.name or false
+    end
+    return Texts.NAME_TAGS[tag] == true
+end
+
 -- Title text colour: class (players) or reaction, or plain white. The
 -- right and centre title texts take it when they name the unit; values
 -- stay white.
@@ -780,7 +837,7 @@ local function paintTitle(frame)
     if mode ~= "WHITE" then r, g, b = ns.Health.UnitColor(frame.unit, mode, frame.key) end
     frame.texts.title:SetTextColor(r, g, b, 1)
     for field, key in pairs({ titleRight = "titleTextRight", titleCenter = "titleTextCenter" }) do
-        if Texts.NAME_TAGS[Config.Get(frame.key, key)] then
+        if isNameSetting(frame, field, key) then
             frame.texts[field]:SetTextColor(r, g, b, 1)
         else
             frame.texts[field]:SetTextColor(1, 1, 1, 1)
@@ -812,7 +869,7 @@ local function paintBars(frame, wordSlot)
     end
     for _, slot in ipairs(SLOTS) do
         if slot.bar ~= "title" then
-            local named = slot.field ~= wordSlot and Texts.NAME_TAGS[Config.Get(frame.key, slot.setting)]
+            local named = slot.field ~= wordSlot and isNameSetting(frame, slot.field, slot.setting)
             if named then
                 frame.texts[slot.field]:SetTextColor(r, g, b, a)
             else
@@ -832,7 +889,9 @@ local function statusSlot(frame)
     for _, slot in ipairs(SLOTS) do
         if slot.bar == "health" then
             local tag = Config.Get(frame.key, slot.setting)
-            if SAMPLE_TAGS[tag] then return slot.field end
+            if SAMPLE_TAGS[tag] or (tag == "CUSTOM" and slotDepends(frame, slot, "health")) then
+                return slot.field
+            end
             if tag == "NONE" and not slot.center then empty = slot.field end
         end
     end
@@ -840,19 +899,22 @@ local function statusSlot(frame)
 end
 
 local function isHealthValue(frame, slot)
-    return slot.bar == "health" and SAMPLE_TAGS[Config.Get(frame.key, slot.setting)] ~= nil
+    return slot.bar == "health" and slotDepends(frame, slot, "health")
 end
 
 -- Events that only change one bar's numbers: while the status word stays,
 -- only that bar's value texts are set again (they come on every tick of
 -- every frame; names, colours, badge and class icon stay as they are).
 Texts.VALUE_EVENTS = { UNIT_HEALTH = "health", UNIT_MAXHEALTH = "health",
-    UNIT_POWER_FREQUENT = "power", UNIT_MAXPOWER = "power" }
+    UNIT_POWER_FREQUENT = "power", UNIT_MAXPOWER = "power",
+    FUF_PROGRESS = "progress", FUF_COMBO = "combo", FUF_THREAT = "threat",
+    FUF_STATE = "state", FUF_GUILD = "guild" }
 
 function Texts.Update(frame, event)
     -- A power tick changes neither the status word nor any text but a
     -- power value: nothing to do on a frame that shows none (raid cells).
-    if Texts.VALUE_EVENTS[event] == "power" and frame.textKinds and not frame.textKinds.power then return end
+    local changed = Texts.VALUE_EVENTS[event]
+    if changed and frame.textKinds and not frame.textKinds[changed] then return end
     local showSurname = Config.Get(frame.key, "showSurname")
     -- One table per frame, filled anew: no garbage per event.
     local opts = frame.textOpts or {}
@@ -873,14 +935,17 @@ function Texts.Update(frame, event)
         and Texts.AwayState(frame.unit) == "AFK" then
         word = "AFK"
     end
+    opts.statusWord = word
+    opts.frame = frame
+    opts.statusState = ns.UnitStatus.Of(frame)
+    opts.awayState = frame.health.preview and nil or Texts.AwayState(frame.unit)
     local wordSlot = word and statusSlot(frame)
-    local only = Texts.VALUE_EVENTS[event]
+    local only = changed
     if only and frame.textWord == (word or false) then
         for _, slot in ipairs(SLOTS) do
-            local tag = Config.Get(frame.key, slot.setting)
-            if valueKind(slot, tag) == only and slot.field ~= wordSlot
+            if slotDepends(frame, slot, only) and slot.field ~= wordSlot
                 and not (word and isHealthValue(frame, slot)) then
-                Texts.Apply(frame.texts[slot.field], tag, frame.unit, only, showSurname, sample, opts)
+                applySlot(frame, slot, showSurname, sample, opts)
             end
         end
         return
@@ -893,8 +958,7 @@ function Texts.Update(frame, event)
         elseif word and isHealthValue(frame, slot) then
             fs:SetText("")
         else
-            Texts.Apply(fs, Config.Get(frame.key, slot.setting), frame.unit, slot.kind or slot.bar, showSurname,
-                sample, opts)
+            applySlot(frame, slot, showSurname, sample, opts)
         end
     end
     paintTitle(frame)
@@ -909,9 +973,83 @@ function Texts.Preview(frame)
     if frame.unit and UnitExists(frame.unit) then Texts.Update(frame) end
 end
 
+-- Druid form transitions may publish display-power before the final
+-- name and health values. An ordinary Texts.Update handles both bar text
+-- and custom expressions, and unlike a full restyle does not touch secure
+-- unit-frame layout. Follow the form change on the next frame and shortly
+-- afterwards, without permanent polling or work on every power tick.
+local formTextGeneration = 0
+local function refreshPlayerFormText()
+    local frame = ns.Frames and ns.Frames.player
+    if frame and frame.unit == "player" and frame:IsVisible() and UnitExists("player") then
+        Texts.Update(frame)
+        -- Plain counter for in-game verification; no protected API values.
+        frame.fufFormTextRefreshes = (frame.fufFormTextRefreshes or 0) + 1
+    end
+end
+
+local function formTextChanged()
+    formTextGeneration = formTextGeneration + 1
+    local generation = formTextGeneration
+    refreshPlayerFormText()
+    C_Timer.After(0, function()
+        if generation == formTextGeneration then refreshPlayerFormText() end
+    end)
+    C_Timer.After(0.15, function()
+        if generation == formTextGeneration then refreshPlayerFormText() end
+    end)
+end
+ns.On("UPDATE_SHAPESHIFT_FORM", formTextChanged)
+ns.On("UPDATE_SHAPESHIFT_FORMS", formTextChanged)
+
 -- The role tag follows the group's roles.
 local function updateAll(event) ns.Units.UpdateElement(Texts, event) end
 ns.On("GROUP_ROSTER_UPDATE", updateAll)
 ns.On("PLAYER_ROLES_ASSIGNED", updateAll)
+
+-- Global player information is not delivered as a UNIT_* event for the
+-- currently displayed target frame. Refresh only subscribed custom text
+-- slots, without restyling secure unit buttons or polling.
+local function refreshDependent(kind, keys)
+    for _, frame in pairs(ns.Frames or {}) do
+        if frame and frame.unit and frame:IsVisible() and UnitExists(frame.unit)
+            and frame.textKinds and frame.textKinds[kind]
+            and (not keys or keys[frame.key]) then
+            Texts.Update(frame, "FUF_" .. kind:upper())
+        end
+    end
+end
+local ONLY_PLAYER = { player = true }
+local COMBO_FRAMES = { player = true, target = true }
+local THREAT_FRAMES = { player = true, pet = true }
+for _, event in ipairs({ "PLAYER_XP_UPDATE", "PLAYER_LEVEL_UP", "UPDATE_EXHAUSTION", "UPDATE_FACTION" }) do
+    ns.On(event, function() refreshDependent("progress", ONLY_PLAYER) end)
+end
+ns.On("PLAYER_TARGET_CHANGED", function()
+    refreshDependent("combo", COMBO_FRAMES)
+    refreshDependent("threat")
+end)
+for _, event in ipairs({ "UNIT_POWER_FREQUENT", "UNIT_MAXPOWER" }) do
+    ns.On(event, function(_, unit)
+        if unit == "player" then refreshDependent("combo", COMBO_FRAMES) end
+    end)
+end
+for _, event in ipairs({ "UNIT_THREAT_LIST_UPDATE", "UNIT_THREAT_SITUATION_UPDATE" }) do
+    ns.On(event, function(_, unit)
+        if unit == "target" then refreshDependent("threat", THREAT_FRAMES) end
+    end)
+end
+ns.On("PLAYER_REGEN_DISABLED", function() refreshDependent("state") end)
+ns.On("PLAYER_REGEN_ENABLED", function() refreshDependent("state") end)
+-- GUILD_ROSTER_UPDATE is optional on game branches. Probe rather than
+-- registering an unknown event in Core.Init's unguarded event hub.
+local probe = CreateFrame("Frame")
+for _, event in ipairs({ "GUILD_ROSTER_UPDATE", "PLAYER_GUILD_UPDATE", "ENABLE_XP_GAIN", "DISABLE_XP_GAIN" }) do
+    if pcall(probe.RegisterEvent, probe, event) then
+        probe:UnregisterEvent(event)
+        local kind = (event == "ENABLE_XP_GAIN" or event == "DISABLE_XP_GAIN") and "progress" or "guild"
+        ns.On(event, function() refreshDependent(kind, kind == "progress" and ONLY_PLAYER or nil) end)
+    end
+end
 
 ns.RegisterElement(Texts)

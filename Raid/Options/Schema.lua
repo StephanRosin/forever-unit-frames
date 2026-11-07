@@ -87,7 +87,7 @@ Schema.TABS = {
             "powerStripHeight" } },
         { id = "cellShape", keys = { "cellBorder", "cellBorderStyle", "cellBorderSize", "cellBorderColor",
             "cellCornerRadius" } },
-        { id = "heals", keys = { "healPrediction", "overheal", "absorbs", "combatText" } },
+        { id = "heals", keys = { "healPrediction", "healHotEnabled", "overheal", "absorbs", "combatText" } },
     } },
     { id = "texts", sections = {
         { id = "texts", keys = { "nameClassColor", "nameColor", "secondLine", "secondLineColor" } },

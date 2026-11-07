@@ -706,7 +706,7 @@ L.SETTING_fsrDim = "Dim the bar"
 L.SETTING_fsrDimAlpha = "Opacity while dimmed (%)"
 L.SECTION_druidMana = "Druid mana"
 L.SETTING_druidMana = "Show mana in forms"
-L.HINT_druidMana = "Bear and cat form: a strip under the power bar"
+L.HINT_druidMana = "In Cat/Bear Form: mana beside Energy/Rage, or an optional thin strip."
 L.SETTING_druidManaHeight = "Strip height"
 
 -- Value size, compact values, INFO class colour.
@@ -1451,3 +1451,36 @@ L.NEWS_0_36_0_SORT = "The party frames can sort by role: Party > Group > Sort by
 L.NEWS_0_36_1_KEY = "The smart buff key takes its key only while there is something to cast and wins over Bartender then; otherwise the key does what it did before."
 L.NEWS_0_36_1_STRONGER = "A member with a stronger buff no longer blocks the smart buff: they are passed over for two minutes."
 L.NEWS_OPEN_SHIELDS = "Open the shield watch"
+
+-- Custom contribution strings (kept separate from upstream)
+L.ENUM_CUSTOM = "Custom expression"
+L.HINT_CUSTOM_EXPRESSION = "[shortname] = J. D.; [firstname] [lastinitial] = Jane D. Also [guild], [classification], [creaturetype], [threatpct], [combo], [curxp], [perxp], [currep], [perrep], [status]. [guild|No guild] is a fallback; [?combat|In combat|Safe] is conditional; [perhp:1] shows one decimal. Full tag list in README."
+L.SETTING_titleTextCustom = "Title left expression"; L.HINT_titleTextCustom = L.HINT_CUSTOM_EXPRESSION
+L.SETTING_titleTextCenterCustom = "Title centre expression"; L.HINT_titleTextCenterCustom = L.HINT_CUSTOM_EXPRESSION
+L.SETTING_titleTextRightCustom = "Title right expression"; L.HINT_titleTextRightCustom = L.HINT_CUSTOM_EXPRESSION
+L.SETTING_textHealthLeftCustom = "Health left expression"; L.HINT_textHealthLeftCustom = L.HINT_CUSTOM_EXPRESSION
+L.SETTING_textHealthCenterCustom = "Health centre expression"; L.HINT_textHealthCenterCustom = L.HINT_CUSTOM_EXPRESSION
+L.SETTING_textHealthRightCustom = "Health right expression"; L.HINT_textHealthRightCustom = L.HINT_CUSTOM_EXPRESSION
+L.SETTING_textPowerLeftCustom = "Power left expression"; L.HINT_textPowerLeftCustom = L.HINT_CUSTOM_EXPRESSION
+L.SETTING_textPowerCenterCustom = "Power centre expression"; L.HINT_textPowerCenterCustom = L.HINT_CUSTOM_EXPRESSION
+L.SETTING_textPowerRightCustom = "Power right expression"; L.HINT_textPowerRightCustom = L.HINT_CUSTOM_EXPRESSION
+L.SETTING_footerTextLeftCustom = "Footer left expression"; L.HINT_footerTextLeftCustom = L.HINT_CUSTOM_EXPRESSION
+L.SETTING_footerTextCenterCustom = "Footer centre expression"; L.HINT_footerTextCenterCustom = L.HINT_CUSTOM_EXPRESSION
+L.SETTING_footerTextRightCustom = "Footer right expression"; L.HINT_footerTextRightCustom = L.HINT_CUSTOM_EXPRESSION
+L.SETTING_healBeyondCapEnabled = "Limit overheal extension"
+L.HINT_healBeyondCapEnabled = "Caps the heal prediction extending past the frame; off retains the original full-width extension"
+L.SETTING_healBeyondPercent = "Maximum overheal (%)"
+L.HINT_healBeyondPercent = "0-30% of the health bar width; 0 hides over-full-health predictions. Disable reserved overheal lane for an exact 0% end"
+L.SETTING_druidManaLayout = "Druid mana layout"
+L.ENUM_druidManaLayout_SPLIT = "Side by side"
+L.ENUM_druidManaLayout_STRIP = "Thin strip (original)"
+L.SETTING_druidManaWidth = "Mana width (% of power row)"
+L.HINT_druidManaWidth = "20-80% mana / remaining width Energy or Rage. Both share the existing power row's height."
+L.SETTING_druidManaText = "Mana value display"
+L.HINT_druidManaText = "Text inside the blue mana half of the split power bar; no resource prefix. Does not affect Energy/Rage or XP/reputation."
+L.ENUM_druidManaText_CURRENT = "Current"
+L.ENUM_druidManaText_CURRENT_MAX = "Current / Maximum"
+L.ENUM_druidManaText_PERCENT = "Percentage"
+L.HINT_druidManaLayout = "Mana and Energy/Rage split horizontally; XP and reputation remain full-width stacked bars."
+L.SETTING_xpRepHideCombat = "Hide XP/reputation during combat"
+L.HINT_xpRepHideCombat = "Off by default. When enabled, both progress bars collapse during combat and their height returns to health and power."

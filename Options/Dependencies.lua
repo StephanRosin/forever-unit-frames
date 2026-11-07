@@ -44,6 +44,13 @@ end
 local function isNot(key, value)
     return anywhere({ key }, function(scope) return not applies(scope, key) or Config.Get(scope, key) ~= value end)
 end
+local function sidePortrait()
+    return anywhere({ "portraitMode" }, function(scope)
+        if not applies(scope, "portraitMode") then return true end
+        local mode = Config.Get(scope, "portraitMode")
+        return mode == "LEFT" or mode == "RIGHT"
+    end)
+end
 -- Any of the switches the page has on (none on the page: alone).
 local function anyOn(keys)
     return anywhere(keys, function(scope)
@@ -107,16 +114,43 @@ local RULES = {
     -- Elements/Health.lua: the fixed colour only for STATIC.
     { is("healthColorMode", "STATIC"), { "healthColor" } },
     { on("absorbEnabled"), { "absorbMode", "absorbColor" } },
-    { on("healPrediction"), { "healOverflow", "healBeyond", "healMyColor", "healOtherColor", "powerMatchesHealth" } },
+    { on("healPrediction"), { "healOverflow", "healBeyond", "healBeyondCapEnabled", "healBeyondPercent",
+        "healMyColor", "healOtherColor", "healHotEnabled", "healHotColor", "powerMatchesHealth" } },
+    { on("healHotEnabled"), { "healHotColor" } },
+    { on("healBeyond"), { "healBeyondCapEnabled", "healBeyondPercent" } },
+    { on("healBeyondCapEnabled"), { "healBeyondPercent" } },
     -- Units/Single.lua: the lane only with heal prediction and overflow.
     { on("healOverflow"), { "powerMatchesHealth" } },
+    -- Custom expressions only matter when their corresponding text slot selects Custom.
+    { is("titleText", "CUSTOM"), { "titleTextCustom" } },
+    { is("titleTextCenter", "CUSTOM"), { "titleTextCenterCustom" } },
+    { is("titleTextRight", "CUSTOM"), { "titleTextRightCustom" } },
+    { is("textHealthLeft", "CUSTOM"), { "textHealthLeftCustom" } },
+    { is("textHealthCenter", "CUSTOM"), { "textHealthCenterCustom" } },
+    { is("textHealthRight", "CUSTOM"), { "textHealthRightCustom" } },
+    { is("textPowerLeft", "CUSTOM"), { "textPowerLeftCustom" } },
+    { is("textPowerCenter", "CUSTOM"), { "textPowerCenterCustom" } },
+    { is("textPowerRight", "CUSTOM"), { "textPowerRightCustom" } },
+    { is("footerTextLeft", "CUSTOM"), { "footerTextLeftCustom" } },
+    { is("footerTextCenter", "CUSTOM"), { "footerTextCenterCustom" } },
+    { is("footerTextRight", "CUSTOM"), { "footerTextRightCustom" } },
     -- Everything on the power bar goes with it.
     { on("powerEnabled"), { "powerPercent", "powerHideEmpty", "powerCostPrediction", "powerCostColor", "druidMana",
-        "druidManaHeight", "textPowerLeft", "textPowerCenter", "textPowerRight", "fsrEnabled", "fsrSpark",
+        "druidManaLayout", "druidManaWidth", "druidManaText", "druidManaHeight", "textPowerLeft", "textPowerCenter", "textPowerRight", "textPowerLeftCustom",
+        "textPowerCenterCustom", "textPowerRightCustom", "fsrEnabled", "fsrSpark",
         "fsrSparkDirection", "fsrSparkWidth", "fsrSparkColor", "fsrText", "fsrTextPoint", "fsrTextTenths", "fsrDim",
         "fsrDimAlpha" } },
     { on("powerCostPrediction"), { "powerCostColor" } },
-    { on("druidMana"), { "druidManaHeight" } },
+    { on("druidMana"), { "druidManaLayout", "druidManaHeight", "druidManaWidth", "druidManaText" } },
+    { is("druidManaLayout", "SPLIT"), { "druidManaWidth", "druidManaText" } },
+    { is("druidManaLayout", "STRIP"), { "druidManaHeight", "portraitAvoidDruidMana" } },
+    { on("xpRepEnabled"), { "xpRepMode", "xpRepTop", "xpRepHeight", "xpRepText", "xpRepLabel", "xpRepRested", "xpRepHideCombat",
+        "portraitAvoidXPRep" } },
+    { on("comboBarEnabled"), { "comboBarHeight", "comboBarSpacing", "comboBarGrowth", "comboBarColor",
+        "comboBarBackground", "comboBarHideEmpty", "portraitAvoidComboBar" } },
+    -- With XP-only or reputation-only the visible part fills the whole row;
+    -- choosing which part is above the other only applies to Both mode.
+    { is("xpRepMode", "AUTO"), { "xpRepTop" } },
     { on("fsrEnabled"), { "fsrSpark", "fsrSparkDirection", "fsrSparkWidth", "fsrSparkColor", "fsrText", "fsrTextPoint",
         "fsrTextTenths", "fsrDim", "fsrDimAlpha" } },
     { on("fsrSpark"), { "fsrSparkDirection", "fsrSparkWidth", "fsrSparkColor" } },
@@ -124,10 +158,14 @@ local RULES = {
     { on("fsrDim"), { "fsrDimAlpha" } },
     { isNot("portraitMode", "OFF"), { "portraitStyle", "portraitHeight", "portraitZoom", "portraitOffsetY" } },
     { is("portraitMode", "TOP"), { "portraitHeight" } },
+    { sidePortrait(), { "portraitAvoidTitle", "portraitAvoidHealth", "portraitAvoidPower",
+        "portraitAvoidFooter", "portraitAvoidDruidMana", "portraitAvoidCastbar",
+        "portraitAvoidXPRep", "portraitAvoidComboBar" } },
     { is("portraitStyle", "3D"), { "portraitZoom", "portraitOffsetY" } },
     -- Only matters while ours is off (Core/Blizzard.lua).
     { is("enabled", false), { "hideBlizzardFrame" } },
-    { isNot("footerHeight", 0), { "footerTextLeft", "footerTextCenter", "footerTextRight" } },
+    { isNot("footerHeight", 0), { "footerTextLeft", "footerTextCenter", "footerTextRight",
+        "footerTextLeftCustom", "footerTextCenterCustom", "footerTextRightCustom" } },
     -- Elements/ShieldWatch.lua: everything with the watch; each text's
     -- look with that text.
     { on("shieldsEnabled"), { "shieldsPriest", "shieldsMage", "shieldsWarlock", "shieldsItems", "shieldsExtra",
@@ -178,8 +216,12 @@ local RULES = {
     { on("auraBorder"), { "auraBorderSize", "buffsOwnBorderColor", "buffsOtherBorderColor" } },
     { on("buffsCasterBorder"), { "buffsOwnBorderColor", "buffsOtherBorderColor" } },
     -- Hiding Blizzard's castbar does not depend on ours.
-    { on("castbarEnabled"), { "castbarAlwaysShow", "castbarPosition", "castbarDock", "castbarHeight", "castbarIcon",
+    { on("castbarEnabled"), { "castbarAlwaysShow", "castbarPosition", "castbarDock", "castbarHeight", "portraitAvoidCastbar", "castbarIcon",
         "castbarName", "castbarTime", "castbarInterrupt", "castbarLatency", "castbarLatencyPoint", "castbarLatencyX", "castbarX", "castbarY" } },
+    -- Squish consumes health-row height only while a cast is visible.
+    -- The portrait switch does not affect any other castbar placement.
+    { is("castbarPosition", "SQUISH"), { "portraitAvoidCastbar" } },
+    { is("castbarDock", "SQUISH"), { "portraitAvoidCastbar" } },
     { on("castbarLatency"), { "castbarLatencyPoint", "castbarLatencyX" } },
     { is("castbarPosition", "DETACHED"), { "castbarX", "castbarY" } },
     { on("threatBar"), { "threatBarHeight", "threatBarWarn", "threatBarRole", "threatBarSolo" } },

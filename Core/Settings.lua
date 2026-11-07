@@ -16,7 +16,7 @@ ns.Settings = Settings
 -- ("60 Mage Gnome"); creatures: level and type ("60 Humanoid").
 -- POWER_CURRENT_MAX: power on any row; ROLE: the group role's icon.
 local TEXT_TAGS = { "NONE", "NAME", "NAME_LEVEL", "LEVEL", "CURRENT", "CURRENT_MAX", "PERCENT", "DEFICIT", "INFO",
-    "POWER_CURRENT_MAX", "ROLE" }
+    "POWER_CURRENT_MAX", "ROLE", "CUSTOM" }
 Settings.TEXT_TAGS = TEXT_TAGS
 -- The anchor points a placed icon or group chooses from.
 Settings.POINTS = { "TOPLEFT", "TOP", "TOPRIGHT", "LEFT", "CENTER", "RIGHT", "BOTTOMLEFT", "BOTTOM", "BOTTOMRIGHT" }
@@ -90,6 +90,7 @@ Settings.Define({ key = "reactionHostileColor", code = "RH", scope = "inherit", 
 Settings.Define({ key = "absorbColor", code = "AC", scope = "inherit", type = "color", default = { 1, 1, 1, 0.65 } })
 Settings.Define({ key = "healMyColor", code = "MC", scope = "inherit", type = "color", default = { 0.3, 0.95, 0.45, 0.65 } })
 Settings.Define({ key = "healOtherColor", code = "OC", scope = "inherit", type = "color", default = { 0.15, 0.65, 0.3, 0.55 } })
+Settings.Define({ key = "healHotColor", code = "HTC", scope = "inherit", type = "color", default = { 0.75, 0.95, 0.25, 0.65 } })
 -- Where the shield shows: after the health fill (only where health is
 -- missing, the client's own look), or from the bar's right end over the
 -- health, so it also shows at full health.
@@ -152,10 +153,19 @@ Settings.Define({ key = "absorbEnabled", code = "AB", scope = "frame", type = "b
 -- Incoming heals; the overheal lane gives the end of the health row to
 -- heals past full health.
 Settings.Define({ key = "healPrediction", code = "IH", scope = "frame", type = "bool", default = true })
+Settings.Define({ key = "healHotEnabled", code = "HTE", scope = "frame", type = "bool", default = false })
+-- Global, opt-in: meter totals reflect effective healing, so calibration
+-- waits for repeated consistent high-confidence pure-HoT observations.
+Settings.Define({ key = "healHotCalibration", code = "HTL", scope = "general", type = "bool", default = false })
 Settings.Define({ key = "healOverflow", code = "OV", scope = "frame", type = "bool", default = false })
 -- Incoming heals drawn in full, past the frame's right edge when they
 -- overheal (up to one more bar width).
 Settings.Define({ key = "healBeyond", code = "OB", scope = "frame", type = "bool", default = false })
+-- Optional visual clip for heal predictions beyond full health. Off keeps the
+-- original full-width extension for existing profiles.
+Settings.Define({ key = "healBeyondCapEnabled", code = "OX", scope = "frame", type = "bool", default = false })
+Settings.Define({ key = "healBeyondPercent", code = "OY", scope = "frame", type = "int", min = 0, max = 30,
+    default = 20 })
 -- With the overheal lane: the power bar ends where the health bar ends.
 Settings.Define({ key = "powerMatchesHealth", code = "OM", scope = "frame", type = "bool", default = false })
 Settings.Define({ key = "x", code = "X", scope = "frame", type = "int", min = -4000, max = 4000,
@@ -176,6 +186,40 @@ Settings.Define({ key = "portraitHeight", code = "QH", scope = "frame", type = "
 -- and a vertical shift of the view in pixels (to bring the eyes in).
 Settings.Define({ key = "portraitZoom", code = "QZ", scope = "frame", type = "int", min = 100, max = 400, default = 100 })
 Settings.Define({ key = "portraitOffsetY", code = "QV", scope = "frame", type = "int", min = -100, max = 100, default = 0 })
+
+-- Bar-by-bar side portrait widths. Keep the old layout until the user
+-- changes one of these. No effect on the TOP portrait strip or OFF mode.
+Settings.Define({ key = "portraitAvoidTitle", code = "WQ", scope = "frame", type = "bool", default = true })
+Settings.Define({ key = "portraitAvoidHealth", code = "WR", scope = "frame", type = "bool", default = true })
+Settings.Define({ key = "portraitAvoidPower", code = "WS", scope = "frame", type = "bool", default = true })
+Settings.Define({ key = "portraitAvoidFooter", code = "WU", scope = "frame", type = "bool", default = false })
+Settings.Define({ key = "portraitAvoidDruidMana", code = "WV", scope = "frame",
+    only = { player = true }, type = "bool", default = true })
+
+-- Player's optional fixed-height experience or watched reputation row.
+-- This row is below power and does not lose height to SQUISH casts.
+local XP_ONLY = { player = true }
+Settings.Define({ key = "xpRepEnabled", code = "UY", scope = "frame", only = XP_ONLY, type = "bool", default = false })
+Settings.Define({ key = "xpRepMode", code = "UZ", scope = "frame", only = XP_ONLY, type = "enum",
+    values = { "AUTO", "XP", "REP" }, default = "AUTO" })
+-- Order of the two half-height bars when Progress display is Both.
+-- Reputation on top preserves the appearance introduced in v0.7.2.
+Settings.Define({ key = "xpRepTop", code = "UJ", scope = "frame", only = XP_ONLY,
+    type = "enum", values = { "REP", "XP" }, default = "REP" })
+Settings.Define({ key = "xpRepHeight", code = "UX", scope = "frame", only = XP_ONLY,
+    type = "int", min = 4, max = 40, default = 10 })
+Settings.Define({ key = "xpRepText", code = "UW", scope = "frame", only = XP_ONLY,
+    type = "enum", values = { "PERCENT", "VALUES", "NONE" }, default = "PERCENT" })
+Settings.Define({ key = "xpRepLabel", code = "UV", scope = "frame", only = XP_ONLY,
+    type = "bool", default = true })
+Settings.Define({ key = "xpRepRested", code = "UH", scope = "frame", only = XP_ONLY,
+    type = "bool", default = true })
+-- Optional: collapse XP/reputation during combat and return its height to
+-- health/power. Default keeps both progress bars visible at all times.
+Settings.Define({ key = "xpRepHideCombat", code = "UQ", scope = "frame", only = XP_ONLY,
+    type = "bool", default = false })
+Settings.Define({ key = "portraitAvoidXPRep", code = "UI", scope = "frame", only = XP_ONLY,
+    type = "bool", default = true })
 
 -- Elite / rare marker: frames that show units other than you, your pet and
 -- your party (players are never elite).
@@ -325,13 +369,16 @@ Settings.Define({ key = "hideBlizzardCastbar", code = "CB", scope = "frame", onl
 -- portrait; party castbars dock above or below each member.
 local CASTBAR_SINGLE = { player = true, target = true, targettarget = true, pet = true, pettarget = true, focus = true }
 Settings.Define({ key = "castbarPosition", code = "CP", scope = "frame", only = CASTBAR_SINGLE, type = "enum",
-    values = { "BELOW", "ABOVE", "DETACHED", "PORTRAIT" }, default = "BELOW" })
+    values = { "BELOW", "ABOVE", "DETACHED", "PORTRAIT", "SQUISH" }, default = "BELOW" })
 Settings.Define({ key = "castbarDock", code = "CD", scope = "frame", only = PARTY, type = "enum",
-    values = { "BELOW", "ABOVE" }, default = "BELOW" })
+    values = { "BELOW", "ABOVE", "SQUISH" }, default = "BELOW" })
 Settings.Define({ key = "castbarX", code = "CX", scope = "frame", only = CASTBAR_SINGLE, type = "int", min = -4000, max = 4000,
     default = { target = 300, targettarget = 480, pet = -352, pettarget = -222, focus = -300, _ = 0 } })
 Settings.Define({ key = "castbarY", code = "CY", scope = "frame", only = CASTBAR_SINGLE, type = "int", min = -4000, max = 4000,
     default = { player = -160, focus = -170, _ = -300 } })
+-- The castbar has its own side-portrait avoidance when placed inside the health row.
+Settings.Define({ key = "portraitAvoidCastbar", code = "KZ", scope = "frame", only = CASTBAR,
+    type = "bool", default = true })
 Settings.Define({ key = "castbarHeight", code = "CH", scope = "frame", only = CASTBAR, type = "int", min = 4, max = 60,
     default = { player = 18, target = 16, focus = 16, _ = 12 } })
 Settings.Define({ key = "castbarIcon", code = "CI", scope = "frame", only = CASTBAR, type = "bool", default = true })
@@ -404,6 +451,18 @@ Settings.Define({ key = "footerTextCenter", code = "FX", scope = "frame", type =
     default = "NONE" })
 Settings.Define({ key = "footerTextRight", code = "FR", scope = "frame", type = "enum", values = TEXT_TAGS,
     default = "NONE" })
+-- Separate expressions for the twelve configurable text slots. These are
+-- inert unless that slot selects CUSTOM. Their codes are not reused.
+local CUSTOM_TEXT = {
+    { "titleText", "KI" }, { "titleTextRight", "KJ" }, { "titleTextCenter", "KK" },
+    { "textHealthLeft", "KL" }, { "textHealthRight", "KM" }, { "textHealthCenter", "KN" },
+    { "textPowerLeft", "KO" }, { "textPowerRight", "KP" }, { "textPowerCenter", "KQ" },
+    { "footerTextLeft", "KT" }, { "footerTextRight", "KU" }, { "footerTextCenter", "KV" },
+}
+for _, field in ipairs(CUSTOM_TEXT) do
+    Settings.Define({ key = field[1] .. "Custom", code = field[2], scope = "frame",
+        type = "text", maxLetters = 256, check = ns.TextResolver.Check, default = "" })
+end
 
 -- The border around every aura icon (plain colour on buffs, the dispel
 -- colour on debuffs). General, overridable per frame.
@@ -419,6 +478,9 @@ Settings.Define({ key = "auraBorderSize", code = "AW", scope = "inherit", type =
 -- debuffs you can dispel, with their own size and place; while it is on,
 -- the debuffs group leaves them out. Its OTHER is the debuffs.
 Settings.AURA_GROUPS = { "buffs", "debuffs", "dispels" }
+-- Optional single native aura stream: both types share one layout, while
+-- keeping the separate groups ready when the option is disabled.
+Settings.Define({ key = "combineAuras", code = "VM", scope = "frame", type = "bool", default = false })
 -- Tracking and sensing spells (Classic IDs): profession finds, hunter,
 -- druid, paladin and warlock tracking. Left out by "Hide tracking".
 Settings.TRACKING_SPELLS = {
@@ -624,6 +686,26 @@ Settings.Define({ key = "totemsX", code = "QX", scope = "frame", only = TOTEMS, 
     default = 6 })
 Settings.Define({ key = "totemsY", code = "QY", scope = "frame", only = TOTEMS, type = "int", min = -400, max = 400,
     default = 0 })
+
+
+-- Player-frame SUF-style segmented combo-point row. Its height is fixed
+-- during casts, but can be reclaimed by health/power at zero points.
+local COMBO_BAR = { player = true }
+Settings.Define({ key = "comboBarEnabled", code = "YB", scope = "frame", only = COMBO_BAR, type = "bool", default = false })
+Settings.Define({ key = "comboBarHeight", code = "YC", scope = "frame", only = COMBO_BAR, type = "int",
+    min = 4, max = 36, default = 10 })
+Settings.Define({ key = "comboBarSpacing", code = "YD", scope = "frame", only = COMBO_BAR, type = "int",
+    min = 0, max = 12, default = 2 })
+Settings.Define({ key = "comboBarGrowth", code = "YE", scope = "frame", only = COMBO_BAR, type = "enum",
+    values = { "RIGHT", "LEFT" }, default = "RIGHT" })
+Settings.Define({ key = "comboBarColor", code = "YF", scope = "frame", only = COMBO_BAR, type = "color",
+    default = { 1, 0.82, 0.1, 1 } })
+Settings.Define({ key = "comboBarBackground", code = "YG", scope = "frame", only = COMBO_BAR,
+    type = "bool", default = true })
+Settings.Define({ key = "comboBarHideEmpty", code = "YI", scope = "frame", only = COMBO_BAR,
+    type = "bool", default = false })
+Settings.Define({ key = "portraitAvoidComboBar", code = "YJ", scope = "frame", only = COMBO_BAR,
+    type = "bool", default = true })
 
 -- Combo points (target only, Elements/ComboPoints.lua): a row of pips
 -- below the target's block, right-aligned; hidden while there are none.
@@ -901,6 +983,17 @@ Settings.Define({ key = "druidMana", code = "MD", scope = "frame", only = { play
     default = true })
 Settings.Define({ key = "druidManaHeight", code = "MH", scope = "frame", only = { player = true }, type = "int",
     min = 2, max = 20, default = 4 })
+-- Share the existing power row horizontally with shapeshifted mana, or keep
+-- the older thin strip. The slider is the percentage allocated to mana;
+-- XP/reputation remains two vertically stacked, full-width bars.
+Settings.Define({ key = "druidManaLayout", code = "NZ", scope = "frame", only = { player = true },
+    type = "enum", values = { "SPLIT", "STRIP" }, default = "SPLIT" })
+Settings.Define({ key = "druidManaWidth", code = "NX", scope = "frame", only = { player = true },
+    type = "int", min = 20, max = 80, default = 35 })
+-- Mana label for the right-hand half of the split power row. New code and
+-- enum: existing saved profiles continue using CURRENT without an M prefix.
+Settings.Define({ key = "druidManaText", code = "NQ", scope = "frame", only = { player = true },
+    type = "enum", values = { "CURRENT", "CURRENT_MAX", "PERCENT" }, default = "CURRENT" })
 -- The five-second rule on the player's mana bar (Elements/FiveSecondRule.lua):
 -- after a spell that costs mana, a spark runs across the power bar in 5 s;
 -- optional a countdown text and a dimmed fill. On with the spark by default

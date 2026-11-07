@@ -104,12 +104,44 @@ local function enabled(scope)
     return ns.FrameEnabled(scope) or ns.Config.Get(scope, "hideBlizzardFrame")
 end
 
+
+-- Blizzard can attach PlayerCastingBarFrame as a child of PlayerFrame
+-- ("Lock to player frame" in Edit Mode). Concealing PlayerFrame then
+-- hides the castbar implicitly, even if hideBlizzardCastbar is OFF.
+-- Keep the castbar's Blizzard anchor/skin, but make its parent UIParent
+-- before PlayerFrame is concealed. Protected reparenting is deferred out
+-- of combat, just like the other FUF visibility changes.
+local castbarHooked
+local function preserveBlizzardCastbar()
+    if ns.Config.Get("player", "hideBlizzardCastbar") then return end
+    local castbar, player = _G.PlayerCastingBarFrame, _G.PlayerFrame
+    if not (castbar and player) then return end
+    if castbar:GetParent() == player then
+        -- PlayerFrame may already be under FUF's hidden parent; the
+        -- anchor can remain relative to it without inheriting visibility.
+        castbar:SetParent(UIParent)
+    end
+end
+
+local function watchCastbarAttachment()
+    if castbarHooked or type(_G.PlayerFrame_AttachCastBar) ~= "function" then return end
+    castbarHooked = true
+    hooksecurefunc("PlayerFrame_AttachCastBar", function()
+        if not ns.Config.Profile() then return end
+        if enabled("player") and not ns.Config.Get("player", "hideBlizzardCastbar") then
+            ns.AfterCombat("fufPreserveBlizzardCastbar", preserveBlizzardCastbar)
+        end
+    end)
+end
+
 -- Only frames we replace or that are switched off are hidden. Running
 -- again is harmless, so newly enabled frames are covered at once; getting
 -- a Blizzard frame back needs a /reload.
 function Blizzard.HideDefaults()
     ns.AfterCombat("hideBlizzard", function()
+        watchCastbarAttachment()
         if enabled("player") then
+            preserveBlizzardCastbar()
             Blizzard.Conceal(_G.PlayerFrame)
             if ns.Config.Get("player", "hideBlizzardCastbar") then Blizzard.Conceal(_G.PlayerCastingBarFrame) end
         end
