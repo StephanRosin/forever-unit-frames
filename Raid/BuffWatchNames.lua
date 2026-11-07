@@ -1,9 +1,9 @@
 local _, ns = ...
 
--- The names under a buff in the watch window (Raid/BuffWatchWindow.lua):
+-- The names next to a buff in the watch window (Raid/BuffWatchWindow.lua):
 -- who needs it, from a state of Raid/BuffWatch.lua, read out of combat
 -- only (the window renders then). Missing first, then running out
--- (dimmed, with the minutes left), each part alphabetical; a member the
+-- (dimmed; the tooltip adds the minutes left), each part alphabetical; a member the
 -- buff's single form plainly does not reach is grey, so "missing, but
 -- nobody in range" shows who. A name the client keeps secret is left out
 -- of the line (it still counts). At most MAX_LINES lines, the rest "+N".
@@ -56,6 +56,11 @@ function Names.Text(item)
     return "|c" .. colour(item) .. Names.Plain(item) .. "|r"
 end
 
+-- In the window: the name alone.
+local function short(item)
+    return "|c" .. colour(item) .. item.name .. "|r"
+end
+
 -- Greedy: as many names as fit on a line; on the last line, room is
 -- kept for "+N" when names would remain.
 function Names.Pack(list, width, measure)
@@ -64,12 +69,12 @@ function Names.Pack(list, width, measure)
         if i > #list then break end
         local plain, text = "", ""
         while i <= #list do
-            local add = (plain == "" and "" or Names.SPACE) .. Names.Plain(list[i])
+            local add = (plain == "" and "" or Names.SPACE) .. list[i].name
             local rest = #list - i
             local more = (line == Names.MAX_LINES and rest > 0) and (Names.SPACE .. L.RAID_BUFF_MORE:format(rest)) or ""
             if plain ~= "" and measure(plain .. add .. more) > width then break end
             plain = plain .. add
-            text = text .. (text == "" and "" or Names.SPACE) .. Names.Text(list[i])
+            text = text .. (text == "" and "" or Names.SPACE) .. short(list[i])
             i = i + 1
         end
         lines[line] = text

@@ -1,13 +1,10 @@
 local _, ns = ...
 
 -- The buff watch window: a small panel with a header (its title, a gear
--- for the settings, the next cast of all: the smart buff key's,
--- Raid/SmartBuff.lua) and, below a rule, a block per watched buff
--- (Raid/BuffWatch.lua): a row with its icon, its name and marks counting
--- who misses it (red) and who has it running out (yellow), or "unknown"
--- while the client keeps auras secret; under the row up to two lines
--- with those members' names (Raid/BuffWatchNames.lua). Each row is a
--- secure action button: a click casts that buff on whoever needs it most
+-- for the settings) and, below a rule, a row per watched buff somebody
+-- needs (Raid/BuffWatch.lua): its icon and, next to it, up to two lines
+-- with those members' names (Raid/BuffWatchNames.lua), or "unknown" while
+-- the client keeps auras secret. Each row is a secure action button: a click casts that buff on whoever needs it most
 -- (BuffWatch.Best), its spell and unit set out of combat. It shows in a
 -- group (or alone with buffSolo) while the raid frames are on and a buff is watched (with "only
 -- when missing": while one is missing or running out), and in raid test
@@ -31,8 +28,8 @@ local Watch, SmartBuff, Names = ns.RaidBuffWatch, ns.SmartBuff, ns.RaidBuffNames
 Window.NAME = "ForeverUnitFramesBuffWatch"
 Window.WIDTH, Window.PADDING, Window.HEADER_H, Window.LINE_GAP = 260, 6, 18, 4
 Window.ROW_H, Window.ICON, Window.GAP = 20, 18, 4
--- The name lines under a row: their height and size, indented under the name.
-Window.NAME_LINE_H, Window.NAME_SIZE = 14, 10
+-- The name lines next to the icon: their height and size.
+Window.NAME_LINE_H, Window.NAME_SIZE = 14, 11
 Window.NAMES_INDENT = Window.ICON + Window.GAP
 -- Rows made at most (a paladin's six blessings).
 Window.MAX_ROWS = 6
@@ -60,19 +57,25 @@ function Window.Shown()
     return not general("buffWatchOnlyMissing") or anyNeeded()
 end
 
--- The rows' states: the watch's; in test mode while it has none (solo),
--- a preview per watched buff ({ entry, preview = true }).
+-- The rows' states: the watch's where somebody needs the buff or it cannot
+-- be told; in test mode while the watch has none (solo), a preview per
+-- watched buff ({ entry, preview = true }).
 local function states()
-    local entries = Watch.state.entries
-    if #entries > 0 or not testing() then return entries end
-    local list = {}
-    for i, entry in ipairs(Watch.Watched()) do list[i] = { entry = entry, preview = true } end
+    local entries, list = Watch.state.entries, {}
+    if #entries == 0 and testing() then
+        for i, entry in ipairs(Watch.Watched()) do list[i] = { entry = entry, preview = true } end
+        return list
+    end
+    for _, st in ipairs(entries) do
+        if st.unknown or #st.needs > 0 then list[#list + 1] = st end
+    end
     return list
 end
 
--- A buff's block: its row and its name lines.
+-- A buff's block: the icon's height holds the first name line, the others
+-- add to it.
 function Window.BlockHeight(lineCount)
-    return Window.ROW_H + lineCount * Window.NAME_LINE_H
+    return Window.ROW_H + math.max(0, lineCount - 1) * Window.NAME_LINE_H
 end
 
 -- Measures a text in the names' font; made on first use, as the mover asks
@@ -96,9 +99,11 @@ local function sampleItems()
     }
 end
 
--- The name lines of a state, packed to the room under the row. Size and
--- render both ask here, so the height they use always agrees.
+-- The lines next to the icon: the names, packed to the room there, or
+-- "unknown". Size and render both ask here, so the height they use always
+-- agrees.
 local function linesOf(st)
+    if st.unknown then return { L.RAID_BUFF_UNKNOWN } end
     local items = st.preview and sampleItems() or Names.Of(st)
     return Names.Pack(items, Window.WIDTH - 2 * Window.PADDING - Window.NAMES_INDENT, measure)
 end
@@ -159,6 +164,8 @@ local function tooltip(row)
         if live then text = SmartBuff.Describe(Watch.Best(st)) end
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
         GameTooltip:SetText(text or noCast(live and #st.needs > 0), 1, 1, 1)
+        -- The row shows only an icon: no cast named, the buff's name here.
+        if not text and st then GameTooltip:AddLine(st.entry.single.name) end
         if live then
             for _, item in ipairs(Names.Of(st)) do GameTooltip:AddLine(Names.Text(item)) end
             GameTooltip:AddLine(L.RAID_BUFF_RIGHT_CLICK, 0.6, 0.6, 0.6)
@@ -194,19 +201,12 @@ local function row(i)
     r.icon = r:CreateTexture(nil, "ARTWORK")
     r.icon:SetSize(Window.ICON, Window.ICON)
     r.icon:SetPoint("TOPLEFT", r, "TOPLEFT", 0, -(Window.ROW_H - Window.ICON) / 2)
-    r.count = Style.Text(r, 11, "text")
-    r.count:SetPoint("TOPRIGHT", r, "TOPRIGHT", 0, -(Window.ROW_H - 11) / 2)
-    -- The name gives way to the counts: one line, cut where they begin.
-    r.name = Style.Text(r, 11, "text")
-    r.name:SetPoint("LEFT", r.icon, "RIGHT", Window.GAP, 0)
-    r.name:SetPoint("RIGHT", r.count, "LEFT", -Window.GAP, 0)
-    r.name:SetJustifyH("LEFT")
-    r.name:SetWordWrap(false)
-    -- The members who need it, under the row, indented to the name.
+    -- The members who need it, next to the icon.
     r.lines = {}
+    local top = (Window.ROW_H - Window.NAME_LINE_H) / 2
     for n = 1, Names.MAX_LINES do
         local line = Style.Text(r, Window.NAME_SIZE, "text")
-        line:SetPoint("TOPLEFT", r, "TOPLEFT", Window.NAMES_INDENT, -(Window.ROW_H + (n - 1) * Window.NAME_LINE_H))
+        line:SetPoint("TOPLEFT", r, "TOPLEFT", Window.NAMES_INDENT, -(top + (n - 1) * Window.NAME_LINE_H))
         line:SetPoint("RIGHT", r, "RIGHT", 0, 0)
         line:SetJustifyH("LEFT")
         line:SetWordWrap(false)
@@ -220,29 +220,9 @@ end
 local function paint(colorKey)
     if not Window.frame then return end
     Style.Paint(Window.title, colorKey)
-    Style.Paint(Window.next, colorKey)
-    for _, r in ipairs(Window.rows) do
-        Style.Paint(r.name, colorKey)
-        Style.Paint(r.count, colorKey)
-    end
 end
 
--- A buff's counts as marks: who misses it (red), who has it running out
--- (yellow), a check when none; nothing on a preview. The names carry
--- their own colours, so only these numbers are coloured here.
-local MARK = "|A:%s:12:12|a"
-function Window.CountText(st)
-    if st.preview then return "" end
-    if st.unknown then return L.RAID_BUFF_UNKNOWN end
-    if st.missing == 0 and st.expiring == 0 then return MARK:format("UI-LFG-ReadyMark") end
-    local parts = {}
-    if st.missing > 0 then parts[#parts + 1] = MARK:format("UI-LFG-DeclineMark") .. " |cffe64d4d" .. st.missing .. "|r" end
-    if st.expiring > 0 then parts[#parts + 1] = MARK:format("UI-LFG-PendingMark") .. " |cffffd100" .. st.expiring .. "|r" end
-    return table.concat(parts, "  ")
-end
-
--- Out of combat: the blocks of the state, top-down, their casts, the next
--- one. Returns the window's height, as Window.Size counts it.
+-- Out of combat: the blocks of the state, top-down, their casts. Returns the window's height, as Window.Size counts it.
 local function render()
     local entries = states()
     local y = Window.PADDING + Window.HEADER_H + Window.LINE_GAP
@@ -255,8 +235,6 @@ local function render()
             if st then
                 local lines = linesOf(st)
                 r.icon:SetTexture(st.entry.single.icon)
-                r.name:SetText(st.entry.single.name)
-                r.count:SetText(Window.CountText(st))
                 for n = 1, Names.MAX_LINES do
                     r.lines[n]:SetText(lines[n] or "")
                     r.lines[n]:SetShown(lines[n] ~= nil)
@@ -269,13 +247,10 @@ local function render()
             r:SetShown(st ~= nil)
         end
     end
-    local next = Watch.Next()
-    Window.next:SetText(next and L.RAID_BUFF_NEXT:format(SmartBuff.Describe(next)) or noCast(anyNeeded()))
     paint("text")
-    -- The colour codes in the count and the names ignore the grey of
-    -- combat; their alpha does not (see PLAYER_REGEN_DISABLED).
+    -- The colour codes in the names ignore the grey of combat; their alpha
+    -- does not (see PLAYER_REGEN_DISABLED).
     for _, r in ipairs(Window.rows) do
-        r.count:SetAlpha(1)
         for _, line in ipairs(r.lines) do line:SetAlpha(1) end
     end
     return y + Window.PADDING
@@ -357,7 +332,7 @@ function Window.Create()
     Window.title:SetText(L.RAID_BUFF_WATCH_TITLE)
     local gear = CreateFrame("Button", nil, f)
     gear:SetSize(14, 14)
-    gear:SetPoint("LEFT", Window.title, "RIGHT", Window.GAP, 0)
+    gear:SetPoint("TOPRIGHT", f, "TOPRIGHT", -Window.PADDING, -Window.PADDING)
     gear.icon = gear:CreateTexture(nil, "ARTWORK")
     gear.icon:SetAllPoints(gear)
     gear.icon:SetTexture("Interface\\Buttons\\UI-OptionsButton")
@@ -371,11 +346,6 @@ function Window.Create()
         if GameTooltip:IsOwned(self) then GameTooltip:Hide() end
     end)
     Window.gear = gear
-    Window.next = Style.Text(f, 11, "text")
-    Window.next:SetPoint("LEFT", gear, "RIGHT", Window.GAP, 0)
-    Window.next:SetPoint("RIGHT", f, "TOPRIGHT", -Window.PADDING, -(Window.PADDING + Window.HEADER_H / 2))
-    Window.next:SetJustifyH("RIGHT")
-    Window.next:SetWordWrap(false)
     -- A rule between the header and the blocks.
     local ruleY = -(Window.PADDING + Window.HEADER_H + Window.LINE_GAP / 2)
     Window.rule = f:CreateTexture(nil, "ARTWORK")
@@ -399,10 +369,8 @@ ns.On("PLAYER_REGEN_DISABLED", function()
     if not Window.frame or InCombatLockdown() then return end
     for _, r in ipairs(Window.rows) do SmartBuff.Set(r, nil) end
     paint("muted")
-    -- The count's marks and numbers and the names carry their own colours:
-    -- only the alpha greys them.
+    -- The names carry their own colours: only the alpha greys them.
     for _, r in ipairs(Window.rows) do
-        r.count:SetAlpha(0.4)
         for _, line in ipairs(r.lines) do line:SetAlpha(0.4) end
     end
 end)

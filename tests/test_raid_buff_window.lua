@@ -1,7 +1,7 @@
--- The buff watch window (Raid/BuffWatchWindow.lua): a row per watched buff
--- (icon, name, missing and expiring counts, or unknown), a click on a row
--- casts that buff on whoever needs it most (a secure button set out of
--- combat), the next cast of all in words; hidden solo and while nothing is
+-- The buff watch window (Raid/BuffWatchWindow.lua): a row per buff somebody
+-- needs (icon, the names next to it, or unknown), a click on a row casts
+-- that buff on whoever needs it most (a secure button set out of combat);
+-- hidden solo and while nothing is
 -- watched, optionally while nothing is missing; in combat its last state,
 -- greyed, the rows casting nothing. Moved with the raid window's lock.
 local M = H.M
@@ -34,10 +34,14 @@ local row = Win.rows[1]
 H.check("one row", row:IsShown() and (not Win.rows[2] or not Win.rows[2]:IsShown()), true)
 H.check("a secure button", row._template, "SecureActionButtonTemplate")
 H.check("key down and up", table.concat(row._clicks, ","), "AnyUp,AnyDown")
-H.check("its name", row.name:GetText(), "Power Word: Fortitude")
 H.check("its icon", row.icon._texture, 100000 + 1243)
-H.check("its counts", row.count:GetText(), Win.CountText({ missing = 1, expiring = 1 }))
-H.check("the next cast", Win.next:GetText(), L.RAID_BUFF_NEXT:format("Power Word: Fortitude: Ann"))
+H.check("the title alone", Win.title:GetText(), "Smart Buffs")
+H.check("no next cast in the header", Win.next, nil)
+H.checkTrue("names: who misses it", row.lines[1]:GetText():find("Ann", 1, true))
+H.checkTrue("names: who has it running out", row.lines[1]:GetText():find("Bob", 1, true))
+H.check("names: without the minutes", row.lines[1]:GetText():find(L.RAID_BUFF_MINUTES:format(1), 1, true), nil)
+H.checkTrue("names: next to the icon", select(4, row.lines[1]:GetPoint(1)) == Win.NAMES_INDENT
+    and select(5, row.lines[1]:GetPoint(1)) > -Win.ROW_H)
 -- A click casts it on Ann.
 H.check("a click casts", M.SecureClick(row, "LeftButton"), "spell")
 H.check("on Ann", M.casts[1][1] .. "@" .. M.casts[1][2], "1243@party1")
@@ -62,20 +66,20 @@ M.units.party2.auras = { fortAura(1700) }
 M.units.party1.distance = 100
 M.FireEvent("UNIT_AURA", "party2")
 M.Tick(1)
-H.check("out of range: still counted", row.count:GetText(), Win.CountText({ missing = 1, expiring = 0 }))
-H.check("out of range: said so", Win.next:GetText(), L.RAID_BUFF_OUT_OF_RANGE)
+H.checkTrue("out of range: the name greyed", row.lines[1]:GetText():find("|cff808080Ann|r", 1, true))
 row:GetScript("OnEnter")(row)
-H.check("out of range: the tooltip too", M.tooltipLines[1], L.RAID_BUFF_OUT_OF_RANGE)
+H.check("out of range: the tooltip says so", M.tooltipLines[1], L.RAID_BUFF_OUT_OF_RANGE)
+H.check("out of range: and which buff", M.tooltipLines[2], "Power Word: Fortitude")
 row:GetScript("OnLeave")(row)
 M.units.party1.distance = 10
 
--- Everyone buffed: the row says so, a click casts nothing.
+-- Everyone buffed: no row, no cast, the window only its header.
 M.units.party1.auras = { fortAura(1700) }
 M.units.party2.auras = { fortAura(1700) }
 M.FireEvent("UNIT_AURA", "party1")
 M.Tick(1)
-H.check("nothing missing", row.count:GetText(), Win.CountText({ missing = 0, expiring = 0 }))
-H.check("nothing to cast", Win.next:GetText(), L.RAID_BUFF_NOTHING)
+H.check("nothing missing: no row", row:IsShown(), false)
+H.check("nothing missing: the header's height", f:GetHeight(), 2 * Win.PADDING + Win.HEADER_H + Win.LINE_GAP)
 H.check("a click casts nothing", M.SecureClick(row, "LeftButton"), nil)
 -- Only while something is missing: hidden now.
 RC.Set("general", "buffWatchOnlyMissing", true)
@@ -90,7 +94,7 @@ RC.Set("general", "buffWatchOnlyMissing", false)
 -- Auras secret: unknown, nothing cast.
 M.aurasSecret = true
 Watch.Scan()
-H.check("unknown", row.count:GetText(), L.RAID_BUFF_UNKNOWN)
+H.check("unknown", row.lines[1]:GetText(), L.RAID_BUFF_UNKNOWN)
 H.check("unknown: no cast", row:GetAttribute("type"), nil)
 M.aurasSecret = false
 Watch.Scan()
@@ -102,9 +106,8 @@ M.SetCombat(true)
 H.check("combat: shown", f:IsShown(), true)
 H.check("combat: no cast", row:GetAttribute("type"), nil)
 H.check("combat: a click does nothing", M.SecureClick(row, "LeftButton"), nil)
-local r, g, b = row.count:GetTextColor()
+local r, g, b = Win.title:GetTextColor()
 H.check("combat: greyed", table.concat({ r, g, b }, ","), table.concat({ unpack(ns.Style.COLORS.muted, 1, 3) }, ","))
-H.check("combat: count dimmed", row.count:GetAlpha(), 0.4)
 H.check("combat: names dimmed", row.lines[1]:GetAlpha(), 0.4)
 -- The tooltip in combat: nothing to cast, no range asked.
 local rangeQueries = M.spellQueries
@@ -122,9 +125,8 @@ H.check("after combat, solo: hidden", f:IsShown(), false)
 M.SetGroup({ "party1", "party2" })
 M.Tick(1)
 H.check("again: shown", f:IsShown(), true)
-r, g, b = row.count:GetTextColor()
+r, g, b = Win.title:GetTextColor()
 H.check("not grey any more", r, ns.Style.COLORS.text[1])
-H.check("count undimmed", row.count:GetAlpha(), 1)
 H.check("names undimmed", row.lines[1]:GetAlpha(), 1)
 
 -- Switched off; nothing watched.

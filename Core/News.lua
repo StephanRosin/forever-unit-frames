@@ -106,6 +106,9 @@ News.ENTRIES = {
     ["0.37.0"] = {
         lines = { "NEWS_0_37_0_TOTOT", "NEWS_0_37_0_FSR" },
     },
+    ["0.37.1"] = {
+        lines = { "NEWS_0_37_1_BUFFS" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).
