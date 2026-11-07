@@ -5,7 +5,9 @@ local _, ns = ...
 -- an action for the window's left button. A version without an entry has
 -- no news. Options/News.lua shows an entry; /fuf news shows any.
 --
--- Only an entry with announce = true (a big release) shows by itself; a
+-- Only an entry with announce = true (a big release) shows by itself, or
+-- with announce = a game locale code ("koKR") only on a client in that
+-- language; a
 -- small release's news waits for /fuf news, and its login records
 -- nothing, so a later announced version still shows.
 --
@@ -109,6 +111,11 @@ News.ENTRIES = {
     ["0.37.1"] = {
         lines = { "NEWS_0_37_1_BUFFS" },
     },
+    -- Announced on Korean clients only: the translation is their news.
+    ["0.38.0"] = {
+        announce = "koKR",
+        lines = { "NEWS_0_38_0_KOKR", "NEWS_0_38_0_FONT" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).
@@ -163,7 +170,7 @@ end
 function News.Due()
     local current = News.Current()
     local entry = News.Entry(current)
-    if not (entry and entry.announce) then return false end
+    if not entry or not (entry.announce == true or entry.announce == GetLocale()) then return false end
     local seen = seenVersion()
     if seen then return News.Compare(seen, current) < 0 end
     return hadSettings

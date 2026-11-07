@@ -956,4 +956,4 @@ Settings.Define({ key = "minimapAngle", code = "MA", scope = "general", type = "
 -- own language (Config.Import). inNav: its control sits at the bottom of
 -- the options window's navigation, on no page.
 Settings.Define({ key = "language", code = "LN", scope = "general", type = "enum", personal = true, inNav = true,
-    values = { "AUTO", "enUS", "deDE", "esES", "frFR" }, default = "AUTO" })
+    values = { "AUTO", "enUS", "deDE", "esES", "frFR", "koKR" }, default = "AUTO" })

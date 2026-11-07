@@ -14,7 +14,7 @@ local Locale = {}
 ns.Locale = Locale
 
 -- The game's locale -> the translation used for it.
-Locale.GAME = { deDE = "deDE", esES = "esES", esMX = "esES", frFR = "frFR" }
+Locale.GAME = { deDE = "deDE", esES = "esES", esMX = "esES", frFR = "frFR", koKR = "koKR" }
 Locale.DEFAULT = "enUS"
 
 local current

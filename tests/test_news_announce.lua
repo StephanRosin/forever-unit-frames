@@ -5,8 +5,9 @@
 local M = H.M
 local ns
 
-local function login(db, version, entries)
+local function login(db, version, entries, locale)
     ns = H.LoadAddon()
+    if locale then M.locale = locale end
     M.units.player = { name = "Me", class = "MAGE", health = 1, healthMax = 1 }
     M.addonVersion = version
     _G.ForeverUnitFramesDB = db
@@ -40,6 +41,13 @@ H.check("small: not due", ns.News.Due(), false)
 SlashCmdList.FOREVERUNITFRAMES("news")
 H.check("/fuf news opens it", ns.NewsWindow.IsOpen(), true)
 H.check("its version", ns.NewsWindow.frame.titleBar.title:GetText(), "What's new in 9.1.0")
+-- An entry announced for one game language: only a client in it pops up.
+local KOREAN = { ["9.1.0"] = { lines = { "NEWS_0_22_0_RAID" }, announce = "koKR" } }
+H.check("koKR entry: no popup on an English client", login({ profile = {}, newsSeen = "9.0.0" }, "9.1.0", KOREAN), false)
+H.check("koKR entry: nothing recorded", ForeverUnitFramesDB.newsSeen, "9.0.0")
+H.check("koKR entry: popup on a Korean client", login({ profile = {}, newsSeen = "9.0.0" }, "9.1.0", KOREAN, "koKR"), true)
+H.check("koKR entry: shown in Korean", ns.NewsWindow.frame.titleBar.title:GetText(), "9.1.0 새 소식")
+H.check("shipped 0.38.0 is announced for Korean clients", ns.News.Entry("0.38.0").announce, "koKR")
 -- Then a big release: shown as before.
 H.check("big: popup", login({ profile = {}, newsSeen = "9.0.0" }, "9.2.0", BIG), true)
 H.check("big: recorded", ForeverUnitFramesDB.newsSeen, "9.2.0")

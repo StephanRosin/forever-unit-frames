@@ -3,7 +3,7 @@
 Clean, fully configurable unit frames for **WoW: Forever**: player, target, target of target, focus,
 pet and party, with auras that keep updating in combat, threat, range and dispel indicators, and raid
 frames for 10, 20 and 40 players.
-English, Deutsch, Español, Français.
+English, Deutsch, Español, Français, 한국어.
 
 Download: [CurseForge](https://www.curseforge.com/projects/1708698) ·
 Source: [GitHub](https://github.com/StephanRosin/forever-unit-frames)

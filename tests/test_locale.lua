@@ -4,7 +4,7 @@ local M = H.M
 
 local ns = H.LoadAddon()
 local base = ns.Locales.enUS
-local LANGUAGES = { "deDE", "esES", "frFR" }
+local LANGUAGES = { "deDE", "esES", "frFR", "koKR" }
 
 -- The % specifiers of a string in order, "%%" left out.
 local function specifiers(s)
@@ -28,17 +28,19 @@ for _, code in ipairs(LANGUAGES) do
         H.checkTrue(code .. " key " .. key .. " exists in English", base[key] ~= nil)
     end
     -- Language names are shown in their own language everywhere.
-    for _, name in ipairs({ "enUS", "deDE", "esES", "frFR" }) do
+    for _, name in ipairs({ "enUS", "deDE", "esES", "frFR", "koKR" }) do
         H.check(code .. " names " .. name .. " in itself", t["ENUM_language_" .. name], base["ENUM_language_" .. name])
     end
 end
 -- Labels fit the label column like the English ones (mock: half the font
 -- size per character, test_options_frames.lua); a hint is no longer than
 -- the longest English hint.
+-- The mock counts bytes; a Hangul syllable (3 bytes) is one full-width
+-- glyph, so it counts as two half-size characters here.
 local function width(text, size)
     local fs = M.newWidget("FontString")
     fs:SetFont("x", size, "")
-    fs:SetText(text)
+    fs:SetText((text:gsub("[\234-\237][\128-\191][\128-\191]", "xx")))
     return fs:GetStringWidth()
 end
 local longestHint = 0
@@ -56,7 +58,7 @@ for _, code in ipairs(LANGUAGES) do
 end
 
 -- The threat bar's role hint says both halves, the tanks' and the others'.
-for code, other in pairs({ deDE = "andere: ihr Anteil", esES = "los demás: su parte", frFR = "les autres : leur part" }) do
+for code, other in pairs({ deDE = "andere: ihr Anteil", esES = "los demás: su parte", frFR = "les autres : leur part", koKR = "나머지는 자신의 비율" }) do
     H.checkTrue(code .. ": threat role hint names the others' share",
         (ns.Locales[code].HINT_threatBarRole or ""):find(other, 1, true))
 end
@@ -156,7 +158,7 @@ for i, v in ipairs(def.values) do
     H.check("encode " .. v, s, "1;gLN" .. i)
     H.check("round trip " .. v, ns.Codec.Decode(s).general.language, v)
 end
-H.check("append-only order", table.concat(def.values, ","), "AUTO,enUS,deDE,esES,frFR")
+H.check("append-only order", table.concat(def.values, ","), "AUTO,enUS,deDE,esES,frFR,koKR")
 
 -- Boot: the saved choice, applied before anything is built -------------------------
 
@@ -210,7 +212,7 @@ H.checkTrue("list open", list:IsShown())
 H.check("list opens upwards", (list:GetPoint(1)), "BOTTOMLEFT")
 local names = {}
 for _, r in ipairs(list.rows) do if r:IsShown() then names[#names + 1] = r.text:GetText() end end
-H.check("choices in their own language", table.concat(names, ","), "Game language,English,Deutsch,Español,Français")
+H.check("choices in their own language", table.concat(names, ","), "Game language,English,Deutsch,Español,Français,한국어")
 list.rows[3]:GetScript("OnClick")(list.rows[3])
 H.check("picked German", ns.Config.Get("general", "language"), "deDE")
 H.checkTrue("window rebuilt", O.frame ~= oldFrame)

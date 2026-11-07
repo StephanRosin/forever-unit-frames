@@ -8,7 +8,9 @@ ns.Media = Media
 
 local builtin = {
     font = {
-        ["Friz Quadrata"] = "Fonts\\FRIZQT__.TTF",
+        -- The client's own standard font: FRIZQT__ on western clients, a font
+        -- with Hangul/Hanzi/Cyrillic elsewhere (Blizzard_Fonts_Shared GameFonts.xml).
+        ["Friz Quadrata"] = STANDARD_TEXT_FONT or "Fonts\\FRIZQT__.TTF",
         ["Arial Narrow"] = "Fonts\\ARIALN.TTF",
         ["Skurri"] = "Fonts\\skurri.ttf",
         ["Morpheus"] = "Fonts\\MORPHEUS.ttf",
