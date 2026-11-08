@@ -38,6 +38,7 @@ Schema.GENERAL = {
         { id = "auraBlock", keys = { "auraBlockAccount" } },
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },
+        { id = "opacity", keys = { "frameAlpha" } },
     } },
     -- The bars as on a frame's Bars tab: health colours, textures, the
     -- shield beside its colour, heals, power colours.
@@ -77,6 +78,7 @@ Schema.FRAME = {
         { id = "portrait", keys = { "portraitMode", "portraitStyle", "portraitHeight", "portraitZoom", "portraitOffsetY" } },
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },
+        { id = "opacity", keys = { "frameAlpha" } },
         -- General's switch, overridable here (decision 76).
         { id = "clickCast", keys = { "clickCast" } },
     } },

@@ -116,6 +116,9 @@ News.ENTRIES = {
         announce = "koKR",
         lines = { "NEWS_0_38_0_KOKR", "NEWS_0_38_0_FONT" },
     },
+    ["0.39.0"] = {
+        lines = { "NEWS_0_39_0_OPACITY" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

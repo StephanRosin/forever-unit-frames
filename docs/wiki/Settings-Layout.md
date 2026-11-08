@@ -6,7 +6,7 @@ Size, position, the rows of the frame, portrait, border and corners, shadow.
 
 The **Layout** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
 
-**On this page:** [Display](#display) · [Size](#size) · [Position](#position) · [Bar heights](#bar-heights) · [Portrait](#portrait) · [Border and corners](#border-and-corners) · [Shadow](#shadow) · [Click-casting](#click-casting)
+**On this page:** [Display](#display) · [Size](#size) · [Position](#position) · [Bar heights](#bar-heights) · [Portrait](#portrait) · [Border and corners](#border-and-corners) · [Shadow](#shadow) · [Opacity](#opacity) · [Click-casting](#click-casting)
 
 ## Display
 
@@ -86,6 +86,15 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 <tr><td><b>Drop shadow</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
 <tr><td><b>Shadow strength</b></td><td>Opacity in percent</td><td>0 – 100</td><td>16</td><td>all</td></tr>
 <tr><td><b>Shadow size</b></td><td>Width of the soft edge in pixels</td><td>1 – 16</td><td>9</td><td>all</td></tr>
+</tbody>
+</table>
+
+## Opacity
+
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Frame opacity (%)</b></td><td>Fading out of range or out of combat comes on top</td><td>10 – 100</td><td>100</td><td>all</td></tr>
 </tbody>
 </table>
 

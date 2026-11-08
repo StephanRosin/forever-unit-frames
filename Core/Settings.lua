@@ -74,6 +74,9 @@ Settings.Define({ key = "shadowEnabled", code = "SE", scope = "inherit", type = 
 Settings.Define({ key = "shadowAlpha", code = "SA", scope = "inherit", type = "int", min = 0, max = 100, default = 50 })
 Settings.Define({ key = "shadowSize", code = "SZ", scope = "inherit", type = "int", min = 1, max = 16, default = 4 })
 Settings.Define({ key = "cornerRadius", code = "CR", scope = "inherit", type = "int", min = 0, max = 12, default = 0 })
+-- The whole frame's opacity (Elements/Range.lua): range and out-of-combat
+-- fading scale it down further.
+Settings.Define({ key = "frameAlpha", code = "OA", scope = "inherit", type = "int", min = 10, max = 100, default = 100 })
 
 -- Colors
 Settings.Define({ key = "healthColorMode", code = "HM", scope = "inherit", type = "enum",

@@ -37,7 +37,8 @@ local _, ns = ...
 --    refused or blocked call is not repeated this session.
 -- Nothing known: full opacity.
 --
--- The opacity is the unit frame's own alpha. SetAlpha and
+-- The opacity is the unit frame's own alpha (and its 3D portrait's), a
+-- share of frameAlpha, the frame's full opacity. SetAlpha and
 -- SetAlphaFromBoolean are not protected functions (unlike SetShown), so
 -- the secure frames may fade in combat; aura containers and the other
 -- children fade with them, as Blizzard's raid frames do.
@@ -485,15 +486,36 @@ ns.Listen("CONFIG_CHANGED", function(_, key)
     if key == nil or key == OVERRIDE.friendly or key == OVERRIDE.hostile then Range.Invalidate() end
 end)
 
+-- The frame's full opacity (frameAlpha); every fading scales it down.
+function Range.FullAlpha(frame)
+    return Config.Get(frame.key, "frameAlpha") / 100
+end
+
+-- A 3D portrait (a model) does not take its parent's opacity: it gets the
+-- same value itself.
+function Range.SetAlpha(frame, value)
+    frame:SetAlpha(value)
+    if frame.portrait3D then frame.portrait3D:SetAlpha(value) end
+end
+
+local function setFromBoolean(region, inRange, full, out)
+    return pcall(region.SetAlphaFromBoolean, region, inRange, full, out)
+end
+
 -- Opacity from a plain or secret boolean; nil is full opacity.
 local function apply(frame, inRange)
+    local full = Range.FullAlpha(frame)
     if type(inRange) == "nil" then
-        frame:SetAlpha(1)
+        Range.SetAlpha(frame, full)
         return
     end
-    if pcall(frame.SetAlphaFromBoolean, frame, inRange, 1, outAlpha(frame)) then return end
+    local out = full * outAlpha(frame)
+    if setFromBoolean(frame, inRange, full, out) then
+        if frame.portrait3D then setFromBoolean(frame.portrait3D, inRange, full, out) end
+        return
+    end
     -- A client without it: only a plain answer can be used.
-    if Secrets.IsSecret(inRange) then frame:SetAlpha(1) else frame:SetAlpha(inRange and 1 or outAlpha(frame)) end
+    if Secrets.IsSecret(inRange) then Range.SetAlpha(frame, full) else Range.SetAlpha(frame, inRange and full or out) end
 end
 
 local function check(frame)
@@ -505,7 +527,7 @@ local function check(frame)
         return
     end
     if not enabled(frame) or not (frame.unit and UnitExists(frame.unit)) then
-        frame:SetAlpha(1)
+        apply(frame, nil)
         return
     end
     apply(frame, Range.InRange(frame.unit))

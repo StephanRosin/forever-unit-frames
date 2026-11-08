@@ -10,7 +10,7 @@ Profiles, export, import and reset are on the **Profiles** page at the bottom of
 
 - **[Frames](#frames):** [Which frames are shown](#which-frames-are-shown) · [Click-casting](#click-casting) · [Minimap button](#minimap-button)
 - **[Click-casting](#click-casting-1)**
-- **[Appearance](#appearance):** [Font](#font) · [Presentation](#presentation) · [Title row](#title-row) · [Aura icons](#aura-icons) · [Hidden auras](#hidden-auras) · [Border and corners](#border-and-corners) · [Shadow](#shadow)
+- **[Appearance](#appearance):** [Font](#font) · [Presentation](#presentation) · [Title row](#title-row) · [Aura icons](#aura-icons) · [Hidden auras](#hidden-auras) · [Border and corners](#border-and-corners) · [Shadow](#shadow) · [Opacity](#opacity)
 - **[Bars](#bars):** [Health bar](#health-bar) · [Textures](#textures) · [Absorb shields](#absorb-shields) · [Incoming heals](#incoming-heals) · [Power colors](#power-colors)
 - **[Status](#status):** [Combat icon](#combat-icon) · [Highlights](#highlights) · [Range](#range)
 
@@ -138,6 +138,15 @@ Auras hidden by spell, such as a campfire or a food buff: the list under General
 <tr><td><b>Drop shadow</b></td><td></td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Shadow strength</b></td><td>Opacity in percent</td><td>0 – 100</td><td>16</td></tr>
 <tr><td><b>Shadow size</b></td><td>Width of the soft edge in pixels</td><td>1 – 16</td><td>9</td></tr>
+</tbody>
+</table>
+
+### Opacity
+
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Frame opacity (%)</b></td><td>Fading out of range or out of combat comes on top</td><td>10 – 100</td><td>100</td></tr>
 </tbody>
 </table>
 

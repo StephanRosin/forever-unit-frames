@@ -11,7 +11,7 @@ local _, ns = ...
 -- The player's health reaches addon code as a secret, out of combat too,
 -- so "full" cannot be tested here. The client does it: a step curve maps
 -- the health fraction to the opacity (full: the faded opacity, anything
--- less: 1), UnitHealthPercent evaluates it, and SetAlpha takes the
+-- less: frameAlpha), UnitHealthPercent evaluates it, and SetAlpha takes the
 -- (secret) result as it is. Power is not looked at: it has no such
 -- curve path to a single opacity together with health, and mana and
 -- energy refill quickly out of combat anyway.
@@ -30,16 +30,17 @@ local CombatFade = {
 ns.CombatFade = CombatFade
 
 local Config, Secrets = ns.Config, ns.Secrets
+local function setAlpha(frame, value) ns.Range.SetAlpha(frame, value) end
 
--- The step curve for a faded opacity (rebuilt when it changes).
-local curve, curveAlpha
-local function healthCurve(alpha)
-    if curve and curveAlpha == alpha then return curve end
+-- The step curve from full to faded opacity (rebuilt when either changes).
+local curve, curveFull, curveAlpha
+local function healthCurve(full, alpha)
+    if curve and curveFull == full and curveAlpha == alpha then return curve end
     curve = C_CurveUtil.CreateCurve()
     curve:SetType(Enum.LuaCurveType.Step)
-    curve:AddPoint(0, 1)
+    curve:AddPoint(0, full)
     curve:AddPoint(1, alpha)
-    curveAlpha = alpha
+    curveFull, curveAlpha = full, alpha
     return curve
 end
 
@@ -60,12 +61,6 @@ function CombatFade.Blocker()
     return nil
 end
 
--- A 3D portrait (a model) does not take its parent's opacity: it gets the
--- same value itself.
-local function setAlpha(frame, value)
-    frame:SetAlpha(value)
-    if frame.portrait3D then frame.portrait3D:SetAlpha(value) end
-end
 
 -- Whether the pet frame's opacity is the player frame's right now.
 function CombatFade.HoldsPet(frame)
@@ -74,7 +69,7 @@ function CombatFade.HoldsPet(frame)
 end
 
 -- The pet frame takes value while it follows; one that followed and no
--- longer does goes back to its range fading (its 3D portrait to full).
+-- longer does goes back to its range fading (3D portrait included).
 local function applyPet(value)
     local pet = ns.Frames.pet
     if not pet then return end
@@ -83,7 +78,6 @@ local function applyPet(value)
         pet.fadeFollowed = true
     elseif pet.fadeFollowed then
         pet.fadeFollowed = nil
-        setAlpha(pet, 1)
         ns.Range.Update(pet)
     end
 end
@@ -91,17 +85,19 @@ end
 function CombatFade.Apply()
     local frame = ns.Frames.player
     if not frame then return end
+    -- frameAlpha is full; the fade is a share of it.
+    local full = ns.Range.FullAlpha(frame)
     if CombatFade.Blocker() ~= nil then
-        setAlpha(frame, 1)
-        applyPet(1)
+        setAlpha(frame, full)
+        applyPet(full)
         return
     end
-    local alpha = Config.Get("player", "playerFadeAlpha") / 100
+    local alpha = full * Config.Get("player", "playerFadeAlpha") / 100
     local value = alpha
     if Config.Get("player", "playerFadeHurt") then
         local ok
-        ok, value = pcall(UnitHealthPercent, "player", false, healthCurve(alpha))
-        if not ok or type(value) == "nil" then value = 1 end
+        ok, value = pcall(UnitHealthPercent, "player", false, healthCurve(full, alpha))
+        if not ok or type(value) == "nil" then value = full end
     end
     setAlpha(frame, value)
     applyPet(value)
