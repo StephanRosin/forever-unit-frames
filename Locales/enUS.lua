@@ -1090,7 +1090,7 @@ L.RAID_TEST_PET_WARLOCK = "Imp"
 -- Raid frames: click-casting (Raid/ClickCast.lua, Raid/ClickKeys.lua,
 -- Raid/Options/ClickCast.lua).
 L.RAID_TAB_clickCast = "Click-casting"
-L.RAID_NOTE_clickCast = "For this character, at every raid size; changes apply out of combat. A modified click with nothing bound does what the plain click does, but never targets or opens the menu. Blizzard's own click bindings win. Which unit frames take them: unit frames options, General > Frames."
+L.RAID_NOTE_clickCast = "For this character, at every raid size; changes apply out of combat. A modified click with nothing bound does what the plain click does, but never targets or opens the menu. Blizzard's own click bindings win; to open the menu with a modified right click, move Blizzard's \"Open menu\" there too (Options > Keybindings > Click Casting). Which unit frames take them: unit frames options, General > Click-casting."
 L.RAID_SECTION_clickCastGeneral = "General"
 L.RAID_SECTION_clickLeft = "Left button"
 L.RAID_SECTION_clickRight = "Right button"
@@ -1467,6 +1467,7 @@ L.NEWS_0_38_0_FONT = "The default font now follows the game client's font, so Ko
 L.NEWS_0_39_0_OPACITY = "Frame opacity: General > Appearance > Opacity sets how see-through every frame is, each frame's Layout tab can override it. Range and out-of-combat fading come on top, and the 3D portrait now fades with its frame."
 L.NEWS_0_40_0_MENU = "Tidier options: where icons and auras sit and grow is folded under “Position and growth” in each section, your own buffs and debuffs have a block of their own, and General has an Auras tab."
 L.NEWS_0_40_0_MOVED = "Moved: the threat bar to Status > Threat (with the threat glow), the shield watch to Bars, range and out-of-combat fading to Layout > Visibility and fading, the font to the top of Text. The search finds everything as before."
+L.NEWS_0_43_0_MENU_CLICK = "Click-casting: “Open the menu” now also goes on a right click with modifiers (e.g. Ctrl-Alt-right), so the plain right click is free for a spell. Move Blizzard’s own “open menu” binding to the same click too (Options > Keybindings > Click Casting)."
 L.NEWS_0_42_0_AURA_TIME = "General > Auras > Aura icons > “Time left X” and “Time left Y” move the timer on buff and debuff icons, also per frame on its Auras tab."
 L.NEWS_0_41_0_BLIZZARD_AURAS = "Player > Auras > Buffs > “Hide Blizzard buffs and debuffs” hides Blizzard’s buff and debuff frames at the minimap, for when the player frame shows them."
 L.NEWS_0_40_0_RAID = "Raid frames: General > Appearance > Cell opacity sets how see-through the cells are, for every raid size."

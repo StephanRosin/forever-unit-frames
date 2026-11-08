@@ -6,7 +6,7 @@ Heal, decurse, target, assist or focus raid members with one click: up to 40 mou
 
 The **Click-casting** tab of the raid options window (`/fuf raid`), under **General** in the top bar (General | 10 | 20 | 40 | Profiles). Its settings belong to the character, not to a raid size: they are the same at every size.
 
-For this character, at every raid size; changes apply out of combat. A modified click with nothing bound does what the plain click does, but never targets or opens the menu. Blizzard's own click bindings win. Which unit frames take them: unit frames options, General > Frames.
+For this character, at every raid size; changes apply out of combat. A modified click with nothing bound does what the plain click does, but never targets or opens the menu. Blizzard's own click bindings win; to open the menu with a modified right click, move Blizzard's "Open menu" there too (Options > Keybindings > Click Casting). Which unit frames take them: unit frames options, General > Click-casting.
 
 **On this page:** [General](#general) · [Left button](#left-button) · [Right button](#right-button) · [Middle button](#middle-button) · [Mouse button 4](#mouse-button-4) · [Mouse button 5](#mouse-button-5) · [Keys on mouse-over](#keys-on-mouse-over)
 
@@ -41,13 +41,13 @@ For this character, at every raid size; changes apply out of combat. A modified 
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
 <tr><td><b>Click</b></td><td></td><td>Nothing, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Open the menu</td></tr>
-<tr><td><b>Shift-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
-<tr><td><b>Ctrl-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
-<tr><td><b>Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
-<tr><td><b>Shift-Ctrl-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
-<tr><td><b>Shift-Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
-<tr><td><b>Ctrl-Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
-<tr><td><b>Shift-Ctrl-Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Shift-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Ctrl-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Shift-Ctrl-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Shift-Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Ctrl-Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
+<tr><td><b>Shift-Ctrl-Alt-click</b></td><td></td><td>Like the plain click, Target, Focus, Assist, Open the menu, Cast a spell, Use an item, Run a macro</td><td>Like the plain click</td></tr>
 </tbody>
 </table>
 

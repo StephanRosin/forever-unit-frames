@@ -129,6 +129,9 @@ News.ENTRIES = {
     ["0.42.0"] = {
         lines = { "NEWS_0_42_0_AURA_TIME" },
     },
+    ["0.43.0"] = {
+        lines = { "NEWS_0_43_0_MENU_CLICK" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

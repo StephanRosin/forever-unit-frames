@@ -1066,7 +1066,7 @@ L.RAID_TEST_PET_WARLOCK = "Diablillo"
 -- Marcos de banda: lanzar con clic (Raid/ClickCast.lua, Raid/ClickKeys.lua,
 -- Raid/Options/ClickCast.lua).
 L.RAID_TAB_clickCast = "Lanzar con clic"
-L.RAID_NOTE_clickCast = "Para este personaje, en todos los tamaños de banda; los cambios se aplican fuera de combate. Un clic con modificador sin asignar hace lo mismo que el clic simple, salvo seleccionar o abrir el menú. Las asignaciones de clic de Blizzard tienen prioridad. Qué marcos de unidad las usan: opciones de los marcos de unidad, General > Marcos."
+L.RAID_NOTE_clickCast = "Para este personaje, en todos los tamaños de banda; los cambios se aplican fuera de combate. Un clic con modificador sin asignar hace lo mismo que el clic simple, salvo seleccionar o abrir el menú. Las asignaciones de clic de Blizzard tienen prioridad; para abrir el menú con un clic derecho con modificador, mueve allí también «Abrir menú» de Blizzard (Opciones > Asignación de teclas > Lanzar con clic). Qué marcos de unidad las usan: opciones de los marcos de unidad, General > Lanzar con clic."
 L.RAID_SECTION_clickCastGeneral = "General"
 L.RAID_SECTION_clickLeft = "Botón izquierdo"
 L.RAID_SECTION_clickRight = "Botón derecho"
@@ -1440,6 +1440,7 @@ L.NEWS_0_38_0_FONT = "La fuente por defecto sigue ahora la del cliente del juego
 L.NEWS_0_39_0_OPACITY = "Opacidad de los marcos: General > Appearance > Opacity fija lo transparentes que son todos los marcos; la pestaña Layout de cada marco puede cambiarla. El desvanecido fuera de alcance y fuera de combate se aplica además, y el retrato 3D ahora se desvanece con su marco."
 L.NEWS_0_40_0_MENU = "Opciones más ordenadas: dónde están y cómo crecen los iconos y auras se pliega bajo «Posición y crecimiento» en cada sección, tus propios beneficios y perjuicios tienen su bloque, y General tiene una pestaña Auras."
 L.NEWS_0_40_0_MOVED = "Movidos: la barra de amenaza a Estado > Amenaza (con el brillo de amenaza), la vigilancia de escudos a Barras, el desvanecido fuera de alcance y fuera de combate a Diseño > Visibilidad y desvanecido, la fuente al principio de Textos. La búsqueda lo encuentra todo como antes."
+L.NEWS_0_43_0_MENU_CLICK = "Lanzar con clic: «Abrir el menú» ahora también va en un clic derecho con modificador (p. ej. Ctrl-Alt-derecho), así el clic derecho simple queda libre para un hechizo. Mueve también «Abrir menú» de Blizzard al mismo clic (Opciones > Asignación de teclas > Lanzar con clic)."
 L.NEWS_0_42_0_AURA_TIME = "General > Auras > Iconos de auras > «Tiempo restante X» y «Tiempo restante Y» mueven el tiempo de los iconos de aura, también por marco en su pestaña Auras."
 L.NEWS_0_41_0_BLIZZARD_AURAS = "Jugador > Auras > Beneficios > «Ocultar auras de Blizzard» oculta los beneficios y perjuicios de Blizzard junto al minimapa, para cuando el marco del jugador los muestra."
 L.NEWS_0_40_0_RAID = "Marcos de banda: General > Apariencia > Opacidad de las celdas fija lo transparentes que son las celdas, para todos los tamaños de banda."

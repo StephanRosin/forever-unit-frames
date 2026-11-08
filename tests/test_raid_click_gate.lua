@@ -73,7 +73,8 @@ H.check("the macro cleared", cell:GetAttribute("shift-macrotext1"), nil)
 -- The menu only on the plain left and right clicks.
 H.check("menu on the plain right", RS.Validate(RS.Get("click2"), "menu"), "menu")
 H.check("menu on the plain left", RS.Validate(RS.Get("click1"), "menu"), "menu")
-H.check("no menu on shift-right", RS.Validate(RS.Get("click2Shift"), "menu"), nil)
+H.check("menu on shift-right too", RS.Validate(RS.Get("click2Shift"), "menu"), "menu")
+H.check("no menu on shift-left", RS.Validate(RS.Get("click1Shift"), "menu"), nil)
 H.check("no menu on the middle", RS.Validate(RS.Get("click3"), "menu"), nil)
 H.check("target anywhere", RS.Validate(RS.Get("click4CtrlAlt"), "target"), "target")
 local function kinds(key)
@@ -81,4 +82,22 @@ local function kinds(key)
 end
 H.check("plain left's kinds", kinds("click1"), ",target,focus,assist,menu,spell,item,macro")
 H.check("shift-left's kinds", kinds("click1Shift"), ",target,focus,assist,spell,item,macro")
+H.check("ctrl-alt-right's kinds", kinds("click2CtrlAlt"), ",target,focus,assist,menu,spell,item,macro")
+
+-- The menu on Ctrl-Alt-right (a CurseForge request): it acts once
+-- Blizzard's "Open menu" is moved there; the plain right click is free
+-- for a cast.
+RC.Set("general", "click2CtrlAlt", "menu")
+RC.Set("general", "click2", "assist")
+H.check("ctrl-alt-right: the menu", cell:GetAttribute("alt-ctrl-type2"), "togglemenu")
+local function ctrlAlt(mouseButton)
+    M.ctrlDown, M.altDown = true, true
+    local ran = M.SecureClick(cell, mouseButton)
+    M.ctrlDown, M.altDown = false, false
+    return ran
+end
+H.check("Blizzard's menu still on the plain right: blocked", ctrlAlt("RightButton"), nil)
+M.clickBindings[2] = { button = "RightButton", modifiers = 6, type = 3, interaction = 2 }
+H.check("moved: ctrl-alt-right opens the menu", ctrlAlt("RightButton"), "togglemenu")
+H.check("the plain right casts", click("RightButton"), "assist")
 H.check("nothing blocked", #M.blocked, 0)

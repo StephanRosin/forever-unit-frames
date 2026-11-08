@@ -24,6 +24,13 @@ switched off. Switch it in the unit frames' options on top of General > Click-ca
 per frame on its Layout tab. With the default bindings nothing changes: left click targets, right
 click opens the menu. While Clique is loaded, the automatic mode leaves the clicks to Clique.
 
+### The menu on another click (to put a spell on the right click)
+
+Choose **Open the menu** on a right click with modifiers, for example Ctrl-Alt-right, and put your spell on
+the plain right click. Then move Blizzard's own "open menu" binding to the same click: Options >
+Keybindings > Click Casting. Blizzard's click bindings come first, so without that step the modified
+click does nothing. Other buttons than the right one cannot open the menu.
+
 ### A portrait shows a flat picture for a moment
 
 With 3D portraits the 2D picture stands in while the game loads the 3D model, usually only for a

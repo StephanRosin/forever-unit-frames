@@ -692,20 +692,24 @@ local CLICK_DEFAULTS = { click1 = "target", click2 = "menu" }
 -- click bound to an interaction there, which by default are the plain
 -- left and right clicks alone. A slot's interaction is true for those
 -- two: the others take Target as a macro (Raid/ClickCast.lua) and never
--- the menu.
+-- the menu. The menu may also go on a right click with modifiers: it acts
+-- once Blizzard's "Open menu" click binding is moved to that click (its
+-- Click Casting window), which looks up our attribute for the right
+-- button with the held modifiers (GetEffectiveInteractionButton).
 local MOUSE_KINDS = {}
 for _, kind in ipairs(Raid.CLICK_KINDS) do
     if kind ~= "menu" then MOUSE_KINDS[#MOUSE_KINDS + 1] = kind end
 end
 -- The kinds a mouse slot offers, in the raid window's order.
-function Raid.SlotKinds(slot) return slot.interaction and Raid.CLICK_KINDS or MOUSE_KINDS end
+function Raid.SlotKinds(slot) return slot.menu and Raid.CLICK_KINDS or MOUSE_KINDS end
 Raid.CLICK_SLOTS, Raid.CLICK_SLOT_BY_KEY = {}, {}
 for _, b in ipairs(Raid.CLICK_BUTTONS) do
     for _, m in ipairs(Raid.CLICK_MODIFIERS) do
         local slot = { key = "click" .. b.button .. m.name, button = b.button, modifiers = m.name, prefix = m.prefix,
             interaction = m.prefix == "*" and b.button <= 2 }
+        slot.menu = slot.interaction or b.button == 2
         local check = isBinding
-        if not slot.interaction then check = function(text) return isBinding(text) and text ~= "menu" end end
+        if not slot.menu then check = function(text) return isBinding(text) and text ~= "menu" end end
         RaidSettings.Define({ key = slot.key, code = b.letter .. m.letter, scope = "general", type = "text",
             maxLetters = Raid.CLICK_BINDING_LETTERS, check = check, kinds = Raid.SlotKinds(slot),
             default = CLICK_DEFAULTS[slot.key] or "" })

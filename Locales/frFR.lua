@@ -1065,7 +1065,7 @@ L.RAID_TEST_PET_WARLOCK = "Diablotin"
 -- Cadres de raid : sorts au clic (Raid/ClickCast.lua, Raid/ClickKeys.lua,
 -- Raid/Options/ClickCast.lua).
 L.RAID_TAB_clickCast = "Sorts au clic"
-L.RAID_NOTE_clickCast = "Pour ce personnage, à toutes les tailles de raid ; changements appliqués hors combat. Un clic avec modificateur non attribué agit comme le clic simple, sauf pour cibler ou ouvrir le menu. Les raccourcis de clic de Blizzard passent avant. Quels cadres d’unité les utilisent : options des cadres d’unité, Général > Cadres."
+L.RAID_NOTE_clickCast = "Pour ce personnage, à toutes les tailles de raid ; changements appliqués hors combat. Un clic avec modificateur non attribué agit comme le clic simple, sauf pour cibler ou ouvrir le menu. Les raccourcis de clic de Blizzard passent avant ; pour ouvrir le menu par un clic droit avec modificateur, déplacez aussi « Ouvrir le menu » de Blizzard sur ce clic (Options > Raccourcis > Sorts au clic). Quels cadres d’unité les utilisent : options des cadres d’unité, Général > Sorts au clic."
 L.RAID_SECTION_clickCastGeneral = "Général"
 L.RAID_SECTION_clickLeft = "Bouton gauche"
 L.RAID_SECTION_clickRight = "Bouton droit"
@@ -1439,6 +1439,7 @@ L.NEWS_0_38_0_FONT = "La police par défaut suit désormais celle du client du j
 L.NEWS_0_39_0_OPACITY = "Opacité des cadres : General > Appearance > Opacity règle la transparence de tous les cadres, l'onglet Layout de chaque cadre peut la remplacer. Le fondu hors de portée et hors combat s'applique en plus, et le portrait 3D s'estompe désormais avec son cadre."
 L.NEWS_0_40_0_MENU = "Options plus claires : l'emplacement et la croissance des icônes et des auras sont repliés sous « Position et croissance » dans chaque section, vos propres améliorations et affaiblissements ont leur bloc, et Général a un onglet Auras."
 L.NEWS_0_40_0_MOVED = "Déplacés : la barre de menace dans État > Menace (avec la lueur de menace), le suivi des boucliers dans Barres, le fondu hors de portée et hors combat dans Disposition > Visibilité et fondu, la police en haut de Textes. La recherche trouve tout comme avant."
+L.NEWS_0_43_0_MENU_CLICK = "Sorts au clic : « Ouvrir le menu » va maintenant aussi sur un clic droit avec modificateur (ex. Ctrl-Alt-droit), le clic droit simple reste libre pour un sort. Déplacez aussi « Ouvrir le menu » de Blizzard sur ce clic (Options > Raccourcis > Sorts au clic)."
 L.NEWS_0_42_0_AURA_TIME = "Général > Auras > Icônes d'auras > « Temps restant X » et « Temps restant Y » déplacent le temps sur les icônes d’aura, aussi par cadre dans son onglet Auras."
 L.NEWS_0_41_0_BLIZZARD_AURAS = "Joueur > Auras > Améliorations > « Masquer les auras de Blizzard » masque les améliorations et affaiblissements de Blizzard près de la minicarte, quand le cadre du joueur les affiche."
 L.NEWS_0_40_0_RAID = "Cadres de raid : Général > Apparence > Opacité des cellules règle la transparence des cellules, pour toutes les tailles de raid."
