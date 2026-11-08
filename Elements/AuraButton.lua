@@ -121,7 +121,11 @@ local function shape(button, scope, size, showTime)
     button.count:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, 0)
     button.count:SetJustifyH("RIGHT")
     local numbers = button.cooldown:GetCountdownFontString()
-    if numbers then numbers:SetFont(font, fontSize, ns.Texts.CountdownFlags(outline)) end
+    if numbers then
+        numbers:SetFont(font, fontSize, ns.Texts.CountdownFlags(outline))
+        numbers:ClearAllPoints()
+        numbers:SetPoint("CENTER", button, "CENTER", Config.Get(scope, "auraTimeX"), Config.Get(scope, "auraTimeY"))
+    end
     button.cooldown:SetHideCountdownNumbers(not showTime)
     button.plainBorder = Config.Get(scope, "borderColor")
     -- A buff whose border shows its caster (button.casterBorder, set by the

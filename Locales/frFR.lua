@@ -619,6 +619,9 @@ L.ENUM_combatAnimation_DUEL = "Duel (épées qui s'entrechoquent)"
 L.HINT_combatAnimation = "Duel : épées croisées. Éclat : surgit. Pulsation : respire"
 
 -- Aura border thickness.
+L.SETTING_auraTimeX = "Temps restant X"
+L.SETTING_auraTimeY = "Temps restant Y"
+L.HINT_auraTimeX = "Déplace le temps des icônes d’aura depuis leur centre"
 L.SETTING_auraBorderSize = "Épaisseur de la bordure"
 
 -- Party pet layout.
@@ -1436,6 +1439,7 @@ L.NEWS_0_38_0_FONT = "La police par défaut suit désormais celle du client du j
 L.NEWS_0_39_0_OPACITY = "Opacité des cadres : General > Appearance > Opacity règle la transparence de tous les cadres, l'onglet Layout de chaque cadre peut la remplacer. Le fondu hors de portée et hors combat s'applique en plus, et le portrait 3D s'estompe désormais avec son cadre."
 L.NEWS_0_40_0_MENU = "Options plus claires : l'emplacement et la croissance des icônes et des auras sont repliés sous « Position et croissance » dans chaque section, vos propres améliorations et affaiblissements ont leur bloc, et Général a un onglet Auras."
 L.NEWS_0_40_0_MOVED = "Déplacés : la barre de menace dans État > Menace (avec la lueur de menace), le suivi des boucliers dans Barres, le fondu hors de portée et hors combat dans Disposition > Visibilité et fondu, la police en haut de Textes. La recherche trouve tout comme avant."
+L.NEWS_0_42_0_AURA_TIME = "Général > Auras > Icônes d'auras > « Temps restant X » et « Temps restant Y » déplacent le temps sur les icônes d’aura, aussi par cadre dans son onglet Auras."
 L.NEWS_0_41_0_BLIZZARD_AURAS = "Joueur > Auras > Améliorations > « Masquer les auras de Blizzard » masque les améliorations et affaiblissements de Blizzard près de la minicarte, quand le cadre du joueur les affiche."
 L.NEWS_0_40_0_RAID = "Cadres de raid : Général > Apparence > Opacité des cellules règle la transparence des cellules, pour toutes les tailles de raid."
 L.NEWS_OPEN_SHIELDS = "Ouvrir la veille des boucliers"

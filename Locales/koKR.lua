@@ -596,6 +596,9 @@ L.ENUM_combatAnimation_PULSE = "맥동"
 L.ENUM_combatAnimation_DUEL = "결투 (칼 부딪힘)"
 L.HINT_combatAnimation = "결투: 칼이 부딪힘. 튀어나오기: 튀어나옴. 맥동: 숨쉬듯"
 
+L.SETTING_auraTimeX = "남은 시간 X"
+L.SETTING_auraTimeY = "남은 시간 Y"
+L.HINT_auraTimeX = "오라 아이콘의 남은 시간을 가운데에서 옮깁니다"
 L.SETTING_auraBorderSize = "테두리 두께"
 
 L.SETTING_partyPetLayout = "소환수 배치"
@@ -1374,6 +1377,7 @@ L.NEWS_0_38_0_FONT = "기본 글꼴이 이제 게임 클라이언트의 글꼴�
 L.NEWS_0_39_0_OPACITY = "프레임 불투명도: General > Appearance > Opacity에서 모든 프레임의 투명도를 정하고, 각 프레임의 Layout 탭에서 따로 바꿀 수 있습니다. 사거리 밖·비전투 흐려짐은 그 위에 추가로 적용되며, 3D 초상화도 이제 프레임과 함께 흐려집니다."
 L.NEWS_0_40_0_MENU = "옵션 정리: 아이콘과 오라의 위치와 확장 방향은 각 구역의 '위치 및 확장 방향' 아래에 접혀 있고, 내 버프와 디버프는 따로 묶였으며, 일반에 오라 탭이 생겼습니다."
 L.NEWS_0_40_0_MOVED = "이동: 위협 수준 바는 상태 > 위협 (위협 강조와 함께), 보호막 감시는 Bars, 사거리 밖·비전투 흐려짐은 Layout > 표시 및 흐려짐, 글꼴은 Text 맨 위로. 검색은 예전처럼 모두 찾습니다."
+L.NEWS_0_42_0_AURA_TIME = "일반 > 오라 > 오라 아이콘 > '남은 시간 X'와 '남은 시간 Y'로 강화·약화 아이콘의 남은 시간을 옮깁니다. 프레임별 오라 탭에서도 설정할 수 있습니다."
 L.NEWS_0_41_0_BLIZZARD_AURAS = "플레이어 > 오라 > Buffs > '블리자드 강화/약화 효과 숨기기'로 미니맵 옆 블리자드 강화·약화 효과를 숨깁니다. 플레이어 프레임에 표시할 때 사용하세요."
 L.NEWS_0_40_0_RAID = "공격대 프레임: 일반 > 모양 > 칸 불투명도에서 모든 공격대 크기의 칸 투명도를 정합니다."
 L.NEWS_OPEN_SHIELDS = "보호막 감시 열기"

@@ -129,6 +129,8 @@ Button: **Apply to all frames**.
 <tbody>
 <tr><td><b>Border around the icons</b></td><td>Debuffs: shows the dispel type (magic, curse, poison, disease)</td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Border thickness</b></td><td></td><td>1 – 6</td><td>1</td></tr>
+<tr><td><b>Time left X</b></td><td>Moves the time on buff and debuff icons from their centre</td><td>-32 – 32</td><td>0</td></tr>
+<tr><td><b>Time left Y</b></td><td></td><td>-32 – 32</td><td>0</td></tr>
 </tbody>
 </table>
 

@@ -620,6 +620,9 @@ L.ENUM_combatAnimation_DUEL = "Duelo (espadas chocando)"
 L.HINT_combatAnimation = "Duelo: espadas chocando. Destello: aparece. Pulso: late"
 
 -- Aura border thickness.
+L.SETTING_auraTimeX = "Tiempo restante X"
+L.SETTING_auraTimeY = "Tiempo restante Y"
+L.HINT_auraTimeX = "Mueve el tiempo de los iconos de aura desde su centro"
 L.SETTING_auraBorderSize = "Grosor del borde"
 
 -- Party pet layout.
@@ -1437,6 +1440,7 @@ L.NEWS_0_38_0_FONT = "La fuente por defecto sigue ahora la del cliente del juego
 L.NEWS_0_39_0_OPACITY = "Opacidad de los marcos: General > Appearance > Opacity fija lo transparentes que son todos los marcos; la pestaña Layout de cada marco puede cambiarla. El desvanecido fuera de alcance y fuera de combate se aplica además, y el retrato 3D ahora se desvanece con su marco."
 L.NEWS_0_40_0_MENU = "Opciones más ordenadas: dónde están y cómo crecen los iconos y auras se pliega bajo «Posición y crecimiento» en cada sección, tus propios beneficios y perjuicios tienen su bloque, y General tiene una pestaña Auras."
 L.NEWS_0_40_0_MOVED = "Movidos: la barra de amenaza a Estado > Amenaza (con el brillo de amenaza), la vigilancia de escudos a Barras, el desvanecido fuera de alcance y fuera de combate a Diseño > Visibilidad y desvanecido, la fuente al principio de Textos. La búsqueda lo encuentra todo como antes."
+L.NEWS_0_42_0_AURA_TIME = "General > Auras > Iconos de auras > «Tiempo restante X» y «Tiempo restante Y» mueven el tiempo de los iconos de aura, también por marco en su pestaña Auras."
 L.NEWS_0_41_0_BLIZZARD_AURAS = "Jugador > Auras > Beneficios > «Ocultar auras de Blizzard» oculta los beneficios y perjuicios de Blizzard junto al minimapa, para cuando el marco del jugador los muestra."
 L.NEWS_0_40_0_RAID = "Marcos de banda: General > Apariencia > Opacidad de las celdas fija lo transparentes que son las celdas, para todos los tamaños de banda."
 L.NEWS_OPEN_SHIELDS = "Abrir el vigía de escudos"

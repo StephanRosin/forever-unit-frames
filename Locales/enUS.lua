@@ -643,6 +643,9 @@ L.ENUM_combatAnimation_DUEL = "Duel (clashing swords)"
 L.HINT_combatAnimation = "Duel: clashing swords. Burst: springs in. Pulse: breathes"
 
 -- Aura border thickness.
+L.SETTING_auraTimeX = "Time left X"
+L.SETTING_auraTimeY = "Time left Y"
+L.HINT_auraTimeX = "Moves the time on buff and debuff icons from their centre"
 L.SETTING_auraBorderSize = "Border thickness"
 
 -- Party pet layout.
@@ -1464,6 +1467,7 @@ L.NEWS_0_38_0_FONT = "The default font now follows the game client's font, so Ko
 L.NEWS_0_39_0_OPACITY = "Frame opacity: General > Appearance > Opacity sets how see-through every frame is, each frame's Layout tab can override it. Range and out-of-combat fading come on top, and the 3D portrait now fades with its frame."
 L.NEWS_0_40_0_MENU = "Tidier options: where icons and auras sit and grow is folded under “Position and growth” in each section, your own buffs and debuffs have a block of their own, and General has an Auras tab."
 L.NEWS_0_40_0_MOVED = "Moved: the threat bar to Status > Threat (with the threat glow), the shield watch to Bars, range and out-of-combat fading to Layout > Visibility and fading, the font to the top of Text. The search finds everything as before."
+L.NEWS_0_42_0_AURA_TIME = "General > Auras > Aura icons > “Time left X” and “Time left Y” move the timer on buff and debuff icons, also per frame on its Auras tab."
 L.NEWS_0_41_0_BLIZZARD_AURAS = "Player > Auras > Buffs > “Hide Blizzard buffs and debuffs” hides Blizzard’s buff and debuff frames at the minimap, for when the player frame shows them."
 L.NEWS_0_40_0_RAID = "Raid frames: General > Appearance > Cell opacity sets how see-through the cells are, for every raid size."
 L.NEWS_OPEN_SHIELDS = "Open the shield watch"

@@ -417,6 +417,9 @@ Settings.Define({ key = "footerTextRight", code = "FR", scope = "frame", type = 
 Settings.Define({ key = "auraBorder", code = "AZ", scope = "inherit", type = "bool", default = true })
 -- Its thickness in pixels.
 Settings.Define({ key = "auraBorderSize", code = "AW", scope = "inherit", type = "int", min = 1, max = 6, default = 1 })
+-- The time left on every aura icon, moved from the icon's centre.
+Settings.Define({ key = "auraTimeX", code = "AT", scope = "inherit", type = "int", min = -32, max = 32, default = 0 })
+Settings.Define({ key = "auraTimeY", code = "AU", scope = "inherit", type = "int", min = -32, max = 32, default = 0 })
 
 -- Auras. Buffs and debuffs are two groups with the same settings, each
 -- configured on its own. Codes: J + letter for buffs, D + letter for

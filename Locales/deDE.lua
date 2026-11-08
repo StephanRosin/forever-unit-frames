@@ -619,6 +619,9 @@ L.ENUM_combatAnimation_DUEL = "Duell (Schwerter im Kampf)"
 L.HINT_combatAnimation = "Duell: kämpfende Schwerter. Aufschlag: springt auf. Pulsieren: atmet"
 
 -- Aura border thickness.
+L.SETTING_auraTimeX = "Restzeit X"
+L.SETTING_auraTimeY = "Restzeit Y"
+L.HINT_auraTimeX = "Verschiebt die Zeit auf Buff- und Debuff-Symbolen aus der Mitte"
 L.SETTING_auraBorderSize = "Randstärke"
 
 -- Party pet layout.
@@ -1436,6 +1439,7 @@ L.NEWS_0_38_0_FONT = "Die Standardschrift folgt jetzt der Schrift des Spielclien
 L.NEWS_0_39_0_OPACITY = "Deckkraft der Rahmen: General > Appearance > Opacity legt fest, wie durchsichtig alle Rahmen sind; der Reiter Layout jedes Rahmens kann das überschreiben. Ausblenden außer Reichweite und außerhalb des Kampfes kommt noch dazu, und das 3D-Porträt blendet jetzt mit seinem Rahmen aus."
 L.NEWS_0_40_0_MENU = "Aufgeräumte Optionen: Wo Symbole und Auren sitzen und wachsen, ist in jedem Abschnitt unter „Position und Wachstum“ eingeklappt, deine eigenen Buffs und Debuffs haben einen eigenen Block, und Allgemein hat einen Reiter Auren."
 L.NEWS_0_40_0_MOVED = "Verschoben: die Bedrohungsleiste nach Status > Bedrohung (zum Bedrohungsleuchten), die Schildanzeige nach Leisten, das Ausblenden außer Reichweite und außerhalb des Kampfes nach Anordnung > Sichtbarkeit und Ausblenden, die Schrift an den Anfang von Texte. Die Suche findet alles wie bisher."
+L.NEWS_0_42_0_AURA_TIME = "Allgemein > Auren > Aurensymbole > „Restzeit X“ und „Restzeit Y“ verschieben die Zeit auf Buff- und Debuff-Symbolen, auch je Rahmen auf seinem Reiter Auren."
 L.NEWS_0_41_0_BLIZZARD_AURAS = "Spieler > Auren > Buffs > „Blizzard-Auren ausblenden“ blendet Blizzards Buff- und Debuff-Leiste an der Minimap aus, wenn der Spielerrahmen sie zeigt."
 L.NEWS_0_40_0_RAID = "Raid-Frames: Allgemein > Darstellung > Deckkraft der Zellen legt fest, wie durchsichtig die Zellen sind, für alle Raidgrößen."
 L.NEWS_OPEN_SHIELDS = "Schildwache öffnen"

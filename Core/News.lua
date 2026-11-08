@@ -126,6 +126,9 @@ News.ENTRIES = {
     ["0.41.0"] = {
         lines = { "NEWS_0_41_0_BLIZZARD_AURAS" },
     },
+    ["0.42.0"] = {
+        lines = { "NEWS_0_42_0_AURA_TIME" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

@@ -15,6 +15,8 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <tbody>
 <tr><td><b>Border around the icons</b></td><td>Debuffs: shows the dispel type (magic, curse, poison, disease)</td><td>On, Off</td><td>On</td><td>all</td></tr>
 <tr><td><b>Border thickness</b></td><td></td><td>1 – 6</td><td>1</td><td>all</td></tr>
+<tr><td><b>Time left X</b></td><td>Moves the time on buff and debuff icons from their centre</td><td>-32 – 32</td><td>0</td><td>all</td></tr>
+<tr><td><b>Time left Y</b></td><td></td><td>-32 – 32</td><td>0</td><td>all</td></tr>
 </tbody>
 </table>
 
