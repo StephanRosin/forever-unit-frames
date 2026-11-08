@@ -50,7 +50,7 @@ H.check("tabs", table.concat(titles, ","), "General,Cell,Text,Debuffs,Indicators
 -- Opens on the size's first tab (decision 71); General in the top bar.
 H.check("first tab", RO.currentTab, "cell")
 click(RO.generalTab)
-H.check("general rows", keys(), "enabled,showInParty,hideBlizzard,minimapShow,minimapAngle")
+H.check("general rows", keys(), "enabled,showInParty,hideBlizzard,minimapShow,minimapAngle,frameAlpha")
 H.check("label", rowFor("showInParty").label:GetText(), "Raid view in a party")
 H.check("hint", rowFor("hideBlizzard").hintText:GetText(), "Needs /reload to show them again")
 click(rowFor("showInParty").box)

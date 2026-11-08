@@ -107,6 +107,10 @@ RaidSettings.Define({ key = "hideBlizzard", code = "HB", scope = "general", type
 RaidSettings.Define({ key = "minimapShow", code = "MS", scope = "general", type = "bool", default = true })
 RaidSettings.Define({ key = "minimapAngle", code = "MA", scope = "general", type = "int", min = 0, max = 359,
     default = 260 })
+-- The cells' full opacity for every raid size; range fading is a share of
+-- it (Elements/Range.lua).
+RaidSettings.Define({ key = "frameAlpha", code = "CA", scope = "general", type = "int", min = 10, max = 100,
+    default = 100 })
 
 -- Per size ------------------------------------------------------------------------
 -- Every per-size setting has a class (Copy between sizes may leave the

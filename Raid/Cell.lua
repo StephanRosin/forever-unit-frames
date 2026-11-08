@@ -128,6 +128,7 @@ local MAPPED = {
     groupIconSize = function() return get("iconSize") end,
     rangeFade = function() return get("rangeFade") end,
     rangeAlpha = function() return get("rangeAlpha") end,
+    frameAlpha = function() return ns.RaidConfig.Get("general", "frameAlpha") end,
 }
 
 -- Everything else is the unit frames' shipped default for a party frame

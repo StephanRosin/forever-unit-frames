@@ -75,3 +75,41 @@ M.FireEvent("PLAYER_REGEN_ENABLED")
 M.units.player.health, M.units.player.healthMax = 1, 2
 M.FireEvent("UNIT_HEALTH", "player")
 near("hurt: 80%, not full", player:GetAlpha(), 0.8)
+
+-- Raid cells: the raid profile's own opacity, range fading a share of it.
+do
+    local ns = H.LoadAddon()
+    local RC, Header = ns.RaidConfig, ns.RaidHeader
+    M.units.player = { name = "Me", class = "WARRIOR", className = "Warrior", isPlayer = true, level = 60,
+        health = 100, healthMax = 100 }
+    M.FireEvent("ADDON_LOADED", "ForeverUnitFrames")
+    M.FireEvent("PLAYER_LOGIN")
+    M.RunTimers()
+    local rdef = ns.RaidSettings.Get("frameAlpha")
+    H.check("raid: one for every size", rdef.scope, "general")
+    H.check("raid: full by default", ns.RaidSettings.Default(rdef, "general"), 100)
+    H.checkTrue("raid: label", ns.L.RAID_SETTING_frameAlpha ~= nil)
+    local tab
+    for _, t in ipairs(ns.RaidSchema and ns.RaidSchema.TABS or {}) do
+        for _, sec in ipairs(t.sections or {}) do
+            for _, k in ipairs(sec.keys or {}) do if k == "frameAlpha" then tab = t.id .. "/" .. sec.id end end
+        end
+    end
+    H.check("raid: on the General tab", tab, "general/appearance")
+    M.SetRaidRoster({ { name = "Ann", class = "PRIEST", subgroup = 1 },
+        { name = "Bob", class = "MAGE", subgroup = 1, unit = { inRange = false } } })
+    M.RunTimers()
+    local function cell(i) return Header.headers[1]:GetAttribute("child" .. i) end
+    M.Tick(0.25)
+    near("raid: full", cell(1):GetAlpha(), 1)
+    RC.Set("general", "frameAlpha", 80)
+    M.RunTimers()
+    M.Tick(0.25)
+    near("raid: 80%", cell(1):GetAlpha(), 0.8)
+    near("raid: out of range a share of it", cell(2):GetAlpha(), 0.32)
+    near("unit frames untouched", ns.Frames.player:GetAlpha(), 1)
+    RC.Set("r10", "rangeFade", false)
+    M.RunTimers()
+    M.Tick(0.25)
+    near("raid fading off: still 80%", cell(2):GetAlpha(), 0.8)
+end

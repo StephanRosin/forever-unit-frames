@@ -78,6 +78,7 @@ Schema.TABS = {
     { id = "general", sections = {
         { id = "raidFrames", keys = { "enabled", "showInParty", "hideBlizzard" } },
         { id = "minimap", keys = { "minimapShow", "minimapAngle" } },
+        { id = "appearance", keys = { "frameAlpha" } },
     } },
     -- Heals, shields and the power strip keep the unit frames' shipped
     -- colours (Raid/Cell.lua): the note says so.
