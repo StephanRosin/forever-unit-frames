@@ -184,19 +184,22 @@ end
 
 -- Blizzard's frames are already hidden for every frame that was on; one
 -- the backup turns off only gets Blizzard's back after a /reload. The
--- player's hideBlizzardCastbar is a second such flag: Blizzard.Conceal
+-- player's hideBlizzardCastbar (and hideBlizzardAuras) is a second such flag: Blizzard.Conceal
 -- hides Blizzard's cast bar in response to a change (login, or
 -- hideBlizzardCastbar turning on) and never reveals it again on its own,
 -- so the same problem applies if the backup turns it back off.
-local function hintReload(before, beforeHideCastbar)
+local function hintReload(before, beforeHide)
     for scope, was in pairs(before) do
         if was and not ns.FrameEnabled(scope) then
             ns.Print(ns.L.RELOAD_FOR_BLIZZARD)
             return
         end
     end
-    if beforeHideCastbar and not ns.Config.Get("player", "hideBlizzardCastbar") then
-        ns.Print(ns.L.RELOAD_FOR_BLIZZARD)
+    for key, was in pairs(beforeHide) do
+        if was and not ns.Config.Get("player", key) then
+            ns.Print(ns.L.RELOAD_FOR_BLIZZARD)
+            return
+        end
     end
 end
 
@@ -206,10 +209,11 @@ function tryMigrate()
     local profile = fromMacro()
     if not profile then return false end
     local before = enabledFrames()
-    local beforeHideCastbar = ns.Config.Get("player", "hideBlizzardCastbar")
+    local beforeHide = { hideBlizzardCastbar = ns.Config.Get("player", "hideBlizzardCastbar"),
+        hideBlizzardAuras = ns.Config.Get("player", "hideBlizzardAuras") }
     lateMigration = false
     ns.Config.Import(profile)   -- its CONFIG_CHANGED save is held or queued
-    hintReload(before, beforeHideCastbar)
+    hintReload(before, beforeHide)
     endWait("MacroBackup")
     handOver()
     return true

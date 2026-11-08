@@ -324,6 +324,10 @@ Settings.Define({ key = "castbarEnabled", code = "CE", scope = "frame", only = C
 -- castbarEnabled -- some players want both cast bars shown at once.
 Settings.Define({ key = "hideBlizzardCastbar", code = "CB", scope = "frame", only = { player = true },
     type = "bool", default = false })
+-- Player only: conceals Blizzard's buff and debuff frames at the minimap
+-- (BuffFrame, DebuffFrame), for those who show them on the player frame.
+Settings.Define({ key = "hideBlizzardAuras", code = "BF", scope = "frame", only = { player = true },
+    type = "bool", default = false })
 -- Single frames may detach their castbar (own mover) or lay it over their
 -- portrait; party castbars dock above or below each member.
 local CASTBAR_SINGLE = { player = true, target = true, targettarget = true, targettargettarget = true, pet = true, pettarget = true, focus = true }

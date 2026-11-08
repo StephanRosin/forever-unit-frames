@@ -150,7 +150,7 @@ Schema.FRAME = {
     -- Buffs and debuffs: what shows first, then a block for your own.
     { id = "auras", sections = {
         { id = "auraIcons", keys = { "auraBorder", "auraBorderSize" } },
-        { id = "buffs", keys = { "buffsEnabled", "weaponEnchants", "buffsOnlyMine", "buffsHideTracking", "buffsHidePermanent", "buffsHideLonger", "buffsShowTime", "buffsAnchor", "buffsFramePoint",
+        { id = "buffs", keys = { "buffsEnabled", "hideBlizzardAuras", "weaponEnchants", "buffsOnlyMine", "buffsHideTracking", "buffsHidePermanent", "buffsHideLonger", "buffsShowTime", "buffsAnchor", "buffsFramePoint",
             "buffsPoint", "buffsX", "buffsY", "buffsGrowth", "buffsRowGrowth", "buffsSize", "buffsSpacing",
             "buffsPerRow", "buffsMax" },
             placement = { "buffsAnchor", "buffsFramePoint", "buffsPoint", "buffsX", "buffsY", "buffsGrowth", "buffsRowGrowth" } },

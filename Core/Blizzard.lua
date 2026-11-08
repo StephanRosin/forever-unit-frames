@@ -112,6 +112,10 @@ function Blizzard.HideDefaults()
         if enabled("player") then
             Blizzard.Conceal(_G.PlayerFrame)
             if ns.Config.Get("player", "hideBlizzardCastbar") then Blizzard.Conceal(_G.PlayerCastingBarFrame) end
+            if ns.Config.Get("player", "hideBlizzardAuras") then
+                Blizzard.Conceal(_G.BuffFrame)
+                Blizzard.Conceal(_G.DebuffFrame)
+            end
         end
         if enabled("target") then
             concealTarget()
@@ -127,7 +131,7 @@ end
 
 ns.Listen("CONFIG_CHANGED", function(_, key)
     if key == nil or key == "enabled" or key == "unitFrames" or key == "hideBlizzardCastbar"
-        or key == "hideBlizzardFrame" then
+        or key == "hideBlizzardAuras" or key == "hideBlizzardFrame" then
         Blizzard.HideDefaults()
     end
 end)

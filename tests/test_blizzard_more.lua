@@ -7,7 +7,7 @@ local M = H.M
 local function blizzardFrames()
     local frames = {}
     for _, name in ipairs({ "PlayerFrame", "TargetFrame", "TargetFrameToT", "PetFrame", "FocusFrame",
-        "PlayerCastingBarFrame", "PartyFrame", "CompactPartyFrame" }) do
+        "PlayerCastingBarFrame", "PartyFrame", "CompactPartyFrame", "BuffFrame", "DebuffFrame" }) do
         frames[name] = M.newWidget("Frame", name)
         _G[name] = frames[name]
     end
@@ -49,6 +49,14 @@ H.check("player castbar untouched by castbarEnabled alone", B.PlayerCastingBarFr
 ns.Config.Set("player", "hideBlizzardCastbar", true)
 H.check("player castbar: hidden", B.PlayerCastingBarFrame:IsShown(), false)
 H.checkTrue("player castbar: reparented", B.PlayerCastingBarFrame:GetParent() ~= nil)
+
+-- Blizzard's buffs and debuffs at the minimap stay until hideBlizzardAuras.
+H.check("buffs kept", B.BuffFrame:IsShown(), true)
+H.check("debuffs kept", B.DebuffFrame:IsShown(), true)
+ns.Config.Set("player", "hideBlizzardAuras", true)
+H.check("buffs: hidden", B.BuffFrame:IsShown(), false)
+H.check("debuffs: hidden", B.DebuffFrame:IsShown(), false)
+H.check("only on the player", ns.Settings.Get("hideBlizzardAuras").only.player, true)
 
 -- Members Blizzard acquires later are hidden on the roster update.
 local late = M.newWidget("Button", "PartyMember2")

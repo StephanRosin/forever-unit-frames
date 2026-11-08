@@ -108,6 +108,15 @@ H.check("castbarEnabled no longer hints", rows.castbarEnabled.hintText, nil)
 H.checkTrue("reload hint fits",
     rows.hideBlizzardCastbar.hintText.GetStringWidth({ _text = L.HINT_hideBlizzardCastbar, _font = { nil, 10 } })
         <= ns.Widgets.LABEL_MAX_W)
+-- hideBlizzardAuras: on the player's Auras tab, below "Show buffs".
+O.SelectTab("auras")
+rows = rowKeys()
+H.checkTrue("player auras: hide-Blizzard row", rows.hideBlizzardAuras)
+H.checkTrue("hide row below buffs on", rowIndex("hideBlizzardAuras") > rowIndex("buffsEnabled"))
+O.Select("target")
+O.SelectTab("auras")
+H.check("target auras: no hide-Blizzard row", rowKeys().hideBlizzardAuras, nil)
+O.Select("player")
 for _, scope in ipairs({ "target", "party" }) do
     O.Select(scope)
     O.SelectTab("castbar")

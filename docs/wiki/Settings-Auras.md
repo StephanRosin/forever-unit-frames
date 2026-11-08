@@ -24,6 +24,7 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
 <tr><td><b>Show buffs</b></td><td></td><td>On, Off</td><td>Player, Target of Target, Pet: Off; Target, Focus, Party: On</td><td>all</td></tr>
+<tr><td><b>Hide Blizzard buffs and debuffs</b></td><td>Those at the minimap; /reload to show them again</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
 <tr><td><b>Weapon enchants</b></td><td>Poisons, stones, Rockbiter Weapon and the like, before the buffs</td><td>On, Off</td><td>On</td><td>Player</td></tr>
 <tr><td><b>Only mine</b></td><td>Cast by you or your pet</td><td>On, Off</td><td>Player, Target, Target of Target, Focus, Pet: Off; Party: On</td><td>all</td></tr>
 <tr><td><b>Hide tracking</b></td><td>Herb, mineral and treasure finding, tracking and sensing</td><td>On, Off</td><td>Player, Target: On; Target of Target, Focus, Pet, Party: Off</td><td>all</td></tr>
