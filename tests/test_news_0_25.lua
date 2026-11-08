@@ -16,8 +16,7 @@ for _, code in ipairs({ "enUS", "deDE", "esES", "frFR" }) do
         H.check(code .. " " .. key, type(rawget(ns.Locales[code], key)), "string")
     end
     H.check(code .. " action", entry and type(rawget(ns.Locales[code], entry.action.text)), "string")
-    H.checkTrue(code .. " names the section",
-        (rawget(ns.Locales[code], "NEWS_0_25_0_SHIELDS") or ""):find(ns.Locales[code].SECTION_shields, 1, true))
+    -- The section was renamed in 0.40.0 (Shield watch): the old news keep the old name.
     H.checkTrue(code .. " names the switch",
         (rawget(ns.Locales[code], "NEWS_0_25_0_SHIELDS") or ""):find(ns.Locales[code].SETTING_shieldsEnabled, 1, true))
 end
@@ -25,7 +24,7 @@ H.checkTrue("says it is off", (L.NEWS_0_25_0_SHIELDS or ""):find("off by default
 entry.action.run()
 H.check("action: the options", ns.Options.IsOpen(), true)
 H.check("action: the player frame", ns.Options.currentScope, "player")
-H.check("action: the Auras tab", ns.Options.currentTab, "auras")
+H.check("action: the Bars tab (since 0.40.0)", ns.Options.currentTab, "bars")
 
 -- The section's spell list: the hidden-auras editor with a note of its own
 -- and no marks.

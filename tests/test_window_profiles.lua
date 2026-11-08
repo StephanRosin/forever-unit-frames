@@ -14,7 +14,7 @@ end
 
 local ids = {}
 for _, tab in ipairs(ns.Schema.Tabs("general")) do ids[#ids + 1] = tab.id end
-H.check("general tabs", table.concat(ids, ","), "frames,clickCast,appearance,bars,status")
+H.check("general tabs", table.concat(ids, ","), "frames,clickCast,appearance,auras,bars,status")
 local frames = ns.Schema.Tabs("general")[1]
 H.check("minimap last in Frames", frames.sections[#frames.sections].id, "minimap")
 

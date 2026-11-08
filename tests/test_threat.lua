@@ -49,7 +49,7 @@ do
             end
         end
     end
-    H.check("in Status > Highlights", found, "status:highlights")
+    H.check("in Status > Threat", found, "status:threat")
     H.check("section label", ns.L.SECTION_highlights, "Highlights")
     H.checkTrue("label", ns.L.SETTING_threatGlow ~= "SETTING_threatGlow")
 end

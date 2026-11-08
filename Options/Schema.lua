@@ -13,18 +13,19 @@ local SHADOW_KEYS = { "shadowEnabled", "shadowAlpha", "shadowSize" }
 Schema.GENERAL = {
     -- The master switch (Core/Settings.lua: unitFrames), then one switch
     -- per frame (section.frames): the same "enabled" as on each frame's
-    -- Layout tab (Options/Window.lua builds them).
+    -- Layout tab (Options/Window.lua builds them); the addon's own minimap
+    -- button.
     { id = "frames", sections = {
         { id = "frames", keys = { "unitFrames" }, frames = true },
-        -- Click-casting (decision 76): the unit frames' switch; the
-        -- bindings are on the next tab.
-        { id = "clickCast", keys = { "clickCast" } },
         { id = "minimap", keys = { "minimapShow", "minimapAngle" } },
     } },
     -- The click-casting editor, the raid window's own (Raid/Options/
     -- ClickCast.lua builds both; the bindings belong to the character, as
-    -- there). note: the raid tab's.
-    { id = "clickCast", custom = "clickCast", note = "clickCast", sections = {} },
+    -- there). note: the raid tab's. Its section: the unit frames' switch
+    -- (decision 76), on top of the editor (Options/Window.lua puts it there).
+    { id = "clickCast", custom = "clickCast", note = "clickCast", sections = {
+        { id = "clickCast", keys = { "clickCast" } },
+    } },
     { id = "appearance", sections = {
         -- action: a two-click button under the rows (Options/Window.lua).
         { id = "font", keys = { "fontFace", "fontSize", "valueFontSize", "fontOutline", "fontShadow" },
@@ -32,13 +33,18 @@ Schema.GENERAL = {
         -- How the texts read (not the font): also each frame's Text tab.
         { id = "display", keys = { "infoClassColor", "textCompact", "showSurname" } },
         { id = "titleText", keys = { "awayBadge", "titleClassIcon", "classIconSize", "classIconX", "classIconY",
-            "classIconRing", "classIconRingColor" } },
-        { id = "auraIcons", keys = { "auraBorder", "auraBorderSize" } },
-        -- The spells hidden on every frame and raid cell.
-        { id = "auraBlock", keys = { "auraBlockAccount" } },
+            "classIconRing", "classIconRingColor" }, placement = { "classIconX", "classIconY" } },
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },
-        { id = "opacity", keys = { "frameAlpha" } },
+        -- How see-through the frames are, and how much range fading takes
+        -- off (how it measures: Status > Range).
+        { id = "visibility", keys = { "frameAlpha", "rangeAlpha" } },
+    } },
+    -- The aura icons' border and the spells hidden on every frame and raid
+    -- cell.
+    { id = "auras", sections = {
+        { id = "auraIcons", keys = { "auraBorder", "auraBorderSize" } },
+        { id = "auraBlock", keys = { "auraBlockAccount" } },
     } },
     -- The bars as on a frame's Bars tab: health colours, textures, the
     -- shield beside its colour, heals, power colours.
@@ -51,14 +57,14 @@ Schema.GENERAL = {
         { id = "powerColors", keys = { "powerColorMode", "powerColorMana", "powerColorRage", "powerColorFocus", "powerColorEnergy" } },
     } },
     -- The combat swords, the target highlight's colour; how range fading
-    -- measures and how strongly it fades; the switches
-    -- (and opacity overrides) are per frame (Status > Range on each page).
+    -- measures (its opacity: Appearance > Visibility; the switches are per
+    -- frame, Layout > Visibility on each page).
     { id = "status", sections = {
         { id = "combatIcon", keys = { "combatAnimation" } },
         -- The party's highlight colour, where its switch is (Status >
         -- Highlights).
         { id = "highlights", keys = { "targetHighlightColor" } },
-        { id = "range", keys = { "rangeAlpha", "rangeFriendlyMode", "rangeFriendlySpell", "rangeFriendlyYards",
+        { id = "range", keys = { "rangeFriendlyMode", "rangeFriendlySpell", "rangeFriendlyYards",
             "rangeHostileMode", "rangeHostileSpell", "rangeHostileYards" } },
     } },
 }
@@ -78,7 +84,10 @@ Schema.FRAME = {
         { id = "portrait", keys = { "portraitMode", "portraitStyle", "portraitHeight", "portraitZoom", "portraitOffsetY" } },
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },
-        { id = "opacity", keys = { "frameAlpha" } },
+        -- Everything about how see-through the frame is: its opacity, then
+        -- range fading and (player) fading out of combat, a share of it.
+        { id = "visibility", keys = { "frameAlpha", "rangeFade", "rangeAlpha", "playerFadeOOC", "playerFadeAlpha",
+            "playerFadeTarget", "playerFadeHurt", "playerFadeGroup", "playerFadePet" } },
         -- General's switch, overridable here (decision 76).
         { id = "clickCast", keys = { "clickCast" } },
     } },
@@ -107,82 +116,107 @@ Schema.FRAME = {
         { id = "druidMana", keys = { "druidMana", "druidManaHeight" } },
         { id = "fiveSecondRule", keys = { "fsrEnabled", "fsrSpark", "fsrSparkDirection", "fsrSparkWidth", "fsrSparkColor", "fsrText",
             "fsrTextPoint", "fsrTextTenths", "fsrDim", "fsrDimAlpha" } },
-    } },
-    -- The note: what "Info" shows, said once for every text.
-    { id = "text", note = "texts", sections = {
-        { id = "titleText", keys = { "titleText", "titleTextCenter", "titleTextRight", "titleColorMode", "awayBadge", "titleClassIcon", "classIconSize",
-            "classIconX", "classIconY", "classIconRing", "classIconRingColor" } },
-        { id = "healthText", keys = { "textHealthLeft", "textHealthCenter", "textHealthRight" } },
-        { id = "powerText", keys = { "textPowerLeft", "textPowerCenter", "textPowerRight" } },
-        { id = "footerText", keys = { "footerHeight", "footerTextLeft", "footerTextCenter", "footerTextRight" } },
-        -- The damage and heal numbers shown inside the frame.
-        { id = "combatFeedback", keys = { "combatFeedback", "combatFeedbackPoint", "combatFeedbackX",
-            "combatFeedbackY", "combatFeedbackFont", "combatFeedbackSize", "combatFeedbackOutline" } },
-        -- How the texts read, on every bar: colours, level colour, compact
-        -- values, the secondary name.
-        { id = "display", keys = { "levelColorMode", "barNameColorMode", "infoClassColor", "textCompact",
-            "showSurname" } },
-        { id = "font", keys = { "fontFace", "fontSize", "valueFontSize", "fontOutline", "fontShadow" } },
-    } },
-    { id = "auras", sections = {
-        { id = "auraIcons", keys = { "auraBorder", "auraBorderSize" } },
-        { id = "buffs", keys = { "buffsEnabled", "weaponEnchants", "buffsOnlyMine", "buffsHideTracking", "buffsHidePermanent", "buffsHideLonger", "buffsShowTime", "buffsAnchor", "buffsFramePoint",
-            "buffsPoint", "buffsX", "buffsY", "buffsGrowth", "buffsRowGrowth", "buffsSize", "buffsSpacing",
-            "buffsPerRow", "buffsMax", "buffsHighlightOwn", "buffsOwnSize", "buffsOwnSameRow",
-            "buffsOwnPlacement", "buffsOwnFramePoint", "buffsOwnPoint", "buffsOwnX", "buffsOwnY", "buffsOwnGrowth",
-            "buffsOwnRowGrowth", "buffsOwnPerRow", "buffsCasterBorder", "buffsOwnBorderColor",
-            "buffsOtherBorderColor" } },
-        { id = "debuffs", keys = { "debuffsEnabled", "debuffsOnlyMine", "debuffsDispellable", "debuffsHidePermanent", "debuffsShowTime",
-            "debuffsAnchor", "debuffsFramePoint", "debuffsPoint", "debuffsX", "debuffsY", "debuffsGrowth",
-            "debuffsRowGrowth", "debuffsSize", "debuffsSpacing", "debuffsPerRow", "debuffsMax", "debuffsHighlightOwn",
-            "debuffsOwnSize", "debuffsOwnSameRow", "debuffsOwnPlacement", "debuffsOwnFramePoint", "debuffsOwnPoint",
-            "debuffsOwnX", "debuffsOwnY", "debuffsOwnGrowth", "debuffsOwnRowGrowth", "debuffsOwnPerRow" } },
-        { id = "dispels", keys = { "dispelsEnabled", "dispelsShowTime", "dispelsAnchor", "dispelsFramePoint",
-            "dispelsPoint", "dispelsX", "dispelsY", "dispelsGrowth", "dispelsRowGrowth", "dispelsSize",
-            "dispelsSpacing", "dispelsPerRow", "dispelsMax" } },
-        -- The shield watch (Elements/ShieldWatch.lua): the player only.
+        -- The shield watch (Elements/ShieldWatch.lua), the player only: the
+        -- shields' icons and the amount left; last, as it is long.
         { id = "shields", keys = { "shieldsEnabled", "shieldsPriest", "shieldsMage", "shieldsWarlock", "shieldsItems",
             "shieldsExtra", "shieldsHideInBuffs", "shieldsSize", "shieldsSpacing", "shieldsGrowth",
             "shieldsAnchor", "shieldsX", "shieldsY", "shieldsFramePoint", "shieldsPoint", "shieldsFrameX",
             "shieldsFrameY", "shieldsTotal", "shieldsTotalPoint", "shieldsTotalX",
             "shieldsTotalY", "shieldsTotalFont", "shieldsTotalSize", "shieldsTotalOutline", "shieldsTotalColor",
             "shieldsSwipe", "shieldsTime", "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY", "shieldsTimeFont",
-            "shieldsTimeSize", "shieldsTimeOutline", "shieldsTimeColor" } },
+            "shieldsTimeSize", "shieldsTimeOutline", "shieldsTimeColor" },
+            placement = { "shieldsGrowth", "shieldsAnchor", "shieldsX", "shieldsY", "shieldsFramePoint", "shieldsPoint",
+                "shieldsFrameX", "shieldsFrameY", "shieldsTotalPoint", "shieldsTotalX", "shieldsTotalY",
+                "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY" } },
+    } },
+    -- The note: what "Info" shows, said once for every text. The font
+    -- first: the sizes of every text below.
+    { id = "text", note = "texts", sections = {
+        { id = "font", keys = { "fontFace", "fontSize", "valueFontSize", "fontOutline", "fontShadow" } },
+        { id = "titleText", keys = { "titleText", "titleTextCenter", "titleTextRight", "titleColorMode", "awayBadge", "titleClassIcon", "classIconSize",
+            "classIconX", "classIconY", "classIconRing", "classIconRingColor" }, placement = { "classIconX", "classIconY" } },
+        { id = "healthText", keys = { "textHealthLeft", "textHealthCenter", "textHealthRight" } },
+        { id = "powerText", keys = { "textPowerLeft", "textPowerCenter", "textPowerRight" } },
+        { id = "footerText", keys = { "footerHeight", "footerTextLeft", "footerTextCenter", "footerTextRight" } },
+        -- The damage and heal numbers shown inside the frame.
+        { id = "combatFeedback", keys = { "combatFeedback", "combatFeedbackPoint", "combatFeedbackX",
+            "combatFeedbackY", "combatFeedbackFont", "combatFeedbackSize", "combatFeedbackOutline" },
+            placement = { "combatFeedbackPoint", "combatFeedbackX", "combatFeedbackY" } },
+        -- How the texts read, on every bar: colours, level colour, compact
+        -- values, the secondary name.
+        { id = "display", keys = { "levelColorMode", "barNameColorMode", "infoClassColor", "textCompact",
+            "showSurname" } },
+    } },
+    -- Buffs and debuffs: what shows first, then a block for your own.
+    { id = "auras", sections = {
+        { id = "auraIcons", keys = { "auraBorder", "auraBorderSize" } },
+        { id = "buffs", keys = { "buffsEnabled", "weaponEnchants", "buffsOnlyMine", "buffsHideTracking", "buffsHidePermanent", "buffsHideLonger", "buffsShowTime", "buffsAnchor", "buffsFramePoint",
+            "buffsPoint", "buffsX", "buffsY", "buffsGrowth", "buffsRowGrowth", "buffsSize", "buffsSpacing",
+            "buffsPerRow", "buffsMax" },
+            placement = { "buffsAnchor", "buffsFramePoint", "buffsPoint", "buffsX", "buffsY", "buffsGrowth", "buffsRowGrowth" } },
+        { id = "buffsOwn", keys = { "buffsHighlightOwn", "buffsOwnSize", "buffsOwnSameRow",
+            "buffsOwnPlacement", "buffsOwnFramePoint", "buffsOwnPoint", "buffsOwnX", "buffsOwnY", "buffsOwnGrowth",
+            "buffsOwnRowGrowth", "buffsOwnPerRow", "buffsCasterBorder", "buffsOwnBorderColor",
+            "buffsOtherBorderColor" },
+            placement = { "buffsOwnPlacement", "buffsOwnFramePoint", "buffsOwnPoint", "buffsOwnX", "buffsOwnY",
+                "buffsOwnGrowth", "buffsOwnRowGrowth" } },
+        { id = "debuffs", keys = { "debuffsEnabled", "debuffsOnlyMine", "debuffsDispellable", "debuffsHidePermanent", "debuffsShowTime",
+            "debuffsAnchor", "debuffsFramePoint", "debuffsPoint", "debuffsX", "debuffsY", "debuffsGrowth",
+            "debuffsRowGrowth", "debuffsSize", "debuffsSpacing", "debuffsPerRow", "debuffsMax" },
+            placement = { "debuffsAnchor", "debuffsFramePoint", "debuffsPoint", "debuffsX", "debuffsY", "debuffsGrowth",
+                "debuffsRowGrowth" } },
+        { id = "debuffsOwn", keys = { "debuffsHighlightOwn",
+            "debuffsOwnSize", "debuffsOwnSameRow", "debuffsOwnPlacement", "debuffsOwnFramePoint", "debuffsOwnPoint",
+            "debuffsOwnX", "debuffsOwnY", "debuffsOwnGrowth", "debuffsOwnRowGrowth", "debuffsOwnPerRow" },
+            placement = { "debuffsOwnPlacement", "debuffsOwnFramePoint", "debuffsOwnPoint", "debuffsOwnX", "debuffsOwnY",
+                "debuffsOwnGrowth", "debuffsOwnRowGrowth" } },
+        { id = "dispels", keys = { "dispelsEnabled", "dispelsShowTime", "dispelsAnchor", "dispelsFramePoint",
+            "dispelsPoint", "dispelsX", "dispelsY", "dispelsGrowth", "dispelsRowGrowth", "dispelsSize",
+            "dispelsSpacing", "dispelsPerRow", "dispelsMax" },
+            placement = { "dispelsAnchor", "dispelsFramePoint", "dispelsPoint", "dispelsX", "dispelsY", "dispelsGrowth",
+                "dispelsRowGrowth" } },
         -- The spells this frame hides (with the account's list).
         { id = "auraBlock", keys = { "auraBlock" } },
         { id = "totems", keys = { "totemsEnabled", "totemsSize", "totemsSpacing", "totemsDirection", "totemsFramePoint", "totemsPoint",
-            "totemsX", "totemsY" } },
+            "totemsX", "totemsY" }, placement = { "totemsDirection", "totemsFramePoint", "totemsPoint", "totemsX", "totemsY" } },
     } },
     -- What the unit is doing or what state it is in, drawn on the frame.
     -- The note: how a point on the frame and an own point place things.
     -- The swords' animation (section.with): on the player's page with its
     -- status icon's combat switch, on the others' with the combat icon.
+    -- placement: the rows folded under "Position" (Options/Window.lua).
     { id = "status", note = "points", sections = {
         { id = "statusIcons", keys = { "statusCombat", "combatAnimation", "statusResting", "statusSize",
-            "statusFramePoint", "statusPoint", "statusX", "statusY" }, with = { combatAnimation = "statusCombat" } },
+            "statusFramePoint", "statusPoint", "statusX", "statusY" }, with = { combatAnimation = "statusCombat" },
+            placement = { "statusFramePoint", "statusPoint", "statusX", "statusY" } },
         { id = "combatIcon", keys = { "combatIcon", "combatAnimation", "combatIconSize", "combatIconFramePoint", "combatIconPoint",
-            "combatIconX", "combatIconY" }, with = { combatAnimation = "combatIcon" } },
+            "combatIconX", "combatIconY" }, with = { combatAnimation = "combatIcon" },
+            placement = { "combatIconFramePoint", "combatIconPoint", "combatIconX", "combatIconY" } },
         { id = "pvpIcon", keys = { "pvpIcon", "pvpIconNPC", "pvpIconSize", "pvpIconFramePoint", "pvpIconPoint", "pvpIconX",
-            "pvpIconY" } },
+            "pvpIconY" }, placement = { "pvpIconFramePoint", "pvpIconPoint", "pvpIconX", "pvpIconY" } },
         { id = "raidMarker", keys = { "raidMarker", "raidMarkerSize", "raidMarkerFramePoint", "raidMarkerPoint",
-            "raidMarkerX", "raidMarkerY" } },
+            "raidMarkerX", "raidMarkerY" }, placement = { "raidMarkerFramePoint", "raidMarkerPoint", "raidMarkerX", "raidMarkerY" } },
         { id = "eliteMarker", keys = { "eliteMarker", "eliteMarkerStyle", "eliteBorderSize", "eliteMarkerFramePoint",
-            "eliteMarkerPoint", "eliteMarkerX", "eliteMarkerY", "eliteMarkerSize" } },
+            "eliteMarkerPoint", "eliteMarkerX", "eliteMarkerY", "eliteMarkerSize" },
+            placement = { "eliteMarkerFramePoint", "eliteMarkerPoint", "eliteMarkerX", "eliteMarkerY" } },
         { id = "petHappiness", keys = { "petHappiness", "petHappinessHideHappy", "petHappinessSize",
-            "petHappinessFramePoint", "petHappinessPoint", "petHappinessX", "petHappinessY" } },
+            "petHappinessFramePoint", "petHappinessPoint", "petHappinessX", "petHappinessY" },
+            placement = { "petHappinessFramePoint", "petHappinessPoint", "petHappinessX", "petHappinessY" } },
         { id = "groupIcons", keys = { "groupLeader", "groupReadyCheck", "groupResurrect", "groupSummon", "groupPhase", "groupRole",
             "groupIconSize",
-            "groupIconFramePoint", "groupIconPoint", "groupIconX", "groupIconY" } },
+            "groupIconFramePoint", "groupIconPoint", "groupIconX", "groupIconY" },
+            placement = { "groupIconFramePoint", "groupIconPoint", "groupIconX", "groupIconY" } },
         { id = "comboPoints", keys = { "comboPoints", "comboHideEmpty", "comboShape", "comboSize", "comboSpacing", "comboColor",
-            "comboFramePoint", "comboPoint", "comboX", "comboY" } },
-        -- What lights the frame up: threat, the party's target, a debuff
-        -- you can dispel.
-        { id = "highlights", keys = { "threatGlow", "targetHighlight", "targetHighlightColor", "targetHighlightSize",
+            "comboFramePoint", "comboPoint", "comboX", "comboY" },
+            placement = { "comboFramePoint", "comboPoint", "comboX", "comboY" } },
+        -- Threat together: the glow on the frame and (player, pet's target)
+        -- the bar below it.
+        { id = "threat", keys = { "threatGlow", "threatBar", "threatBarHeight", "threatBarWarn", "threatBarRole",
+            "threatBarSolo" } },
+        -- What lights the frame up: the party's target, a debuff you can
+        -- dispel, the mouse.
+        { id = "highlights", keys = { "targetHighlight", "targetHighlightColor", "targetHighlightSize",
             "dispelHighlight", "hoverHighlight" } },
-        -- Fading comes last: how the frame behaves, not what it shows.
-        { id = "range", keys = { "rangeFade", "rangeAlpha" } },
-        { id = "outOfCombat", keys = { "playerFadeOOC", "playerFadeAlpha", "playerFadeTarget",
-            "playerFadeHurt", "playerFadeGroup", "playerFadePet" } },
     } },
     { id = "castbar", sections = {
         { id = "castbar", keys = { "castbarEnabled", "castbarAlwaysShow", "hideBlizzardCastbar", "castbarPosition", "castbarDock",
@@ -190,8 +224,6 @@ Schema.FRAME = {
         { id = "castbarContent", keys = { "castbarIcon", "castbarName", "castbarTime", "castbarInterrupt", "castbarLatency", "castbarLatencyPoint",
             "castbarLatencyX" } },
         { id = "castbarDetached", keys = { "castbarX", "castbarY" } },
-        { id = "threatBar", keys = { "threatBar", "threatBarHeight", "threatBarWarn", "threatBarRole",
-            "threatBarSolo" } },
     } },
 }
 

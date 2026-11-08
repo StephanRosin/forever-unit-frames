@@ -20,7 +20,7 @@ aren't built for WoW: Forever yet.
 
 The raid window's own click-casting (`/fuf raid` > General > Click-casting) also works on the unit
 frames: player, pet, target, target of target, focus, the party and its pets, also while the raid frames are
-switched off. Switch it in the unit frames' options under General > Frames (**Click-casting**), or
+switched off. Switch it in the unit frames' options on top of General > Click-casting (**Click-casting**), or
 per frame on its Layout tab. With the default bindings nothing changes: left click targets, right
 click opens the menu. While Clique is loaded, the automatic mode leaves the clicks to Clique.
 
@@ -38,7 +38,10 @@ time. Blizzard's own frames have the same limit.
 
 Each settings page lists every option with its place: tab, then section. For example *Name color in
 bar texts* is on [[Text|Settings-Text]] > *Presentation*. The page names match the tabs in `/fuf`, and the
-sidebar on the right lists them all.
+sidebar on the right lists them all. The search box at the top of `/fuf` finds any option by name.
+In 0.40.0 a few moved: the threat bar to Status > *Threat* (with the threat glow), the shield watch to
+the end of Bars, range and out-of-combat fading to Layout > *Visibility and fading*, the account's hidden
+auras to General > Auras. Anchors, points, offsets and growth are folded under *Position and growth*.
 
 ### How do I get my frames back in place after a mistake?
 

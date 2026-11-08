@@ -13,8 +13,10 @@ M.RunTimers()
 local Options, RO, RC, L = ns.Options, ns.RaidOptions, ns.RaidConfig, ns.L
 
 local function click(button) button:GetScript("OnClick")(button) end
+-- The editor's rows (the unit frames' own switch above them shares the
+-- key "clickCast" with the editor's mode row).
 local function rowIn(rows, key)
-    for _, row in ipairs(rows or {}) do if row.key == key then return row end end
+    for _, row in ipairs(rows or {}) do if row.key == key and row.clickCastRow then return row end end
 end
 local function pick(button, text)
     click(button)
@@ -31,7 +33,7 @@ end
 -- The tab: after Frames, on General only.
 local ids = {}
 for i, tab in ipairs(ns.Schema.Tabs("general")) do ids[i] = tab.id end
-H.check("General's tabs", table.concat(ids, ","), "frames,clickCast,appearance,bars,status")
+H.check("General's tabs", table.concat(ids, ","), "frames,clickCast,appearance,auras,bars,status")
 local frameTabs = {}
 for _, tab in ipairs(ns.Schema.Tabs("player")) do frameTabs[#frameTabs + 1] = tab.id end
 H.checkTrue("not on a frame's page", not table.concat(frameTabs, ","):find("clickCast", 1, true))

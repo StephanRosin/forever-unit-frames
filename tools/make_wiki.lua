@@ -125,14 +125,18 @@ end
 
 -- What each frame tab is for (the page's first line).
 local TAB_INTRO = {
-    layout = "Size, position, the rows of the frame, portrait, border and corners, shadow.",
+    layout = "Size, position, the rows of the frame, portrait, border and corners, shadow, and how see-through the"
+        .. " frame is: its opacity, range fading and (player) fading out of combat.",
     group = "The party only: how the members are arranged (also sorted by role), their pets and their targets. Its Buffs section at the end holds the raid window's smart buff key, Also when solo and the buff window's switch: the same values, in effect while the raid frames are on.",
-    bars = "Colors and textures of the bars, shields, incoming heals, power colors and the druid's mana.",
-    text = "What the texts on the title row and the bars show, the damage and heal numbers, how the texts read,"
-        .. " and the font.",
-    auras = "Buffs, debuffs, the party's dispellable debuffs and the player's totems.",
-    status = "Icons and markers on the frame (the elite marker too), combo points, highlights and fading.",
-    castbar = "Castbars, and the player's threat bar below them.",
+    bars = "Colors and textures of the bars, shields (the player's shield watch too), incoming heals, power colors"
+        .. " and the druid's mana.",
+    text = "The font first, then what the texts on the title row and the bars show, the damage and heal numbers"
+        .. " and how the texts read.",
+    auras = "Buffs and debuffs, each with a block for your own, the party's dispellable debuffs and the player's"
+        .. " totems. Where the icons sit and grow is folded under **Position and growth** in each section.",
+    status = "Icons and markers on the frame (the elite marker too), combo points, threat (glow and the threat"
+        .. " bar) and highlights. Where an icon sits is folded under **Position and growth**.",
+    castbar = "Castbars: what they show and where.",
 }
 
 local function write(name, lines)
@@ -191,7 +195,7 @@ local SECTION_NOTE = {
         .. " and items. The total is the game's own sum of every absorb on you (shields not on the list"
         .. " included); it shows while it is above zero, at a side of the icons. There is no amount per shield."
         .. " **Hide them in the buffs** leaves the watched shields out of your buffs.",
-    auraBlock = "Auras hidden by spell, such as a campfire or a food buff: the list under General > Appearance"
+    auraBlock = "Auras hidden by spell, such as a campfire or a food buff: the list under General > Auras"
         .. " hides them on every frame and raid cell, each frame's own list on that frame (both apply; each raid"
         .. " size has one too, on the raid window's Debuffs tab). Type spell IDs or names (several, separated by"
         .. " commas) and press Enter; a name adds the ranks in your spell book and the game's own spell of that"
@@ -362,7 +366,7 @@ local RAID_TAB_INTRO = {
         .. " corners; tint and border combine), and a row that shows every debuff (the one in the center may"
         .. " appear there too). Hidden auras: spells this"
         .. " size leaves out of the debuff row and the corner indicators, together with the unit frames' list"
-        .. " for everywhere (General > Appearance); on your group the game hides debuffs only for spells it never"
+        .. " for everywhere (General > Auras); on your group the game hides debuffs only for spells it never"
         .. " keeps secret.",
     indicators = "Up to five small squares at the corners and the top edge, each for spells of your choice"
         .. " (heals over time, shields).",

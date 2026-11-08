@@ -8,13 +8,14 @@ Profiles, export, import and reset are on the **Profiles** page at the bottom of
 
 **On this page:**
 
-- **[Frames](#frames):** [Which frames are shown](#which-frames-are-shown) · [Click-casting](#click-casting) · [Minimap button](#minimap-button)
+- **[Frames & addon](#frames--addon):** [Which frames are shown](#which-frames-are-shown) · [Minimap button](#minimap-button)
 - **[Click-casting](#click-casting-1)**
-- **[Appearance](#appearance):** [Font](#font) · [Presentation](#presentation) · [Title row](#title-row) · [Aura icons](#aura-icons) · [Hidden auras](#hidden-auras) · [Border and corners](#border-and-corners) · [Shadow](#shadow) · [Opacity](#opacity)
+- **[Appearance](#appearance):** [Font](#font) · [Presentation](#presentation) · [Title row](#title-row) · [Border and corners](#border-and-corners) · [Shadow](#shadow) · [Visibility and fading](#visibility-and-fading)
+- **[Auras](#auras):** [Aura icons](#aura-icons) · [Hidden auras](#hidden-auras)
 - **[Bars](#bars):** [Health bar](#health-bar) · [Textures](#textures) · [Absorb shields](#absorb-shields) · [Incoming heals](#incoming-heals) · [Power colors](#power-colors)
 - **[Status](#status):** [Combat icon](#combat-icon) · [Highlights](#highlights) · [Range](#range)
 
-## Frames
+## Frames & addon
 
 ### Which frames are shown
 
@@ -24,17 +25,6 @@ Below **Use unit frames**, one switch per frame: the frame's own, as on its page
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
 <tr><td><b>Use unit frames</b></td><td>Off: none shown; /reload brings back Blizzard's</td><td>On, Off</td><td>On</td></tr>
-</tbody>
-</table>
-
-### Click-casting
-
-The click-casting bindings (General > Click-casting here, or `/fuf raid` > General > Click-casting) on this frame: one switch on General for every unit frame, each frame can differ on its Layout tab. Works while the raid frames are off. With the default bindings nothing changes (left click targets, right click opens the menu).
-
-<table>
-<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
-<tbody>
-<tr><td><b>Click-casting</b></td><td>Clicks use the bindings on the Click-casting tab</td><td>On, Off</td><td>On</td></tr>
 </tbody>
 </table>
 
@@ -95,27 +85,6 @@ Button: **Apply to all frames**.
 </tbody>
 </table>
 
-### Aura icons
-
-<table>
-<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
-<tbody>
-<tr><td><b>Border around the icons</b></td><td>Debuffs: shows the dispel type (magic, curse, poison, disease)</td><td>On, Off</td><td>On</td></tr>
-<tr><td><b>Border thickness</b></td><td></td><td>1 – 6</td><td>1</td></tr>
-</tbody>
-</table>
-
-### Hidden auras
-
-Auras hidden by spell, such as a campfire or a food buff: the list under General > Appearance hides them on every frame and raid cell, each frame's own list on that frame (both apply; each raid size has one too, on the raid window's Debuffs tab). Type spell IDs or names (several, separated by commas) and press Enter; a name adds the ranks in your spell book and the game's own spell of that name, other ranks go in by ID. Up to 100 spells per list. Faster: **Shift + right-click** on a frame's auras lists that row's auras the game lets you hide on that unit, out of combat; pick one to hide it on that frame (**Shift + Ctrl**: everywhere). With nothing to offer the chat says why; a Shift (or Ctrl + Shift) right-click bound to click-casting casts instead. `/fuf auras undo` takes the last one back. The game decides where a spell can be hidden: buffs on you, your group, pets and other friendly units; debuffs only on enemies, except spells the game never keeps secret (those everywhere). The list marks entries that will not hide everywhere on its frames.
-
-<table>
-<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
-<tbody>
-<tr><td><b>Hidden auras (everywhere)</b></td><td>On every frame and raid cell</td><td>Spell IDs or names, up to 100 spells</td><td>(none)</td></tr>
-</tbody>
-</table>
-
 ### Border and corners
 
 <table>
@@ -141,12 +110,36 @@ Auras hidden by spell, such as a campfire or a food buff: the list under General
 </tbody>
 </table>
 
-### Opacity
+### Visibility and fading
 
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
-<tr><td><b>Frame opacity (%)</b></td><td>Fading out of range or out of combat comes on top</td><td>10 – 100</td><td>100</td></tr>
+<tr><td><b>Frame opacity (%)</b></td><td>Range and out-of-combat fading below come on top</td><td>10 – 100</td><td>100</td></tr>
+<tr><td><b>Opacity out of range (%)</b></td><td>General sets it for every frame; a frame's page can override it</td><td>0 – 100</td><td>70</td></tr>
+</tbody>
+</table>
+
+## Auras
+
+### Aura icons
+
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Border around the icons</b></td><td>Debuffs: shows the dispel type (magic, curse, poison, disease)</td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Border thickness</b></td><td></td><td>1 – 6</td><td>1</td></tr>
+</tbody>
+</table>
+
+### Hidden auras
+
+Auras hidden by spell, such as a campfire or a food buff: the list under General > Auras hides them on every frame and raid cell, each frame's own list on that frame (both apply; each raid size has one too, on the raid window's Debuffs tab). Type spell IDs or names (several, separated by commas) and press Enter; a name adds the ranks in your spell book and the game's own spell of that name, other ranks go in by ID. Up to 100 spells per list. Faster: **Shift + right-click** on a frame's auras lists that row's auras the game lets you hide on that unit, out of combat; pick one to hide it on that frame (**Shift + Ctrl**: everywhere). With nothing to offer the chat says why; a Shift (or Ctrl + Shift) right-click bound to click-casting casts instead. `/fuf auras undo` takes the last one back. The game decides where a spell can be hidden: buffs on you, your group, pets and other friendly units; debuffs only on enemies, except spells the game never keeps secret (those everywhere). The list marks entries that will not hide everywhere on its frames.
+
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Hidden auras (everywhere)</b></td><td>On every frame and raid cell</td><td>Spell IDs or names, up to 100 spells</td><td>(none)</td></tr>
 </tbody>
 </table>
 
@@ -234,7 +227,6 @@ Auras hidden by spell, such as a campfire or a food buff: the list under General
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
-<tr><td><b>Opacity out of range (%)</b></td><td>General sets it for every frame; a frame's page can override it</td><td>0 – 100</td><td>70</td></tr>
 <tr><td><b>Friends: measure by</b></td><td></td><td>Automatic (spell), Spell, Yards, Off</td><td>Yards</td></tr>
 <tr><td><b>Spell for friends</b></td><td></td><td>Text (a spell name or ID)</td><td>(none)</td></tr>
 <tr><td><b>Friendly range (yards)</b></td><td></td><td>5 – 40</td><td>40</td></tr>

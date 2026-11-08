@@ -138,7 +138,9 @@ for _, case in ipairs(CASES) do
         H.check(label .. "wakes " .. key, rowFor(key) and rowFor(key).enabledState, true)
         C.Set(scope, parent, off)
         H.check(label .. "greys " .. key, rowFor(key) and rowFor(key).enabledState, false)
-        H.checkTrue(label .. "keeps the row " .. key, rowFor(key) and rowFor(key):IsShown())
+        -- Greyed, not hidden (a row in a closed placement fold is the fold's).
+        local row = rowFor(key)
+        H.checkTrue(label .. "keeps the row " .. key, row and (row:IsShown() or (row.fold ~= nil and not row.fold.open)))
     end
     C.ResetScope(scope)
 end

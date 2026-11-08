@@ -34,7 +34,8 @@ local function sectionIds(scope)
         end
     end
 end
-H.check("party aura sections", sectionIds("party"):match("^[^,]*,[^,]*,[^,]*,[^,]*"), "auraIcons,buffs,debuffs,dispels")
+H.check("party aura sections", sectionIds("party"):match("^[^,]*,[^,]*,[^,]*,[^,]*,[^,]*,[^,]*"),
+    "auraIcons,buffs,buffsOwn,debuffs,debuffsOwn,dispels")
 
 -- Containers ---------------------------------------------------------------------
 M.units.party1 = { name = "Ann", health = 5, healthMax = 10 }

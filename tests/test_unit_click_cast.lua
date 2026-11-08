@@ -117,10 +117,10 @@ H.check("mode back", frameOf("pet"):GetAttribute("ctrl-type1"), "assist")
 -- Options: General shows the switch (the bindings have a tab of their
 -- own, test_unit_click_cast_tab.lua); each frame as an inherited row.
 local Options = ns.Options
-Options.Open("general", "frames")
+Options.Open("general", "clickCast")
 local row
 for _, r in ipairs(Options.rows) do
-    if r.key == "clickCast" then row = r end
+    if r.key == "clickCast" and not r.clickCastRow then row = r end
 end
 H.checkTrue("general: the row", row)
 H.check("general: label", row and row.label:GetText(), L.SETTING_clickCast)

@@ -63,7 +63,7 @@ box:SetText(L.SETTING_playerFadeOOC)
 H.check("the player's setting", box.list.rows[1].entry.scope, "player")
 box:GetScript("OnEnterPressed")(box)
 H.check("Enter takes the first", Options.currentScope, "player")
-H.check("its tab", Options.currentTab, "status")
+H.check("its tab", Options.currentTab, "layout")
 
 -- One entry per shared setting: the current frame's, not one per frame.
 Options.Select("party")

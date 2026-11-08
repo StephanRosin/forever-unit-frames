@@ -2,13 +2,26 @@
 
 # Settings: Text
 
-What the texts on the title row and the bars show, the damage and heal numbers, how the texts read, and the font.
+The font first, then what the texts on the title row and the bars show, the damage and heal numbers and how the texts read.
 
 The **Text** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
 
 Level, class and race reads e.g. 60 Mage Gnome, or 60 Humanoid for a creature.
 
-**On this page:** [Title row](#title-row) · [Health bar text](#health-bar-text) · [Power bar text](#power-bar-text) · [Footer row](#footer-row) · [Combat numbers](#combat-numbers) · [Presentation](#presentation) · [Font](#font)
+**On this page:** [Font](#font) · [Title row](#title-row) · [Health bar text](#health-bar-text) · [Power bar text](#power-bar-text) · [Footer row](#footer-row) · [Combat numbers](#combat-numbers) · [Presentation](#presentation)
+
+## Font
+
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Font</b></td><td></td><td>Font</td><td>Friz Quadrata</td><td>all</td></tr>
+<tr><td><b>Font size</b></td><td></td><td>6 – 32</td><td>12</td><td>all</td></tr>
+<tr><td><b>Value font size</b></td><td>Health and power numbers; Auto: the font size</td><td>0 – 32 (0: Auto)</td><td>Auto</td><td>all</td></tr>
+<tr><td><b>Font style</b></td><td></td><td>None, Outline, Thick outline, Monochrome, Soft outline</td><td>Outline</td><td>all</td></tr>
+<tr><td><b>Font shadow</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
+</tbody>
+</table>
 
 ## Title row
 
@@ -90,19 +103,6 @@ Each row (title, health and power) can have a center text as well. While one is 
 <tr><td><b>Info: class in color</b></td><td>Level, class and race: only the class or creature type colored</td><td>On, Off</td><td>Off</td><td>all</td></tr>
 <tr><td><b>Compact values</b></td><td>1234/1234 instead of 1234 / 1234</td><td>On, Off</td><td>Off</td><td>all</td></tr>
 <tr><td><b>Show secondary name</b></td><td>Surname next to the first name</td><td>On, Off</td><td>Player, Target, Focus, Pet: On; Target of Target, Party: Off</td><td>all</td></tr>
-</tbody>
-</table>
-
-## Font
-
-<table>
-<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
-<tbody>
-<tr><td><b>Font</b></td><td></td><td>Font</td><td>Friz Quadrata</td><td>all</td></tr>
-<tr><td><b>Font size</b></td><td></td><td>6 – 32</td><td>12</td><td>all</td></tr>
-<tr><td><b>Value font size</b></td><td>Health and power numbers; Auto: the font size</td><td>0 – 32 (0: Auto)</td><td>Auto</td><td>all</td></tr>
-<tr><td><b>Font style</b></td><td></td><td>None, Outline, Thick outline, Monochrome, Soft outline</td><td>Outline</td><td>all</td></tr>
-<tr><td><b>Font shadow</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
 </tbody>
 </table>
 

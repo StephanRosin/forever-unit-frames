@@ -17,7 +17,7 @@ for _, code in ipairs({ "enUS", "deDE", "esES", "frFR" }) do
         H.check(code .. " " .. key, type(rawget(LC, key)), "string")
     end
     local line = rawget(LC, "NEWS_0_25_1_SHIELDS_PLACE") or ""
-    H.checkTrue(code .. " names the section", line:find(LC.SECTION_shields, 1, true))
+    -- The section was renamed in 0.40.0 (Shield watch): the old news keep the old name.
     H.checkTrue(code .. " names the setting", line:find(LC.SETTING_shieldsAnchor, 1, true))
 end
 H.check("enUS words", ns.Locales.enUS.NEWS_0_25_1_COMBAT_JOIN,

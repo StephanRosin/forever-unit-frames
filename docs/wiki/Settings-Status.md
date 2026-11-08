@@ -2,13 +2,13 @@
 
 # Settings: Status
 
-Icons and markers on the frame (the elite marker too), combo points, highlights and fading.
+Icons and markers on the frame (the elite marker too), combo points, threat (glow and the threat bar) and highlights. Where an icon sits is folded under **Position and growth**.
 
 The **Status** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
 
 Point on the frame and point of the icon: the icon's own point sits on that point of the frame; the offset X and Y moves it from there.
 
-**On this page:** [Status icons](#status-icons) · [Combat icon](#combat-icon) · [PvP icon](#pvp-icon) · [Raid target marker](#raid-target-marker) · [Elite / rare marker](#elite--rare-marker) · [Pet happiness](#pet-happiness) · [Group icons](#group-icons) · [Combo points](#combo-points) · [Highlights](#highlights) · [Range](#range) · [Out of combat](#out-of-combat)
+**On this page:** [Status icons](#status-icons) · [Combat icon](#combat-icon) · [PvP icon](#pvp-icon) · [Raid target marker](#raid-target-marker) · [Elite / rare marker](#elite--rare-marker) · [Pet happiness](#pet-happiness) · [Group icons](#group-icons) · [Combo points](#combo-points) · [Threat](#threat) · [Highlights](#highlights)
 
 ## Status icons
 
@@ -140,43 +140,30 @@ Where the marker (Marker style) sits: **Automatic** is its usual place, on the p
 </tbody>
 </table>
 
-## Highlights
+## Threat
 
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
 <tr><td><b>Threat glow</b></td><td>Player, party, pet: the unit's own threat. Target, focus: your threat on it</td><td>On, Off</td><td>Player, Party: On; Target, Target of Target, Focus, Pet: Off</td><td>all</td></tr>
+<tr><td><b>Threat bar below the castbar</b></td><td>Your threat on your target. Keeps a docked castbar's place</td><td>On, Off</td><td>On</td><td>Player</td></tr>
+<tr><td><b>Height</b></td><td></td><td>6 – 30</td><td>12</td><td>Player</td></tr>
+<tr><td><b>Yellow from (%)</b></td><td>Tank: someone reaches this share of your threat. Others: of the pull</td><td>50 – 99</td><td>80</td><td>Player</td></tr>
+<tr><td><b>Role</b></td><td>Automatic: by role, form or aura. Tanks see their lead, others their share</td><td>Automatic, Tank, Damage or healer</td><td>Automatic</td><td>Player</td></tr>
+<tr><td><b>Also without a group</b></td><td>Also when alone; a pet out counts as a group</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
+</tbody>
+</table>
+
+## Highlights
+
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
 <tr><td><b>Highlight your target</b></td><td>The party member you have targeted</td><td>On, Off</td><td>On</td><td>Party</td></tr>
 <tr><td><b>Target highlight color</b></td><td></td><td>Color</td><td><code>#ffffff</code>, 90 % opaque</td><td>Party</td></tr>
 <tr><td><b>Thickness</b></td><td></td><td>1 – 12</td><td>6</td><td>Party</td></tr>
 <tr><td><b>Tint border on dispellable debuff</b></td><td>In the debuff's color while it carries one you can dispel</td><td>On, Off</td><td>On</td><td>Player, Party</td></tr>
 <tr><td><b>Highlight under the mouse</b></td><td>The frame under the mouse lights up</td><td>On, Off</td><td>Off</td><td>all</td></tr>
-</tbody>
-</table>
-
-## Range
-
-<table>
-<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
-<tbody>
-<tr><td><b>Fade when out of range</b></td><td>Measured as set in General &gt; Status &gt; Range</td><td>On, Off</td><td>On</td><td>Target, Target of Target, Focus, Pet, Party</td></tr>
-<tr><td><b>Opacity out of range (%)</b></td><td>General sets it for every frame; a frame's page can override it</td><td>0 – 100</td><td>70</td><td>Target, Target of Target, Focus, Pet, Party</td></tr>
-</tbody>
-</table>
-
-## Out of combat
-
-With **Pet frame fades too** the pet frame takes the player frame's opacity whenever that fades, and shows in full while you miss health. Meanwhile the pet frame's own range fading waits; it is back whenever something keeps the player frame in full (combat, a cast, a target, test mode, unlocked frames, a group with the next option). With **Never fade in a group** the frames stay in full while you are in a party or raid, for healers who heal by mouse-over without a target.
-
-<table>
-<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
-<tbody>
-<tr><td><b>Fade out of combat</b></td><td>While idle: no combat, no cast</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
-<tr><td><b>Opacity when faded (%)</b></td><td>0 = invisible</td><td>0 – 100</td><td>25</td><td>Player</td></tr>
-<tr><td><b>Show in full with a target</b></td><td>Fades back in when you select a target</td><td>On, Off</td><td>On</td><td>Player</td></tr>
-<tr><td><b>Show in full when hurt</b></td><td>Fades back in while your health is not full</td><td>On, Off</td><td>On</td><td>Player</td></tr>
-<tr><td><b>Never fade in a group</b></td><td>In a party or raid the frame always shows in full</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
-<tr><td><b>Pet frame fades too</b></td><td>Your pet's frame takes the same opacity</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
 </tbody>
 </table>
 

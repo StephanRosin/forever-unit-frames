@@ -223,16 +223,25 @@ end
 
 -- Pages -------------------------------------------------------------------------
 
+-- Whether a row is folded away (a closed placement fold, below).
+local function folded(row)
+    return row.fold ~= nil and not row.fold.open
+end
+
 -- The page's rows laid out anew with their gaps, after a row changed its
--- height (the hidden-auras editor's list); the scroll range follows.
+-- height (the hidden-auras editor's list) or a fold opened or closed; the
+-- scroll range follows.
 local function restack(page)
     local y = PAGE_TOP
     for _, row in ipairs(page.rows) do
-        y = y + row.stackGap
-        row:ClearAllPoints()
-        row:SetPoint("TOPLEFT", page, "TOPLEFT", 0, -y)
-        row:SetPoint("TOPRIGHT", page, "TOPRIGHT", 0, -y)
-        y = y + row:GetHeight()
+        if row.fold then row:SetShown(not folded(row)) end
+        if not folded(row) then
+            y = y + row.stackGap
+            row:ClearAllPoints()
+            row:SetPoint("TOPLEFT", page, "TOPLEFT", 0, -y)
+            row:SetPoint("TOPRIGHT", page, "TOPRIGHT", 0, -y)
+            y = y + row:GetHeight()
+        end
     end
     page.height = y + PAGE_BOTTOM
     Options.PageResized(page)
@@ -253,6 +262,7 @@ local function newStack(page)
     function stack.finish()
         page.rows, page.height = stack.rows, stack.y + PAGE_BOTTOM
         page.Restack = function() restack(page) end
+        if page.hasFolds then restack(page) end
     end
     return stack
 end
@@ -283,13 +293,60 @@ local function frameSwitches(page, stack)
     end
 end
 
+-- A section's placement rows (section.placement: anchors, points,
+-- offsets, growth) fold under one row, closed until clicked. A fold opened
+-- stays open while the game runs (openFolds, by page and section).
+local openFolds = {}
+local function foldRow(page, id)
+    local row = Widgets.NewRow(page, { label = "" })
+    row.isFold = true
+    local button = CreateFrame("Button", nil, row)
+    button:SetAllPoints(row)
+    button:SetScript("OnEnter", function() row.hover:Show() end)
+    button:SetScript("OnLeave", function() row.hover:Hide() end)
+    function row:SetOpen(open)
+        row.open = open
+        openFolds[id] = open or nil
+        row:SetLabel((open and "- " or "+ ") .. L.FOLD_PLACEMENT)
+    end
+    button:SetScript("OnClick", function()
+        row:SetOpen(not row.open)
+        page.Restack()
+    end)
+    row.button = button
+    function row:Refresh() end
+    function row:SetEnabled() end
+    row:SetOpen(openFolds[id] == true)
+    return row
+end
+
+-- The section's rows: its settings, those of section.placement folded at
+-- the end (in the section's order).
+local function addSectionRows(page, stack, scope, section, keys)
+    local placement = {}
+    for _, key in ipairs(section.placement or {}) do placement[key] = true end
+    local foldKeys = {}
+    for _, key in ipairs(keys) do
+        if placement[key] then foldKeys[#foldKeys + 1] = key else stack.add(settingRow(page, scope, key)) end
+    end
+    if #foldKeys == 0 then return end
+    local fold = foldRow(page, scope .. ":" .. section.id)
+    stack.add(fold)
+    for _, key in ipairs(foldKeys) do
+        local row = settingRow(page, scope, key)
+        row.fold = fold
+        stack.add(row)
+    end
+    page.hasFolds = true
+end
+
 -- A tab's sections onto the stack: those with a setting of the page.
 local function addSections(page, stack, scope, tab)
     for _, section in ipairs(tab.sections or {}) do
         local keys = Schema.SectionKeys(section, scope)
         if #keys > 0 then
             stack.add(sectionHeader(page, section.id))
-            for _, key in ipairs(keys) do stack.add(settingRow(page, scope, key)) end
+            addSectionRows(page, stack, scope, section, keys)
             if section.frames then frameSwitches(page, stack) end
             if section.action then stack.add(actionBlock(page, section.action)) end
         end
@@ -541,6 +598,7 @@ local function buildProfilePage(page)
     local header = Widgets.Header(page, L.PROFILES_SECTION)
     header.isSection = true
     stack.add(header)
+    stack.add(noteBlock(page, L.PROFILES_NOTE))
     profileRows(page, stack)
     for _, entry in ipairs(CUSTOM_BLOCKS) do
         header = Widgets.Header(page, L[entry.header])
@@ -566,7 +624,15 @@ local function pageFor(scope, tab)
     if tab.custom == "profiles" then
         buildProfilePage(page)
     elseif tab.custom == "clickCast" then
-        ns.RaidClickCastPage.Build(page, tab, CLICK_CAST_LAYOUT, "unit")
+        -- The unit frames' switch (the tab's section) above the editor.
+        local layout = setmetatable({ leading = function()
+            local rows = {}
+            for _, section in ipairs(tab.sections) do
+                for _, key in ipairs(Schema.SectionKeys(section, scope)) do rows[#rows + 1] = settingRow(page, scope, key) end
+            end
+            return rows
+        end }, { __index = CLICK_CAST_LAYOUT })
+        ns.RaidClickCastPage.Build(page, tab, layout, "unit")
         page.clickCast = true
     else
         buildSettingsPage(page, scope, tab)
@@ -797,11 +863,20 @@ local function tabButton(i)
     return b
 end
 
-local function renderTabs(tabs)
+-- A tab's name; a page may name a tab its own way (TAB_<id>_<scope>).
+local function tabLabel(tab, scope)
+    local own = "TAB_" .. tab.id .. "_" .. tostring(scope)
+    local text = L[own]
+    if text ~= nil and text ~= own then return text end
+    return L["TAB_" .. tab.id]
+end
+Options.TabLabel = tabLabel
+
+local function renderTabs(tabs, scope)
     for i, tab in ipairs(tabs) do
         local b = Options.tabButtons[i] or tabButton(i)
         b.tabId = tab.id
-        b.text:SetText(L["TAB_" .. tab.id])
+        b.text:SetText(tabLabel(tab, scope))
         b:SetWidth(math.max(TAB_MIN_W, (b.text:GetStringWidth() or 0) + TAB_PADDING))
         b:Show()
     end
@@ -944,9 +1019,9 @@ local function searchEntries()
     local list, seen = {}, {}
     local function add(scope)
         for _, tab in ipairs(Schema.Tabs(scope)) do
-            local tabPath = scopeText(scope) .. " > " .. L["TAB_" .. tab.id]
+            local tabPath = scopeText(scope) .. " > " .. tabLabel(tab, scope)
             if tab.custom then
-                list[#list + 1] = { title = L["TAB_" .. tab.id], path = scopeText(scope), scope = scope, tab = tab.id }
+                list[#list + 1] = { title = tabLabel(tab, scope), path = scopeText(scope), scope = scope, tab = tab.id }
             end
             for _, section in ipairs(tab.sections or {}) do
                 for _, key in ipairs(section.raidKeys or {}) do
@@ -1069,7 +1144,7 @@ function Options.Select(scope)
     Options.copyRow:SetShown(frameScope)
     Options.resetFrameButton:SetShown(frameScope)
     renderNav()
-    renderTabs(tabs)
+    renderTabs(tabs, scope)
     Options.SelectTab(tabId)
     highlightFrame(scope)
 end

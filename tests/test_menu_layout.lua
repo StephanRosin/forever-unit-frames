@@ -47,7 +47,7 @@ local function tabIds(scope)
     for _, tab in ipairs(ns.Schema.Tabs(scope)) do ids[#ids + 1] = tab.id end
     return table.concat(ids, ",")
 end
-H.check("General tabs", tabIds("general"), "frames,clickCast,appearance,bars,status")
+H.check("General tabs", tabIds("general"), "frames,clickCast,appearance,auras,bars,status")
 H.check("General: master switch in Frames", where("general", "unitFrames"), "frames:frames")
 H.check("General: textures on Bars", keysOf("general", "bars", "textures"), "barTexture,backgroundColor,titleBackground")
 H.check("General: Bars in a frame page's order", (function()
@@ -86,7 +86,7 @@ local function shown(scope, tabId, secId)
         end
     end
 end
-H.check("target Layout", sectionIds("target", "layout"), "frame,size,position,barHeights,portrait,border,shadow,opacity,clickCast")
+H.check("target Layout", sectionIds("target", "layout"), "frame,size,position,barHeights,portrait,border,shadow,visibility,clickCast")
 H.check("elite marker after the raid marker", sectionIds("target", "status"):match("raidMarker,eliteMarker") ~= nil, true)
 H.check("elite marker rows", shown("target", "status", "eliteMarker"),
     "eliteMarker,eliteMarkerStyle,eliteBorderSize,eliteMarkerFramePoint,eliteMarkerPoint,eliteMarkerX,eliteMarkerY,eliteMarkerSize")
@@ -96,8 +96,10 @@ H.check("corners with the border", shown("target", "layout", "border"),
 H.check("General: corners with the border", keysOf("general", "appearance", "border"),
     "borderShow,borderStyle,borderSize,borderPadding,borderColor,cornerRadius")
 H.check("party highlights", shown("party", "status", "highlights"),
-    "threatGlow,targetHighlight,targetHighlightColor,targetHighlightSize,dispelHighlight,hoverHighlight")
-H.check("player highlights", shown("player", "status", "highlights"), "threatGlow,dispelHighlight,hoverHighlight")
+    "targetHighlight,targetHighlightColor,targetHighlightSize,dispelHighlight,hoverHighlight")
+H.check("player highlights", shown("player", "status", "highlights"), "dispelHighlight,hoverHighlight")
+H.check("player threat: glow and bar", shown("player", "status", "threat"),
+    "threatGlow,threatBar,threatBarHeight,threatBarWarn,threatBarRole,threatBarSolo")
 H.check("player: swords after the combat switch", shown("player", "status", "statusIcons"),
     "statusCombat,combatAnimation,statusResting,statusSize,statusFramePoint,statusPoint,statusX,statusY")
 H.check("player: no combat icon section", shown("player", "status", "combatIcon"), "")

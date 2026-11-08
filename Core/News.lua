@@ -45,12 +45,12 @@ News.ENTRIES = {
             "NEWS_0_22_0_LOOK" },
         action = { text = "NEWS_OPEN_RAID", run = function() ns.RaidOptions.Open() end },
     },
-    -- The account's list of hidden auras is on General > Appearance.
+    -- The account's list of hidden auras is on General > Auras.
     ["0.23.0"] = {
         announce = true,
         lines = { "NEWS_0_23_0_HIDDEN", "NEWS_0_23_0_ADD", "NEWS_0_23_0_CLICK", "NEWS_0_23_0_OWN",
             "NEWS_0_23_0_ELITE", "NEWS_0_23_0_TOOLS", "NEWS_0_23_0_LOOK" },
-        action = { text = "NEWS_OPEN_HIDDEN", run = function() ns.Options.Open("general", "appearance") end },
+        action = { text = "NEWS_OPEN_HIDDEN", run = function() ns.Options.Open("general", "auras") end },
     },
     -- The five-second rule is on by default: its button opens where it is
     -- switched off (the player frame's Bars tab).
@@ -60,11 +60,11 @@ News.ENTRIES = {
         action = { text = "NEWS_OPEN_FSR", run = function() ns.Options.Open("player", "bars") end },
     },
     -- The shield watch is off by default: the button opens where it is
-    -- switched on (the player frame's Auras tab, section Shields).
+    -- switched on (the player frame's Bars tab, section Shield watch).
     ["0.25.0"] = {
         announce = true,
         lines = { "NEWS_0_25_0_SHIELDS", "NEWS_0_25_0_SHIELDS_MORE" },
-        action = { text = "NEWS_OPEN_SHIELDS", run = function() ns.Options.Open("player", "auras") end },
+        action = { text = "NEWS_OPEN_SHIELDS", run = function() ns.Options.Open("player", "bars") end },
     },
     ["0.25.1"] = {
         lines = { "NEWS_0_25_1_COMBAT_JOIN", "NEWS_0_25_1_SHIELDS_PLACE" },
@@ -118,6 +118,10 @@ News.ENTRIES = {
     },
     ["0.39.0"] = {
         lines = { "NEWS_0_39_0_OPACITY" },
+    },
+    -- The tidier options: the threat bar is the move players may miss.
+    ["0.40.0"] = {
+        lines = { "NEWS_0_40_0_MENU", "NEWS_0_40_0_MOVED", "NEWS_0_40_0_RAID" },
     },
 }
 

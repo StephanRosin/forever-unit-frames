@@ -76,7 +76,7 @@ C.ResetAll()
 -- same rows" greys while Free.
 local tab = ns.Schema.Tabs("target")[4]
 for n, g in ipairs({ "buffs", "debuffs" }) do
-    local keys = table.concat(tab.sections[n + 1].keys, ",")
+    local keys = table.concat(tab.sections[2 * n + 1].keys, ",")
     local want = {}
     for i, part in ipairs(PARTS) do want[i] = g .. part end
     H.checkTrue(g .. ": rows after 'same rows'", keys:find(g .. "OwnSameRow," .. table.concat(want, ","), 1, true))

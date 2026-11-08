@@ -65,10 +65,11 @@ local function hasKey(section, key)
     for _, k in ipairs(section.keys) do if k == key then return true end end
     return false
 end
-H.checkTrue("buffs section: highlight own", hasKey(tab.sections[2], "buffsHighlightOwn"))
-H.checkTrue("buffs section: own size", hasKey(tab.sections[2], "buffsOwnSize"))
-H.checkTrue("debuffs section: highlight own", hasKey(tab.sections[3], "debuffsHighlightOwn"))
-H.checkTrue("debuffs section: own size", hasKey(tab.sections[3], "debuffsOwnSize"))
+-- Their own block below each (since 0.40.0): Buffs, Your own buffs, Debuffs, Your own debuffs.
+H.checkTrue("own buffs section: highlight own", hasKey(tab.sections[3], "buffsHighlightOwn"))
+H.checkTrue("own buffs section: own size", hasKey(tab.sections[3], "buffsOwnSize"))
+H.checkTrue("own debuffs section: highlight own", hasKey(tab.sections[5], "debuffsHighlightOwn"))
+H.checkTrue("own debuffs section: own size", hasKey(tab.sections[5], "debuffsOwnSize"))
 H.check("label highlight", L.SETTING_debuffsHighlightOwn, "Mine first")
 H.check("label own size", L.SETTING_buffsOwnSize, "Size of mine")
 H.check("auto label", L.AUTO, "Auto")

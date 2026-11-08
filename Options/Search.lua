@@ -66,19 +66,30 @@ local function flash(row)
 end
 
 -- Scrolls a shown page's row of the key into view and lights it up. A key
--- without a row (a tab built by hand) leaves the page at its top.
+-- without a row (a tab built by hand) leaves the page at its top. A row in
+-- a closed fold (Options/Window.lua) opens its fold first.
 function Search.Reveal(scroll, page, key)
+    for _, row in ipairs(page.rows or {}) do
+        if row.key == key and row.fold and not row.fold.open then
+            row.fold:SetOpen(true)
+            if page.Restack then page.Restack() end
+            break
+        end
+    end
     local y = 0
     for _, row in ipairs(page.rows or {}) do
-        y = y + (row.stackGap or 0)
-        if row.key == key then
-            scroll:UpdateScrollChildRect()
-            local range = math.max(0, scroll:GetVerticalScrollRange())
-            scroll:SetVerticalScroll(math.max(0, math.min(range, y - REVEAL_MARGIN)))
-            flash(row)
-            return row
+        -- A row folded away takes no room.
+        if not (row.fold and not row.fold.open) then
+            y = y + (row.stackGap or 0)
+            if row.key == key then
+                scroll:UpdateScrollChildRect()
+                local range = math.max(0, scroll:GetVerticalScrollRange())
+                scroll:SetVerticalScroll(math.max(0, math.min(range, y - REVEAL_MARGIN)))
+                flash(row)
+                return row
+            end
+            y = y + row:GetHeight()
         end
-        y = y + row:GetHeight()
     end
     return nil
 end

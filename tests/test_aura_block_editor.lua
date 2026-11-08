@@ -60,8 +60,10 @@ local function checkGrows(name, win, key, set)
     H.check(name .. ": row below back", yOf(below), y0)
     H.check(name .. ": page back", page.height, h0)
 end
-Options.Open("player", "auras")
+-- The shield watch is on the Bars tab (since 0.40.0).
+Options.Open("player", "bars")
 checkGrows("more shields", Options, "shieldsExtra", function(v) C.Set("player", "shieldsExtra", v) end)
+Options.Open("player", "auras")
 checkGrows("player list", Options, "auraBlock", function(v) C.Set("player", "auraBlock", v) end)
 -- The scroll range follows the page while it is shown.
 local scroll = Options.frame.scroll
@@ -128,9 +130,9 @@ H.check("combat: remove off", row.lines[1].remove:IsEnabled(), false)
 M.SetCombat(false)
 H.check("after combat: on", row.edit:IsEnabled(), true)
 
--- General: the account's list.
+-- General: the account's list (General > Auras since 0.40.0).
 Options.Select("general")
-Options.SelectTab("appearance")
+Options.SelectTab("auras")
 row = rowOf(Options.rows, "auraBlockAccount")
 H.checkTrue("general: the editor", row and row.edit)
 type_(row, "7353")

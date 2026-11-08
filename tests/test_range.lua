@@ -58,10 +58,12 @@ do
     local found
     for _, tab in ipairs(ns.Schema.Tabs("party")) do
         for _, sec in ipairs(tab.sections or {}) do
-            if sec.id == "range" then found = tab.id end
+            for _, key in ipairs(sec.keys) do
+                if key == "rangeFade" then found = tab.id .. ":" .. sec.id end
+            end
         end
     end
-    H.check("range section on the status tab", found, "status")
+    H.check("range fading with the opacity on Layout", found, "layout:visibility")
     H.check("section label", ns.L.SECTION_range, "Range")
 end
 

@@ -73,7 +73,7 @@ H.check("the raid's range: measured as the unit frames'", ns.Locales.enUS.RAID_H
     "Measured as in the unit frames: General > Status > Range")
 
 -- The wiki says the notes too.
-local fh = io.open(ADDONDIR .. "/docs/wiki/Settings-Group.md")
+local fh = io.open(ADDONDIR .. "/docs/wiki/Settings-Group-layout.md")
 local page = fh and fh:read("*a") or ""
 if fh then fh:close() end
 H.checkTrue("wiki: the party's click-casting note", page:find(ns.Locales.enUS.NOTE_partyClickCast, 1, true) ~= nil)

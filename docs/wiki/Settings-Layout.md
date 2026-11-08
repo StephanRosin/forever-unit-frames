@@ -2,11 +2,11 @@
 
 # Settings: Layout
 
-Size, position, the rows of the frame, portrait, border and corners, shadow.
+Size, position, the rows of the frame, portrait, border and corners, shadow, and how see-through the frame is: its opacity, range fading and (player) fading out of combat.
 
 The **Layout** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
 
-**On this page:** [Display](#display) · [Size](#size) · [Position](#position) · [Bar heights](#bar-heights) · [Portrait](#portrait) · [Border and corners](#border-and-corners) · [Shadow](#shadow) · [Opacity](#opacity) · [Click-casting](#click-casting)
+**On this page:** [Display](#display) · [Size](#size) · [Position](#position) · [Bar heights](#bar-heights) · [Portrait](#portrait) · [Border and corners](#border-and-corners) · [Shadow](#shadow) · [Visibility and fading](#visibility-and-fading) · [Click-casting](#click-casting)
 
 ## Display
 
@@ -57,7 +57,7 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
 <tr><td><b>Portrait</b></td><td>Left/right: a square as tall as the frame. Above health: a full-width strip; the frame grows by its height</td><td>Off, Left, Right, Above health bar</td><td>Player, Target: Left; Target of Target, Focus, Pet, Party: Off</td><td>all</td></tr>
-<tr><td><b>Portrait style</b></td><td></td><td>2D, 3D (model), Class icon</td><td>Player, Target: 3D (model); Target of Target, Focus, Pet, Party: 2D</td><td>all</td></tr>
+<tr><td><b>Portrait style</b></td><td>2D picture, 3D model or class icon</td><td>2D, 3D (model), Class icon</td><td>Player, Target: 3D (model); Target of Target, Focus, Pet, Party: 2D</td><td>all</td></tr>
 <tr><td><b>Strip height</b></td><td></td><td>10 – 120</td><td>30</td><td>all</td></tr>
 <tr><td><b>3D zoom (%)</b></td><td>100: the game's portrait framing; more zooms in on the face</td><td>100 – 400</td><td>100</td><td>all</td></tr>
 <tr><td><b>3D offset Y</b></td><td>Moves the model up or down, e.g. to bring the eyes into the strip. Models differ</td><td>-100 – 100</td><td>0</td><td>all</td></tr>
@@ -89,12 +89,20 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 </tbody>
 </table>
 
-## Opacity
+## Visibility and fading
 
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Frame opacity (%)</b></td><td>Fading out of range or out of combat comes on top</td><td>10 – 100</td><td>100</td><td>all</td></tr>
+<tr><td><b>Frame opacity (%)</b></td><td>Range and out-of-combat fading below come on top</td><td>10 – 100</td><td>100</td><td>all</td></tr>
+<tr><td><b>Fade when out of range</b></td><td>Measured as set in General &gt; Status &gt; Range</td><td>On, Off</td><td>On</td><td>Target, Target of Target, Focus, Pet, Party</td></tr>
+<tr><td><b>Opacity out of range (%)</b></td><td>General sets it for every frame; a frame's page can override it</td><td>0 – 100</td><td>70</td><td>Target, Target of Target, Focus, Pet, Party</td></tr>
+<tr><td><b>Fade out of combat</b></td><td>While idle: no combat, no cast</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
+<tr><td><b>Opacity when faded (%)</b></td><td>0 = invisible</td><td>0 – 100</td><td>25</td><td>Player</td></tr>
+<tr><td><b>Show in full with a target</b></td><td>Fades back in when you select a target</td><td>On, Off</td><td>On</td><td>Player</td></tr>
+<tr><td><b>Show in full when hurt</b></td><td>Fades back in while your health is not full</td><td>On, Off</td><td>On</td><td>Player</td></tr>
+<tr><td><b>Never fade in a group</b></td><td>In a party or raid the frame always shows in full</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
+<tr><td><b>Pet frame fades too</b></td><td>Your pet's frame takes the same opacity</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
 </tbody>
 </table>
 

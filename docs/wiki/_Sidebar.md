@@ -8,7 +8,7 @@
 
 - [[General|Settings-General]]
 - [[Layout|Settings-Layout]]
-- [[Group|Settings-Group]]
+- [[Group layout|Settings-Group-layout]]
 - [[Bars|Settings-Bars]]
 - [[Text|Settings-Text]]
 - [[Auras|Settings-Auras]]

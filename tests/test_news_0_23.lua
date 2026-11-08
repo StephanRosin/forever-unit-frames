@@ -18,5 +18,5 @@ end
 entry.action.run()
 H.check("action: the options", ns.Options.IsOpen(), true)
 H.check("action: General", ns.Options.currentScope, "general")
-H.check("action: the tab with the list", ns.Options.currentTab, "appearance")
+H.check("action: the tab with the list", ns.Options.currentTab, "auras")
 H.checkTrue("help names the undo", L.HELP:find("/fuf auras undo", 1, true))

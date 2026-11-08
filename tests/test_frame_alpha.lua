@@ -22,7 +22,7 @@ for _, scope in ipairs({ "general", "player" }) do
     local tab
     for _, t in ipairs(scope == "general" and ns.Schema.GENERAL or ns.Schema.Tabs(scope)) do
         for _, sec in ipairs(t.sections or {}) do
-            if sec.id == "opacity" then tab = t.id end
+            if sec.id == "visibility" then tab = t.id end
         end
     end
     H.check(scope .. ": opacity section", tab, scope == "general" and "appearance" or "layout")

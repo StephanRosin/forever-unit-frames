@@ -14,7 +14,9 @@ Source: [GitHub](https://github.com/StephanRosin/forever-unit-frames)
   of the selected page are along the top.
 - **General** sets the look of every frame at once. A frame's own page can override any of those
   settings; an overridden setting has a **Reset** button that hands it back to General.
-- **General > Frames** lists every frame with a switch, to turn frames on or off at a glance.
+- **General > Frames & addon** lists every frame with a switch, to turn frames on or off at a glance.
+- Where icons and auras sit and grow is folded under **Position and growth** in each section: click it
+  to unfold the anchors, points, offsets and growth.
 - **Test mode** (button at the bottom of the window) shows every frame with sample values: auras,
   casts, a full party, and every indicator you have switched on, so you can set everything up
   without a target or a group. It covers the unit frames only; the raid frames have a test mode of
@@ -95,15 +97,17 @@ frames keep their own profiles per character (see below), and click-casting stay
 The settings pages list every option with what it does, its choices, its default and which frames
 have it. They are generated from the addon itself, so they always match the current version.
 
-- [[General|Settings-General]] – the look of all frames at once
-- [[Layout|Settings-Layout]] – size, position, bar heights, portrait, border, shadow, corners
-- [[Group|Settings-Group]] – party arrangement, party pets, party targets
-- [[Bars|Settings-Bars]] – colors, textures, shields, incoming heals, power colors, druid mana
-- [[Text|Settings-Text]] – what the texts show and how they read, fonts
-- [[Auras|Settings-Auras]] – buffs, debuffs, dispellable debuffs, totems
+- [[General|Settings-General]] – the look of all frames at once, the account's hidden auras, how range is measured
+- [[Layout|Settings-Layout]] – size, position, bar heights, portrait, border, shadow, corners, opacity, range and
+  out-of-combat fading (the party page calls this tab **Frame**)
+- [[Group layout|Settings-Group-layout]] – party arrangement, party pets, party targets
+- [[Bars|Settings-Bars]] – colors, textures, shields, incoming heals, power colors, druid mana, the five-second
+  rule, the player's shield watch
+- [[Text|Settings-Text]] – fonts, what the texts show and how they read
+- [[Auras|Settings-Auras]] – buffs and debuffs (each with a block for your own), dispellable debuffs, totems
 - [[Status|Settings-Status]] – combat, PvP and status icons, raid markers, the elite marker, combo points,
-  threat, highlights, range and out-of-combat fading
-- [[Castbar|Settings-Castbar]] – castbars and the threat bar
+  threat (glow and threat bar), highlights
+- [[Castbar|Settings-Castbar]] – castbars
 
 The raid frames have pages of their own, one per tab of the raid window, grouped as its top bar groups
 them.

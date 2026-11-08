@@ -2,11 +2,11 @@
 
 # Settings: Auras
 
-Buffs, debuffs, the party's dispellable debuffs and the player's totems.
+Buffs and debuffs, each with a block for your own, the party's dispellable debuffs and the player's totems. Where the icons sit and grow is folded under **Position and growth** in each section.
 
 The **Auras** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
 
-**On this page:** [Aura icons](#aura-icons) · [Buffs](#buffs) · [Debuffs](#debuffs) · [Dispellable debuffs](#dispellable-debuffs) · [Shields](#shields) · [Hidden auras](#hidden-auras) · [Totems](#totems)
+**On this page:** [Aura icons](#aura-icons) · [Buffs](#buffs) · [Your own buffs](#your-own-buffs) · [Debuffs](#debuffs) · [Your own debuffs](#your-own-debuffs) · [Dispellable debuffs](#dispellable-debuffs) · [Hidden auras](#hidden-auras) · [Totems](#totems)
 
 ## Aura icons
 
@@ -41,6 +41,14 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <tr><td><b>Spacing</b></td><td></td><td>0 – 20</td><td>Player: 4; Target, Target of Target, Focus, Pet: 2; Party: 0</td><td>all</td></tr>
 <tr><td><b>Icons per row</b></td><td>Auto: as many as fit the frame</td><td>0 – 40 (0: Auto)</td><td>Player, Target: 8; Target of Target, Focus, Pet, Party: Auto</td><td>all</td></tr>
 <tr><td><b>Maximum icons</b></td><td></td><td>1 – 40</td><td>Player, Target: 24; Target of Target: 9; Focus: 16; Pet: 6; Party: 8</td><td>all</td></tr>
+</tbody>
+</table>
+
+## Your own buffs
+
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
 <tr><td><b>Mine first</b></td><td>Yours in their own rows, bigger</td><td>On, Off</td><td>Player, Target, Party: On; Target of Target, Focus, Pet: Off</td><td>all</td></tr>
 <tr><td><b>Size of mine</b></td><td></td><td>10 – 64</td><td>Player: 25; Target, Focus: 26; Target of Target, Pet: 21; Party: 28</td><td>all</td></tr>
 <tr><td><b>Mine in the same rows</b></td><td>Yours first, then the rest in the same rows, as SUF shows them</td><td>On, Off</td><td>Off</td><td>all</td></tr>
@@ -79,6 +87,14 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <tr><td><b>Spacing</b></td><td></td><td>0 – 20</td><td>Player, Target of Target, Focus, Pet: 2; Target: 4; Party: 3</td><td>all</td></tr>
 <tr><td><b>Icons per row</b></td><td>Auto: as many as fit the frame</td><td>0 – 40 (0: Auto)</td><td>Player, Target of Target, Focus, Pet: Auto; Target: 12; Party: 8</td><td>all</td></tr>
 <tr><td><b>Maximum icons</b></td><td></td><td>1 – 40</td><td>Player, Target: 24; Target of Target, Pet, Party: 6; Focus: 16</td><td>all</td></tr>
+</tbody>
+</table>
+
+## Your own debuffs
+
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
 <tr><td><b>Mine first</b></td><td>Yours in their own rows, bigger</td><td>On, Off</td><td>Player, Target, Focus, Party: On; Target of Target, Pet: Off</td><td>all</td></tr>
 <tr><td><b>Size of mine</b></td><td></td><td>10 – 64</td><td>Player, Focus: 26; Target: 31; Target of Target, Pet: 21; Party: 27</td><td>all</td></tr>
 <tr><td><b>Mine in the same rows</b></td><td>Yours first, then the rest in the same rows, as SUF shows them</td><td>On, Off</td><td>Off</td><td>all</td></tr>
@@ -114,53 +130,9 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 </tbody>
 </table>
 
-## Shields
-
-The icons of your active absorb shields and the exact total of all your absorbs, like a WeakAura: Power Word: Shield, the mage's barriers and wards, the warlock's Shadow Ward and Sacrifice, protection potions and absorbing items, plus spells you add. Off by default: switch it on with **Shield watch**. The block has its own mover (unlock the frames to place it), or hangs from the player frame (**Place**: a point of the frame, the icons' own point and an offset; it moves and scales with the frame); test mode shows two sample icons and a sample total. The game draws the icons itself, in combat too, with their swipe and time left, and only for the shields on your list: your own class's, a priest's shield and the potions and items. The total is the game's own sum of every absorb on you (shields not on the list included); it shows while it is above zero, at a side of the icons. There is no amount per shield. **Hide them in the buffs** leaves the watched shields out of your buffs.
-
-<table>
-<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
-<tbody>
-<tr><td><b>Shield watch</b></td><td>Icons of your active shields and the total of your absorbs</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
-<tr><td><b>Priest shields</b></td><td>Power Word: Shield</td><td>On, Off</td><td>On</td><td>Player</td></tr>
-<tr><td><b>Mage shields</b></td><td>Ice Barrier, Mana Shield, the wards; only as a mage</td><td>On, Off</td><td>On</td><td>Player</td></tr>
-<tr><td><b>Warlock shields</b></td><td>Shadow Ward, Sacrifice; only as a warlock</td><td>On, Off</td><td>On</td><td>Player</td></tr>
-<tr><td><b>Potions and items</b></td><td>Protection potions, absorbing trinkets and belts</td><td>On, Off</td><td>On</td><td>Player</td></tr>
-<tr><td><b>More shields</b></td><td>Spell IDs or names; Enter adds</td><td>Spell IDs or names, up to 100 spells</td><td>(none)</td><td>Player</td></tr>
-<tr><td><b>Hide them in the buffs</b></td><td>The watched shields leave your buffs</td><td>On, Off</td><td>On</td><td>Player</td></tr>
-<tr><td><b>Icon size</b></td><td></td><td>8 – 96</td><td>32</td><td>Player</td></tr>
-<tr><td><b>Spacing</b></td><td></td><td>0 – 20</td><td>4</td><td>Player</td></tr>
-<tr><td><b>Growth</b></td><td></td><td>Right, Left, Up, Down</td><td>Right</td><td>Player</td></tr>
-<tr><td><b>Place</b></td><td>Free, moved when the frames are unlocked, or on the player frame</td><td>Free (moved when unlocked), On the player frame</td><td>Free (moved when unlocked)</td><td>Player</td></tr>
-<tr><td><b>Position X</b></td><td></td><td>-4000 – 4000</td><td>-300</td><td>Player</td></tr>
-<tr><td><b>Position Y</b></td><td></td><td>-4000 – 4000</td><td>-140</td><td>Player</td></tr>
-<tr><td><b>Point on the frame</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Top left</td><td>Player</td></tr>
-<tr><td><b>Point of the icons</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Bottom left</td><td>Player</td></tr>
-<tr><td><b>Offset X</b></td><td></td><td>-400 – 400</td><td>0</td><td>Player</td></tr>
-<tr><td><b>Offset Y</b></td><td></td><td>-400 – 400</td><td>4</td><td>Player</td></tr>
-<tr><td><b>Total</b></td><td>All your absorbs, exact; shown while above zero</td><td>On, Off</td><td>On</td><td>Player</td></tr>
-<tr><td><b>Total place</b></td><td>At that side of the icons</td><td>Top, Bottom, Left, Right, Center</td><td>Left</td><td>Player</td></tr>
-<tr><td><b>Total offset X</b></td><td></td><td>-64 – 64</td><td>-3</td><td>Player</td></tr>
-<tr><td><b>Total offset Y</b></td><td></td><td>-64 – 64</td><td>0</td><td>Player</td></tr>
-<tr><td><b>Total font</b></td><td></td><td>Font, or the frame's font</td><td>The frame's font</td><td>Player</td></tr>
-<tr><td><b>Total size</b></td><td></td><td>6 – 48 (0: Auto)</td><td>Auto</td><td>Player</td></tr>
-<tr><td><b>Total font style</b></td><td></td><td>The frame's style, None, Outline, Thick outline, Monochrome, Soft outline</td><td>The frame's style</td><td>Player</td></tr>
-<tr><td><b>Total color</b></td><td></td><td>Color</td><td><code>#ffffff</code></td><td>Player</td></tr>
-<tr><td><b>Swipe</b></td><td></td><td>On, Off</td><td>On</td><td>Player</td></tr>
-<tr><td><b>Time left</b></td><td></td><td>On, Off</td><td>Off</td><td>Player</td></tr>
-<tr><td><b>Time place</b></td><td></td><td>Top, Bottom, Left, Right, Center</td><td>Top</td><td>Player</td></tr>
-<tr><td><b>Time offset X</b></td><td></td><td>-64 – 64</td><td>0</td><td>Player</td></tr>
-<tr><td><b>Time offset Y</b></td><td></td><td>-64 – 64</td><td>0</td><td>Player</td></tr>
-<tr><td><b>Time font</b></td><td></td><td>Font, or the frame's font</td><td>The frame's font</td><td>Player</td></tr>
-<tr><td><b>Time size</b></td><td></td><td>6 – 48 (0: Auto)</td><td>Auto</td><td>Player</td></tr>
-<tr><td><b>Time font style</b></td><td></td><td>The frame's style, None, Outline, Thick outline, Monochrome, Soft outline</td><td>The frame's style</td><td>Player</td></tr>
-<tr><td><b>Time color</b></td><td></td><td>Color</td><td><code>#ffffff</code></td><td>Player</td></tr>
-</tbody>
-</table>
-
 ## Hidden auras
 
-Auras hidden by spell, such as a campfire or a food buff: the list under General > Appearance hides them on every frame and raid cell, each frame's own list on that frame (both apply; each raid size has one too, on the raid window's Debuffs tab). Type spell IDs or names (several, separated by commas) and press Enter; a name adds the ranks in your spell book and the game's own spell of that name, other ranks go in by ID. Up to 100 spells per list. Faster: **Shift + right-click** on a frame's auras lists that row's auras the game lets you hide on that unit, out of combat; pick one to hide it on that frame (**Shift + Ctrl**: everywhere). With nothing to offer the chat says why; a Shift (or Ctrl + Shift) right-click bound to click-casting casts instead. `/fuf auras undo` takes the last one back. The game decides where a spell can be hidden: buffs on you, your group, pets and other friendly units; debuffs only on enemies, except spells the game never keeps secret (those everywhere). The list marks entries that will not hide everywhere on its frames.
+Auras hidden by spell, such as a campfire or a food buff: the list under General > Auras hides them on every frame and raid cell, each frame's own list on that frame (both apply; each raid size has one too, on the raid window's Debuffs tab). Type spell IDs or names (several, separated by commas) and press Enter; a name adds the ranks in your spell book and the game's own spell of that name, other ranks go in by ID. Up to 100 spells per list. Faster: **Shift + right-click** on a frame's auras lists that row's auras the game lets you hide on that unit, out of combat; pick one to hide it on that frame (**Shift + Ctrl**: everywhere). With nothing to offer the chat says why; a Shift (or Ctrl + Shift) right-click bound to click-casting casts instead. `/fuf auras undo` takes the last one back. The game decides where a spell can be hidden: buffs on you, your group, pets and other friendly units; debuffs only on enemies, except spells the game never keeps secret (those everywhere). The list marks entries that will not hide everywhere on its frames.
 
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>

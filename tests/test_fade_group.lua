@@ -16,11 +16,11 @@ H.check("label", ns.L.SETTING_playerFadeGroup, "Never fade in a group")
 local keys
 for _, tab in ipairs(ns.Schema.Tabs("player")) do
     for _, sec in ipairs(tab.sections or {}) do
-        if sec.id == "outOfCombat" then keys = table.concat(sec.keys, ",") end
+        if sec.id == "visibility" then keys = table.concat(sec.keys, ",") end
     end
 end
 H.check("in the player's fade section", keys,
-    "playerFadeOOC,playerFadeAlpha,playerFadeTarget,playerFadeHurt,playerFadeGroup,playerFadePet")
+    "frameAlpha,rangeFade,rangeAlpha,playerFadeOOC,playerFadeAlpha,playerFadeTarget,playerFadeHurt,playerFadeGroup,playerFadePet")
 
 M.units.player = { name = "Me", health = 100, healthMax = 100, power = 50, powerMax = 50, powerType = 0 }
 _G.ForeverUnitFramesDB = nil

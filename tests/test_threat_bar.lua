@@ -33,10 +33,10 @@ do
     local found
     for _, tab in ipairs(ns.Schema.Tabs("player")) do
         for _, sec in ipairs(tab.sections or {}) do
-            if sec.id == "threatBar" then found = tab.id end
+            if sec.id == "threat" then found = tab.id end
         end
     end
-    H.check("in the castbar tab", found, "castbar")
+    H.check("in Status > Threat, with the glow", found, "status")
 end
 
 -- Off: no row, nothing changes ---------------------------------------------------

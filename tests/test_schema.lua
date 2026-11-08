@@ -37,8 +37,8 @@ for _, def in ipairs(Settings.All()) do
     end
 end
 
-H.check("general has a status tab for the range spells", S.Tabs("general")[5].id, "status")
-H.check("general has five tabs", #S.Tabs("general"), 5)
+H.check("general has a status tab for the range spells", S.Tabs("general")[6].id, "status")
+H.check("general has six tabs", #S.Tabs("general"), 6)
 H.check("profiles page", S.Tabs("profiles")[1].id, "profiles")
 H.check("frame tab count", #S.Tabs("player"), 6)
 H.check("status tab before the castbar tab", S.Tabs("player")[5].id, "status")

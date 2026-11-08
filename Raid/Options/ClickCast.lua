@@ -381,6 +381,9 @@ local function rows(page, tab, layout)
     -- The editor's rows lock by their own rules (the switches' dependencies
     -- of the window around them do not apply).
     for _, row in ipairs(list) do row.clickCastRow = true end
+    -- layout.leading: the window's own rows right below the note (the
+    -- unit-frame window's switch), locked by that window's rules.
+    for i, row in ipairs(layout.leading and layout.leading() or {}) do table.insert(list, 1 + i, row) end
     return list
 end
 
@@ -391,7 +394,8 @@ ClickCastPage.pages = {}
 
 -- page: a frame as wide as the window's page; tab: its note (tab.note, a
 -- raid note id); layout: the window's measures, those of RAID_LAYOUT and
--- top, bottom, sectionGap, noteHeight (RaidOptions.PAGE's names). Sets
+-- top, bottom, sectionGap, noteHeight (RaidOptions.PAGE's names), and
+-- optionally leading() (rows below the note). Sets
 -- page.rows, page.height, page.onShow (the window calls it when it shows
 -- the page) and page.clickCopyRow, clickCopyButton, clickClearButton (the
 -- window disarms Clear all when it leaves the page or hides). owner: the
