@@ -40,7 +40,7 @@ The **Bars** tab on each frame's page in `/fuf`. The last column says which fram
 <tbody>
 <tr><td><b>Show absorb shields</b></td><td>Over the end of the health bar</td><td>On, Off</td><td>On</td><td>all</td></tr>
 <tr><td><b>Shield position</b></td><td>At the end: also shown at full health</td><td>After the health, At the bar's end</td><td>After the health</td><td>all</td></tr>
-<tr><td><b>Absorb shield stripes</b></td><td>Under the shield the bar is darkened, its empty part lit</td><td>Color</td><td><code>#ffffff</code>, 65 % opaque</td><td>all</td></tr>
+<tr><td><b>Absorb shield color</b></td><td>Stripes, the lit empty part and the glow when the shield runs past full health</td><td>Color</td><td><code>#ffffff</code>, 65 % opaque</td><td>all</td></tr>
 </tbody>
 </table>
 

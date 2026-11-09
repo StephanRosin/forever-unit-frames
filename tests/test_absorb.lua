@@ -44,6 +44,8 @@ local lift = bar.lift
 H.check("lift adds", lift._blend, "ADD")
 H.check("lift on the filled part", lift._allPoints, bar:GetStatusBarTexture())
 H.checkTrue("lift is dim", lift._color[1] + lift._color[2] + lift._color[3] < 1)
+-- Its colour is a share of absorbColor: white by default, not blue.
+H.check("lift neutral by default", lift._color[1], lift._color[3])
 local stripes = bar.stripes
 H.check("stripes texture", stripes._texture, ns.Absorb.STRIPES)
 H.checkTrue("stripes tile across", stripes._horizTile and stripes._vertTile)
@@ -84,10 +86,36 @@ H.check("general colour", stripes._color[4], 0.5)
 C.Set("player", "absorbColor", { 0, 0, 1, 0.8 })
 H.check("own colour", stripes._color[3], 1)
 H.check("the shade stays grey", bar._color[3], ns.Absorb.SHADE)
+H.check("lift follows the colour", lift._color[3], ns.Absorb.LIFT_SHARE)
+H.check("lift has none of the rest", lift._color[1], 0)
+H.check("glow follows the colour", bar.glow._color[1], 0)
+C.ClearOverride("player", "absorbColor")
+C.ClearOverride("general", "absorbColor")
+
+-- Over-absorb glow: Blizzard's, at the end of the clip, visible only
+-- inside a clipping frame laid over the shield's fill (past the end when
+-- health, heals and shield exceed the maximum).
+local gate, glow = bar.gate, bar.glow
+H.check("glow texture", glow._texture, ns.Absorb.GLOW)
+H.check("glow adds", glow._blend, "ADD")
+H.check("glow in the gate", glow:GetParent(), gate)
+H.checkTrue("gate cuts", gate._clips)
+H.check("gate over the shield's fill", gate._allPoints, bar:GetStatusBarTexture())
+H.check("gate outside the bar's clip", gate:GetParent(), f.health)
+H.check("glow at the clip's end", point(glow, "TOPLEFT")[2], f.absorbClip)
+H.check("glow reaches back", point(glow, "TOPLEFT")[4], -ns.Absorb.GLOW_OVERLAP)
+H.check("glow width", glow:GetWidth(), ns.Absorb.GLOW_WIDTH)
+H.checkTrue("gate shown", gate:IsShown())
+H.checkTrue("overlay above the glow", f.overlay:GetFrameLevel() > gate:GetFrameLevel())
+C.Set("player", "absorbMode", "END")
+H.check("no glow at the bar's end", gate:IsShown(), false)
+C.ClearOverride("player", "absorbMode")
+H.checkTrue("glow back", gate:IsShown())
 
 -- Off: hidden and left alone.
 C.Set("player", "absorbEnabled", false)
 H.check("off: hidden", f.absorbClip:IsShown(), false)
+H.check("off: no glow", bar.gate:IsShown(), false)
 M.units.player.absorbs = 99
 M.FireEvent("UNIT_ABSORB_AMOUNT_CHANGED", "player")
 H.check("off: not updated", bar:GetValue(), 50)

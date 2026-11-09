@@ -177,7 +177,7 @@ Auras hidden by spell, such as a campfire or a food buff: the list under General
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
 <tr><td><b>Shield position</b></td><td>At the end: also shown at full health</td><td>After the health, At the bar's end</td><td>After the health</td></tr>
-<tr><td><b>Absorb shield stripes</b></td><td>Under the shield the bar is darkened, its empty part lit</td><td>Color</td><td><code>#ffffff</code>, 65 % opaque</td></tr>
+<tr><td><b>Absorb shield color</b></td><td>Stripes, the lit empty part and the glow when the shield runs past full health</td><td>Color</td><td><code>#ffffff</code>, 65 % opaque</td></tr>
 </tbody>
 </table>
 

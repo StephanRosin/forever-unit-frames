@@ -132,6 +132,9 @@ News.ENTRIES = {
     ["0.43.0"] = {
         lines = { "NEWS_0_43_0_MENU_CLICK" },
     },
+    ["0.44.0"] = {
+        lines = { "NEWS_0_44_0_SHIELD" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).
