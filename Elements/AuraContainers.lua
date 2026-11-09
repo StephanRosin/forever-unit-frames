@@ -105,12 +105,13 @@ end
 
 local function describe(group, enabled, filter, size, newLine)
     local spacing = group.spacing
+    local rows = spacing + (group.rowGap or 0)
     return {
         enabled = enabled and true or false,
         filter = filter,
         max = group.max,
-        layout = { elementWidth = size, elementHeight = size, elementSpacing = spacing, lineSpacing = spacing,
-            groupSpacing = spacing, groupLineSpacing = spacing, forceNewLine = newLine },
+        layout = { elementWidth = size, elementHeight = size, elementSpacing = spacing, lineSpacing = rows,
+            groupSpacing = spacing, groupLineSpacing = rows, forceNewLine = newLine },
         -- Any maxDuration hides auras without one; this one keeps every
         -- timed aura (it is compared with the aura's full duration).
         candidateFilters = AuraContainers.CandidateFilters(group),

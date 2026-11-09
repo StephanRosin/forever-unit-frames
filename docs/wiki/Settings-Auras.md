@@ -42,6 +42,7 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <tr><td><b>New rows</b></td><td>Across the growth direction</td><td>Right, Left, Up, Down</td><td>Player, Target, Target of Target, Focus, Pet: Up; Party: Down</td><td>all</td></tr>
 <tr><td><b>Icon size</b></td><td></td><td>8 – 64</td><td>Player, Target: 18; Target of Target: 14; Focus: 20; Pet: 16; Party: 17</td><td>all</td></tr>
 <tr><td><b>Spacing</b></td><td></td><td>0 – 20</td><td>Player: 4; Target, Target of Target, Focus, Pet: 2; Party: 0</td><td>all</td></tr>
+<tr><td><b>Row gap</b></td><td>Extra space between rows, e.g. for the time left below the icons</td><td>0 – 30</td><td>0</td><td>all</td></tr>
 <tr><td><b>Icons per row</b></td><td>Auto: as many as fit the frame</td><td>0 – 40 (0: Auto)</td><td>Player, Target: 8; Target of Target, Focus, Pet, Party: Auto</td><td>all</td></tr>
 <tr><td><b>Maximum icons</b></td><td></td><td>1 – 40</td><td>Player, Target: 24; Target of Target: 9; Focus: 16; Pet: 6; Party: 8</td><td>all</td></tr>
 </tbody>
@@ -88,6 +89,7 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <tr><td><b>New rows</b></td><td>Across the growth direction</td><td>Right, Left, Up, Down</td><td>Player, Target of Target, Focus, Pet: Up; Target, Party: Down</td><td>all</td></tr>
 <tr><td><b>Icon size</b></td><td></td><td>8 – 64</td><td>Player, Target: 18; Target of Target: 14; Focus: 20; Pet: 16; Party: 17</td><td>all</td></tr>
 <tr><td><b>Spacing</b></td><td></td><td>0 – 20</td><td>Player, Target of Target, Focus, Pet: 2; Target: 4; Party: 3</td><td>all</td></tr>
+<tr><td><b>Row gap</b></td><td>Extra space between rows, e.g. for the time left below the icons</td><td>0 – 30</td><td>0</td><td>all</td></tr>
 <tr><td><b>Icons per row</b></td><td>Auto: as many as fit the frame</td><td>0 – 40 (0: Auto)</td><td>Player, Target of Target, Focus, Pet: Auto; Target: 12; Party: 8</td><td>all</td></tr>
 <tr><td><b>Maximum icons</b></td><td></td><td>1 – 40</td><td>Player, Target: 24; Target of Target, Pet, Party: 6; Focus: 16</td><td>all</td></tr>
 </tbody>
@@ -128,6 +130,7 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <tr><td><b>New rows</b></td><td>Across the growth direction</td><td>Right, Left, Up, Down</td><td>Down</td><td>Party</td></tr>
 <tr><td><b>Icon size</b></td><td></td><td>8 – 64</td><td>31</td><td>Party</td></tr>
 <tr><td><b>Spacing</b></td><td></td><td>0 – 20</td><td>2</td><td>Party</td></tr>
+<tr><td><b>Row gap</b></td><td>Extra space between rows, e.g. for the time left below the icons</td><td>0 – 30</td><td>0</td><td>Party</td></tr>
 <tr><td><b>Icons per row</b></td><td>Auto: as many as fit the frame</td><td>0 – 40 (0: Auto)</td><td>Auto</td><td>Party</td></tr>
 <tr><td><b>Maximum icons</b></td><td></td><td>1 – 40</td><td>3</td><td>Party</td></tr>
 </tbody>

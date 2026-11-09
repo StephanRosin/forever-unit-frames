@@ -165,6 +165,26 @@ H.check("own per row 1: second own below", at(2, 2, "RIGHT", "DOWN"), "0,-28 26"
 H.check("others per row 2: third other wraps", at(5, 2, "RIGHT", "DOWN"), "0,-78 20")
 H.check("limits: block", block(2, 5, "RIGHT", "DOWN"), "42x98")
 
+-- Row gap: added to the spacing between rows only (own rows, the gap to
+-- the others, the others' rows); along a row the spacing stays.
+shape.ownPerRow, shape.perRow, shape.rowGap = 3, 4, 5
+H.check("gap: along a row unchanged", at(2, 4, "RIGHT", "DOWN"), "28,0 26")
+H.check("gap: second own row", at(4, 4, "RIGHT", "DOWN"), "0,-33 26")
+H.check("gap: others after the own rows", at(5, 4, "RIGHT", "DOWN"), "0,-66 20")
+H.check("gap: others along", at(6, 4, "RIGHT", "DOWN"), "22,-66 20")
+H.check("gap: others' second row", at(9, 4, "RIGHT", "DOWN"), "0,-93 20")
+H.check("gap: rows up", at(9, 4, "RIGHT", "UP"), "0,93 20")
+H.check("gap: growing down, rows right", at(9, 4, "DOWN", "RIGHT"), "93,0 20")
+H.check("gap: block", block(4, 9, "RIGHT", "DOWN"), "86x113")
+H.check("gap: block, vertical", block(4, 9, "UP", "RIGHT"), "113x86")
+H.check("gap: one row has none", block(0, 3, "RIGHT", "DOWN"), "64x20")
+H.check("gap: plain extent", select(2, Layout.AuraExtent(5, 4, 20, 2, "RIGHT", 7)), 47)
+-- Yours in the same rows: the flow wraps with the gap too.
+shape.ownSameRow, shape.perRowSetting = true, 3
+H.check("gap: same rows wrap", at(4, 0, "RIGHT", "DOWN"), "0,-27 20")
+H.check("gap: same rows block", block(0, 4, "RIGHT", "DOWN"), "64x47")
+shape.ownSameRow, shape.perRowSetting, shape.rowGap = nil, nil, nil
+
 -- On the frames ----------------------------------------------------------------
 local function aura(id, fields)
     local a = { auraInstanceID = id, icon = 100 + id, applications = 0, duration = 0, expirationTime = 0 }
@@ -331,6 +351,12 @@ H.check("samples: two own", debuffs.own, 2)
 H.check("sample own big", debuffs.buttons[2]:GetWidth(), 26)
 H.check("sample other normal", debuffs.buttons[3]:GetWidth(), 20)
 H.check("samples: others above", offset(debuffs.buttons[3]), "BOTTOMLEFT>BOTTOMLEFT 0,28")
+-- A row gap on the frame moves the next row by it, not the icons in a row.
+C.Set("target", "debuffsRowGap", 6)
+H.check("row gap read", debuffs.rowGap, 6)
+H.check("row gap: others further up", offset(debuffs.buttons[3]), "BOTTOMLEFT>BOTTOMLEFT 0,34")
+H.check("row gap: along unchanged", offset(debuffs.buttons[2]), "BOTTOMLEFT>BOTTOMLEFT 28,0")
+C.ResetScope("target")
 H.check("samples: max total", debuffs.count, 16)
 H.check("samples: buffs none own", buffs.own, 0)
 for i, b in ipairs(ns.Party.fakes) do

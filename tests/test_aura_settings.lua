@@ -4,11 +4,11 @@ C.Use({})
 
 local FRAMES = { "player", "target", "targettarget", "pet", "focus", "party" }
 local SUFFIXES = { "Enabled", "OnlyMine", "ShowTime", "Anchor", "FramePoint", "Point", "X", "Y", "Growth",
-    "RowGrowth", "Size", "Spacing", "PerRow", "Max" }
+    "RowGrowth", "Size", "Spacing", "RowGap", "PerRow", "Max" }
 
 -- The permanent codes: J = buffs, D = debuffs, the second letter the setting.
 local CODES = { Enabled = "E", OnlyMine = "M", ShowTime = "T", Anchor = "A", FramePoint = "F", Point = "O",
-    X = "X", Y = "Y", Growth = "G", RowGrowth = "R", Size = "S", Spacing = "D", PerRow = "N", Max = "C" }
+    X = "X", Y = "Y", Growth = "G", RowGrowth = "R", Size = "S", Spacing = "D", RowGap = "J", PerRow = "N", Max = "C" }
 for _, group in ipairs({ { "buffs", "J" }, { "debuffs", "D" } }) do
     for _, suffix in ipairs(SUFFIXES) do
         local def = S.Get(group[1] .. suffix)

@@ -81,12 +81,13 @@ function Layout.AuraOffset(i, perRow, step, primary, row)
 end
 
 -- Width and height of count icons laid out this way (0, 0 for none).
-function Layout.AuraExtent(count, perRow, size, spacing, primary)
+-- rowSpacing: between rows (spacing when not given).
+function Layout.AuraExtent(count, perRow, size, spacing, primary, rowSpacing)
     if count <= 0 then return 0, 0 end
     local cols = math.min(count, perRow)
     local lines = math.ceil(count / perRow)
     local along = cols * size + (cols - 1) * spacing
-    local across = lines * size + (lines - 1) * spacing
+    local across = lines * size + (lines - 1) * (rowSpacing or spacing)
     if HORIZONTAL[primary] then return along, across end
     return across, along
 end
@@ -101,15 +102,19 @@ end
 -- Two size classes: the first `own` icons (yours) in their own leading
 -- rows at shape.ownSize, shape.ownPerRow per row; the rest in the rows
 -- after them at shape.size, shape.perRow per row. shape also holds
--- primary, row and spacing. Plain numbers in, plain numbers out: nothing
--- is allocated.
+-- primary, row and spacing (along a row; rowGap adds to it between rows).
+-- Plain numbers in, plain numbers out: nothing is allocated.
+
+local function rowSpacing(shape)
+    return shape.spacing + (shape.rowGap or 0)
+end
 
 -- How far across the growth direction the own rows reach, with the gap to
 -- the rows after them (0 without own icons).
 local function ownDepth(shape, own)
     if own <= 0 then return 0 end
     local lines = math.ceil(own / shape.ownPerRow)
-    return lines * shape.ownSize + lines * shape.spacing
+    return lines * (shape.ownSize + rowSpacing(shape))
 end
 
 -- Offset of icon i from the corner, and its size.
@@ -126,7 +131,7 @@ function Layout.AuraFlow(shape, i, own)
     for n = 1, i do
         local size = n <= own and shape.ownSize or shape.size
         if inRow > 0 and ((limit and inRow >= limit) or (not limit and along + size > length)) then
-            across, along, depth, inRow = across + depth + shape.spacing, 0, 0, 0
+            across, along, depth, inRow = across + depth + rowSpacing(shape), 0, 0, 0
         end
         if n == i then return along, across, size end
         along, inRow = along + size + shape.spacing, inRow + 1
@@ -146,8 +151,8 @@ function Layout.AuraPlace(shape, i, own)
     if i > own then
         index, perRow, size, shift = i - own, shape.perRow, shape.size, ownDepth(shape, own)
     end
-    local step = size + shape.spacing
-    local along, across = ((index - 1) % perRow) * step, math.floor((index - 1) / perRow) * step + shift
+    local along = ((index - 1) % perRow) * (size + shape.spacing)
+    local across = math.floor((index - 1) / perRow) * (size + rowSpacing(shape)) + shift
     -- + 0 turns a negative zero into 0.
     return p[1] * along + r[1] * across + 0, p[2] * along + r[2] * across + 0, size
 end
@@ -164,10 +169,11 @@ function Layout.AuraBlock(shape, own, count)
         if HORIZONTAL[shape.primary] then return along, across end
         return across, along
     end
-    local ownAlong, ownAcross = Layout.AuraExtent(own, shape.ownPerRow, shape.ownSize, shape.spacing, "RIGHT")
-    local along, across = Layout.AuraExtent(count - own, shape.perRow, shape.size, shape.spacing, "RIGHT")
+    local rows = rowSpacing(shape)
+    local ownAlong, ownAcross = Layout.AuraExtent(own, shape.ownPerRow, shape.ownSize, shape.spacing, "RIGHT", rows)
+    local along, across = Layout.AuraExtent(count - own, shape.perRow, shape.size, shape.spacing, "RIGHT", rows)
     along = math.max(along, ownAlong)
-    if own > 0 and count > own then across = across + shape.spacing end
+    if own > 0 and count > own then across = across + rows end
     across = across + ownAcross
     if HORIZONTAL[shape.primary] then return along, across end
     return across, along

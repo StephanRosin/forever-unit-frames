@@ -472,6 +472,9 @@ local AURA_SETTINGS = {
     { "RowGrowth", "R", { type = "enum", values = DIRECTIONS } },
     { "Size", "S", { type = "int", min = 8, max = 64 } },
     { "Spacing", "D", { type = "int", min = 0, max = 20 } },
+    -- Extra space between rows, on top of Spacing (room for the time left
+    -- moved below an icon); 0 = rows as close as the icons in a row.
+    { "RowGap", "J", { type = "int", min = 0, max = 30 } },
     -- 0 = Auto: as many as fit the frame's width (height when growing
     -- up or down).
     { "PerRow", "N", { type = "int", min = 0, max = 40, zeroText = "AUTO" } },
@@ -517,7 +520,7 @@ local AURA_DEFAULTS = {
         Y = { party = 0, _ = 2 },
         Growth = "RIGHT",
         RowGrowth = { party = "DOWN", _ = "UP" },
-        Size = AURA_SIZE, Spacing = 2, PerRow = 0,
+        Size = AURA_SIZE, Spacing = 2, RowGap = 0, PerRow = 0,
         Max = { party = 4, targettarget = 6, targettargettarget = 6, pet = 6, pettarget = 6, _ = 16 },
         HighlightOwn = false, OwnSize = ownSizes(AURA_SIZE), OwnSameRow = false,
         -- Free, beside the frame's bottom edge (rows up): right of it, on
@@ -543,7 +546,7 @@ local AURA_DEFAULTS = {
         Y = { party = 0, _ = 2 },
         Growth = "RIGHT",
         RowGrowth = { party = "DOWN", _ = "UP" },
-        Size = AURA_SIZE, Spacing = 2, PerRow = 0,
+        Size = AURA_SIZE, Spacing = 2, RowGap = 0, PerRow = 0,
         Max = { party = 6, targettarget = 6, targettargettarget = 6, pet = 6, pettarget = 6, _ = 16 },
         HighlightOwn = { target = true, focus = true, _ = false }, OwnSize = ownSizes(AURA_SIZE),
         OwnSameRow = false,
@@ -568,7 +571,7 @@ local AURA_DEFAULTS = {
         Y = 0,
         Growth = "RIGHT",
         RowGrowth = "DOWN",
-        Size = 24, Spacing = 2, PerRow = 0,
+        Size = 24, Spacing = 2, RowGap = 0, PerRow = 0,
         Max = 3,
     },
 }

@@ -151,7 +151,7 @@ Schema.FRAME = {
     { id = "auras", sections = {
         { id = "auraIcons", keys = { "auraBorder", "auraBorderSize", "auraTimeX", "auraTimeY" } },
         { id = "buffs", keys = { "buffsEnabled", "hideBlizzardAuras", "weaponEnchants", "buffsOnlyMine", "buffsHideTracking", "buffsHidePermanent", "buffsHideLonger", "buffsShowTime", "buffsAnchor", "buffsFramePoint",
-            "buffsPoint", "buffsX", "buffsY", "buffsGrowth", "buffsRowGrowth", "buffsSize", "buffsSpacing",
+            "buffsPoint", "buffsX", "buffsY", "buffsGrowth", "buffsRowGrowth", "buffsSize", "buffsSpacing", "buffsRowGap",
             "buffsPerRow", "buffsMax" },
             placement = { "buffsAnchor", "buffsFramePoint", "buffsPoint", "buffsX", "buffsY", "buffsGrowth", "buffsRowGrowth" } },
         { id = "buffsOwn", keys = { "buffsHighlightOwn", "buffsOwnSize", "buffsOwnSameRow",
@@ -162,7 +162,7 @@ Schema.FRAME = {
                 "buffsOwnGrowth", "buffsOwnRowGrowth" } },
         { id = "debuffs", keys = { "debuffsEnabled", "debuffsOnlyMine", "debuffsDispellable", "debuffsHidePermanent", "debuffsShowTime",
             "debuffsAnchor", "debuffsFramePoint", "debuffsPoint", "debuffsX", "debuffsY", "debuffsGrowth",
-            "debuffsRowGrowth", "debuffsSize", "debuffsSpacing", "debuffsPerRow", "debuffsMax" },
+            "debuffsRowGrowth", "debuffsSize", "debuffsSpacing", "debuffsRowGap", "debuffsPerRow", "debuffsMax" },
             placement = { "debuffsAnchor", "debuffsFramePoint", "debuffsPoint", "debuffsX", "debuffsY", "debuffsGrowth",
                 "debuffsRowGrowth" } },
         { id = "debuffsOwn", keys = { "debuffsHighlightOwn",
@@ -172,7 +172,7 @@ Schema.FRAME = {
                 "debuffsOwnGrowth", "debuffsOwnRowGrowth" } },
         { id = "dispels", keys = { "dispelsEnabled", "dispelsShowTime", "dispelsAnchor", "dispelsFramePoint",
             "dispelsPoint", "dispelsX", "dispelsY", "dispelsGrowth", "dispelsRowGrowth", "dispelsSize",
-            "dispelsSpacing", "dispelsPerRow", "dispelsMax" },
+            "dispelsSpacing", "dispelsRowGap", "dispelsPerRow", "dispelsMax" },
             placement = { "dispelsAnchor", "dispelsFramePoint", "dispelsPoint", "dispelsX", "dispelsY", "dispelsGrowth",
                 "dispelsRowGrowth" } },
         -- The spells this frame hides (with the account's list).

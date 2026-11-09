@@ -65,6 +65,10 @@ H.check("other on", other.enabled, true)
 H.check("other: everything", other.filter, "HARMFUL")
 H.check("other size", other.layout.elementWidth .. "x" .. other.layout.elementHeight, "20x20")
 H.check("spacing", other.layout.elementSpacing .. "/" .. other.layout.lineSpacing, "2/2")
+-- Row gap: between lines only, also where yours and the rest meet.
+local gapped = AC.Part(shape({ rowGap = 5 }), "other").layout
+H.check("row gap: lines", gapped.elementSpacing .. "/" .. gapped.lineSpacing, "2/7")
+H.check("row gap: groups", gapped.groupSpacing .. "/" .. gapped.groupLineSpacing, "2/7")
 H.check("no new line", other.layout.forceNewLine, false)
 H.check("maximum", other.max, 16)
 H.check("own filter kept valid while off", own.filter, "HARMFUL|PLAYER")

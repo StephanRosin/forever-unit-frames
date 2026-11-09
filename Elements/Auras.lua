@@ -223,6 +223,7 @@ local function readFree(frame, group)
         and not AuraContainers.OwnRefused(frame, group.key) or false
     local free = group.free
     free.filter, free.max, free.showTime, free.spacing = group.filter, group.max, group.showTime, group.spacing
+    free.rowGap = group.rowGap
     free.size, free.ownSize, free.ownSameRow = group.ownSize, group.ownSize, false
     if not group.ownFree then return end
     free.primary = get(frame, group, "OwnGrowth")
@@ -283,6 +284,7 @@ local function readSettings(frame, group)
     local ownSize = group.highlightOwn and get(frame, group, "OwnSize") or get(frame, group, "Size")
     group.ownSize = Pixel.Snap(ownSize, nil, 1)
     group.spacing = Pixel.Snap(get(frame, group, "Spacing"))
+    group.rowGap = Pixel.Snap(get(frame, group, "RowGap"))
     group.primary = get(frame, group, "Growth")
     group.row = Layout.AuraRowDirection(group.primary, get(frame, group, "RowGrowth"))
     group.corner = Layout.AuraCorner(group.primary, group.row)
