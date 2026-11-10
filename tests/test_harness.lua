@@ -47,3 +47,23 @@ ns.AfterCombat("good", function() good = good + 1 end)
 H.check("same keys queue again", ns.PendingCombatWork(), 2)
 M.SetCombat(false)
 H.check("same key ran in next combat", good, 2)
+
+-- A long drain pauses after its time budget and resumes next frame, in order;
+-- work asked for meanwhile queues behind it.
+ns = H.LoadAddon()
+local now, ran = 0, {}
+_G.debugprofilestop = function() return now end
+M.SetCombat(true)
+for i = 1, 3 do ns.AfterCombat("slow" .. i, function() now = now + 20; ran[#ran + 1] = i end) end
+M.SetCombat(false)
+H.check("drain paused after budget", table.concat(ran, ","), "1,2")
+ns.AfterCombat("late", function() ran[#ran + 1] = "late" end)
+H.check("work during drain waits its turn", table.concat(ran, ","), "1,2")
+M.SetCombat(true)
+M.RunTimers()
+H.check("new fight keeps the rest queued", ns.PendingCombatWork(), 2)
+M.SetCombat(false)
+H.check("drain finished in order", table.concat(ran, ","), "1,2,3,late")
+ns.AfterCombat("now", function() ran[#ran + 1] = "now" end)
+H.check("runs at once after drain", ran[#ran], "now")
+_G.debugprofilestop = nil

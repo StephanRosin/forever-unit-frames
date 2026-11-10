@@ -49,13 +49,15 @@ end
 -- Work that touches secure frames must wait until combat ends. Keyed, so
 -- repeated requests for the same work collapse into one run.
 local pending, order = {}, {}
+-- True while a drain is spread over several frames.
+local draining = false
 
 -- mode == "last" moves an already-queued key to the end of the queue
 -- instead of leaving it at its first position, so a job that must run after
 -- everything else queued so far (and everything queued after it, right up
 -- to combat ending) stays last no matter how many more keys get queued.
 function ns.AfterCombat(key, fn, mode)
-    if not InCombatLockdown() then
+    if not InCombatLockdown() and not draining then
         fn()
         return
     end
@@ -77,17 +79,38 @@ function ns.PendingCombatWork()
     return #order
 end
 
--- The queue is emptied completely before any job runs, and each job runs
--- protected: a throwing job is reported but never strands the jobs after it
--- or blocks its key from being queued again.
-ns.On("PLAYER_REGEN_ENABLED", function()
-    local keys, jobs = order, pending
-    order, pending = {}, {}
+-- Jobs run in queue order, each protected: a throwing job is reported but
+-- never strands the jobs after it or blocks its key from being queued again.
+-- The drain stops after DRAIN_BUDGET ms and continues next frame, because
+-- one long run trips the client's "script ran too long"; meanwhile new jobs
+-- queue behind the old ones, and a new fight leaves the rest queued for its end.
+local DRAIN_BUDGET = 25
+
+local function drain()
+    local clock = debugprofilestop
+    local start = clock and clock()
     local handler = geterrorhandler and geterrorhandler() or print
-    for i = 1, #keys do
-        local fn = jobs[keys[i]]
-        if fn then xpcall(fn, handler) end
+    while #order > 0 do
+        if InCombatLockdown() then
+            draining = false
+            return
+        end
+        local key = table.remove(order, 1)
+        local fn = pending[key]
+        pending[key] = nil
+        xpcall(fn, handler)
+        if clock and #order > 0 and clock() - start > DRAIN_BUDGET then
+            C_Timer.After(0, drain)
+            return
+        end
     end
+    draining = false
+end
+
+ns.On("PLAYER_REGEN_ENABLED", function()
+    if draining then return end
+    draining = true
+    drain()
 end)
 
 -- Chat output ----------------------------------------------------------------

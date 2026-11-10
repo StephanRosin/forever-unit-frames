@@ -1449,6 +1449,7 @@ L.NEWS_0_43_0_MENU_CLICK = "Klickzauber: „Menü öffnen“ geht jetzt auch auf
 L.NEWS_0_44_0_SHIELD = "Absorptionsschilde: Der aufgehellte Teil folgt jetzt der Schildfarbe (standardmässig weiss statt bläulich), und ein Leuchten am Ende der Lebensleiste zeigt einen Schild bei voller Gesundheit, wie bei Blizzards Rahmen. Oder „Position des Schilds“ auf „Am Leistenende“ stellen, dann liegt der ganze Schild über dem Leben (Leisten > Absorptionsschilde)."
 L.NEWS_0_45_0_ROW_GAP = "Auren: Neue Option „Zeilenabstand“ (Auren > Buffs / Debuffs / Bannbare Debuffs) für mehr Platz zwischen den Symbolreihen, z. B. für die nach unten verschobene Restzeit. Koreanische Übersetzung von einem Spieler vervollständigt."
 L.NEWS_0_46_0_BORDER = "Rahmen: zwei neue Randstile, „Bronze“ und „Schattiert (eigene Farbe)“, der die gewählte Randfarbe schattiert (Allgemein > Aussehen > Randstil, auch für Raid-Zellen)."
+L.NEWS_0_46_1_COMBAT_END = "Behoben: Fehler „script ran too long“ bei Kampfende; im Kampf aufgeschobene Arbeit wird jetzt auf einige Frames verteilt."
 L.NEWS_0_42_0_AURA_TIME = "Allgemein > Auren > Aurensymbole > „Restzeit X“ und „Restzeit Y“ verschieben die Zeit auf Buff- und Debuff-Symbolen, auch je Rahmen auf seinem Reiter Auren."
 L.NEWS_0_41_0_BLIZZARD_AURAS = "Spieler > Auren > Buffs > „Blizzard-Auren ausblenden“ blendet Blizzards Buff- und Debuff-Leiste an der Minimap aus, wenn der Spielerrahmen sie zeigt."
 L.NEWS_0_40_0_RAID = "Raid-Frames: Allgemein > Darstellung > Deckkraft der Zellen legt fest, wie durchsichtig die Zellen sind, für alle Raidgrößen."
