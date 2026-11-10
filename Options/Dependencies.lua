@@ -101,6 +101,7 @@ local RULES = {
     -- and the gold style paints its own shades.
     { on("borderShow"), { "borderStyle", "borderSize", "borderPadding", "borderColor" } },
     { isNot("borderStyle", "GOLD"), { "borderColor" } },
+    { isNot("borderStyle", "BRONZE"), { "borderColor" } },
     { on("shadowEnabled"), { "shadowAlpha", "shadowSize" } },
     { on("titleClassIcon"), { "classIconSize", "classIconX", "classIconY", "classIconRing", "classIconRingColor" } },
     { isNot("classIconRing", 0), { "classIconRingColor" } },

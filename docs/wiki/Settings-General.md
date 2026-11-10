@@ -91,7 +91,7 @@ Button: **Apply to all frames**.
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
 <tr><td><b>Show border</b></td><td>One ring around the frame and a docked castbar</td><td>On, Off</td><td>On</td></tr>
-<tr><td><b>Border style</b></td><td>Gold is shaded and ignores the border color</td><td>Flat, Gold</td><td>Gold</td></tr>
+<tr><td><b>Border style</b></td><td>Gold and bronze are shaded; Shaded shades the border color</td><td>Flat, Gold, Bronze, Shaded (own color)</td><td>Gold</td></tr>
 <tr><td><b>Border size</b></td><td></td><td>1 – 8</td><td>1</td></tr>
 <tr><td><b>Border padding</b></td><td>Gap between frame and border</td><td>0 – 8</td><td>0</td></tr>
 <tr><td><b>Border color</b></td><td></td><td>Color</td><td><code>#000000</code></td></tr>

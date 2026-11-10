@@ -39,6 +39,7 @@ local RULES = {
     -- style paints its own shades.
     { on("cellBorder"), { "cellBorderStyle", "cellBorderSize", "cellBorderColor" } },
     { isNot("cellBorderStyle", "GOLD"), { "cellBorderColor" } },
+    { isNot("cellBorderStyle", "BRONZE"), { "cellBorderColor" } },
     -- Elements/Health.lua: the fixed colour only for STATIC (by class,
     -- others take the reaction colour).
     { is("healthColorMode", "STATIC"), { "healthColor" } },

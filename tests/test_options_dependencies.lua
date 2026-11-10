@@ -28,6 +28,7 @@ end
 local CASES = {
     { "general", "borderShow", false, true, { "borderStyle", "borderSize", "borderPadding", "borderColor" } },
     { "player", "borderStyle", "GOLD", "FLAT", { "borderColor" } },
+    { "player", "borderStyle", "BRONZE", "SHADED", { "borderColor" } },
     { "general", "shadowEnabled", false, true, { "shadowAlpha", "shadowSize" } },
     { "general", "titleClassIcon", false, true, { "classIconSize", "classIconX", "classIconY", "classIconRing",
         "classIconRingColor" } },

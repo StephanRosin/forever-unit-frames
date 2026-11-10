@@ -138,6 +138,9 @@ News.ENTRIES = {
     ["0.45.0"] = {
         lines = { "NEWS_0_45_0_ROW_GAP" },
     },
+    ["0.46.0"] = {
+        lines = { "NEWS_0_46_0_BORDER" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

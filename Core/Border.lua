@@ -10,9 +10,11 @@ local _, ns = ...
 -- and box stay concentric. One mask per texture: the client allows three.
 -- The pieces are white; paint colours them with vertex colours.
 --
--- Styles: FLAT is one colour (`borderColor`). GOLD is shaded like a bevel,
--- lighter at the top and left, darker at the bottom and right, with a dark
--- one-pixel line along the inside (a second, thin ring).
+-- Styles: FLAT is one colour (`borderColor`). GOLD and BRONZE are shaded
+-- like a bevel, lighter at the top and left, darker at the bottom and
+-- right, with a dark one-pixel line along the inside (a second, thin
+-- ring); they differ only in their shades (Border.SHADED). SHADED takes
+-- its shades from `borderColor` (Border.ShadesOf).
 --
 -- The drop shadow is a soft band around the ring (or the box, without a
 -- ring); nothing is drawn under the box, so translucent bars stay as they
@@ -42,6 +44,32 @@ Border.GOLD = {
     DARK = { 0.55, 0.38, 0.07, 1 },
     LINE = { 0.2, 0.12, 0.02, 1 },
 }
+-- Bronze: a browner, less saturated metal, closer to the frames of
+-- Blizzard's own UI; the same five steps from light to the inner line.
+Border.BRONZE = {
+    LIGHT = { 0.94, 0.78, 0.55, 1 },
+    MID = { 0.76, 0.56, 0.33, 1 },
+    SHADE = { 0.58, 0.41, 0.23, 1 },
+    DARK = { 0.39, 0.26, 0.13, 1 },
+    LINE = { 0.14, 0.09, 0.04, 1 },
+}
+-- The shaded styles and their shades; any other style is flat.
+Border.SHADED = { GOLD = Border.GOLD, BRONZE = Border.BRONZE }
+
+-- The own colour as the middle shade: lighter towards white above it,
+-- darker below, the inner line nearly black; its alpha is kept.
+Border.OWN_LIGHT, Border.OWN_SHADE, Border.OWN_DARK, Border.OWN_LINE = 0.45, 0.78, 0.55, 0.2
+function Border.ShadesOf(c)
+    local function scaled(f) return { c[1] * f, c[2] * f, c[3] * f, c[4] } end
+    local l = Border.OWN_LIGHT
+    return {
+        LIGHT = { c[1] + (1 - c[1]) * l, c[2] + (1 - c[2]) * l, c[3] + (1 - c[3]) * l, c[4] },
+        MID = scaled(1),
+        SHADE = scaled(Border.OWN_SHADE),
+        DARK = scaled(Border.OWN_DARK),
+        LINE = scaled(Border.OWN_LINE),
+    }
+end
 
 -- Outward direction of each corner (Corners.POINTS order).
 local OUT = { { -1, 1 }, { 1, 1 }, { -1, -1 }, { 1, -1 } }
@@ -182,8 +210,7 @@ end
 -- corner's height thick (size / corner square), so it takes that part of
 -- its corner's fade and meets the corner without a step. Gradients are
 -- minColor (bottom) first.
-local function goldShades(share)
-    local G = Border.GOLD
+local function metalShades(G, share)
     local function vertical(bottom, top) return { color(bottom), color(top) } end
     local top = vertical(mix(G.LIGHT, G.MID, share), G.LIGHT)
     local bottom = vertical(G.DARK, mix(G.DARK, G.SHADE, share))
@@ -192,8 +219,8 @@ local function goldShades(share)
     return { top, bottom, side, side, topCorner, topCorner, bottomCorner, bottomCorner }
 end
 
-local function paintGold(ring, share)
-    local shades = goldShades(share)
+local function paintMetal(ring, G, share)
+    local shades = metalShades(G, share)
     for i, piece in ipairs(ringPieces(ring)) do piece:SetGradient("VERTICAL", shades[i][1], shades[i][2]) end
 end
 
@@ -333,20 +360,22 @@ function Border.Draw(owner, scope, box, radius)
     local size, padding = Border.Size(scope), Border.Padding(scope)
     radius = radius or ns.Corners.Radius(scope)
     local corner = placeRing(ring, box, size, padding, radius)
-    local isGold = Config.Get(scope, "borderStyle") == "GOLD"
-    if isGold then
-        paintGold(ring, corner > 0 and size / corner or 1)
+    local style = Config.Get(scope, "borderStyle")
+    local metal = Border.SHADED[style]
+    if style == "SHADED" then metal = Border.ShadesOf(Config.Get(scope, "borderColor")) end
+    if metal then
+        paintMetal(ring, metal, corner > 0 and size / corner or 1)
     else
         paintFlat(ring, Config.Get(scope, "borderColor"))
     end
     showRing(ring, size > 0)
-    -- The dark inner line of the gold style, the ring's innermost pixel;
+    -- The dark inner line of a shaded style, the ring's innermost pixel;
     -- a one-pixel ring would be all line.
     local pixel = Pixel.Snap(1, nil, 1)
-    local hasLine = isGold and size >= 2 * pixel
+    local hasLine = metal ~= nil and size >= 2 * pixel
     if hasLine then
         placeRing(ring.line, box, pixel, padding, radius)
-        paintFlat(ring.line, Border.GOLD.LINE)
+        paintFlat(ring.line, metal.LINE)
     end
     showRing(ring.line, hasLine)
     drawShadow(owner, scope, box, radius)

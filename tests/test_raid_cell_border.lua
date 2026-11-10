@@ -17,7 +17,7 @@ local function default(key)
     return v
 end
 H.check("style", default("cellBorderStyle"), "GOLD")
-H.check("style choices: the unit frames'", table.concat(RS.Get("cellBorderStyle").values, ","), "FLAT,GOLD")
+H.check("style choices: the unit frames'", table.concat(RS.Get("cellBorderStyle").values, ","), "FLAT,GOLD,BRONZE,SHADED")
 H.check("thickness", default("cellBorderSize"), 1)
 H.check("colour", default("cellBorderColor"), "0 0 0 1")
 H.check("corner radius", default("cellCornerRadius"), 4)

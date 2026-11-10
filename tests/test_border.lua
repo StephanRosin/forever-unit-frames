@@ -22,13 +22,13 @@ local function setting(key, code, kind, default)
 end
 setting("borderShow", "BV", "bool", true)
 local style = setting("borderStyle", "BY", "enum", "FLAT")
-H.check("styles, append only", style and table.concat(style.values, ","), "FLAT,GOLD")
+H.check("styles, append only", style and table.concat(style.values, ","), "FLAT,GOLD,BRONZE,SHADED")
 setting("shadowEnabled", "SE", "bool", false)
 local alpha = setting("shadowAlpha", "SA", "int", 50)
 H.check("shadow strength range", alpha and (alpha.min .. "-" .. alpha.max), "0-100")
 local ssize = setting("shadowSize", "SZ", "int", 4)
 H.check("shadow size range", ssize and (ssize.min .. "-" .. ssize.max), "1-16")
-for _, v in ipairs({ "FLAT", "GOLD" }) do
+for _, v in ipairs({ "FLAT", "GOLD", "BRONZE", "SHADED" }) do
     H.checkTrue("style text " .. v, ns.Schema.EnumText(style, v) ~= "ENUM_" .. v)
 end
 
@@ -238,6 +238,26 @@ C.Set("target", "cornerRadius", 0)
 C.Set("target", "borderSize", 1)
 H.check("one pixel gold: no inner line", line[1]:IsShown(), false)
 C.Set("target", "borderSize", 4)
+-- Bronze: the same bevel in its own shades.
+C.Set("target", "borderStyle", "BRONZE")
+G = B.BRONZE
+checkGold("bronze: ", 4)
+H.check("bronze: inner line", line[1]._color[1], B.BRONZE.LINE[1])
+H.checkTrue("bronze: browner than gold", B.BRONZE.MID[3] > B.GOLD.MID[3] and B.BRONZE.MID[2] < B.GOLD.MID[2])
+-- Shaded: the bevel from the border colour, which is its middle shade.
+local ownBefore = C.Get("target", "borderColor")
+local own = { 0.2, 0.4, 0.8, 1 }
+C.Set("target", "borderColor", own)
+C.Set("target", "borderStyle", "SHADED")
+G = B.ShadesOf(own)
+checkGold("own colour: ", 4)
+H.check("own colour: the middle shade", colour(G.MID), colour(own))
+H.checkTrue("own colour: lighter above", G.LIGHT[1] > own[1] and G.LIGHT[3] < 1)
+H.checkTrue("own colour: darker below", G.DARK[3] < G.SHADE[3] and G.SHADE[3] < own[3])
+H.check("own colour: inner line", line[1]._color[3], own[3] * B.OWN_LINE)
+H.check("own colour: alpha kept", G.LINE[4], 1)
+C.Set("target", "borderColor", ownBefore)
+G = B.GOLD
 C.Set("target", "borderStyle", "FLAT")
 H.check("flat again: gradient gone", b[1]._gradient, nil)
 H.check("flat again: own colour", b[1]._color[1], 1)

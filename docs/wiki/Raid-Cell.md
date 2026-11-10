@@ -40,9 +40,9 @@ Heals, shields and the power strip keep the unit frames' standard colors.
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
 <tr><td><b>Border around the cell</b></td><td></td><td>On, Off</td><td>Off</td></tr>
-<tr><td><b>Border style</b></td><td></td><td>Flat, Gold</td><td>Gold</td></tr>
+<tr><td><b>Border style</b></td><td></td><td>Flat, Gold, Bronze, Shaded (own color)</td><td>Gold</td></tr>
 <tr><td><b>Border size</b></td><td></td><td>1 – 8</td><td>1</td></tr>
-<tr><td><b>Border color</b></td><td>For the flat style</td><td>Color</td><td><code>#000000</code></td></tr>
+<tr><td><b>Border color</b></td><td>For the flat and shaded styles</td><td>Color</td><td><code>#000000</code></td></tr>
 <tr><td><b>Corner radius</b></td><td>0 = square corners</td><td>0 – 12</td><td>10 players: 4; 20 players: 3; 40 players: 2</td></tr>
 </tbody>
 </table>

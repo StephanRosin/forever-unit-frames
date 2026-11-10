@@ -36,6 +36,7 @@ local CASES = {
     { "cellBorder", false, true, { "cellBorderStyle", "cellBorderSize", "cellBorderColor" },
         { cellBorderStyle = "FLAT" } },
     { "cellBorderStyle", "GOLD", "FLAT", { "cellBorderColor" }, { cellBorder = true } },
+    { "cellBorderStyle", "BRONZE", "SHADED", { "cellBorderColor" }, { cellBorder = true } },
     { "healthColorMode", "CLASS", "STATIC", { "healthColor" } },
     { "healthColorMode", "GRADIENT", "STATIC", { "healthColor" } },
     { "nameClassColor", true, false, { "nameColor" } },
