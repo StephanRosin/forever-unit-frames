@@ -121,6 +121,10 @@ Settings.Define({ key = "clickCast", code = "CK", scope = "inherit", type = "boo
 -- Frame layout
 -- The pet's target is new in 0.29.0: off until switched on, so an update shows nothing new.
 Settings.Define({ key = "enabled", code = "E", scope = "frame", type = "bool", default = { targettargettarget = false, pettarget = false, _ = true } })
+-- The player frame hidden in a party or raid (e.g. you are shown in the
+-- party frames instead); the game's own visibility driver, combat included.
+Settings.Define({ key = "playerHideInGroup", code = "HG", scope = "frame", only = { player = true }, type = "bool",
+    default = false })
 -- With ours off, Blizzard's frame comes back unless this is set (e.g. the
 -- player shown in the party frames instead). Frames Blizzard has one of.
 Settings.Define({ key = "hideBlizzardFrame", code = "HB", scope = "frame", type = "bool", default = false,

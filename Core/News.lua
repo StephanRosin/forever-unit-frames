@@ -147,6 +147,9 @@ News.ENTRIES = {
     ["0.46.2"] = {
         lines = { "NEWS_0_46_2_FIXES" },
     },
+    ["0.47.0"] = {
+        lines = { "NEWS_0_47_0_HIDE_IN_GROUP" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

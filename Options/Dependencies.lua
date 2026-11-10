@@ -128,6 +128,7 @@ local RULES = {
     { is("portraitStyle", "3D"), { "portraitZoom", "portraitOffsetY" } },
     -- Only matters while ours is off (Core/Blizzard.lua).
     { is("enabled", false), { "hideBlizzardFrame" } },
+    { on("enabled"), { "playerHideInGroup" } },
     { isNot("footerHeight", 0), { "footerTextLeft", "footerTextCenter", "footerTextRight" } },
     -- Elements/ShieldWatch.lua: everything with the watch; each text's
     -- look with that text.

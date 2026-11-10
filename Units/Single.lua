@@ -120,11 +120,31 @@ end
 -- plain frames only, so fine in combat.
 Single.LayoutBars = layoutBars
 
+-- What shows and hides an enabled frame: the unit watch (shown while its
+-- unit exists), or for the player hidden in a group the game's visibility
+-- driver (the player always exists). Out of combat only.
+local GROUP_DRIVER = "[group] hide; show"
+
+function Single.Watch(frame)
+    if frame.key == "player" and Config.Get("player", "playerHideInGroup") then
+        UnregisterUnitWatch(frame)
+        RegisterStateDriver(frame, "visibility", GROUP_DRIVER)
+    else
+        UnregisterStateDriver(frame, "visibility")
+        RegisterUnitWatch(frame)
+    end
+end
+
+function Single.Unwatch(frame)
+    UnregisterUnitWatch(frame)
+    UnregisterStateDriver(frame, "visibility")
+end
+
 local function applyEnabled(frame)
     if ns.FrameEnabled(frame.key) then
-        RegisterUnitWatch(frame)
+        Single.Watch(frame)
     else
-        UnregisterUnitWatch(frame)
+        Single.Unwatch(frame)
         frame:Hide()
     end
 end

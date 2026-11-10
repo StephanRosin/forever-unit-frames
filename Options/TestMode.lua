@@ -22,7 +22,7 @@ local saved = {}
 local function applyOn(frame)
     saved[frame] = frame.unit
     ns.Single.SetUnit(frame, "player")
-    UnregisterUnitWatch(frame)
+    ns.Single.Unwatch(frame)
     frame:Show()
     ns.Single.Preview(frame, true)
     ns.Single.UpdateAll(frame)
@@ -37,9 +37,9 @@ local function applyOff(frame)
     ns.Single.SetUnit(frame, unit)
     ns.Single.Preview(frame, false)
     if ns.FrameEnabled(frame.key) then
-        RegisterUnitWatch(frame)
+        ns.Single.Watch(frame)
     else
-        UnregisterUnitWatch(frame)
+        ns.Single.Unwatch(frame)
         frame:Hide()
     end
     ns.Single.UpdateAll(frame)
@@ -100,7 +100,7 @@ ns.Listen("CONFIG_CHANGED", function()
             elseif not enabled and owned then
                 applyOff(frame)
             elseif enabled and owned then
-                UnregisterUnitWatch(frame)
+                ns.Single.Unwatch(frame)
                 frame:Show()
             end
         end
