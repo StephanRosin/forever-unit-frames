@@ -301,6 +301,7 @@ function Party.InitButton(button)
     for _, el in ipairs(ns.Elements) do el.Build(button) end
     Party.buttons[#Party.buttons + 1] = button
     ns.Units.EnableTooltip(button)
+    ns.Units.EnablePing(button)
     ns.Units.EnableClickCast(button)
     -- Made in combat it keeps the XML size until the relayout after combat.
     if not InCombatLockdown() then

@@ -215,6 +215,7 @@ function Cell.Setup(button)
     button.auraGroupKeys = {}
     for _, el in ipairs(ns.Elements) do el.Build(button) end
     ns.Units.EnableTooltip(button)
+    ns.Units.EnablePing(button)
 end
 
 -- XML OnLoad: the cell exists, its unit is not known yet. Its header

@@ -103,7 +103,8 @@ M.units.target.auras[3].name = "Mine"
 M.shiftDown = true
 free.holder._mouseOver = true
 M.menu = nil
-t:GetScript("OnMouseUp")(t, "RightButton")
+M.FireEvent("GLOBAL_MOUSE_DOWN", "RightButton")
+M.FireEvent("GLOBAL_MOUSE_UP", "RightButton")
 H.checkTrue("menu over the block", M.menu ~= nil)
 free.holder._mouseOver = false
 M.shiftDown = false

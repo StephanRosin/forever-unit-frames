@@ -1478,6 +1478,7 @@ L.NEWS_0_44_0_SHIELD = "Absorb shields: the lit part now follows the shield colo
 L.NEWS_0_45_0_ROW_GAP = "Auras: a new “Row gap” option (Auras > Buffs / Debuffs / Dispellable debuffs) adds space between icon rows, e.g. for the time left moved below the icons. Korean translation completed by a player."
 L.NEWS_0_46_0_BORDER = "Borders: two new border styles, “Bronze” and “Shaded (own color)”, which shades the border color you pick (General > Appearance > Border style, also for raid cells)."
 L.NEWS_0_46_1_COMBAT_END = "Fixed: a “script ran too long” error when combat ends; work saved up during combat is now spread over a few frames."
+L.NEWS_0_46_2_FIXES = "Fixed: Shift + right-click on a row of auras now opens the menu to hide them, also for rows beside the frame. Pinging a frame whose unit the game keeps secret no longer throws an error."
 L.NEWS_0_42_0_AURA_TIME = "General > Auras > Aura icons > “Time left X” and “Time left Y” move the timer on buff and debuff icons, also per frame on its Auras tab."
 L.NEWS_0_41_0_BLIZZARD_AURAS = "Player > Auras > Buffs > “Hide Blizzard buffs and debuffs” hides Blizzard’s buff and debuff frames at the minimap, for when the player frame shows them."
 L.NEWS_0_40_0_RAID = "Raid frames: General > Appearance > Cell opacity sets how see-through the cells are, for every raid size."

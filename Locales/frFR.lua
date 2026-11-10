@@ -1450,6 +1450,7 @@ L.NEWS_0_44_0_SHIELD = "Boucliers d'absorption : la partie éclaircie suit maint
 L.NEWS_0_45_0_ROW_GAP = "Auras : nouvelle option « Écart entre rangées » (Auras > Améliorations / Affaiblissements / Affaiblissements dissipables) pour plus d’espace entre les rangées d’icônes, p. ex. pour le temps restant déplacé sous les icônes. Traduction coréenne complétée par un joueur."
 L.NEWS_0_46_0_BORDER = "Bordures : deux nouveaux styles, « Bronze » et « Ombré (couleur au choix) », qui ombre la couleur de bordure choisie (Général > Apparence > Style de bordure, aussi pour les cellules de raid)."
 L.NEWS_0_46_1_COMBAT_END = "Corrigé : erreur « script ran too long » à la fin du combat ; le travail mis en attente pendant le combat est désormais réparti sur quelques images."
+L.NEWS_0_46_2_FIXES = "Corrigé : Maj + clic droit sur une rangée d’auras ouvre désormais le menu pour les masquer, aussi pour les rangées à côté du cadre. Signaler un cadre dont l’unité est gardée secrète par le jeu ne provoque plus d’erreur."
 L.NEWS_0_42_0_AURA_TIME = "Général > Auras > Icônes d'auras > « Temps restant X » et « Temps restant Y » déplacent le temps sur les icônes d’aura, aussi par cadre dans son onglet Auras."
 L.NEWS_0_41_0_BLIZZARD_AURAS = "Joueur > Auras > Améliorations > « Masquer les auras de Blizzard » masque les améliorations et affaiblissements de Blizzard près de la minicarte, quand le cadre du joueur les affiche."
 L.NEWS_0_40_0_RAID = "Cadres de raid : Général > Apparence > Opacité des cellules règle la transparence des cellules, pour toutes les tailles de raid."

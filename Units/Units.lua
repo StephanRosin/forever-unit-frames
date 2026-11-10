@@ -56,6 +56,26 @@ function ns.Units.EnableTooltip(frame)
     frame:HookScript("OnLeave", onLeave)
 end
 
+-- The ping key over a frame pings its unit (PingableType_UnitFrameMixin,
+-- Blizzard_SharedXML/PingableType.lua). Blizzard's GetTargetInfo hands on
+-- the unit's GUID as it is; a secret one makes the ping system's
+-- securecopy throw (Blizzard_PingManager.lua). Ours treat a frame whose
+-- GUID is secret as not pingable: the client says "can't ping" instead.
+local function pingGUID(frame)
+    local guid = UnitGUID(frame.unit or frame:GetAttribute("unit"))
+    if ns.Secrets.IsSecret(guid) then return nil end
+    return guid
+end
+
+local Ping = {
+    GetIsPingable = function(frame) return pingGUID(frame) ~= nil end,
+    GetTargetInfo = function(frame) return { guid = pingGUID(frame) } end,
+}
+
+function ns.Units.EnablePing(frame)
+    Mixin(frame, PingableType_UnitFrameMixin, Ping)
+end
+
 -- Click-casting addons (Clique and others) find unit frames through the
 -- shared global table ClickCastFrames: frame -> true. Clique takes the
 -- entries made before it loaded and watches the table afterwards,

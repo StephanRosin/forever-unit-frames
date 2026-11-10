@@ -1,7 +1,8 @@
 -- Adding a hidden aura from the frame. The icons take no clicks (a
 -- container's never run addon code; ours pass the click on), so a Shift +
 -- right-click on them is the unit frame's: its secure click does nothing
--- with Shift (no click binding), its OnMouseUp opens our menu with the
+-- with Shift (no click binding); the client's GLOBAL_MOUSE_UP opens our
+-- menu, also for a row beside the frame (the click falls on the world), with the
 -- auras of the row under the mouse, readable ones only, each a button that
 -- puts the spell on that frame's list (Shift + Ctrl: the account's). Out
 -- of combat only. A chat line says what was hidden and
@@ -27,6 +28,33 @@ local t = ns.Frames.target
 M.FireEvent("PLAYER_TARGET_CHANGED")
 local buffs = t.auraContainers.buffs.container
 
+-- A container's place is secret to the addon: the menu asks a plain frame
+-- of its own, put where the container is. It counts as under the mouse
+-- when it hangs exactly where a container marked so does.
+local function probeOver(self)
+    for _, f in pairs(ns.Frames) do
+        for _, e in pairs(f.auraContainers or {}) do
+            if e.container._mouseOver then
+                local a = { e.container:GetPoint() }
+                local b = { self:GetPoint() }
+                -- Hung from the other container: from its stand-in here.
+                for k, o in pairs(f.auraContainers) do
+                    if a[2] == o.container then a[2] = ns.AuraBlockMenu.probes[k] end
+                end
+                if #a > 0 and a[1] == b[1] and a[2] == b[2] and a[3] == b[3] and a[4] == b[4] and a[5] == b[5] then
+                    return self:GetWidth() > 0
+                end
+            end
+        end
+    end
+    return false
+end
+-- Every stand-in, made now or on the first click.
+setmetatable(ns.AuraBlockMenu.probes, { __newindex = function(t, k, p)
+    p.IsMouseOver = probeOver
+    rawset(t, k, p)
+end })
+
 local function ours(menu)
     local list = {}
     for _, e in ipairs(menu and menu.elements or {}) do
@@ -36,9 +64,9 @@ local function ours(menu)
 end
 local function rightClick()
     M.menu = nil
+    M.FireEvent("GLOBAL_MOUSE_DOWN", "RightButton")
     M.SecureClick(t, "RightButton")
-    local up = t:GetScript("OnMouseUp")
-    if up then up(t, "RightButton") end
+    M.FireEvent("GLOBAL_MOUSE_UP", "RightButton")
     return M.menu
 end
 
@@ -54,7 +82,8 @@ M.shiftDown = true
 H.check("shift: no secure action", M.SecureClick(t, "RightButton"), nil)
 M.menu = nil
 -- A left click with Shift: nothing.
-t:GetScript("OnMouseUp")(t, "LeftButton")
+M.FireEvent("GLOBAL_MOUSE_DOWN", "LeftButton")
+M.FireEvent("GLOBAL_MOUSE_UP", "LeftButton")
 H.check("shift + left: no menu", M.menu, nil)
 -- Shift, not over the auras: nothing either.
 buffs._mouseOver = false
@@ -66,6 +95,9 @@ local list = ours(rightClick())
 H.check("our own menu", M.menu and M.menu.tag, "context")
 H.check("title", list[1] and list[1].text, L.AURA_BLOCK_MENU_FRAME:format(L.FRAME_target))
 H.check("two buffs", #list, 3)
+local g = t.auras.buffs
+H.check("stand-in: as wide as two buffs", ns.AuraBlockMenu.probes.buffs:GetWidth(), 2 * g.size + g.spacing)
+H.check("stand-in: one row high", ns.AuraBlockMenu.probes.buffs:GetHeight(), g.size)
 H.check("first", list[2] and list[2].text, L.AURA_BLOCK_MENU_ENTRY:format("Well Fed", FOOD))
 M.ClickMenu(list[2])
 H.check("on the target's list", C.Get("target", "auraBlock"), tostring(FOOD))
@@ -177,4 +209,21 @@ M.SetCombat(true)
 H.check("combat: nothing", #ours(rightClick()), 0)
 M.SetCombat(false)
 H.check("no errors", #M.errors, 0)
+M.shiftDown = false
+
+-- The row counts where the button went down: over the world the camera
+-- turns while it is held, and no region counts the mouse as over it then.
+M.shiftDown = true
+M.menu = nil
+buffs._mouseOver = true
+M.FireEvent("GLOBAL_MOUSE_DOWN", "RightButton")
+buffs._mouseOver = false
+M.FireEvent("GLOBAL_MOUSE_UP", "RightButton")
+H.check("row taken on the way down", M.menu and M.menu.tag, "context")
+-- Down elsewhere, up over the row: nothing.
+M.menu = nil
+M.FireEvent("GLOBAL_MOUSE_DOWN", "RightButton")
+buffs._mouseOver = true
+M.FireEvent("GLOBAL_MOUSE_UP", "RightButton")
+H.check("down elsewhere: nothing", M.menu, nil)
 M.shiftDown = false

@@ -260,6 +260,7 @@ function Pets.InitButton(button)
     for _, el in ipairs(ns.Elements) do el.Build(button) end
     Pets.buttons[#Pets.buttons + 1] = button
     ns.Units.EnableTooltip(button)
+    ns.Units.EnablePing(button)
     ns.Units.EnableClickCast(button)
     -- Made in combat it keeps the XML size until the relayout after combat.
     if not InCombatLockdown() then button:SetSize(Single.Size(Pets.KEY)) end
@@ -298,6 +299,7 @@ function Pets.InitBeside(button)
     for _, el in ipairs(ns.Elements) do el.Build(button) end
     Pets.beside[#Pets.beside + 1] = button
     ns.Units.EnableTooltip(button)
+    ns.Units.EnablePing(button)
     ns.Units.EnableClickCast(button)
     Single.StyleContent(button)
     -- Made with its member, ahead of time: its aura containers now.
