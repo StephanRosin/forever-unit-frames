@@ -1486,6 +1486,7 @@ L.NEWS_0_46_1_COMBAT_END = "Fixed: a “script ran too long” error when combat
 L.NEWS_0_46_2_FIXES = "Fixed: Shift + right-click on a row of auras now opens the menu to hide them, also for rows beside the frame. Pinging a frame whose unit the game keeps secret no longer throws an error."
 L.NEWS_0_47_0_HIDE_IN_GROUP = "Player frame: new option “Hide in a group” (Player > Layout > Display) hides it in a party or raid, e.g. when you show in the party frames."
 L.NEWS_0_48_0_BOSS = "Boss frames: the bosses of an encounter (up to five) now get frames of their own in place of Blizzard's, in a column; settings under Boss, moved with the other frames."
+L.NEWS_0_48_1_COUNT = "Aura icons: the stack count now has a strong black outline, readable on bright icons such as Inner Fire."
 L.NEWS_0_42_0_AURA_TIME = "General > Auras > Aura icons > “Time left X” and “Time left Y” move the timer on buff and debuff icons, also per frame on its Auras tab."
 L.NEWS_0_41_0_BLIZZARD_AURAS = "Player > Auras > Buffs > “Hide Blizzard buffs and debuffs” hides Blizzard’s buff and debuff frames at the minimap, for when the player frame shows them."
 L.NEWS_0_40_0_RAID = "Raid frames: General > Appearance > Cell opacity sets how see-through the cells are, for every raid size."

@@ -135,18 +135,13 @@ local function shape(button, scope, size, showTime)
 end
 
 -- Size, fonts and countdown numbers; out of combat or on plain frames
--- only, like every Style.
+-- only, like every Style. The count takes the plain outline for a soft
+-- one, like the countdown numbers: the soft one's thin edge is lost on a
+-- bright icon (Inner Fire), and a container's button, whose count the
+-- client writes, could not have one anyway.
 function AuraButton.Style(button, scope, size, showTime)
     local font, fontSize, outline = shape(button, scope, size, showTime)
-    ns.Texts.SetFont(button.count, font, fontSize, outline)
-end
-
--- The same for a container's button. The client writes its count, so a
--- soft outline (copies of the text that we would have to write) cannot
--- follow it: it gets the plain outline, like the countdown numbers.
-function AuraButton.StyleManaged(button, scope, size, showTime)
-    local font, fontSize, outline = shape(button, scope, size, showTime)
-    ns.Texts.SetFont(button.count, font, fontSize, outline == "SOFT" and "OUTLINE" or outline)
+    ns.Texts.SetFont(button.count, font, fontSize, ns.Texts.CountdownFlags(outline))
 end
 
 local function forget(button)

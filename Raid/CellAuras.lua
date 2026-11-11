@@ -144,7 +144,7 @@ end
 -- The unit frames' debuff icon look, for the centre icon and the row.
 local function decorate(frame, button, size)
     AuraButton.Decorate(button, true)
-    AuraButton.StyleManaged(button, frame.key, size, false)
+    AuraButton.Style(button, frame.key, size, false)
     ns.AuraContainers.Wire(button, true)
 end
 
@@ -264,7 +264,7 @@ CellAuras.AddPart({
         local square = CellAuras.SetSlot(frame, container, "square", filter, shows == "SQUARE", initSquare)
         CellAuras.SetSlot(frame, container, "tint", filter, get("dispelTint"), initTint)
         local border = CellAuras.SetSlot(frame, container, "border", filter, get("dispelBorder"), initBorder)
-        local refused = icon ~= nil and not pcall(AuraButton.StyleManaged, icon, frame.key, dispelSize(), false)
+        local refused = icon ~= nil and not pcall(AuraButton.Style, icon, frame.key, dispelSize(), false)
         if square ~= nil and not pcall(placeSquare, frame, square) then refused = true end
         if border ~= nil and not pcall(placeBorder, frame, border) then refused = true end
         return refused
@@ -367,7 +367,7 @@ CellAuras.AddPart({
         container:SetAuraGroupEnabled(key, wanted)
         local refused = false
         for _, button in ipairs(auras.row) do
-            if not pcall(AuraButton.StyleManaged, button, frame.key, size, false) then refused = true end
+            if not pcall(AuraButton.Style, button, frame.key, size, false) then refused = true end
         end
         return refused
     end,

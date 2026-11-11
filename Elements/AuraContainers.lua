@@ -190,7 +190,7 @@ function AuraContainers.InitButton(entry, own, button)
     AuraButton.Decorate(button, entry.isDebuff)
     button.casterBorder = AuraContainers.CasterBorder(group, own)
     -- Fonts before the count is registered: the client writes it at once.
-    AuraButton.StyleManaged(button, entry.frame.key, size, group.showTime)
+    AuraButton.Style(button, entry.frame.key, size, group.showTime)
     entry.buttons[#entry.buttons + 1] = { button = button, own = own }
     AuraContainers.Wire(button, entry.isDebuff)
 end
@@ -295,7 +295,7 @@ local function restyle(entry, group)
     for _, record in ipairs(entry.buttons) do
         local size = record.own and group.ownSize or group.size
         record.button.casterBorder = AuraContainers.CasterBorder(group, record.own)
-        if not pcall(ns.AuraButton.StyleManaged, record.button, entry.frame.key, size, group.showTime) then
+        if not pcall(ns.AuraButton.Style, record.button, entry.frame.key, size, group.showTime) then
             refused = true
         end
     end

@@ -52,10 +52,17 @@ c:AddAuraGroup("soft", "HARMFUL", { initializeFrame = function(button) AC.InitBu
 local sb = soft.buttons[1].button
 H.check("plain outline", select(3, sb.count:GetFont()), "OUTLINE")
 H.check("no copies of the count", sb.count.softCopies, nil)
--- Our own icons keep the soft outline.
+-- Our own icons too: a soft edge is lost on a bright icon.
 local plainButton = AuraButton.Create(UIParent, false)
 AuraButton.Style(plainButton, "target", 20, true)
-H.checkTrue("own icons: soft copies", plainButton.count.softCopies)
+H.check("own icons: plain outline", select(3, plainButton.count:GetFont()), "OUTLINE")
+H.check("own icons: no copies", plainButton.count.softCopies, nil)
+C.Set("general", "fontOutline", "NONE")
+AuraButton.Style(plainButton, "target", 20, true)
+H.check("no outline chosen: none", select(3, plainButton.count:GetFont()), "")
+C.Set("general", "fontOutline", "THICKOUTLINE")
+AuraButton.Style(plainButton, "target", 20, true)
+H.check("thick outline kept", select(3, plainButton.count:GetFont()), "THICKOUTLINE")
 C.ResetAll()
 
 -- A batch made in combat is set up the same way (before it is locked).

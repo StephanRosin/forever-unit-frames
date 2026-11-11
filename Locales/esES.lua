@@ -1459,6 +1459,7 @@ L.NEWS_0_46_1_COMBAT_END = "Corregido: error «script ran too long» al terminar
 L.NEWS_0_46_2_FIXES = "Corregido: Mayús + clic derecho en una fila de auras abre ahora el menú para ocultarlas, también en filas junto al marco. Marcar un marco cuya unidad el juego mantiene secreta ya no da error."
 L.NEWS_0_47_0_HIDE_IN_GROUP = "Marco del jugador: nueva opción «Ocultar en grupo» (Jugador > Diseño > Visibilidad) que lo oculta en grupo o banda, p. ej. si apareces en los marcos de grupo."
 L.NEWS_0_48_0_BOSS = "Marcos de jefe: los jefes de un encuentro (hasta cinco) tienen ahora marcos propios en lugar de los de Blizzard, en columna; ajustes en Jefe, se mueven con los demás marcos."
+L.NEWS_0_48_1_COUNT = "Iconos de aura: el número de acumulaciones tiene ahora un contorno negro marcado, legible incluso en iconos claros como Fuego interno."
 L.NEWS_0_42_0_AURA_TIME = "General > Auras > Iconos de auras > «Tiempo restante X» y «Tiempo restante Y» mueven el tiempo de los iconos de aura, también por marco en su pestaña Auras."
 L.NEWS_0_41_0_BLIZZARD_AURAS = "Jugador > Auras > Beneficios > «Ocultar auras de Blizzard» oculta los beneficios y perjuicios de Blizzard junto al minimapa, para cuando el marco del jugador los muestra."
 L.NEWS_0_40_0_RAID = "Marcos de banda: General > Apariencia > Opacidad de las celdas fija lo transparentes que son las celdas, para todos los tamaños de banda."

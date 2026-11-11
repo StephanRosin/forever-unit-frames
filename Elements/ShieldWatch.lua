@@ -281,7 +281,7 @@ end
 local function styleButton(button, scope, managed)
     local showTime = setting(scope, "shieldsTime") == true
     if managed then
-        AuraButton.StyleManaged(button, scope, iconSize(scope), showTime)
+        AuraButton.Style(button, scope, iconSize(scope), showTime)
     else
         AuraButton.Style(button, scope, iconSize(scope), showTime)
     end

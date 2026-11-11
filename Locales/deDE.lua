@@ -1458,6 +1458,7 @@ L.NEWS_0_46_1_COMBAT_END = "Behoben: Fehler „script ran too long“ bei Kampfe
 L.NEWS_0_46_2_FIXES = "Behoben: Shift + Rechtsklick auf eine Aura-Reihe öffnet jetzt das Menü zum Ausblenden, auch bei Reihen neben dem Rahmen. Ein Ping auf einen Rahmen, dessen Einheit das Spiel geheim hält, wirft keinen Fehler mehr."
 L.NEWS_0_47_0_HIDE_IN_GROUP = "Spielerrahmen: neue Option „In der Gruppe ausblenden“ (Spieler > Anordnung > Anzeige) blendet ihn in Gruppe oder Schlachtzug aus, z. B. wenn du in den Gruppenrahmen erscheinst."
 L.NEWS_0_48_0_BOSS = "Bossrahmen: Die Bosse eines Kampfes (bis zu fünf) bekommen eigene Rahmen statt Blizzards, untereinander; Einstellungen unter Boss, verschoben mit den anderen Rahmen."
+L.NEWS_0_48_1_COUNT = "Aura-Symbole: Die Stapelzahl hat jetzt einen kräftigen schwarzen Umriss, lesbar auch auf hellen Symbolen wie Inneres Feuer."
 L.NEWS_0_42_0_AURA_TIME = "Allgemein > Auren > Aurensymbole > „Restzeit X“ und „Restzeit Y“ verschieben die Zeit auf Buff- und Debuff-Symbolen, auch je Rahmen auf seinem Reiter Auren."
 L.NEWS_0_41_0_BLIZZARD_AURAS = "Spieler > Auren > Buffs > „Blizzard-Auren ausblenden“ blendet Blizzards Buff- und Debuff-Leiste an der Minimap aus, wenn der Spielerrahmen sie zeigt."
 L.NEWS_0_40_0_RAID = "Raid-Frames: Allgemein > Darstellung > Deckkraft der Zellen legt fest, wie durchsichtig die Zellen sind, für alle Raidgrößen."
