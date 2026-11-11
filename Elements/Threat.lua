@@ -25,7 +25,7 @@ local Config, Secrets, Pixel, Border = ns.Config, ns.Secrets, ns.Pixel, ns.Borde
 -- The band's width.
 Threat.SIZE = 6
 -- Frames that show your threat on their unit; the rest show the unit's own.
-Threat.ON_UNIT = { target = true, focus = true, targettarget = true, targettargettarget = true, pettarget = true,
+Threat.ON_UNIT = { target = true, focus = true, targettarget = true, targettargettarget = true, focustarget = true, pettarget = true,
     boss = true }
 -- Blizzard's default threat colours, for a client without
 -- GetThreatStatusColor.

@@ -150,6 +150,12 @@ local PRESET = {
         x = 520,
         y = 232,
     },
+    focustarget = {
+        healthColorMode = "CLASS",
+        showSurname = false,
+        x = 668,
+        y = 232,
+    },
     party = {
         buffsAnchor = "FRAME",
         buffsFramePoint = "TOPLEFT",
