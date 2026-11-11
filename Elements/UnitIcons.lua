@@ -45,6 +45,7 @@ UnitIcons.SAMPLES = {
     targettargettarget = { combatIcon = true, pvpIcon = "Horde" },
     pettarget = { combatIcon = true, pvpIcon = "Horde" },
     focus = { combatIcon = true, pvpIcon = "Horde" },
+    boss = { combatIcon = true },
 }
 UnitIcons.PARTY_SAMPLES = {
     [1] = { combatIcon = true, pvpIcon = "Alliance" }, [2] = { combatIcon = true, pvpIcon = "Horde" },

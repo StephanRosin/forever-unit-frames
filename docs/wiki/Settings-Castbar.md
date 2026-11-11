@@ -13,12 +13,12 @@ The **Castbar** tab on each frame's page in `/fuf`. The last column says which f
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Show castbar</b></td><td></td><td>On, Off</td><td>Player, Target, Target of Target, Focus, Party: On; Pet: Off</td><td>all</td></tr>
-<tr><td><b>Always show</b></td><td>Keep an empty bar while nothing is cast</td><td>On, Off</td><td>Player, Target, Party: On; Target of Target, Focus, Pet: Off</td><td>all</td></tr>
+<tr><td><b>Show castbar</b></td><td></td><td>On, Off</td><td>Player, Target, Target of Target, Focus, Party, Boss: On; Pet: Off</td><td>all</td></tr>
+<tr><td><b>Always show</b></td><td>Keep an empty bar while nothing is cast</td><td>On, Off</td><td>Player, Target, Party: On; Target of Target, Focus, Pet, Boss: Off</td><td>all</td></tr>
 <tr><td><b>Hide Blizzard cast bar</b></td><td>Needs /reload to show it again</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
 <tr><td><b>Castbar position</b></td><td>Detached: set its place under Detached position, or unlock the frames. Over the portrait: along its bottom edge, seen while casting</td><td>Below the frame, Above the frame, Detached, Over the portrait</td><td>Below the frame</td><td>Player, Target, Target of Target, Focus, Pet</td></tr>
-<tr><td><b>Castbar position</b></td><td></td><td>Below the frame, Above the frame</td><td>Below the frame</td><td>Party</td></tr>
-<tr><td><b>Castbar height</b></td><td></td><td>4 – 60</td><td>Player: 18; Target, Focus: 16; Target of Target, Pet, Party: 12</td><td>all</td></tr>
+<tr><td><b>Castbar position</b></td><td></td><td>Below the frame, Above the frame</td><td>Below the frame</td><td>Party, Boss</td></tr>
+<tr><td><b>Castbar height</b></td><td></td><td>4 – 60</td><td>Player: 18; Target, Focus: 16; Target of Target, Pet, Party, Boss: 12</td><td>all</td></tr>
 </tbody>
 </table>
 
@@ -30,7 +30,7 @@ The **Castbar** tab on each frame's page in `/fuf`. The last column says which f
 <tr><td><b>Spell icon</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
 <tr><td><b>Spell name</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
 <tr><td><b>Cast time</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
-<tr><td><b>Interrupt ready</b></td><td>A green strip on the bar while your interrupt is ready and the cast can be interrupted</td><td>On, Off</td><td>On</td><td>Target, Focus</td></tr>
+<tr><td><b>Interrupt ready</b></td><td>A green strip on the bar while your interrupt is ready and the cast can be interrupted</td><td>On, Off</td><td>On</td><td>Target, Focus, Boss</td></tr>
 <tr><td><b>Latency zone</b></td><td>The part of the bar where casting again is safe</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
 <tr><td><b>Position in the bar</b></td><td>Bar end: right for casts, left for channels</td><td>Bar end, Left, Right</td><td>Bar end</td><td>Player</td></tr>
 <tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>0</td><td>Player</td></tr>

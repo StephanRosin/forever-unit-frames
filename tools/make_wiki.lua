@@ -17,7 +17,7 @@ local RS, RaidSchema = ns.RaidSettings, ns.RaidSchema
 -- WIKI_OUT (optional): another folder, e.g. for the test that checks the
 -- committed pages are current.
 local OUT = (rawget(_G, "WIKI_OUT") or (ADDONDIR .. "/docs/wiki")) .. "/"
-local FRAMES = { "player", "target", "targettarget", "focus", "pet", "party" }
+local FRAMES = { "player", "target", "targettarget", "focus", "pet", "party", "boss" }
 
 local function label(key, fallback)
     local v = L[key]

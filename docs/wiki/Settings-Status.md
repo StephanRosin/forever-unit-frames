@@ -31,13 +31,13 @@ Point on the frame and point of the icon: the icon's own point sits on that poin
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Show combat icon</b></td><td>Crossed swords while the unit is in combat</td><td>On, Off</td><td>Off</td><td>Target, Target of Target, Focus, Party</td></tr>
-<tr><td><b>Combat icon animation</b></td><td>Duel: clashing swords. Burst: springs in. Pulse: breathes</td><td>Off, Burst, Pulse, Duel (clashing swords)</td><td>Duel (clashing swords)</td><td>Target, Target of Target, Focus, Party</td></tr>
-<tr><td><b>Icon size</b></td><td></td><td>8 – 48</td><td>18</td><td>Target, Target of Target, Focus, Party</td></tr>
-<tr><td><b>Point on the frame</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Left</td><td>Target, Target of Target, Focus, Party</td></tr>
-<tr><td><b>Point of the icon</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Right</td><td>Target, Target of Target, Focus, Party</td></tr>
-<tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>-2</td><td>Target, Target of Target, Focus, Party</td></tr>
-<tr><td><b>Offset Y</b></td><td></td><td>-200 – 200</td><td>0</td><td>Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Show combat icon</b></td><td>Crossed swords while the unit is in combat</td><td>On, Off</td><td>Off</td><td>Target, Target of Target, Focus, Party, Boss</td></tr>
+<tr><td><b>Combat icon animation</b></td><td>Duel: clashing swords. Burst: springs in. Pulse: breathes</td><td>Off, Burst, Pulse, Duel (clashing swords)</td><td>Duel (clashing swords)</td><td>Target, Target of Target, Focus, Party, Boss</td></tr>
+<tr><td><b>Icon size</b></td><td></td><td>8 – 48</td><td>18</td><td>Target, Target of Target, Focus, Party, Boss</td></tr>
+<tr><td><b>Point on the frame</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Left</td><td>Target, Target of Target, Focus, Party, Boss</td></tr>
+<tr><td><b>Point of the icon</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Right</td><td>Target, Target of Target, Focus, Party, Boss</td></tr>
+<tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>-2</td><td>Target, Target of Target, Focus, Party, Boss</td></tr>
+<tr><td><b>Offset Y</b></td><td></td><td>-200 – 200</td><td>0</td><td>Target, Target of Target, Focus, Party, Boss</td></tr>
 </tbody>
 </table>
 
@@ -47,7 +47,7 @@ Point on the frame and point of the icon: the icon's own point sits on that poin
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
 <tr><td><b>Show PvP icon</b></td><td>The faction crest while a player is flagged for PvP</td><td>On, Off</td><td>Player, Target: On; Target of Target, Focus, Party: Off</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
-<tr><td><b>Also on NPCs</b></td><td>Flagged NPCs too, such as guards: attacking one flags you</td><td>On, Off</td><td>On</td><td>Target, Target of Target, Focus</td></tr>
+<tr><td><b>Also on NPCs</b></td><td>Flagged NPCs too, such as guards: attacking one flags you</td><td>On, Off</td><td>On</td><td>Target, Target of Target, Focus, Boss</td></tr>
 <tr><td><b>Icon size</b></td><td></td><td>8 – 48</td><td>Player: 25; Target: 28; Target of Target, Focus, Party: 24</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
 <tr><td><b>Point on the frame</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Top left</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
 <tr><td><b>Point of the icon</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Center</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
@@ -62,7 +62,7 @@ Point on the frame and point of the icon: the icon's own point sits on that poin
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
 <tr><td><b>Show raid target marker</b></td><td>Skull, cross, star and the other raid target icons</td><td>On, Off</td><td>On</td><td>all</td></tr>
-<tr><td><b>Icon size</b></td><td></td><td>8 – 64</td><td>Player, Target of Target, Pet: 16; Target, Focus, Party: 20</td><td>all</td></tr>
+<tr><td><b>Icon size</b></td><td></td><td>8 – 64</td><td>Player, Target of Target, Pet: 16; Target, Focus, Party, Boss: 20</td><td>all</td></tr>
 <tr><td><b>Point on the frame</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Top</td><td>all</td></tr>
 <tr><td><b>Point of the icon</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Center</td><td>all</td></tr>
 <tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>0</td><td>all</td></tr>
@@ -77,14 +77,14 @@ Where the marker (Marker style) sits: **Automatic** is its usual place, on the p
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Elite / rare marker</b></td><td>On the portrait, else above the frame</td><td>On, Off</td><td>On</td><td>Target, Target of Target, Focus</td></tr>
-<tr><td><b>Elite / rare style</b></td><td>Border: gold for elites, silver for rares</td><td>Marker, Border</td><td>Marker</td><td>Target, Target of Target, Focus</td></tr>
-<tr><td><b>Elite border thickness</b></td><td></td><td>1 – 6</td><td>Target: 4; Target of Target, Focus: 2</td><td>Target, Target of Target, Focus</td></tr>
-<tr><td><b>Marker: point on the frame</b></td><td>Automatic: on the portrait, else above the frame</td><td>Automatic, Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right</td><td>Automatic</td><td>Target, Target of Target, Focus</td></tr>
-<tr><td><b>Marker: its own point</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Center</td><td>Target, Target of Target, Focus</td></tr>
-<tr><td><b>Marker: offset X</b></td><td>Marker style; with Automatic, moves it from there</td><td>-200 – 200</td><td>0</td><td>Target, Target of Target, Focus</td></tr>
-<tr><td><b>Marker: offset Y</b></td><td>Marker style; with Automatic, moves it from there</td><td>-200 – 200</td><td>0</td><td>Target, Target of Target, Focus</td></tr>
-<tr><td><b>Marker: size</b></td><td>Badge, or the word's font size; Auto: as always</td><td>8 – 64 (0: Auto)</td><td>Target: 49; Target of Target, Focus: Auto</td><td>Target, Target of Target, Focus</td></tr>
+<tr><td><b>Elite / rare marker</b></td><td>On the portrait, else above the frame</td><td>On, Off</td><td>On</td><td>Target, Target of Target, Focus, Boss</td></tr>
+<tr><td><b>Elite / rare style</b></td><td>Border: gold for elites, silver for rares</td><td>Marker, Border</td><td>Marker</td><td>Target, Target of Target, Focus, Boss</td></tr>
+<tr><td><b>Elite border thickness</b></td><td></td><td>1 – 6</td><td>Target: 4; Target of Target, Focus, Boss: 2</td><td>Target, Target of Target, Focus, Boss</td></tr>
+<tr><td><b>Marker: point on the frame</b></td><td>Automatic: on the portrait, else above the frame</td><td>Automatic, Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right</td><td>Automatic</td><td>Target, Target of Target, Focus, Boss</td></tr>
+<tr><td><b>Marker: its own point</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Center</td><td>Target, Target of Target, Focus, Boss</td></tr>
+<tr><td><b>Marker: offset X</b></td><td>Marker style; with Automatic, moves it from there</td><td>-200 – 200</td><td>0</td><td>Target, Target of Target, Focus, Boss</td></tr>
+<tr><td><b>Marker: offset Y</b></td><td>Marker style; with Automatic, moves it from there</td><td>-200 – 200</td><td>0</td><td>Target, Target of Target, Focus, Boss</td></tr>
+<tr><td><b>Marker: size</b></td><td>Badge, or the word's font size; Auto: as always</td><td>8 – 64 (0: Auto)</td><td>Target: 49; Target of Target, Focus, Boss: Auto</td><td>Target, Target of Target, Focus, Boss</td></tr>
 </tbody>
 </table>
 
@@ -145,7 +145,7 @@ Where the marker (Marker style) sits: **Automatic** is its usual place, on the p
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Threat glow</b></td><td>Player, party, pet: the unit's own threat. Target, focus: your threat on it</td><td>On, Off</td><td>Player, Party: On; Target, Target of Target, Focus, Pet: Off</td><td>all</td></tr>
+<tr><td><b>Threat glow</b></td><td>Player, party, pet: the unit's own threat. Target, focus: your threat on it</td><td>On, Off</td><td>Player, Party: On; Target, Target of Target, Focus, Pet, Boss: Off</td><td>all</td></tr>
 <tr><td><b>Threat bar below the castbar</b></td><td>Your threat on your target. Keeps a docked castbar's place</td><td>On, Off</td><td>On</td><td>Player</td></tr>
 <tr><td><b>Height</b></td><td></td><td>6 – 30</td><td>12</td><td>Player</td></tr>
 <tr><td><b>Yellow from (%)</b></td><td>Tank: someone reaches this share of your threat. Others: of the pull</td><td>50 – 99</td><td>80</td><td>Player</td></tr>

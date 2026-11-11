@@ -52,11 +52,17 @@ function Movers.Snap(v)
 end
 
 -- The spec of an ordinary unit frame.
+-- A column's (the boss frames, Units/Single.lua) is its first frame's and
+-- spans the whole column; the frames hang from its top edge.
 function Movers.FrameSpec(frame)
-    local key = frame.key
+    local key, count = frame.key, frame.count
     return {
         scope = key, label = function() return L["FRAME_" .. key] end,
-        size = function() return ns.Single.Size(key) end,
+        point = count and "TOP" or nil,
+        size = function()
+            if count then return ns.Single.ColumnSize(key, count) end
+            return ns.Single.Size(key)
+        end,
     }
 end
 

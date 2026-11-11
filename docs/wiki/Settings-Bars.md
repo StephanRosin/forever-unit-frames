@@ -13,12 +13,12 @@ The **Bars** tab on each frame's page in `/fuf`. The last column says which fram
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Health color</b></td><td>Class: players in their class color, NPCs in reaction color</td><td>Class, Reaction, Static color, Gradient by health</td><td>Player, Target, Target of Target, Party: Class; Focus, Pet: Static color</td><td>all</td></tr>
+<tr><td><b>Health color</b></td><td>Class: players in their class color, NPCs in reaction color</td><td>Class, Reaction, Static color, Gradient by health</td><td>Player, Target, Target of Target, Party: Class; Focus, Pet, Boss: Static color</td><td>all</td></tr>
 <tr><td><b>Static health color</b></td><td></td><td>Color</td><td><code>#33bf4d</code></td><td>all</td></tr>
 <tr><td><b>Friendly color</b></td><td>For health and title colors by reaction</td><td>Color</td><td><code>#33bf4d</code></td><td>all</td></tr>
 <tr><td><b>Neutral color</b></td><td></td><td>Color</td><td><code>#e6cc40</code></td><td>all</td></tr>
 <tr><td><b>Hostile color</b></td><td></td><td>Color</td><td><code>#d93333</code></td><td>all</td></tr>
-<tr><td><b>Gray when tapped by others</b></td><td>Someone else attacked it first: no experience or loot</td><td>On, Off</td><td>On</td><td>Target, Target of Target, Focus</td></tr>
+<tr><td><b>Gray when tapped by others</b></td><td>Someone else attacked it first: no experience or loot</td><td>On, Off</td><td>On</td><td>Target, Target of Target, Focus, Boss</td></tr>
 </tbody>
 </table>
 
@@ -51,7 +51,7 @@ The **Bars** tab on each frame's page in `/fuf`. The last column says which fram
 <tbody>
 <tr><td><b>Show incoming heals</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
 <tr><td><b>Overheal lane</b></td><td>Shows heals and shields past full health</td><td>On, Off</td><td>Off</td><td>all</td></tr>
-<tr><td><b>Heals past the frame</b></td><td>Incoming heals drawn in full, past the right edge</td><td>On, Off</td><td>Player, Target, Party: On; Target of Target, Focus, Pet: Off</td><td>all</td></tr>
+<tr><td><b>Heals past the frame</b></td><td>Incoming heals drawn in full, past the right edge</td><td>On, Off</td><td>Player, Target, Party: On; Target of Target, Focus, Pet, Boss: Off</td><td>all</td></tr>
 <tr><td><b>Power bar matches health bar</b></td><td>With the overheal lane: the power bar ends where the health bar ends</td><td>On, Off</td><td>Off</td><td>all</td></tr>
 <tr><td><b>Your heals color</b></td><td></td><td>Color</td><td><code>#4df273</code>, 65 % opaque</td><td>all</td></tr>
 <tr><td><b>Other heals color</b></td><td></td><td>Color</td><td><code>#26a64d</code>, 55 % opaque</td><td>all</td></tr>

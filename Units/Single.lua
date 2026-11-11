@@ -40,12 +40,37 @@ function Single.LayoutSize(frame)
     return w, h
 end
 
+-- A frame of a column (def.count, the boss frames): the room from one
+-- frame's bottom edge to the next one's top, a docked castbar between
+-- included (as Units/Party.lua stacks its members).
+function Single.ColumnGap(scope)
+    return Pixel.Snap(Config.Get(scope, "bossSpacing")) + ns.Castbar.DockedDepth(scope)
+end
+
+-- The whole column's size: count frames and the gaps between them.
+function Single.ColumnSize(scope, count)
+    local w, h = Single.Size(scope)
+    return w, count * h + (count - 1) * Single.ColumnGap(scope)
+end
+
 local function place(frame)
     local scope = frame.key
     local w, h = Single.Size(scope)
     frame:SetSize(w, h)
     frame:ClearAllPoints()
-    if frame.mover then
+    if frame.index and frame.index > 1 then
+        frame:SetPoint("TOP", frame.previous, "BOTTOM", 0, -Single.ColumnGap(scope))
+    elseif frame.index then
+        -- The column's top edge: the mover's (Movers.FrameSpec), or with
+        -- the column's centre at x / y.
+        if frame.mover then
+            frame:SetPoint("TOP", frame.mover, "TOP", 0, 0)
+        else
+            local _, columnH = Single.ColumnSize(scope, frame.count)
+            frame:SetPoint("TOP", UIParent, "CENTER", Pixel.Centre(Config.Get(scope, "x"), w),
+                Pixel.Centre(Config.Get(scope, "y"), columnH) + columnH / 2)
+        end
+    elseif frame.mover then
         frame:SetPoint("CENTER", frame.mover, "CENTER", 0, 0)
     else
         frame:SetPoint("CENTER", UIParent, "CENTER",
@@ -177,12 +202,19 @@ function Single.StyleAll(frame)
     Single.UpdateAll(frame)
 end
 
-function Single.Create(def)
-    local frame = CreateFrame("Button", "ForeverUnitFrames_" .. def.key, UIParent, "SecureUnitButtonTemplate")
+-- index (optional): the frame's place in a column of def.count, whose
+-- unit is def.unit .. index; ns.Frames holds it under def.key .. index.
+function Single.Create(def, index)
+    local name = def.key .. (index or "")
+    local unit = index and def.unit .. index or def.unit
+    local frame = CreateFrame("Button", "ForeverUnitFrames_" .. name, UIParent, "SecureUnitButtonTemplate")
     ns.Units.EnableTooltip(frame)
     ns.Units.EnableClickCast(frame)
-    frame.key, frame.unit = def.key, def.unit
-    frame:SetAttribute("unit", def.unit)
+    frame.key, frame.unit = def.key, unit
+    if index then
+        frame.index, frame.count, frame.previous = index, def.count, ns.Frames[def.key .. (index - 1)]
+    end
+    frame:SetAttribute("unit", unit)
     frame:SetAttribute("*type1", "target")
     frame:SetAttribute("*type2", "togglemenu")
     -- The ping key over the frame pings its unit, as PingableUnitFrameTemplate
@@ -192,7 +224,7 @@ function Single.Create(def)
     frame:RegisterForClicks("AnyUp")
     for _, el in ipairs(ns.Elements) do el.Build(frame) end
     ns.UnitEvents.Bind(frame)
-    ns.Frames[def.key] = frame
+    ns.Frames[name] = frame
     Single.StyleAll(frame)
     return frame
 end
@@ -238,10 +270,13 @@ function Single.CreateAll(onBuilt)
     ns.AfterCombat("createSingle", function()
         for _, def in ipairs(ns.Units.List) do
             local usable = def.available == nil or def.available()
-            if def.unit and usable and not ns.Frames[def.key] then
-                local frame = Single.Create(def)
-                listen(frame, def)
-                if def.poll then Single.Poll(frame, def.poll) end
+            for index = 1, def.count or 1 do
+                local i = def.count and index or nil
+                if def.unit and usable and not ns.Frames[def.key .. (i or "")] then
+                    local frame = Single.Create(def, i)
+                    listen(frame, def)
+                    if def.poll then Single.Poll(frame, def.poll) end
+                end
             end
         end
         if onBuilt then onBuilt() end
@@ -250,8 +285,12 @@ end
 
 local function restyle(scope)
     ns.AfterCombat("restyle:" .. (scope or "all"), function()
-        for key, frame in pairs(ns.Frames) do
-            if scope == nil or scope == "general" or scope == key then Single.StyleAll(frame) end
+        -- A column's frames hang from the one above: top to bottom.
+        for _, def in ipairs(ns.Units.List) do
+            for index = 1, def.count or 1 do
+                local frame = ns.Frames[def.key .. (def.count and index or "")]
+                if frame and (scope == nil or scope == "general" or scope == def.key) then Single.StyleAll(frame) end
+            end
         end
     end)
 end

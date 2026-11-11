@@ -30,7 +30,7 @@ Level, class and race reads e.g. 60 Mage Gnome, or 60 Humanoid for a creature.
 <tbody>
 <tr><td><b>Title row, left text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>Name</td><td>all</td></tr>
 <tr><td><b>Title row, center text</b></td><td>Left and right then keep to a third each</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>None</td><td>all</td></tr>
-<tr><td><b>Title row, right text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>Player, Target, Focus, Party: Level; Target of Target, Pet: None</td><td>all</td></tr>
+<tr><td><b>Title row, right text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>Player, Target, Focus, Party: Level; Target of Target, Pet, Boss: None</td><td>all</td></tr>
 <tr><td><b>Title text color</b></td><td>Class: players in their class color, NPCs in reaction color</td><td>Class (players), Reaction, White</td><td>Class (players)</td><td>all</td></tr>
 <tr><td><b>AFK/DND badge</b></td><td>Gold AFK or red DND badge after the name</td><td>On, Off</td><td>On</td><td>all</td></tr>
 <tr><td><b>Show class icon</b></td><td>Players only, as a round badge on the frame's top right corner</td><td>On, Off</td><td>On</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
@@ -49,9 +49,9 @@ Each row (title, health and power) can have a center text as well. While one is 
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Health bar, left text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>Player, Target, Party: Current / max; Target of Target, Pet: Name; Focus: None</td><td>all</td></tr>
+<tr><td><b>Health bar, left text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>Player, Target, Party: Current / max; Target of Target, Pet, Boss: Name; Focus: None</td><td>all</td></tr>
 <tr><td><b>Health bar, center text</b></td><td>Left and right then keep to a third each</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>None</td><td>all</td></tr>
-<tr><td><b>Health bar, right text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>Player, Target, Focus, Pet, Party: Percent; Target of Target: None</td><td>all</td></tr>
+<tr><td><b>Health bar, right text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>Player, Target, Focus, Pet, Party: Percent; Target of Target, Boss: None</td><td>all</td></tr>
 </tbody>
 </table>
 
@@ -60,9 +60,9 @@ Each row (title, health and power) can have a center text as well. While one is 
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Power bar, left text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>Player, Target, Party: Current / max; Target of Target, Focus, Pet: None</td><td>all</td></tr>
+<tr><td><b>Power bar, left text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>Player, Target, Party: Current / max; Target of Target, Focus, Pet, Boss: None</td><td>all</td></tr>
 <tr><td><b>Power bar, center text</b></td><td>Left and right then keep to a third each</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>None</td><td>all</td></tr>
-<tr><td><b>Power bar, right text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>Player, Target, Pet, Party: Percent; Target of Target, Focus: None</td><td>all</td></tr>
+<tr><td><b>Power bar, right text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>Player, Target, Pet, Party: Percent; Target of Target, Focus, Boss: None</td><td>all</td></tr>
 </tbody>
 </table>
 
@@ -98,11 +98,11 @@ Each row (title, health and power) can have a center text as well. While one is 
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Level color</b></td><td>Red, orange, yellow, green, gray against your level</td><td>Text color, By difficulty</td><td>Player, Target of Target, Focus, Pet, Party: Text color; Target: By difficulty</td><td>all</td></tr>
+<tr><td><b>Level color</b></td><td>Red, orange, yellow, green, gray against your level</td><td>Text color, By difficulty</td><td>Player, Target of Target, Focus, Pet, Party, Boss: Text color; Target: By difficulty</td><td>all</td></tr>
 <tr><td><b>Name color in bar texts</b></td><td>Only names on the health or power bar; the title row has its own</td><td>White, Class, Reaction</td><td>White</td><td>all</td></tr>
 <tr><td><b>Info: class in color</b></td><td>Level, class and race: only the class or creature type colored</td><td>On, Off</td><td>Off</td><td>all</td></tr>
 <tr><td><b>Compact values</b></td><td>1234/1234 instead of 1234 / 1234</td><td>On, Off</td><td>Off</td><td>all</td></tr>
-<tr><td><b>Show secondary name</b></td><td>Surname next to the first name</td><td>On, Off</td><td>Player, Target, Focus, Pet: On; Target of Target, Party: Off</td><td>all</td></tr>
+<tr><td><b>Show secondary name</b></td><td>Surname next to the first name</td><td>On, Off</td><td>Player, Target, Focus, Pet, Boss: On; Target of Target, Party: Off</td><td>all</td></tr>
 </tbody>
 </table>
 

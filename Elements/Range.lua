@@ -537,7 +537,7 @@ function Range.Build() end
 
 -- Whether any frame that is on has fading on (the party's setting covers
 -- its pets; raid cells count while one shows a unit).
-local SCOPES = { "party", "target", "targettarget", "targettargettarget", "focus", "pet", "pettarget" }
+local SCOPES = { "party", "target", "targettarget", "targettargettarget", "focus", "pet", "pettarget", "boss" }
 local function anyEnabled()
     if not (Range.ReactionOn("friendly") or Range.ReactionOn("hostile")) then return false end
     for _, scope in ipairs(SCOPES) do

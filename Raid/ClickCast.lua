@@ -243,7 +243,8 @@ end
 -- The unit frames that may take them (decision 76), each by its own
 -- clickCast (inherited from General). Party pets follow the party's;
 -- party targets never.
-ClickCast.UNIT_SCOPES = { player = true, pet = true, target = true, targettarget = true, focus = true, party = true }
+ClickCast.UNIT_SCOPES = { player = true, pet = true, target = true, targettarget = true, focus = true, party = true,
+    boss = true }
 
 -- Whether a frame takes the bindings: a raid cell a header made while the
 -- raid frames are on, a unit frame whose switch is on.
@@ -312,8 +313,8 @@ end
 local function frames()
     local list = {}
     for _, b in ipairs(ns.RaidCell.buttons) do list[#list + 1] = b end
-    for key in pairs(ClickCast.UNIT_SCOPES) do
-        if ns.Frames[key] then list[#list + 1] = ns.Frames[key] end
+    for _, frame in pairs(ns.Frames) do
+        if ClickCast.UNIT_SCOPES[frame.key] then list[#list + 1] = frame end
     end
     for _, group in ipairs({ ns.Party.buttons or {}, ns.PartyPets.buttons, ns.PartyPets.beside }) do
         for _, b in ipairs(group) do list[#list + 1] = b end

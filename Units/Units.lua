@@ -28,7 +28,9 @@ ns.Units.List = {
       eventUnit = { UNIT_PET = "player", UNIT_TARGET = "pet" }, poll = 0.2 },
     { key = "focus", unit = "focus", events = { "PLAYER_FOCUS_CHANGED" }, available = ns.Units.FocusAvailable },
     -- Built by Units/Party.lua from a group header, not as a single frame.
-    { key = "party", group = true },
+    { key = "party", group = true },    -- Five frames, boss1 to boss5, under one set of settings (Units/Single.lua:
+    -- count). The unit watch shows each while its boss is engaged.
+    { key = "boss", unit = "boss", count = 5, events = { "INSTANCE_ENCOUNTER_ENGAGE_UNIT", "UNIT_TARGETABLE_CHANGED" } },
 }
 
 -- Hovering a unit frame shows its unit's tooltip. Blizzard's own

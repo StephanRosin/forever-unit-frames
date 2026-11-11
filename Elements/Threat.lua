@@ -25,7 +25,8 @@ local Config, Secrets, Pixel, Border = ns.Config, ns.Secrets, ns.Pixel, ns.Borde
 -- The band's width.
 Threat.SIZE = 6
 -- Frames that show your threat on their unit; the rest show the unit's own.
-Threat.ON_UNIT = { target = true, focus = true, targettarget = true, targettargettarget = true, pettarget = true }
+Threat.ON_UNIT = { target = true, focus = true, targettarget = true, targettargettarget = true, pettarget = true,
+    boss = true }
 -- Blizzard's default threat colours, for a client without
 -- GetThreatStatusColor.
 Threat.COLORS = { { 1, 1, 0.47 }, { 1, 0.6, 0 }, { 1, 0, 0 } }
@@ -116,9 +117,8 @@ end
 -- The frames showing your threat on their unit follow your own
 -- situation; after combat every frame looks again.
 local function updateOnUnit(event)
-    for key in pairs(Threat.ON_UNIT) do
-        local frame = ns.Frames[key]
-        if frame and frame.unit and UnitExists(frame.unit) then Threat.Update(frame, event) end
+    for _, frame in pairs(ns.Frames) do
+        if Threat.ON_UNIT[frame.key] and frame.unit and UnitExists(frame.unit) then Threat.Update(frame, event) end
     end
 end
 local listener = CreateFrame("Frame")

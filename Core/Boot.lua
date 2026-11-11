@@ -8,7 +8,10 @@ local _, ns = ...
 -- Runs in the same out-of-combat run that built the single frames.
 local function afterBuild()
     ns.Party.Create()
-    for _, frame in pairs(ns.Frames) do ns.Movers.Attach(frame) end
+    -- A column's frames move with its first (Movers.FrameSpec).
+    for _, frame in pairs(ns.Frames) do
+        if not frame.index or frame.index == 1 then ns.Movers.Attach(frame) end
+    end
     ns.Movers.Attach(ns.Party.header, ns.Party.MoverSpec())
     for _, frame in pairs(ns.Frames) do ns.Castbar.AttachMover(frame) end
     for _, frame in pairs(ns.Frames) do ns.ShieldWatch.AttachMover(frame) end

@@ -24,8 +24,8 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Width</b></td><td></td><td>40 – 600</td><td>Player, Target: 300; Target of Target: 120; Focus: 160; Pet: 115; Party: 198</td><td>all</td></tr>
-<tr><td><b>Height</b></td><td></td><td>8 – 200</td><td>Player: 67; Target: 70; Target of Target, Pet: 28; Focus: 36; Party: 53</td><td>all</td></tr>
+<tr><td><b>Width</b></td><td></td><td>40 – 600</td><td>Player, Target: 300; Target of Target: 120; Focus, Boss: 160; Pet: 115; Party: 198</td><td>all</td></tr>
+<tr><td><b>Height</b></td><td></td><td>8 – 200</td><td>Player: 67; Target: 70; Target of Target, Pet: 28; Focus, Boss: 36; Party: 53</td><td>all</td></tr>
 </tbody>
 </table>
 
@@ -34,8 +34,9 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Position X</b></td><td>Offset from the screen center</td><td>-4000 – 4000</td><td>Player: -400; Target: 400; Target of Target: 536; Focus: 520; Pet: -624; Party: -709</td><td>all</td></tr>
-<tr><td><b>Position Y</b></td><td>Offset from the screen center</td><td>-4000 – 4000</td><td>Player, Target: -220; Target of Target: -304; Focus: 232; Pet: -328; Party: 150</td><td>all</td></tr>
+<tr><td><b>Position X</b></td><td>Offset from the screen center</td><td>-4000 – 4000</td><td>Player: -400; Target: 400; Target of Target: 536; Focus: 520; Pet: -624; Party: -709; Boss: 560</td><td>all</td></tr>
+<tr><td><b>Position Y</b></td><td>Offset from the screen center</td><td>-4000 – 4000</td><td>Player, Target: -220; Target of Target: -304; Focus: 232; Pet: -328; Party: 150; Boss: 40</td><td>all</td></tr>
+<tr><td><b>Spacing</b></td><td>Between two boss frames</td><td>0 – 60</td><td>12</td><td>Boss</td></tr>
 </tbody>
 </table>
 
@@ -44,11 +45,11 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Title row height (%)</b></td><td>0 = no title row</td><td>0 – 60</td><td>Player, Target, Focus: 30; Target of Target, Pet: 0; Party: 26</td><td>all</td></tr>
-<tr><td><b>Health bar height (%)</b></td><td>Share of the frame height</td><td>10 – 100</td><td>Player, Target: 68; Target of Target, Pet: 75; Focus: 45; Party: 17</td><td>all</td></tr>
-<tr><td><b>Power bar height (%)</b></td><td>Share of the frame height; room left over goes to health and power</td><td>0 – 90</td><td>Player, Target, Target of Target, Pet: 25; Focus: 21; Party: 7</td><td>all</td></tr>
+<tr><td><b>Title row height (%)</b></td><td>0 = no title row</td><td>0 – 60</td><td>Player, Target, Focus, Boss: 30; Target of Target, Pet: 0; Party: 26</td><td>all</td></tr>
+<tr><td><b>Health bar height (%)</b></td><td>Share of the frame height</td><td>10 – 100</td><td>Player, Target: 68; Target of Target, Pet: 75; Focus, Boss: 45; Party: 17</td><td>all</td></tr>
+<tr><td><b>Power bar height (%)</b></td><td>Share of the frame height; room left over goes to health and power</td><td>0 – 90</td><td>Player, Target, Target of Target, Pet, Boss: 25; Focus: 21; Party: 7</td><td>all</td></tr>
 <tr><td><b>Show power bar</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
-<tr><td><b>Hide without power</b></td><td>NPCs without mana, rage or energy: no empty bar</td><td>On, Off</td><td>Target: On; Target of Target, Focus: Off</td><td>Target, Target of Target, Focus</td></tr>
+<tr><td><b>Hide without power</b></td><td>NPCs without mana, rage or energy: no empty bar</td><td>On, Off</td><td>Target: On; Target of Target, Focus, Boss: Off</td><td>Target, Target of Target, Focus, Boss</td></tr>
 </tbody>
 </table>
 
@@ -57,8 +58,8 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
-<tr><td><b>Portrait</b></td><td>Left/right: a square as tall as the frame. Above health: a full-width strip; the frame grows by its height</td><td>Off, Left, Right, Above health bar</td><td>Player, Target: Left; Target of Target, Focus, Pet, Party: Off</td><td>all</td></tr>
-<tr><td><b>Portrait style</b></td><td>2D picture, 3D model or class icon</td><td>2D, 3D (model), Class icon</td><td>Player, Target: 3D (model); Target of Target, Focus, Pet, Party: 2D</td><td>all</td></tr>
+<tr><td><b>Portrait</b></td><td>Left/right: a square as tall as the frame. Above health: a full-width strip; the frame grows by its height</td><td>Off, Left, Right, Above health bar</td><td>Player, Target: Left; Target of Target, Focus, Pet, Party, Boss: Off</td><td>all</td></tr>
+<tr><td><b>Portrait style</b></td><td>2D picture, 3D model or class icon</td><td>2D, 3D (model), Class icon</td><td>Player, Target: 3D (model); Target of Target, Focus, Pet, Party, Boss: 2D</td><td>all</td></tr>
 <tr><td><b>Strip height</b></td><td></td><td>10 – 120</td><td>30</td><td>all</td></tr>
 <tr><td><b>3D zoom (%)</b></td><td>100: the game's portrait framing; more zooms in on the face</td><td>100 – 400</td><td>100</td><td>all</td></tr>
 <tr><td><b>3D offset Y</b></td><td>Moves the model up or down, e.g. to bring the eyes into the strip. Models differ</td><td>-100 – 100</td><td>0</td><td>all</td></tr>
@@ -75,7 +76,7 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 <tr><td><b>Border size</b></td><td></td><td>1 – 8</td><td>1</td><td>all</td></tr>
 <tr><td><b>Border padding</b></td><td>Gap between frame and border</td><td>0 – 8</td><td>0</td><td>all</td></tr>
 <tr><td><b>Border color</b></td><td></td><td>Color</td><td><code>#000000</code></td><td>all</td></tr>
-<tr><td><b>Corner radius</b></td><td>0 = square corners</td><td>0 – 12</td><td>Player, Target, Party: 10; Target of Target, Focus, Pet: 0</td><td>all</td></tr>
+<tr><td><b>Corner radius</b></td><td>0 = square corners</td><td>0 – 12</td><td>Player, Target, Party: 10; Target of Target, Focus, Pet, Boss: 0</td><td>all</td></tr>
 </tbody>
 </table>
 
@@ -96,8 +97,8 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
 <tr><td><b>Frame opacity (%)</b></td><td>Range and out-of-combat fading below come on top</td><td>10 – 100</td><td>100</td><td>all</td></tr>
-<tr><td><b>Fade when out of range</b></td><td>Measured as set in General &gt; Status &gt; Range</td><td>On, Off</td><td>On</td><td>Target, Target of Target, Focus, Pet, Party</td></tr>
-<tr><td><b>Opacity out of range (%)</b></td><td>General sets it for every frame; a frame's page can override it</td><td>0 – 100</td><td>70</td><td>Target, Target of Target, Focus, Pet, Party</td></tr>
+<tr><td><b>Fade when out of range</b></td><td>Measured as set in General &gt; Status &gt; Range</td><td>On, Off</td><td>On</td><td>Target, Target of Target, Focus, Pet, Party, Boss</td></tr>
+<tr><td><b>Opacity out of range (%)</b></td><td>General sets it for every frame; a frame's page can override it</td><td>0 – 100</td><td>70</td><td>Target, Target of Target, Focus, Pet, Party, Boss</td></tr>
 <tr><td><b>Fade out of combat</b></td><td>While idle: no combat, no cast</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
 <tr><td><b>Opacity when faded (%)</b></td><td>0 = invisible</td><td>0 – 100</td><td>25</td><td>Player</td></tr>
 <tr><td><b>Show in full with a target</b></td><td>Fades back in when you select a target</td><td>On, Off</td><td>On</td><td>Player</td></tr>

@@ -104,6 +104,24 @@ local function enabled(scope)
     return ns.FrameEnabled(scope) or ns.Config.Get(scope, "hideBlizzardFrame")
 end
 
+-- Blizzard's boss frames (Boss1TargetFrame .. Boss5TargetFrame,
+-- Blizzard_UnitFrame/Mainline/TargetFrame.xml) show themselves on their
+-- own events; their container moves under the hidden parent, as the raid
+-- container does (below), so nothing of them shows or takes clicks.
+local function concealBoss()
+    for i = 1, 5 do
+        local frame = _G["Boss" .. i .. "TargetFrame"]
+        if frame then frame:UnregisterAllEvents() end
+        local bar = _G["Boss" .. i .. "TargetFrameSpellBar"]
+        if bar then bar:UnregisterAllEvents() end
+    end
+    local container = _G.BossTargetFrameContainer
+    if not container then return end
+    container:UnregisterAllEvents()
+    hide(container)
+    container:SetParent(hiddenParent)
+end
+
 -- Only frames we replace or that are switched off are hidden. Running
 -- again is harmless, so newly enabled frames are covered at once; getting
 -- a Blizzard frame back needs a /reload.
@@ -126,6 +144,7 @@ function Blizzard.HideDefaults()
         -- Ours exists only when the focus unit is available on this client.
         if enabled("focus") and ns.Frames.focus then Blizzard.Conceal(_G.FocusFrame) end
         if enabled("party") then concealParty() end
+        if enabled("boss") then concealBoss() end
     end)
 end
 

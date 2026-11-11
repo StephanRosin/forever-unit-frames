@@ -10,7 +10,7 @@ M.FireEvent("ADDON_LOADED", "ForeverUnitFrames")
 M.FireEvent("PLAYER_LOGIN")
 M.RunTimers()
 -- The unit frames do not fade: the timer runs for cells only.
-for _, scope in ipairs({ "party", "pet", "target", "targettarget", "focus" }) do ns.Config.Set(scope, "rangeFade", false) end
+for _, scope in ipairs({ "party", "pet", "target", "targettarget", "focus", "boss" }) do ns.Config.Set(scope, "rangeFade", false) end
 H.check("solo: no timer for cells", ns.Range.driver:IsShown(), false)
 M.SetRaidRoster({ { name = "Ann", class = "PRIEST", subgroup = 1 },
     { name = "Bob", class = "MAGE", subgroup = 1, unit = { inRange = false } },

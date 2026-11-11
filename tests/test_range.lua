@@ -252,7 +252,7 @@ do
     M.units.party1 = { name = "Ann", isPlayer = true, health = 5, healthMax = 10 }
     M.SetGroup({ "party1" })
     H.checkTrue("timer runs", ns.Range.driver:IsShown())
-    for _, scope in ipairs({ "party", "pet", "target", "targettarget", "focus" }) do C.Set(scope, "rangeFade", false) end
+    for _, scope in ipairs({ "party", "pet", "target", "targettarget", "focus", "boss" }) do C.Set(scope, "rangeFade", false) end
     H.check("all off: timer stopped", ns.Range.driver:IsShown(), false)
     local asked = M.rangeQueries
     M.Tick(0.25)

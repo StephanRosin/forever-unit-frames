@@ -150,6 +150,9 @@ News.ENTRIES = {
     ["0.47.0"] = {
         lines = { "NEWS_0_47_0_HIDE_IN_GROUP" },
     },
+    ["0.48.0"] = {
+        lines = { "NEWS_0_48_0_BOSS" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

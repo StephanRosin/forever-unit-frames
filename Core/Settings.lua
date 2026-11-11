@@ -5,8 +5,9 @@ local _, ns = ...
 -- into saved and exported strings: once released it must never change or
 -- be reused. The registry itself is Core/Registry.lua.
 local Settings = ns.NewRegistry(
-    { "general", "player", "target", "targettarget", "targettargettarget", "pet", "pettarget", "focus", "party" },
-    { general = "g", player = "p", target = "t", targettarget = "o", targettargettarget = "z", pet = "e", pettarget = "a", focus = "f", party = "y" })
+    { "general", "player", "target", "targettarget", "targettargettarget", "pet", "pettarget", "focus", "party", "boss" },
+    { general = "g", player = "p", target = "t", targettarget = "o", targettargettarget = "z", pet = "e", pettarget = "a", focus = "f", party = "y",
+      boss = "b" })
 ns.Settings = Settings
 
 -- Definitions -----------------------------------------------------------------
@@ -128,18 +129,18 @@ Settings.Define({ key = "playerHideInGroup", code = "HG", scope = "frame", only 
 -- With ours off, Blizzard's frame comes back unless this is set (e.g. the
 -- player shown in the party frames instead). Frames Blizzard has one of.
 Settings.Define({ key = "hideBlizzardFrame", code = "HB", scope = "frame", type = "bool", default = false,
-    only = { player = true, target = true, targettarget = true, pet = true, focus = true, party = true } })
+    only = { player = true, target = true, targettarget = true, pet = true, focus = true, party = true, boss = true } })
 Settings.Define({ key = "width", code = "W", scope = "frame", type = "int", min = 40, max = 600,
-    default = { player = 220, target = 220, focus = 160, party = 160, _ = 120 } })
+    default = { player = 220, target = 220, focus = 160, party = 160, boss = 160, _ = 120 } })
 Settings.Define({ key = "height", code = "H", scope = "frame", type = "int", min = 8, max = 200,
-    default = { player = 46, target = 46, focus = 36, party = 46, _ = 28 } })
+    default = { player = 46, target = 46, focus = 36, party = 46, boss = 36, _ = 28 } })
 -- Rows, top to bottom: title, health, power; each a share of the frame
 -- height, and together they fill it (Layout.Rows). A title of 0 is the
 -- two-row layout.
 Settings.Define({ key = "titlePercent", code = "TP", scope = "frame", type = "int", min = 0, max = 60,
-    default = { player = 30, target = 30, focus = 30, party = 30, _ = 0 } })
+    default = { player = 30, target = 30, focus = 30, party = 30, boss = 30, _ = 0 } })
 Settings.Define({ key = "healthPercent", code = "HP", scope = "frame", type = "int", min = 10, max = 100,
-    default = { player = 45, target = 45, focus = 45, party = 45, _ = 75 } })
+    default = { player = 45, target = 45, focus = 45, party = 45, boss = 45, _ = 75 } })
 Settings.Define({ key = "powerPercent", code = "PP", scope = "frame", type = "int", min = 0, max = 90, default = 25 })
 -- The cost of the spell being cast, faded over the end of the player's
 -- power bar (Elements/PowerCost.lua), on by default as on Blizzard's
@@ -154,7 +155,7 @@ Settings.Define({ key = "powerEnabled", code = "PE", scope = "frame", type = "bo
 -- bar takes its row. Players always have power, so it only ever acts on NPCs.
 -- Off by default: the look stays as it was until switched on.
 Settings.Define({ key = "powerHideEmpty", code = "PN", scope = "frame",
-    only = { target = true, targettarget = true, targettargettarget = true, pettarget = true, focus = true }, type = "bool", default = false })
+    only = { target = true, targettarget = true, targettargettarget = true, pettarget = true, focus = true, boss = true }, type = "bool", default = false })
 Settings.Define({ key = "absorbEnabled", code = "AB", scope = "frame", type = "bool", default = true })
 -- Incoming heals; the overheal lane gives the end of the health row to
 -- heals past full health.
@@ -166,9 +167,13 @@ Settings.Define({ key = "healBeyond", code = "OB", scope = "frame", type = "bool
 -- With the overheal lane: the power bar ends where the health bar ends.
 Settings.Define({ key = "powerMatchesHealth", code = "OM", scope = "frame", type = "bool", default = false })
 Settings.Define({ key = "x", code = "X", scope = "frame", type = "int", min = -4000, max = 4000,
-    default = { player = -300, target = 300, targettarget = 480, targettargettarget = 604, pet = -352, pettarget = -222, focus = -300, party = -760, _ = 0 } })
+    default = { player = -300, target = 300, targettarget = 480, targettargettarget = 604, pet = -352, pettarget = -222, focus = -300, party = -760, boss = 560, _ = 0 } })
 Settings.Define({ key = "y", code = "Y", scope = "frame", type = "int", min = -4000, max = 4000,
-    default = { player = -220, target = -220, targettarget = -220, targettargettarget = -220, pet = -272, pettarget = -272, focus = -120, party = 120, _ = 0 } })
+    default = { player = -220, target = -220, targettarget = -220, targettargettarget = -220, pet = -272, pettarget = -272, focus = -120, party = 120, boss = 40, _ = 0 } })
+-- The boss frames (boss1 to boss5, Units/Boss.lua) stand in a column,
+-- boss1 on top; x and y are the column's centre.
+Settings.Define({ key = "bossSpacing", code = "BG", scope = "frame", only = { boss = true }, type = "int", min = 0,
+    max = 60, default = 12 })
 
 -- Portrait
 Settings.Define({ key = "portraitMode", code = "PM", scope = "frame", type = "enum",
@@ -187,23 +192,23 @@ Settings.Define({ key = "portraitOffsetY", code = "QV", scope = "frame", type = 
 -- Elite / rare marker: frames that show units other than you, your pet and
 -- your party (players are never elite).
 Settings.Define({ key = "eliteMarker", code = "EM", scope = "frame",
-    only = { target = true, targettarget = true, targettargettarget = true, pettarget = true, focus = true }, type = "bool", default = true })
+    only = { target = true, targettarget = true, targettargettarget = true, pettarget = true, focus = true, boss = true }, type = "bool", default = true })
 -- How: the marker (badge on the portrait, or a word), or a thin ring
 -- around the frame, gold for elites and bosses, silver for rares.
 -- Grey health bar while a creature is tapped by someone else (you get
 -- no experience or loot from it), as Blizzard's target frame shows it.
 Settings.Define({ key = "tapDenied", code = "TD", scope = "frame",
-    only = { target = true, targettarget = true, targettargettarget = true, pettarget = true, focus = true }, type = "bool", default = true })
+    only = { target = true, targettarget = true, targettargettarget = true, pettarget = true, focus = true, boss = true }, type = "bool", default = true })
 Settings.Define({ key = "eliteMarkerStyle", code = "EZ", scope = "frame",
-    only = { target = true, targettarget = true, targettargettarget = true, pettarget = true, focus = true }, type = "enum", values = { "MARKER", "BORDER" },
+    only = { target = true, targettarget = true, targettargettarget = true, pettarget = true, focus = true, boss = true }, type = "enum", values = { "MARKER", "BORDER" },
     default = "MARKER" })
 Settings.Define({ key = "eliteBorderSize", code = "EU", scope = "frame",
-    only = { target = true, targettarget = true, targettargettarget = true, pettarget = true, focus = true }, type = "int", min = 1, max = 6, default = 2 })
+    only = { target = true, targettarget = true, targettargettarget = true, pettarget = true, focus = true, boss = true }, type = "int", min = 1, max = 6, default = 2 })
 -- Where the marker (MARKER style) sits: AUTO, the default, is the place it
 -- always had (Elements/Classification.lua); X and Y then move it from
 -- there. A point on the frame instead puts the marker's own point there.
 -- Stored by index: append only.
-local ELITE = { target = true, targettarget = true, targettargettarget = true, pettarget = true, focus = true }
+local ELITE = { target = true, targettarget = true, targettargettarget = true, pettarget = true, focus = true, boss = true }
 local ELITE_POINTS = { "AUTO" }
 for _, point in ipairs(Settings.POINTS) do ELITE_POINTS[#ELITE_POINTS + 1] = point end
 Settings.Define({ key = "eliteMarkerFramePoint", code = "MF", scope = "frame", only = ELITE, type = "enum",
@@ -321,7 +326,8 @@ Settings.Define({ key = "partyTargetY", code = "YY", scope = "frame", only = PAR
     default = 0 })
 
 -- Castbar (off by default on the player and pet frames)
-local CASTBAR = { player = true, target = true, targettarget = true, targettargettarget = true, pet = true, pettarget = true, focus = true, party = true }
+local CASTBAR = { player = true, target = true, targettarget = true, targettargettarget = true, pet = true, pettarget = true, focus = true, party = true,
+    boss = true }
 Settings.Define({ key = "castbarEnabled", code = "CE", scope = "frame", only = CASTBAR, type = "bool",
     default = { player = false, pet = false, _ = true } })
 -- Player only: conceals Blizzard's PlayerCastingBarFrame. Independent of
@@ -333,11 +339,11 @@ Settings.Define({ key = "hideBlizzardCastbar", code = "CB", scope = "frame", onl
 Settings.Define({ key = "hideBlizzardAuras", code = "BF", scope = "frame", only = { player = true },
     type = "bool", default = false })
 -- Single frames may detach their castbar (own mover) or lay it over their
--- portrait; party castbars dock above or below each member.
+-- portrait; party and boss castbars dock above or below each frame.
 local CASTBAR_SINGLE = { player = true, target = true, targettarget = true, targettargettarget = true, pet = true, pettarget = true, focus = true }
 Settings.Define({ key = "castbarPosition", code = "CP", scope = "frame", only = CASTBAR_SINGLE, type = "enum",
     values = { "BELOW", "ABOVE", "DETACHED", "PORTRAIT" }, default = "BELOW" })
-Settings.Define({ key = "castbarDock", code = "CD", scope = "frame", only = PARTY, type = "enum",
+Settings.Define({ key = "castbarDock", code = "CD", scope = "frame", only = { party = true, boss = true }, type = "enum",
     values = { "BELOW", "ABOVE" }, default = "BELOW" })
 Settings.Define({ key = "castbarX", code = "CX", scope = "frame", only = CASTBAR_SINGLE, type = "int", min = -4000, max = 4000,
     default = { target = 300, targettarget = 480, targettargettarget = 604, pet = -352, pettarget = -222, focus = -300, _ = 0 } })
@@ -358,7 +364,7 @@ Settings.Define({ key = "castbarLatencyX", code = "CZ", scope = "frame", only = 
     default = 0 })
 -- A strip on the bar while your interrupt is ready and the cast can be
 -- interrupted (Elements/Castbar.lua).
-Settings.Define({ key = "castbarInterrupt", code = "CQ", scope = "frame", only = { target = true, focus = true }, type = "bool", default = true })
+Settings.Define({ key = "castbarInterrupt", code = "CQ", scope = "frame", only = { target = true, focus = true, boss = true }, type = "bool", default = true })
 -- Keeps an empty bar in place while nothing is cast, so what is anchored
 -- below it does not jump.
 Settings.Define({ key = "castbarAlwaysShow", code = "CA", scope = "frame", only = CASTBAR, type = "bool", default = false })
@@ -444,7 +450,7 @@ Settings.TRACKING_SPELLS = {
 }
 local AURA_ANCHORS = { "FRAME", "HEALTH", "POWER", "CASTBAR", "OTHER" }
 local DIRECTIONS = { "RIGHT", "LEFT", "UP", "DOWN" }
-local AURA_SIZE = { party = 18, targettarget = 16, targettargettarget = 16, pet = 16, pettarget = 16, _ = 20 }
+local AURA_SIZE = { party = 18, boss = 18, targettarget = 16, targettargettarget = 16, pet = 16, pettarget = 16, _ = 20 }
 -- Own auras (cast by you, your pet or vehicle) are drawn this much bigger
 -- by default.
 local function ownSizes(sizes)
@@ -505,8 +511,8 @@ local AURA_SETTINGS = {
     { "OwnPerRow", "N", { type = "int", min = 0, max = 40, zeroText = "AUTO" }, true },
 }
 
--- Debuffs sit above the frame, buffs above the debuffs; party auras to
--- the right of each member. Player buffs are off: Blizzard's buff frame
+-- Debuffs sit above the frame, buffs above the debuffs; party and boss
+-- auras to the right of each frame (they stack). Player buffs are off: Blizzard's buff frame
 -- shows them.
 local AURA_DEFAULTS = {
     buffs = {
@@ -518,8 +524,8 @@ local AURA_DEFAULTS = {
         HideLonger = 0,
         ShowTime = true,
         Anchor = "OTHER",
-        FramePoint = { party = "TOPRIGHT", _ = "TOPLEFT" },
-        Point = { party = "TOPLEFT", _ = "BOTTOMLEFT" },
+        FramePoint = { party = "TOPRIGHT", boss = "TOPRIGHT", _ = "TOPLEFT" },
+        Point = { party = "TOPLEFT", boss = "TOPLEFT", _ = "BOTTOMLEFT" },
         X = { party = 2, _ = 0 },
         Y = { party = 0, _ = 2 },
         Growth = "RIGHT",
@@ -544,15 +550,15 @@ local AURA_DEFAULTS = {
         HidePermanent = false,
         ShowTime = true,
         Anchor = "FRAME",
-        FramePoint = { party = "TOPRIGHT", _ = "TOPLEFT" },
-        Point = { party = "TOPLEFT", _ = "BOTTOMLEFT" },
-        X = { party = 8, _ = 0 },
-        Y = { party = 0, _ = 2 },
+        FramePoint = { party = "TOPRIGHT", boss = "TOPRIGHT", _ = "TOPLEFT" },
+        Point = { party = "TOPLEFT", boss = "TOPLEFT", _ = "BOTTOMLEFT" },
+        X = { party = 8, boss = 8, _ = 0 },
+        Y = { party = 0, boss = 0, _ = 2 },
         Growth = "RIGHT",
-        RowGrowth = { party = "DOWN", _ = "UP" },
+        RowGrowth = { party = "DOWN", boss = "DOWN", _ = "UP" },
         Size = AURA_SIZE, Spacing = 2, RowGap = 0, PerRow = 0,
-        Max = { party = 6, targettarget = 6, targettargettarget = 6, pet = 6, pettarget = 6, _ = 16 },
-        HighlightOwn = { target = true, focus = true, _ = false }, OwnSize = ownSizes(AURA_SIZE),
+        Max = { party = 6, boss = 6, targettarget = 6, targettargettarget = 6, pet = 6, pettarget = 6, _ = 16 },
+        HighlightOwn = { target = true, focus = true, boss = true, _ = false }, OwnSize = ownSizes(AURA_SIZE),
         OwnSameRow = false,
         -- Free, beside the frame's top edge (rows down).
         ownLetter = "Z",
@@ -737,12 +743,14 @@ shields({ key = "shieldsTimeColor", code = "KB", type = "color", default = { 1, 
 -- Combat and PvP icons on the other frames (Elements/UnitIcons.lua), off
 -- by default. The combat icon sits left of the frame, the crest on its top
 -- left corner.
-local COMBAT_ICON = { target = true, targettarget = true, targettargettarget = true, pettarget = true, focus = true, party = true }
+local COMBAT_ICON = { target = true, targettarget = true, targettargettarget = true, pettarget = true, focus = true, party = true,
+    boss = true }
 -- How the combat icons move (Elements/CombatAnimation.lua), the player's
 -- included: our clashing swords (the default), a burst as they appear, a
 -- steady pulse, or Blizzard's still icon.
 Settings.Define({ key = "combatAnimation", code = "EA", scope = "inherit", type = "enum",
-    only = { player = true, target = true, targettarget = true, targettargettarget = true, pettarget = true, focus = true, party = true },
+    only = { player = true, target = true, targettarget = true, targettargettarget = true, pettarget = true, focus = true, party = true,
+        boss = true },
     values = { "OFF", "BURST", "PULSE", "DUEL" }, default = "DUEL" })
 local PVP_ICON = { player = true, target = true, targettarget = true, targettargettarget = true, pettarget = true, focus = true, party = true }
 for _, icon in ipairs({
@@ -786,7 +794,7 @@ Settings.Define({ key = "petHappinessY", code = "GY", scope = "frame", only = PE
 -- one flags you. On by default; flagged elite guards then show the crest
 -- in the elite marker's corner as well (move one of them if they clash).
 Settings.Define({ key = "pvpIconNPC", code = "HN", scope = "frame",
-    only = { target = true, targettarget = true, targettargettarget = true, pettarget = true, focus = true }, type = "bool", default = true })
+    only = { target = true, targettarget = true, targettargettarget = true, pettarget = true, focus = true, boss = true }, type = "bool", default = true })
 
 -- Status icons (player only, Elements/StatusIcons.lua): Blizzard's combat
 -- and resting icons in a row on the player's health bar, centred on it by
@@ -846,7 +854,8 @@ Settings.Define({ key = "groupIconY", code = "LY", scope = "frame", only = GROUP
 -- Range fading (Elements/Range.lua): party members and their pets, the
 -- target, its target, the focus and the pet at a lower opacity while out
 -- of range.
-local RANGE = { party = true, target = true, focus = true, pet = true, targettarget = true, targettargettarget = true, pettarget = true }
+local RANGE = { party = true, target = true, focus = true, pet = true, targettarget = true, targettargettarget = true, pettarget = true,
+    boss = true }
 -- On everywhere: every class measures enemies, by a spell or in yards.
 Settings.Define({ key = "rangeFade", code = "VE", scope = "frame", only = RANGE, type = "bool", default = true })
 -- The opacity: once in General for every frame, overridable per frame.
