@@ -205,3 +205,68 @@ ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
     end
 end)
 ns.On("GROUP_ROSTER_UPDATE", Blizzard.HideRaid)
+
+-- Positions from Blizzard's Edit Mode layout: each of our frames gets its
+-- top-left corner where Blizzard's frame has its own (their sizes differ,
+-- and an empty party or boss container shrinks to its top edge). Taken
+-- once on request, not kept in step: our movers decide after that.
+Blizzard.LAYOUT_FRAMES = {
+    { scope = "player", name = "PlayerFrame" },
+    { scope = "target", name = "TargetFrame" },
+    { scope = "focus", name = "FocusFrame" },
+    { scope = "party", name = "PartyFrame" },
+    { scope = "boss", name = "BossTargetFrameContainer" },
+}
+
+-- Blizzard's frame's top-left corner in UIParent's units, from the
+-- screen centre. A concealed frame under the hidden parent is read under
+-- UIParent, where its Edit Mode anchor means what it says.
+local function topLeft(frame)
+    local parent = frame:GetParent()
+    if parent ~= UIParent then frame:SetParent(UIParent) end
+    local left, top = frame:GetLeft(), frame:GetTop()
+    local scale = frame:GetEffectiveScale() / UIParent:GetEffectiveScale()
+    if parent ~= UIParent then frame:SetParent(parent) end
+    if not (left and top) then return nil end
+    local ux, uy = UIParent:GetCenter()
+    return left * scale - ux, top * scale - uy
+end
+
+local function ourSize(scope)
+    if scope == ns.Party.KEY then return ns.Party.BlockSize() end
+    local frame = ns.Frames[scope] or ns.Frames[scope .. "1"]
+    return ns.Movers.FrameSpec(frame).size()
+end
+
+-- shortcut: the old positions live only until /reload (only settings are
+-- stored), enough to try it and go back.
+local undo
+
+-- Moves every shown frame with a Blizzard counterpart. Returns how many.
+function Blizzard.TakeLayout()
+    if InCombatLockdown() then return 0 end
+    local saved, n = {}, 0
+    for _, entry in ipairs(Blizzard.LAYOUT_FRAMES) do
+        local blizzard = _G[entry.name]
+        local left, top
+        if blizzard and ns.FrameEnabled(entry.scope) then left, top = topLeft(blizzard) end
+        if left then
+            local w, h = ourSize(entry.scope)
+            saved[entry.scope] = ns.Config.Snapshot(entry.scope, { "x", "y" })
+            ns.Config.SetKeys(entry.scope, { { "x", math.floor(left + w / 2 + 0.5) },
+                { "y", math.floor(top - h / 2 + 0.5) } })
+            n = n + 1
+        end
+    end
+    if n > 0 then undo = saved end
+    return n
+end
+
+-- The positions from before the last TakeLayout. Returns whether there
+-- were any.
+function Blizzard.UndoLayout()
+    if not undo or InCombatLockdown() then return false end
+    for scope, snapshot in pairs(undo) do ns.Config.Restore(scope, snapshot) end
+    undo = nil
+    return true
+end

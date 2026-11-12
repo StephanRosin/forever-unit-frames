@@ -221,8 +221,8 @@ local function section(lines, sec, keys, scopesFor, showFrames, level)
         lines[#lines + 1] = SECTION_NOTE[sec.id]
         lines[#lines + 1] = ""
     end
-    if sec.action then
-        lines[#lines + 1] = ("Button: **%s**."):format(label("ACTION_" .. sec.action, sec.action))
+    for _, id in ipairs(sec.actions or {}) do
+        lines[#lines + 1] = ("Button: **%s**."):format(label("ACTION_" .. id, id))
         lines[#lines + 1] = ""
     end
     tableStart(lines, showFrames and 5 or 4)

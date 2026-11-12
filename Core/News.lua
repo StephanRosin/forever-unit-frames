@@ -159,6 +159,9 @@ News.ENTRIES = {
     ["0.49.0"] = {
         lines = { "NEWS_0_49_0_FOCUSTARGET" },
     },
+    ["0.50.0"] = {
+        lines = { "NEWS_0_50_0_LAYOUT" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

@@ -16,7 +16,8 @@ Schema.GENERAL = {
     -- Layout tab (Options/Window.lua builds them); the addon's own minimap
     -- button.
     { id = "frames", sections = {
-        { id = "frames", keys = { "unitFrames" }, frames = true },
+        { id = "frames", keys = { "unitFrames" }, frames = true,
+            actions = { "positionsFromBlizzard", "positionsUndo" } },
         { id = "minimap", keys = { "minimapShow", "minimapAngle" } },
     } },
     -- The click-casting editor, the raid window's own (Raid/Options/
@@ -27,9 +28,9 @@ Schema.GENERAL = {
         { id = "clickCast", keys = { "clickCast" } },
     } },
     { id = "appearance", sections = {
-        -- action: a two-click button under the rows (Options/Window.lua).
+        -- actions: two-click buttons under the rows (Options/Window.lua).
         { id = "font", keys = { "fontFace", "fontSize", "valueFontSize", "fontOutline", "fontShadow" },
-            action = "applyFontToFrames" },
+            actions = { "applyFontToFrames" } },
         -- How the texts read (not the font): also each frame's Text tab.
         { id = "display", keys = { "infoClassColor", "textCompact", "showSurname" } },
         { id = "titleText", keys = { "awayBadge", "titleClassIcon", "classIconSize", "classIconX", "classIconY",

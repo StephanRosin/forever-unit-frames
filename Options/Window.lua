@@ -349,7 +349,7 @@ local function addSections(page, stack, scope, tab)
             stack.add(sectionHeader(page, section.id))
             addSectionRows(page, stack, scope, section, keys)
             if section.frames then frameSwitches(page, stack) end
-            if section.action then stack.add(actionBlock(page, section.action)) end
+            for _, id in ipairs(section.actions or {}) do stack.add(actionBlock(page, id)) end
         end
         if section.raidKeys then
             stack.add(sectionHeader(page, section.id))
@@ -402,6 +402,8 @@ end
 -- Section actions: what the button does. Two clicks, like Reset.
 local ACTIONS = {
     applyFontToFrames = function() Config.ClearFrameOverrides(ns.Settings.TEXT_STYLE_KEYS) end,
+    positionsFromBlizzard = function() ns.Blizzard.TakeLayout() end,
+    positionsUndo = function() ns.Blizzard.UndoLayout() end,
 }
 -- The buttons by action id, for the tests and for disarming on close.
 Options.actionButtons = {}
