@@ -175,6 +175,9 @@ News.ENTRIES = {
         lines = { "NEWS_0_53_0_MANA", "NEWS_0_53_0_MANA_CLICK", "NEWS_0_53_0_PROFILES", "NEWS_0_53_0_FIXES" },
         action = { text = "NEWS_OPEN_MANA_WARN", run = function() ns.Options.Open("player", "bars") end },
     },
+    ["0.53.1"] = {
+        lines = { "NEWS_0_53_1_ENCHANTS", "NEWS_0_53_1_TOTEMS" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

@@ -216,6 +216,11 @@ do
     H.check("secret texture is the icon", M.Reveal(fire.art.icon._texture), 135825)
     H.check("swipe from the duration object", fire.art.cooldown._cooldown.object._duration, 60)
     H.check("empty water slot invisible", water.art:GetAlpha(), 0)
+    -- Reported: right after a totem in combat, empty slots showed a black
+    -- box for a moment. Border and swipe follow "has a totem" too.
+    H.check("empty slot: no border", M.Reveal(water.art.border:GetAlpha()), 0)
+    H.check("empty slot: no swipe", M.Reveal(water.art.cooldown:GetAlpha()), 0)
+    H.check("fire: border shown", M.Reveal(fire.art.border:GetAlpha()), 1)
     H.check("click areas untouched in combat", water.click:IsShown(), true)
     -- Reported as a totem with no time left (just removed): no empty
     -- square stays until the end of combat (asked on CurseForge).

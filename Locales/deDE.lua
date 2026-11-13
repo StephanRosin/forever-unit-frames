@@ -1538,4 +1538,6 @@ L.NEWS_0_53_0_MANA = "Mana-Warnung: ein Symbol und / oder ein Text, solange dein
 L.NEWS_0_53_0_MANA_CLICK = "Ihr Symbol wählst du aus den Makro-Symbolen. Sie kann die Gruppe im Chat informieren, und ein Klick mit Umschalt kann einen Gegenstand benutzen, einen Zauber wirken oder ein Makro ausführen."
 L.NEWS_0_53_0_PROFILES = "Der Import fragt nach, und „Kopieren von…“ lässt sich in derselben Liste rückgängig machen. Positionen sind eine Zahl mit - / + statt eines Reglers."
 L.NEWS_0_53_0_FIXES = "Die Ziel-Hervorhebung folgt deinem Ziel auch bei Begleitern neben ihrem Besitzer."
+L.NEWS_0_53_1_ENCHANTS = "Waffenverzauberungen (Öle, Steine, Gifte) bekommen eine eigene Reihe vor deinen Buffs; die Buff-Reihen geraten nicht mehr durcheinander."
+L.NEWS_0_53_1_TOTEMS = "Totems: Leere Plätze blitzen im Kampf nicht mehr als schwarzes Kästchen auf, wenn du ein Totem setzt."
 L.NEWS_OPEN_MANA_WARN = "Mana-Warnung öffnen"

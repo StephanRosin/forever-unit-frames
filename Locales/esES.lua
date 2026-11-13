@@ -1539,4 +1539,6 @@ L.NEWS_0_53_0_MANA = "Aviso de maná bajo: un icono y / o un texto mientras tu m
 L.NEWS_0_53_0_MANA_CLICK = "Elige su icono entre los iconos de macro. Puede avisar a tu grupo en el chat, y un clic con Mayús puede usar un objeto, lanzar un hechizo o ejecutar una macro."
 L.NEWS_0_53_0_PROFILES = "Importar pide confirmación, y \"Copiar de…\" se puede deshacer en la misma lista. Las posiciones son un número con - / + en lugar de un deslizador."
 L.NEWS_0_53_0_FIXES = "El resaltado del objetivo sigue a tu objetivo también en las mascotas junto a su dueño."
+L.NEWS_0_53_1_ENCHANTS = "Los encantamientos de arma (aceites, piedras, venenos) tienen su propia fila antes de tus beneficios; las filas de beneficios ya no se descolocan."
+L.NEWS_0_53_1_TOTEMS = "Tótems: las ranuras vacías ya no muestran un cuadro negro en combate al colocar un tótem."
 L.NEWS_OPEN_MANA_WARN = "Abrir el aviso de maná"

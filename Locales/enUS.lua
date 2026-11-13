@@ -1566,4 +1566,6 @@ L.NEWS_0_53_0_MANA = "Low mana warning: an icon and / or a text while your mana 
 L.NEWS_0_53_0_MANA_CLICK = "Pick its icon from the macro icons. It can tell your group in chat, and a click with Shift can use an item, cast a spell or run a macro."
 L.NEWS_0_53_0_PROFILES = "Import asks to confirm, and \"Copy from…\" can be undone from the same list. Positions are a number with - / + instead of a slider."
 L.NEWS_0_53_0_FIXES = "The target highlight follows your target on pets beside their owner too."
+L.NEWS_0_53_1_ENCHANTS = "Weapon enchants (oils, stones, poisons) get a row of their own before your buffs; the buff rows no longer break apart."
+L.NEWS_0_53_1_TOTEMS = "Totems: empty slots no longer flash a black box in combat when you set a totem."
 L.NEWS_OPEN_MANA_WARN = "Open the mana warning"

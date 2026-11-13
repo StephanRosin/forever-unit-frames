@@ -1538,4 +1538,6 @@ L.NEWS_0_53_0_MANA = "Alerte de mana bas : une icône et / ou un texte tant que 
 L.NEWS_0_53_0_MANA_CLICK = "Choisissez son icône parmi les icônes de macro. Elle peut prévenir le groupe dans le chat, et un clic avec Maj peut utiliser un objet, lancer un sort ou une macro."
 L.NEWS_0_53_0_PROFILES = "L'importation demande confirmation, et « Copier depuis… » peut être annulé dans la même liste. Les positions sont un nombre avec - / + au lieu d'un curseur."
 L.NEWS_0_53_0_FIXES = "La surbrillance de la cible suit aussi votre cible sur les familiers à côté de leur maître."
+L.NEWS_0_53_1_ENCHANTS = "Les enchantements d'arme (huiles, pierres, poisons) ont leur propre rangée avant vos améliorations ; les rangées d'améliorations ne se désorganisent plus."
+L.NEWS_0_53_1_TOTEMS = "Totems : les emplacements vides n'affichent plus de carré noir en combat quand vous posez un totem."
 L.NEWS_OPEN_MANA_WARN = "Ouvrir l'alerte de mana"
