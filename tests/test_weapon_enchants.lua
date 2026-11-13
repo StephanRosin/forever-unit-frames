@@ -42,10 +42,17 @@ H.checkTrue("shown", b:IsShown())
 H.check("the enchant's icon", b.icon._texture, 136086)
 H.check("buff size", b:GetWidth(), p.auras.buffs.size)
 H.check("the buffs make room for one", p.enchantLead, 1)
-local step = p.auras.buffs.size + p.auras.buffs.spacing
-local _, _, _, bx = b:GetPoint(1)
-local _, _, _, cx = p.auraContainers.buffs.container:GetPoint(1)
-H.check("buffs moved on by one icon", cx - bx, step)
+local g = p.auras.buffs
+local step = g.size + g.spacing
+local rowStep = g.size + g.spacing + (g.rowGap or 0)
+local _, _, _, bx, by = b:GetPoint(1)
+local _, _, _, cx, cy = p.auraContainers.buffs.container:GetPoint(1)
+-- Reported: moving the buffs along the row broke every row (the client
+-- lays them out and knows no indented first row). The enchants get a row
+-- of their own; the buffs' rows stay as they are, one row on.
+H.check("buffs: one row on (the way rows go)", math.abs(by - cy), rowStep)
+H.check("buffs: not moved along the row", cx, bx)
+H.check("buffs: rows keep their length", p.auraContainers.buffs.container._flow.lineSize, AC.Flow(g).lineSize)
 
 -- A second one (off hand): two icons, the buffs two steps on.
 M.weaponEnchants[1] = { { hasEnchant = true, timeLeft = 60000, charges = 5, enchantIconID = 1234, enchantID = 7 } }
@@ -53,8 +60,9 @@ W.Update(p)
 local b2 = p.enchantButtons[2]
 H.checkTrue("second icon", b2:IsShown())
 H.check("charges as count", b2.count:GetText(), "5")
-_, _, _, cx = p.auraContainers.buffs.container:GetPoint(1)
-H.check("buffs moved on by two", cx - bx, 2 * step)
+_, _, _, cx, cy = p.auraContainers.buffs.container:GetPoint(1)
+H.check("two: still one row on", math.abs(by - cy), rowStep)
+H.check("two: not moved along the row", cx, bx)
 local _, _, _, b2x = b2:GetPoint(1)
 H.check("second right of the first", b2x - bx, step)
 

@@ -304,9 +304,11 @@ local function restyle(entry, group)
 end
 
 -- Room the player's weapon enchants take before the buffs
--- (Elements/WeaponEnchants.lua): that many icons along the growth
--- direction. The container moves on by it and its rows get as much
--- shorter, so the first row keeps its length.
+-- (Elements/WeaponEnchants.lua): a row of their own at the anchor. The
+-- client lays out the buffs' rows itself and knows no indented first row:
+-- moving the container along the row (as before 0.53.1) moved and
+-- shortened every row (reported: rows broken with an enchant on). So the
+-- container moves on by one row and its rows keep their length.
 local STEP_DIRECTION = { RIGHT = { 1, 0 }, LEFT = { -1, 0 }, UP = { 0, 1 }, DOWN = { 0, -1 } }
 
 function AuraContainers.Lead(frame, key)
@@ -314,8 +316,8 @@ function AuraContainers.Lead(frame, key)
     local n = frame.enchantLead or 0
     if n == 0 then return 0, 0, 0 end
     local group = frame.auras[key]
-    local step = n * (group.size + group.spacing)
-    local d = STEP_DIRECTION[group.primary] or STEP_DIRECTION.RIGHT
+    local step = group.size + group.spacing + (group.rowGap or 0)
+    local d = STEP_DIRECTION[ns.Layout.AuraRowDirection(group.primary, group.row)] or STEP_DIRECTION.DOWN
     return step, d[1] * step, d[2] * step
 end
 
@@ -340,8 +342,7 @@ local function placeOwn(frame, key)
 end
 
 local function lineSize(frame, key, flow)
-    local lead = AuraContainers.Lead(frame, key)
-    return math.max(flow.lineSize - lead, frame.auras[key].size)
+    return math.max(flow.lineSize, frame.auras[key].size)
 end
 
 -- The weapon enchants changed in number: the buffs make room, combat
