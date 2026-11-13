@@ -72,6 +72,15 @@ local function docked()
     return general("toolsMode") == "DOCKED" and (Panel.Active() or testing())
 end
 
+-- Docked in a party without the raid view: above our party frames (their
+-- block's mover), rather than at the free spot, which only the raid
+-- window's unlock moves (asked on CurseForge). Nil when it is not.
+local function partyDock()
+    if general("toolsMode") ~= "DOCKED" or docked() or not ns.FrameEnabled(ns.Party.KEY) then return nil end
+    return ns.Party.header and ns.Party.header.mover
+end
+Tools.PartyDock = partyDock
+
 -- Whether the bar shows now (with at least one row).
 function Tools.Shown()
     if not (Panel.Enabled() and general("toolsShow")) then return false end
@@ -92,7 +101,7 @@ end
 
 -- Its mover shows with the raid window's lock while the bar shows free.
 function Tools.Movable()
-    return Tools.Shown() and not docked()
+    return Tools.Shown() and not docked() and not partyDock()
 end
 
 function Tools.MoverSpec()
@@ -475,7 +484,8 @@ ns.On("GROUP_ROSTER_UPDATE", paintAssist)
 -- The bar ---------------------------------------------------------------------------
 
 -- Docked: the handle beside the main panel, the bar beyond it, both
--- hanging from the panel's anchor (out of combat: the bar is protected).
+-- hanging from the panel's anchor (out of combat: the bar is protected);
+-- in a party without the panel, both above the party frames.
 -- Free: its own mover holds it (before the mover is there, its
 -- position), the handle just left of it; the handle never hangs from the
 -- protected bar.
@@ -488,6 +498,10 @@ local function place()
         local x = (ns.RaidHeader.width or 0) + Tools.DOCK_GAP
         handle:SetPoint("TOPLEFT", anchor, "TOPLEFT", x, 0)
         bar:SetPoint("TOPLEFT", anchor, "TOPLEFT", x + Tools.HANDLE_W + Tools.DOCK_GAP, 0)
+    elseif partyDock() then
+        local block = partyDock()
+        handle:SetPoint("BOTTOMLEFT", block, "TOPLEFT", 0, Tools.DOCK_GAP)
+        bar:SetPoint("BOTTOMLEFT", block, "TOPLEFT", Tools.HANDLE_W + Tools.DOCK_GAP, Tools.DOCK_GAP)
     elseif bar.mover then
         ns.Movers.Sync(bar)
         bar:SetPoint("TOPLEFT", bar.mover, "TOPLEFT", 0, 0)
@@ -606,6 +620,10 @@ ns.On("GROUP_ROSTER_UPDATE", update)
 ns.On("PARTY_LEADER_CHANGED", update)
 ns.Listen("RAID_CONFIG_CHANGED", update)
 ns.Listen("RAID_TEST_MODE", update)
+-- Our party frames on or off: docked in a party, the bar hangs above them.
+ns.Listen("CONFIG_CHANGED", function(scope, key)
+    if scope == ns.Party.KEY and (key == nil or key == "enabled") then update() end
+end)
 -- The words of the moment (a button's width may change).
 ns.Listen("LANGUAGE_CHANGED", update)
 -- Docked, it follows the main panel's size (placed out of combat).

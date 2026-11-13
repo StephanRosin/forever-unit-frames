@@ -176,6 +176,24 @@ local function showDuration(art, slot, start, duration)
     end
 end
 
+-- Opacity from the time a slot has left: 0 at none, else 1. A slot can
+-- report a totem with nothing left (just removed or run out: Blizzard's
+-- totem frame also wants a duration above 0); with secret data only the
+-- slot's duration object tells, and it is no secret itself.
+local leftCurve
+local function curve()
+    if leftCurve then return leftCurve end
+    leftCurve = C_CurveUtil.CreateCurve()
+    leftCurve:SetType(Enum.LuaCurveType.Step)
+    leftCurve:AddPoint(0, 0)
+    leftCurve:AddPoint(0.05, 1)
+    return leftCurve
+end
+
+local function alphaFromTimeLeft(art, slot)
+    art:SetAlpha(GetTotemDuration(slot):EvaluateRemainingDuration(curve()))
+end
+
 -- One slot from the client's data. Returns true (a totem), false (none)
 -- or nil (unknown: the values are secret).
 local function showSlot(s)
@@ -186,8 +204,11 @@ local function showSlot(s)
         art.icon:SetTexture(icon)
         showDuration(art, slot, start, duration)
         art:Show()
-        -- An empty slot is transparent; without the call it stays visible.
-        if not pcall(art.SetAlphaFromBoolean, art, have, 1, 0) then art:SetAlpha(1) end
+        -- An empty slot, or one with no time left, is transparent (time
+        -- left implies a totem); else by "has a totem"; else visible.
+        if not pcall(alphaFromTimeLeft, art, slot) and not pcall(art.SetAlphaFromBoolean, art, have, 1, 0) then
+            art:SetAlpha(1)
+        end
         return nil
     end
     -- Blizzard's totem frame shows no totem without a duration.

@@ -165,6 +165,9 @@ News.ENTRIES = {
     ["0.51.0"] = {
         lines = { "NEWS_0_51_0_PVPTIMER", "NEWS_0_51_0_PULSE" },
     },
+    ["0.52.0"] = {
+        lines = { "NEWS_0_52_0_TOTEMS", "NEWS_0_52_0_TOOLS" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

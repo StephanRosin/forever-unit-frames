@@ -270,3 +270,13 @@ function Blizzard.UndoLayout()
     undo = nil
     return true
 end
+
+-- Blizzard's totem bar flyout (the totems to pick for a slot) shares the
+-- MEDIUM strata with our frames and opened behind the player frame (asked
+-- on CurseForge); one strata up it is above them, as above Blizzard's own
+-- player frame. Out of combat: it holds secure buttons.
+function Blizzard.RaiseTotemFlyout()
+    local flyout = _G.MultiCastFlyoutFrame
+    if flyout then flyout:SetFrameStrata("HIGH") end
+end
+ns.On("PLAYER_LOGIN", function() ns.AfterCombat("totemFlyout", Blizzard.RaiseTotemFlyout) end)

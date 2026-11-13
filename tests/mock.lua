@@ -2857,7 +2857,12 @@ function M.Reset()
     _G.GetTotemDuration = function(slot)
         assert(validSlot(slot), "GetTotemDuration: bad slot")
         local t = M.totems[slot]
-        return { _start = t and t.start or 0, _duration = t and t.duration or 0 }
+        local d = { _start = t and t.start or 0, _duration = t and t.duration or 0 }
+        -- LuaDurationObjectAPIDocumentation.lua: the curve at the time left.
+        function d:EvaluateRemainingDuration(curve)
+            return curve:Evaluate(math.max(0, self._start + self._duration - M.now))
+        end
+        return d
     end
     _G.DestroyTotem = function(slot)
         assert(M.secureDepth > 0, "DestroyTotem is protected: only secure code may call it")

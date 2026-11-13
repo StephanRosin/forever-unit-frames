@@ -211,13 +211,18 @@ do
     M.FireEvent("PLAYER_TOTEM_UPDATE", 1)
     H.check("no blocked calls in combat", #M.blocked, 0)
     H.check("fire icon shown", fire.art:IsShown(), true)
-    H.check("fire alpha from the secret", fire.art:GetAlpha(), 1)
-    H.checkTrue("alpha carries the secret", fire.art._alphaSecret)
+    H.check("fire: visible, time left", fire.art:GetAlpha(), 1)
     H.checkTrue("secret icon passed through", M.IsSecret(fire.art.icon._texture))
     H.check("secret texture is the icon", M.Reveal(fire.art.icon._texture), 135825)
     H.check("swipe from the duration object", fire.art.cooldown._cooldown.object._duration, 60)
     H.check("empty water slot invisible", water.art:GetAlpha(), 0)
     H.check("click areas untouched in combat", water.click:IsShown(), true)
+    -- Reported as a totem with no time left (just removed): no empty
+    -- square stays until the end of combat (asked on CurseForge).
+    M.totems[3] = { name = "Healing Stream", start = 1000, duration = 0, icon = 135127 }
+    M.FireEvent("PLAYER_TOTEM_UPDATE", 3)
+    H.check("totem without time left invisible", water.art:GetAlpha(), 0)
+    M.totems[3] = nil
 
     -- Expired in combat: the icon goes, the click area waits.
     M.totemsSecret = false

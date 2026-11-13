@@ -83,22 +83,38 @@ RC.Set("general", "toolsMode", "DOCKED")
 RC.Set("general", "toolsOpen", false)
 
 -- A party without the raid view in party: the main panel is hidden, so
--- the docked bar falls back to its free position (the handle left of
--- it); with the raid view on, it docks again.
+-- the docked bar hangs above our party frames (their block's mover, the
+-- handle first), without a mover of its own; without our party frames
+-- it falls back to its free position; with the raid view on, it docks
+-- again.
 M.SetRaidRoster({})
 RC.Set("general", "showInParty", false)
 M.units.party1 = { name = "Ann", class = "PRIEST", isPlayer = true }
 M.SetGroup({ "party1" })
 M.RunTimers()
 H.check("party, no raid view: the panel hidden", ns.RaidPanel.Active(), false)
-H.check("party, no raid view: the handle at the free place", point(handle), "TOPRIGHT mover TOPLEFT -4 0")
+local block = ns.Party.header.mover
+local function above(frame)
+    local p, rel, relPoint, x, y = frame:GetPoint(1)
+    return table.concat({ p, rel == block and "party" or "?", relPoint, x, y }, " ")
+end
+H.check("party, no raid view: the handle above the party", above(handle), "BOTTOMLEFT party TOPLEFT 0 " .. Tools.DOCK_GAP)
 H.check("party, no raid view: folded in", bar:IsShown(), false)
 RC.Set("general", "toolsOpen", true)
 H.checkTrue("party, no raid view: bar shown", bar:IsShown())
-H.check("party, no raid view: at its free place", point(bar), "TOPLEFT mover TOPLEFT 0 0")
+H.check("party, no raid view: beside the handle", above(bar),
+    "BOTTOMLEFT party TOPLEFT " .. (Tools.HANDLE_W + Tools.DOCK_GAP) .. " " .. Tools.DOCK_GAP)
 ns.Movers.Unlock("raid")
-H.checkTrue("party, no raid view: its mover", bar.mover:IsShown())
+H.check("party, no raid view: no mover of its own", bar.mover:IsShown(), false)
 ns.Movers.Lock("raid")
+ns.Config.Set("party", "enabled", false)
+M.RunTimers()
+H.check("our party frames off: the free place", point(bar), "TOPLEFT mover TOPLEFT 0 0")
+ns.Movers.Unlock("raid")
+H.checkTrue("our party frames off: its mover", bar.mover:IsShown())
+ns.Movers.Lock("raid")
+ns.Config.Set("party", "enabled", true)
+M.RunTimers()
 RC.Set("general", "showInParty", true)
 M.RunTimers()
 H.checkTrue("raid view on: docked again", handle:IsShown())
