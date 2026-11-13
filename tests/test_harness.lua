@@ -67,3 +67,22 @@ H.check("drain finished in order", table.concat(ran, ","), "1,2,3,late")
 ns.AfterCombat("now", function() ran[#ran + 1] = "now" end)
 H.check("runs at once after drain", ran[#ran], "now")
 _G.debugprofilestop = nil
+
+-- A global widget a test made (a stand-in for a Blizzard frame) does not
+-- outlive the next boot: it would keep that boot alive.
+_G.PlayerFrame = M.newWidget("Frame", "PlayerFrame", UIParent)
+H.LoadAddon()
+H.check("stand-in frames cleared on boot", rawget(_G, "PlayerFrame"), nil)
+H.checkTrue("UIParent made again", rawget(_G, "UIParent"))
+
+-- A failed check names its line and an optional note.
+do
+    local printed, print0 = {}, print
+    local fail0 = H.fail
+    _G.print = function(s) printed[#printed + 1] = s end
+    H.check("x", 1, 2, "why")
+    _G.print = print0
+    H.fail = fail0
+    H.checkTrue("line in the message", printed[1]:find("(line %d+)") ~= nil)
+    H.checkTrue("note in the message", printed[1]:find("why", 1, true) ~= nil)
+end

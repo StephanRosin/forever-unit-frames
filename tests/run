@@ -1,8 +1,39 @@
 #!/usr/bin/env bash
+# tests/run [pattern]          one process, every test file (or those whose
+#                              name contains pattern)
+# tests/run -j N [pattern]     N processes (at most 4) sharing the files; the
+#                              output of each in turn, then the sums
 set -e
 HERE="$(cd "$(dirname "$0")" && pwd)"
 cd "$HERE"
-# At most 8 GB: a leak between boots fails the run ("not enough memory")
-# instead of filling RAM and swap until the system kills the terminal.
-ulimit -v 8000000
-exec lua5.1 -e "ADDONDIR='$(cd "$HERE/.." && pwd)'" run.lua "$@"
+ADDON="$(cd "$HERE/.." && pwd)"
+JOBS=1
+if [ "$1" = "-j" ]; then JOBS="$2"; shift 2; fi
+if [ "$JOBS" -lt 1 ] || [ "$JOBS" -gt 4 ]; then echo "tests/run: -j 1 to 4" >&2; exit 2; fi
+if [ "$JOBS" -eq 1 ]; then
+    # At most 8 GB: a leak between boots fails the run ("not enough memory")
+    # instead of filling RAM and swap until the system kills the terminal.
+    ulimit -v 8000000
+    exec lua5.1 -e "ADDONDIR='$ADDON'" run.lua "$@"
+fi
+# Several processes: each capped lower, so that together they stay well
+# under the machine's memory (30 parallel runs once killed the game).
+OUT="$(mktemp -d)"
+trap 'rm -rf "$OUT"' EXIT
+START=$(date +%s)
+for i in $(seq 1 "$JOBS"); do
+    ( ulimit -v 2500000; FUF_PART="$i/$JOBS" lua5.1 -e "ADDONDIR='$ADDON'" run.lua "$@" > "$OUT/$i.txt" 2>&1 ) &
+done
+wait || true
+PASS=0; FAIL=0; FILES=0
+for i in $(seq 1 "$JOBS"); do
+    head -n -1 "$OUT/$i.txt"
+    LAST="$(tail -n 1 "$OUT/$i.txt")"
+    if [[ "$LAST" =~ ^([0-9]+)\ passed,\ ([0-9]+)\ failed\ \(([0-9]+)\ files ]]; then
+        PASS=$((PASS + BASH_REMATCH[1])); FAIL=$((FAIL + BASH_REMATCH[2])); FILES=$((FILES + BASH_REMATCH[3]))
+    else
+        echo "$LAST"; echo "  ERROR process $i ended without a total"; FAIL=$((FAIL + 1))
+    fi
+done
+echo "$PASS passed, $FAIL failed ($FILES files, $(( $(date +%s) - START )) s, $JOBS processes)"
+[ "$FAIL" -eq 0 ]

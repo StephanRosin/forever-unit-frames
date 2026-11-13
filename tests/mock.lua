@@ -34,19 +34,36 @@ end
 
 -- Widgets ------------------------------------------------------------------
 local widget = {}
-widget.__index = function(t, k)
-    -- Unknown CamelCase keys are widget methods that do nothing; anything
-    -- else is addon data and must be nil, as in the game. Strict objects
-    -- (Blizzard aura containers and their buttons) have only the methods
-    -- the mock gives them. Under an aura button, even a no-op method
-    -- refuses while auras are secret.
-    if type(k) ~= "string" or not k:match("^%u") then return nil end
-    if rawget(t, "_strict") then error("mock: " .. tostring(rawget(t, "_kind")) .. " has no method " .. k, 2) end
-    local f = function(self)
-        if M.AurasSecret() and M.IsAuraRestricted(self) then error("aura button: tainted access while auras are secret", 2) end
+local methods = {}
+-- methods[k] wrapped: refuses while auras are secret under an aura button.
+local guarded = {}
+local function guardedMethod(k, m)
+    local g = guarded[k]
+    if not g then
+        g = function(self, ...)
+            if M.AurasSecret() and M.IsAuraRestricted(self) then
+                error("aura button: tainted access while auras are secret", 2)
+            end
+            return m(self, ...)
+        end
+        guarded[k] = g
     end
-    rawset(t, k, f)
-    return f
+    return g
+end
+widget.__index = function(t, k)
+    local m = methods[k]
+    if m ~= nil then
+        if rawget(t, "_guarded") then return guardedMethod(k, m) end
+        return m
+    end
+    -- A key the mock does not know is nil, as in the game: a method the
+    -- client lacks (or a typo) fails when called, and "if frame.Method"
+    -- tests answer as there. Strict objects (Blizzard aura containers and
+    -- their buttons) say which method is missing.
+    if type(k) == "string" and k:match("^%u") and rawget(t, "_strict") then
+        error("mock: " .. tostring(rawget(t, "_kind")) .. " has no method " .. k, 2)
+    end
+    return nil
 end
 
 -- XML templates of the addon, mirrored in Lua (the tests cannot load XML).
@@ -627,7 +644,11 @@ function M.HasLayoutAspect(obj)
 end
 
 -- Every method of obj and its descendants refuses while auras are secret.
+-- The shared methods get their guard through widget.__index (one wrapper
+-- per method for all guarded widgets, made once); the widget's own
+-- functions are wrapped here.
 local function guardTree(obj)
+    rawset(obj, "_guarded", true)
     for k, v in pairs(obj) do
         if type(k) == "string" and k:match("^%u") and type(v) == "function" then
             obj[k] = function(...)
@@ -936,7 +957,508 @@ function M.IsProtectedTree(obj)
     return false
 end
 
-local function newWidget(kind, name, parent)
+local newWidget
+-- The methods every widget shares (one copy, not one per widget: a boot
+-- makes some 11 000 widgets).
+function methods:SetFrameLevel(level)
+    assert(type(level) == "number" and level >= 0 and level <= 10000, "SetFrameLevel: level out of range")
+    self._level = level
+end
+function methods:GetFrameLevel() return self._level end
+function methods:GetChildren() return unpack(rawget(self, "_children") or {}) end
+function methods:GetName() return self._name end
+function methods:GetObjectType() return self._kind end
+function methods:SetScript(s, fn) self._scripts[s] = fn end
+function methods:GetScript(s) return self._scripts[s] end
+function methods:HookScript(s, fn)
+    local old = self._scripts[s]
+    self._scripts[s] = function(...) if old then old(...) end fn(...) end
+end
+function methods:RegisterEvent(e) self._events[e] = true; M.Listen(self) end
+-- Unit events: delivered only when the event's first argument is one of
+-- the registered units, like the client's RegisterUnitEvent.
+function methods:RegisterUnitEvent(e, ...)
+    self._events[e] = { ... }
+    M.Listen(self)
+    return true
+end
+function methods:UnregisterEvent(e) self._events[e] = nil end
+function methods:UnregisterAllEvents() self._events = {} end
+function methods:SetAttribute(k, v)
+    self._attr[k] = v
+    local script = self._scripts.OnAttributeChanged
+    if script then script(self, k, v) end
+end
+function methods:GetAttribute(k) return self._attr[k] end
+function methods:RegisterForClicks(...) self._clicks = { ... } end
+-- OnSizeChanged runs when the size really changes, as in the client.
+local function resize(self, width, height)
+    if width == self._w and height == self._h then return end
+    self._w, self._h = width, height
+    local script = self._scripts.OnSizeChanged
+    if script then script(self, width, height) end
+end
+function methods:SetSize(a, b) resize(self, a, b) end
+function methods:SetWidth(v) resize(self, v, self._h) end
+function methods:SetHeight(v) resize(self, self._w, v) end
+function methods:GetWidth() return self._w end
+function methods:GetHeight() return self._h end
+-- Also the anchors SetAllPoints made (in the client: two points).
+function methods:ClearAllPoints()
+    self._points = {}
+    self._allPoints = nil
+end
+-- Setting a point that is already anchored replaces that anchor.
+-- Anchoring to an aura container that has groups needs the
+-- UntrustedLayoutScriptExecution aspect (Blizzard_CustomAuraContainer.lua);
+-- children have their parent's (ForbiddenAspectConstantsDocumentation.lua).
+function methods:SetPoint(point, ...)
+    local relativeTo = ...
+    if type(relativeTo) == "table" and rawget(relativeTo, "_layoutForbidden")
+        and not M.HasLayoutAspect(self) then
+        error("mock: anchoring to an aura container needs DisableUntrustedLayoutScriptsTemplate", 2)
+    end
+    for i, p in ipairs(self._points) do
+        if p[1] == point then
+            self._points[i] = { point, ... }
+            return
+        end
+    end
+    table.insert(self._points, { point, ... })
+end
+function methods:GetPoint(i) local p = self._points[i or 1]; if p then return unpack(p) end end
+function methods:GetNumPoints() return #self._points end
+function methods:GetCenter() return self._cx or 0, self._cy or 0 end
+-- Shown, and every parent shown too.
+function methods:IsVisible()
+    if not self._shown then return false end
+    local parent = self._parent
+    if type(parent) ~= "table" or not parent.IsVisible then return true end
+    return parent:IsVisible()
+end
+-- OnShow/OnHide fire only when the frame's effective visibility
+-- changes, as in the client: hiding a frame whose parent is hidden
+-- fires nothing. (The mock does not propagate them to children.)
+function methods:SetShown(v)
+    v = not not v
+    if v == self._shown then return end
+    local wasVisible = self:IsVisible()
+    self._shown = v
+    if self:IsVisible() == wasVisible then return end
+    local script = self._scripts[v and "OnShow" or "OnHide"]
+    if script then script(self) end
+end
+function methods:Show() self:SetShown(true) end
+function methods:Hide() self:SetShown(false) end
+function methods:IsShown() return self._shown end
+function methods:SetParent(p) self._parent = p end
+function methods:GetParent() return self._parent end
+-- Takes a secret number (AllowedWhenTainted); the alpha carries it.
+function methods:SetAlpha(a)
+    self._alphaSecret = M.IsSecret(a) or nil
+    self._alpha = M.Reveal(a)
+end
+function methods:GetAlpha() return self._alpha or 1 end
+-- SimpleFrameAPI / SimpleRegionAPI: takes a secret boolean
+-- (AllowedWhenTainted); the alpha then carries the secret aspect.
+function methods:SetAlphaFromBoolean(value, alphaIfTrue, alphaIfFalse)
+    assert(type(M.Reveal(value)) == "boolean", "SetAlphaFromBoolean: value must be a boolean")
+    self._alpha = M.Reveal(value) and alphaIfTrue or alphaIfFalse
+    self._alphaSecret = M.IsSecret(value)
+end
+function methods:EnableMouse(v) self._mouse = v end
+function methods:IsProtected() return self._protected or false end
+function methods:SetFrameStrata(v) self._strata = v end
+function methods:SetFixedFrameStrata(v) self._fixedStrata = v end
+function methods:SetHighlightTexture(t, blend) self._highlight = { t, blend } end
+function methods:GetFrameStrata() return self._strata end
+function methods:SetClipsChildren(v) self._clips = v end
+function methods:GetEffectiveScale() return M.scale end
+function methods:SetScale(v)
+    assert(type(v) == "number" and v > 0, "SetScale: scale must be a positive number")
+    self._scale = v
+end
+function methods:GetScale() return self._scale or 1 end
+-- StatusBar
+function methods:SetMinMaxValues(a, b) self._min, self._max = a, b end
+function methods:GetMinMaxValues() return self._min, self._max end
+function methods:SetValue(v) self._value = v end
+function methods:GetValue() return self._value end
+function methods:SetStatusBarTexture(t) self._texture = t end
+function methods:SetStatusBarColor(r, g, b, a) self._color = { r, g, b, a } end
+function methods:GetStatusBarTexture() return self._barTex end
+function methods:SetReverseFill(v) self._reverse = v end
+-- Texture
+-- A texture shows either a file or an atlas; setting one replaces the
+-- other.
+function methods:SetTexture(t, wrapH, wrapV) self._texture = t; self._atlas = nil; self._wrap = { wrapH, wrapV } end
+function methods:SetHorizTile(v) self._horizTile = v end
+function methods:SetBlendMode(mode)
+    assert(({ DISABLE = 1, BLEND = 1, ALPHAKEY = 1, ADD = 1, MOD = 1 })[mode], "SetBlendMode: bad mode")
+    self._blend = mode
+end
+function methods:SetVertTile(v) self._vertTile = v end
+-- Masks (SimpleTextureAPI): only mask textures can be added, and at
+-- most M.MAX_MASKS per texture (the client raises beyond that).
+function methods:AddMaskTexture(mask)
+    assert(type(mask) == "table" and mask._kind == "MaskTexture", "AddMaskTexture: not a mask texture")
+    self._masks = self._masks or {}
+    if #self._masks >= M.MAX_MASKS then
+        error(("Texture:AddMaskTexture(): Texture already has the maximum number of mask textures (%d)")
+            :format(M.MAX_MASKS), 2)
+    end
+    table.insert(self._masks, mask)
+end
+function methods:RemoveMaskTexture(mask)
+    assert(type(mask) == "table" and mask._kind == "MaskTexture", "RemoveMaskTexture: not a mask texture")
+    for i, m in ipairs(self._masks or {}) do
+        if m == mask then table.remove(self._masks, i) return end
+    end
+end
+function methods:GetNumMaskTextures() return self._masks and #self._masks or 0 end
+function methods:SetAtlas(atlas)
+    assert(type(atlas) == "string", "SetAtlas: atlas must be a string")
+    self._atlas = atlas; self._texture = nil
+end
+function methods:SetTexCoord(...) self._texCoord = { ... } end
+-- SimpleTextureBaseAPI: radians, may be secret (AllowedWhenTainted).
+function methods:SetRotation(radians)
+    assert(type(M.Reveal(radians)) == "number", "SetRotation: radians must be a number")
+    self._rotation = M.Reveal(radians)
+end
+-- Takes a secret boolean (AllowedWhenTainted).
+function methods:SetDesaturated(v)
+    assert(type(M.Reveal(v)) == "boolean", "SetDesaturated: value must be a boolean")
+    self._desaturated = M.Reveal(v)
+end
+-- SimpleTextureBaseAPI: the cell may be secret (AllowedWhenTainted),
+-- rows and columns never are.
+function methods:SetSpriteSheetCell(cell, rows, columns)
+    assert(type(M.Reveal(cell)) == "number", "SetSpriteSheetCell: cell must be a number")
+    assert(not M.IsSecret(rows) and not M.IsSecret(columns), "SetSpriteSheetCell: rows/columns never secret")
+    self._spriteCell = { M.Reveal(cell), rows, columns }
+    self._spriteSecret = M.IsSecret(cell)
+end
+-- Shader nine-slice (SimpleTextureBaseAPI, masks included).
+function methods:SetTextureSliceMargins(left, top, right, bottom)
+    for _, v in ipairs({ left, top, right, bottom }) do
+        assert(type(v) == "number", "SetTextureSliceMargins: margins must be numbers")
+    end
+    self._slice = { left, top, right, bottom }
+end
+function methods:GetTextureSliceMargins()
+    local s = self._slice or { 0, 0, 0, 0 }
+    return s[1], s[2], s[3], s[4]
+end
+function methods:SetTextureSliceMode(mode)
+    assert(mode == 0 or mode == 1, "SetTextureSliceMode: bad mode")
+    self._sliceMode = mode
+end
+function methods:ClearTextureSlice() self._slice, self._sliceMode = nil, nil end
+-- _color is the last colour given either way; _texColor keeps the
+-- colour texture's own.
+function methods:SetColorTexture(r, g, b, a)
+    self._color = { r, g, b, a }; self._texColor = self._color
+    self._texture, self._atlas = nil, nil
+end
+-- One vertex colour replaces a gradient's per-vertex colours.
+function methods:SetVertexColor(r, g, b, a) self._color = { r, g, b, a }; self._gradient = nil end
+-- SetGradient(orientation, minColor, maxColor): colours are ColorMixin
+-- objects (SimpleTextureBaseAPIDocumentation.lua).
+function methods:SetGradient(orientation, minColor, maxColor)
+    assert(orientation == "HORIZONTAL" or orientation == "VERTICAL", "SetGradient: bad orientation")
+    for _, c in ipairs({ minColor, maxColor }) do
+        assert(type(c) == "table" and type(c.r) == "number", "SetGradient: colours must be ColorMixin objects")
+    end
+    self._gradient = { orientation, minColor, maxColor }
+end
+function methods:SetAllPoints(p) self._allPoints = p or true end
+-- Region draw layer; sublevel -8..7 like the client.
+function methods:SetDrawLayer(layer, sublevel)
+    sublevel = sublevel or 0
+    assert(sublevel >= -8 and sublevel <= 7, "SetDrawLayer: sublevel out of range")
+    self._layer, self._sublevel = layer, sublevel
+end
+function methods:GetDrawLayer() return self._layer, self._sublevel or 0 end
+-- FontString / EditBox. An EditBox without a font cannot take text in
+-- the client, so the mock refuses it too.
+function methods:SetFont(path, size, flags) self._font = { path, size, flags }; return true end
+function methods:GetFont()
+    if not self._font then return nil end
+    return self._font[1], self._font[2], self._font[3]
+end
+function methods:SetFontObject(o) self._fontObject = o end
+function methods:SetText(t)
+    if self._kind == "EditBox" or self._kind == "FontString" then
+        assert(self._font or self._fontObject, self._kind .. ":SetText(): Font not set")
+    end
+    self._text = t
+    self._fmt, self._args = nil, nil
+    -- An EditBox reports every new text: userInput true only for the
+    -- player's typing (M.Type), false for SetText from code.
+    if self._kind == "EditBox" and self._scripts and self._scripts.OnTextChanged then
+        local userInput = M.typing == self
+        M.typing = nil   -- a SetText in the handler is the code's own
+        self._scripts.OnTextChanged(self, userInput)
+    end
+end
+function methods:SetTextColor(r, g, b, a) self._color = { r, g, b, a } end
+function methods:GetTextColor()
+    local c = self._color or { 1, 1, 1, 1 }
+    return c[1], c[2], c[3], c[4] or 1
+end
+function methods:GetText() return self._text end
+function methods:SetFormattedText(fmt, ...)
+    if self._kind == "EditBox" or self._kind == "FontString" then
+        assert(self._font or self._fontObject, self._kind .. ":SetFormattedText(): Font not set")
+    end
+    self._fmt = fmt; self._args = { ... }
+    self._text = nil
+end
+function methods:SetShadowOffset(x, y) self._shadow = { x, y } end
+function methods:SetJustifyH(v) self._justifyH = v end
+function methods:SetJustifyV(v) self._justifyV = v end
+function methods:SetWordWrap(v) self._wordWrap = not not v end
+function methods:GetWordWrap() return self._wordWrap ~= false end
+-- Rough text width: half the font size per character.
+function methods:GetStringWidth()
+    local size = self._font and self._font[2] or 12
+    return #(self._text or "") * size / 2
+end
+function methods:GetUnboundedStringWidth() return self:GetStringWidth() end
+-- Rough text height: one font size per line; a set width wraps the
+-- text (when word wrap is on) into as many lines as it needs.
+function methods:GetStringHeight()
+    if (self._text or "") == "" then return 0 end
+    local size = self._font and self._font[2] or 12
+    local width, lines = self._w or 0, 1
+    if width > 0 and self:GetWordWrap() then
+        lines = math.max(1, math.ceil(self:GetStringWidth() / width))
+    end
+    return lines * size
+end
+-- Cut off when the natural width exceeds a set width (0 = natural).
+function methods:IsTruncated()
+    local width = self._w or 0
+    return width > 0 and self:GetStringWidth() > width
+end
+-- Enable state (Button, CheckButton, EditBox, Slider)
+-- A disabled EditBox loses its focus and cannot take it (SetFocus).
+function methods:SetEnabled(v)
+    self._enabled = not not v
+    if not v then self._focus = false end
+end
+function methods:IsEnabled() return self._enabled ~= false end
+function methods:Enable() self._enabled = true end
+function methods:Disable() self._enabled = false end
+function methods:EnableMouseWheel(v) self._mouseWheel = v end
+function methods:IsMouseOver() return self._mouseOver or false end
+function methods:EnableKeyboard(v) self._keyboard = v end
+function methods:SetPropagateKeyboardInput(v)
+    assert(not M.combat, "SetPropagateKeyboardInput is restricted in combat")
+    self._propagate = v
+end
+-- Slider
+function methods:SetOrientation(v) self._orientation = v end
+function methods:SetValueStep(v) self._step = v end
+function methods:SetObeyStepOnDrag(v) self._obeyStep = v end
+function methods:SetThumbTexture(asset)
+    self._thumb = self._thumb or newWidget("Texture", nil, self)
+    self._thumb._texture = asset
+end
+function methods:GetThumbTexture() return self._thumb end
+-- CheckButton
+function methods:SetChecked(v) self._checked = not not v end
+function methods:GetChecked() return self._checked or false end
+function methods:SetCheckedTexture(asset)
+    self._checkedTex = self._checkedTex or newWidget("Texture", nil, self)
+    self._checkedTex._texture = asset
+end
+function methods:GetCheckedTexture() return self._checkedTex end
+-- EditBox
+function methods:SetAutoFocus(v) self._autoFocus = v end
+function methods:SetFocus() if self._enabled ~= false then self._focus = true end end
+function methods:ClearFocus() self._focus = false end
+function methods:HasFocus() return self._focus or false end
+function methods:SetCursorPosition(p) self._cursor = p end
+function methods:HighlightText(a, b) self._highlighted = { a, b } end
+function methods:SetMaxLetters(n) self._maxLetters = n end
+function methods:SetMultiLine(v) self._multiLine = v end
+function methods:SetTextInsets(l, r, t, b) self._insets = { l, r, t, b } end
+-- ScrollFrame
+function methods:SetScrollChild(c) self._scrollChild = c end
+function methods:GetScrollChild() return self._scrollChild end
+function methods:SetVerticalScroll(v) self._vscroll = v end
+function methods:GetVerticalScroll() return self._vscroll or 0 end
+function methods:GetVerticalScrollRange() return self._vrange or 0 end
+-- The range anew from the child's height and the frame's, when both
+-- are known (the client works it out from their layout).
+function methods:UpdateScrollChildRect()
+    local child = self._scrollChild
+    if child and child._h and self._h then self._vrange = math.max(0, child._h - self._h) end
+end
+-- Creation
+function methods:CreateTexture(n, layer, _, sublevel)
+    local t = newWidget("Texture", n, self)
+    t._layer, t._sublevel = layer, sublevel
+    return t
+end
+function methods:CreateMaskTexture(n, layer, _, sublevel)
+    local t = newWidget("MaskTexture", n, self)
+    t._layer, t._sublevel = layer, sublevel
+    -- In the client a mask ignores texture coordinates: a mirrored mask
+    -- drew unmirrored in game (ring corners came out concave). No
+    -- Blizzard mask uses them either. Mask files carry their own shape.
+    function t:SetTexCoord()
+        error("MaskTexture:SetTexCoord: masks ignore texture coordinates in the client", 2)
+    end
+    -- Nor does a mask's own scale change a sliced mask's corners (in
+    -- game a scaled mask kept its full margin as corner size).
+    function t:SetScale()
+        error("MaskTexture:SetScale: the client ignores a mask's scale for its slices", 2)
+    end
+    return t
+end
+function methods:CreateFontString(n, layer)
+    local fs = newWidget("FontString", n, self)
+    fs._layer, fs._sublevel = layer or "ARTWORK", 0
+    return fs
+end
+-- Animation groups: Play marks the group playing; M.FinishAnimations
+-- ends every playing group like the client would when it is done.
+function methods:CreateAnimationGroup()
+    local group = newWidget("AnimationGroup", nil, self)
+    group._anims = {}
+    function group:CreateAnimation(kind)
+        local anim = newWidget(kind, nil, self)
+        function anim:SetFromAlpha(v) self._from = v end
+        function anim:SetToAlpha(v) self._to = v end
+        function anim:SetDuration(v) self._duration = v end
+        function anim:SetStartDelay(v) self._delay = v end
+        function anim:SetOrder(v) self._order = v end
+        -- Translation (SimpleAnimTranslationAPI)
+        function anim:SetOffset(x, y)
+            assert(type(x) == "number" and type(y) == "number", "SetOffset: offsetX, offsetY")
+            self._offset = { x, y }
+        end
+        function anim:GetOffset()
+            local o = self._offset or { 0, 0 }
+            return o[1], o[2]
+        end
+        -- Scale (SimpleAnimScaleAPI)
+        function anim:SetScaleFrom(x, y) self._scaleFrom = { x, y } end
+        function anim:SetScaleTo(x, y) self._scaleTo = { x, y } end
+        function anim:SetOrigin(point, x, y) self._origin = { point, x, y } end
+        function anim:SetSmoothing(v)
+            assert(({ NONE = 1, IN = 1, OUT = 1, IN_OUT = 1 })[v], "SetSmoothing: bad smoothing")
+            self._smoothing = v
+        end
+        -- FlipBook (SimpleAnimFlipBookAPI)
+        function anim:SetFlipBookRows(v) self._rows = v end
+        function anim:SetFlipBookColumns(v) self._columns = v end
+        function anim:SetFlipBookFrames(v) self._frames = v end
+        function anim:SetFlipBookFrameWidth(v) self._frameWidth = v end
+        function anim:SetFlipBookFrameHeight(v) self._frameHeight = v end
+        table.insert(self._anims, anim)
+        return anim
+    end
+    function group:SetToFinalAlpha(v) self._toFinal = v end
+    function group:SetLooping(v)
+        assert(v == "NONE" or v == "REPEAT" or v == "BOUNCE", "SetLooping: bad loop type")
+        self._looping = v
+    end
+    function group:Play() self._playing = true; M.playing[self] = true end
+    function group:Stop() self._playing = false; M.playing[self] = nil end
+    function group:IsPlaying() return self._playing or false end
+    return group
+end
+-- Cooldown. _cooldown holds { start, duration } or { object = duration
+-- object }; nil when cleared.
+function methods:SetCooldown(start, duration) self._cooldown = { start, duration } end
+function methods:SetCooldownFromDurationObject(duration) self._cooldown = { object = duration } end
+function methods:Clear() self._cooldown = nil end
+function methods:SetHideCountdownNumbers(v) self._hideNumbers = v end
+function methods:SetDrawSwipe(v) self._drawSwipe = v end
+function methods:SetReverse(v) self._reverse = v end
+function methods:SetDrawEdge(v) self._drawEdge = v end
+function methods:SetToplevel(v) self._toplevel = v end
+function methods:SetDontSavePosition(v) self._dontSave = v end
+function methods:GetCountdownFontString()
+    self._countdown = self._countdown or newWidget("FontString", nil, self)
+    return self._countdown
+end
+-- Mouse: motion (tooltips) and clicks can be switched separately.
+function methods:SetMouseClickEnabled(v) self._clickEnabled = v end
+function methods:SetMouseMotionEnabled(v) self._motionEnabled = v end
+-- Mouse buttons that go through the frame to what lies below it
+-- (SimpleScriptRegionAPI; protected on protected frames in combat).
+function methods:SetPassThroughButtons(...) self._passThrough = { ... } end
+-- PlayerModel
+-- A unit without a (loaded) model (d.noModel): the client keeps what
+-- the model showed, as it does in game.
+-- d.modelLater: loaded frames later (M.LoadModels fires OnModelLoaded).
+function methods:SetUnit(unit)
+    local d = M.units[unit]
+    if d and d.noModel then return false end
+    if d and d.modelLater then
+        M.pendingModels = M.pendingModels or {}
+        M.pendingModels[self] = unit
+        return nil
+    end
+    -- A creature (d.creatureModel): as measured in Forever, SetUnit
+    -- loads nothing and answers nil (model empty, display 0).
+    if d and d.creatureModel then return nil end
+    self._modelUnit = unit
+    return true
+end
+-- Players have a file; creatures (d.creatureModel) only a display ID.
+function methods:GetModelFileID()
+    local d = self._modelUnit and M.units[self._modelUnit]
+    if not self._modelUnit or (d and d.creatureModel) then return nil end
+    return 12345
+end
+function methods:GetDisplayInfo() return self._modelUnit and 678 or 0 end
+-- By NPC ID: loads the creature (d.npcID must match a known unit).
+function methods:SetCreature(id)
+    for token, d in pairs(M.units) do
+        if d.npcID == id then self._modelUnit = token; self._creature = id; return end
+    end
+end
+function methods:ClearModel()
+    self._modelUnit = nil
+    self._cleared = true
+    if M.pendingModels then M.pendingModels[self] = nil end
+end
+function methods:SetPortraitZoom(z) self._zoom = z end
+function methods:SetCamDistanceScale(v) self._camScale = v end
+function methods:SetPosition(x, y, z) self._position = { x, y, z } end
+function methods:SetViewTranslation(x, y) self._view = { x, y } end
+-- Movable
+function methods:SetMovable(v) self._movable = v end
+function methods:RegisterForDrag(...) self._drag = { ... } end
+function methods:StartMoving() end
+function methods:StopMovingOrSizing() end
+function methods:SetClampedToScreen() end
+-- Protected frames: explicitly protected ones (secure templates) and
+-- every frame with a protected descendant. In combat, tainted code may
+-- not show, hide, move, size, reparent or re-attribute them
+-- (ADDON_ACTION_BLOCKED in the client).
+for _, method in ipairs({ "SetShown", "SetPoint", "ClearAllPoints", "SetSize", "SetWidth", "SetHeight",
+                          "SetAttribute", "SetParent", "EnableMouse", "SetAllPoints",
+                          "SetPassThroughButtons" }) do
+    local original = methods[method]
+    if original then
+        methods[method] = function(self, ...)
+            if M.combat and M.secureDepth == 0 and M.IsProtectedTree(self) then
+                M.blocked[#M.blocked + 1] = method
+                error("mock: " .. method .. " on a protected frame in combat", 2)
+            end
+            return original(self, ...)
+        end
+    end
+end
+
+function newWidget(kind, name, parent)
     local w = setmetatable({
         _kind = kind, _name = name, _parent = parent, _scripts = {},
         _events = {}, _attr = {}, _points = {}, _w = 0, _h = 0, _shown = true,
@@ -951,498 +1473,6 @@ local function newWidget(kind, name, parent)
     -- A frame starts one level above its parent, as in the client.
     local parentLevel = type(parent) == "table" and rawget(parent, "_level")
     w._level = parentLevel and parentLevel + 1 or 0
-    function w:SetFrameLevel(level)
-        assert(type(level) == "number" and level >= 0 and level <= 10000, "SetFrameLevel: level out of range")
-        self._level = level
-    end
-    function w:GetFrameLevel() return self._level end
-    function w:GetChildren() return unpack(rawget(self, "_children") or {}) end
-    function w:GetName() return self._name end
-    function w:GetObjectType() return self._kind end
-    function w:SetScript(s, fn) self._scripts[s] = fn end
-    function w:GetScript(s) return self._scripts[s] end
-    function w:HookScript(s, fn)
-        local old = self._scripts[s]
-        self._scripts[s] = function(...) if old then old(...) end fn(...) end
-    end
-    function w:RegisterEvent(e) self._events[e] = true; M.Listen(self) end
-    -- Unit events: delivered only when the event's first argument is one of
-    -- the registered units, like the client's RegisterUnitEvent.
-    function w:RegisterUnitEvent(e, ...)
-        self._events[e] = { ... }
-        M.Listen(self)
-        return true
-    end
-    function w:UnregisterEvent(e) self._events[e] = nil end
-    function w:UnregisterAllEvents() self._events = {} end
-    function w:SetAttribute(k, v)
-        self._attr[k] = v
-        local script = self._scripts.OnAttributeChanged
-        if script then script(self, k, v) end
-    end
-    function w:GetAttribute(k) return self._attr[k] end
-    function w:RegisterForClicks(...) self._clicks = { ... } end
-    -- OnSizeChanged runs when the size really changes, as in the client.
-    local function resize(self, width, height)
-        if width == self._w and height == self._h then return end
-        self._w, self._h = width, height
-        local script = self._scripts.OnSizeChanged
-        if script then script(self, width, height) end
-    end
-    function w:SetSize(a, b) resize(self, a, b) end
-    function w:SetWidth(v) resize(self, v, self._h) end
-    function w:SetHeight(v) resize(self, self._w, v) end
-    function w:GetWidth() return self._w end
-    function w:GetHeight() return self._h end
-    -- Also the anchors SetAllPoints made (in the client: two points).
-    function w:ClearAllPoints()
-        self._points = {}
-        self._allPoints = nil
-    end
-    -- Setting a point that is already anchored replaces that anchor.
-    -- Anchoring to an aura container that has groups needs the
-    -- UntrustedLayoutScriptExecution aspect (Blizzard_CustomAuraContainer.lua);
-    -- children have their parent's (ForbiddenAspectConstantsDocumentation.lua).
-    function w:SetPoint(point, ...)
-        local relativeTo = ...
-        if type(relativeTo) == "table" and rawget(relativeTo, "_layoutForbidden")
-            and not M.HasLayoutAspect(self) then
-            error("mock: anchoring to an aura container needs DisableUntrustedLayoutScriptsTemplate", 2)
-        end
-        for i, p in ipairs(self._points) do
-            if p[1] == point then
-                self._points[i] = { point, ... }
-                return
-            end
-        end
-        table.insert(self._points, { point, ... })
-    end
-    function w:GetPoint(i) local p = self._points[i or 1]; if p then return unpack(p) end end
-    function w:GetNumPoints() return #self._points end
-    function w:GetCenter() return self._cx or 0, self._cy or 0 end
-    -- Shown, and every parent shown too.
-    function w:IsVisible()
-        if not self._shown then return false end
-        local parent = self._parent
-        if type(parent) ~= "table" or not parent.IsVisible then return true end
-        return parent:IsVisible()
-    end
-    -- OnShow/OnHide fire only when the frame's effective visibility
-    -- changes, as in the client: hiding a frame whose parent is hidden
-    -- fires nothing. (The mock does not propagate them to children.)
-    function w:SetShown(v)
-        v = not not v
-        if v == self._shown then return end
-        local wasVisible = self:IsVisible()
-        self._shown = v
-        if self:IsVisible() == wasVisible then return end
-        local script = self._scripts[v and "OnShow" or "OnHide"]
-        if script then script(self) end
-    end
-    function w:Show() self:SetShown(true) end
-    function w:Hide() self:SetShown(false) end
-    function w:IsShown() return self._shown end
-    function w:SetParent(p) self._parent = p end
-    function w:GetParent() return self._parent end
-    -- Takes a secret number (AllowedWhenTainted); the alpha carries it.
-    function w:SetAlpha(a)
-        self._alphaSecret = M.IsSecret(a) or nil
-        self._alpha = M.Reveal(a)
-    end
-    function w:GetAlpha() return self._alpha or 1 end
-    -- SimpleFrameAPI / SimpleRegionAPI: takes a secret boolean
-    -- (AllowedWhenTainted); the alpha then carries the secret aspect.
-    function w:SetAlphaFromBoolean(value, alphaIfTrue, alphaIfFalse)
-        assert(type(M.Reveal(value)) == "boolean", "SetAlphaFromBoolean: value must be a boolean")
-        self._alpha = M.Reveal(value) and alphaIfTrue or alphaIfFalse
-        self._alphaSecret = M.IsSecret(value)
-    end
-    function w:EnableMouse(v) self._mouse = v end
-    function w:IsProtected() return self._protected or false end
-    function w:SetFrameStrata(v) self._strata = v end
-    function w:SetFixedFrameStrata(v) self._fixedStrata = v end
-    function w:SetHighlightTexture(t, blend) self._highlight = { t, blend } end
-    function w:GetFrameStrata() return self._strata end
-    function w:SetClipsChildren(v) self._clips = v end
-    function w:GetEffectiveScale() return M.scale end
-    function w:SetScale(v)
-        assert(type(v) == "number" and v > 0, "SetScale: scale must be a positive number")
-        self._scale = v
-    end
-    function w:GetScale() return self._scale or 1 end
-    -- StatusBar
-    function w:SetMinMaxValues(a, b) self._min, self._max = a, b end
-    function w:GetMinMaxValues() return self._min, self._max end
-    function w:SetValue(v) self._value = v end
-    function w:GetValue() return self._value end
-    function w:SetStatusBarTexture(t) self._texture = t end
-    function w:SetStatusBarColor(r, g, b, a) self._color = { r, g, b, a } end
-    function w:GetStatusBarTexture() return self._barTex end
-    function w:SetReverseFill(v) self._reverse = v end
-    -- Texture
-    -- A texture shows either a file or an atlas; setting one replaces the
-    -- other.
-    function w:SetTexture(t, wrapH, wrapV) self._texture = t; self._atlas = nil; self._wrap = { wrapH, wrapV } end
-    function w:SetHorizTile(v) self._horizTile = v end
-    function w:SetBlendMode(mode)
-        assert(({ DISABLE = 1, BLEND = 1, ALPHAKEY = 1, ADD = 1, MOD = 1 })[mode], "SetBlendMode: bad mode")
-        self._blend = mode
-    end
-    function w:SetVertTile(v) self._vertTile = v end
-    -- Masks (SimpleTextureAPI): only mask textures can be added, and at
-    -- most M.MAX_MASKS per texture (the client raises beyond that).
-    function w:AddMaskTexture(mask)
-        assert(type(mask) == "table" and mask._kind == "MaskTexture", "AddMaskTexture: not a mask texture")
-        self._masks = self._masks or {}
-        if #self._masks >= M.MAX_MASKS then
-            error(("Texture:AddMaskTexture(): Texture already has the maximum number of mask textures (%d)")
-                :format(M.MAX_MASKS), 2)
-        end
-        table.insert(self._masks, mask)
-    end
-    function w:RemoveMaskTexture(mask)
-        assert(type(mask) == "table" and mask._kind == "MaskTexture", "RemoveMaskTexture: not a mask texture")
-        for i, m in ipairs(self._masks or {}) do
-            if m == mask then table.remove(self._masks, i) return end
-        end
-    end
-    function w:GetNumMaskTextures() return self._masks and #self._masks or 0 end
-    function w:SetAtlas(atlas)
-        assert(type(atlas) == "string", "SetAtlas: atlas must be a string")
-        self._atlas = atlas; self._texture = nil
-    end
-    function w:SetTexCoord(...) self._texCoord = { ... } end
-    -- SimpleTextureBaseAPI: radians, may be secret (AllowedWhenTainted).
-    function w:SetRotation(radians)
-        assert(type(M.Reveal(radians)) == "number", "SetRotation: radians must be a number")
-        self._rotation = M.Reveal(radians)
-    end
-    -- Takes a secret boolean (AllowedWhenTainted).
-    function w:SetDesaturated(v)
-        assert(type(M.Reveal(v)) == "boolean", "SetDesaturated: value must be a boolean")
-        self._desaturated = M.Reveal(v)
-    end
-    -- SimpleTextureBaseAPI: the cell may be secret (AllowedWhenTainted),
-    -- rows and columns never are.
-    function w:SetSpriteSheetCell(cell, rows, columns)
-        assert(type(M.Reveal(cell)) == "number", "SetSpriteSheetCell: cell must be a number")
-        assert(not M.IsSecret(rows) and not M.IsSecret(columns), "SetSpriteSheetCell: rows/columns never secret")
-        self._spriteCell = { M.Reveal(cell), rows, columns }
-        self._spriteSecret = M.IsSecret(cell)
-    end
-    -- Shader nine-slice (SimpleTextureBaseAPI, masks included).
-    function w:SetTextureSliceMargins(left, top, right, bottom)
-        for _, v in ipairs({ left, top, right, bottom }) do
-            assert(type(v) == "number", "SetTextureSliceMargins: margins must be numbers")
-        end
-        self._slice = { left, top, right, bottom }
-    end
-    function w:GetTextureSliceMargins()
-        local s = self._slice or { 0, 0, 0, 0 }
-        return s[1], s[2], s[3], s[4]
-    end
-    function w:SetTextureSliceMode(mode)
-        assert(mode == 0 or mode == 1, "SetTextureSliceMode: bad mode")
-        self._sliceMode = mode
-    end
-    function w:ClearTextureSlice() self._slice, self._sliceMode = nil, nil end
-    -- _color is the last colour given either way; _texColor keeps the
-    -- colour texture's own.
-    function w:SetColorTexture(r, g, b, a)
-        self._color = { r, g, b, a }; self._texColor = self._color
-        self._texture, self._atlas = nil, nil
-    end
-    -- One vertex colour replaces a gradient's per-vertex colours.
-    function w:SetVertexColor(r, g, b, a) self._color = { r, g, b, a }; self._gradient = nil end
-    -- SetGradient(orientation, minColor, maxColor): colours are ColorMixin
-    -- objects (SimpleTextureBaseAPIDocumentation.lua).
-    function w:SetGradient(orientation, minColor, maxColor)
-        assert(orientation == "HORIZONTAL" or orientation == "VERTICAL", "SetGradient: bad orientation")
-        for _, c in ipairs({ minColor, maxColor }) do
-            assert(type(c) == "table" and type(c.r) == "number", "SetGradient: colours must be ColorMixin objects")
-        end
-        self._gradient = { orientation, minColor, maxColor }
-    end
-    function w:SetAllPoints(p) self._allPoints = p or true end
-    -- Region draw layer; sublevel -8..7 like the client.
-    function w:SetDrawLayer(layer, sublevel)
-        sublevel = sublevel or 0
-        assert(sublevel >= -8 and sublevel <= 7, "SetDrawLayer: sublevel out of range")
-        self._layer, self._sublevel = layer, sublevel
-    end
-    function w:GetDrawLayer() return self._layer, self._sublevel or 0 end
-    -- FontString / EditBox. An EditBox without a font cannot take text in
-    -- the client, so the mock refuses it too.
-    function w:SetFont(path, size, flags) self._font = { path, size, flags }; return true end
-    function w:GetFont()
-        if not self._font then return nil end
-        return self._font[1], self._font[2], self._font[3]
-    end
-    function w:SetFontObject(o) self._fontObject = o end
-    function w:SetText(t)
-        if self._kind == "EditBox" or self._kind == "FontString" then
-            assert(self._font or self._fontObject, self._kind .. ":SetText(): Font not set")
-        end
-        self._text = t
-        self._fmt, self._args = nil, nil
-        -- An EditBox reports every new text: userInput true only for the
-        -- player's typing (M.Type), false for SetText from code.
-        if self._kind == "EditBox" and self._scripts and self._scripts.OnTextChanged then
-            local userInput = M.typing == self
-            M.typing = nil   -- a SetText in the handler is the code's own
-            self._scripts.OnTextChanged(self, userInput)
-        end
-    end
-    function w:SetTextColor(r, g, b, a) self._color = { r, g, b, a } end
-    function w:GetTextColor()
-        local c = self._color or { 1, 1, 1, 1 }
-        return c[1], c[2], c[3], c[4] or 1
-    end
-    function w:GetText() return self._text end
-    function w:SetFormattedText(fmt, ...)
-        if self._kind == "EditBox" or self._kind == "FontString" then
-            assert(self._font or self._fontObject, self._kind .. ":SetFormattedText(): Font not set")
-        end
-        self._fmt = fmt; self._args = { ... }
-        self._text = nil
-    end
-    function w:SetShadowOffset(x, y) self._shadow = { x, y } end
-    function w:SetJustifyH(v) self._justifyH = v end
-    function w:SetJustifyV(v) self._justifyV = v end
-    function w:SetWordWrap(v) self._wordWrap = not not v end
-    function w:GetWordWrap() return self._wordWrap ~= false end
-    -- Rough text width: half the font size per character.
-    function w:GetStringWidth()
-        local size = self._font and self._font[2] or 12
-        return #(self._text or "") * size / 2
-    end
-    -- Rough text height: one font size per line; a set width wraps the
-    -- text (when word wrap is on) into as many lines as it needs.
-    function w:GetStringHeight()
-        if (self._text or "") == "" then return 0 end
-        local size = self._font and self._font[2] or 12
-        local width, lines = self._w or 0, 1
-        if width > 0 and self:GetWordWrap() then
-            lines = math.max(1, math.ceil(self:GetStringWidth() / width))
-        end
-        return lines * size
-    end
-    -- Cut off when the natural width exceeds a set width (0 = natural).
-    function w:IsTruncated()
-        local width = self._w or 0
-        return width > 0 and self:GetStringWidth() > width
-    end
-    -- Enable state (Button, CheckButton, EditBox, Slider)
-    -- A disabled EditBox loses its focus and cannot take it (SetFocus).
-    function w:SetEnabled(v)
-        self._enabled = not not v
-        if not v then self._focus = false end
-    end
-    function w:IsEnabled() return self._enabled ~= false end
-    function w:Enable() self._enabled = true end
-    function w:Disable() self._enabled = false end
-    function w:EnableMouseWheel(v) self._mouseWheel = v end
-    function w:IsMouseOver() return self._mouseOver or false end
-    function w:EnableKeyboard(v) self._keyboard = v end
-    function w:SetPropagateKeyboardInput(v)
-        assert(not M.combat, "SetPropagateKeyboardInput is restricted in combat")
-        self._propagate = v
-    end
-    -- Slider
-    function w:SetOrientation(v) self._orientation = v end
-    function w:SetValueStep(v) self._step = v end
-    function w:SetObeyStepOnDrag(v) self._obeyStep = v end
-    function w:SetThumbTexture(asset)
-        self._thumb = self._thumb or newWidget("Texture", nil, self)
-        self._thumb._texture = asset
-    end
-    function w:GetThumbTexture() return self._thumb end
-    -- CheckButton
-    function w:SetChecked(v) self._checked = not not v end
-    function w:GetChecked() return self._checked or false end
-    function w:SetCheckedTexture(asset)
-        self._checkedTex = self._checkedTex or newWidget("Texture", nil, self)
-        self._checkedTex._texture = asset
-    end
-    function w:GetCheckedTexture() return self._checkedTex end
-    -- EditBox
-    function w:SetAutoFocus(v) self._autoFocus = v end
-    function w:SetFocus() if self._enabled ~= false then self._focus = true end end
-    function w:ClearFocus() self._focus = false end
-    function w:HasFocus() return self._focus or false end
-    function w:SetCursorPosition(p) self._cursor = p end
-    function w:HighlightText(a, b) self._highlighted = { a, b } end
-    function w:SetMaxLetters(n) self._maxLetters = n end
-    function w:SetMultiLine(v) self._multiLine = v end
-    function w:SetTextInsets(l, r, t, b) self._insets = { l, r, t, b } end
-    -- ScrollFrame
-    function w:SetScrollChild(c) self._scrollChild = c end
-    function w:GetScrollChild() return self._scrollChild end
-    function w:SetVerticalScroll(v) self._vscroll = v end
-    function w:GetVerticalScroll() return self._vscroll or 0 end
-    function w:GetVerticalScrollRange() return self._vrange or 0 end
-    -- The range anew from the child's height and the frame's, when both
-    -- are known (the client works it out from their layout).
-    function w:UpdateScrollChildRect()
-        local child = self._scrollChild
-        if child and child._h and self._h then self._vrange = math.max(0, child._h - self._h) end
-    end
-    -- Creation
-    function w:CreateTexture(n, layer, _, sublevel)
-        local t = newWidget("Texture", n, self)
-        t._layer, t._sublevel = layer, sublevel
-        return t
-    end
-    function w:CreateMaskTexture(n, layer, _, sublevel)
-        local t = newWidget("MaskTexture", n, self)
-        t._layer, t._sublevel = layer, sublevel
-        -- In the client a mask ignores texture coordinates: a mirrored mask
-        -- drew unmirrored in game (ring corners came out concave). No
-        -- Blizzard mask uses them either. Mask files carry their own shape.
-        function t:SetTexCoord()
-            error("MaskTexture:SetTexCoord: masks ignore texture coordinates in the client", 2)
-        end
-        -- Nor does a mask's own scale change a sliced mask's corners (in
-        -- game a scaled mask kept its full margin as corner size).
-        function t:SetScale()
-            error("MaskTexture:SetScale: the client ignores a mask's scale for its slices", 2)
-        end
-        return t
-    end
-    function w:CreateFontString(n, layer)
-        local fs = newWidget("FontString", n, self)
-        fs._layer, fs._sublevel = layer or "ARTWORK", 0
-        return fs
-    end
-    -- Animation groups: Play marks the group playing; M.FinishAnimations
-    -- ends every playing group like the client would when it is done.
-    function w:CreateAnimationGroup()
-        local group = newWidget("AnimationGroup", nil, self)
-        group._anims = {}
-        function group:CreateAnimation(kind)
-            local anim = newWidget(kind, nil, self)
-            function anim:SetFromAlpha(v) self._from = v end
-            function anim:SetToAlpha(v) self._to = v end
-            function anim:SetDuration(v) self._duration = v end
-            function anim:SetStartDelay(v) self._delay = v end
-            function anim:SetOrder(v) self._order = v end
-            -- Translation (SimpleAnimTranslationAPI)
-            function anim:SetOffset(x, y)
-                assert(type(x) == "number" and type(y) == "number", "SetOffset: offsetX, offsetY")
-                self._offset = { x, y }
-            end
-            function anim:GetOffset()
-                local o = self._offset or { 0, 0 }
-                return o[1], o[2]
-            end
-            -- Scale (SimpleAnimScaleAPI)
-            function anim:SetScaleFrom(x, y) self._scaleFrom = { x, y } end
-            function anim:SetScaleTo(x, y) self._scaleTo = { x, y } end
-            function anim:SetOrigin(point, x, y) self._origin = { point, x, y } end
-            function anim:SetSmoothing(v)
-                assert(({ NONE = 1, IN = 1, OUT = 1, IN_OUT = 1 })[v], "SetSmoothing: bad smoothing")
-                self._smoothing = v
-            end
-            -- FlipBook (SimpleAnimFlipBookAPI)
-            function anim:SetFlipBookRows(v) self._rows = v end
-            function anim:SetFlipBookColumns(v) self._columns = v end
-            function anim:SetFlipBookFrames(v) self._frames = v end
-            function anim:SetFlipBookFrameWidth(v) self._frameWidth = v end
-            function anim:SetFlipBookFrameHeight(v) self._frameHeight = v end
-            table.insert(self._anims, anim)
-            return anim
-        end
-        function group:SetToFinalAlpha(v) self._toFinal = v end
-        function group:SetLooping(v)
-            assert(v == "NONE" or v == "REPEAT" or v == "BOUNCE", "SetLooping: bad loop type")
-            self._looping = v
-        end
-        function group:Play() self._playing = true; M.playing[self] = true end
-        function group:Stop() self._playing = false; M.playing[self] = nil end
-        function group:IsPlaying() return self._playing or false end
-        return group
-    end
-    -- Cooldown. _cooldown holds { start, duration } or { object = duration
-    -- object }; nil when cleared.
-    function w:SetCooldown(start, duration) self._cooldown = { start, duration } end
-    function w:SetCooldownFromDurationObject(duration) self._cooldown = { object = duration } end
-    function w:Clear() self._cooldown = nil end
-    function w:SetHideCountdownNumbers(v) self._hideNumbers = v end
-    function w:SetDrawSwipe(v) self._drawSwipe = v end
-    function w:GetCountdownFontString()
-        self._countdown = self._countdown or newWidget("FontString", nil, self)
-        return self._countdown
-    end
-    -- Mouse: motion (tooltips) and clicks can be switched separately.
-    function w:SetMouseClickEnabled(v) self._clickEnabled = v end
-    function w:SetMouseMotionEnabled(v) self._motionEnabled = v end
-    -- Mouse buttons that go through the frame to what lies below it
-    -- (SimpleScriptRegionAPI; protected on protected frames in combat).
-    function w:SetPassThroughButtons(...) self._passThrough = { ... } end
-    -- PlayerModel
-    -- A unit without a (loaded) model (d.noModel): the client keeps what
-    -- the model showed, as it does in game.
-    -- d.modelLater: loaded frames later (M.LoadModels fires OnModelLoaded).
-    function w:SetUnit(unit)
-        local d = M.units[unit]
-        if d and d.noModel then return false end
-        if d and d.modelLater then
-            M.pendingModels = M.pendingModels or {}
-            M.pendingModels[self] = unit
-            return nil
-        end
-        -- A creature (d.creatureModel): as measured in Forever, SetUnit
-        -- loads nothing and answers nil (model empty, display 0).
-        if d and d.creatureModel then return nil end
-        self._modelUnit = unit
-        return true
-    end
-    -- Players have a file; creatures (d.creatureModel) only a display ID.
-    function w:GetModelFileID()
-        local d = self._modelUnit and M.units[self._modelUnit]
-        if not self._modelUnit or (d and d.creatureModel) then return nil end
-        return 12345
-    end
-    function w:GetDisplayInfo() return self._modelUnit and 678 or 0 end
-    -- By NPC ID: loads the creature (d.npcID must match a known unit).
-    function w:SetCreature(id)
-        for token, d in pairs(M.units) do
-            if d.npcID == id then self._modelUnit = token; self._creature = id; return end
-        end
-    end
-    function w:ClearModel()
-        self._modelUnit = nil
-        self._cleared = true
-        if M.pendingModels then M.pendingModels[self] = nil end
-    end
-    function w:SetPortraitZoom(z) self._zoom = z end
-    function w:SetCamDistanceScale(v) self._camScale = v end
-    function w:SetPosition(x, y, z) self._position = { x, y, z } end
-    function w:SetViewTranslation(x, y) self._view = { x, y } end
-    -- Movable
-    function w:SetMovable(v) self._movable = v end
-    function w:RegisterForDrag(...) self._drag = { ... } end
-    function w:StartMoving() end
-    function w:StopMovingOrSizing() end
-    function w:SetClampedToScreen() end
-    -- Protected frames: explicitly protected ones (secure templates) and
-    -- every frame with a protected descendant. In combat, tainted code may
-    -- not show, hide, move, size, reparent or re-attribute them
-    -- (ADDON_ACTION_BLOCKED in the client).
-    for _, method in ipairs({ "SetShown", "SetPoint", "ClearAllPoints", "SetSize", "SetWidth", "SetHeight",
-                              "SetAttribute", "SetParent", "EnableMouse", "SetAllPoints",
-                              "SetPassThroughButtons" }) do
-        local original = w[method]
-        if original then
-            w[method] = function(self, ...)
-                if M.combat and M.secureDepth == 0 and M.IsProtectedTree(self) then
-                    M.blocked[#M.blocked + 1] = method
-                    error("mock: " .. method .. " on a protected frame in combat", 2)
-                end
-                return original(self, ...)
-            end
-        end
-    end
     -- Made under an aura button after it was restricted: restricted too.
     if restricted(w) then guardTree(w) end
     return w

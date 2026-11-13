@@ -37,6 +37,16 @@ for version, entry in pairs(News.ENTRIES) do
         H.check(version .. ": action", type(entry.action.run), "function")
     end
 end
+-- Every action runs (it opens a window or a tab). Replaces one test file
+-- per old version that only held its wording.
+for version, entry in pairs(News.ENTRIES) do
+    if entry.action then
+        local ok, err = pcall(entry.action.run)
+        H.checkTrue(version .. ": action runs", ok, err)
+    end
+end
+ns.Options.Close()
+ns.RaidOptions.Close()
 
 -- A version without news opens nothing.
 H.check("no news: refused", NW.Open("0.1.0"), false)

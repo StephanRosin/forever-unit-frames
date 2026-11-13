@@ -106,3 +106,20 @@ M.weaponEnchants[1] = { { hasEnchant = true, timeLeft = 60000, charges = 0, ench
 W.Update(p)
 H.check("in combat: two", p.enchantLead, 2)
 M.SetCombat(false)
+
+-- What keeps it current: the client's events, and a timer for the time
+-- left (no event fires when an enchant runs out).
+M.weaponEnchants[1] = nil
+M.FireEvent("WEAPON_ENCHANT_CHANGED")
+H.check("event: back to one", p.enchantLead, 1)
+M.FireEvent("UNIT_INVENTORY_CHANGED", "party1")
+M.weaponEnchants[1] = { { hasEnchant = true, timeLeft = 60000, charges = 0, enchantIconID = 2, enchantID = 2 } }
+M.FireEvent("UNIT_INVENTORY_CHANGED", "party1")
+H.check("someone else's inventory: no update", p.enchantLead, 1)
+M.FireEvent("UNIT_INVENTORY_CHANGED", "player")
+H.check("own inventory: updated", p.enchantLead, 2)
+M.weaponEnchants[1] = nil
+M.Tick(W.INTERVAL / 2)
+H.check("timer: not yet", p.enchantLead, 2)
+M.Tick(W.INTERVAL)
+H.check("timer: updated", p.enchantLead, 1)

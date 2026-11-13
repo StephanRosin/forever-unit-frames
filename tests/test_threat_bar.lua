@@ -246,3 +246,41 @@ do
     C.Set("player", "threatBarSolo", true)
     H.checkTrue("also without a group: the row alone", bar:IsShown())
 end
+
+-- The pet's threat (the pet's target frame's bar): only while the pet
+-- attacks your target, as a tank's by its role.
+do
+    local ns = boot()
+    local T = ns.ThreatBar
+    M.units.player.class = "HUNTER"
+    M.units.pet = { name = "Wolf", health = 1, healthMax = 1 }
+    local ogre = { name = "Ogre", hostile = true, health = 1, healthMax = 1, detailed = {} }
+    M.units.target = ogre
+    H.check("pet without a target: nothing", T.EvaluatePet(), nil)
+    M.units.pettarget = { name = "Boar", hostile = true, health = 1, healthMax = 1 }
+    H.check("pet on another mob: nothing", T.EvaluatePet(), nil)
+    M.units.pettarget = ogre
+    H.check("pet not on the threat list: nothing", T.EvaluatePet(), nil)
+    -- { tanking, status, scaled, raw, value }
+    ogre.detailed.pet = { true, 3, 100, 100, 2000 }
+    ogre.detailed.player = { false, 1, 60, 60, 1200 }
+    -- A hunter's pet tanks outside dungeons.
+    H.check("hunter's pet: a tank", T.PetRole(), "tank")
+    local view = T.EvaluatePet()
+    H.checkTrue("pet tanking: a view", view)
+    H.check("pet holds aggro: green", view and view.color, "green")
+    H.check("pet's lead over you", view and view.fill, 40)
+    -- In a dungeon it does damage; the setting wins over both.
+    M.instanceType = "party"
+    H.check("in a dungeon: damage", T.PetRole(), "dps")
+    ns.Config.Set(T.PET_SCOPE, "threatBarRole", "TANK")
+    H.check("setting: tank", T.PetRole(), "tank")
+    M.instanceType = nil
+    ns.Config.Set(T.PET_SCOPE, "threatBarRole", "DPS")
+    view = T.EvaluatePet()
+    H.check("pet as damage with aggro: red", view and view.color, "red")
+    -- Secret threat: the status colour only (FromStatus).
+    ogre.detailed.pet = { M.Secret(true), M.Secret(3), M.Secret(100), M.Secret(100), M.Secret(2000) }
+    local ok, secretView = pcall(T.EvaluatePet)
+    H.checkTrue("secret threat: no error", ok, secretView)
+end

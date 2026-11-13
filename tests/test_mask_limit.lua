@@ -1,7 +1,7 @@
 -- The client allows at most three mask textures per texture and raises
 -- beyond that (a CurseForge report: moving the corner radius slider). The
 -- rounding keeps every texture at one mask at most, so Blizzard or other
--- code still has room for theirs. Swept over the whole radius range on
+-- code still has room for theirs. Swept over the telling radii on
 -- every frame type, castbar docked and detached, rings and shadow on.
 local M = H.M
 
@@ -22,17 +22,19 @@ local function setRadius(ns, radius, inCombat)
     if inCombat then M.SetCombat(false) end
 end
 
+-- The rule hangs on the change 0 <-> above 0, on one rounded radius after
+-- another and on the largest: those, up and down again (every step is a
+-- rebuild of all frames, so not the whole range).
 local function sweep(label, ns, inCombat)
     local max = ns.Settings.Get("cornerRadius").max
     local ok, err = pcall(function()
-        for radius = 0, max do
+        for _, radius in ipairs({ 0, 1, 2, max, 2, 1, 0 }) do
             setRadius(ns, radius, inCombat)
             local most = mostMasks()
             H.check(label .. ": radius " .. radius .. " at most one mask per texture", most <= 1, true)
             local rounded = ns.Frames.target.healthBg:GetNumMaskTextures()
             H.check(label .. ": radius " .. radius .. " rounds the frame", rounded, radius > 0 and 1 or 0)
         end
-        for radius = max, 0, -1 do setRadius(ns, radius, inCombat) end
     end)
     H.check(label .. ": sweep without errors", ok and "ok" or tostring(err), "ok")
 end

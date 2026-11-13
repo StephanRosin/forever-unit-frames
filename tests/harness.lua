@@ -7,15 +7,28 @@ local function show(v)
     return tostring(v)
 end
 
-function H.check(label, got, want)
+-- The line of the test file that made the check (the first caller
+-- outside this file).
+local function callerLine()
+    for level = 3, 12 do
+        local info = debug.getinfo(level, "Sl")
+        if not info then return "?" end
+        if info.what ~= "C" and not info.short_src:find("harness%.lua$") then return info.currentline end
+    end
+    return "?"
+end
+
+-- note (optional): shown with a failure, e.g. the error of a pcall.
+function H.check(label, got, want, note)
     if got == want then
         H.pass = H.pass + 1
     else
         H.fail = H.fail + 1
-        print(("  FAIL %s -> %s (want %s)"):format(label, show(got), show(want)))
+        print(("  FAIL %s (line %s) -> %s (want %s)%s"):format(label, callerLine(), show(got), show(want),
+            note ~= nil and ("  " .. show(note)) or ""))
     end
 end
-function H.checkTrue(label, v) H.check(label, not not v, true) end
+function H.checkTrue(label, v, note) H.check(label, not not v, true, note) end
 function H.checkError(label, fn)
     local ok = pcall(fn)
     H.check(label .. " raises", ok, false)
@@ -59,15 +72,15 @@ function H.LoadAddon(files)
     -- make again (a test cell, the minimap button) keeps the old boot alive.
     local ccf = rawget(_G, "ClickCastFrames")
     if type(ccf) == "table" and next(ccf) ~= nil then _G.ClickCastFrames = nil end
-    local named = {}
-    for k in pairs(_G) do
-        if type(k) == "string" and k:find("^ForeverUnitFrames") and not k:find("^ForeverUnitFramesDB") then
-            named[#named + 1] = k
-        end
+    -- Any global widget, not only ours: a test that stands in for a
+    -- Blizzard frame (PlayerFrame, TargetFrame ...) kept every later boot
+    -- alive through it (hooks added per boot). M.Reset makes UIParent and
+    -- the client's frames again.
+    local stale = {}
+    for k, v in pairs(_G) do
+        if type(v) == "table" and rawget(v, "_kind") ~= nil then stale[#stale + 1] = k end
     end
-    for _, k in ipairs(named) do
-        if type(_G[k]) == "table" and _G[k].GetObjectType then _G[k] = nil end
-    end
+    for _, k in ipairs(stale) do _G[k] = nil end
     M.Reset()
     local ns = {}
     for _, f in ipairs(files or withoutPreset(H.TocFiles())) do
