@@ -84,6 +84,7 @@ function UnitIcons.Build(frame)
         end
     end
     if next(icons) then frame.unitIcons = icons end
+    if icons.pvpIcon and applies(frame, "pvpTimer") then UnitIcons.BuildTimer(frame) end
 end
 
 function UnitIcons.Style(frame)
@@ -98,6 +99,7 @@ function UnitIcons.Style(frame)
         icon.holder:SetPoint(Config.Get(scope, kind .. "Point"), frame, Config.Get(scope, kind .. "FramePoint"),
             Pixel.Snap(Config.Get(scope, kind .. "X")), Pixel.Snap(Config.Get(scope, kind .. "Y")))
     end
+    if frame.pvpTimer then UnitIcons.StyleTimer(frame) end
     if frame.unitIconsPreview then UnitIcons.Preview(frame, true) else UnitIcons.Update(frame) end
 end
 
@@ -216,6 +218,69 @@ function UnitIcons.Preview(frame, on)
         showFrom(icons.pvpIcon, shown == true)
     end
 end
+
+-- The PvP timer (player only, pvpTimer): the time until the player's PvP
+-- flag runs out, left of the crest's place, like Blizzard's
+-- PlayerPVPTimerText; shown while the timer runs, with or without the
+-- crest. GetPVPTimer is read when the client says the timer changed and
+-- counted down here, as Blizzard does.
+local timerFrames, pvpEnds, ticker = {}, nil, nil
+
+function UnitIcons.BuildTimer(frame)
+    local holder = CreateFrame("Frame", nil, frame)
+    holder:SetSize(1, 1)
+    local text = holder:CreateFontString(nil, "OVERLAY")
+    text:SetPoint("RIGHT", holder, "RIGHT", 0, 0)
+    holder.text = text
+    holder:Hide()
+    frame.pvpTimer = holder
+    timerFrames[#timerFrames + 1] = frame
+end
+
+function UnitIcons.TimerText(seconds)
+    seconds = math.ceil(seconds)
+    return ("%d:%02d"):format(math.floor(seconds / 60), seconds % 60)
+end
+
+local function showTimers()
+    local left = pvpEnds and pvpEnds - GetTime()
+    local running = left ~= nil and left > 0
+    for _, frame in ipairs(timerFrames) do
+        local holder = frame.pvpTimer
+        local on = running and Config.Get(frame.key, "pvpTimer") == true
+        if on then holder.text:SetText(UnitIcons.TimerText(left)) end
+        holder:SetShown(on)
+    end
+    if not running and ticker then
+        ticker:Cancel()
+        ticker = nil
+    end
+end
+
+function UnitIcons.ReadTimer()
+    pvpEnds = nil
+    if Secrets.Bool(IsPVPTimerRunning) == true then
+        local ok, ms = pcall(GetPVPTimer)
+        if ok and not Secrets.IsSecret(ms) and type(ms) == "number" then pvpEnds = GetTime() + ms / 1000 end
+    end
+    if pvpEnds and not ticker then ticker = C_Timer.NewTicker(1, showTimers) end
+    showTimers()
+end
+
+function UnitIcons.StyleTimer(frame)
+    local holder, crest = frame.pvpTimer, frame.unitIcons.pvpIcon.holder
+    local scope = frame.key
+    holder:SetFrameLevel(frame:GetFrameLevel() + UnitIcons.LEVELS)
+    holder:ClearAllPoints()
+    holder:SetPoint("RIGHT", crest, "LEFT", 0, 0)
+    ns.Texts.SetFont(holder.text, ns.Media.Font(Config.Get(scope, "fontFace")), Config.Get(scope, "fontSize"),
+        ns.Texts.CountdownFlags(Config.Get(scope, "fontOutline")))
+    showTimers()
+end
+
+ns.On("PVP_TIMER_UPDATE", UnitIcons.ReadTimer)
+ns.On("PLAYER_FLAGS_CHANGED", UnitIcons.ReadTimer)
+ns.On("PLAYER_ENTERING_WORLD", UnitIcons.ReadTimer)
 
 -- Combat starts and ends without a unit event for everyone else; a frame
 -- showing a unit looks again then.

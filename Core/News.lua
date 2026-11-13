@@ -162,6 +162,9 @@ News.ENTRIES = {
     ["0.50.0"] = {
         lines = { "NEWS_0_50_0_LAYOUT" },
     },
+    ["0.51.0"] = {
+        lines = { "NEWS_0_51_0_PVPTIMER", "NEWS_0_51_0_PULSE" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

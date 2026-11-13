@@ -22,6 +22,7 @@ The **Debuffs** tab of the raid options window (`/fuf raid`), under a raid size 
 <tr><td><b>Tint the cell</b></td><td>The whole cell in the debuff type's color</td><td>On, Off</td><td>Off</td></tr>
 <tr><td><b>Border in the debuff color</b></td><td>Inside the cell, in the debuff type's color; with the tint or on its own</td><td>On, Off</td><td>Off</td></tr>
 <tr><td><b>Debuff border size</b></td><td>In pixels</td><td>1 – 6</td><td>2</td></tr>
+<tr><td><b>Pulse</b></td><td>Tint and border fade in and out</td><td>On, Off</td><td>Off</td></tr>
 </tbody>
 </table>
 

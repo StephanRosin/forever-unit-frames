@@ -791,6 +791,11 @@ Settings.Define({ key = "petHappinessX", code = "GX", scope = "frame", only = PE
 Settings.Define({ key = "petHappinessY", code = "GY", scope = "frame", only = PET_HAPPINESS, type = "int",
     min = -200, max = 200, default = 0 })
 
+-- The time until the player's PvP flag runs out (Elements/UnitIcons.lua),
+-- left of the crest's place; on, as on Blizzard's player frame.
+Settings.Define({ key = "pvpTimer", code = "HT", scope = "frame", only = { player = true }, type = "bool",
+    default = true })
+
 -- The PvP crest on flagged NPCs too (city guards, faction NPCs): attacking
 -- one flags you. On by default; flagged elite guards then show the crest
 -- in the elite marker's corner as well (move one of them if they clash).
@@ -970,6 +975,9 @@ Settings.Define({ key = "playerFadePet", code = "WP", scope = "frame", only = { 
 -- party frames tints while the unit has a debuff you can dispel.
 Settings.Define({ key = "dispelHighlight", code = "HD", scope = "frame", only = { player = true, party = true },
     type = "bool", default = true })
+-- The tinted border pulses (Elements/Pulse.lua); asked for on CurseForge.
+Settings.Define({ key = "dispelPulse", code = "HU", scope = "frame", only = { player = true, party = true },
+    type = "bool", default = false })
 
 -- Minimap button (Options/MinimapButton.lua): General only. The angle
 -- around the minimap in degrees, counter-clockwise from the right (225:

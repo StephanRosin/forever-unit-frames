@@ -249,6 +249,8 @@ RaidSettings.Define({ key = "dispelTint", code = "DT", scope = "frame", class = 
 RaidSettings.Define({ key = "dispelBorder", code = "DB", scope = "frame", class = "behaviour", type = "bool", default = false })
 RaidSettings.Define({ key = "dispelBorderSize", code = "DW", scope = "frame", class = "layout", type = "int", min = 1, max = 6,
     default = 2 })
+-- Tint and border pulse (Elements/Pulse.lua); asked for on CurseForge.
+RaidSettings.Define({ key = "dispelPulse", code = "DU", scope = "frame", class = "behaviour", type = "bool", default = false })
 -- A row along the bottom of the cell with every debuff ("HARMFUL"); the
 -- one in the centre may show in it as well.
 RaidSettings.Define({ key = "debuffRow", code = "DR", scope = "frame", class = "behaviour", type = "bool", default = false })

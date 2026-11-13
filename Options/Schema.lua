@@ -193,7 +193,7 @@ Schema.FRAME = {
         { id = "combatIcon", keys = { "combatIcon", "combatAnimation", "combatIconSize", "combatIconFramePoint", "combatIconPoint",
             "combatIconX", "combatIconY" }, with = { combatAnimation = "combatIcon" },
             placement = { "combatIconFramePoint", "combatIconPoint", "combatIconX", "combatIconY" } },
-        { id = "pvpIcon", keys = { "pvpIcon", "pvpIconNPC", "pvpIconSize", "pvpIconFramePoint", "pvpIconPoint", "pvpIconX",
+        { id = "pvpIcon", keys = { "pvpIcon", "pvpTimer", "pvpIconNPC", "pvpIconSize", "pvpIconFramePoint", "pvpIconPoint", "pvpIconX",
             "pvpIconY" }, placement = { "pvpIconFramePoint", "pvpIconPoint", "pvpIconX", "pvpIconY" } },
         { id = "raidMarker", keys = { "raidMarker", "raidMarkerSize", "raidMarkerFramePoint", "raidMarkerPoint",
             "raidMarkerX", "raidMarkerY" }, placement = { "raidMarkerFramePoint", "raidMarkerPoint", "raidMarkerX", "raidMarkerY" } },
@@ -217,7 +217,7 @@ Schema.FRAME = {
         -- What lights the frame up: the party's target, a debuff you can
         -- dispel, the mouse.
         { id = "highlights", keys = { "targetHighlight", "targetHighlightColor", "targetHighlightSize",
-            "dispelHighlight", "hoverHighlight" } },
+            "dispelHighlight", "dispelPulse", "hoverHighlight" } },
     } },
     { id = "castbar", sections = {
         { id = "castbar", keys = { "castbarEnabled", "castbarAlwaysShow", "hideBlizzardCastbar", "castbarPosition", "castbarDock",

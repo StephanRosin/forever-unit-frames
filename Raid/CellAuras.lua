@@ -262,8 +262,11 @@ CellAuras.AddPart({
         local filter, shows = CellAuras.FILTERS[get("dispelFilter")], dispelShows()
         local icon = CellAuras.SetSlot(frame, container, "dispel", filter, shows == "ICON", initIcon)
         local square = CellAuras.SetSlot(frame, container, "square", filter, shows == "SQUARE", initSquare)
-        CellAuras.SetSlot(frame, container, "tint", filter, get("dispelTint"), initTint)
+        local tint = CellAuras.SetSlot(frame, container, "tint", filter, get("dispelTint"), initTint)
         local border = CellAuras.SetSlot(frame, container, "border", filter, get("dispelBorder"), initBorder)
+        local pulse = get("dispelPulse") == true
+        if tint and tint.tint then ns.Pulse.Set({ tint.tint }, pulse) end
+        if border and border.ring then ns.Pulse.Set(ns.Border.InnerRingPieces(border.ring), pulse) end
         local refused = icon ~= nil and not pcall(AuraButton.Style, icon, frame.key, dispelSize(), false)
         if square ~= nil and not pcall(placeSquare, frame, square) then refused = true end
         if border ~= nil and not pcall(placeBorder, frame, border) then refused = true end
@@ -305,6 +308,7 @@ CellAuras.AddPart({
         square:SetShown(c ~= nil and shows == "SQUARE")
         tint:SetFrameLevel(frame:GetFrameLevel() + CellAuras.TINT_LEVELS)
         if c then tint.texture:SetVertexColor(c[1], c[2], c[3], CellAuras.TINT_ALPHA) end
+        ns.Pulse.Set({ tint.texture }, get("dispelPulse") == true)
         tint:SetShown(c ~= nil and get("dispelTint") == true)
         local border = samples.border
         border:SetFrameLevel(frame:GetFrameLevel() + CellAuras.BORDER_LEVELS)
@@ -314,6 +318,7 @@ CellAuras.AddPart({
                 piece:SetVertexColor(c[1], c[2], c[3], 1)
             end
         end
+        ns.Pulse.Set(ns.Border.InnerRingPieces(border.ring), get("dispelPulse") == true)
         border:SetShown(c ~= nil and get("dispelBorder") == true)
     end,
 })

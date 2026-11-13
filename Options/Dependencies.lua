@@ -99,6 +99,8 @@ end
 local RULES = {
     -- Elements/Border.lua: a hidden border has no size (Border.Size 0),
     -- and the gold style paints its own shades.
+    -- Elements/Pulse.lua: only a shown highlight pulses.
+    { on("dispelHighlight"), { "dispelPulse" } },
     { on("borderShow"), { "borderStyle", "borderSize", "borderPadding", "borderColor" } },
     { isNot("borderStyle", "GOLD"), { "borderColor" } },
     { isNot("borderStyle", "BRONZE"), { "borderColor" } },

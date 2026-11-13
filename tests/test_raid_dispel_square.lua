@@ -115,7 +115,7 @@ for _, t in ipairs(ns.RaidSchema.TABS) do
 end
 H.check("dispel section", table.concat(tab.sections[1].keys, ","),
     "dispelIcon,dispelFilter,dispelStyle,dispelIconSize,dispelSquarePoint,dispelSquareSize,dispelTint,dispelBorder,"
-    .. "dispelBorderSize")
+    .. "dispelBorderSize,dispelPulse")
 H.check("row section", table.concat(tab.sections[2].keys, ","), "debuffRow,debuffCount,debuffSize")
 ns.RaidOptions.Open(10, "debuffs")
 local sliders = {}

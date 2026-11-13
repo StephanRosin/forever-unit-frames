@@ -47,6 +47,7 @@ Point on the frame and point of the icon: the icon's own point sits on that poin
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
 <tr><td><b>Show PvP icon</b></td><td>The faction crest while a player is flagged for PvP</td><td>On, Off</td><td>Player, Target: On; Target of Target, Focus, Party: Off</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>PvP timer</b></td><td>Time until your PvP flag runs out, left of the crest</td><td>On, Off</td><td>On</td><td>Player</td></tr>
 <tr><td><b>Also on NPCs</b></td><td>Flagged NPCs too, such as guards: attacking one flags you</td><td>On, Off</td><td>On</td><td>Target, Target of Target, Focus, Boss</td></tr>
 <tr><td><b>Icon size</b></td><td></td><td>8 – 48</td><td>Player: 25; Target: 28; Target of Target, Focus, Party: 24</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
 <tr><td><b>Point on the frame</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Top left</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
@@ -163,6 +164,7 @@ Where the marker (Marker style) sits: **Automatic** is its usual place, on the p
 <tr><td><b>Target highlight color</b></td><td></td><td>Color</td><td><code>#ffffff</code>, 90 % opaque</td><td>Party</td></tr>
 <tr><td><b>Thickness</b></td><td></td><td>1 – 12</td><td>6</td><td>Party</td></tr>
 <tr><td><b>Tint border on dispellable debuff</b></td><td>In the debuff's color while it carries one you can dispel</td><td>On, Off</td><td>On</td><td>Player, Party</td></tr>
+<tr><td><b>Pulse</b></td><td>The tinted border fades in and out</td><td>On, Off</td><td>Off</td><td>Player, Party</td></tr>
 <tr><td><b>Highlight under the mouse</b></td><td>The frame under the mouse lights up</td><td>On, Off</td><td>Off</td><td>all</td></tr>
 </tbody>
 </table>

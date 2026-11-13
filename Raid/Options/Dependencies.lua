@@ -57,6 +57,7 @@ local RULES = {
     { on("dispelIcon"), { "dispelStyle", "dispelIconSize", "dispelSquarePoint", "dispelSquareSize" } },
     { anyOn({ "dispelIcon", "dispelTint", "dispelBorder" }), { "dispelFilter" } },
     { on("dispelBorder"), { "dispelBorderSize" } },
+    { anyOn({ "dispelTint", "dispelBorder" }), { "dispelPulse" } },
     { is("dispelStyle", "ICON"), { "dispelIconSize" } },
     { is("dispelStyle", "SQUARE"), { "dispelSquarePoint", "dispelSquareSize" } },
     { on("debuffRow"), { "debuffCount", "debuffSize" } },

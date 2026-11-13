@@ -60,6 +60,7 @@ function Dispel.Applies(scope)
 end
 
 local function wanted(frame) return Config.Get(frame.key, "dispelHighlight") end
+local function pulsing(frame) return Config.Get(frame.key, "dispelPulse") == true end
 
 -- Four edges around frame: the outer edge `reach` outside it (the
 -- border's outer edge), `thick` wide inwards.
@@ -112,6 +113,7 @@ end
 
 local function showPlain(frame, dispelName)
     local ring = frame.dispel.ring
+    ns.Pulse.Set(ring.edges, pulsing(frame))
     local c = ns.AuraButton.DISPEL_COLORS[dispelName]
     if c then paint(ring.edges, c[1], c[2], c[3], 1) end
     ring:SetShown(c ~= nil and wanted(frame))
@@ -139,6 +141,7 @@ local function readPlain(frame)
     local asked, color = pcall(C_UnitAuras.GetAuraDispelTypeColor, unit, id, ns.AuraButton.DispelCurve())
     if not asked or type(color) == "nil" then return end
     paint(ring.edges, color:GetRGBA())
+    ns.Pulse.Set(ring.edges, pulsing(frame))
     ring:Show()
 end
 
@@ -154,6 +157,7 @@ local function initButton(frame, button)
     local options = { style = Enum.CustomAuraButtonDispelTypeTextureStyle.PreserveAsset,
         customDispelColorCurve = ns.AuraButton.DispelCurve() }
     for _, edge in ipairs(edges) do button:AddDispelTypeTexture(edge, options) end
+    ns.Pulse.Set(edges, pulsing(frame))
     local d = frame.dispel
     d.buttons[#d.buttons + 1] = edges
 end
@@ -166,6 +170,7 @@ local function apply(frame)
     local reach, thick = ringSize(frame)
     for _, edges in ipairs(d.buttons) do
         if not pcall(placeRing, edges, frame, reach, thick) then d.stale = true end
+        ns.Pulse.Set(edges, pulsing(frame))
     end
     d.container:SetFrameLevel(frame:GetFrameLevel() + Dispel.LEVELS)
     d.container:SetShown(wanted(frame) and not testing(frame))
@@ -227,6 +232,7 @@ function Dispel.Style(frame)
     local d = frame.dispel
     if not d then return end
     placeRing(d.ring.edges, frame, ringSize(frame))
+    ns.Pulse.Set(d.ring.edges, pulsing(frame))
     if d.sample then showPlain(frame, d.sample) end
     if not d.container then return end
     if InCombatLockdown() then later(frame) else apply(frame) end
