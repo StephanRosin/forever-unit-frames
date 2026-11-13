@@ -31,6 +31,9 @@ local ICON_SWITCHES = { "roleIcon", "raidMarker", "leaderIcon", "looterIcon", "r
 
 -- { test, rows }: every test of a row must pass.
 local RULES = {
+    -- Raid/Header.lua and Core/Blizzard.lua pass these by while the raid
+    -- frames are off.
+    { on("enabled"), { "showInParty", "hideBlizzard" } },
     -- Raid/Layout.lua: no grouping is one block of everyone (you are
     -- always in it). Its title and ring still show; the gap between
     -- blocks is the own panels' too (Raid/Panel.lua: Shape).

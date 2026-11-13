@@ -31,7 +31,8 @@ ns.Units.List = {
     { key = "focustarget", unit = "focustarget", events = { "PLAYER_FOCUS_CHANGED", "UNIT_TARGET" },
       eventUnit = { UNIT_TARGET = "focus" }, poll = 0.2, available = ns.Units.FocusAvailable },
     -- Built by Units/Party.lua from a group header, not as a single frame.
-    { key = "party", group = true },    -- Five frames, boss1 to boss5, under one set of settings (Units/Single.lua:
+    { key = "party", group = true },
+    -- Five frames, boss1 to boss5, under one set of settings (Units/Single.lua:
     -- count). The unit watch shows each while its boss is engaged.
     { key = "boss", unit = "boss", count = 5, events = { "INSTANCE_ENCOUNTER_ENGAGE_UNIT", "UNIT_TARGETABLE_CHANGED" } },
 }

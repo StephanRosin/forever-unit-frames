@@ -91,3 +91,18 @@ do
     H.check("with the other highlights on the status tab", found,
         "status:targetHighlight,targetHighlightColor,targetHighlightSize,dispelHighlight,dispelPulse,hoverHighlight")
 end
+
+-- A target change reaches every party and pet frame, pets beside their
+-- owner too (they were left out once).
+do
+    local seen, update = {}, ns.TargetHighlight.Update
+    ns.TargetHighlight.Update = function(frame) seen[frame] = true end
+    local pet = { key = ns.Party.PET_KEY }
+    ns.PartyPets.beside = ns.PartyPets.beside or {}
+    table.insert(ns.PartyPets.beside, pet)
+    M.FireEvent("PLAYER_TARGET_CHANGED")
+    H.checkTrue("pet beside its owner updated", seen[pet])
+    H.checkTrue("party member updated", seen[a])
+    table.remove(ns.PartyPets.beside)
+    ns.TargetHighlight.Update = update
+end

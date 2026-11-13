@@ -22,7 +22,8 @@ H.check("corner with a bad row direction", Layout.AuraCorner("RIGHT", "RIGHT"), 
 
 -- Offsets of icon i from that corner (step = size + spacing).
 local function at(i, perRow, primary, row)
-    local x, y = Layout.AuraOffset(i, perRow, 22, primary, row)
+    local shape = { size = 20, spacing = 2, perRow = perRow, primary = primary, row = row }
+    local x, y = Layout.AuraPlace(shape, i, 0)
     return x .. "," .. y
 end
 H.check("first icon", at(1, 4, "RIGHT", "DOWN"), "0,0")

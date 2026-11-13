@@ -94,9 +94,9 @@ end
 
 -- A new target: every party frame looks again.
 local function updateAll()
-    for _, list in ipairs({ ns.Party.buttons, ns.Party.fakes, ns.PartyPets and ns.PartyPets.buttons or {} }) do
-        for _, frame in ipairs(list) do TargetHighlight.Update(frame) end
-    end
+    ns.Units.ForEachFrame(function(frame)
+        if applies(frame) then TargetHighlight.Update(frame) end
+    end)
 end
 ns.On("PLAYER_TARGET_CHANGED", updateAll)
 ns.On("GROUP_ROSTER_UPDATE", updateAll)

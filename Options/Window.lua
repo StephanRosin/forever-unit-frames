@@ -152,7 +152,19 @@ end
 
 local ROW_BUILDERS = {
     int = function(parent, def, opts)
+        -- An icon's file ID: the macro icons to pick from (0: def.icon).
+        if def.icon then
+            opts.default = def.icon
+            return Widgets.Icon(parent, opts)
+        end
         opts.min, opts.max, opts.step = def.min, def.max, 1
+        -- A position across the screen: a slider would move ~40 units per
+        -- pixel, so a number with - / + (Shift: the movers' grid), as in
+        -- the raid window.
+        if def.max - def.min > 1000 then
+            opts.bigStep = ns.Movers.GRID
+            return Widgets.Stepper(parent, opts)
+        end
         opts.zeroText = def.zeroText and L[def.zeroText]
         return Widgets.Slider(parent, opts)
     end,
@@ -452,7 +464,6 @@ local function showImportMessage(text, colorKey)
     Style.Paint(Options.importMessage, colorKey)
 end
 
-local RAID_LETTERS = { a = true, b = true, c = true }
 local function runImport()
     local text = (Options.importArea:GetText() or ""):match("^%s*(.-)%s*$")
     local profile, err, rejected = ns.Codec.Decode(text)
@@ -460,12 +471,20 @@ local function runImport()
         showImportMessage(L["IMPORT_" .. err], "error")
         return
     end
-    -- A raid size's export (Raid/Profiles.lua) has only its size letter:
-    -- a, b or c, and "a" is the pet's target here. It is not read as one.
+    -- A raid size's export (Raid/Profiles.lua) has only its size letter
+    -- (a, b or c), which are also the pet's target and the boss frames
+    -- here. Only those letters, and every entry one the raid window
+    -- reads: a raid text, refused.
     local letters = ns.Codec.Letters(text)
     local raid = next(letters) ~= nil
+    local raidLetters = {}
+    for _, letter in pairs(ns.RaidSettings.PREFIX) do raidLetters[letter] = true end
     for letter in pairs(letters) do
-        if not RAID_LETTERS[letter] then raid = false end
+        if not raidLetters[letter] then raid = false end
+    end
+    if raid then
+        local _, _, raidRejected = ns.RaidCodec.Decode(text)
+        raid = raidRejected == 0
     end
     -- Import replaces every frame: a text of which nothing could be read
     -- would reset them all. Only the bare version ("1") is a real all-defaults profile.
@@ -485,7 +504,10 @@ end
 local function importBlock(page)
     local block = newBlock(page)
     local area = textArea(block, false, 0)
-    local button = Widgets.Button(block, { text = L.IMPORT, width = BUTTON_W, onClick = runImport })
+    -- Import replaces every frame: two clicks, like Reset (an empty box
+    -- just says so at once).
+    local button = confirmButton(block, L.IMPORT, runImport, nil,
+        function() return (Options.importArea:GetText() or ""):find("%S") ~= nil end)
     button:SetPoint("TOPLEFT", area, "BOTTOMLEFT", 0, -8)
     local message = Style.Text(block, 11, "muted")
     message:SetPoint("TOPLEFT", button, "BOTTOMLEFT", 0, -6)
@@ -902,12 +924,34 @@ local function toggleMovers()
     if ns.Movers.IsUnlocked("units") then ns.Movers.Lock("units") else ns.Movers.Unlock("units") end
 end
 
+-- The settings a copy overwrote, until the next copy or /reload: the
+-- list then offers "Undo copy" on that frame's page.
+local copyUndo
+local UNDO = "__undo"
+
 local function otherFrames()
     local items = {}
+    if copyUndo and copyUndo.scope == Options.currentScope then
+        items[1] = { value = UNDO, text = L.COPY_UNDO }
+    end
     for _, def in ipairs(ns.Units.List) do
         if def.key ~= Options.currentScope then items[#items + 1] = { value = def.key, text = L["FRAME_" .. def.key] } end
     end
     return items
+end
+
+local function copyFrom(from)
+    local to = Options.currentScope
+    if from == UNDO then
+        local undo = copyUndo
+        copyUndo = nil
+        if undo then Config.Restore(undo.scope, undo.saved) end
+        return
+    end
+    local keys = {}
+    for _, def in ipairs(ns.Settings.All()) do keys[#keys + 1] = def.key end
+    copyUndo = { scope = to, saved = Config.Snapshot(to, keys) }
+    Config.CopyScope(from, to)
 end
 
 -- The shared dropdown list, driven by a row whose button always reads
@@ -916,7 +960,7 @@ local function copyFromRow(footer)
     local row = Widgets.Dropdown(footer, {
         items = otherFrames,
         get = function() return nil end,
-        set = function(from) Config.CopyScope(from, Options.currentScope) end,
+        set = copyFrom,
     })
     row:SetSize(WIDE_BUTTON_W, BUTTON_H)
     row:EnableMouse(false)

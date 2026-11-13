@@ -72,14 +72,6 @@ function Layout.AuraCorner(primary, row)
     return v .. h
 end
 
--- Offset of icon i (1-based) from that corner; step = icon size + spacing.
-function Layout.AuraOffset(i, perRow, step, primary, row)
-    row = Layout.AuraRowDirection(primary, row)
-    local col, line = (i - 1) % perRow, math.floor((i - 1) / perRow)
-    local p, r = VECTOR[primary], VECTOR[row]
-    return (p[1] * col + r[1] * line) * step, (p[2] * col + r[2] * line) * step
-end
-
 -- Width and height of count icons laid out this way (0, 0 for none).
 -- rowSpacing: between rows (spacing when not given).
 function Layout.AuraExtent(count, perRow, size, spacing, primary, rowSpacing)

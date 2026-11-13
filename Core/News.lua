@@ -168,6 +168,13 @@ News.ENTRIES = {
     ["0.52.0"] = {
         lines = { "NEWS_0_52_0_TOTEMS", "NEWS_0_52_0_TOOLS" },
     },
+    -- The low mana warning is off by default: the button opens where it is
+    -- switched on (the player frame's Bars tab).
+    ["0.53.0"] = {
+        announce = true,
+        lines = { "NEWS_0_53_0_MANA", "NEWS_0_53_0_MANA_CLICK", "NEWS_0_53_0_PROFILES", "NEWS_0_53_0_FIXES" },
+        action = { text = "NEWS_OPEN_MANA_WARN", run = function() ns.Options.Open("player", "bars") end },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

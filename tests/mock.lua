@@ -1526,6 +1526,18 @@ function M.Reset()
             if frame and frame:IsShown() then frame:Hide() end
         end
     end
+    -- Lines sent to a chat channel: { msg, chatType }. M.chatLockdown:
+    -- the client forbids addons the chat.
+    M.sent, M.chatLockdown, M.secureUsed = {}, false, {}
+    _G.SendChatMessage = function(msg, chatType)
+        assert(type(msg) == "string", "chat message must be a plain string")
+        table.insert(M.sent, { msg, chatType })
+    end
+    _G.C_ChatInfo = _G.C_ChatInfo or {}
+    _G.C_ChatInfo.InChatMessagingLockdown = function() return M.chatLockdown end
+    -- The macro window's icons (file IDs): a few of each kind.
+    _G.GetMacroIcons = function(t) for i = 1, 70 do t[#t + 1] = 100000 + i end end
+    _G.GetMacroItemIcons = function(t) for i = 1, 30 do t[#t + 1] = 200000 + i end end
     _G.DEFAULT_CHAT_FRAME = { AddMessage = function(_, msg)
         assert(type(msg) == "string", "chat message must be a plain string")
         table.insert(M.chat, msg)
@@ -3294,6 +3306,10 @@ local SECURE_ACTIONS = {
         end
     end,
     destroytotem = function(button, attr) DestroyTotem(attr("totem-slot")) end,
+    -- SECURE_ACTIONS.item / macro: recorded in M.secureUsed as
+    -- { type, value }.
+    item = function(_, attr) table.insert(M.secureUsed, { "item", attr("item") }) end,
+    macro = function(_, attr) table.insert(M.secureUsed, { "macro", attr("macrotext") }) end,
     togglemenu = toggleMenu,
     -- SECURE_ACTIONS.raidtarget.
     raidtarget = function(_, attr)

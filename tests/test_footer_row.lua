@@ -48,6 +48,17 @@ M.units.player.role = "NONE"
 M.FireEvent("PLAYER_ROLES_ASSIGNED")
 H.check("no role: empty", t.footerCenter:GetText(), "")
 
+-- Roster changes only rewrite frames that show the role tag.
+do
+    local seen, update = {}, ns.Texts.Update
+    ns.Texts.Update = function(frame) seen[frame.key] = true end
+    M.units.target = { name = "Dummy", health = 1, healthMax = 1 }
+    M.FireEvent("GROUP_ROSTER_UPDATE")
+    ns.Texts.Update = update
+    H.checkTrue("role shown: rewritten", seen.player)
+    H.check("no role tag: left alone", seen.target, nil)
+end
+
 -- Off again: back to the old height, texts hidden.
 C.Set("player", "footerHeight", 0)
 H.check("height back", f:GetHeight(), h)

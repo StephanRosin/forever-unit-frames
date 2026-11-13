@@ -810,6 +810,162 @@ function Widgets.Color(parent, opts)
     return row
 end
 
+-- Icon --------------------------------------------------------------------
+
+-- An icon row: the current icon on a button; a click opens a grid of the
+-- game's macro icons (spells, then items, as the macro window offers
+-- them), the wheel scrolls it. The first cell is opts.default (value 0).
+-- The value is the icon's file ID.
+Widgets.ICON_COLS, Widgets.ICON_ROWS, Widgets.ICON_CELL = 10, 6, 30
+local iconGrid, iconList
+
+-- The macro window's icons, read once.
+function Widgets.IconList()
+    if iconList then return iconList end
+    iconList = {}
+    if GetMacroIcons then GetMacroIcons(iconList) end
+    if GetMacroItemIcons then GetMacroItemIcons(iconList) end
+    return iconList
+end
+
+local function closeIconGrid()
+    if iconGrid then iconGrid:Hide() end
+end
+Widgets.CloseIconGrid = closeIconGrid
+ns.On("PLAYER_REGEN_DISABLED", closeIconGrid)
+
+local function iconCount() return #Widgets.IconList() + 1 end
+local function maxIconRow()
+    return math.max(0, math.ceil(iconCount() / Widgets.ICON_COLS) - Widgets.ICON_ROWS)
+end
+
+-- Cell n (1: the default) shows icon n - 1 of the list.
+local function iconAt(n, owner)
+    if n == 1 then return 0, owner.opts.default end
+    local icon = Widgets.IconList()[n - 1]
+    return icon, icon
+end
+
+local function renderIconGrid()
+    local g = iconGrid
+    local current = g.owner.opts.get()
+    for i, cell in ipairs(g.cells) do
+        local n = g.offset * Widgets.ICON_COLS + i
+        if n <= iconCount() then
+            local value, texture = iconAt(n, g.owner)
+            cell.value = value
+            cell.icon:SetTexture(texture)
+            Style.SetBorderColor(cell, value == current and "accent" or "border")
+            cell:Show()
+        else
+            cell.value = nil
+            cell:Hide()
+        end
+    end
+end
+
+local function createIconGrid()
+    local g = CreateFrame("Frame", nil, UIParent)
+    g:SetFrameStrata("FULLSCREEN_DIALOG")
+    g:SetClampedToScreen(true)
+    g:EnableMouse(true)
+    g:EnableMouseWheel(true)
+    Style.Fill(g, "panel")
+    Style.Border(g)
+    local size, gap = Widgets.ICON_CELL, 2
+    g:SetSize(Widgets.ICON_COLS * (size + gap) + 6, Widgets.ICON_ROWS * (size + gap) + 6)
+    g.cells = {}
+    for i = 1, Widgets.ICON_COLS * Widgets.ICON_ROWS do
+        local cell = CreateFrame("Button", nil, g)
+        cell:SetSize(size, size)
+        local col, line = (i - 1) % Widgets.ICON_COLS, math.floor((i - 1) / Widgets.ICON_COLS)
+        cell:SetPoint("TOPLEFT", g, "TOPLEFT", 4 + col * (size + gap), -4 - line * (size + gap))
+        Style.Border(cell)
+        cell.icon = cell:CreateTexture(nil, "ARTWORK")
+        cell.icon:SetPoint("TOPLEFT", 1, -1)
+        cell.icon:SetPoint("BOTTOMRIGHT", -1, 1)
+        cell.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+        cell:SetScript("OnClick", function(self)
+            local owner = g.owner
+            if self.value == nil or InCombatLockdown() then return end
+            closeIconGrid()
+            if self.value ~= owner.opts.get() then owner.opts.set(self.value) end
+            owner:Refresh()
+        end)
+        g.cells[i] = cell
+    end
+    g.offset = 0
+    g:SetScript("OnMouseWheel", function(_, delta)
+        g.offset = math.max(0, math.min(maxIconRow(), g.offset - delta))
+        renderIconGrid()
+    end)
+    g:SetScript("OnEvent", function()
+        if not g:IsMouseOver() and not g.owner.swatch:IsMouseOver() then closeIconGrid() end
+    end)
+    g:SetScript("OnKeyDown", onListKeyDown)
+    g:SetScript("OnHide", function(self)
+        self:UnregisterEvent("GLOBAL_MOUSE_DOWN")
+        self:EnableKeyboard(false)
+        self.owner = nil
+    end)
+    g:Hide()
+    iconGrid = g
+    Widgets.iconGrid = g
+end
+
+local function openIconGrid(row)
+    if not iconGrid then createIconGrid() end
+    if iconGrid:IsShown() and iconGrid.owner == row then return closeIconGrid() end
+    if InCombatLockdown() then return end
+    iconGrid.owner = row
+    -- Open on the row of the current icon.
+    local index = 1
+    local current = row.opts.get()
+    for i, icon in ipairs(Widgets.IconList()) do
+        if icon == current then index = i + 1 break end
+    end
+    iconGrid.offset = math.max(0, math.min(maxIconRow(), math.floor((index - 1) / Widgets.ICON_COLS) - 1))
+    iconGrid:ClearAllPoints()
+    iconGrid:SetPoint("TOPLEFT", row.swatch, "BOTTOMLEFT", 0, -2)
+    renderIconGrid()
+    iconGrid:Show()
+    iconGrid:RegisterEvent("GLOBAL_MOUSE_DOWN")
+    iconGrid:EnableKeyboard(true)
+end
+
+function Widgets.Icon(parent, opts)
+    local row = newRow(parent, opts)
+    row.opts = opts
+    local s = CreateFrame("Button", nil, row)
+    s:SetSize(22, 22)
+    s:SetPoint("LEFT", row, "LEFT", Widgets.CONTROL_X, 0)
+    Style.Border(s, "muted")
+    s.icon = s:CreateTexture(nil, "ARTWORK")
+    s.icon:SetPoint("TOPLEFT", 1, -1)
+    s.icon:SetPoint("BOTTOMRIGHT", -1, 1)
+    s.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
+    s:SetScript("OnEnter", function(self) Style.SetBorderColor(self, "accent") end)
+    s:SetScript("OnLeave", function(self) Style.SetBorderColor(self, "muted") end)
+    s:SetScript("OnClick", function() openIconGrid(row) end)
+    trackHover(row, s)
+    row.swatch = s
+    row:SetScript("OnHide", function(self)
+        if iconGrid and iconGrid.owner == self then closeIconGrid() end
+    end)
+    function row:Refresh()
+        local v = opts.get()
+        s.icon:SetTexture(v ~= 0 and v or opts.default)
+        if iconGrid and iconGrid.owner == row then renderIconGrid() end
+        row:RefreshInherit()
+    end
+    function row:SetEnabled(on)
+        if not on and iconGrid and iconGrid.owner == row then closeIconGrid() end
+        s:SetEnabled(on)
+        dimRow(row, on)
+    end
+    return row
+end
+
 -- Button --------------------------------------------------------------------
 
 local function paintButton(button, hovered)

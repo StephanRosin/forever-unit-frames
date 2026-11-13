@@ -52,6 +52,7 @@ end
 local function choices(def, raid)
     local t = def.type
     local enumText = raid and RaidSchema.EnumText or Schema.EnumText
+    if def.icon then return "Any of the macro icons" end
     if t == "int" then
         local range = ("%d – %d"):format(def.lowest or def.min or 0, def.max or 0)
         if def.zeroText then range = range .. (" (0: %s)"):format(label(def.zeroText, "0")) end

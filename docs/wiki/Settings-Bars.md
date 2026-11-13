@@ -6,7 +6,7 @@ Colors and textures of the bars, shields (the player's shield watch too), incomi
 
 The **Bars** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
 
-**On this page:** [Health bar](#health-bar) · [Textures](#textures) · [Absorb shields](#absorb-shields) · [Incoming heals](#incoming-heals) · [Power colors](#power-colors) · [Spell cost](#spell-cost) · [Druid mana](#druid-mana) · [Five-second rule](#five-second-rule) · [Shield watch (icons and amount)](#shield-watch-icons-and-amount)
+**On this page:** [Health bar](#health-bar) · [Textures](#textures) · [Absorb shields](#absorb-shields) · [Incoming heals](#incoming-heals) · [Power colors](#power-colors) · [Spell cost](#spell-cost) · [Druid mana](#druid-mana) · [Five-second rule](#five-second-rule) · [Low mana warning](#low-mana-warning) · [Shield watch (icons and amount)](#shield-watch-icons-and-amount)
 
 ## Health bar
 
@@ -108,6 +108,32 @@ After a spell that costs mana, your mana regenerates fully again only five secon
 <tr><td><b>Tenths in the last second</b></td><td></td><td>On, Off</td><td>On</td><td>Player</td></tr>
 <tr><td><b>Dim the bar</b></td><td></td><td>On, Off</td><td>Off</td><td>Player</td></tr>
 <tr><td><b>Opacity while dimmed (%)</b></td><td></td><td>0 – 100</td><td>70</td><td>Player</td></tr>
+</tbody>
+</table>
+
+## Low mana warning
+
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Low mana warning</b></td><td>An icon and / or a text while your mana is low; its own mover</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
+<tr><td><b>Mana below (%)</b></td><td></td><td>5 – 90</td><td>20</td><td>Player</td></tr>
+<tr><td><b>Only in a group or raid</b></td><td></td><td>On, Off</td><td>Off</td><td>Player</td></tr>
+<tr><td><b>Out of combat too</b></td><td>In combat only by default</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
+<tr><td><b>Show</b></td><td></td><td>Icon and text, Icon, Text</td><td>Icon and text</td><td>Player</td></tr>
+<tr><td><b>Icon</b></td><td>Click: pick one of the macro icons</td><td>Any of the macro icons</td><td>Mana potion</td><td>Player</td></tr>
+<tr><td><b>Icon size</b></td><td></td><td>16 – 128</td><td>40</td><td>Player</td></tr>
+<tr><td><b>Text size</b></td><td></td><td>8 – 48</td><td>18</td><td>Player</td></tr>
+<tr><td><b>Text color</b></td><td></td><td>Color</td><td><code>#5999ff</code></td><td>Player</td></tr>
+<tr><td><b>Pulse</b></td><td></td><td>On, Off</td><td>On</td><td>Player</td></tr>
+<tr><td><b>Fade in and out</b></td><td></td><td>On, Off</td><td>On</td><td>Player</td></tr>
+<tr><td><b>Fade time (1/10 s)</b></td><td></td><td>1 – 30</td><td>3</td><td>Player</td></tr>
+<tr><td><b>Tell the group when it comes up</b></td><td>A line in party or raid chat; at most every 30 s, never solo</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
+<tr><td><b>Click on it</b></td><td>Item, spell, macro: in combat the place stays clickable while it is hidden</td><td>Nothing, Tell the group, Use an item, Cast a spell, Macro text</td><td>Nothing</td><td>Player</td></tr>
+<tr><td><b>Key to hold</b></td><td></td><td>None, Shift, Ctrl, Alt</td><td>Shift</td><td>Player</td></tr>
+<tr><td><b>Item, spell or macro</b></td><td>A name or ID; a macro: /use Major Mana Potion</td><td>Text (a spell name or ID)</td><td>(none)</td><td>Player</td></tr>
+<tr><td><b>Position X</b></td><td></td><td>-4000 – 4000</td><td>0</td><td>Player</td></tr>
+<tr><td><b>Position Y</b></td><td></td><td>-4000 – 4000</td><td>160</td><td>Player</td></tr>
 </tbody>
 </table>
 

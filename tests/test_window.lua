@@ -77,23 +77,29 @@ H.check("switch off: target disabled", ns.Config.Get("target", "enabled"), false
 targetSwitch.box:GetScript("OnClick")(targetSwitch.box)
 H.check("switch on again", ns.Config.Get("target", "enabled"), true)
 
--- Export / import
+-- Export / import (Import: two clicks, like Reset)
+local function importNow()
+    for _ = 1, 2 do ns.Options.importButton:GetScript("OnClick")(ns.Options.importButton) end
+end
 ns.Options.Select("profiles")
 H.checkTrue("export filled", ns.Options.exportArea:GetText():match("^1;"))
 ns.Options.importArea:SetText("1;pW222")
 ns.Options.importButton:GetScript("OnClick")(ns.Options.importButton)
+H.check("import asks to confirm", ns.Options.importButton.text:GetText(), ns.L.CONFIRM)
+H.check("first click does not import", ns.Config.Get("player", "width") == 222, false)
+ns.Options.importButton:GetScript("OnClick")(ns.Options.importButton)
 H.check("import applied", ns.Config.Get("player", "width"), 222)
 ns.Options.importArea:SetText("9;xx")
-ns.Options.importButton:GetScript("OnClick")(ns.Options.importButton)
+importNow()
 H.check("bad import keeps settings", ns.Config.Get("player", "width"), 222)
 -- Nothing readable: refused, not an all-defaults profile.
 ns.Options.importArea:SetText("1;garbage")
-ns.Options.importButton:GetScript("OnClick")(ns.Options.importButton)
+importNow()
 H.check("unreadable import keeps settings", ns.Config.Get("player", "width"), 222)
 H.check("unreadable import: refused", ns.Options.importMessage:GetText(), ns.L.IMPORT_CODEC_FORMAT)
 -- Partly readable: imported, the rest named.
 ns.Options.importArea:SetText("1;pW224;garbage")
-ns.Options.importButton:GetScript("OnClick")(ns.Options.importButton)
+importNow()
 H.check("partial import applied", ns.Config.Get("player", "width"), 224)
 H.check("partial import: skipped named", ns.Options.importMessage:GetText(), ns.L.IMPORT_SKIPPED:format(1))
 -- A raid size's export (Raid/Profiles.lua) is refused: one of 20 or 40
@@ -103,10 +109,20 @@ ns.RaidConfig.Set("r10", "cellWidth", 120)
 ns.RaidConfig.Set("r10", "cellHeight", 40)
 for _, size in ipairs({ 20, 10 }) do
     ns.Options.importArea:SetText(ns.RaidProfiles.Export(size))
-    ns.Options.importButton:GetScript("OnClick")(ns.Options.importButton)
+    importNow()
     H.check("raid " .. size .. " export: settings kept", ns.Config.Get("player", "width"), 224)
     H.check("raid " .. size .. " export: pet's target untouched", next(ns.Config.Profile().pettarget or {}), nil)
     H.check("raid " .. size .. " export: refused", ns.Options.importMessage:GetText(), ns.L.IMPORT_RAID_STRING)
+end
+
+-- A unit text with only the boss frames' (or the pet's target's) letter
+-- is a unit profile when the raid window cannot read it. (One the raid
+-- could read too stays ambiguous and is refused.)
+do
+    ns.Options.importArea:SetText("1;b" .. ns.Settings.Get("bossSpacing").code .. "20")
+    importNow()
+    H.check("boss-only import applied", ns.Config.Get("boss", "bossSpacing"), 20)
+    H.check("boss-only import: done", ns.Options.importMessage:GetText(), ns.L.IMPORT_DONE)
 end
 
 -- Position saved
@@ -135,10 +151,10 @@ end
 -- Messages under the import button
 O.Open("profiles")
 O.importArea:SetText("1;pW230")
-click(O.importButton)
+click(O.importButton); click(O.importButton)
 H.check("import success message", O.importMessage:GetText(), L.IMPORT_DONE)
 O.importArea:SetText("9;xx")
-click(O.importButton)
+click(O.importButton); click(O.importButton)
 H.check("import error message", O.importMessage:GetText(), L.IMPORT_CODEC_VERSION)
 H.check("import error in red", O.importMessage._color[1], ns.Style.COLORS.error[1])
 O.importArea:SetText("")
@@ -181,6 +197,14 @@ click(list.rows[1])
 H.check("copy applied", ns.Config.Get("target", "height"), 60)
 H.check("copy keeps position", ns.Config.Get("target", "x"), 300)
 H.check("copy label after select", O.copyRow.button.text:GetText(), L.COPY_FROM)
+-- The copy can be undone from the same list, on that frame's page.
+click(O.copyRow.button)
+H.check("undo offered first", ns.Widgets.list.items[1].value, "__undo")
+click(ns.Widgets.list.rows[1])
+H.check("undo: height back", ns.Config.Get("target", "height") == 60, false)
+click(O.copyRow.button)
+H.check("undo used up", ns.Widgets.list.items[1].value, "player")
+click(O.copyRow.button)
 
 -- Reset frame: two clicks
 ns.Config.Set("target", "width", 333)

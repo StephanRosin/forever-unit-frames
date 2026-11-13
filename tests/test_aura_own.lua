@@ -123,10 +123,16 @@ local function block(own, count, primary, row)
     local w, h = Layout.AuraBlock(shape, own, count)
     return w .. "x" .. h
 end
--- Without own icons: exactly the plain layout.
+-- Without own icons: exactly the plain layout (icon i on a grid of 22).
+local VECTOR = { RIGHT = { 1, 0 }, LEFT = { -1, 0 }, UP = { 0, 1 }, DOWN = { 0, -1 } }
+local function plain(i, perRow, primary, row)
+    local p, r = VECTOR[primary], VECTOR[row]
+    local col, line = (i - 1) % perRow, math.floor((i - 1) / perRow)
+    return (p[1] * col + r[1] * line) * 22 + 0, (p[2] * col + r[2] * line) * 22 + 0
+end
 for _, dirs in ipairs({ { "RIGHT", "DOWN" }, { "LEFT", "UP" }, { "UP", "RIGHT" }, { "DOWN", "LEFT" } }) do
     for i = 1, 9 do
-        local x, y = Layout.AuraOffset(i, 4, 22, dirs[1], dirs[2])
+        local x, y = plain(i, 4, dirs[1], dirs[2])
         H.check("no own " .. dirs[1] .. "/" .. dirs[2] .. " #" .. i, at(i, 0, dirs[1], dirs[2]), x .. "," .. y .. " 20")
     end
     local w, h = Layout.AuraExtent(9, 4, 20, 2, dirs[1])

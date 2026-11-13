@@ -97,10 +97,10 @@ end
 
 -- { test, rows }: every test of a row must pass.
 local RULES = {
-    -- Elements/Border.lua: a hidden border has no size (Border.Size 0),
-    -- and the gold style paints its own shades.
     -- Elements/Pulse.lua: only a shown highlight pulses.
     { on("dispelHighlight"), { "dispelPulse" } },
+    -- Core/Border.lua: a hidden border has no size (Border.Size 0),
+    -- and the gold style paints its own shades.
     { on("borderShow"), { "borderStyle", "borderSize", "borderPadding", "borderColor" } },
     { isNot("borderStyle", "GOLD"), { "borderColor" } },
     { isNot("borderStyle", "BRONZE"), { "borderColor" } },
@@ -132,6 +132,16 @@ local RULES = {
     { is("enabled", false), { "hideBlizzardFrame" } },
     { on("enabled"), { "playerHideInGroup" } },
     { isNot("footerHeight", 0), { "footerTextLeft", "footerTextCenter", "footerTextRight" } },
+    -- Elements/ManaWarning.lua: everything with the warning; the icon's
+    -- rows with an icon shown, the text's with a text.
+    { on("manaWarn"), { "manaWarnBelow", "manaWarnGroupOnly", "manaWarnOutOfCombat", "manaWarnShow", "manaWarnIcon", "manaWarnSize",
+        "manaWarnFontSize", "manaWarnColor", "manaWarnPulse", "manaWarnFade", "manaWarnFadeTime", "manaWarnChat", "manaWarnClick", "manaWarnClickKey",
+        "manaWarnClickWhat", "manaWarnX", "manaWarnY" } },
+    { on("manaWarnFade"), { "manaWarnFadeTime" } },
+    { isNot("manaWarnClick", "NONE"), { "manaWarnClickKey", "manaWarnClickWhat" } },
+    { isNot("manaWarnClick", "CHAT"), { "manaWarnClickWhat" } },
+    { isNot("manaWarnShow", "TEXT"), { "manaWarnIcon", "manaWarnSize" } },
+    { isNot("manaWarnShow", "ICON"), { "manaWarnFontSize", "manaWarnColor" } },
     -- Elements/ShieldWatch.lua: everything with the watch; each text's
     -- look with that text.
     { on("shieldsEnabled"), { "shieldsPriest", "shieldsMage", "shieldsWarlock", "shieldsItems", "shieldsExtra",

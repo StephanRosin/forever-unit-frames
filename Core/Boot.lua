@@ -15,6 +15,7 @@ local function afterBuild()
     ns.Movers.Attach(ns.Party.header, ns.Party.MoverSpec())
     for _, frame in pairs(ns.Frames) do ns.Castbar.AttachMover(frame) end
     for _, frame in pairs(ns.Frames) do ns.ShieldWatch.AttachMover(frame) end
+    for _, frame in pairs(ns.Frames) do ns.ManaWarning.AttachMover(frame) end
 end
 
 local startRaid   -- below

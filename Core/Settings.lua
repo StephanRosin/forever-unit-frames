@@ -171,7 +171,7 @@ Settings.Define({ key = "x", code = "X", scope = "frame", type = "int", min = -4
     default = { player = -300, target = 300, targettarget = 480, targettargettarget = 604, pet = -352, pettarget = -222, focus = -300, focustarget = -152, party = -760, boss = 560, _ = 0 } })
 Settings.Define({ key = "y", code = "Y", scope = "frame", type = "int", min = -4000, max = 4000,
     default = { player = -220, target = -220, targettarget = -220, targettargettarget = -220, pet = -272, pettarget = -272, focus = -120, focustarget = -120, party = 120, boss = 40, _ = 0 } })
--- The boss frames (boss1 to boss5, Units/Boss.lua) stand in a column,
+-- The boss frames (boss1 to boss5, Units/Single.lua) stand in a column,
 -- boss1 on top; x and y are the column's centre.
 Settings.Define({ key = "bossSpacing", code = "BG", scope = "frame", only = { boss = true }, type = "int", min = 0,
     max = 60, default = 12 })
@@ -956,6 +956,43 @@ Settings.Define({ key = "fsrDim", code = "FM", scope = "frame", only = FSR, type
 -- The fill's opacity during the rule (%).
 Settings.Define({ key = "fsrDimAlpha", code = "FA", scope = "frame", only = FSR, type = "int", min = 0, max = 100,
     default = 70 })
+-- The low mana warning (Elements/ManaWarning.lua), the player only: an icon
+-- and / or a text while your mana is below manaWarnBelow percent, in a
+-- block with its own mover. Off by default. The icon: a file ID from the
+-- macro icons (0: the shipped one). Enums stored by index: append only.
+local MANA_WARN = { player = true }
+local function manaWarn(def)
+    def.scope, def.only = "frame", MANA_WARN
+    Settings.Define(def)
+end
+manaWarn({ key = "manaWarn", code = "MB", type = "bool", default = false })
+manaWarn({ key = "manaWarnBelow", code = "ME", type = "int", min = 5, max = 90, default = 20 })
+manaWarn({ key = "manaWarnGroupOnly", code = "MG", type = "bool", default = false })
+-- In combat only, unless this is on.
+manaWarn({ key = "manaWarnOutOfCombat", code = "MT", type = "bool", default = false })
+manaWarn({ key = "manaWarnShow", code = "MI", type = "enum", values = { "ICON_TEXT", "ICON", "TEXT" },
+    default = "ICON_TEXT" })
+manaWarn({ key = "manaWarnIcon", code = "MJ", type = "int", icon = "Interface\\Icons\\INV_Potion_76", min = 0, max = 2147483647, default = 0,
+    zeroText = "MANA_WARN_ICON_DEFAULT" })
+manaWarn({ key = "manaWarnSize", code = "MK", type = "int", min = 16, max = 128, default = 40 })
+manaWarn({ key = "manaWarnFontSize", code = "ML", type = "int", min = 8, max = 48, default = 18 })
+manaWarn({ key = "manaWarnColor", code = "MM", type = "color", default = { 0.35, 0.6, 1, 1 } })
+manaWarn({ key = "manaWarnPulse", code = "MN", type = "bool", default = true })
+-- Fading in and out, over manaWarnFadeTime tenths of a second.
+manaWarn({ key = "manaWarnFade", code = "QA", type = "bool", default = true })
+manaWarn({ key = "manaWarnFadeTime", code = "QB", type = "int", min = 1, max = 30, default = 3 })
+-- A line to the group's chat each time it comes up.
+manaWarn({ key = "manaWarnChat", code = "MP", type = "bool", default = false })
+-- A click on it (with manaWarnClickKey held): the chat line, or an item, a
+-- spell or a macro text (manaWarnClickWhat) through a secure button.
+manaWarn({ key = "manaWarnClick", code = "MU", type = "enum", values = { "NONE", "CHAT", "ITEM", "SPELL", "MACRO" },
+    default = "NONE" })
+manaWarn({ key = "manaWarnClickKey", code = "MV", type = "enum", values = { "NONE", "SHIFT", "CTRL", "ALT" },
+    default = "SHIFT" })
+manaWarn({ key = "manaWarnClickWhat", code = "MW", type = "text", maxLetters = 255, default = "" })
+-- The block's centre, from the screen's centre (its mover).
+manaWarn({ key = "manaWarnX", code = "MQ", type = "int", min = -4000, max = 4000, default = 0 })
+manaWarn({ key = "manaWarnY", code = "MR", type = "int", min = -4000, max = 4000, default = 160 })
 -- Back in full while you have a target: see your resources before a pull.
 Settings.Define({ key = "playerFadeTarget", code = "WT", scope = "frame", only = { player = true }, type = "bool",
     default = true })

@@ -909,9 +909,20 @@ function Texts.Preview(frame)
     if frame.unit and UnitExists(frame.unit) then Texts.Update(frame) end
 end
 
--- The role tag follows the group's roles.
-local function updateAll(event) ns.Units.UpdateElement(Texts, event) end
-ns.On("GROUP_ROSTER_UPDATE", updateAll)
-ns.On("PLAYER_ROLES_ASSIGNED", updateAll)
+-- The role tag follows the group's roles. Only frames that show the tag:
+-- names follow the headers' unit attribute (OnUnitChanged), not this.
+local function showsRole(frame)
+    for _, slot in ipairs(SLOTS) do
+        if Config.Get(frame.key, slot.setting) == "ROLE" then return true end
+    end
+    return false
+end
+local function updateRoles(event)
+    ns.Units.ForEachFrame(function(frame)
+        if frame.unit and UnitExists(frame.unit) and showsRole(frame) then Texts.Update(frame, event) end
+    end)
+end
+ns.On("GROUP_ROSTER_UPDATE", updateRoles)
+ns.On("PLAYER_ROLES_ASSIGNED", updateRoles)
 
 ns.RegisterElement(Texts)

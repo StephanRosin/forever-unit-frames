@@ -98,3 +98,13 @@ C.Set("party", "debuffsHighlightOwn", false)
 H.check("free, mine first off: x greyed", active("debuffsOwnX"), false)
 C.ResetAll()
 H.check("no error", #M.errors, 0)
+
+-- The placement switch greys open rows ("Mine in the same rows"), so it
+-- stays out of the folded placement rows where its reason would be hidden.
+for _, tab in ipairs(ns.Schema.Tabs("player")) do
+    for _, sec in ipairs(tab.sections or {}) do
+        for _, key in ipairs(sec.placement or {}) do
+            H.checkTrue("not folded: " .. key, not key:find("OwnPlacement", 1, true))
+        end
+    end
+end

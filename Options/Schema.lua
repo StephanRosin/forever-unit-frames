@@ -117,6 +117,12 @@ Schema.FRAME = {
         { id = "druidMana", keys = { "druidMana", "druidManaHeight" } },
         { id = "fiveSecondRule", keys = { "fsrEnabled", "fsrSpark", "fsrSparkDirection", "fsrSparkWidth", "fsrSparkColor", "fsrText",
             "fsrTextPoint", "fsrTextTenths", "fsrDim", "fsrDimAlpha" } },
+        -- The low mana warning (Elements/ManaWarning.lua), the player only.
+        { id = "manaWarn", keys = { "manaWarn", "manaWarnBelow", "manaWarnGroupOnly", "manaWarnOutOfCombat", "manaWarnShow", "manaWarnIcon",
+            "manaWarnSize", "manaWarnFontSize", "manaWarnColor", "manaWarnPulse", "manaWarnFade", "manaWarnFadeTime", "manaWarnChat", "manaWarnClick", "manaWarnClickKey",
+            "manaWarnClickWhat", "manaWarnX",
+            "manaWarnY" },
+            placement = { "manaWarnX", "manaWarnY" } },
         -- The shield watch (Elements/ShieldWatch.lua), the player only: the
         -- shields' icons and the amount left; last, as it is long.
         { id = "shields", keys = { "shieldsEnabled", "shieldsPriest", "shieldsMage", "shieldsWarlock", "shieldsItems",
@@ -159,7 +165,7 @@ Schema.FRAME = {
             "buffsOwnPlacement", "buffsOwnFramePoint", "buffsOwnPoint", "buffsOwnX", "buffsOwnY", "buffsOwnGrowth",
             "buffsOwnRowGrowth", "buffsOwnPerRow", "buffsCasterBorder", "buffsOwnBorderColor",
             "buffsOtherBorderColor" },
-            placement = { "buffsOwnPlacement", "buffsOwnFramePoint", "buffsOwnPoint", "buffsOwnX", "buffsOwnY",
+            placement = { "buffsOwnFramePoint", "buffsOwnPoint", "buffsOwnX", "buffsOwnY",
                 "buffsOwnGrowth", "buffsOwnRowGrowth" } },
         { id = "debuffs", keys = { "debuffsEnabled", "debuffsOnlyMine", "debuffsDispellable", "debuffsHidePermanent", "debuffsShowTime",
             "debuffsAnchor", "debuffsFramePoint", "debuffsPoint", "debuffsX", "debuffsY", "debuffsGrowth",
@@ -169,7 +175,7 @@ Schema.FRAME = {
         { id = "debuffsOwn", keys = { "debuffsHighlightOwn",
             "debuffsOwnSize", "debuffsOwnSameRow", "debuffsOwnPlacement", "debuffsOwnFramePoint", "debuffsOwnPoint",
             "debuffsOwnX", "debuffsOwnY", "debuffsOwnGrowth", "debuffsOwnRowGrowth", "debuffsOwnPerRow" },
-            placement = { "debuffsOwnPlacement", "debuffsOwnFramePoint", "debuffsOwnPoint", "debuffsOwnX", "debuffsOwnY",
+            placement = { "debuffsOwnFramePoint", "debuffsOwnPoint", "debuffsOwnX", "debuffsOwnY",
                 "debuffsOwnGrowth", "debuffsOwnRowGrowth" } },
         { id = "dispels", keys = { "dispelsEnabled", "dispelsShowTime", "dispelsAnchor", "dispelsFramePoint",
             "dispelsPoint", "dispelsX", "dispelsY", "dispelsGrowth", "dispelsRowGrowth", "dispelsSize",

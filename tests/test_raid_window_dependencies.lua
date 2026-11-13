@@ -32,6 +32,7 @@ local function set(key, value) RC.Set(scopeOf(key), key, value) end
 local function default(key) return ns.RaidSettings.Default(ns.RaidSettings.Get(key), scopeOf(key)) end
 
 local CASES = {
+    { "enabled", false, true, { "showInParty", "hideBlizzard" } },
     { "groupBy", "NONE", "GROUP", { "blockDirection", "blocksPerLine", "hideEmpty" } },
     { "cellBorder", false, true, { "cellBorderStyle", "cellBorderSize", "cellBorderColor" },
         { cellBorderStyle = "FLAT" } },
