@@ -31,6 +31,10 @@ local ICON_SWITCHES = { "roleIcon", "raidMarker", "leaderIcon", "looterIcon", "r
 
 -- { test, rows }: every test of a row must pass.
 local RULES = {
+    -- Raid/Cell.lua: a theme on the cells sets their look (cellTheme OWN
+    -- gives it back to these rows).
+    { function() return ns.RaidCell.Theme() == ns.Themes.CLASSIC end, { "barTexture", "backgroundColor", "fontFace",
+        "fontOutline", "cellBorder", "cellBorderStyle", "cellBorderSize", "cellBorderColor", "cellCornerRadius" } },
     -- Raid/Header.lua and Core/Blizzard.lua pass these by while the raid
     -- frames are off.
     { on("enabled"), { "showInParty", "hideBlizzard" } },

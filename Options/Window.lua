@@ -220,12 +220,22 @@ local function hintFor(scope, key)
     return localized("HINT_" .. key .. "_" .. scope) or localized("HINT_" .. key)
 end
 
+-- Settings that do more than store a value: the theme swaps every
+-- setting for its own set (Core/Themes.lua).
+local SETTERS = {
+    theme = function(v)
+        local ok, why = ns.Themes.Switch(v)
+        if not ok then ns.Print(L["THEME_REFUSED_" .. why]) end
+        return ok
+    end,
+}
+
 local function settingRow(parent, scope, key)
     local def = ns.Settings.Get(key)
     local opts = {
         label = L["SETTING_" .. key], hint = hintFor(scope, key),
         get = function() return Config.Get(scope, key) end,
-        set = function(v) return Config.Set(scope, key, v) end,
+        set = SETTERS[key] or function(v) return Config.Set(scope, key, v) end,
         scope = scope,
     }
     if isFrameScope(scope) and def.scope == "inherit" then opts.inherit = inheritOpts(scope, key) end
@@ -287,8 +297,8 @@ local function sectionHeader(page, id)
 end
 
 -- Defined with the other blocks below; a section's action button, a
--- tab's note.
-local actionBlock, noteBlock
+-- tab's note, the theme's "Take positions from" list.
+local actionBlock, noteBlock, themeCopyRow
 
 -- General > Frames: after the master switch, one switch per frame, the
 -- frame's own "enabled".
@@ -361,6 +371,7 @@ local function addSections(page, stack, scope, tab)
             stack.add(sectionHeader(page, section.id))
             addSectionRows(page, stack, scope, section, keys)
             if section.frames then frameSwitches(page, stack) end
+            if section.themeCopy then stack.add(themeCopyRow(page)) end
             for _, id in ipairs(section.actions or {}) do stack.add(actionBlock(page, id)) end
         end
         if section.raidKeys then
@@ -416,6 +427,10 @@ local ACTIONS = {
     applyFontToFrames = function() Config.ClearFrameOverrides(ns.Settings.TEXT_STYLE_KEYS) end,
     positionsFromBlizzard = function() ns.Blizzard.TakeLayout() end,
     positionsUndo = function() ns.Blizzard.UndoLayout() end,
+    themeReset = function()
+        local ok, why = ns.Themes.Reset()
+        if not ok then ns.Print(L["THEME_REFUSED_" .. why]) end
+    end,
 }
 -- The buttons by action id, for the tests and for disarming on close.
 Options.actionButtons = {}
@@ -431,6 +446,46 @@ function actionBlock(page, id)
     function block:SetEnabled(on) button:SetEnabled(on) end
     block:SetHeight(BUTTON_H + 12)
     return block
+end
+
+-- The positions another theme's set has, taken over into the current
+-- one. What it replaced comes back with "Undo" in the same list, until
+-- the theme changes or /reload.
+local themeUndo
+local UNDO_THEME, NONE_THEME = "__undo", "__none"
+function themeCopyRow(page)
+    local row
+    row = Widgets.Dropdown(page, {
+        label = L.THEME_COPY_FROM, hint = L.HINT_THEME_COPY_FROM,
+        items = function()
+            local items = {}
+            if themeUndo and themeUndo.theme == ns.Themes.Current() then
+                items[1] = { value = UNDO_THEME, text = L.COPY_UNDO }
+            end
+            for _, id in ipairs(ns.Themes.Stored()) do
+                items[#items + 1] = { value = id, text = ns.Schema.EnumText(ns.Settings.Get("theme"), id) }
+            end
+            if #items == 0 then items[1] = { value = NONE_THEME, text = L.THEME_COPY_NONE } end
+            return items
+        end,
+        get = function() return nil end,
+        set = function(id)
+            if id == NONE_THEME then return end
+            if id == UNDO_THEME then
+                local undo = themeUndo
+                themeUndo = nil
+                if undo then ns.Themes.Restore(undo.saved) end
+                return
+            end
+            local saved, why = ns.Themes.CopyPlacement(id)
+            if not saved then ns.Print(L["THEME_REFUSED_" .. why]); return end
+            themeUndo = { theme = ns.Themes.Current(), saved = saved }
+        end,
+    })
+    local refresh = row.Refresh
+    function row:Refresh() refresh(self); self.button.text:SetText(L.THEME_COPY_PICK) end
+    row:Refresh()
+    return row
 end
 
 -- A muted text above a tab's sections, as wide as the page (two lines at

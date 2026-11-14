@@ -43,6 +43,7 @@ The **General** tab of the raid options window (`/fuf raid`), under **General** 
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
+<tr><td><b>Cell theme</b></td><td>The unit frames' theme, your raid look, or a theme of its own</td><td>Like the unit frames, Own look (raid settings), Wooden plaque, Technology / AI, Parchment &amp; seal, Runestone, Stained glass, Comic, Frost, Pixel</td><td>Like the unit frames</td></tr>
 <tr><td><b>Cell opacity (%)</b></td><td>Every raid size; fading out of range comes on top</td><td>10 – 100</td><td>100</td></tr>
 </tbody>
 </table>

@@ -16,6 +16,9 @@ grep -v '^\s*#' "$HERE/ForeverUnitFrames.toc" | grep -v '^\s*$' | tr -d '\r' | w
     cp "$HERE/$f" "$TARGET/$f"
 done
 # Textures the Lua code loads by path (made by tools/make_corners.py).
-mkdir -p "$TARGET/Media"
+mkdir -p "$TARGET/Media/Themes" "$TARGET/Media/Fonts"
 cp "$HERE"/Media/*.tga "$TARGET/Media/"
+# The themes' textures (tools/make_themes.py) and fonts with their licence.
+cp "$HERE"/Media/Themes/*.tga "$TARGET/Media/Themes/"
+cp "$HERE"/Media/Fonts/*.ttf "$HERE"/Media/Fonts/*.txt "$TARGET/Media/Fonts/"
 echo "Installed to $TARGET"

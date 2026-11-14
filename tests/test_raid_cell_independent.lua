@@ -46,12 +46,13 @@ H.check("bar texture: the shipped one", C.Get("raid", "barTexture"), "Raid")
 H.check("border style: the shipped one", C.Get("raid", "borderStyle"), "GOLD")
 H.check("outline: the shipped one", C.Get("raid", "fontOutline"), "OUTLINE")
 
--- Every party and General setting changed.
+-- Every party and General setting changed, but the theme: the cells
+-- follow it on purpose (tests/test_themes.lua).
 local before = snapshot()
 local changed = 0
 for _, def in ipairs(Settings.All()) do
     for _, scope in ipairs({ "general", ns.Party.KEY }) do
-        if Settings.AppliesTo(def, scope) and C.Set(scope, def.key, another(def, C.Get(scope, def.key))) then
+        if def.key ~= "theme" and Settings.AppliesTo(def, scope) and C.Set(scope, def.key, another(def, C.Get(scope, def.key))) then
             changed = changed + 1
         end
     end

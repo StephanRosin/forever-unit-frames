@@ -27,6 +27,7 @@ Core\Codec.lua
 Core\MacroBackup.lua
 Core\UnitProfiles.lua
 Core\Storage.lua
+Core\Themes.lua
 Raid\BuffData.lua
 Raid\Settings.lua
 Raid\Spellbook.lua
@@ -57,6 +58,7 @@ Elements\Auras.lua
 Elements\AuraBlockMenu.lua
 Elements\Classification.lua
 Elements\CombatFeedback.lua
+Elements\ThemeArt.lua
 Elements\Shape.lua
 Elements\Totems.lua
 Elements\ShieldWatch.lua

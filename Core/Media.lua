@@ -6,6 +6,7 @@ local _, ns = ...
 local Media = {}
 ns.Media = Media
 
+local ADDON = "Interface\\AddOns\\ForeverUnitFrames\\Media\\"
 local builtin = {
     font = {
         -- The client's own standard font: FRIZQT__ on western clients, a font
@@ -14,6 +15,15 @@ local builtin = {
         ["Arial Narrow"] = "Fonts\\ARIALN.TTF",
         ["Skurri"] = "Fonts\\skurri.ttf",
         ["Morpheus"] = "Fonts\\MORPHEUS.ttf",
+        -- The themes' fonts (Core/Themes.lua), Latin letters only; licences
+        -- in Media/Fonts.
+        ["Bangers"] = ADDON .. "Fonts\\Bangers-Regular.ttf",
+        ["Cinzel"] = ADDON .. "Fonts\\Cinzel-Bold.ttf",
+        ["Cormorant SC"] = ADDON .. "Fonts\\CormorantSC-Bold.ttf",
+        ["IM Fell English SC"] = ADDON .. "Fonts\\IMFeENsc28P.ttf",
+        ["Marcellus"] = ADDON .. "Fonts\\Marcellus-Regular.ttf",
+        ["Space Grotesk"] = ADDON .. "Fonts\\SpaceGrotesk-Bold.ttf",
+        ["VT323"] = ADDON .. "Fonts\\VT323-Regular.ttf",
     },
     statusbar = {
         ["Flat"] = "Interface\\Buttons\\WHITE8X8",
@@ -21,6 +31,10 @@ local builtin = {
         ["Raid"] = "Interface\\RaidFrame\\Raid-Bar-Hp-Fill",
     },
 }
+-- The themes' bar textures (tools/make_themes.py).
+for _, name in ipairs({ "Wood", "Tech", "Parchment", "Stone", "Glass", "Comic", "Frost", "Pixel" }) do
+    builtin.statusbar["FUF " .. name] = ADDON .. "Themes\\" .. name .. "Bar.tga"
+end
 local fallback = { font = "Friz Quadrata", statusbar = "Flat" }
 
 local function lsm()

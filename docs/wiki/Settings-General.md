@@ -8,7 +8,7 @@ Profiles, export, import and reset are on the **Profiles** page at the bottom of
 
 **On this page:**
 
-- **[Frames & addon](#frames--addon):** [Which frames are shown](#which-frames-are-shown) · [Minimap button](#minimap-button)
+- **[Frames & addon](#frames--addon):** [Theme](#theme) · [Which frames are shown](#which-frames-are-shown) · [Minimap button](#minimap-button)
 - **[Click-casting](#click-casting-1)**
 - **[Appearance](#appearance):** [Font](#font) · [Presentation](#presentation) · [Title row](#title-row) · [Border and corners](#border-and-corners) · [Shadow](#shadow) · [Visibility and fading](#visibility-and-fading)
 - **[Auras](#auras):** [Aura icons](#aura-icons) · [Hidden auras](#hidden-auras)
@@ -16,6 +16,17 @@ Profiles, export, import and reset are on the **Profiles** page at the bottom of
 - **[Status](#status):** [Combat icon](#combat-icon) · [Highlights](#highlights) · [Range](#range)
 
 ## Frames & addon
+
+### Theme
+
+Button: **Reset theme**.
+
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Theme</b></td><td>Each theme keeps all settings of its own; Classic is always your layout as it was</td><td>Classic (your layout), Wooden plaque, Technology / AI, Parchment &amp; seal, Runestone, Stained glass, Comic, Frost, Pixel</td><td>Classic (your layout)</td></tr>
+</tbody>
+</table>
 
 ### Which frames are shown
 

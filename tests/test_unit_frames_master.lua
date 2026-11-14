@@ -83,9 +83,10 @@ C.Set("general", "unitFrames", true)
 O.Close()
 M.RunTimers()
 
--- Its words, at the top of the General tab.
-local first = ns.Schema.GENERAL[1].sections[1]
-H.check("first on the General tab", first.keys[1], "unitFrames")
+-- Its words, at the top of the General tab, right after the theme.
+H.check("the theme first", ns.Schema.GENERAL[1].sections[1].keys[1], "theme")
+local first = ns.Schema.GENERAL[1].sections[2]
+H.check("then the master switch", first.keys[1], "unitFrames")
 H.check("label", L.SETTING_unitFrames, "Use unit frames")
 H.checkTrue("the hint names the /reload", L.HINT_unitFrames:find("/reload", 1, true))
 -- The wiki's General page says what it does to the frames' own switches

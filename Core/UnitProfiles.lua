@@ -10,7 +10,7 @@ ns.UnitProfiles = UnitProfiles
 UnitProfiles.DEFAULT = "Default"
 UnitProfiles.NAME_LETTERS = 40
 
-local db = { profiles = {}, active = {} }
+local db = { profiles = {}, active = {}, themeSets = {} }
 local active = UnitProfiles.DEFAULT
 
 local function copy(v)
@@ -48,6 +48,7 @@ function UnitProfiles.Attach(saved)
     for name, p in pairs(db.profiles) do
         if type(name) ~= "string" or type(p) ~= "table" then db.profiles[name] = nil end
     end
+    if type(db.themeSets) ~= "table" then db.themeSets = {} end
     local chosen = db.active[charKey()]
     active = (type(chosen) == "string" and db.profiles[chosen]) and chosen or UnitProfiles.DEFAULT
 end
@@ -64,6 +65,18 @@ function UnitProfiles.Names()
     table.sort(names, function(a, b) return a:lower() < b:lower() end)
     table.insert(names, 1, UnitProfiles.DEFAULT)
     return names
+end
+
+-- The settings of the themes not in use (Core/Themes.lua), theme ->
+-- profile table; the active profile's own, made on first use.
+function UnitProfiles.ThemeSets()
+    db.themeSets = type(db.themeSets) == "table" and db.themeSets or {}
+    local sets = db.themeSets[active]
+    if type(sets) ~= "table" then
+        sets = {}
+        db.themeSets[active] = sets
+    end
+    return sets
 end
 
 function UnitProfiles.Write(profile)
@@ -119,6 +132,7 @@ function UnitProfiles.SaveAs(name)
     local why = refuse(name)
     if why then return nil, why end
     db.profiles[name] = copy(ns.Config.Profile())
+    db.themeSets[name] = copy(db.themeSets[active])
     setActive(name)
     return changed()
 end
@@ -132,6 +146,7 @@ function UnitProfiles.Rename(name)
     if name == active then return true end   -- the move below would drop it
     local old = active
     db.profiles[name], db.profiles[old] = db.profiles[old], nil
+    db.themeSets[name], db.themeSets[old] = db.themeSets[old], nil
     for key, chosen in pairs(db.active) do
         if chosen == old then db.active[key] = name end
     end
@@ -150,6 +165,7 @@ function UnitProfiles.Delete()
     -- Not saved back: load() would write the current settings under it again.
     active = UnitProfiles.DEFAULT
     db.profiles[old] = nil
+    db.themeSets[old] = nil
     ns.Config.Import(ns.Settings.Sanitise(copy(db.profiles[UnitProfiles.DEFAULT] or {})))
     ns.Storage.Save()
     return changed()

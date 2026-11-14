@@ -107,6 +107,15 @@ RaidSettings.Define({ key = "hideBlizzard", code = "HB", scope = "general", type
 RaidSettings.Define({ key = "minimapShow", code = "MS", scope = "general", type = "bool", default = true })
 RaidSettings.Define({ key = "minimapAngle", code = "MA", scope = "general", type = "int", min = 0, max = 359,
     default = 260 })
+-- The cells' theme (Core/Themes.lua): UNITS follows the unit frames', OWN
+-- keeps the raid profile's own look, any other is that theme. Stored by
+-- index: append only (new themes go at the end, as in the unit frames).
+local CELL_THEMES = { "UNITS", "OWN" }
+for _, id in ipairs(ns.Settings.THEMES) do
+    if id ~= "CLASSIC" then CELL_THEMES[#CELL_THEMES + 1] = id end
+end
+RaidSettings.Define({ key = "cellTheme", code = "XM", scope = "general", type = "enum", values = CELL_THEMES,
+    default = "UNITS" })
 -- The cells' full opacity for every raid size; range fading is a share of
 -- it (Elements/Range.lua).
 RaidSettings.Define({ key = "frameAlpha", code = "CA", scope = "general", type = "int", min = 10, max = 100,

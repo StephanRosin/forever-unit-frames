@@ -80,6 +80,25 @@ function Cell.IconPoint(_, name)
     return point, x, y
 end
 
+-- The theme the cells show (Raid/Settings.lua: cellTheme): CLASSIC for
+-- their own look.
+function Cell.Theme()
+    local choice = ns.RaidConfig.Get("general", "cellTheme")
+    if choice == "UNITS" then return ns.Themes.Current() end
+    if choice == "OWN" then return ns.Themes.CLASSIC end
+    return choice
+end
+
+-- A look setting: the theme's while one shows (Themes.CellLook), else the
+-- raid profile's.
+local function themed(key, own)
+    return function()
+        local v = ns.Themes.CellLook(Cell.Theme(), key, own)
+        if v ~= nil then return v end
+        return own()
+    end
+end
+
 local function insetX(key) return function() return (Cell.Inset(get(key))) end end
 local function insetY(key) return function() return select(2, Cell.Inset(get(key))) end end
 
@@ -93,8 +112,8 @@ local MAPPED = {
     height = function() return get("cellHeight") end,
     healthColorMode = function() return get("healthColorMode") end,
     healthColor = function() return get("healthColor") end,
-    barTexture = function() return get("barTexture") end,
-    backgroundColor = function() return get("backgroundColor") end,
+    barTexture = themed("barTexture", function() return get("barTexture") end),
+    backgroundColor = themed("backgroundColor", function() return get("backgroundColor") end),
     powerEnabled = function() return get("powerStrip") ~= "OFF" end,
     healthPercent = function() return 100 - get("powerStripHeight") end,
     powerPercent = function() return get("powerStripHeight") end,
@@ -104,16 +123,16 @@ local MAPPED = {
     combatFeedback = function() return get("combatText") end,
     textHealthRight = function() return get("secondLine") end,
     barNameColorMode = function() return get("nameClassColor") and "CLASS" or "WHITE" end,
-    fontFace = function() return get("fontFace") end,
-    fontSize = function() return get("nameFontSize") end,
-    valueFontSize = function() return get("secondFontSize") end,
-    fontOutline = function() return get("fontOutline") end,
+    fontFace = themed("fontFace", function() return get("fontFace") end),
+    fontSize = themed("fontSize", function() return get("nameFontSize") end),
+    valueFontSize = themed("valueFontSize", function() return get("secondFontSize") end),
+    fontOutline = themed("fontOutline", function() return get("fontOutline") end),
     fontShadow = function() return get("fontShadow") end,
-    borderShow = function() return get("cellBorder") end,
-    borderStyle = function() return get("cellBorderStyle") end,
-    borderSize = function() return get("cellBorderSize") end,
-    borderColor = function() return get("cellBorderColor") end,
-    cornerRadius = function() return get("cellCornerRadius") end,
+    borderShow = themed("borderShow", function() return get("cellBorder") end),
+    borderStyle = themed("borderStyle", function() return get("cellBorderStyle") end),
+    borderSize = themed("borderSize", function() return get("cellBorderSize") end),
+    borderColor = themed("borderColor", function() return get("cellBorderColor") end),
+    cornerRadius = themed("cornerRadius", function() return get("cellCornerRadius") end),
     raidMarker = function() return get("raidMarker") end,
     raidMarkerSize = function() return get("iconSize") end,
     raidMarkerFramePoint = function() return get("raidMarkerPoint") end,
@@ -209,6 +228,8 @@ function Cell.Setup(button)
     button.showsPower = Cell.ShowsPower
     button.iconPoint = Cell.IconPoint
     button.fadesOutOfRange = true
+    -- The cell's theme, not the unit frames' (Elements/ThemeArt.lua).
+    button.themeOf = Cell.Theme
     -- None of the unit frames' aura groups (Elements/AuraContainers.lua
     -- makes no container for them); a cell's own auras are one container
     -- of its own (Raid/CellAuras.lua).

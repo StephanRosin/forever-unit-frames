@@ -113,6 +113,12 @@ Settings.Define({ key = "powerColorMode", code = "UT", scope = "inherit", type =
 -- is, so switching it back on restores them. The raid frames do not
 -- depend on it.
 Settings.Define({ key = "unitFrames", code = "UU", scope = "general", type = "bool", default = true })
+-- The look of every unit frame, each with a whole set of settings of its
+-- own (Core/Themes.lua). CLASSIC is the player's own layout. Stored by
+-- index: append only.
+Settings.THEMES = { "CLASSIC", "WOOD", "TECH", "PARCHMENT", "RUNESTONE", "GLASS", "COMIC", "FROST", "PIXEL" }
+Settings.Define({ key = "theme", code = "XT", scope = "general", type = "enum", values = Settings.THEMES,
+    default = "CLASSIC" })
 -- Click-casting on the unit frames (decision 76): the raid window's
 -- bindings (Raid/ClickCast.lua) on the player, pet, target, target of
 -- target, focus, party member and party pet buttons. One switch on General, each
