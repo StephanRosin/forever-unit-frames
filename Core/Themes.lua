@@ -113,11 +113,15 @@ for _, spec in pairs(Themes.SPECS) do
 end
 
 -- The comic's colours, the same in every Forever addon: the paper's tint
--- (the unit frames' comic has no yellow or red accent). Stored account wide
+-- (the unit frames' comic has no yellow or red accent, and no dark ink
+-- that a dark paper would have to lighten). Stored account wide
 -- outside the theme sets (UnitProfiles); GREY is the comic as it is.
-Themes.COMIC_COLORS = { "GREY", "YELLOW", "BLUE", "RED", "GREEN", "PURPLE" }
+Themes.COMIC_COLORS = { "GREY", "DARKGREY", "BLACK", "WHITE", "YELLOW", "BLUE", "RED", "GREEN", "PURPLE" }
 local COMIC_PAPER = {
     GREY = { 0.70, 0.70, 0.70 },
+    DARKGREY = { 0.38, 0.38, 0.38 },
+    BLACK = { 0.16, 0.16, 0.16 },
+    WHITE = { 1, 1, 1 },
     YELLOW = { 0.86, 0.76, 0.36 },
     BLUE = { 0.45, 0.60, 0.86 },
     RED = { 0.86, 0.44, 0.40 },

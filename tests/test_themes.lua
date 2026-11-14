@@ -198,7 +198,7 @@ do
         ns.ThemeArt.Paint(texture, ns.Themes.SPECS.COMIC)
         return table.concat(texture._color, ",")
     end
-    H.check("comic colours: list", table.concat(entry.ComicColors, ","), "GREY,YELLOW,BLUE,RED,GREEN,PURPLE")
+    H.check("comic colours: list", table.concat(entry.ComicColors, ","), "GREY,DARKGREY,BLACK,WHITE,YELLOW,BLUE,RED,GREEN,PURPLE")
     H.check("comic colours: grey by default", entry.ComicColor(), "GREY")
     H.checkTrue("comic colours: to comic", ns.Themes.Switch("COMIC"))
     H.check("comic grey: paper as today", paper(), "0.7,0.7,0.7,1")
@@ -214,6 +214,10 @@ do
     H.checkTrue("comic colour: chosen under wood", ns.Themes.SetComicColor("RED"))
     H.checkTrue("comic colour: back to comic", ns.Themes.Switch("COMIC"))
     H.check("comic colour: survives the switch", entry.ComicColor() .. " " .. paper(), "RED 0.86,0.44,0.4,1")
+    H.checkTrue("comic black: set", ns.Themes.SetComicColor("BLACK"))
+    H.check("comic black: paper", paper(), "0.16,0.16,0.16,1")
+    H.checkTrue("comic white: set", ns.Themes.SetComicColor("WHITE"))
+    H.check("comic white: paper", paper(), "1,1,1,1")
     db.comicColor = "NOPE"
     H.check("comic colour: unknown stored reads grey", ns.Themes.ComicColor(), "GREY")
     H.checkTrue("comic grey back: set", ns.Themes.SetComicColor("GREY"))
