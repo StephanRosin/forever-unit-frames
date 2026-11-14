@@ -740,6 +740,11 @@ shields({ key = "shieldsTimeSize", code = "ZZ", type = "int", min = 0, lowest = 
     zeroText = "AUTO" })
 shields({ key = "shieldsTimeOutline", code = "KA", type = "enum", values = SHIELD_OUTLINES, default = "FRAME" })
 shields({ key = "shieldsTimeColor", code = "KB", type = "color", default = { 1, 1, 1, 1 } })
+-- A vertical bar beside the first icon, as tall as it, that empties with
+-- the absorb left (Elements/ShieldWatch.lua).
+shields({ key = "shieldsBar", code = "KI", type = "bool", default = false })
+shields({ key = "shieldsBarWidth", code = "KJ", type = "int", min = 2, max = 32, default = 6 })
+shields({ key = "shieldsBarColor", code = "KK", type = "color", default = { 1, 0.85, 0.3, 1 } })
 
 -- Combat and PvP icons on the other frames (Elements/UnitIcons.lua), off
 -- by default. The combat icon sits left of the frame, the crest on its top

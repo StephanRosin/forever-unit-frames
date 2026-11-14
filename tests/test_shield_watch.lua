@@ -24,7 +24,8 @@ local EXPECTED = {
     shieldsTimePoint = { "ZL", "enum", "TOP" }, shieldsTimeX = { "ZM", "int", 0 },
     shieldsTimeY = { "ZQ", "int", 0 }, shieldsTimeFont = { "ZV", "media", "" },
     shieldsTimeSize = { "ZZ", "int", 0 }, shieldsTimeOutline = { "KA", "enum", "FRAME" },
-    shieldsTimeColor = { "KB", "color", "1,1,1,1" },
+    shieldsTimeColor = { "KB", "color", "1,1,1,1" }, shieldsBar = { "KI", "bool", false },
+    shieldsBarWidth = { "KJ", "int", 6 }, shieldsBarColor = { "KK", "color", "1,0.85,0.3,1" },
 }
 for key, want in pairs(EXPECTED) do
     local def = S.Get(key)
@@ -281,3 +282,52 @@ H.check("test mode over: the container again", container:IsShown(), true)
 H.check("test mode over: the total again", total:GetText(), "900")
 H.check("test mode over: the total at the container", select(2, total:GetPoint(1)), container)
 H.check("still no shield read by name", byName, 0)
+
+-- The bar ---------------------------------------------------------------------------------------
+-- Beside the first icon, as tall as it; empties with the total. Its full is
+-- the total read just after a watched cast of yours (secret or not).
+local bar = sw.bar
+H.check("bar: off by default", bar:IsShown(), false)
+C.Set("player", "shieldsTotalPoint", "LEFT")
+C.Set("player", "shieldsBar", true)
+H.checkTrue("bar: shown", bar:IsShown())
+H.check("bar: vertical", bar._orientation, "VERTICAL")
+H.check("bar: as tall as an icon", bar:GetHeight(), 32)
+H.check("bar: its width", bar:GetWidth(), 6)
+p, rel, rp, x = bar:GetPoint(1)
+H.check("bar: before the first icon", p .. ">" .. rp, "TOPRIGHT>TOPLEFT")
+H.check("bar: on the block", rel, sw.holder)
+H.check("bar: a gap of the spacing", x, -4)
+H.check("total on the bar's side: outside the bar", select(2, total:GetPoint(1)), bar)
+player.absorbs = 800
+M.FireEvent("UNIT_ABSORB_AMOUNT_CHANGED", "player")
+H.check("bar: nothing cast yet, full", bar._max .. "/" .. bar._value, "800/800")
+player.absorbs = 1200
+M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-1", 10901)
+M.RunTimers(0.3)
+H.check("bar: own shield, its full", bar._max, 1200)
+player.absorbs = 300
+M.FireEvent("UNIT_ABSORB_AMOUNT_CHANGED", "player")
+H.check("bar: empties with the total", bar._max .. "/" .. bar._value, "1200/300")
+M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-2", 133)
+M.RunTimers(0.3)
+H.check("bar: a spell not watched changes nothing", bar._max, 1200)
+M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-3", M.Secret(10901))
+M.RunTimers(0.3)
+H.check("bar: a secret spell ID changes nothing", bar._max, 1200)
+M.absorbsSecret = true
+player.absorbs = 1500
+M.FireEvent("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-4", 10901)
+M.RunTimers(0.3)
+H.check("bar: a secret full goes to the client", M.Reveal(bar._max), 1500)
+H.check("bar: a secret value too", M.Reveal(bar._value), 1500)
+M.absorbsSecret = false
+ns.TestMode.Set(true)
+H.check("bar: test mode sample", bar._value, SW.SAMPLE_BAR)
+ns.TestMode.Set(false)
+C.Set("player", "shieldsGrowth", "LEFT")
+p, _, rp, x = bar:GetPoint(1)
+H.check("bar: growing left, at the right", p .. ">" .. rp .. ">" .. x, "TOPLEFT>TOPRIGHT>4")
+C.Set("player", "shieldsGrowth", "RIGHT")
+C.Set("player", "shieldsBar", false)
+H.check("bar: off again", bar:IsShown(), false)

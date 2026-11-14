@@ -27,6 +27,16 @@ local _, ns = ...
 -- above zero. It hangs at a side of the container (which the client sizes
 -- to its icons) from a frame with the untrusted-layout aspect, the only
 -- kind the client lets anchor to a container.
+--
+-- The bar (shieldsBar): a vertical StatusBar beside the first icon, as
+-- tall as it, that empties with the same total. Its maximum is the total
+-- read shortly after one of the watched spells was cast by you or your pet
+-- (UNIT_SPELLCAST_SUCCEEDED, as Shield Aura Forever does): the client takes
+-- the secret value as the maximum too. Until then the maximum is the total
+-- itself (full while any absorb is up).
+-- shortcut: a shield cast on someone else also captures your total (the
+-- event names no target), and a shield from another player captures
+-- nothing; the bar then shows full until it falls below the old maximum.
 local ShieldWatch = { name = "ShieldWatch", unitEvents = { "UNIT_AURA", "UNIT_ABSORB_AMOUNT_CHANGED" } }
 ns.ShieldWatch = ShieldWatch
 
@@ -76,6 +86,11 @@ ShieldWatch.SAMPLES = {
     { icon = "Interface\\Icons\\Spell_Ice_Lament", duration = 60 },
 }
 ShieldWatch.SAMPLE_TOTAL = 2068
+-- Test mode: the bar's fill.
+ShieldWatch.SAMPLE_BAR = 0.7
+-- After a watched cast: when the new total is read as the bar's maximum
+-- (the absorb lands a moment after the cast event).
+ShieldWatch.CAPTURE_DELAYS = { 0.05, 0.2 }
 -- The handle's length in icons.
 ShieldWatch.HANDLE_ICONS = 2
 -- Automatic text sizes: this share of the icon size.
@@ -166,12 +181,16 @@ function ShieldWatch.SetTotal(fs, v)
     end
 end
 
+-- The total, plain or secret, onto the text and the bar; never compared.
 local function writeTotal(sw, unit)
     local ok, v = pcall(UnitGetTotalAbsorbs, unit)
     if ok then
         ShieldWatch.SetTotal(sw.total, v)
+        pcall(sw.bar.SetMinMaxValues, sw.bar, 0, sw.barMax or v)
+        pcall(sw.bar.SetValue, sw.bar, v)
     else
         sw.total:SetText("")
+        sw.bar:SetValue(0)
     end
 end
 
@@ -189,6 +208,13 @@ function ShieldWatch.Build(frame)
     host:SetAllPoints(holder)
     sw.textHost = host
     sw.total = host:CreateFontString(nil, "OVERLAY")
+    local bar = CreateFrame("StatusBar", nil, holder)
+    bar:SetOrientation("VERTICAL")
+    bar:SetMinMaxValues(0, 1)
+    bar.bg = bar:CreateTexture(nil, "BACKGROUND")
+    bar.bg:SetAllPoints(bar)
+    bar:Hide()
+    sw.bar = bar
 end
 
 local function iconSize(scope) return Pixel.Snap(setting(scope, "shieldsSize")) end
@@ -389,12 +415,33 @@ local function configure(frame)
     if container:GetUnit() ~= (frame.unit or "none") then container:SetUnit(frame.unit or "none") end
 end
 
+-- The bar's side: before the first icon, the icons grow away from it.
+local function barSide(scope)
+    return setting(scope, "shieldsGrowth") == "LEFT" and "RIGHT" or "LEFT"
+end
+
+local function placeBar(frame)
+    local sw, scope = frame.shields, frame.key
+    local bar, corner = sw.bar, CORNER[setting(scope, "shieldsGrowth")]
+    local side = barSide(scope)
+    local point = corner:gsub(side, OPPOSITE[side])
+    bar:ClearAllPoints()
+    bar:SetSize(Pixel.Snap(setting(scope, "shieldsBarWidth")), iconSize(scope))
+    bar:SetPoint(point, sw.holder, corner, (side == "LEFT" and -1 or 1) * spacing(scope), 0)
+    bar:SetStatusBarTexture(ns.Media.StatusBar(setting(scope, "barTexture")))
+    local c = setting(scope, "shieldsBarColor")
+    bar:SetStatusBarColor(c[1], c[2], c[3], c[4])
+    bar.bg:SetColorTexture(c[1] * 0.25, c[2] * 0.25, c[3] * 0.25, 0.6)
+end
+
 -- The total at its side of the icons: the container's (the client sizes it
 -- to its icons), or the handle's in test mode and without a container.
 local function placeTotal(frame)
     local sw, scope = frame.shields, frame.key
     local region = (not sw.preview and sw.container) or sw.holder
     local point = setting(scope, "shieldsTotalPoint")
+    -- On the bar's side: outside the bar.
+    if setting(scope, "shieldsBar") == true and point == barSide(scope) then region = sw.bar end
     sw.total:ClearAllPoints()
     sw.total:SetPoint(OPPOSITE[point], region, point, setting(scope, "shieldsTotalX"), setting(scope, "shieldsTotalY"))
 end
@@ -421,6 +468,7 @@ function ShieldWatch.Style(frame)
     end
     configure(frame)
     styleTotal(frame)
+    placeBar(frame)
     placeTotal(frame)
     sw.styled = true
     ShieldWatch.Refresh(frame)
@@ -451,8 +499,13 @@ function ShieldWatch.Refresh(frame)
     sw.holder:SetShown(on)
     showSamples(sw, on and sw.preview or false)
     sw.total:SetShown(on and setting(scope, "shieldsTotal") == true)
+    sw.bar:SetShown(on and setting(scope, "shieldsBar") == true)
     if not on then return sw.total:SetText("") end
-    if sw.preview then return ShieldWatch.SetTotal(sw.total, ShieldWatch.SAMPLE_TOTAL) end
+    if sw.preview then
+        sw.bar:SetMinMaxValues(0, 1)
+        sw.bar:SetValue(ShieldWatch.SAMPLE_BAR)
+        return ShieldWatch.SetTotal(sw.total, ShieldWatch.SAMPLE_TOTAL)
+    end
     writeTotal(sw, frame.unit or "none")
 end
 
@@ -494,6 +547,26 @@ ns.On("PLAYER_ENTERING_WORLD", function()
     watchedCache = {}
     forEachBlock(function(frame)
         ns.AfterCombat("shieldsStyle:" .. frame.key, function() ShieldWatch.Style(frame) end)
+    end)
+end)
+
+-- A watched shield cast by you or your pet: the total a moment later is the
+-- bar's full. A secret spell ID captures nothing.
+function ShieldWatch.Capture(frame)
+    local ok, v = pcall(UnitGetTotalAbsorbs, frame.unit or "player")
+    if not ok then return end
+    frame.shields.barMax = v
+    ShieldWatch.Refresh(frame)
+end
+
+ns.On("UNIT_SPELLCAST_SUCCEEDED", function(_, unit, _, spellID)
+    if unit ~= "player" and unit ~= "pet" then return end
+    if spellID == nil or ns.Secrets.IsSecret(spellID) then return end
+    forEachBlock(function(frame)
+        if not (enabled(frame.key) and ShieldWatch.Watched(frame.key)[spellID]) then return end
+        for _, delay in ipairs(ShieldWatch.CAPTURE_DELAYS) do
+            C_Timer.After(delay, function() ShieldWatch.Capture(frame) end)
+        end
     end)
 end)
 

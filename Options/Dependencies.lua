@@ -149,7 +149,8 @@ local RULES = {
         "shieldsY", "shieldsFramePoint", "shieldsPoint", "shieldsFrameX", "shieldsFrameY", "shieldsTotal", "shieldsTotalPoint", "shieldsTotalX", "shieldsTotalY",
         "shieldsTotalFont", "shieldsTotalSize", "shieldsTotalOutline", "shieldsTotalColor", "shieldsSwipe",
         "shieldsTime", "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY", "shieldsTimeFont", "shieldsTimeSize",
-        "shieldsTimeOutline", "shieldsTimeColor" } },
+        "shieldsTimeOutline", "shieldsTimeColor", "shieldsBar", "shieldsBarWidth", "shieldsBarColor" } },
+    { on("shieldsBar"), { "shieldsBarWidth", "shieldsBarColor" } },
     -- Free on its mover, or on the player frame: each mode's place rows.
     { is("shieldsAnchor", "FREE"), { "shieldsX", "shieldsY" } },
     { is("shieldsAnchor", "FRAME"), { "shieldsFramePoint", "shieldsPoint", "shieldsFrameX", "shieldsFrameY" } },

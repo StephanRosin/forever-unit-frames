@@ -178,6 +178,9 @@ The icons of your active absorb shields and the exact total of all your absorbs,
 <tr><td><b>Time size</b></td><td></td><td>6 – 48 (0: Auto)</td><td>Auto</td><td>Player</td></tr>
 <tr><td><b>Time font style</b></td><td></td><td>The frame's style, None, Outline, Thick outline, Monochrome, Soft outline</td><td>The frame's style</td><td>Player</td></tr>
 <tr><td><b>Time color</b></td><td></td><td>Color</td><td><code>#ffffff</code></td><td>Player</td></tr>
+<tr><td><b>Absorb bar</b></td><td>Empties as the shield takes damage; full after your own shield</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
+<tr><td><b>Bar width</b></td><td></td><td>2 – 32</td><td>6</td><td>Player</td></tr>
+<tr><td><b>Bar color</b></td><td></td><td>Color</td><td><code>#ffd94d</code></td><td>Player</td></tr>
 </tbody>
 </table>
 
