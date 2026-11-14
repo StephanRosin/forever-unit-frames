@@ -26,6 +26,8 @@ local EXPECTED = {
     shieldsTimeSize = { "ZZ", "int", 0 }, shieldsTimeOutline = { "KA", "enum", "FRAME" },
     shieldsTimeColor = { "KB", "color", "1,1,1,1" }, shieldsBar = { "KI", "bool", false },
     shieldsBarWidth = { "KJ", "int", 6 }, shieldsBarColor = { "KK", "color", "1,0.85,0.3,1" },
+    shieldsBarStyle = { "KL", "enum", "FLAT" }, shieldsBarHeight = { "KM", "int", 0 },
+    shieldsBarX = { "KN", "int", 0 }, shieldsBarY = { "KO", "int", 0 },
 }
 for key, want in pairs(EXPECTED) do
     local def = S.Get(key)
@@ -325,6 +327,32 @@ M.absorbsSecret = false
 ns.TestMode.Set(true)
 H.check("bar: test mode sample", bar._value, SW.SAMPLE_BAR)
 ns.TestMode.Set(false)
+-- No background: with no absorb the empty fill is all there is.
+H.check("bar: no background", bar.bg, nil)
+H.check("bar: the designs on the fill", bar.gate._allPoints, bar:GetStatusBarTexture())
+H.checkTrue("bar: the designs clipped to the fill", bar.gate._clips)
+H.check("bar: flat, no stripes", bar.stripes:IsShown(), false)
+C.Set("player", "shieldsBarStyle", "STRIPES")
+H.checkTrue("bar: stripes", bar.stripes:IsShown())
+C.Set("player", "shieldsBarStyle", "SEGMENTS")
+H.checkTrue("bar: segment lines", bar.lines[1]:IsShown())
+H.check("bar: segments, no frame", bar.lines[#bar.lines]:IsShown(), false)
+C.Set("player", "shieldsBarStyle", "FRAMED")
+H.checkTrue("bar: a frame", bar.lines[#bar.lines]:IsShown())
+H.check("bar: framed, no segments", bar.lines[1]:IsShown(), false)
+C.Set("player", "shieldsBarStyle", "FLAT")
+C.Set("player", "shieldsBarHeight", 120)
+C.Set("player", "shieldsBarWidth", 40)
+H.check("bar: own height and width", bar:GetHeight() .. "x" .. bar:GetWidth(), "120x40")
+C.Set("player", "shieldsBarX", -10)
+C.Set("player", "shieldsBarY", 6)
+p, _, rp, x, y = bar:GetPoint(1)
+H.check("bar: offset", x .. "," .. y, "-14,6")
+C.Set("player", "shieldsBarHeight", 0)
+C.Set("player", "shieldsBarWidth", 6)
+C.Set("player", "shieldsBarX", 0)
+C.Set("player", "shieldsBarY", 0)
+H.check("bar: auto height again", bar:GetHeight(), 32)
 C.Set("player", "shieldsGrowth", "LEFT")
 p, _, rp, x = bar:GetPoint(1)
 H.check("bar: growing left, at the right", p .. ">" .. rp .. ">" .. x, "TOPLEFT>TOPRIGHT>4")

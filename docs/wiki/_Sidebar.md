@@ -14,6 +14,7 @@
 - [[Auras|Settings-Auras]]
 - [[Status|Settings-Status]]
 - [[Castbar|Settings-Castbar]]
+- [[Extras|Settings-Extras]]
 
 **Raid frames: General**
 

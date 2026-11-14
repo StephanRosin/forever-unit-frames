@@ -34,6 +34,10 @@ local _, ns = ...
 -- (UNIT_SPELLCAST_SUCCEEDED, as Shield Aura Forever does): the client takes
 -- the secret value as the maximum too. Until then the maximum is the total
 -- itself (full while any absorb is up).
+-- It has no background: whether a shield is up cannot be asked (the total
+-- is secret), so with none the empty fill is all there is and nothing
+-- shows. The designs draw on the fill only, in a frame on the fill that
+-- clips (as Elements/Absorb.lua's glow): stripes, segment lines, a frame.
 -- shortcut: a shield cast on someone else also captures your total (the
 -- event names no target), and a shield from another player captures
 -- nothing; the bar then shows full until it falls below the old maximum.
@@ -88,6 +92,14 @@ ShieldWatch.SAMPLES = {
 ShieldWatch.SAMPLE_TOTAL = 2068
 -- Test mode: the bar's fill.
 ShieldWatch.SAMPLE_BAR = 0.7
+-- The designs: Blizzard's shield stripes; segment lines over the bar's
+-- whole height (shown where the fill is); a dark frame round the fill.
+ShieldWatch.STRIPES = "Interface\\RaidFrame\\Shield-Overlay"
+ShieldWatch.SEGMENTS = 5
+ShieldWatch.LINE_COLOR = { 0, 0, 0, 0.8 }
+-- The frame's four lines: their two corners, and whether they run across.
+local FRAME_EDGES = { { "TOPLEFT", "TOPRIGHT", true }, { "BOTTOMLEFT", "BOTTOMRIGHT", true },
+    { "TOPLEFT", "BOTTOMLEFT" }, { "TOPRIGHT", "BOTTOMRIGHT" } }
 -- After a watched cast: when the new total is read as the bar's maximum
 -- (the absorb lands a moment after the cast event).
 ShieldWatch.CAPTURE_DELAYS = { 0.05, 0.2 }
@@ -211,10 +223,25 @@ function ShieldWatch.Build(frame)
     local bar = CreateFrame("StatusBar", nil, holder)
     bar:SetOrientation("VERTICAL")
     bar:SetMinMaxValues(0, 1)
-    bar.bg = bar:CreateTexture(nil, "BACKGROUND")
-    bar.bg:SetAllPoints(bar)
     bar:Hide()
     sw.bar = bar
+    -- The fill's frame (anchored in Style, the fill texture is set there).
+    local gate = CreateFrame("Frame", nil, bar)
+    gate:SetClipsChildren(true)
+    bar.gate = gate
+    local stripes = gate:CreateTexture(nil, "OVERLAY")
+    stripes:SetTexture(ShieldWatch.STRIPES, "REPEAT", "REPEAT")
+    stripes:SetHorizTile(true)
+    stripes:SetVertTile(true)
+    stripes:SetAllPoints(gate)
+    bar.stripes = stripes
+    local c = ShieldWatch.LINE_COLOR
+    bar.lines = {}
+    for i = 1, ShieldWatch.SEGMENTS - 1 + 4 do
+        local t = gate:CreateTexture(nil, "OVERLAY", nil, 1)
+        t:SetColorTexture(c[1], c[2], c[3], c[4])
+        bar.lines[i] = t
+    end
 end
 
 local function iconSize(scope) return Pixel.Snap(setting(scope, "shieldsSize")) end
@@ -426,12 +453,37 @@ local function placeBar(frame)
     local side = barSide(scope)
     local point = corner:gsub(side, OPPOSITE[side])
     bar:ClearAllPoints()
-    bar:SetSize(Pixel.Snap(setting(scope, "shieldsBarWidth")), iconSize(scope))
-    bar:SetPoint(point, sw.holder, corner, (side == "LEFT" and -1 or 1) * spacing(scope), 0)
+    local h = setting(scope, "shieldsBarHeight")
+    h = h > 0 and Pixel.Snap(h) or iconSize(scope)
+    bar:SetSize(Pixel.Snap(setting(scope, "shieldsBarWidth")), h)
+    bar:SetPoint(point, sw.holder, corner, (side == "LEFT" and -1 or 1) * spacing(scope) + setting(scope, "shieldsBarX"),
+        setting(scope, "shieldsBarY"))
     bar:SetStatusBarTexture(ns.Media.StatusBar(setting(scope, "barTexture")))
     local c = setting(scope, "shieldsBarColor")
     bar:SetStatusBarColor(c[1], c[2], c[3], c[4])
-    bar.bg:SetColorTexture(c[1] * 0.25, c[2] * 0.25, c[3] * 0.25, 0.6)
+    local gate, style = bar.gate, setting(scope, "shieldsBarStyle")
+    gate:ClearAllPoints()
+    gate:SetAllPoints(bar:GetStatusBarTexture())
+    gate:SetFrameLevel(bar:GetFrameLevel() + 1)
+    bar.stripes:SetShown(style == "STRIPES")
+    -- Lines 1..SEGMENTS-1 split the bar's height; the last four frame the fill.
+    local one, n = Pixel.One(bar), ShieldWatch.SEGMENTS
+    for i, t in ipairs(bar.lines) do
+        t:ClearAllPoints()
+        if i < n then
+            t:SetHeight(one)
+            local y = Pixel.Snap(h * i / n)
+            t:SetPoint("LEFT", bar, "BOTTOMLEFT", 0, y)
+            t:SetPoint("RIGHT", bar, "BOTTOMRIGHT", 0, y)
+            t:SetShown(style == "SEGMENTS")
+        else
+            local edge = FRAME_EDGES[i - n + 1]
+            t:SetPoint(edge[1], gate, edge[1])
+            t:SetPoint(edge[2], gate, edge[2])
+            if edge[3] then t:SetHeight(one) else t:SetWidth(one) end
+            t:SetShown(style == "FRAMED")
+        end
+    end
 end
 
 -- The total at its side of the icons: the container's (the client sizes it

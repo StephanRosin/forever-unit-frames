@@ -26,7 +26,7 @@ for _, key in ipairs({ "player", "target", "targettarget", "pet", "focus", "part
 end
 
 -- Tabs per frame: no castbar for the pet.
-H.check("player tabs", tabIds("player"), "layout,bars,text,auras,status,castbar")
+H.check("player tabs", tabIds("player"), "layout,bars,text,auras,status,castbar,extras")
 H.check("pet tabs", tabIds("pet"), "layout,bars,text,auras,status,castbar")
 H.check("party tabs", tabIds("party"), "layout,group,bars,text,auras,status,castbar")
 

@@ -117,25 +117,6 @@ Schema.FRAME = {
         { id = "druidMana", keys = { "druidMana", "druidManaHeight" } },
         { id = "fiveSecondRule", keys = { "fsrEnabled", "fsrSpark", "fsrSparkDirection", "fsrSparkWidth", "fsrSparkColor", "fsrText",
             "fsrTextPoint", "fsrTextTenths", "fsrDim", "fsrDimAlpha" } },
-        -- The low mana warning (Elements/ManaWarning.lua), the player only.
-        { id = "manaWarn", keys = { "manaWarn", "manaWarnBelow", "manaWarnGroupOnly", "manaWarnOutOfCombat", "manaWarnShow", "manaWarnIcon",
-            "manaWarnSize", "manaWarnFontSize", "manaWarnColor", "manaWarnPulse", "manaWarnFade", "manaWarnFadeTime", "manaWarnChat", "manaWarnClick", "manaWarnClickKey",
-            "manaWarnClickWhat", "manaWarnX",
-            "manaWarnY" },
-            placement = { "manaWarnX", "manaWarnY" } },
-        -- The shield watch (Elements/ShieldWatch.lua), the player only: the
-        -- shields' icons and the amount left; last, as it is long.
-        { id = "shields", keys = { "shieldsEnabled", "shieldsPriest", "shieldsMage", "shieldsWarlock", "shieldsItems",
-            "shieldsExtra", "shieldsHideInBuffs", "shieldsSize", "shieldsSpacing", "shieldsGrowth",
-            "shieldsAnchor", "shieldsX", "shieldsY", "shieldsFramePoint", "shieldsPoint", "shieldsFrameX",
-            "shieldsFrameY", "shieldsTotal", "shieldsTotalPoint", "shieldsTotalX",
-            "shieldsTotalY", "shieldsTotalFont", "shieldsTotalSize", "shieldsTotalOutline", "shieldsTotalColor",
-            "shieldsSwipe", "shieldsTime", "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY", "shieldsTimeFont",
-            "shieldsTimeSize", "shieldsTimeOutline", "shieldsTimeColor", "shieldsBar", "shieldsBarWidth",
-            "shieldsBarColor" },
-            placement = { "shieldsGrowth", "shieldsAnchor", "shieldsX", "shieldsY", "shieldsFramePoint", "shieldsPoint",
-                "shieldsFrameX", "shieldsFrameY", "shieldsTotalPoint", "shieldsTotalX", "shieldsTotalY",
-                "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY" } },
     } },
     -- The note: what "Info" shows, said once for every text. The font
     -- first: the sizes of every text below.
@@ -232,6 +213,29 @@ Schema.FRAME = {
         { id = "castbarContent", keys = { "castbarIcon", "castbarName", "castbarTime", "castbarInterrupt", "castbarLatency", "castbarLatencyPoint",
             "castbarLatencyX" } },
         { id = "castbarDetached", keys = { "castbarX", "castbarY" } },
+    } },
+    -- Blocks of their own with a mover, the player only (their keys apply
+    -- nowhere else, so the tab shows on the player's page only).
+    { id = "extras", sections = {
+        -- The low mana warning (Elements/ManaWarning.lua), the player only.
+        { id = "manaWarn", keys = { "manaWarn", "manaWarnBelow", "manaWarnGroupOnly", "manaWarnOutOfCombat", "manaWarnShow", "manaWarnIcon",
+            "manaWarnSize", "manaWarnFontSize", "manaWarnColor", "manaWarnPulse", "manaWarnFade", "manaWarnFadeTime", "manaWarnChat", "manaWarnClick", "manaWarnClickKey",
+            "manaWarnClickWhat", "manaWarnX",
+            "manaWarnY" },
+            placement = { "manaWarnX", "manaWarnY" } },
+        -- The shield watch (Elements/ShieldWatch.lua), the player only: the
+        -- shields' icons and the amount left; last, as it is long.
+        { id = "shields", keys = { "shieldsEnabled", "shieldsPriest", "shieldsMage", "shieldsWarlock", "shieldsItems",
+            "shieldsExtra", "shieldsHideInBuffs", "shieldsSize", "shieldsSpacing", "shieldsGrowth",
+            "shieldsAnchor", "shieldsX", "shieldsY", "shieldsFramePoint", "shieldsPoint", "shieldsFrameX",
+            "shieldsFrameY", "shieldsTotal", "shieldsTotalPoint", "shieldsTotalX",
+            "shieldsTotalY", "shieldsTotalFont", "shieldsTotalSize", "shieldsTotalOutline", "shieldsTotalColor",
+            "shieldsSwipe", "shieldsTime", "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY", "shieldsTimeFont",
+            "shieldsTimeSize", "shieldsTimeOutline", "shieldsTimeColor", "shieldsBar", "shieldsBarStyle", "shieldsBarWidth",
+            "shieldsBarHeight", "shieldsBarX", "shieldsBarY", "shieldsBarColor" },
+            placement = { "shieldsGrowth", "shieldsAnchor", "shieldsX", "shieldsY", "shieldsFramePoint", "shieldsPoint",
+                "shieldsFrameX", "shieldsFrameY", "shieldsTotalPoint", "shieldsTotalX", "shieldsTotalY",
+                "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY", "shieldsBarX", "shieldsBarY" } },
     } },
 }
 

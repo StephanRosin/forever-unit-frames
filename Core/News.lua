@@ -60,11 +60,11 @@ News.ENTRIES = {
         action = { text = "NEWS_OPEN_FSR", run = function() ns.Options.Open("player", "bars") end },
     },
     -- The shield watch is off by default: the button opens where it is
-    -- switched on (the player frame's Bars tab, section Shield watch).
+    -- switched on (the player frame's Extras tab, section Shield watch).
     ["0.25.0"] = {
         announce = true,
         lines = { "NEWS_0_25_0_SHIELDS", "NEWS_0_25_0_SHIELDS_MORE" },
-        action = { text = "NEWS_OPEN_SHIELDS", run = function() ns.Options.Open("player", "bars") end },
+        action = { text = "NEWS_OPEN_SHIELDS", run = function() ns.Options.Open("player", "extras") end },
     },
     ["0.25.1"] = {
         lines = { "NEWS_0_25_1_COMBAT_JOIN", "NEWS_0_25_1_SHIELDS_PLACE" },
@@ -173,7 +173,7 @@ News.ENTRIES = {
     ["0.53.0"] = {
         announce = true,
         lines = { "NEWS_0_53_0_MANA", "NEWS_0_53_0_MANA_CLICK", "NEWS_0_53_0_PROFILES", "NEWS_0_53_0_FIXES" },
-        action = { text = "NEWS_OPEN_MANA_WARN", run = function() ns.Options.Open("player", "bars") end },
+        action = { text = "NEWS_OPEN_MANA_WARN", run = function() ns.Options.Open("player", "extras") end },
     },
     ["0.53.1"] = {
         lines = { "NEWS_0_53_1_ENCHANTS", "NEWS_0_53_1_TOTEMS" },

@@ -165,15 +165,15 @@ ns.TestMode.Set(not ns.TestMode.IsOn())
 H.check("test mode: shown", mw.holder:IsShown(), true)
 ns.TestMode.Set(not ns.TestMode.IsOn())
 
--- The options: a section on the player's Bars tab, the icon row a picker.
+-- The options: a section on the player's Extras tab, the icon row a picker.
 local found
 for _, tab in ipairs(ns.Schema.Tabs("player")) do
     for _, sec in ipairs(tab.sections or {}) do
         if sec.id == "manaWarn" then found = tab.id end
     end
 end
-H.check("on the bars tab", found, "bars")
-ns.Options.Open("player", "bars")
+H.check("on the extras tab", found, "extras")
+ns.Options.Open("player", "extras")
 local row
 for _, r in ipairs(ns.Options.rows) do if r.key == "manaWarnIcon" then row = r end end
 H.checkTrue("icon row", row and row.swatch)

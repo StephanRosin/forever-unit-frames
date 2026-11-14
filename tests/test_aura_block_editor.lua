@@ -60,8 +60,8 @@ local function checkGrows(name, win, key, set)
     H.check(name .. ": row below back", yOf(below), y0)
     H.check(name .. ": page back", page.height, h0)
 end
--- The shield watch is on the Bars tab (since 0.40.0).
-Options.Open("player", "bars")
+-- The shield watch is on the Extras tab.
+Options.Open("player", "extras")
 checkGrows("more shields", Options, "shieldsExtra", function(v) C.Set("player", "shieldsExtra", v) end)
 Options.Open("player", "auras")
 checkGrows("player list", Options, "auraBlock", function(v) C.Set("player", "auraBlock", v) end)
