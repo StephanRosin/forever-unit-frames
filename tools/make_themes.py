@@ -339,14 +339,17 @@ def seal():
 
 
 def pitwall_wedge():
-    """A wedge slanted 12 degrees, ~10 px wide, white: the addon tints it."""
-    size = ORN * 4
+    """A wedge slanted 12 degrees, ~10 px wide on 32, white: the addon tints it.
+    128 px (4 x ORN), same shape: the addons stretch its left half to the
+    title height, which made the 32 px file look pixelated."""
+    out = ORN * 4
+    size = out * 4
     img = Image.new("RGBA", (size, size), (255, 255, 255, 0))
     d = ImageDraw.Draw(img)
-    w = 10 * 4
+    w = size * 10 / ORN
     shift = size * np.tan(np.radians(12))
     d.polygon([(0, size), (w, size), (w + shift, 0), (shift, 0)], fill=(255, 255, 255, 255))
-    return img.resize((ORN, ORN), Image.LANCZOS)
+    return img.resize((out, out), Image.LANCZOS)
 
 
 THEMES = {
