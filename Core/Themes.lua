@@ -85,7 +85,7 @@ Themes.SPECS = {
             borderPadding = 0, cornerRadius = 0, backgroundColor = { 0, 0, 0, 0 }, titleBackground = false,
             shadowEnabled = false, fontOutline = "THICKOUTLINE" },
         -- The same paper in every Forever addon: ComicBack at 0.7.
-        art = { back = "ComicBack", tint = { 0.7, 0.7, 0.7, 1 }, hardShadow = 5 },
+        art = { back = "ComicBack", tint = { 0.7, 0.7, 0.7, 1 } },
     },
     -- Translucent ice, a pale rim, rounded.
     FROST = {
@@ -101,7 +101,7 @@ Themes.SPECS = {
         look = { borderShow = true, borderStyle = "FLAT", borderSize = 3, borderColor = { 1, 0.95, 0.91, 1 },
             borderPadding = 0, cornerRadius = 0, backgroundColor = { 0, 0, 0, 1 }, titleBackground = false,
             shadowEnabled = false, fontOutline = "OUTLINE" },
-        art = { back = "PixelBack", hardShadow = 4 },
+        art = { back = "PixelBack" },
     },
 }
 

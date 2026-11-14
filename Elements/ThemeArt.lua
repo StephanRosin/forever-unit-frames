@@ -53,6 +53,15 @@ function ThemeArt.Build(frame)
     frame.themeBack:Hide()
     ns.Corners.Add(under, frame.themeBack)
     frame.themeClip = ns.Corners.Clipper(under)
+    -- The backdrop round the frame and its docked castbar, like the ring:
+    -- else the castbar's slot showed the game (or black) through it.
+    -- Its own holder: a clipper rounds every texture its owner listed.
+    local blockUnder = CreateFrame("Frame", nil, frame)
+    blockUnder:SetFrameLevel(under:GetFrameLevel())
+    frame.themeBlockBack = blockUnder:CreateTexture(nil, "BACKGROUND", nil, 0)
+    frame.themeBlockBack:Hide()
+    ns.Corners.Add(blockUnder, frame.themeBlockBack)
+    frame.themeBlockClip = ns.Corners.Clipper(blockUnder)
     -- Above the border rings and the texts' overlay.
     frame.themeOver = CreateFrame("Frame", nil, frame)
     frame.themeOver:SetAllPoints(frame)
@@ -92,6 +101,9 @@ function ThemeArt.Refresh(frame, joined)
     local on = frame.themeShadowOn == true
     frame.themeShadow:SetShown(on and not joined)
     frame.themeBlockShadow:SetShown(on and joined)
+    local back = frame.themeBackOn == true
+    frame.themeBack:SetShown(back and not joined)
+    frame.themeBlockBack:SetShown(back and joined)
     local wanted = frame.themeOrnamentsOn or {}
     for i = 1, 4 do
         frame.themeOrnaments[i]:SetShown(wanted[i] == true and not joined)
@@ -100,12 +112,15 @@ function ThemeArt.Refresh(frame, joined)
 end
 
 -- The backdrop out to the ring's inner edge.
-local function placeBack(frame, padding, radius)
-    local back = frame.themeBack
+local function placeBackAround(back, clip, box, padding, radius)
     back:ClearAllPoints()
-    back:SetPoint("TOPLEFT", frame, "TOPLEFT", -padding, padding)
-    back:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", padding, -padding)
-    ns.Corners.Fit(frame.themeClip, back, radius > 0 and radius + padding or 0)
+    back:SetPoint("TOPLEFT", box, "TOPLEFT", -padding, padding)
+    back:SetPoint("BOTTOMRIGHT", box, "BOTTOMRIGHT", padding, -padding)
+    ns.Corners.Fit(clip, back, radius > 0 and radius + padding or 0)
+end
+local function placeBack(frame, padding, radius)
+    placeBackAround(frame.themeBack, frame.themeClip, frame, padding, radius)
+    placeBackAround(frame.themeBlockBack, frame.themeBlockClip, frame.unitBox or frame, padding, radius)
 end
 
 -- Ornaments sit at the ring's outer corners, art.ornamentInset inwards
@@ -141,7 +156,10 @@ function ThemeArt.Style(frame)
     placeBack(frame, ns.Border.Padding(scope), ns.Corners.Clamp(ns.Corners.Radius(scope), ns.Single.Size(scope)))
     -- A raid cell names its own theme and shows only the backdrop.
     if frame.themeOf then
-        ThemeArt.Paint(frame.themeBack, ns.Themes.Spec(frame.themeOf()))
+        local cell = ns.Themes.Spec(frame.themeOf())
+        ThemeArt.Paint(frame.themeBack, cell)
+        ThemeArt.Paint(frame.themeBlockBack, cell)
+        frame.themeBackOn = frame.themeBack:IsShown()
         frame.themeShadowOn, frame.themeOrnamentsOn = false, nil
         ThemeArt.Refresh(frame, false)
         return
@@ -150,6 +168,8 @@ function ThemeArt.Style(frame)
     local art = spec.art or {}
     local extent = ns.Border.Extent(scope)
     ThemeArt.Paint(frame.themeBack, spec)
+    ThemeArt.Paint(frame.themeBlockBack, spec)
+    frame.themeBackOn = frame.themeBack:IsShown()
     placeOrnaments(frame, art, extent)
     placeShadow(frame, art, extent)
 end

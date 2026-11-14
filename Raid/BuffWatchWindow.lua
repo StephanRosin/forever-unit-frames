@@ -273,6 +273,26 @@ local function place(w, h)
     end
 end
 
+-- The raid cells' theme (Raid/Cell.lua): its backdrop and title font;
+-- Classic the plain dark glass.
+local function applyTheme()
+    local id = ns.RaidCell.Theme()
+    local spec = ns.Themes.Spec(id)
+    local bg = Window.bg
+    bg:SetVertexColor(1, 1, 1, 1)
+    if spec.art and spec.art.back then
+        ns.ThemeArt.Paint(bg, spec)
+    else
+        bg:SetColorTexture(0, 0, 0, 0.6)
+    end
+    local face = ns.Themes.CellLook(id, "fontFace")
+    if face then
+        ns.Texts.SetFont(Window.title, ns.Media.Font(face), 12 + (spec.fontSizeAdd or 0), "OUTLINE")
+    else
+        ns.Texts.SetFont(Window.title, ns.Media.Font("Friz Quadrata"), 12, "NONE")
+    end
+end
+
 -- Out of combat: everything anew.
 function Window.Refresh()
     local f = Window.frame
@@ -282,6 +302,7 @@ function Window.Refresh()
     f:SetSize(Window.WIDTH, h)
     place(Window.WIDTH, h)
     ns.Border.Draw(f, Panel.PANEL_SCOPE, f, 0)
+    applyTheme()
     f:SetShown(Window.Shown())
 end
 
@@ -324,9 +345,8 @@ end
 function Window.Create()
     if Window.frame then return Window.frame end
     local f = CreateFrame("Frame", Window.NAME, UIParent)
-    local bg = f:CreateTexture(nil, "BACKGROUND")
-    bg:SetAllPoints(f)
-    bg:SetColorTexture(0, 0, 0, 0.6)
+    Window.bg = f:CreateTexture(nil, "BACKGROUND")
+    Window.bg:SetAllPoints(f)
     Window.title = Style.Text(f, 12, "text")
     Window.title:SetPoint("TOPLEFT", f, "TOPLEFT", Window.PADDING, -Window.PADDING)
     Window.title:SetText(L.RAID_BUFF_WATCH_TITLE)
