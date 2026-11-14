@@ -100,7 +100,7 @@ Themes.SPECS = {
         font = "VT323", bar = "FUF Pixel", fontSizeAdd = 4,
         look = { borderShow = true, borderStyle = "FLAT", borderSize = 3, borderColor = { 1, 0.95, 0.91, 1 },
             borderPadding = 0, cornerRadius = 0, backgroundColor = { 0, 0, 0, 1 }, titleBackground = false,
-            shadowEnabled = false, fontOutline = "MONOCHROME" },
+            shadowEnabled = false, fontOutline = "OUTLINE" },
         art = { back = "PixelBack", hardShadow = 4 },
     },
 }
@@ -152,7 +152,7 @@ end
 -- Raised whenever SPECS change a look: theme sets made before are made
 -- anew from CLASSIC (Themes.Upgrade), so a changed theme shows as it is
 -- now. CLASSIC is never touched.
-Themes.REVISION = 2
+Themes.REVISION = 3
 
 -- The active profile's stored theme sets; stale ones (an older
 -- REVISION) dropped.
