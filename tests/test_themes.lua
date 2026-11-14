@@ -165,7 +165,15 @@ do
     H.check("docked: block ornament", frame.themeBlockOrnaments[4]:IsShown(), true)
     H.check("docked: frame ornament hidden", frame.themeOrnaments[4]:IsShown(), false)
     H.check("docked: block shadow", frame.themeBlockShadow:IsShown(), true)
+    -- The backdrop goes round the castbar's slot too: else the shadow showed through it.
+    frame.themeBackOn = true
+    art.Refresh(frame, true)
+    H.check("docked: block backdrop", frame.themeBlockBack:IsShown(), true)
+    H.check("docked: frame backdrop hidden", frame.themeBack:IsShown(), false)
+    art.Refresh(frame, false)
+    H.check("alone: frame backdrop", frame.themeBack:IsShown(), true)
 end
+H.check("comic: solid shadow on the unit frames", ns.Themes.SPECS.COMIC.art.hardShadow, 5)
 
 -- The entry for other addons' theme pickers.
 do
