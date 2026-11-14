@@ -621,7 +621,7 @@ local function restoreTitle(frame)
     local title = frame.texts.title
     title:ClearAllPoints()
     title:SetWidth(0)
-    title:SetPoint("LEFT", frame.title, "LEFT", ns.Pixel.Snap(4, title), 0)
+    title:SetPoint("LEFT", frame.title, "LEFT", ns.Pixel.Snap(4 + ns.ThemeArt.TitleIndent(frame), title), 0)
     placeTitleEnd(frame)
 end
 
@@ -632,7 +632,7 @@ end
 local function titleRoom(frame)
     -- With a centre text: its third.
     if frame.centerShown and frame.centerShown.title then return math.max(0, frame.centerThird.title - 8) end
-    local width = (Secrets.Number(frame.title:GetWidth()) or 0) - 8
+    local width = (Secrets.Number(frame.title:GetWidth()) or 0) - 8 - ns.ThemeArt.TitleIndent(frame)
     if frame.classIcon:IsShown() and frame.classBadgeInRow then
         width = width - (frame.classBadgeBox.right - frame.classBadgeBox.left) - 2
     end
@@ -681,7 +681,7 @@ function Texts.UpdateAwayBadge(frame)
     local measure = title.GetUnboundedStringWidth or title.GetStringWidth
     local nameWidth = Secrets.Number(measure(title))
     title:ClearAllPoints()
-    title:SetPoint("LEFT", frame.title, "LEFT", ns.Pixel.Snap(4, title), 0)
+    title:SetPoint("LEFT", frame.title, "LEFT", ns.Pixel.Snap(4 + ns.ThemeArt.TitleIndent(frame), title), 0)
     title:SetWidth(math.min(nameWidth and (nameWidth + 1) or room, room))
     badge:ClearAllPoints()
     badge:SetPoint("LEFT", title, "RIGHT", AWAY_GAP, 0)
@@ -795,7 +795,9 @@ function Texts.Style(frame)
         fs:SetShadowOffset(shadow and 1 or 0, shadow and -1 or 0)
         fs:ClearAllPoints()
         if not slot.center then
-            fs:SetPoint(slot.point, frame[slot.bar], slot.point, ns.Pixel.Snap(slot.x, fs), 0)
+            -- The title clears a theme's title wedge (Elements/ThemeArt.lua).
+            local x = slot.field == "title" and slot.x + ns.ThemeArt.TitleIndent(frame) or slot.x
+            fs:SetPoint(slot.point, frame[slot.bar], slot.point, ns.Pixel.Snap(x, fs), 0)
             fs:SetJustifyH(slot.point)
         end
         if slot.before then

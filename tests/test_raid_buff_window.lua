@@ -160,7 +160,7 @@ H.check("theme: wood backdrop", tostring(Win.bg._texture):find("WoodBack", 1, tr
 H.check("theme: wood font", (Win.title:GetFont() or ""):find("Cinzel", 1, true) ~= nil, true)
 RC.Set("general", "cellTheme", "PITWALL")
 M.Tick(1)
-H.check("theme: pitwall backdrop", tostring(Win.bg._texture):find("PitwallBack", 1, true) ~= nil, true)
+H.check("theme: pitwall backdrop", tostring(Win.bg._texture):find("SwissBack", 1, true) ~= nil, true)
 H.check("theme: pitwall body font", (Win.title:GetFont() or ""):find("TitilliumWeb-SemiBold", 1, true) ~= nil, true)
 RC.Set("general", "cellTheme", "CONSOLE")
 M.Tick(1)

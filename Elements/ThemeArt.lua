@@ -20,6 +20,7 @@ local PATH = "Interface\\AddOns\\ForeverUnitFrames\\Media\\Themes\\"
 -- (Corners.POINTS order): mirrored, never rotated.
 local MIRROR = { { 0, 1, 0, 1 }, { 1, 0, 0, 1 }, { 0, 1, 1, 0 }, { 1, 0, 1, 0 } }
 local SHADOW_COLOR = { 0, 0, 0, 1 }
+local WHITE = "Interface\\Buttons\\WHITE8X8"
 
 -- The backdrop on a texture: tiled, tinted; hidden without one.
 function ThemeArt.Paint(texture, spec)
@@ -80,6 +81,10 @@ function ThemeArt.Build(frame)
     frame.themeRule:Hide()
     frame.themeBlockRule = frame.themeOver:CreateTexture(nil, "OVERLAY", nil, -1)
     frame.themeBlockRule:Hide()
+    -- The title wedge: above the title row's strip (BACKGROUND), below
+    -- the bars and the texts.
+    frame.themeWedge = frame:CreateTexture(nil, "BORDER")
+    frame.themeWedge:Hide()
 end
 
 local function placeShadowAround(shadow, box, offset, extent)
@@ -176,6 +181,41 @@ local function placeRule(frame, art, extent)
     placeRuleOn(frame.themeBlockRule, frame.unitBox or frame, art, extent)
 end
 
+-- The wedge texture is square with a thin slanted piece in its left part:
+-- that part only, as wide as the title row is high, makes a bold wedge
+-- (the whole texture read as a stray stroke).
+local WEDGE_PART = 0.53
+
+-- How far the title text moves right to clear the title wedge.
+function ThemeArt.TitleIndent(frame)
+    if frame.themeOf or not frame.titleHeight then return 0 end
+    local art = ns.Themes.Spec(Config.Get("general", "theme")).art
+    if not (art and art.titleWedge) then return 0 end
+    return frame.titleHeight
+end
+
+-- The title row as a strip of its own colour and the wedge at its start.
+-- Health.Style painted the row before (elements style in order).
+local function placeTitle(frame, id, art)
+    local wedge = frame.themeWedge
+    local width = ThemeArt.TitleIndent(frame)
+    if art.titleStrip then
+        local c = art.titleStrip
+        frame.title:SetTexture(WHITE)
+        frame.title:SetVertexColor(c[1], c[2], c[3], c[4])
+    end
+    wedge:SetShown(width > 0 and frame.titleHeight > 0)
+    if not wedge:IsShown() then return end
+    wedge:ClearAllPoints()
+    wedge:SetPoint("TOPLEFT", frame.title, "TOPLEFT", 0, 0)
+    wedge:SetPoint("BOTTOMLEFT", frame.title, "BOTTOMLEFT", 0, 0)
+    wedge:SetWidth(width)
+    wedge:SetTexture(PATH .. art.titleWedge)
+    wedge:SetTexCoord(0, WEDGE_PART, 0, 1)
+    local c = ns.Themes.Accent(id, "wedge") or art.titleWedgeColor
+    wedge:SetVertexColor(c[1], c[2], c[3], c[4])
+end
+
 function ThemeArt.Style(frame)
     local scope = frame.key
     placeBack(frame, ns.Border.Padding(scope), ns.Corners.Clamp(ns.Corners.Radius(scope), ns.Single.Size(scope)))
@@ -186,6 +226,7 @@ function ThemeArt.Style(frame)
         ThemeArt.Paint(frame.themeBlockBack, cell)
         frame.themeBackOn = frame.themeBack:IsShown()
         frame.themeShadowOn, frame.themeOrnamentsOn, frame.themeRuleOn = false, nil, false
+        frame.themeWedge:Hide()
         ThemeArt.Refresh(frame, false)
         return
     end
@@ -199,6 +240,7 @@ function ThemeArt.Style(frame)
     placeOrnaments(frame, id, art, extent)
     placeRule(frame, art, extent)
     placeShadow(frame, art, extent)
+    placeTitle(frame, id, art)
 end
 
 function ThemeArt.Update() end

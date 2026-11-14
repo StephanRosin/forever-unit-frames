@@ -32,7 +32,9 @@ local LATIN_CLIENTS = { enUS = true, enGB = true, deDE = true, frFR = true, esES
 -- bottom right), ornamentInset = how far in from the border's outer
 -- corner (negative: further out), ornamentHeight = its height when not
 -- square, hardShadow = offset of a solid shadow, rule = a line this thick
--- in ruleColor along the top inside the ring, accent = what the theme's
+-- in ruleColor along the top inside the ring, titleStrip = the title row's
+-- colour, titleWedge = a piece at the title row's start in
+-- titleWedgeColor (the name begins after it), accent = what the theme's
 -- colour paints (Themes.Accent).
 -- borderPadding shows the backdrop round the bars.
 -- fontOutline: the client's OUTLINE, never SOFT. With the theme fonts
@@ -125,17 +127,20 @@ Themes.SPECS = {
             titleBackground = false, shadowEnabled = false, fontOutline = "OUTLINE" },
         art = { back = "ConsoleBack", accent = "ring" },
     },
-    -- A timing screen: carbon, dark cards, a red wedge, solid bars (LED
-    -- segments looked broken on health and power). The
-    -- ring is the carbon's own colour: none to see, but it keeps the
-    -- auras clear of the padding (Border.Extent).
+    -- A timing screen: calm and dark (the carbon weave read as stripes at
+    -- frame size), the name row a dark strip with the red wedge at its
+    -- start, solid bars (LED segments looked broken) on a dark track,
+    -- health in the timing screen's "normal" green. The ring is the
+    -- carbon's own colour: none to see, but it keeps the auras clear of
+    -- the padding (Border.Extent).
     PITWALL = {
         font = "Titillium Web", bar = "FUF Swiss",
         look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = { 0.043, 0.047, 0.055, 1 },
-            borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.086, 0.094, 0.11, 0.92 },
-            titleBackground = true, shadowEnabled = false, fontOutline = "OUTLINE" },
-        art = { back = "PitwallBack", ornament = "PitwallWedge", corners = { 1 }, ornamentSize = 16,
-            ornamentColor = { 0.882, 0.024, 0, 1 }, accent = "ornament" },
+            borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.165, 0.176, 0.2, 1 },
+            titleBackground = true, shadowEnabled = false, fontOutline = "OUTLINE",
+            healthColorMode = "STATIC", healthColor = { 0.133, 0.773, 0.369, 1 } },
+        art = { back = "SwissBack", titleStrip = { 0.137, 0.149, 0.173, 1 }, titleWedge = "PitwallWedge",
+            titleWedgeColor = { 0.882, 0.024, 0, 1 }, accent = "wedge" },
     },
 }
 
@@ -296,7 +301,7 @@ end
 -- Raised whenever SPECS change a look: theme sets made before are made
 -- anew from CLASSIC (Themes.Upgrade), so a changed theme shows as it is
 -- now. CLASSIC is never touched.
-Themes.REVISION = 6
+Themes.REVISION = 7
 
 -- The active profile's stored theme sets; stale ones (an older
 -- REVISION) dropped.
@@ -405,7 +410,8 @@ local function greyPaint(spec)
 end
 
 -- Theme id's colour where its art.accent is `where` ("ring": the border,
--- "ornament": the corner piece); nil for its first colour or another place.
+-- "ornament": the corner piece, "wedge": the title wedge); nil for its first
+-- colour or another place.
 function Themes.Accent(id, where)
     local art = Themes.Spec(id).art
     if not art or art.accent ~= where then return nil end

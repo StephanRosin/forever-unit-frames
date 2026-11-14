@@ -90,23 +90,39 @@ H.check("console amber: block ring", rgb(f.blockRing.border[1]._color), "1.000,0
 H.check("console amber: backdrop kept", f.themeBack._texture, PATH .. "ConsoleBack")
 H.check("console amber: setting untouched", rgb(Config.Get("player", "borderColor")), "0.306,0.929,0.690,1.000")
 
--- Pitwall: carbon, dark cards, the red wedge top left.
+-- Pitwall: calm dark backdrop, the name row a strip with the red wedge at
+-- its start, solid bars on a dark track, green health.
 H.checkTrue("pitwall: switch", Themes.Switch("PITWALL"))
 restyle()
 H.check("pitwall: font", Config.Get("player", "fontFace"), "Titillium Web")
 H.check("pitwall: bar", Config.Get("player", "barTexture"), "FUF Swiss")
-H.check("pitwall: backdrop", f.themeBack._texture, PATH .. "PitwallBack")
-H.check("pitwall: card", rgb(Config.Get("player", "backgroundColor")), "0.086,0.094,0.110,0.920")
-H.check("pitwall: wedge", f.themeOrnaments[1]._texture, PATH .. "PitwallWedge")
-H.check("pitwall: wedge shown, top left only", tostring(f.themeOrnaments[1]:IsShown()) .. " "
-    .. tostring(f.themeOrnaments[4]:IsShown()), "true false")
-H.check("pitwall: wedge red", rgb(f.themeOrnaments[1]._color), "0.882,0.024,0.000,1.000")
+H.check("pitwall: flat backdrop, no weave", f.themeBack._texture, PATH .. "SwissBack")
+H.check("pitwall: dark track", rgb(Config.Get("player", "backgroundColor")), "0.165,0.176,0.200,1.000")
+H.check("pitwall: track on the health bar", rgb(f.healthBg._color), "0.165,0.176,0.200,1.000")
+H.check("pitwall: health green", rgb({ ns.Health.ColorFor(f) }), "0.133,0.773,0.369,1.000")
+H.check("pitwall: no corner wedge", f.themeOrnaments[1]:IsShown(), false)
+H.check("pitwall: title strip", f.title._texture .. " " .. rgb(f.title._color),
+    "Interface\\Buttons\\WHITE8X8 0.137,0.149,0.173,1.000")
+local wedge = f.themeWedge
+H.check("pitwall: wedge shown", wedge:IsShown(), true)
+H.check("pitwall: wedge texture", wedge._texture, PATH .. "PitwallWedge")
+H.check("pitwall: wedge red", rgb(wedge._color), "0.882,0.024,0.000,1.000")
+local function anchor(region, n)
+    local point, rel, relPoint = region:GetPoint(n)
+    return point .. ">" .. (rel == f.title and "title" or tostring(rel)) .. "." .. relPoint
+end
+H.check("pitwall: wedge at the strip's start, full height", anchor(wedge, 1) .. " " .. anchor(wedge, 2),
+    "TOPLEFT>title.TOPLEFT BOTTOMLEFT>title.BOTTOMLEFT")
+local indent = ns.ThemeArt.TitleIndent(f)
+H.checkTrue("pitwall: wedge as wide as the indent", indent > 0 and wedge:GetWidth() == indent)
+local _, _, _, nameX = f.texts.title:GetPoint(1)
+H.check("pitwall: the name starts after the wedge", nameX, ns.Pixel.Snap(4 + indent, f.texts.title))
 H.check("pitwall: no rule", f.themeRule:IsShown(), false)
 H.check("pitwall: ring unchanged by colours", Themes.Accent("PITWALL", "ring"), nil)
 H.checkTrue("pitwall teal: set", Themes.SetColor("TEAL"))
 restyle()
-H.check("pitwall teal: wedge", rgb(f.themeOrnaments[1]._color), "0.000,0.631,0.612,1.000")
-H.check("pitwall teal: backdrop kept", f.themeBack._texture, PATH .. "PitwallBack")
+H.check("pitwall teal: wedge", rgb(f.themeWedge._color), "0.000,0.631,0.612,1.000")
+H.check("pitwall teal: backdrop kept", f.themeBack._texture, PATH .. "SwissBack")
 H.check("colours: each theme its own", Themes.Color("SWISS") .. " " .. Themes.Color("CONSOLE") .. " "
     .. Themes.Color(), "BLUE AMBER TEAL")
 
@@ -127,6 +143,10 @@ for key, value in pairs(classic) do
 end
 H.check("classic: no rule", f.themeRule:IsShown(), false)
 H.check("classic: no ornament", f.themeOrnaments[1]:IsShown(), false)
+H.check("classic: no wedge, the name back in place", tostring(f.themeWedge:IsShown()) .. " "
+    .. select(4, f.texts.title:GetPoint(1)), "false " .. ns.Pixel.Snap(4, f.texts.title))
+H.check("classic: title row the bar again", f.title._texture,
+    ns.Media.StatusBar(Config.Get("player", "barTexture")))
 H.check("classic: no colours", #Themes.Colors(), 0)
 
 -- Raid cells in a theme of their own: its bar, body font, accent ring.
