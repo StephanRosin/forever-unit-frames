@@ -1317,7 +1317,10 @@ L.NEWS_0_24_0_GROUP = "플레이어 프레임: \"그룹에서는 흐리지 않�
 L.NEWS_0_24_0_COMBAT = "전투 숫자: 위치(왼쪽, 중앙, 오른쪽)와 오프셋, 고유한 글꼴, 크기, 글꼴 스타일 (각 프레임의 텍스트 탭)."
 L.NEWS_OPEN_FSR = "5초 규칙 열기"
 
-L.SECTION_shields = "보호막 감시 (아이콘과 남은 양)"
+L.SECTION_shields = "보호막 감시"
+L.SECTION_shieldsIcons = "보호막 아이콘"
+L.SECTION_shieldsTotal = "보호막 합계"
+L.SECTION_shieldsBar = "흡수 막대"
 L.MOVER_SHIELDS = "%s 보호막"
 L.SETTING_shieldsEnabled = "보호막 감시"
 L.HINT_shieldsEnabled = "활성 보호막 아이콘과 흡수량 합계"

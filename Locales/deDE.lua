@@ -1379,7 +1379,10 @@ L.NEWS_0_24_0_COMBAT = "Kampfzahlen: Platz (links, Mitte, rechts) mit Versatz, e
 L.NEWS_OPEN_FSR = "Fünf-Sekunden-Regel öffnen"
 
 -- The shield watch (Elements/ShieldWatch.lua).
-L.SECTION_shields = "Schildanzeige (Symbole und Menge)"
+L.SECTION_shields = "Schildwache"
+L.SECTION_shieldsIcons = "Schild-Symbole"
+L.SECTION_shieldsTotal = "Schild-Summe"
+L.SECTION_shieldsBar = "Absorb-Leiste"
 L.MOVER_SHIELDS = "Schilde: %s"
 L.SETTING_shieldsEnabled = "Schildwache"
 L.HINT_shieldsEnabled = "Symbole deiner aktiven Schilde und die Summe deiner Absorptionen"

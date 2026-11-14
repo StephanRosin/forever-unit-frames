@@ -1407,7 +1407,10 @@ L.NEWS_0_24_0_COMBAT = "Combat numbers: place (left, center, right) with an offs
 L.NEWS_OPEN_FSR = "Open the five-second rule"
 
 -- The shield watch (Elements/ShieldWatch.lua).
-L.SECTION_shields = "Shield watch (icons and amount)"
+L.SECTION_shields = "Shield watch"
+L.SECTION_shieldsIcons = "Shield icons"
+L.SECTION_shieldsTotal = "Shield total"
+L.SECTION_shieldsBar = "Absorb bar"
 L.MOVER_SHIELDS = "%s shields"
 L.SETTING_shieldsEnabled = "Shield watch"
 L.HINT_shieldsEnabled = "Icons of your active shields and the total of your absorbs"

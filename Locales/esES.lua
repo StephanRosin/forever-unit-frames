@@ -1380,7 +1380,10 @@ L.NEWS_0_24_0_COMBAT = "Números de combate: posición (izquierda, centro, derec
 L.NEWS_OPEN_FSR = "Abrir la regla de los 5 segundos"
 
 -- The shield watch (Elements/ShieldWatch.lua).
-L.SECTION_shields = "Vigilancia de escudos (iconos y cantidad)"
+L.SECTION_shields = "Vigilancia de escudos"
+L.SECTION_shieldsIcons = "Iconos de escudos"
+L.SECTION_shieldsTotal = "Total de escudos"
+L.SECTION_shieldsBar = "Barra de absorción"
 L.MOVER_SHIELDS = "Escudos: %s"
 L.SETTING_shieldsEnabled = "Vigía de escudos"
 L.HINT_shieldsEnabled = "Iconos de tus escudos activos y el total de tus absorciones"

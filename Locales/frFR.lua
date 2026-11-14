@@ -1379,7 +1379,10 @@ L.NEWS_0_24_0_COMBAT = "Chiffres de combat : position (gauche, centre, droite) a
 L.NEWS_OPEN_FSR = "Ouvrir la règle des 5 secondes"
 
 -- The shield watch (Elements/ShieldWatch.lua).
-L.SECTION_shields = "Suivi des boucliers (icônes et quantité)"
+L.SECTION_shields = "Suivi des boucliers"
+L.SECTION_shieldsIcons = "Icônes des boucliers"
+L.SECTION_shieldsTotal = "Total des boucliers"
+L.SECTION_shieldsBar = "Barre d'absorption"
 L.MOVER_SHIELDS = "Boucliers : %s"
 L.SETTING_shieldsEnabled = "Veille des boucliers"
 L.HINT_shieldsEnabled = "Icônes de vos boucliers actifs et total de vos absorptions"

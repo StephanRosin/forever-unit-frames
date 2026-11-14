@@ -6,7 +6,7 @@
 
 The **Extras** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
 
-**On this page:** [Low mana warning](#low-mana-warning) · [Shield watch (icons and amount)](#shield-watch-icons-and-amount)
+**On this page:** [Low mana warning](#low-mana-warning) · [Shield watch](#shield-watch) · [Shield icons](#shield-icons) · [Shield total](#shield-total) · [Absorb bar](#absorb-bar)
 
 ## Low mana warning
 
@@ -34,7 +34,7 @@ The **Extras** tab on each frame's page in `/fuf`. The last column says which fr
 </tbody>
 </table>
 
-## Shield watch (icons and amount)
+## Shield watch
 
 The icons of your active absorb shields and the exact total of all your absorbs, like a WeakAura: Power Word: Shield, the mage's barriers and wards, the warlock's Shadow Ward and Sacrifice, protection potions and absorbing items, plus spells you add. Off by default: switch it on with **Shield watch**. The block has its own mover (unlock the frames to place it), or hangs from the player frame (**Place**: a point of the frame, the icons' own point and an offset; it moves and scales with the frame); test mode shows two sample icons and a sample total. The game draws the icons itself, in combat too, with their swipe and time left, and only for the shields on your list: your own class's, a priest's shield and the potions and items. The total is the game's own sum of every absorb on you (shields not on the list included); it shows while it is above zero, at a side of the icons. There is no amount per shield. **Hide them in the buffs** leaves the watched shields out of your buffs.
 
@@ -48,9 +48,6 @@ The icons of your active absorb shields and the exact total of all your absorbs,
 <tr><td><b>Potions and items</b></td><td>Protection potions, absorbing trinkets and belts</td><td>On, Off</td><td>On</td><td>Player</td></tr>
 <tr><td><b>More shields</b></td><td>Spell IDs or names; Enter adds</td><td>Spell IDs or names, up to 100 spells</td><td>(none)</td><td>Player</td></tr>
 <tr><td><b>Hide them in the buffs</b></td><td>The watched shields leave your buffs</td><td>On, Off</td><td>On</td><td>Player</td></tr>
-<tr><td><b>Icon size</b></td><td></td><td>8 – 96</td><td>32</td><td>Player</td></tr>
-<tr><td><b>Spacing</b></td><td></td><td>0 – 20</td><td>4</td><td>Player</td></tr>
-<tr><td><b>Growth</b></td><td></td><td>Right, Left, Up, Down</td><td>Right</td><td>Player</td></tr>
 <tr><td><b>Place</b></td><td>Free, moved when the frames are unlocked, or on the player frame</td><td>Free (moved when unlocked), On the player frame</td><td>Free (moved when unlocked)</td><td>Player</td></tr>
 <tr><td><b>Position X</b></td><td></td><td>-4000 – 4000</td><td>-300</td><td>Player</td></tr>
 <tr><td><b>Position Y</b></td><td></td><td>-4000 – 4000</td><td>-140</td><td>Player</td></tr>
@@ -58,25 +55,56 @@ The icons of your active absorb shields and the exact total of all your absorbs,
 <tr><td><b>Point of the icons</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Bottom left</td><td>Player</td></tr>
 <tr><td><b>Offset X</b></td><td></td><td>-400 – 400</td><td>0</td><td>Player</td></tr>
 <tr><td><b>Offset Y</b></td><td></td><td>-400 – 400</td><td>4</td><td>Player</td></tr>
-<tr><td><b>Total</b></td><td>All your absorbs, exact; shown while above zero</td><td>On, Off</td><td>On</td><td>Player</td></tr>
-<tr><td><b>Total place</b></td><td>At that side of the icons</td><td>Top, Bottom, Left, Right, Center</td><td>Left</td><td>Player</td></tr>
-<tr><td><b>Total offset X</b></td><td></td><td>-64 – 64</td><td>-3</td><td>Player</td></tr>
-<tr><td><b>Total offset Y</b></td><td></td><td>-64 – 64</td><td>0</td><td>Player</td></tr>
-<tr><td><b>Total font</b></td><td></td><td>Font, or the frame's font</td><td>The frame's font</td><td>Player</td></tr>
-<tr><td><b>Total size</b></td><td></td><td>6 – 48 (0: Auto)</td><td>Auto</td><td>Player</td></tr>
-<tr><td><b>Total font style</b></td><td></td><td>The frame's style, None, Outline, Thick outline, Monochrome, Soft outline</td><td>The frame's style</td><td>Player</td></tr>
-<tr><td><b>Total color</b></td><td></td><td>Color</td><td><code>#ffffff</code></td><td>Player</td></tr>
+</tbody>
+</table>
+
+## Shield icons
+
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Icon size</b></td><td></td><td>8 – 96</td><td>32</td><td>Player</td></tr>
+<tr><td><b>Spacing</b></td><td></td><td>0 – 20</td><td>4</td><td>Player</td></tr>
 <tr><td><b>Swipe</b></td><td></td><td>On, Off</td><td>On</td><td>Player</td></tr>
 <tr><td><b>Time left</b></td><td></td><td>On, Off</td><td>Off</td><td>Player</td></tr>
-<tr><td><b>Time place</b></td><td></td><td>Top, Bottom, Left, Right, Center</td><td>Top</td><td>Player</td></tr>
-<tr><td><b>Time offset X</b></td><td></td><td>-64 – 64</td><td>0</td><td>Player</td></tr>
-<tr><td><b>Time offset Y</b></td><td></td><td>-64 – 64</td><td>0</td><td>Player</td></tr>
 <tr><td><b>Time font</b></td><td></td><td>Font, or the frame's font</td><td>The frame's font</td><td>Player</td></tr>
 <tr><td><b>Time size</b></td><td></td><td>6 – 48 (0: Auto)</td><td>Auto</td><td>Player</td></tr>
 <tr><td><b>Time font style</b></td><td></td><td>The frame's style, None, Outline, Thick outline, Monochrome, Soft outline</td><td>The frame's style</td><td>Player</td></tr>
 <tr><td><b>Time color</b></td><td></td><td>Color</td><td><code>#ffffff</code></td><td>Player</td></tr>
+<tr><td><b>Growth</b></td><td></td><td>Right, Left, Up, Down</td><td>Right</td><td>Player</td></tr>
+<tr><td><b>Time place</b></td><td></td><td>Top, Bottom, Left, Right, Center</td><td>Top</td><td>Player</td></tr>
+<tr><td><b>Time offset X</b></td><td></td><td>-64 – 64</td><td>0</td><td>Player</td></tr>
+<tr><td><b>Time offset Y</b></td><td></td><td>-64 – 64</td><td>0</td><td>Player</td></tr>
+</tbody>
+</table>
+
+## Shield total
+
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Total</b></td><td>All your absorbs, exact; shown while above zero</td><td>On, Off</td><td>On</td><td>Player</td></tr>
+<tr><td><b>Total font</b></td><td></td><td>Font, or the frame's font</td><td>The frame's font</td><td>Player</td></tr>
+<tr><td><b>Total size</b></td><td></td><td>6 – 48 (0: Auto)</td><td>Auto</td><td>Player</td></tr>
+<tr><td><b>Total font style</b></td><td></td><td>The frame's style, None, Outline, Thick outline, Monochrome, Soft outline</td><td>The frame's style</td><td>Player</td></tr>
+<tr><td><b>Total color</b></td><td></td><td>Color</td><td><code>#ffffff</code></td><td>Player</td></tr>
+<tr><td><b>Total place</b></td><td>At that side of the icons</td><td>Top, Bottom, Left, Right, Center</td><td>Left</td><td>Player</td></tr>
+<tr><td><b>Total offset X</b></td><td></td><td>-64 – 64</td><td>-3</td><td>Player</td></tr>
+<tr><td><b>Total offset Y</b></td><td></td><td>-64 – 64</td><td>0</td><td>Player</td></tr>
+</tbody>
+</table>
+
+## Absorb bar
+
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
 <tr><td><b>Absorb bar</b></td><td>Empties as the shield takes damage; full after your own shield</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
 <tr><td><b>Bar design</b></td><td></td><td>Flat, Shield stripes, Segments, Framed</td><td>Flat</td><td>Player</td></tr>
+<tr><td><b>Bar texture</b></td><td></td><td>Texture, or the frame's texture</td><td>Flat</td><td>Player</td></tr>
+<tr><td><b>Glow</b></td><td>Brightens the fill</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
+<tr><td><b>Bar color mode</b></td><td>Green at the top, red at the bottom: the fuller, the greener its top</td><td>Fixed, Red to green</td><td>Fixed</td><td>Player</td></tr>
+<tr><td><b>Bar color</b></td><td></td><td>Color</td><td><code>#ffd94d</code></td><td>Player</td></tr>
 <tr><td><b>Bar width</b></td><td></td><td>2 – 64</td><td>6</td><td>Player</td></tr>
 <tr><td><b>Bar height</b></td><td></td><td>4 – 300 (0: Auto)</td><td>Auto</td><td>Player</td></tr>
 <tr><td><b>Bar position</b></td><td></td><td>At the icons, Free</td><td>At the icons</td><td>Player</td></tr>
@@ -85,10 +113,6 @@ The icons of your active absorb shields and the exact total of all your absorbs,
 <tr><td><b>Bar offset Y</b></td><td></td><td>-200 – 200</td><td>0</td><td>Player</td></tr>
 <tr><td><b>Bar X</b></td><td></td><td>-4000 – 4000</td><td>-340</td><td>Player</td></tr>
 <tr><td><b>Bar Y</b></td><td></td><td>-4000 – 4000</td><td>-140</td><td>Player</td></tr>
-<tr><td><b>Bar texture</b></td><td></td><td>Texture, or the frame's texture</td><td>Flat</td><td>Player</td></tr>
-<tr><td><b>Glow</b></td><td>Brightens the fill</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
-<tr><td><b>Bar color mode</b></td><td>Green at the top, red at the bottom: the fuller, the greener its top</td><td>Fixed, Red to green</td><td>Fixed</td><td>Player</td></tr>
-<tr><td><b>Bar color</b></td><td></td><td>Color</td><td><code>#ffd94d</code></td><td>Player</td></tr>
 </tbody>
 </table>
 

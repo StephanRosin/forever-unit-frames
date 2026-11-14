@@ -223,21 +223,26 @@ Schema.FRAME = {
             "manaWarnClickWhat", "manaWarnX",
             "manaWarnY" },
             placement = { "manaWarnX", "manaWarnY" } },
-        -- The shield watch (Elements/ShieldWatch.lua), the player only: the
-        -- shields' icons and the amount left; last, as it is long.
+        -- The shield watch (Elements/ShieldWatch.lua), the player only, in
+        -- four parts, each with its own place rows: the watch (which
+        -- shields, where the block is), the icons, the total, the bar.
         { id = "shields", keys = { "shieldsEnabled", "shieldsPriest", "shieldsMage", "shieldsWarlock", "shieldsItems",
-            "shieldsExtra", "shieldsHideInBuffs", "shieldsSize", "shieldsSpacing", "shieldsGrowth",
-            "shieldsAnchor", "shieldsX", "shieldsY", "shieldsFramePoint", "shieldsPoint", "shieldsFrameX",
-            "shieldsFrameY", "shieldsTotal", "shieldsTotalPoint", "shieldsTotalX",
-            "shieldsTotalY", "shieldsTotalFont", "shieldsTotalSize", "shieldsTotalOutline", "shieldsTotalColor",
-            "shieldsSwipe", "shieldsTime", "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY", "shieldsTimeFont",
-            "shieldsTimeSize", "shieldsTimeOutline", "shieldsTimeColor", "shieldsBar", "shieldsBarStyle", "shieldsBarWidth",
-            "shieldsBarHeight", "shieldsBarAnchor", "shieldsBarSide", "shieldsBarX", "shieldsBarY", "shieldsBarFreeX", "shieldsBarFreeY",
-            "shieldsBarTexture", "shieldsBarGlow", "shieldsBarColorMode", "shieldsBarColor" },
-            placement = { "shieldsGrowth", "shieldsAnchor", "shieldsX", "shieldsY", "shieldsFramePoint", "shieldsPoint",
-                "shieldsFrameX", "shieldsFrameY", "shieldsTotalPoint", "shieldsTotalX", "shieldsTotalY",
-                "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY", "shieldsBarAnchor", "shieldsBarSide", "shieldsBarX", "shieldsBarY",
-                "shieldsBarFreeX", "shieldsBarFreeY" } },
+            "shieldsExtra", "shieldsHideInBuffs", "shieldsAnchor", "shieldsX", "shieldsY", "shieldsFramePoint",
+            "shieldsPoint", "shieldsFrameX", "shieldsFrameY" },
+            placement = { "shieldsAnchor", "shieldsX", "shieldsY", "shieldsFramePoint", "shieldsPoint", "shieldsFrameX",
+                "shieldsFrameY" } },
+        { id = "shieldsIcons", keys = { "shieldsSize", "shieldsSpacing", "shieldsSwipe", "shieldsTime", "shieldsTimeFont",
+            "shieldsTimeSize", "shieldsTimeOutline", "shieldsTimeColor", "shieldsGrowth", "shieldsTimePoint", "shieldsTimeX",
+            "shieldsTimeY" },
+            placement = { "shieldsGrowth", "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY" } },
+        { id = "shieldsTotal", keys = { "shieldsTotal", "shieldsTotalFont", "shieldsTotalSize", "shieldsTotalOutline",
+            "shieldsTotalColor", "shieldsTotalPoint", "shieldsTotalX", "shieldsTotalY" },
+            placement = { "shieldsTotalPoint", "shieldsTotalX", "shieldsTotalY" } },
+        { id = "shieldsBar", keys = { "shieldsBar", "shieldsBarStyle", "shieldsBarTexture", "shieldsBarGlow",
+            "shieldsBarColorMode", "shieldsBarColor", "shieldsBarWidth", "shieldsBarHeight", "shieldsBarAnchor",
+            "shieldsBarSide", "shieldsBarX", "shieldsBarY", "shieldsBarFreeX", "shieldsBarFreeY" },
+            placement = { "shieldsBarAnchor", "shieldsBarSide", "shieldsBarX", "shieldsBarY", "shieldsBarFreeX",
+                "shieldsBarFreeY" } },
     } },
 }
 
