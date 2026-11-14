@@ -127,3 +127,22 @@ H.check("upgrade: revision noted", db.themeSets.Default.revision, ns.Themes.REVI
 ns.Config.Set("general", "borderPadding", 2)
 ns.Themes.Upgrade()
 H.check("upgrade: once only", ns.Config.Get("general", "borderPadding"), 2)
+
+-- Ornaments and the solid shadow sit at the ring's corners: around the
+-- frame, or around the frame and its docked castbar.
+do
+    local art = ns.ThemeArt
+    local frame = M.newWidget("Frame", nil, UIParent)
+    frame.key = "player"
+    frame.unitBox = M.newWidget("Frame", nil, frame)
+    art.Build(frame)
+    frame.themeOrnamentsOn, frame.themeShadowOn = { [1] = true, [4] = true }, true
+    art.Refresh(frame, false)
+    H.check("alone: frame ornament", frame.themeOrnaments[4]:IsShown(), true)
+    H.check("alone: no block ornament", frame.themeBlockOrnaments[4]:IsShown(), false)
+    H.check("alone: unwanted corner", frame.themeOrnaments[2]:IsShown(), false)
+    art.Refresh(frame, true)
+    H.check("docked: block ornament", frame.themeBlockOrnaments[4]:IsShown(), true)
+    H.check("docked: frame ornament hidden", frame.themeOrnaments[4]:IsShown(), false)
+    H.check("docked: block shadow", frame.themeBlockShadow:IsShown(), true)
+end

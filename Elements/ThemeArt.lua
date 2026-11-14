@@ -57,10 +57,14 @@ function ThemeArt.Build(frame)
     frame.themeOver = CreateFrame("Frame", nil, frame)
     frame.themeOver:SetAllPoints(frame)
     frame.themeOver:SetFrameLevel(frame:GetFrameLevel() + 12)
-    frame.themeOrnaments = {}
+    -- Two sets like the shadow: at the frame's corners, and at the unit
+    -- box's with a docked castbar.
+    frame.themeOrnaments, frame.themeBlockOrnaments = {}, {}
     for i = 1, 4 do
         frame.themeOrnaments[i] = frame.themeOver:CreateTexture(nil, "OVERLAY")
         frame.themeOrnaments[i]:Hide()
+        frame.themeBlockOrnaments[i] = frame.themeOver:CreateTexture(nil, "OVERLAY")
+        frame.themeBlockOrnaments[i]:Hide()
     end
 end
 
@@ -80,13 +84,19 @@ local function placeShadow(frame, art, extent)
     ThemeArt.Refresh(frame, frame.blockRing ~= nil and frame.blockRing:IsShown())
 end
 
--- Any time, combat included (Elements/Shape.lua: Refresh): the shadow
--- of the frame alone, or of the frame with its docked castbar (joined).
+-- Any time, combat included (Elements/Shape.lua: Refresh): shadow and
+-- ornaments of the frame alone, or of the frame with its docked castbar
+-- (joined). Only shows and hides.
 function ThemeArt.Refresh(frame, joined)
     if not frame.themeShadow then return end
     local on = frame.themeShadowOn == true
     frame.themeShadow:SetShown(on and not joined)
     frame.themeBlockShadow:SetShown(on and joined)
+    local wanted = frame.themeOrnamentsOn or {}
+    for i = 1, 4 do
+        frame.themeOrnaments[i]:SetShown(wanted[i] == true and not joined)
+        frame.themeBlockOrnaments[i]:SetShown(wanted[i] == true and joined)
+    end
 end
 
 -- The backdrop out to the ring's inner edge.
@@ -100,27 +110,30 @@ end
 
 -- Ornaments sit at the ring's outer corners, art.ornamentInset inwards
 -- (negative: outwards).
-local function placeOrnaments(frame, art, extent)
-    local wanted = {}
-    for _, i in ipairs(art.ornament and art.corners or {}) do wanted[i] = true end
+local function placeOrnamentSet(pieces, box, art, wanted, extent)
     local size, inset = art.ornamentSize or 12, (art.ornamentInset or 0) - extent
     local c = art.ornamentColor or { 1, 1, 1, 1 }
-    for i, piece in ipairs(frame.themeOrnaments) do
+    for i, piece in ipairs(pieces) do
         if wanted[i] then
             local point = ns.Corners.POINTS[i]
             local dx = (i == 1 or i == 3) and inset or -inset
             local dy = (i <= 2) and -inset or inset
             piece:ClearAllPoints()
-            piece:SetPoint(point, frame, point, dx, dy)
+            piece:SetPoint(point, box, point, dx, dy)
             piece:SetSize(size, size)
             piece:SetTexture(PATH .. art.ornament)
             piece:SetTexCoord(unpack(MIRROR[i]))
             piece:SetVertexColor(c[1], c[2], c[3], c[4])
-            piece:Show()
-        else
-            piece:Hide()
         end
     end
+end
+
+local function placeOrnaments(frame, art, extent)
+    local wanted = {}
+    for _, i in ipairs(art.ornament and art.corners or {}) do wanted[i] = true end
+    frame.themeOrnamentsOn = wanted
+    placeOrnamentSet(frame.themeOrnaments, frame, art, wanted, extent)
+    placeOrnamentSet(frame.themeBlockOrnaments, frame.unitBox or frame, art, wanted, extent)
 end
 
 function ThemeArt.Style(frame)
@@ -129,17 +142,16 @@ function ThemeArt.Style(frame)
     -- A raid cell names its own theme and shows only the backdrop.
     if frame.themeOf then
         ThemeArt.Paint(frame.themeBack, ns.Themes.Spec(frame.themeOf()))
-        frame.themeShadowOn = false
+        frame.themeShadowOn, frame.themeOrnamentsOn = false, nil
         ThemeArt.Refresh(frame, false)
-        for _, piece in ipairs(frame.themeOrnaments) do piece:Hide() end
         return
     end
     local spec = ns.Themes.Spec(Config.Get("general", "theme"))
     local art = spec.art or {}
     local extent = ns.Border.Extent(scope)
     ThemeArt.Paint(frame.themeBack, spec)
-    placeShadow(frame, art, extent)
     placeOrnaments(frame, art, extent)
+    placeShadow(frame, art, extent)
 end
 
 function ThemeArt.Update() end
