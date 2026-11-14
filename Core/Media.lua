@@ -37,6 +37,19 @@ for _, name in ipairs({ "Wood", "Tech", "Parchment", "Stone", "Glass", "Comic", 
 end
 local fallback = { font = "Friz Quadrata", statusbar = "Flat" }
 
+-- Our own font files loaded while the addon loads: a file used for the
+-- first time can be refused (Elements/Texts.lua tries again), so the
+-- first restyle should not be its first use.
+do
+    local holder = CreateFrame("Frame")
+    holder:Hide()
+    for _, path in pairs(builtin.font) do
+        if path:find(ADDON, 1, true) then
+            holder:CreateFontString():SetFont(path, 12, "")
+        end
+    end
+end
+
 local function lsm()
     return LibStub and LibStub("LibSharedMedia-3.0", true)
 end

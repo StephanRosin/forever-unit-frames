@@ -29,46 +29,54 @@ local LATIN_CLIENTS = { enUS = true, enGB = true, deDE = true, frFR = true, esES
 -- art (Elements/ThemeArt.lua): back = backdrop file in Media/Themes,
 -- tint = its colour, ornament = corner piece, corners = which ones
 -- (Corners.POINTS order: 1 top left, 2 top right, 3 bottom left, 4
--- bottom right), ornamentInset = how far inside the frame (negative:
--- outside, on the border), hardShadow = offset of a solid shadow.
+-- bottom right), ornamentInset = how far in from the border's outer
+-- corner (negative: further out), hardShadow = offset of a solid shadow.
+-- borderPadding shows the backdrop round the bars.
 Themes.SPECS = {
     CLASSIC = {},
+    -- Oak boards round the bars, a brass rim, brass rivets.
     WOOD = {
         font = "Cinzel", bar = "FUF Wood",
-        look = { borderShow = true, borderStyle = "BRONZE", borderSize = 3, borderPadding = 0, cornerRadius = 6,
-            backgroundColor = { 0.12, 0.07, 0.03, 0.85 }, titleBackground = false,
+        look = { borderShow = true, borderStyle = "BRONZE", borderSize = 3, borderPadding = 4, cornerRadius = 3,
+            backgroundColor = { 0.1, 0.06, 0.02, 0.85 }, titleBackground = false,
             shadowEnabled = true, shadowAlpha = 60, shadowSize = 6, fontOutline = "SOFT" },
-        art = { back = "WoodBack", ornament = "Rivet", corners = { 1, 2, 3, 4 }, ornamentSize = 12, ornamentInset = 2 },
+        art = { back = "WoodBack", ornament = "Rivet", corners = { 1, 2, 3, 4 }, ornamentSize = 11, ornamentInset = 1 },
     },
+    -- Dark navy with a faint grid, a thin cyan line, corner brackets.
     TECH = {
         font = "Space Grotesk", bar = "FUF Tech",
-        look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = { 0.12, 0.29, 0.36, 1 },
-            borderPadding = 0, cornerRadius = 0, backgroundColor = { 0.03, 0.07, 0.11, 0.9 },
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = { 0.25, 0.88, 0.94, 0.9 },
+            borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.02, 0.05, 0.08, 0.92 },
             titleBackground = false, shadowEnabled = false, fontOutline = "SOFT" },
-        art = { back = "TechBack", ornament = "Bracket", corners = { 2, 3 }, ornamentSize = 14, ornamentInset = -3,
+        art = { back = "TechBack", ornament = "Bracket", corners = { 1, 2, 3, 4 }, ornamentSize = 12, ornamentInset = -3,
             ornamentColor = { 0.25, 0.88, 0.94, 1 } },
     },
+    -- Parchment round the bars, a brown ink line, a wax seal.
     PARCHMENT = {
         font = "IM Fell English SC", bar = "FUF Parchment", fontSizeAdd = 1,
-        look = { borderShow = true, borderStyle = "FLAT", borderSize = 2, borderColor = { 0.23, 0.16, 0.1, 1 },
-            borderPadding = 0, cornerRadius = 3, backgroundColor = { 0.3, 0.2, 0.1, 0.45 }, titleBackground = false,
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 2, borderColor = { 0.29, 0.2, 0.12, 1 },
+            borderPadding = 4, cornerRadius = 2, backgroundColor = { 0.22, 0.15, 0.07, 0.6 }, titleBackground = false,
             shadowEnabled = true, shadowAlpha = 45, shadowSize = 5, fontOutline = "SOFT" },
-        art = { back = "ParchmentBack" },
+        art = { back = "ParchmentBack", ornament = "Seal", corners = { 3 }, ornamentSize = 22, ornamentInset = -6 },
     },
+    -- Grey granite, a dark chiselled edge, glowing runes.
     RUNESTONE = {
-        font = "Cinzel", bar = "FUF Stone",
-        look = { borderShow = true, borderStyle = "SHADED", borderSize = 3, borderColor = { 0.32, 0.33, 0.36, 1 },
-            borderPadding = 0, cornerRadius = 2, backgroundColor = { 0.06, 0.06, 0.07, 0.9 },
+        font = "Marcellus", bar = "FUF Stone", fontSizeAdd = 1,
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 2, borderColor = { 0.1, 0.1, 0.12, 1 },
+            borderPadding = 5, cornerRadius = 0, backgroundColor = { 0.04, 0.05, 0.06, 0.92 },
             titleBackground = false, shadowEnabled = true, shadowAlpha = 70, shadowSize = 6, fontOutline = "SOFT" },
-        art = { back = "StoneBack" },
+        art = { back = "StoneBack", ornament = "Rune", corners = { 1, 2 }, ornamentSize = 14, ornamentInset = 2,
+            ornamentColor = { 0.35, 0.95, 0.85, 1 } },
     },
+    -- A mosaic of coloured glass round the bars, dark lead.
     GLASS = {
-        font = "Cormorant SC", bar = "FUF Glass", fontSizeAdd = 2,
-        look = { borderShow = true, borderStyle = "FLAT", borderSize = 4, borderColor = { 0.08, 0.07, 0.05, 1 },
-            borderPadding = 0, cornerRadius = 0, backgroundColor = { 0.16, 0.14, 0.12, 0.9 },
-            titleBackground = false, shadowEnabled = true, shadowAlpha = 55, shadowSize = 6, fontOutline = "OUTLINE" },
-        art = { back = "GlassBack", tint = { 0.85, 0.85, 0.85, 1 } },
+        font = "Morpheus", bar = "FUF Glass", fontSizeAdd = 1,
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 3, borderColor = { 0.07, 0.06, 0.05, 1 },
+            borderPadding = 6, cornerRadius = 0, backgroundColor = { 0.05, 0.04, 0.06, 0.9 },
+            titleBackground = true, shadowEnabled = true, shadowAlpha = 55, shadowSize = 6, fontOutline = "OUTLINE" },
+        art = { back = "GlassBack" },
     },
+    -- Thick ink line, halftone paper, a solid shadow.
     COMIC = {
         font = "Bangers", bar = "FUF Comic", fontSizeAdd = 2,
         look = { borderShow = true, borderStyle = "FLAT", borderSize = 3, borderColor = { 0.07, 0.07, 0.07, 1 },
@@ -76,13 +84,15 @@ Themes.SPECS = {
             shadowEnabled = false, fontOutline = "THICKOUTLINE" },
         art = { back = "ComicBack", hardShadow = 5 },
     },
+    -- Translucent ice, a pale rim, rounded.
     FROST = {
-        font = "Marcellus", bar = "FUF Frost", fontSizeAdd = 1,
+        font = "Cormorant SC", bar = "FUF Frost", fontSizeAdd = 2,
         look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = { 0.86, 0.96, 1, 0.8 },
-            borderPadding = 0, cornerRadius = 8, backgroundColor = { 0.04, 0.12, 0.22, 0.6 },
+            borderPadding = 2, cornerRadius = 6, backgroundColor = { 0.04, 0.12, 0.22, 0.6 },
             titleBackground = false, shadowEnabled = true, shadowAlpha = 55, shadowSize = 8, fontOutline = "SOFT" },
         art = { back = "FrostBack", tint = { 1, 1, 1, 0.75 } },
     },
+    -- A light pixel frame, scan lines, a solid shadow.
     PIXEL = {
         font = "VT323", bar = "FUF Pixel", fontSizeAdd = 4,
         look = { borderShow = true, borderStyle = "FLAT", borderSize = 3, borderColor = { 1, 0.95, 0.91, 1 },

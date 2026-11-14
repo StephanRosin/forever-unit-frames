@@ -22,7 +22,7 @@ H.check("wood: keeps the position", Config.Get("player", "x"), -200)
 H.check("wood: keeps an element's place", Config.Get("player", "shieldsBarX"), 5)
 H.check("wood: its border", Config.Get("player", "borderStyle"), "BRONZE")
 H.check("wood: its bar", Config.Get("player", "barTexture"), "FUF Wood")
-H.check("wood: frame override gone, General's look", Config.Get("player", "cornerRadius"), 6)
+H.check("wood: frame override gone, General's look", Config.Get("player", "cornerRadius"), 3)
 H.check("wood: its font", Config.Get("player", "fontFace"), "Cinzel")
 H.check("wood: target as wide as the player", Config.Get("target", "width"), 300)
 H.check("wood: target as high as the player", Config.Get("target", "height"), 67)
@@ -95,3 +95,18 @@ H.check("cells: own look", Cell.Theme(), "CLASSIC")
 H.check("cells: own bar", Config.Get(Cell.KEY, "barTexture"), ns.RaidConfig.Get("r10", "barTexture"))
 ns.RaidConfig.Set("general", "cellTheme", "FROST")
 H.check("cells: a theme of their own", Config.Get(Cell.KEY, "barTexture"), "FUF Frost")
+
+-- A font the client refuses at first use is tried again; until it takes,
+-- the soft outline's black copies stay hidden (the text would show black).
+local fs = UIParent:CreateFontString()
+local setFont, refusals = fs.SetFont, 1
+fs.SetFont = function(self, path, ...)
+    if refusals > 0 and path == "Fonts\\new.ttf" then refusals = refusals - 1; self._font = nil; return false end
+    return setFont(self, path, ...)
+end
+fs:Show()
+ns.Texts.SetFont(fs, "Fonts\\new.ttf", 12, "SOFT")
+H.check("refused: no outline under an empty text", fs.softCopies[1]:IsShown(), false)
+M.RunTimers()
+H.check("tried again: taken", (fs:GetFont()), "Fonts\\new.ttf")
+H.check("tried again: outline back", fs.softCopies[1]:IsShown(), true)

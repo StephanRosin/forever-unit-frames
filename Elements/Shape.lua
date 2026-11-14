@@ -121,6 +121,7 @@ function Shape.Refresh(frame)
     local joined = top or bottom
     frame.frameRing:SetShown(not joined)
     frame.blockRing:SetShown(joined)
+    ns.ThemeArt.Refresh(frame, joined)
     ns.Corners.SetShape(frame.clip, frameShape(top, bottom))
 end
 

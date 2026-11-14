@@ -350,14 +350,42 @@ function Texts.CountdownFlags(outline)
     return outline
 end
 
+-- Whether a text took the font asked for. A font file the client has not
+-- loaded yet (the themes' own, Core/Media.lua) can be refused on first
+-- use and leave the text without a font: drawn, only its black soft
+-- outline copies would show.
+local function hasFont(fs, font)
+    local path = fs:GetFont()
+    if type(path) ~= "string" then return false end
+    local function plain(p) return (p:lower():gsub("/", "\\")) end
+    return plain(path) == plain(font)
+end
+-- How often, and how far apart, a refused font is tried again.
+local FONT_RETRIES, FONT_RETRY_DELAY = 8, 0.25
+
 -- Sets font, size and outline style of a text. Returns nothing.
-function Texts.SetFont(fs, font, size, outline)
+function Texts.SetFont(fs, font, size, outline, retries)
     local soft = outline == "SOFT"
     local flags = (outline == "NONE" or soft) and "" or outline
     fs:SetFont(font, size, flags)
+    local wanted = font .. "|" .. size .. "|" .. outline
+    fs.fontWanted = wanted
+    local taken = hasFont(fs, font)
+    if not taken then
+        retries = retries or FONT_RETRIES
+        if retries > 0 then
+            C_Timer.After(FONT_RETRY_DELAY, function()
+                -- Restyled since: that call has its own tries.
+                if fs.fontWanted == wanted then Texts.SetFont(fs, font, size, outline, retries - 1) end
+            end)
+        else
+            ns.Print(("Font could not be loaded: %s"):format(font))
+        end
+    end
     if soft and not fs.softCopies then makeCopies(fs) end
     if not fs.softCopies then return end
-    fs.soft = soft
+    -- No outline under a text that has no font yet.
+    fs.soft = soft and taken
     -- Exactly one physical pixel: thinner than the client's OUTLINE.
     -- Recomputed on every restyle, which a UI scale or window size change
     -- triggers too.

@@ -7,7 +7,8 @@ Per theme (Core/Themes.lua):
 * <Name>Bar.tga, 256 x 32: the bar texture. Kept light (white to grey):
   the client multiplies it with the bar colour.
 Ornaments, 32 x 32, drawn for the top-left corner (the addon mirrors them):
-* Rivet.tga (wood), Bracket.tga (tech).
+* Rivet.tga (wood), Bracket.tga (tech), Rune.tga (runestone, white:
+  tinted), Seal.tga (parchment).
 
 Run from the repository root:  python3 tools/make_themes.py
 The output is deterministic; re-running it must not change the files.
@@ -175,19 +176,23 @@ def wood_bar(rng):
 
 
 def tech_bar(rng):
-    x = np.arange(BAR_W)
-    seg = ((x % 16) < 13).astype(float)
-    v = np.repeat(seg[None, :], BAR_H, axis=0) * 0.95 + 0.05
-    return rgba(v, v, v, np.repeat(seg[None, :], BAR_H, axis=0) * 0.85 + 0.15)
+    # Clean: a bright top line, a darker foot, faint scan lines.
+    def profile(t):
+        if t < 0.06:
+            return 1.0
+        if t > 0.88:
+            return 0.62
+        return 0.86 - 0.08 * t
+    v = vertical(profile)
+    v = v * np.where((np.arange(BAR_H) % 2 == 0)[:, None], 1.0, 0.96)
+    return bar_from(v)
 
 
 def parchment_bar(rng):
-    n = noise(rng, 3, BAR_W)[:BAR_H]
-    v = 0.78 + n * 0.22
-    y = np.arange(BAR_H)[:, None] / (BAR_H - 1)
-    edge = np.minimum(y, 1 - y)
-    a = np.clip(edge * 6 + n * 0.3, 0, 1) * 0.9 + 0.1
-    return rgba(v, v, v, np.broadcast_to(a, v.shape))
+    # A wash: lighter at the top, a faint even grain.
+    n = noise(rng, 6, BAR_W)[:BAR_H]
+    v = vertical(lambda t: 0.97 - 0.17 * t) * (0.95 + n * 0.05)
+    return bar_from(v)
 
 
 def stone_bar(rng):
@@ -196,12 +201,12 @@ def stone_bar(rng):
 
 
 def glass_bar(rng):
-    x = np.arange(BAR_W)
-    y = np.arange(BAR_H)
-    lead = ((x % 32) < 3)[None, :] | ((y < 2) | (y >= BAR_H - 2))[:, None]
-    shine = np.clip(1 - np.abs((x[None, :] % 32) - (y[:, None] * 0.6 + 8)) / 6, 0, 1) * 0.25
-    v = np.where(lead, 0.08, 0.80 + shine)
-    return bar_from(v)
+    # Smooth glass: a soft diagonal sheen and a light top edge.
+    x = np.arange(BAR_W)[None, :]
+    y = np.arange(BAR_H)[:, None]
+    band = np.clip(1 - np.abs(((x + y * 1.5) % 128) - 40) / 18, 0, 1) * 0.12
+    v = vertical(lambda t: 0.95 - 0.2 * t) + band
+    return bar_from(np.clip(v, 0, 1))
 
 
 def comic_bar(rng):
@@ -245,6 +250,45 @@ def bracket():
     return img
 
 
+def rune():
+    """A glowing rune (like Othala): white, the addon tints it."""
+    size = ORN * 4
+    core = Image.new("L", (size, size), 0)
+    d = ImageDraw.Draw(core)
+    w = size // 14
+    top, mid, low, foot = size * 0.16, size * 0.42, size * 0.66, size * 0.86
+    cx = size / 2
+    d.line([(cx, top), (cx + size * 0.2, mid), (cx - size * 0.16, foot)], fill=255, width=w)
+    d.line([(cx, top), (cx - size * 0.2, mid), (cx + size * 0.16, foot)], fill=255, width=w)
+    glow = core.filter(ImageFilter.GaussianBlur(size / 16))
+    a = np.clip(np.asarray(core, float) / 255 + np.asarray(glow, float) / 255 * 1.6, 0, 1)
+    ones = np.ones_like(a)
+    return rgba(ones, ones, ones, a).resize((ORN, ORN), Image.LANCZOS)
+
+
+def seal():
+    """A red wax seal with an inner ring."""
+    size = ORN * 4
+    img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    c = size / 2
+    rng = np.random.default_rng(7)
+    pts = []
+    for i in range(24):
+        ang = i / 24 * 2 * np.pi
+        r = size * (0.44 + rng.uniform(-0.03, 0.02))
+        pts.append((c + np.cos(ang) * r, c + np.sin(ang) * r))
+    d.polygon(pts, fill=(120, 20, 14, 255))
+    for i in range(int(size * 0.4), 0, -2):
+        t = i / (size * 0.4)
+        col = tuple(int(v) for v in mix((216, 87, 75), (130, 26, 18), t))
+        off = (1 - t) * size * 0.06
+        d.ellipse([c - i - off, c - i - off, c + i - off, c + i - off], fill=col + (255,))
+    r = size * 0.26
+    d.ellipse([c - r, c - r, c + r, c + r], outline=(246, 190, 175, 170), width=size // 28)
+    return img.resize((ORN, ORN), Image.LANCZOS)
+
+
 THEMES = {
     "Wood": (wood, wood_bar),
     "Tech": (tech, tech_bar),
@@ -264,6 +308,8 @@ def main():
         save(bar(np.random.default_rng(200 + i)), name + "Bar.tga")
     save(rivet(), "Rivet.tga")
     save(bracket(), "Bracket.tga")
+    save(rune(), "Rune.tga")
+    save(seal(), "Seal.tga")
 
 
 if __name__ == "__main__":

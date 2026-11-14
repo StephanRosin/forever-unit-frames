@@ -1,11 +1,13 @@
 local _, ns = ...
 
 -- The theme's art beyond settings (Core/Themes.lua): a tiled backdrop
--- under the bars and the title row, corner ornaments on the border and a
--- solid shadow behind it. Only plain textures, placed out of combat with
--- everything else (Style); nothing here is clickable, so auras and texts
--- placed around the frame stay where they are. Built before Shape, so the
--- backdrop is rounded with the frame (ns.Corners.Add).
+-- under the frame, reaching out to the border (the border padding shows
+-- it around the bars, like a plaque), corner ornaments on the border and
+-- a solid shadow behind it. Only plain textures, placed out of combat
+-- with everything else (Style); nothing here is clickable. Auras already
+-- keep clear of the border's extent (Elements/Auras.lua), padding
+-- included. The backdrop has a rounding mask of its own, concentric with
+-- the ring (its radius plus the padding).
 --
 -- Raid cells name their theme (button.themeOf, Raid/Cell.lua) and get
 -- the backdrop only.
@@ -35,15 +37,22 @@ function ThemeArt.Paint(texture, spec)
 end
 
 function ThemeArt.Build(frame)
-    frame.themeBack = frame:CreateTexture(nil, "BACKGROUND", nil, -8)
-    frame.themeBack:SetAllPoints(frame)
-    frame.themeBack:Hide()
-    ns.Corners.Add(frame, frame.themeBack)
-    -- Below the frame's own level: the shadow lies under the border.
-    frame.themeUnder = CreateFrame("Frame", nil, frame)
-    frame.themeUnder:SetFrameLevel(math.max(frame:GetFrameLevel() - 1, 0))
-    frame.themeShadow = frame.themeUnder:CreateTexture(nil, "BACKGROUND")
+    -- Below the frame's own level: under the bars, the title row and the
+    -- border.
+    local under = CreateFrame("Frame", nil, frame)
+    under:SetFrameLevel(math.max(frame:GetFrameLevel() - 1, 0))
+    frame.themeUnder = under
+    -- The solid shadow in two forms, as the border (Elements/Shape.lua):
+    -- around the frame, or around the unit box with a docked castbar.
+    -- Shape.Refresh shows the one that matches (ThemeArt.Refresh).
+    frame.themeShadow = under:CreateTexture(nil, "BACKGROUND", nil, -8)
     frame.themeShadow:Hide()
+    frame.themeBlockShadow = under:CreateTexture(nil, "BACKGROUND", nil, -8)
+    frame.themeBlockShadow:Hide()
+    frame.themeBack = under:CreateTexture(nil, "BACKGROUND", nil, 0)
+    frame.themeBack:Hide()
+    ns.Corners.Add(under, frame.themeBack)
+    frame.themeClip = ns.Corners.Clipper(under)
     -- Above the border rings and the texts' overlay.
     frame.themeOver = CreateFrame("Frame", nil, frame)
     frame.themeOver:SetAllPoints(frame)
@@ -55,23 +64,46 @@ function ThemeArt.Build(frame)
     end
 end
 
-local function placeShadow(frame, art, extent)
-    local shadow, offset = frame.themeShadow, art.hardShadow
-    if not offset then
-        shadow:Hide()
-        return
-    end
+local function placeShadowAround(shadow, box, offset, extent)
     shadow:ClearAllPoints()
-    shadow:SetPoint("TOPLEFT", frame, "TOPLEFT", offset - extent, extent - offset)
-    shadow:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", offset + extent, -offset - extent)
+    shadow:SetPoint("TOPLEFT", box, "TOPLEFT", offset - extent, extent - offset)
+    shadow:SetPoint("BOTTOMRIGHT", box, "BOTTOMRIGHT", offset + extent, -offset - extent)
     shadow:SetColorTexture(SHADOW_COLOR[1], SHADOW_COLOR[2], SHADOW_COLOR[3], SHADOW_COLOR[4])
-    shadow:Show()
 end
 
-local function placeOrnaments(frame, art)
+local function placeShadow(frame, art, extent)
+    frame.themeShadowOn = art.hardShadow ~= nil
+    if frame.themeShadowOn then
+        placeShadowAround(frame.themeShadow, frame, art.hardShadow, extent)
+        placeShadowAround(frame.themeBlockShadow, frame.unitBox or frame, art.hardShadow, extent)
+    end
+    ThemeArt.Refresh(frame, frame.blockRing ~= nil and frame.blockRing:IsShown())
+end
+
+-- Any time, combat included (Elements/Shape.lua: Refresh): the shadow
+-- of the frame alone, or of the frame with its docked castbar (joined).
+function ThemeArt.Refresh(frame, joined)
+    if not frame.themeShadow then return end
+    local on = frame.themeShadowOn == true
+    frame.themeShadow:SetShown(on and not joined)
+    frame.themeBlockShadow:SetShown(on and joined)
+end
+
+-- The backdrop out to the ring's inner edge.
+local function placeBack(frame, padding, radius)
+    local back = frame.themeBack
+    back:ClearAllPoints()
+    back:SetPoint("TOPLEFT", frame, "TOPLEFT", -padding, padding)
+    back:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", padding, -padding)
+    ns.Corners.Fit(frame.themeClip, back, radius > 0 and radius + padding or 0)
+end
+
+-- Ornaments sit at the ring's outer corners, art.ornamentInset inwards
+-- (negative: outwards).
+local function placeOrnaments(frame, art, extent)
     local wanted = {}
     for _, i in ipairs(art.ornament and art.corners or {}) do wanted[i] = true end
-    local size, inset = art.ornamentSize or 12, art.ornamentInset or 0
+    local size, inset = art.ornamentSize or 12, (art.ornamentInset or 0) - extent
     local c = art.ornamentColor or { 1, 1, 1, 1 }
     for i, piece in ipairs(frame.themeOrnaments) do
         if wanted[i] then
@@ -92,18 +124,22 @@ local function placeOrnaments(frame, art)
 end
 
 function ThemeArt.Style(frame)
+    local scope = frame.key
+    placeBack(frame, ns.Border.Padding(scope), ns.Corners.Clamp(ns.Corners.Radius(scope), ns.Single.Size(scope)))
     -- A raid cell names its own theme and shows only the backdrop.
     if frame.themeOf then
         ThemeArt.Paint(frame.themeBack, ns.Themes.Spec(frame.themeOf()))
-        frame.themeShadow:Hide()
+        frame.themeShadowOn = false
+        ThemeArt.Refresh(frame, false)
         for _, piece in ipairs(frame.themeOrnaments) do piece:Hide() end
         return
     end
     local spec = ns.Themes.Spec(Config.Get("general", "theme"))
     local art = spec.art or {}
+    local extent = ns.Border.Extent(scope)
     ThemeArt.Paint(frame.themeBack, spec)
-    placeShadow(frame, art, ns.Border.Extent(frame.key))
-    placeOrnaments(frame, art)
+    placeShadow(frame, art, extent)
+    placeOrnaments(frame, art, extent)
 end
 
 function ThemeArt.Update() end
