@@ -184,21 +184,30 @@ end
 -- The wedge texture is square with a thin slanted piece in its left part:
 -- that part only, as wide as the title row is high, makes a bold wedge
 -- (the whole texture read as a stray stroke).
-local WEDGE_PART = 0.53
+-- Drawn h wide, its right edge runs from 0.98 h (top) to 0.62 h (bottom);
+-- the text starts TITLE_GAP past it at the text's mid-height, as in every
+-- Forever addon.
+local WEDGE_PART, TITLE_GAP = 0.53, 8
+local function wedgeReach(h, y) return math.floor(0.98 * h - 0.36 * y + 0.5) end
 
--- How far the title text moves right to clear the title wedge.
-function ThemeArt.TitleIndent(frame)
+local function wedgeHeight(frame)
     if frame.themeOf or not frame.titleHeight then return 0 end
     local art = ns.Themes.Spec(Config.Get("general", "theme")).art
-    if not (art and art.titleWedge) then return 0 end
-    return frame.titleHeight
+    return art and art.titleWedge and frame.titleHeight or 0
+end
+
+-- How far the title text moves right (beyond its usual 4) to clear the
+-- title wedge.
+function ThemeArt.TitleIndent(frame)
+    local h = wedgeHeight(frame)
+    return h > 0 and wedgeReach(h, h / 2) + TITLE_GAP - 4 or 0
 end
 
 -- The title row as a strip of its own colour and the wedge at its start.
 -- Health.Style painted the row before (elements style in order).
 local function placeTitle(frame, id, art)
     local wedge = frame.themeWedge
-    local width = ThemeArt.TitleIndent(frame)
+    local width = wedgeHeight(frame)
     if art.titleStrip then
         local c = art.titleStrip
         frame.title:SetTexture(WHITE)

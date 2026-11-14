@@ -122,7 +122,9 @@ end
 H.check("pitwall: wedge at the strip's start, full height", anchor(wedge, 1) .. " " .. anchor(wedge, 2),
     "TOPLEFT>title.TOPLEFT BOTTOMLEFT>title.BOTTOMLEFT")
 local indent = ns.ThemeArt.TitleIndent(f)
-H.checkTrue("pitwall: wedge as wide as the indent", indent > 0 and wedge:GetWidth() == indent)
+H.check("pitwall: wedge as wide as the title row is high", wedge:GetWidth(), f.titleHeight)
+-- The family rule: the name starts 8 past the wedge's edge at mid-height.
+H.check("pitwall: name 8 past the wedge", 4 + indent, math.floor(0.8 * f.titleHeight + 0.5) + 8)
 local _, _, _, nameX = f.texts.title:GetPoint(1)
 H.check("pitwall: the name starts after the wedge", nameX, ns.Pixel.Snap(4 + indent, f.texts.title))
 H.check("pitwall: no rule", f.themeRule:IsShown(), false)
