@@ -216,19 +216,17 @@ do
     H.checkTrue("secret icon passed through", M.IsSecret(fire.art.icon._texture))
     H.check("secret texture is the icon", M.Reveal(fire.art.icon._texture), 135825)
     H.check("swipe from the duration object", fire.art.cooldown._cooldown.object._duration, 60)
+    -- Reported (0.53.1, 0.54.1): after a totem in combat the empty slots
+    -- were black boxes until it ended. Their "has a totem" is true (the
+    -- element is learned); only the time left clears them.
     H.check("empty water slot invisible", M.Reveal(water.art:GetAlpha()), 0)
-    -- Reported: right after a totem in combat, empty slots showed a black
-    -- box for a moment. Border and swipe follow "has a totem" too.
-    H.check("empty slot: no border", M.Reveal(water.art.border:GetAlpha()), 0)
-    H.check("empty slot: no swipe", M.Reveal(water.art.cooldown:GetAlpha()), 0)
     H.check("fire: border shown", M.Reveal(fire.art.border:GetAlpha()), 1)
     H.check("click areas untouched in combat", water.click:IsShown(), true)
     -- Reported as a totem with no time left (just removed): no empty
     -- square stays until the end of combat (asked on CurseForge).
     M.totems[3] = { name = "Healing Stream", start = 1000, duration = 0, icon = 135127 }
     M.FireEvent("PLAYER_TOTEM_UPDATE", 3)
-    H.check("totem without time left: no icon", M.Reveal(water.art.icon:GetAlpha()), 0)
-    H.check("totem without time left: no border", M.Reveal(water.art.border:GetAlpha()), 0)
+    H.check("totem without time left: invisible", M.Reveal(water.art:GetAlpha()), 0)
     M.totems[3] = nil
 
     -- Expired in combat: the icon goes, the click area waits.
@@ -282,32 +280,27 @@ do
     end
 end
 
--- Reported again from combat: casting a totem, the empty slots stayed
--- black boxes until combat ended. Modelled as a client whose duration
--- object of an empty slot reports time left: "has a totem" clears them.
+-- A totem that runs out in combat clears without an event (the time left
+-- is read again while the slot shows); one dropped next to it stays.
 do
     local ns = boot("SHAMAN")
     local t = ns.Frames.player.totems
-    local real = _G.GetTotemDuration
-    _G.GetTotemDuration = function(slot)
-        local d = real(slot)
-        function d:EvaluateRemainingDuration(c) return c:Evaluate(30) end
-        return d
-    end
     M.combat = true
     M.totemsSecret = true
-    M.totems[1] = { name = "Searing Totem", start = 1000, duration = 60, icon = 135825 }
+    M.totems[1] = { name = "Searing Totem", start = M.now, duration = 1, icon = 135825 }
+    M.totems[2] = { name = "Stoneskin", start = M.now, duration = 120, icon = 136098 }
     M.FireEvent("PLAYER_TOTEM_UPDATE", 1)
-    for i, s in ipairs(t.slots) do
-        local want = s.slot == 1 and 1 or 0
-        H.check("time left everywhere: slot " .. s.slot .. " by its totem", M.Reveal(s.art:GetAlpha()), want)
-    end
+    local fire, earth = t.slots[2], t.slots[1]
+    H.check("fire visible while it runs", M.Reveal(fire.art:GetAlpha()), 1)
+    M.Tick(2)
+    H.check("fire run out: invisible without an event", M.Reveal(fire.art:GetAlpha()), 0)
+    H.check("earth still visible", M.Reveal(earth.art:GetAlpha()), 1)
+    for i = 3, 4 do H.check("empty slot " .. i .. " invisible", M.Reveal(t.slots[i].art:GetAlpha()), 0) end
     M.totems[1] = nil
-    M.FireEvent("PLAYER_TOTEM_UPDATE", 1)
-    H.check("totem gone in combat: cleared", M.Reveal(t.slots[2].art:GetAlpha()), 0)
-    _G.GetTotemDuration = real
     M.totemsSecret = false
     M.SetCombat(false)
+    H.check("after combat: fire hidden", fire.art:IsShown(), false)
+    H.check("after combat: no rechecks", earth.art:GetScript("OnUpdate"), nil)
 end
 
 -- A client without SetAlphaFromBoolean or GetTotemDuration still works.

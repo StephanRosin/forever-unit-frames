@@ -25,8 +25,8 @@ local _, ns = ...
 --
 -- Totem data may be secret (SecretWhenTotemSlotSecret: combat, encounter,
 -- challenge mode or PvP restrictions). Secrets are only handed to widgets:
--- the icon to SetTexture, "has a totem" to SetAlphaFromBoolean, the time
--- through the slot's duration object (GetTotemDuration). Slots are shown
+-- the icon to SetTexture; the time left, through the slot's duration
+-- object (GetTotemDuration), to a curve and SetAlpha. Slots are shown
 -- in a fixed order (Blizzard's priorities), so nothing moves in combat.
 local Totems = { name = "Totems" }
 ns.Totems = Totems
@@ -194,24 +194,37 @@ local function timeLeftAlpha(slot)
     return GetTotemDuration(slot):EvaluateRemainingDuration(curve())
 end
 
--- With secret data a slot is seen only if both say so: the whole icon by
--- "has a totem" (SetAlphaFromBoolean), its parts (icon, border, swipe) by
--- the time left. Reported twice from combat: empty slots stayed black
--- boxes until it ended; their time left did not clear them, and the icon
--- (empty, so black) followed only that. Anything refused is shown.
--- plain = true: all visible.
-local function seenBy(art, slot, have, plain)
-    local parts = { art.icon, art.border, art.cooldown }
+-- With secret data a slot is seen by the time it has left alone, read
+-- again every RECHECK seconds while it shows (a totem ends or goes without
+-- a moment's notice). Not by "has a totem": for a shaman it is true for
+-- every element with a totem learned, empty or not (Blizzard's totem frame
+-- also wants a duration, its multicast bar shows a slot by it). Gating by
+-- it left empty slots as black boxes (their border) until combat ended
+-- (CurseForge, 0.53.1 and 0.54.1). A refused time left shows the slot.
+-- plain = true: visible, no rechecks.
+Totems.RECHECK = 0.1
+
+local function fadeByTimeLeft(art)
+    local ok, alpha = pcall(timeLeftAlpha, art.totemSlot)
+    if not (ok and pcall(art.SetAlpha, art, alpha)) then art:SetAlpha(1) end
+end
+
+local function recheck(art, elapsed)
+    art.sinceCheck = (art.sinceCheck or 0) + elapsed
+    if art.sinceCheck < Totems.RECHECK then return end
+    art.sinceCheck = 0
+    fadeByTimeLeft(art)
+end
+
+local function seenBy(art, plain)
+    for _, part in ipairs({ art.icon, art.border, art.cooldown }) do part:SetAlpha(1) end
     if plain then
         art:SetAlpha(1)
-        for _, part in ipairs(parts) do part:SetAlpha(1) end
+        art:SetScript("OnUpdate", nil)
         return
     end
-    if not pcall(art.SetAlphaFromBoolean, art, have, 1, 0) then art:SetAlpha(1) end
-    local ok, alpha = pcall(timeLeftAlpha, slot)
-    for _, part in ipairs(parts) do
-        if not (ok and pcall(part.SetAlpha, part, alpha)) then part:SetAlpha(1) end
-    end
+    fadeByTimeLeft(art)
+    art:SetScript("OnUpdate", recheck)
 end
 
 -- One slot from the client's data. Returns true (a totem), false (none)
@@ -224,7 +237,7 @@ local function showSlot(s)
         art.icon:SetTexture(icon)
         showDuration(art, slot, start, duration)
         art:Show()
-        seenBy(art, slot, have)
+        seenBy(art)
         return nil
     end
     -- Blizzard's totem frame shows no totem without a duration.
@@ -235,7 +248,7 @@ local function showSlot(s)
     end
     art.icon:SetTexture(icon)
     showDuration(art, slot, start, duration)
-    seenBy(art, slot, nil, true)
+    seenBy(art, true)
     art:Show()
     return true
 end
@@ -245,7 +258,7 @@ local sampleStart
 
 local function showSample(s, i)
     AuraButton.ShowSample(s.art, Totems.SAMPLES[(i - 1) % #Totems.SAMPLES + 1], sampleStart)
-    seenBy(s.art, nil, nil, true)
+    seenBy(s.art, true)
     s.art.sample = true
 end
 

@@ -2884,7 +2884,10 @@ function M.Reset()
         return type(slot) == "number" and slot >= 1 and slot <= MAX_TOTEMS
     end
     -- haveTotem, totemName, startTime, duration, icon, modRate, spellID;
-    -- nothing for a slot that does not exist (MayReturnNothing).
+    -- nothing for a slot that does not exist (MayReturnNothing). haveTotem
+    -- means "a totem of this element is learned", so an empty slot says true
+    -- too (MultiCastActionBarFrame shows slots by it; TotemFrame wants a
+    -- duration); M.totemsUnlearned makes empty slots say false.
     _G.GetTotemInfo = function(slot)
         if not validSlot(slot) then return end
         local t = M.totems[slot]
@@ -2892,7 +2895,7 @@ function M.Reset()
         if t then
             r = { true, t.name or "Totem", t.start or 0, t.duration or 0, t.icon or 0, 1, t.spellID or 0 }
         else
-            r = { false, "", 0, 0, 0, 1, 0 }
+            r = { not M.totemsUnlearned, "", 0, 0, 0, 1, 0 }
         end
         if M.totemsSecret then
             for i = 1, #r do r[i] = M.Secret(r[i]) end
