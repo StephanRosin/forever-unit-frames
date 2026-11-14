@@ -232,10 +232,12 @@ Schema.FRAME = {
             "shieldsTotalY", "shieldsTotalFont", "shieldsTotalSize", "shieldsTotalOutline", "shieldsTotalColor",
             "shieldsSwipe", "shieldsTime", "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY", "shieldsTimeFont",
             "shieldsTimeSize", "shieldsTimeOutline", "shieldsTimeColor", "shieldsBar", "shieldsBarStyle", "shieldsBarWidth",
-            "shieldsBarHeight", "shieldsBarX", "shieldsBarY", "shieldsBarColor" },
+            "shieldsBarHeight", "shieldsBarAnchor", "shieldsBarX", "shieldsBarY", "shieldsBarFreeX", "shieldsBarFreeY",
+            "shieldsBarColorMode", "shieldsBarColor" },
             placement = { "shieldsGrowth", "shieldsAnchor", "shieldsX", "shieldsY", "shieldsFramePoint", "shieldsPoint",
                 "shieldsFrameX", "shieldsFrameY", "shieldsTotalPoint", "shieldsTotalX", "shieldsTotalY",
-                "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY", "shieldsBarX", "shieldsBarY" } },
+                "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY", "shieldsBarAnchor", "shieldsBarX", "shieldsBarY",
+                "shieldsBarFreeX", "shieldsBarFreeY" } },
     } },
 }
 

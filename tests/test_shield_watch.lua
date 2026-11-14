@@ -28,6 +28,8 @@ local EXPECTED = {
     shieldsBarWidth = { "KJ", "int", 6 }, shieldsBarColor = { "KK", "color", "1,0.85,0.3,1" },
     shieldsBarStyle = { "KL", "enum", "FLAT" }, shieldsBarHeight = { "KM", "int", 0 },
     shieldsBarX = { "KN", "int", 0 }, shieldsBarY = { "KO", "int", 0 },
+    shieldsBarAnchor = { "KP", "enum", "ICONS" }, shieldsBarFreeX = { "KQ", "int", -340 },
+    shieldsBarFreeY = { "KT", "int", -140 }, shieldsBarColorMode = { "KU", "enum", "FIXED" },
 }
 for key, want in pairs(EXPECTED) do
     local def = S.Get(key)
@@ -353,6 +355,33 @@ C.Set("player", "shieldsBarWidth", 6)
 C.Set("player", "shieldsBarX", 0)
 C.Set("player", "shieldsBarY", 0)
 H.check("bar: auto height again", bar:GetHeight(), 32)
+-- Free: on a mover of its own, not on the block.
+H.check("bar at the icons: its mover inactive", SW.BarMoverSpec(ns.Frames.player).active(), false)
+C.Set("player", "shieldsBarAnchor", "FREE")
+H.check("bar free: its mover active", SW.BarMoverSpec(ns.Frames.player).active(), true)
+H.checkTrue("bar free: a mover", bar.mover)
+H.check("bar free: on its mover", bar._allPoints, bar.mover)
+H.check("bar free: not the block's child", bar:GetParent(), UIParent)
+H.check("bar free: the total back at the container", select(2, total:GetPoint(1)), container)
+C.Set("player", "shieldsBarFreeX", 120)
+H.check("bar free: the mover follows", select(4, bar.mover:GetPoint(1)), 120)
+C.Set("player", "shieldsBar", false)
+H.check("bar off: its mover inactive", SW.BarMoverSpec(ns.Frames.player).active(), false)
+H.check("bar off: hidden though free", bar:IsShown(), false)
+C.Set("player", "shieldsBar", true)
+C.Set("player", "shieldsBarAnchor", "ICONS")
+H.check("bar at the icons again: the block's child", bar:GetParent(), sw.holder)
+H.check("bar at the icons again: beside them", select(2, bar:GetPoint(1)), sw.holder)
+-- Colour mode: red at the bottom to green at the top, over the whole bar,
+-- seen where the fill is.
+H.check("bar fixed: no gradient", bar.gradient:IsShown(), false)
+C.Set("player", "shieldsBarColorMode", "GRADIENT")
+H.checkTrue("bar gradient: shown", bar.gradient:IsShown())
+H.check("bar gradient: the whole bar", bar.gradient._allPoints, bar)
+H.check("bar gradient: in the fill's clip", bar.gradient:GetParent(), bar.gate)
+H.check("bar gradient: the fill itself clear", bar._color[4], 0)
+C.Set("player", "shieldsBarColorMode", "FIXED")
+H.check("bar fixed again: the fill's colour", bar._color[4], 1)
 C.Set("player", "shieldsGrowth", "LEFT")
 p, _, rp, x = bar:GetPoint(1)
 H.check("bar: growing left, at the right", p .. ">" .. rp .. ">" .. x, "TOPLEFT>TOPRIGHT>4")

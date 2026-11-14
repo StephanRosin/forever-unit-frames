@@ -745,6 +745,9 @@ shields({ key = "shieldsTimeColor", code = "KB", type = "color", default = { 1, 
 shields({ key = "shieldsBar", code = "KI", type = "bool", default = false })
 shields({ key = "shieldsBarWidth", code = "KJ", type = "int", min = 2, max = 64, default = 6 })
 shields({ key = "shieldsBarColor", code = "KK", type = "color", default = { 1, 0.85, 0.3, 1 } })
+-- One colour, or a gradient red (bottom) to green (top) over the whole
+-- height, seen as far as the fill reaches. Stored by index: append only.
+shields({ key = "shieldsBarColorMode", code = "KU", type = "enum", values = { "FIXED", "GRADIENT" }, default = "FIXED" })
 -- Its look. Stored by index: append only.
 shields({ key = "shieldsBarStyle", code = "KL", type = "enum", values = { "FLAT", "STRIPES", "SEGMENTS", "FRAMED" },
     default = "FLAT" })
@@ -753,6 +756,12 @@ shields({ key = "shieldsBarHeight", code = "KM", type = "int", min = 0, lowest =
     zeroText = "AUTO" })
 shields({ key = "shieldsBarX", code = "KN", type = "int", min = -200, max = 200, default = 0 })
 shields({ key = "shieldsBarY", code = "KO", type = "int", min = -200, max = 200, default = 0 })
+-- Beside the first icon (offset by shieldsBarX / Y), or free on its own
+-- mover (shieldsBarFreeX / Y, its centre from the screen's). Stored by
+-- index: append only.
+shields({ key = "shieldsBarAnchor", code = "KP", type = "enum", values = { "ICONS", "FREE" }, default = "ICONS" })
+shields({ key = "shieldsBarFreeX", code = "KQ", type = "int", min = -4000, max = 4000, default = -340 })
+shields({ key = "shieldsBarFreeY", code = "KT", type = "int", min = -4000, max = 4000, default = -140 })
 
 -- Combat and PvP icons on the other frames (Elements/UnitIcons.lua), off
 -- by default. The combat icon sits left of the frame, the crest on its top

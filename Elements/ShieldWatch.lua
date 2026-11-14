@@ -38,6 +38,9 @@ local _, ns = ...
 -- is secret), so with none the empty fill is all there is and nothing
 -- shows. The designs draw on the fill only, in a frame on the fill that
 -- clips (as Elements/Absorb.lua's glow): stripes, segment lines, a frame.
+-- It sits beside the first icon (shieldsBarAnchor ICONS) or free on a
+-- mover of its own (FREE), then a child of UIParent so the player frame's
+-- scale does not move it off its handle.
 -- shortcut: a shield cast on someone else also captures your total (the
 -- event names no target), and a shield from another player captures
 -- nothing; the bar then shows full until it falls below the old maximum.
@@ -97,6 +100,12 @@ ShieldWatch.SAMPLE_BAR = 0.7
 ShieldWatch.STRIPES = "Interface\\RaidFrame\\Shield-Overlay"
 ShieldWatch.SEGMENTS = 5
 ShieldWatch.LINE_COLOR = { 0, 0, 0, 0.8 }
+-- Colour mode GRADIENT: bottom and top. No Lua knows the share left (the
+-- total is secret, and colour curves take secrets from Blizzard's code
+-- only), so the gradient spans the whole height and the fill shows of it
+-- what it covers.
+ShieldWatch.GRADIENT_EMPTY = { 0.9, 0.15, 0.1, 1 }
+ShieldWatch.GRADIENT_FULL = { 0.2, 0.9, 0.2, 1 }
 -- The frame's four lines: their two corners, and whether they run across.
 local FRAME_EDGES = { { "TOPLEFT", "TOPRIGHT", true }, { "BOTTOMLEFT", "BOTTOMRIGHT", true },
     { "TOPLEFT", "BOTTOMLEFT" }, { "TOPRIGHT", "BOTTOMRIGHT" } }
@@ -235,6 +244,7 @@ function ShieldWatch.Build(frame)
     stripes:SetVertTile(true)
     stripes:SetAllPoints(gate)
     bar.stripes = stripes
+    bar.gradient = gate:CreateTexture(nil, "ARTWORK")
     local c = ShieldWatch.LINE_COLOR
     bar.lines = {}
     for i = 1, ShieldWatch.SEGMENTS - 1 + 4 do
@@ -447,24 +457,65 @@ local function barSide(scope)
     return setting(scope, "shieldsGrowth") == "LEFT" and "RIGHT" or "LEFT"
 end
 
+-- The bar's size: its width, its height or (0) an icon's.
+function ShieldWatch.BarSize(scope)
+    local h = setting(scope, "shieldsBarHeight")
+    return Pixel.Snap(setting(scope, "shieldsBarWidth")), h > 0 and Pixel.Snap(h) or iconSize(scope)
+end
+
+local function barFree(scope) return setting(scope, "shieldsBarAnchor") == "FREE" end
+
+function ShieldWatch.BarMoverSpec(frame)
+    local scope = frame.key
+    return {
+        id = "shieldBar:" .. scope, scope = scope, xKey = "shieldsBarFreeX", yKey = "shieldsBarFreeY", anchor = false,
+        label = function() return ns.L.MOVER_SHIELD_BAR:format(ns.L["FRAME_" .. scope]) end,
+        size = function() return ShieldWatch.BarSize(scope) end,
+        active = function()
+            return enabled(scope) and setting(scope, "shieldsBar") == true and barFree(scope)
+        end,
+    }
+end
+
 local function placeBar(frame)
     local sw, scope = frame.shields, frame.key
     local bar, corner = sw.bar, CORNER[setting(scope, "shieldsGrowth")]
     local side = barSide(scope)
     local point = corner:gsub(side, OPPOSITE[side])
     bar:ClearAllPoints()
-    local h = setting(scope, "shieldsBarHeight")
-    h = h > 0 and Pixel.Snap(h) or iconSize(scope)
-    bar:SetSize(Pixel.Snap(setting(scope, "shieldsBarWidth")), h)
-    bar:SetPoint(point, sw.holder, corner, (side == "LEFT" and -1 or 1) * spacing(scope) + setting(scope, "shieldsBarX"),
-        setting(scope, "shieldsBarY"))
+    local w, h = ShieldWatch.BarSize(scope)
+    bar:SetSize(w, h)
+    if barFree(scope) then
+        bar:SetParent(UIParent)
+        bar:SetFrameStrata(sw.holder:GetFrameStrata())
+        if bar.mover then
+            ns.Movers.Sync(bar)
+            bar:SetAllPoints(bar.mover)
+        else
+            bar:SetPoint("CENTER", UIParent, "CENTER", Pixel.Centre(setting(scope, "shieldsBarFreeX"), w),
+                Pixel.Centre(setting(scope, "shieldsBarFreeY"), h))
+        end
+    else
+        bar:SetParent(sw.holder)
+        bar:SetPoint(point, sw.holder, corner,
+            (side == "LEFT" and -1 or 1) * spacing(scope) + setting(scope, "shieldsBarX"), setting(scope, "shieldsBarY"))
+    end
+    bar:SetFrameLevel(sw.holder:GetFrameLevel() + 1)
     bar:SetStatusBarTexture(ns.Media.StatusBar(setting(scope, "barTexture")))
     local c = setting(scope, "shieldsBarColor")
-    bar:SetStatusBarColor(c[1], c[2], c[3], c[4])
+    local gradient = setting(scope, "shieldsBarColorMode") == "GRADIENT"
+    -- With the gradient the fill only measures; the gradient is seen.
+    bar:SetStatusBarColor(c[1], c[2], c[3], gradient and 0 or c[4])
     local gate, style = bar.gate, setting(scope, "shieldsBarStyle")
     gate:ClearAllPoints()
     gate:SetAllPoints(bar:GetStatusBarTexture())
     gate:SetFrameLevel(bar:GetFrameLevel() + 1)
+    local g = bar.gradient
+    g:SetAllPoints(bar)
+    g:SetTexture(ns.Media.StatusBar(setting(scope, "barTexture")))
+    local lo, hi = ShieldWatch.GRADIENT_EMPTY, ShieldWatch.GRADIENT_FULL
+    g:SetGradient("VERTICAL", CreateColor(lo[1], lo[2], lo[3], lo[4]), CreateColor(hi[1], hi[2], hi[3], hi[4]))
+    g:SetShown(gradient)
     bar.stripes:SetShown(style == "STRIPES")
     -- Lines 1..SEGMENTS-1 split the bar's height; the last four frame the fill.
     local one, n = Pixel.One(bar), ShieldWatch.SEGMENTS
@@ -493,7 +544,7 @@ local function placeTotal(frame)
     local region = (not sw.preview and sw.container) or sw.holder
     local point = setting(scope, "shieldsTotalPoint")
     -- On the bar's side: outside the bar.
-    if setting(scope, "shieldsBar") == true and point == barSide(scope) then region = sw.bar end
+    if setting(scope, "shieldsBar") == true and not barFree(scope) and point == barSide(scope) then region = sw.bar end
     sw.total:ClearAllPoints()
     sw.total:SetPoint(OPPOSITE[point], region, point, setting(scope, "shieldsTotalX"), setting(scope, "shieldsTotalY"))
 end
@@ -582,6 +633,7 @@ function ShieldWatch.AttachMover(frame)
     local sw = frame.shields
     if not sw then return end
     ns.Movers.Attach(sw.holder, ShieldWatch.MoverSpec(frame))
+    ns.Movers.Attach(sw.bar, ShieldWatch.BarMoverSpec(frame))
     ns.AfterCombat("shieldsStyle:" .. frame.key, function() ShieldWatch.Style(frame) end)
 end
 
