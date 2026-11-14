@@ -79,10 +79,16 @@ function UnitProfiles.ThemeSets()
     return sets
 end
 
--- The comic's colour (Core/Themes.lua): account wide, in no profile or
--- theme set.
-function UnitProfiles.ComicColor() return db.comicColor end
-function UnitProfiles.SetComicColor(id) db.comicColor = id end
+-- The themes' colours (Core/Themes.lua), theme -> colour id: account wide,
+-- in no profile or theme set. The comic's colour of before moves in once.
+function UnitProfiles.ThemeColors()
+    db.themeColors = type(db.themeColors) == "table" and db.themeColors or {}
+    if db.comicColor ~= nil then
+        if db.themeColors.COMIC == nil then db.themeColors.COMIC = db.comicColor end
+        db.comicColor = nil
+    end
+    return db.themeColors
+end
 
 function UnitProfiles.Write(profile)
     db.profiles[active] = copy(profile)

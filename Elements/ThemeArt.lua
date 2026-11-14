@@ -28,7 +28,7 @@ function ThemeArt.Paint(texture, spec)
         texture:Hide()
         return
     end
-    texture:SetTexture(PATH .. art.back, "REPEAT", "REPEAT")
+    texture:SetTexture(PATH .. ns.Themes.Back(spec), "REPEAT", "REPEAT")
     texture:SetHorizTile(true)
     texture:SetVertTile(true)
     local tint = ns.Themes.Tint(spec) or { 1, 1, 1, 1 }

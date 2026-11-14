@@ -112,11 +112,80 @@ for _, spec in pairs(Themes.SPECS) do
     for key in pairs(spec.look or {}) do THEMED[#THEMED + 1] = key end
 end
 
--- The comic's colours, the same in every Forever addon: the paper's tint
--- (the unit frames' comic has no yellow or red accent, and no dark ink
--- that a dark paper would have to lighten). Stored account wide
--- outside the theme sets (UnitProfiles); GREY is the comic as it is.
-Themes.COMIC_COLORS = { "GREY", "DARKGREY", "BLACK", "WHITE", "YELLOW", "BLUE", "RED", "GREEN", "PURPLE" }
+-- Each theme's colours, the same in every Forever addon (none for CLASSIC).
+-- The first is the theme as it is. Any other draws the backdrop from the
+-- theme's grey texture (<back>Grey), tinted so its mean lands on `back`
+-- (vertex colour = back / GREY_MEAN, at most 1), and brings its accent
+-- (nil: the theme's own). The comic keeps its paper tint (COMIC_PAINT).
+local GREY_MEAN = { WoodBack = 0.800, TechBack = 0.705, ParchmentBack = 0.799, StoneBack = 0.800,
+    GlassBack = 0.777, FrostBack = 0.796, PixelBack = 0.800 }
+local function colour(id, back, accent) return { id = id, back = back, accent = accent } end
+Themes.COLORS = {
+    WOOD = {
+        colour("OAK"),
+        colour("WALNUT", { 0.15, 0.09, 0.06 }),
+        colour("BIRCH", { 0.38, 0.32, 0.22 }),
+        colour("CHERRY", { 0.3, 0.12, 0.08 }),
+        colour("EBONY", { 0.08, 0.07, 0.07 }),
+        colour("DRIFTWOOD", { 0.25, 0.24, 0.22 }),
+    },
+    TECH = {
+        colour("CYAN"),
+        colour("GREEN", { 0.02, 0.1, 0.05 }, { 0.3, 0.95, 0.45 }),
+        colour("AMBER", { 0.1, 0.07, 0.02 }, { 1, 0.75, 0.2 }),
+        colour("MAGENTA", { 0.09, 0.03, 0.1 }, { 0.95, 0.4, 0.95 }),
+        colour("BLUE", { 0.03, 0.05, 0.13 }, { 0.45, 0.65, 1 }),
+        colour("GREY", { 0.07, 0.07, 0.08 }, { 0.85, 0.88, 0.9 }),
+    },
+    PARCHMENT = {
+        colour("CLASSIC"),
+        colour("AGED", { 0.32, 0.25, 0.15 }),
+        colour("ASH", { 0.33, 0.33, 0.31 }),
+        colour("SEA", { 0.25, 0.3, 0.33 }),
+        colour("ROSE", { 0.36, 0.27, 0.26 }),
+        colour("DARK", { 0.2, 0.17, 0.13 }),
+    },
+    RUNESTONE = {
+        colour("GRANITE"),
+        colour("SANDSTONE", { 0.33, 0.27, 0.18 }, { 1, 0.8, 0.35 }),
+        colour("SLATE", { 0.15, 0.18, 0.25 }, { 0.55, 0.75, 1 }),
+        colour("MOSS", { 0.15, 0.22, 0.14 }, { 0.5, 1, 0.45 }),
+        colour("OBSIDIAN", { 0.07, 0.06, 0.09 }, { 0.75, 0.5, 1 }),
+    },
+    GLASS = {
+        colour("CATHEDRAL"),
+        colour("BLUE", { 0.08, 0.12, 0.28 }),
+        colour("GREEN", { 0.07, 0.2, 0.1 }),
+        colour("AMBER", { 0.28, 0.17, 0.05 }),
+        colour("VIOLET", { 0.18, 0.08, 0.26 }),
+        colour("RUBY", { 0.26, 0.05, 0.08 }),
+    },
+    FROST = {
+        colour("ICE"),
+        colour("DEEP", { 0.1, 0.18, 0.32 }, { 0.6, 0.85, 1 }),
+        colour("AURORA", { 0.1, 0.27, 0.24 }, { 0.55, 1, 0.8 }),
+        colour("VIOLET", { 0.22, 0.18, 0.33 }, { 0.85, 0.75, 1 }),
+        colour("SILVER", { 0.3, 0.31, 0.33 }, { 0.92, 0.92, 0.95 }),
+        colour("NIGHT", { 0.06, 0.08, 0.14 }, { 0.7, 0.85, 1 }),
+    },
+    PIXEL = {
+        colour("NAVY"),
+        colour("PLUM", { 0.23, 0.08, 0.16 }, { 1, 0.93, 0.15 }),
+        colour("FOREST", { 0, 0.2, 0.12 }, { 1, 0.93, 0.15 }),
+        colour("BROWN", { 0.2, 0.12, 0.08 }, { 1, 0.64, 0 }),
+        colour("GREY", { 0.18, 0.17, 0.16 }),
+        colour("BLACK", { 0.03, 0.03, 0.04 }, { 0, 0.89, 0.21 }),
+        colour("TEAL", { 0.02, 0.17, 0.22 }, { 0.16, 0.68, 1 }),
+        colour("PURPLE", { 0.15, 0.1, 0.25 }, { 1, 0.47, 0.66 }),
+    },
+    COMIC = { colour("GREY"), colour("DARKGREY"), colour("BLACK"), colour("WHITE"), colour("YELLOW"),
+        colour("BLUE"), colour("RED"), colour("GREEN"), colour("PURPLE") },
+}
+
+-- The unit frames take the backdrop only (no accent). Colours are stored
+-- account wide outside the theme sets (UnitProfiles.ThemeColors).
+-- The comic's paper tint per colour (the unit frames' comic has no dark
+-- ink that a dark paper would have to lighten); GREY is the comic as it is.
 local COMIC_PAPER = {
     GREY = { 0.70, 0.70, 0.70 },
     DARKGREY = { 0.38, 0.38, 0.38 },
@@ -241,29 +310,73 @@ local function use(p)
     ns.Storage.Save()
 end
 
--- The comic colour chosen; an unknown one stored reads as GREY.
-function Themes.ComicColor()
-    local id = ns.UnitProfiles.ComicColor()
-    return COMIC_PAPER[id] and id or "GREY"
+local function colourOf(themeId, id)
+    for _, c in ipairs(Themes.COLORS[themeId] or {}) do
+        if c.id == id then return c end
+    end
+    return nil
 end
 
--- The backdrop's tint under spec: the comic's paper in its colour (unit
--- frames, raid cells and the Smart Buffs window alike).
+-- A theme's colour ids in order (themeId defaults to the current theme;
+-- CLASSIC has none).
+function Themes.Colors(themeId)
+    local list = {}
+    for i, c in ipairs(Themes.COLORS[themeId or Themes.Current()] or {}) do list[i] = c.id end
+    return list
+end
+
+-- A theme's colour chosen; an unknown one stored reads as its first.
+function Themes.Color(themeId)
+    themeId = themeId or Themes.Current()
+    local colours = Themes.COLORS[themeId]
+    if not colours then return nil end
+    local id = ns.UnitProfiles.ThemeColors()[themeId]
+    return colourOf(themeId, id) and id or colours[1].id
+end
+
+-- spec's colour when it draws from the grey texture (not its first, not
+-- the comic's paper). Raid cells and Smart Buffs pass their own theme's spec.
+local function greyPaint(spec)
+    for id, s in pairs(Themes.SPECS) do
+        if s == spec then
+            local c = colourOf(id, Themes.Color(id))
+            return c and c.back and c or nil
+        end
+    end
+    return nil
+end
+
+-- The backdrop's texture under spec: the grey one under a colour.
+function Themes.Back(spec)
+    return greyPaint(spec) and spec.art.back .. "Grey" or spec.art.back
+end
+
+-- The backdrop's tint under spec: the comic's paper in its colour, or the
+-- grey texture tinted to the colour at the theme's alpha (unit frames, raid
+-- cells and the Smart Buffs window alike).
 function Themes.Tint(spec)
     local tint = spec.art and spec.art.tint
-    if spec ~= Themes.SPECS.COMIC or not tint then return tint end
-    local paper = COMIC_PAPER[Themes.ComicColor()]
-    return { paper[1], paper[2], paper[3], tint[4] }
+    if spec == Themes.SPECS.COMIC and tint then
+        local paper = COMIC_PAPER[Themes.Color("COMIC")]
+        return { paper[1], paper[2], paper[3], tint[4] }
+    end
+    local c = greyPaint(spec)
+    if not c then return tint end
+    local mean = GREY_MEAN[spec.art.back]
+    return { math.min(1, c.back[1] / mean), math.min(1, c.back[2] / mean), math.min(1, c.back[3] / mean),
+        tint and tint[4] or 1 }
 end
 
--- Repaints at once where the comic shows (unit frames or raid cells),
--- restyling secure frames as Switch does.
-function Themes.SetComicColor(id)
-    if not COMIC_PAPER[id] then return nil, "UNKNOWN" end
-    local shown = Themes.Current() == "COMIC" or ns.RaidCell.Theme() == "COMIC"
+-- A theme's colour (themeId defaults to the current theme). Repaints at
+-- once; refused while that theme shows (unit frames or raid cells) where
+-- Switch would be, since it restyles secure frames.
+function Themes.SetColor(id, themeId)
+    themeId = themeId or Themes.Current()
+    if not colourOf(themeId, id) then return nil, "UNKNOWN" end
+    local shown = Themes.Current() == themeId or ns.RaidCell.Theme() == themeId
     local why = shown and refuse()
     if why then return nil, why end
-    ns.UnitProfiles.SetComicColor(id ~= "GREY" and id or nil)
+    ns.UnitProfiles.ThemeColors()[themeId] = id ~= Themes.COLORS[themeId][1].id and id or nil
     ns.Fire("CONFIG_CHANGED", nil, nil)
     ns.Fire("RAID_CONFIG_CHANGED", "general", "cellTheme")
     return true
@@ -383,7 +496,7 @@ _G.ForeverThemes["ForeverUnitFrames"] = {
     title = "Forever Unit Frames",
     Current = Themes.Current,
     Switch = Themes.Switch,
-    ComicColors = Themes.COMIC_COLORS,
-    ComicColor = Themes.ComicColor,
-    SetComicColor = Themes.SetComicColor,
+    Colors = Themes.Colors,
+    Color = Themes.Color,
+    SetColor = Themes.SetColor,
 }

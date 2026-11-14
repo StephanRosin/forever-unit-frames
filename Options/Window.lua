@@ -246,8 +246,10 @@ end
 
 -- Pages -------------------------------------------------------------------------
 
--- Whether a row is folded away (a closed placement fold, below).
+-- Whether a row is folded away (a closed placement fold, below) or not
+-- offered now (row.visible, the theme's colours).
 local function folded(row)
+    if row.visible and not row.visible() then return true end
     return row.fold ~= nil and not row.fold.open
 end
 
@@ -257,7 +259,7 @@ end
 local function restack(page)
     local y = PAGE_TOP
     for _, row in ipairs(page.rows) do
-        if row.fold then row:SetShown(not folded(row)) end
+        if row.fold or row.visible then row:SetShown(not folded(row)) end
         if not folded(row) then
             y = y + row.stackGap
             row:ClearAllPoints()
@@ -298,7 +300,7 @@ end
 
 -- Defined with the other blocks below; a section's action button, a
 -- tab's note, the theme's "Take positions from" list.
-local actionBlock, noteBlock, themeCopyRow, comicColorRow
+local actionBlock, noteBlock, themeCopyRow, themeColorRow
 
 -- General > Frames: after the master switch, one switch per frame, the
 -- frame's own "enabled".
@@ -372,7 +374,8 @@ local function addSections(page, stack, scope, tab)
             addSectionRows(page, stack, scope, section, keys)
             if section.frames then frameSwitches(page, stack) end
             if section.themeCopy then
-                stack.add(comicColorRow(page))
+                stack.add(themeColorRow(page))
+                page.hasFolds = true   -- the colour row comes and goes with the theme
                 stack.add(themeCopyRow(page))
             end
             for _, id in ipairs(section.actions or {}) do stack.add(actionBlock(page, id)) end
@@ -451,22 +454,25 @@ function actionBlock(page, id)
     return block
 end
 
--- The comic's colour, kept apart from the theme sets; chosen under
--- another theme it waits for the comic.
-function comicColorRow(page)
+-- The current theme's colours, kept apart from the theme sets; none
+-- (the row hidden) under Classic.
+function themeColorRow(page)
     local row = Widgets.Dropdown(page, {
-        label = L.COMIC_COLOR,
+        label = L.OPT_THEME_COLOR,
         items = function()
-            local items = {}
-            for _, id in ipairs(ns.Themes.COMIC_COLORS) do items[#items + 1] = { value = id, text = L["COMIC_COLOR_" .. id] } end
+            local theme, items = ns.Themes.Current(), {}
+            for _, id in ipairs(ns.Themes.Colors()) do
+                items[#items + 1] = { value = id, text = L["THEME_COLOR_" .. theme .. "_" .. id] }
+            end
             return items
         end,
-        get = function() return ns.Themes.ComicColor() end,
+        get = function() return ns.Themes.Color() end,
         set = function(id)
-            local ok, why = ns.Themes.SetComicColor(id)
+            local ok, why = ns.Themes.SetColor(id)
             if not ok then ns.Print(L["THEME_REFUSED_" .. why]) end
         end,
     })
+    row.visible = function() return #ns.Themes.Colors() > 0 end
     row:Refresh()
     return row
 end
@@ -1303,6 +1309,7 @@ ns.Listen("CONFIG_CHANGED", function()
     forEachRow(function(row) row:Refresh() end)
     setRowStates()
     Options.languageRow:Refresh()
+    if Options.page and Options.page.hasFolds and Options.page.Restack then Options.page.Restack() end
 end)
 
 -- The profile list and the buttons follow a switch, save, rename or delete.

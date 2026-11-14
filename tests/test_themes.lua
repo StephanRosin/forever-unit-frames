@@ -188,40 +188,66 @@ H.check("tech: no corner pieces", ns.Themes.SPECS.TECH.art.ornament, nil)
 H.check("comic: paper at 0.7", ns.Themes.SPECS.COMIC.art.tint[1], 0.7)
 H.check("comic: no fill over the paper", ns.Themes.SPECS.COMIC.look.backgroundColor[4], 0)
 
--- The comic's colours: the paper only (no yellow or red accent here), kept
--- apart from the theme sets; unit frames, raid cells and Smart Buffs alike.
+-- Every theme's colours: the backdrop only (no accent here), kept apart
+-- from the theme sets; unit frames, raid cells and Smart Buffs alike.
 do
     ns.RaidProfiles.Attach(db)   -- as at login: the cells' theme is asked too
     local entry = _G.ForeverThemes.ForeverUnitFrames
     local texture = CreateFrame("Frame"):CreateTexture()
-    local function paper()
-        ns.ThemeArt.Paint(texture, ns.Themes.SPECS.COMIC)
-        return table.concat(texture._color, ",")
+    local PATH = "Interface\\AddOns\\ForeverUnitFrames\\Media\\Themes\\"
+    local function rgb(t) return table.concat({ t[1], t[2], t[3], t[4] }, ",") end
+    local function paint(id)
+        ns.ThemeArt.Paint(texture, ns.Themes.SPECS[id])
+        return texture._texture .. " " .. table.concat(texture._color, ",")
     end
-    H.check("comic colours: list", table.concat(entry.ComicColors, ","), "GREY,DARKGREY,BLACK,WHITE,YELLOW,BLUE,RED,GREEN,PURPLE")
-    H.check("comic colours: grey by default", entry.ComicColor(), "GREY")
-    H.checkTrue("comic colours: to comic", ns.Themes.Switch("COMIC"))
-    H.check("comic grey: paper as today", paper(), "0.7,0.7,0.7,1")
-    H.checkTrue("comic blue: set", entry.SetComicColor("BLUE"))
-    H.check("comic blue: paper", paper(), "0.45,0.6,0.86,1")
-    H.check("comic colour: frost untouched", ns.Themes.Tint(ns.Themes.SPECS.FROST)[1], 1)
-    H.check("comic colour: unknown refused", select(2, ns.Themes.SetComicColor("NOPE")), "UNKNOWN")
+    ns.Themes.Switch("CLASSIC")
+    H.check("colours: none under classic", #entry.Colors(), 0)
+    H.check("colours: classic has no colour", entry.Color(), nil)
+    H.check("colours: comic list", table.concat(entry.Colors("COMIC"), ","), "GREY,DARKGREY,BLACK,WHITE,YELLOW,BLUE,RED,GREEN,PURPLE")
+    for _, id in ipairs(ns.Themes.IDS) do
+        local art = ns.Themes.SPECS[id].art
+        if art then
+            local colours = entry.Colors(id)
+            H.check(id .. ": the first colour by default", entry.Color(id), colours[1])
+            H.check(id .. ": default as today", paint(id), PATH .. art.back .. " " .. rgb(art.tint or { 1, 1, 1, 1 }))
+            for _, c in ipairs(colours) do
+                H.checkTrue(id .. " " .. c .. ": named", ns.L["THEME_COLOR_" .. id .. "_" .. c] ~= "THEME_COLOR_" .. id .. "_" .. c)
+            end
+        end
+    end
+    H.checkTrue("colours: to pixel", ns.Themes.Switch("PIXEL"))
+    H.checkTrue("pixel plum: set", entry.SetColor("PLUM"))
+    H.check("pixel plum: grey texture tinted target / mean", paint("PIXEL"),
+        PATH .. "PixelBackGrey " .. rgb({ 0.23 / 0.8, 0.08 / 0.8, 0.16 / 0.8, 1 }))
+    H.checkTrue("frost deep: set for a theme not in use", entry.SetColor("DEEP", "FROST"))
+    H.check("frost deep: keeps the alpha", paint("FROST"),
+        PATH .. "FrostBackGrey " .. rgb({ 0.1 / 0.796, 0.18 / 0.796, 0.32 / 0.796, 0.75 }))
+    H.check("colours: each theme its own", entry.Color() .. " " .. entry.Color("FROST"), "PLUM DEEP")
+    H.check("colour: unknown refused", select(2, ns.Themes.SetColor("NOPE")), "UNKNOWN")
+    H.check("colour: another theme's id refused", select(2, ns.Themes.SetColor("OAK")), "UNKNOWN")
     M.combat = true
-    H.check("comic colour: combat refused under the comic", select(2, ns.Themes.SetComicColor("RED")), "COMBAT")
+    H.check("colour: combat refused for the theme in use", select(2, ns.Themes.SetColor("NAVY")), "COMBAT")
+    H.checkTrue("colour: a theme not shown in combat", ns.Themes.SetColor("ICE", "FROST"))
     M.combat = false
-    H.check("comic colour: in no profile", ns.Config.Profile().general.comicColor, nil)
-    H.checkTrue("comic colour: away to wood", ns.Themes.Switch("WOOD"))
-    H.checkTrue("comic colour: chosen under wood", ns.Themes.SetComicColor("RED"))
-    H.checkTrue("comic colour: back to comic", ns.Themes.Switch("COMIC"))
-    H.check("comic colour: survives the switch", entry.ComicColor() .. " " .. paper(), "RED 0.86,0.44,0.4,1")
-    H.checkTrue("comic black: set", ns.Themes.SetComicColor("BLACK"))
-    H.check("comic black: paper", paper(), "0.16,0.16,0.16,1")
-    H.checkTrue("comic white: set", ns.Themes.SetComicColor("WHITE"))
-    H.check("comic white: paper", paper(), "1,1,1,1")
-    db.comicColor = "NOPE"
-    H.check("comic colour: unknown stored reads grey", ns.Themes.ComicColor(), "GREY")
-    H.checkTrue("comic grey back: set", ns.Themes.SetComicColor("GREY"))
-    H.check("comic grey back: paper", paper(), "0.7,0.7,0.7,1")
-    H.check("comic grey back: nothing stored", db.comicColor, nil)
+    H.check("colour: in no profile", ns.Config.Profile().general.themeColors, nil)
+    H.checkTrue("pixel navy: back", ns.Themes.SetColor("NAVY"))
+    H.check("pixel navy: nothing stored", db.themeColors.PIXEL, nil)
+    -- The comic as built: its paper.
+    H.checkTrue("comic: to comic", ns.Themes.Switch("COMIC"))
+    H.checkTrue("comic blue: set", entry.SetColor("BLUE"))
+    H.check("comic blue: paper", paint("COMIC"), PATH .. "ComicBack 0.45,0.6,0.86,1")
+    H.checkTrue("comic black: set", ns.Themes.SetColor("BLACK"))
+    H.check("comic black: paper", paint("COMIC"), PATH .. "ComicBack 0.16,0.16,0.16,1")
+    db.themeColors.COMIC = "NOPE"
+    H.check("colour: unknown stored reads the first", ns.Themes.Color(), "GREY")
+    -- The comic colour of before moves in once.
+    db.themeColors.COMIC = nil
+    db.comicColor = "RED"
+    H.check("migration: comic colour moved", entry.Color("COMIC") .. " " .. tostring(db.comicColor), "RED nil")
+    db.comicColor = "BLUE"
+    H.check("migration: a colour already set wins", entry.Color("COMIC"), "RED")
+    ns.Themes.SetColor("GREY")
+    H.check("comic grey: paper as today", paint("COMIC"), PATH .. "ComicBack 0.7,0.7,0.7,1")
     ns.Themes.Switch("CLASSIC")
 end
+

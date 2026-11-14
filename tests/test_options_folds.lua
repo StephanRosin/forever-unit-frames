@@ -108,3 +108,21 @@ for code, t in pairs(ns.Locales) do
         H.checkTrue(code .. " " .. key, type(t[key]) == "string" and t[key] ~= "")
     end
 end
+
+-- The theme's colours: one list, the current theme's; none under Classic.
+local function colourRow()
+    for _, row in ipairs(Options.page.rows) do
+        if row.visible then return row end
+    end
+end
+Options.Open("general", "frames")
+H.check("colours: hidden under classic", colourRow():IsShown(), false)
+ns.Themes.Switch("WOOD")
+local items = colourRow().opts.items()
+H.check("colours: shown under wood", colourRow():IsShown(), true)
+H.check("colours: wood's own", #items .. " " .. items[1].text, "6 " .. L.THEME_COLOR_WOOD_OAK)
+ns.Themes.Switch("PIXEL")
+items = colourRow().opts.items()
+H.check("colours: pixel's after the switch", #items .. " " .. items[2].text, "8 " .. L.THEME_COLOR_PIXEL_PLUM)
+ns.Themes.Switch("CLASSIC")
+H.check("colours: hidden again", colourRow():IsShown(), false)
