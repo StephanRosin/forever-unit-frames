@@ -24,6 +24,11 @@ local builtin = {
         ["Marcellus"] = ADDON .. "Fonts\\Marcellus-Regular.ttf",
         ["Space Grotesk"] = ADDON .. "Fonts\\SpaceGrotesk-Bold.ttf",
         ["VT323"] = ADDON .. "Fonts\\VT323-Regular.ttf",
+        -- Body faces of Swiss, Console, Pitwall: one face per frame, so
+        -- the readable text face, not the titles' display face.
+        ["Inter Tight"] = ADDON .. "Fonts\\InterTight-Regular.ttf",
+        ["IBM Plex Mono"] = ADDON .. "Fonts\\IBMPlexMono-Regular.ttf",
+        ["Titillium Web"] = ADDON .. "Fonts\\TitilliumWeb-SemiBold.ttf",
     },
     statusbar = {
         ["Flat"] = "Interface\\Buttons\\WHITE8X8",
@@ -32,7 +37,8 @@ local builtin = {
     },
 }
 -- The themes' bar textures (tools/make_themes.py).
-for _, name in ipairs({ "Wood", "Tech", "Parchment", "Stone", "Glass", "Comic", "Frost", "Pixel" }) do
+for _, name in ipairs({ "Wood", "Tech", "Parchment", "Stone", "Glass", "Comic", "Frost", "Pixel", "Swiss", "Console",
+    "Pitwall" }) do
     builtin.statusbar["FUF " .. name] = ADDON .. "Themes\\" .. name .. "Bar.tga"
 end
 local fallback = { font = "Friz Quadrata", statusbar = "Flat" }

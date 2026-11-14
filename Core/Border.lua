@@ -354,8 +354,9 @@ end
 
 -- Draws owner's border and shadow around box in scope's settings: show,
 -- style, size, padding, colour, shadow; rounded by radius (default: the
--- scope's corner radius; callers clamp it to the box).
-function Border.Draw(owner, scope, box, radius)
+-- scope's corner radius; callers clamp it to the box). color, when given,
+-- replaces a FLAT ring's colour (a theme colour, Themes.Accent).
+function Border.Draw(owner, scope, box, radius, color)
     local ring = pieces(owner)
     local size, padding = Border.Size(scope), Border.Padding(scope)
     radius = radius or ns.Corners.Radius(scope)
@@ -366,7 +367,7 @@ function Border.Draw(owner, scope, box, radius)
     if metal then
         paintMetal(ring, metal, corner > 0 and size / corner or 1)
     else
-        paintFlat(ring, Config.Get(scope, "borderColor"))
+        paintFlat(ring, color or Config.Get(scope, "borderColor"))
     end
     showRing(ring, size > 0)
     -- The dark inner line of a shaded style, the ring's innermost pixel;

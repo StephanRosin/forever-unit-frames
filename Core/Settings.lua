@@ -116,7 +116,8 @@ Settings.Define({ key = "unitFrames", code = "UU", scope = "general", type = "bo
 -- The look of every unit frame, each with a whole set of settings of its
 -- own (Core/Themes.lua). CLASSIC is the player's own layout. Stored by
 -- index: append only.
-Settings.THEMES = { "CLASSIC", "WOOD", "TECH", "PARCHMENT", "RUNESTONE", "GLASS", "COMIC", "FROST", "PIXEL" }
+Settings.THEMES = { "CLASSIC", "WOOD", "TECH", "PARCHMENT", "RUNESTONE", "GLASS", "COMIC", "FROST", "PIXEL", "SWISS",
+    "CONSOLE", "PITWALL" }
 Settings.Define({ key = "theme", code = "XT", scope = "general", type = "enum", values = Settings.THEMES,
     default = "CLASSIC" })
 -- Click-casting on the unit frames (decision 76): the raid window's

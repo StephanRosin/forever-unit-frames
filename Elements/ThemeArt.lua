@@ -75,6 +75,11 @@ function ThemeArt.Build(frame)
         frame.themeBlockOrnaments[i] = frame.themeOver:CreateTexture(nil, "OVERLAY")
         frame.themeBlockOrnaments[i]:Hide()
     end
+    -- The rule along the top, below the ornaments (Swiss: its accent sits on it).
+    frame.themeRule = frame.themeOver:CreateTexture(nil, "OVERLAY", nil, -1)
+    frame.themeRule:Hide()
+    frame.themeBlockRule = frame.themeOver:CreateTexture(nil, "OVERLAY", nil, -1)
+    frame.themeBlockRule:Hide()
 end
 
 local function placeShadowAround(shadow, box, offset, extent)
@@ -104,6 +109,9 @@ function ThemeArt.Refresh(frame, joined)
     local back = frame.themeBackOn == true
     frame.themeBack:SetShown(back and not joined)
     frame.themeBlockBack:SetShown(back and joined)
+    local rule = frame.themeRuleOn == true
+    frame.themeRule:SetShown(rule and not joined)
+    frame.themeBlockRule:SetShown(rule and joined)
     local wanted = frame.themeOrnamentsOn or {}
     for i = 1, 4 do
         frame.themeOrnaments[i]:SetShown(wanted[i] == true and not joined)
@@ -125,9 +133,8 @@ end
 
 -- Ornaments sit at the ring's outer corners, art.ornamentInset inwards
 -- (negative: outwards).
-local function placeOrnamentSet(pieces, box, art, wanted, extent)
+local function placeOrnamentSet(pieces, box, art, wanted, extent, c)
     local size, inset = art.ornamentSize or 12, (art.ornamentInset or 0) - extent
-    local c = art.ornamentColor or { 1, 1, 1, 1 }
     for i, piece in ipairs(pieces) do
         if wanted[i] then
             local point = ns.Corners.POINTS[i]
@@ -135,7 +142,7 @@ local function placeOrnamentSet(pieces, box, art, wanted, extent)
             local dy = (i <= 2) and -inset or inset
             piece:ClearAllPoints()
             piece:SetPoint(point, box, point, dx, dy)
-            piece:SetSize(size, size)
+            piece:SetSize(size, art.ornamentHeight or size)
             piece:SetTexture(PATH .. art.ornament)
             piece:SetTexCoord(unpack(MIRROR[i]))
             piece:SetVertexColor(c[1], c[2], c[3], c[4])
@@ -143,12 +150,30 @@ local function placeOrnamentSet(pieces, box, art, wanted, extent)
     end
 end
 
-local function placeOrnaments(frame, art, extent)
+local function placeOrnaments(frame, id, art, extent)
     local wanted = {}
     for _, i in ipairs(art.ornament and art.corners or {}) do wanted[i] = true end
     frame.themeOrnamentsOn = wanted
-    placeOrnamentSet(frame.themeOrnaments, frame, art, wanted, extent)
-    placeOrnamentSet(frame.themeBlockOrnaments, frame.unitBox or frame, art, wanted, extent)
+    local c = ns.Themes.Accent(id, "ornament") or art.ornamentColor or { 1, 1, 1, 1 }
+    placeOrnamentSet(frame.themeOrnaments, frame, art, wanted, extent, c)
+    placeOrnamentSet(frame.themeBlockOrnaments, frame.unitBox or frame, art, wanted, extent, c)
+end
+
+-- The rule from the ring's outer top corners down art.rule pixels.
+local function placeRuleOn(rule, box, art, extent)
+    rule:ClearAllPoints()
+    rule:SetPoint("TOPLEFT", box, "TOPLEFT", -extent, extent)
+    rule:SetPoint("TOPRIGHT", box, "TOPRIGHT", extent, extent)
+    rule:SetHeight(ns.Pixel.Snap(art.rule, nil, 1))
+    local c = art.ruleColor
+    rule:SetColorTexture(c[1], c[2], c[3], c[4])
+end
+
+local function placeRule(frame, art, extent)
+    frame.themeRuleOn = art.rule ~= nil
+    if not frame.themeRuleOn then return end
+    placeRuleOn(frame.themeRule, frame, art, extent)
+    placeRuleOn(frame.themeBlockRule, frame.unitBox or frame, art, extent)
 end
 
 function ThemeArt.Style(frame)
@@ -160,17 +185,19 @@ function ThemeArt.Style(frame)
         ThemeArt.Paint(frame.themeBack, cell)
         ThemeArt.Paint(frame.themeBlockBack, cell)
         frame.themeBackOn = frame.themeBack:IsShown()
-        frame.themeShadowOn, frame.themeOrnamentsOn = false, nil
+        frame.themeShadowOn, frame.themeOrnamentsOn, frame.themeRuleOn = false, nil, false
         ThemeArt.Refresh(frame, false)
         return
     end
-    local spec = ns.Themes.Spec(Config.Get("general", "theme"))
+    local id = Config.Get("general", "theme")
+    local spec = ns.Themes.Spec(id)
     local art = spec.art or {}
     local extent = ns.Border.Extent(scope)
     ThemeArt.Paint(frame.themeBack, spec)
     ThemeArt.Paint(frame.themeBlockBack, spec)
     frame.themeBackOn = frame.themeBack:IsShown()
-    placeOrnaments(frame, art, extent)
+    placeOrnaments(frame, id, art, extent)
+    placeRule(frame, art, extent)
     placeShadow(frame, art, extent)
 end
 

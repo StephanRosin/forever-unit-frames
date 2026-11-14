@@ -30,7 +30,10 @@ local LATIN_CLIENTS = { enUS = true, enGB = true, deDE = true, frFR = true, esES
 -- tint = its colour, ornament = corner piece, corners = which ones
 -- (Corners.POINTS order: 1 top left, 2 top right, 3 bottom left, 4
 -- bottom right), ornamentInset = how far in from the border's outer
--- corner (negative: further out), hardShadow = offset of a solid shadow.
+-- corner (negative: further out), ornamentHeight = its height when not
+-- square, hardShadow = offset of a solid shadow, rule = a line this thick
+-- in ruleColor along the top inside the ring, accent = what the theme's
+-- colour paints (Themes.Accent).
 -- borderPadding shows the backdrop round the bars.
 -- fontOutline: the client's OUTLINE, never SOFT. With the theme fonts
 -- SOFT (Elements/Texts.lua) showed black text in game; why is not known
@@ -103,6 +106,35 @@ Themes.SPECS = {
             shadowEnabled = false, fontOutline = "OUTLINE" },
         art = { back = "PixelBack", hardShadow = 4 },
     },
+    -- Swiss: flat black, a white rule along the top, one red accent on it.
+    SWISS = {
+        font = "Inter Tight", bar = "FUF Swiss",
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = { 0.165, 0.165, 0.165, 1 },
+            borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.165, 0.165, 0.165, 0.92 },
+            titleBackground = false, shadowEnabled = false, fontOutline = "OUTLINE" },
+        art = { back = "SwissBack", rule = 3, ruleColor = { 0.949, 0.949, 0.949, 1 },
+            ornament = "SwissBar", corners = { 1 }, ornamentSize = 12, ornamentHeight = 3,
+            ornamentColor = { 1, 0.176, 0.125, 1 }, accent = "ornament" },
+    },
+    -- A terminal: near black with scan lines, a mint ring, dashed bars.
+    CONSOLE = {
+        font = "IBM Plex Mono", bar = "FUF Console",
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = { 0.306, 0.929, 0.69, 1 },
+            borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.306, 0.929, 0.69, 0.1 },
+            titleBackground = false, shadowEnabled = false, fontOutline = "OUTLINE" },
+        art = { back = "ConsoleBack", accent = "ring" },
+    },
+    -- A timing screen: carbon, dark cards, a red wedge, LED bars. The
+    -- ring is the carbon's own colour: none to see, but it keeps the
+    -- auras clear of the padding (Border.Extent).
+    PITWALL = {
+        font = "Titillium Web", bar = "FUF Pitwall",
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = { 0.043, 0.047, 0.055, 1 },
+            borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.086, 0.094, 0.11, 0.92 },
+            titleBackground = true, shadowEnabled = false, fontOutline = "OUTLINE" },
+        art = { back = "PitwallBack", ornament = "PitwallWedge", corners = { 1 }, ornamentSize = 16,
+            ornamentColor = { 0.882, 0.024, 0, 1 }, accent = "ornament" },
+    },
 }
 
 -- Settings a theme takes over on every frame: frames that had their own
@@ -117,6 +149,8 @@ end
 -- theme's grey texture (<back>Grey), tinted so its mean lands on `back`
 -- (vertex colour = back / GREY_MEAN, at most 1), and brings its accent
 -- (nil: the theme's own). The comic keeps its paper tint (COMIC_PAINT).
+-- Swiss, Console and Pitwall keep their backdrop: their accent paints
+-- their art.accent instead (Themes.Accent).
 local GREY_MEAN = { WoodBack = 0.800, TechBack = 0.705, ParchmentBack = 0.799, StoneBack = 0.800,
     GlassBack = 0.777, FrostBack = 0.796, PixelBack = 0.800 }
 local function colour(id, back, accent) return { id = id, back = back, accent = accent } end
@@ -177,12 +211,32 @@ Themes.COLORS = {
         colour("BLACK", { 0.03, 0.03, 0.04 }, { 0, 0.89, 0.21 }),
         colour("TEAL", { 0.02, 0.17, 0.22 }, { 0.16, 0.68, 1 }),
         colour("PURPLE", { 0.15, 0.1, 0.25 }, { 1, 0.47, 0.66 }),
+        colour("HANDHELD", { 0.059, 0.122, 0.059 }, { 0.784, 0.941, 0.439 }),
+    },
+    SWISS = {
+        colour("RED"),
+        colour("BLUE", nil, { 0.176, 0.42, 1 }),
+        colour("YELLOW", nil, { 1, 0.82, 0 }),
+        colour("WHITE", nil, { 0.949, 0.949, 0.949 }),
+    },
+    CONSOLE = {
+        colour("MINT"),
+        colour("AMBER", nil, { 1, 0.69, 0 }),
+        colour("PHOSPHOR", nil, { 0.224, 1, 0.078 }),
+        colour("VIOLET", nil, { 0.627, 0.471, 1 }),
+    },
+    PITWALL = {
+        colour("RED"),
+        colour("ORANGE", nil, { 1, 0.541, 0 }),
+        colour("TEAL", nil, { 0, 0.631, 0.612 }),
+        colour("SILVER", nil, { 0.788, 0.808, 0.839 }),
     },
     COMIC = { colour("GREY"), colour("DARKGREY"), colour("BLACK"), colour("WHITE"), colour("YELLOW"),
         colour("BLUE"), colour("RED"), colour("GREEN"), colour("PURPLE") },
 }
 
--- The unit frames take the backdrop only (no accent). Colours are stored
+-- The unit frames take the backdrop only (no accent), but for the themes
+-- whose colours keep the backdrop (art.accent). Colours are stored
 -- account wide outside the theme sets (UnitProfiles.ThemeColors).
 -- The comic's paper tint per colour (the unit frames' comic has no dark
 -- ink that a dark paper would have to lighten); GREY is the comic as it is.
@@ -218,6 +272,7 @@ function Themes.CellLook(id, key, own)
         return size > 0 and size + add or size
     end
     if key == "borderSize" then return math.min(look.borderSize, CELL_BORDER_MAX) end
+    if key == "borderColor" then return Themes.Accent(id, "ring") or look.borderColor end
     if key == "cornerRadius" then return math.min(look.cornerRadius, CELL_RADIUS_MAX) end
     return look[key]
 end
@@ -344,6 +399,15 @@ local function greyPaint(spec)
         end
     end
     return nil
+end
+
+-- Theme id's colour where its art.accent is `where` ("ring": the border,
+-- "ornament": the corner piece); nil for its first colour or another place.
+function Themes.Accent(id, where)
+    local art = Themes.Spec(id).art
+    if not art or art.accent ~= where then return nil end
+    local c = colourOf(id, Themes.Color(id))
+    return c and c.accent and { c.accent[1], c.accent[2], c.accent[3], 1 }
 end
 
 -- The backdrop's texture under spec: the grey one under a colour.
