@@ -30,6 +30,7 @@ local EXPECTED = {
     shieldsBarX = { "KN", "int", 0 }, shieldsBarY = { "KO", "int", 0 },
     shieldsBarAnchor = { "KP", "enum", "ICONS" }, shieldsBarFreeX = { "KQ", "int", -340 },
     shieldsBarFreeY = { "KT", "int", -140 }, shieldsBarColorMode = { "KU", "enum", "FIXED" },
+    shieldsBarSide = { "KV", "enum", "LEFT" },
 }
 for key, want in pairs(EXPECTED) do
     local def = S.Get(key)
@@ -299,8 +300,9 @@ H.check("bar: vertical", bar._orientation, "VERTICAL")
 H.check("bar: as tall as an icon", bar:GetHeight(), 32)
 H.check("bar: its width", bar:GetWidth(), 6)
 p, rel, rp, x = bar:GetPoint(1)
-H.check("bar: before the first icon", p .. ">" .. rp, "TOPRIGHT>TOPLEFT")
-H.check("bar: on the block", rel, sw.holder)
+H.check("bar: left of the icons", p .. ">" .. rp, "TOPRIGHT>TOPLEFT")
+H.check("bar: on the container", rel, container)
+H.check("bar: from a frame allowed to anchor there", sw.barHost._template, SW.TEXT_TEMPLATE)
 H.check("bar: a gap of the spacing", x, -4)
 H.check("total on the bar's side: outside the bar", select(2, total:GetPoint(1)), bar)
 player.absorbs = 800
@@ -370,8 +372,8 @@ H.check("bar off: its mover inactive", SW.BarMoverSpec(ns.Frames.player).active(
 H.check("bar off: hidden though free", bar:IsShown(), false)
 C.Set("player", "shieldsBar", true)
 C.Set("player", "shieldsBarAnchor", "ICONS")
-H.check("bar at the icons again: the block's child", bar:GetParent(), sw.holder)
-H.check("bar at the icons again: beside them", select(2, bar:GetPoint(1)), sw.holder)
+H.check("bar at the icons again: the host's child", bar:GetParent(), sw.barHost)
+H.check("bar at the icons again: beside them", select(2, bar:GetPoint(1)), container)
 -- Colour mode: red at the bottom to green at the top, over the whole bar,
 -- seen where the fill is.
 H.check("bar fixed: no gradient", bar.gradient:IsShown(), false)
@@ -382,9 +384,22 @@ H.check("bar gradient: in the fill's clip", bar.gradient:GetParent(), bar.gate)
 H.check("bar gradient: the fill itself clear", bar._color[4], 0)
 C.Set("player", "shieldsBarColorMode", "FIXED")
 H.check("bar fixed again: the fill's colour", bar._color[4], 1)
-C.Set("player", "shieldsGrowth", "LEFT")
-p, _, rp, x = bar:GetPoint(1)
-H.check("bar: growing left, at the right", p .. ">" .. rp .. ">" .. x, "TOPLEFT>TOPRIGHT>4")
+-- Right of the icons: after the last one shown; the offset from there.
+C.Set("player", "shieldsBarSide", "RIGHT")
+C.Set("player", "shieldsBarX", 3)
+p, rel, rp, x = bar:GetPoint(1)
+H.check("bar right: after the icons", p .. ">" .. rp .. ">" .. x, "TOPLEFT>TOPRIGHT>7")
+H.check("bar right: on the container", rel, container)
+H.check("bar right: the total stays at the container", select(2, total:GetPoint(1)), container)
+C.Set("player", "shieldsGrowth", "UP")
+p, _, rp = bar:GetPoint(1)
+H.check("bar right, growing up: level with the bottom", p .. ">" .. rp, "BOTTOMLEFT>BOTTOMRIGHT")
 C.Set("player", "shieldsGrowth", "RIGHT")
+C.Set("player", "shieldsBarX", 0)
+ns.TestMode.Set(true)
+H.check("bar in test mode: on the handle", select(2, bar:GetPoint(1)), sw.holder)
+ns.TestMode.Set(false)
+H.check("bar after test mode: on the container", select(2, bar:GetPoint(1)), container)
+C.Set("player", "shieldsBarSide", "LEFT")
 C.Set("player", "shieldsBar", false)
 H.check("bar: off again", bar:IsShown(), false)

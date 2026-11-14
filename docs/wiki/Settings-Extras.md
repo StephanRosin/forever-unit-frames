@@ -80,6 +80,7 @@ The icons of your active absorb shields and the exact total of all your absorbs,
 <tr><td><b>Bar width</b></td><td></td><td>2 – 64</td><td>6</td><td>Player</td></tr>
 <tr><td><b>Bar height</b></td><td></td><td>4 – 300 (0: Auto)</td><td>Auto</td><td>Player</td></tr>
 <tr><td><b>Bar position</b></td><td></td><td>At the icons, Free</td><td>At the icons</td><td>Player</td></tr>
+<tr><td><b>Bar side</b></td><td></td><td>Left, Right</td><td>Left</td><td>Player</td></tr>
 <tr><td><b>Bar offset X</b></td><td></td><td>-200 – 200</td><td>0</td><td>Player</td></tr>
 <tr><td><b>Bar offset Y</b></td><td></td><td>-200 – 200</td><td>0</td><td>Player</td></tr>
 <tr><td><b>Bar X</b></td><td></td><td>-4000 – 4000</td><td>-340</td><td>Player</td></tr>

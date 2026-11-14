@@ -38,9 +38,11 @@ local _, ns = ...
 -- is secret), so with none the empty fill is all there is and nothing
 -- shows. The designs draw on the fill only, in a frame on the fill that
 -- clips (as Elements/Absorb.lua's glow): stripes, segment lines, a frame.
--- It sits beside the first icon (shieldsBarAnchor ICONS) or free on a
--- mover of its own (FREE), then a child of UIParent so the player frame's
--- scale does not move it off its handle.
+-- It sits at the icons' left or right (shieldsBarAnchor ICONS,
+-- shieldsBarSide), on the container like the total (from a frame with
+-- the untrusted-layout aspect), so "right" is after the last icon shown;
+-- or free on a mover of its own (FREE), then a child of UIParent so the
+-- player frame's scale does not move it off its handle.
 -- shortcut: a shield cast on someone else also captures your total (the
 -- event names no target), and a shield from another player captures
 -- nothing; the bar then shows full until it falls below the old maximum.
@@ -229,7 +231,11 @@ function ShieldWatch.Build(frame)
     host:SetAllPoints(holder)
     sw.textHost = host
     sw.total = host:CreateFontString(nil, "OVERLAY")
-    local bar = CreateFrame("StatusBar", nil, holder)
+    ok, host = pcall(CreateFrame, "Frame", nil, holder, ShieldWatch.TEXT_TEMPLATE)
+    if not ok then host = CreateFrame("Frame", nil, holder) end
+    host:SetAllPoints(holder)
+    sw.barHost = host
+    local bar = CreateFrame("StatusBar", nil, host)
     bar:SetOrientation("VERTICAL")
     bar:SetMinMaxValues(0, 1)
     bar:Hide()
@@ -452,10 +458,7 @@ local function configure(frame)
     if container:GetUnit() ~= (frame.unit or "none") then container:SetUnit(frame.unit or "none") end
 end
 
--- The bar's side: before the first icon, the icons grow away from it.
-local function barSide(scope)
-    return setting(scope, "shieldsGrowth") == "LEFT" and "RIGHT" or "LEFT"
-end
+local function barSide(scope) return setting(scope, "shieldsBarSide") end
 
 -- The bar's size: its width, its height or (0) an icon's.
 function ShieldWatch.BarSize(scope)
@@ -479,9 +482,9 @@ end
 
 local function placeBar(frame)
     local sw, scope = frame.shields, frame.key
-    local bar, corner = sw.bar, CORNER[setting(scope, "shieldsGrowth")]
-    local side = barSide(scope)
-    local point = corner:gsub(side, OPPOSITE[side])
+    local bar, side = sw.bar, barSide(scope)
+    -- Level with the first icon: its top, or its bottom when they grow up.
+    local edge = setting(scope, "shieldsGrowth") == "UP" and "BOTTOM" or "TOP"
     bar:ClearAllPoints()
     local w, h = ShieldWatch.BarSize(scope)
     bar:SetSize(w, h)
@@ -496,11 +499,15 @@ local function placeBar(frame)
                 Pixel.Centre(setting(scope, "shieldsBarFreeY"), h))
         end
     else
-        bar:SetParent(sw.holder)
-        bar:SetPoint(point, sw.holder, corner,
+        bar:SetParent(sw.barHost)
+        -- The container (sized by the client to its icons), or the handle in
+        -- test mode and without one.
+        local region = (not sw.preview and sw.container) or sw.holder
+        bar:SetPoint(edge .. OPPOSITE[side], region, edge .. side,
             (side == "LEFT" and -1 or 1) * spacing(scope) + setting(scope, "shieldsBarX"), setting(scope, "shieldsBarY"))
     end
-    bar:SetFrameLevel(sw.holder:GetFrameLevel() + 1)
+    sw.barHost:SetFrameLevel(sw.holder:GetFrameLevel() + 2)
+    bar:SetFrameLevel(sw.holder:GetFrameLevel() + 2)
     bar:SetStatusBarTexture(ns.Media.StatusBar(setting(scope, "barTexture")))
     local c = setting(scope, "shieldsBarColor")
     local gradient = setting(scope, "shieldsBarColorMode") == "GRADIENT"
@@ -624,6 +631,7 @@ function ShieldWatch.Preview(frame, on)
     ShieldWatch.Refresh(frame)
     ns.AfterCombat("shieldsPreview:" .. frame.key, function()
         if sw.container then sw.container:SetShown(enabled(frame.key) and not sw.preview) end
+        placeBar(frame)
         placeTotal(frame)
     end)
 end

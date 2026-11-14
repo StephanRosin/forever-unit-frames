@@ -760,6 +760,9 @@ shields({ key = "shieldsBarY", code = "KO", type = "int", min = -200, max = 200,
 -- mover (shieldsBarFreeX / Y, its centre from the screen's). Stored by
 -- index: append only.
 shields({ key = "shieldsBarAnchor", code = "KP", type = "enum", values = { "ICONS", "FREE" }, default = "ICONS" })
+-- At the icons: on their left or right (the offset counts from there).
+-- Stored by index: append only.
+shields({ key = "shieldsBarSide", code = "KV", type = "enum", values = { "LEFT", "RIGHT" }, default = "LEFT" })
 shields({ key = "shieldsBarFreeX", code = "KQ", type = "int", min = -4000, max = 4000, default = -340 })
 shields({ key = "shieldsBarFreeY", code = "KT", type = "int", min = -4000, max = 4000, default = -140 })
 
