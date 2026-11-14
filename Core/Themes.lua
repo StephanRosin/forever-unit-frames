@@ -116,19 +116,21 @@ Themes.SPECS = {
             ornament = "SwissBar", corners = { 1 }, ornamentSize = 12, ornamentHeight = 3,
             ornamentColor = { 1, 0.176, 0.125, 1 }, accent = "ornament" },
     },
-    -- A terminal: near black with scan lines, a mint ring, dashed bars.
+    -- A terminal: near black with scan lines, a mint ring, solid bars
+    -- (dashed ones looked broken on health and power).
     CONSOLE = {
-        font = "IBM Plex Mono", bar = "FUF Console",
+        font = "IBM Plex Mono", bar = "FUF Swiss",
         look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = { 0.306, 0.929, 0.69, 1 },
             borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.306, 0.929, 0.69, 0.1 },
             titleBackground = false, shadowEnabled = false, fontOutline = "OUTLINE" },
         art = { back = "ConsoleBack", accent = "ring" },
     },
-    -- A timing screen: carbon, dark cards, a red wedge, LED bars. The
+    -- A timing screen: carbon, dark cards, a red wedge, solid bars (LED
+    -- segments looked broken on health and power). The
     -- ring is the carbon's own colour: none to see, but it keeps the
     -- auras clear of the padding (Border.Extent).
     PITWALL = {
-        font = "Titillium Web", bar = "FUF Pitwall",
+        font = "Titillium Web", bar = "FUF Swiss",
         look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = { 0.043, 0.047, 0.055, 1 },
             borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.086, 0.094, 0.11, 0.92 },
             titleBackground = true, shadowEnabled = false, fontOutline = "OUTLINE" },
@@ -294,7 +296,7 @@ end
 -- Raised whenever SPECS change a look: theme sets made before are made
 -- anew from CLASSIC (Themes.Upgrade), so a changed theme shows as it is
 -- now. CLASSIC is never touched.
-Themes.REVISION = 5
+Themes.REVISION = 6
 
 -- The active profile's stored theme sets; stale ones (an older
 -- REVISION) dropped.

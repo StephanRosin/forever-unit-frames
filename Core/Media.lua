@@ -36,9 +36,9 @@ local builtin = {
         ["Raid"] = "Interface\\RaidFrame\\Raid-Bar-Hp-Fill",
     },
 }
--- The themes' bar textures (tools/make_themes.py).
-for _, name in ipairs({ "Wood", "Tech", "Parchment", "Stone", "Glass", "Comic", "Frost", "Pixel", "Swiss", "Console",
-    "Pitwall" }) do
+-- The themes' bar textures (tools/make_themes.py). Console and Pitwall
+-- use Swiss's: their dashed and LED bars looked broken here.
+for _, name in ipairs({ "Wood", "Tech", "Parchment", "Stone", "Glass", "Comic", "Frost", "Pixel", "Swiss" }) do
     builtin.statusbar["FUF " .. name] = ADDON .. "Themes\\" .. name .. "Bar.tga"
 end
 local fallback = { font = "Friz Quadrata", statusbar = "Flat" }
