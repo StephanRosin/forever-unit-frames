@@ -174,3 +174,8 @@ do
     H.checkTrue("registry: switch", entry.Switch("FROST"))
     H.check("registry: current", entry.Current(), "FROST")
 end
+
+-- Round 3: Tech without corner pieces; Comic's paper as in every Forever addon.
+H.check("tech: no corner pieces", ns.Themes.SPECS.TECH.art.ornament, nil)
+H.check("comic: paper at 0.7", ns.Themes.SPECS.COMIC.art.tint[1], 0.7)
+H.check("comic: no fill over the paper", ns.Themes.SPECS.COMIC.look.backgroundColor[4], 0)

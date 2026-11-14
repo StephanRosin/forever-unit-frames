@@ -45,14 +45,13 @@ Themes.SPECS = {
             shadowEnabled = true, shadowAlpha = 60, shadowSize = 6, fontOutline = "OUTLINE" },
         art = { back = "WoodBack", ornament = "Rivet", corners = { 1, 2, 3, 4 }, ornamentSize = 11, ornamentInset = 1 },
     },
-    -- Dark navy with a faint grid, a thin cyan line, corner brackets.
+    -- Dark navy with a faint grid, a thin cyan line.
     TECH = {
         font = "Space Grotesk", bar = "FUF Tech",
         look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = { 0.25, 0.88, 0.94, 0.9 },
             borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.02, 0.05, 0.08, 0.92 },
             titleBackground = false, shadowEnabled = false, fontOutline = "OUTLINE" },
-        art = { back = "TechBack", ornament = "Bracket", corners = { 1, 2, 3, 4 }, ornamentSize = 12, ornamentInset = -3,
-            ornamentColor = { 0.25, 0.88, 0.94, 1 } },
+        art = { back = "TechBack" },
     },
     -- Parchment round the bars, a brown ink line, a wax seal.
     PARCHMENT = {
@@ -83,9 +82,10 @@ Themes.SPECS = {
     COMIC = {
         font = "Bangers", bar = "FUF Comic", fontSizeAdd = 2,
         look = { borderShow = true, borderStyle = "FLAT", borderSize = 3, borderColor = { 0.07, 0.07, 0.07, 1 },
-            borderPadding = 0, cornerRadius = 0, backgroundColor = { 1, 0.98, 0.94, 1 }, titleBackground = false,
+            borderPadding = 0, cornerRadius = 0, backgroundColor = { 0, 0, 0, 0 }, titleBackground = false,
             shadowEnabled = false, fontOutline = "THICKOUTLINE" },
-        art = { back = "ComicBack", hardShadow = 5 },
+        -- The same paper in every Forever addon: ComicBack at 0.7.
+        art = { back = "ComicBack", tint = { 0.7, 0.7, 0.7, 1 }, hardShadow = 5 },
     },
     -- Translucent ice, a pale rim, rounded.
     FROST = {
@@ -152,7 +152,7 @@ end
 -- Raised whenever SPECS change a look: theme sets made before are made
 -- anew from CLASSIC (Themes.Upgrade), so a changed theme shows as it is
 -- now. CLASSIC is never touched.
-Themes.REVISION = 3
+Themes.REVISION = 4
 
 -- The active profile's stored theme sets; stale ones (an older
 -- REVISION) dropped.
