@@ -1574,9 +1574,9 @@ L.NEWS_0_54_1_CASTBAR = "Une barre d'incantation ancrée sous ou au-dessus d'un 
 L.NEWS_OPEN_MANA_WARN = "Ouvrir l'alerte de mana"
 
 -- Themes (Core/Themes.lua)
-L.SECTION_theme = "Thème"
+L.SECTION_theme = "Thème (bêta)"
 L.SETTING_theme = "Thème"
-L.HINT_theme = "Chaque thème garde tous ses réglages ; Classique reste toujours votre disposition"
+L.HINT_theme = "Bêta : chaque thème garde ses réglages, au départ ceux de Classique"
 L.ENUM_theme_CLASSIC = "Classique (votre disposition)"
 L.ENUM_theme_WOOD = "Plaque de bois"
 L.ENUM_theme_TECH = "Technologie / IA"

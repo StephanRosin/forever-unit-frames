@@ -1512,9 +1512,9 @@ L.NEWS_0_54_1_CASTBAR = "프레임 아래나 위에 붙은 시전 바도 마우�
 L.NEWS_OPEN_MANA_WARN = "마나 경고 열기"
 
 -- Themes (Core/Themes.lua)
-L.SECTION_theme = "테마"
+L.SECTION_theme = "테마 (베타)"
 L.SETTING_theme = "테마"
-L.HINT_theme = "테마마다 모든 설정을 따로 보관합니다. 기본은 항상 기존 배치입니다"
+L.HINT_theme = "베타: 테마마다 설정을 따로 보관하며 처음에는 기본과 같습니다"
 L.ENUM_theme_CLASSIC = "기본 (내 배치)"
 L.ENUM_theme_WOOD = "나무 명판"
 L.ENUM_theme_TECH = "기술 / AI"

@@ -1602,9 +1602,9 @@ L.NEWS_0_54_1_CASTBAR = "A cast bar docked below or above a frame counts as the 
 L.NEWS_OPEN_MANA_WARN = "Open the mana warning"
 
 -- Themes (Core/Themes.lua)
-L.SECTION_theme = "Theme"
+L.SECTION_theme = "Theme (beta)"
 L.SETTING_theme = "Theme"
-L.HINT_theme = "Each theme keeps all settings of its own; Classic is always your layout as it was"
+L.HINT_theme = "Beta: each theme keeps its own settings, at first those of Classic"
 L.ENUM_theme_CLASSIC = "Classic (your layout)"
 L.ENUM_theme_WOOD = "Wooden plaque"
 L.ENUM_theme_TECH = "Technology / AI"

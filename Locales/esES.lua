@@ -1575,9 +1575,9 @@ L.NEWS_0_54_1_CASTBAR = "Una barra de lanzamiento acoplada debajo o encima de un
 L.NEWS_OPEN_MANA_WARN = "Abrir el aviso de maná"
 
 -- Themes (Core/Themes.lua)
-L.SECTION_theme = "Tema"
+L.SECTION_theme = "Tema (beta)"
 L.SETTING_theme = "Tema"
-L.HINT_theme = "Cada tema guarda todos sus ajustes; Clásico es siempre tu diseño de antes"
+L.HINT_theme = "Beta: cada tema guarda sus ajustes, al principio los de Clásico"
 L.ENUM_theme_CLASSIC = "Clásico (tu diseño)"
 L.ENUM_theme_WOOD = "Placa de madera"
 L.ENUM_theme_TECH = "Tecnología / IA"

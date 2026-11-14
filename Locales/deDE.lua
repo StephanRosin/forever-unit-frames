@@ -1574,9 +1574,9 @@ L.NEWS_0_54_1_CASTBAR = "Eine unter oder über dem Rahmen angedockte Zauberleist
 L.NEWS_OPEN_MANA_WARN = "Mana-Warnung öffnen"
 
 -- Themes (Core/Themes.lua)
-L.SECTION_theme = "Theme"
+L.SECTION_theme = "Theme (Beta)"
 L.SETTING_theme = "Theme"
-L.HINT_theme = "Jedes Theme hat alle Einstellungen für sich; Klassisch ist immer dein Layout wie bisher"
+L.HINT_theme = "Beta: Jedes Theme speichert alles für sich, beim ersten Mal wie Klassisch"
 L.ENUM_theme_CLASSIC = "Klassisch (dein Layout)"
 L.ENUM_theme_WOOD = "Holzplakette"
 L.ENUM_theme_TECH = "Technik / KI"
