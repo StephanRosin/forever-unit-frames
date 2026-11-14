@@ -112,7 +112,7 @@ Themes.SPECS = {
     SWISS = {
         font = "Inter Tight", bar = "FUF Swiss",
         look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = { 0.165, 0.165, 0.165, 1 },
-            borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.165, 0.165, 0.165, 0.92 },
+            borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.039, 0.039, 0.039, 1 },
             titleBackground = false, shadowEnabled = false, fontOutline = "OUTLINE" },
         art = { back = "SwissBack", rule = 3, ruleColor = { 0.949, 0.949, 0.949, 1 },
             ornament = "SwissBar", corners = { 1 }, ornamentSize = 12, ornamentHeight = 3,
@@ -127,19 +127,19 @@ Themes.SPECS = {
             titleBackground = false, shadowEnabled = false, fontOutline = "OUTLINE" },
         art = { back = "ConsoleBack", accent = "ring" },
     },
-    -- A timing screen: calm and dark (the carbon weave read as stripes at
-    -- frame size), the name row a dark strip with the red wedge at its
-    -- start, solid bars (LED segments looked broken) on a dark track,
+    -- A timing screen: calm and black (the carbon weave read as stripes at
+    -- frame size), the name row a black strip with the red wedge at its
+    -- start, solid bars (LED segments looked broken) on a black track,
     -- health in the timing screen's "normal" green. The ring is the
     -- carbon's own colour: none to see, but it keeps the auras clear of
     -- the padding (Border.Extent).
     PITWALL = {
         font = "Titillium Web", bar = "FUF Swiss",
         look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = { 0.043, 0.047, 0.055, 1 },
-            borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.165, 0.176, 0.2, 1 },
+            borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.039, 0.039, 0.039, 1 },
             titleBackground = true, shadowEnabled = false, fontOutline = "OUTLINE",
             healthColorMode = "STATIC", healthColor = { 0.133, 0.773, 0.369, 1 } },
-        art = { back = "SwissBack", titleStrip = { 0.137, 0.149, 0.173, 1 }, titleWedge = "PitwallWedge",
+        art = { back = "SwissBack", titleStrip = { 0, 0, 0, 1 }, titleWedge = "PitwallWedge",
             titleWedgeColor = { 0.882, 0.024, 0, 1 }, accent = "wedge" },
     },
 }
@@ -301,7 +301,7 @@ end
 -- Raised whenever SPECS change a look: theme sets made before are made
 -- anew from CLASSIC (Themes.Upgrade), so a changed theme shows as it is
 -- now. CLASSIC is never touched.
-Themes.REVISION = 7
+Themes.REVISION = 8
 
 -- The active profile's stored theme sets; stale ones (an older
 -- REVISION) dropped.

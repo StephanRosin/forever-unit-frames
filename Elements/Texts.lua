@@ -361,7 +361,10 @@ local function hasFont(fs, font)
     return plain(path) == plain(font)
 end
 -- How often, and how far apart, a refused font is tried again.
-local FONT_RETRIES, FONT_RETRY_DELAY = 8, 0.25
+local FONT_RETRIES, FONT_RETRY_DELAY = 40, 0.25
+-- First use of a file can take seconds when many fonts load at once
+-- (theme switch); report each file only once.
+local refusedFonts = {}
 
 -- A font file used for the first time can leave a text blank although
 -- GetFont reports it (seen in game: empty texts until the theme was
@@ -410,7 +413,8 @@ function Texts.SetFont(fs, font, size, outline, retries)
                 -- Restyled since: that call has its own tries.
                 if fs.fontWanted == wanted then Texts.SetFont(fs, font, size, outline, retries - 1) end
             end)
-        else
+        elseif not refusedFonts[font] then
+            refusedFonts[font] = true
             ns.Print(("Font could not be loaded: %s"):format(font))
         end
     end

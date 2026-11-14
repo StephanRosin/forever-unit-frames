@@ -40,6 +40,14 @@ H.check("swiss: the body face", ns.Media.Font("Inter Tight"):match("[^\\]+$"), "
 H.check("console: the body face", ns.Media.Font("IBM Plex Mono"):match("[^\\]+$"), "IBMPlexMono-Regular.ttf")
 H.check("pitwall: the body face", ns.Media.Font("Titillium Web"):match("[^\\]+$"), "TitilliumWeb-SemiBold.ttf")
 
+-- Swiss and Pitwall share one black with every Forever addon: the flat
+-- backdrop untinted and the background (the tracks) #0a0a0a, opaque.
+for _, id in ipairs({ "SWISS", "PITWALL" }) do
+    local spec = Themes.SPECS[id]
+    H.check(id .. ": the shared black", spec.art.back .. " " .. rgb(Themes.Tint(spec) or { 1, 1, 1, 1 }) .. " "
+        .. rgb(spec.look.backgroundColor), "SwissBack 1.000,1.000,1.000,1.000 0.039,0.039,0.039,1.000")
+end
+
 -- Classic as it is, to compare after the round trip.
 local classic = {}
 for _, key in ipairs({ "fontFace", "barTexture", "borderStyle", "fontSize", "borderPadding" }) do
@@ -54,7 +62,7 @@ H.check("swiss: font", Config.Get("player", "fontFace"), "Inter Tight")
 H.check("swiss: no larger font", Config.Get("general", "fontSize"), size)
 H.check("swiss: bar", Config.Get("player", "barTexture"), "FUF Swiss")
 H.check("swiss: hairline ring", rgb(f.frameRing.border[1]._color), "0.165,0.165,0.165,1.000")
-H.check("swiss: track", rgb(Config.Get("player", "backgroundColor")), "0.165,0.165,0.165,0.920")
+H.check("swiss: black track", rgb(Config.Get("player", "backgroundColor")), "0.039,0.039,0.039,1.000")
 H.check("swiss: backdrop", f.themeBack._texture, PATH .. "SwissBack")
 H.check("swiss: no solid shadow", f.themeShadow:IsShown(), false)
 H.check("swiss: rule shown", f.themeRule:IsShown(), true)
@@ -90,19 +98,19 @@ H.check("console amber: block ring", rgb(f.blockRing.border[1]._color), "1.000,0
 H.check("console amber: backdrop kept", f.themeBack._texture, PATH .. "ConsoleBack")
 H.check("console amber: setting untouched", rgb(Config.Get("player", "borderColor")), "0.306,0.929,0.690,1.000")
 
--- Pitwall: calm dark backdrop, the name row a strip with the red wedge at
--- its start, solid bars on a dark track, green health.
+-- Pitwall: calm black backdrop, the name row a black strip with the red
+-- wedge at its start, solid bars on a black track, green health.
 H.checkTrue("pitwall: switch", Themes.Switch("PITWALL"))
 restyle()
 H.check("pitwall: font", Config.Get("player", "fontFace"), "Titillium Web")
 H.check("pitwall: bar", Config.Get("player", "barTexture"), "FUF Swiss")
 H.check("pitwall: flat backdrop, no weave", f.themeBack._texture, PATH .. "SwissBack")
-H.check("pitwall: dark track", rgb(Config.Get("player", "backgroundColor")), "0.165,0.176,0.200,1.000")
-H.check("pitwall: track on the health bar", rgb(f.healthBg._color), "0.165,0.176,0.200,1.000")
+H.check("pitwall: black track", rgb(Config.Get("player", "backgroundColor")), "0.039,0.039,0.039,1.000")
+H.check("pitwall: track on the health bar", rgb(f.healthBg._color), "0.039,0.039,0.039,1.000")
 H.check("pitwall: health green", rgb({ ns.Health.ColorFor(f) }), "0.133,0.773,0.369,1.000")
 H.check("pitwall: no corner wedge", f.themeOrnaments[1]:IsShown(), false)
 H.check("pitwall: title strip", f.title._texture .. " " .. rgb(f.title._color),
-    "Interface\\Buttons\\WHITE8X8 0.137,0.149,0.173,1.000")
+    "Interface\\Buttons\\WHITE8X8 0.000,0.000,0.000,1.000")
 local wedge = f.themeWedge
 H.check("pitwall: wedge shown", wedge:IsShown(), true)
 H.check("pitwall: wedge texture", wedge._texture, PATH .. "PitwallWedge")
