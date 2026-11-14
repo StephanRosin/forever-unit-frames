@@ -186,6 +186,14 @@ News.ENTRIES = {
     ["0.54.1"] = {
         lines = { "NEWS_0_54_1_TOTEMS", "NEWS_0_54_1_CASTBAR" },
     },
+    -- Themes (beta), shared by the Forever addons: the button opens the
+    -- theme section (General > Frames & addon).
+    ["0.55.0"] = {
+        announce = true,
+        lines = { "NEWS_0_55_0_THEMES", "NEWS_0_55_0_FAMILY", "NEWS_0_55_0_BETA",
+            "NEWS_0_55_0_TOTEMS", "NEWS_0_55_0_RAID_TOOLS" },
+        action = { text = "NEWS_OPEN_THEME", run = function() ns.Options.Open("general", "frames") end },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

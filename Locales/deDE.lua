@@ -1572,6 +1572,12 @@ L.NEWS_0_54_0_EXTRAS = "Neuer Reiter Extras beim Spielerrahmen: Manawarnung und 
 L.NEWS_0_54_1_TOTEMS = "Totems: Leere Plätze bleiben im Kampf nach einem Totem nicht mehr als schwarze Kästchen stehen."
 L.NEWS_0_54_1_CASTBAR = "Eine unter oder über dem Rahmen angedockte Zauberleiste zählt für Mouseover-Zauber zum Rahmen."
 L.NEWS_OPEN_MANA_WARN = "Mana-Warnung öffnen"
+L.NEWS_0_55_0_THEMES = "Neu: Themes (Beta). Forever-Addons können jetzt einen gemeinsamen Look tragen: Holz, Pergament, Technik, Runenstein, Buntglas, Comic, Frost, Pixel, Swiss Clean, Konsole und Pitwall, jedes mit eigener Farbauswahl. Wähle eines in den Optionen des Addons unter Theme."
+L.NEWS_0_55_0_FAMILY = "Es wirkt auch allein, sieht aber am besten aus, wenn deine anderen Forever-Addons dasselbe Theme tragen — „Auf alle Forever-Addons anwenden“ stellt sie mit einem Klick um. Klassisch bleibt der Standard, und der Wechsel zurück zu Klassisch stellt deine bisherigen Einstellungen immer genau wieder her."
+L.NEWS_0_55_0_BETA = "Das ist eine Beta: Wenn etwas komisch aussieht, hilft ein Kommentar mit Screenshot sehr."
+L.NEWS_0_55_0_TOTEMS = "Totems: Leere Plätze hinterlassen im Kampf keine schwarzen Kästchen mehr."
+L.NEWS_0_55_0_RAID_TOOLS = "Schlachtzugswerkzeuge: Der Griff klappt die Leiste auch im Kampf ein und aus."
+L.NEWS_OPEN_THEME = "Theme öffnen"
 
 -- Themes (Core/Themes.lua)
 L.SECTION_theme = "Theme (Beta)"

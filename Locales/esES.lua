@@ -1573,6 +1573,12 @@ L.NEWS_0_54_0_EXTRAS = "Nueva pestaña Extras en el marco del jugador: el aviso 
 L.NEWS_0_54_1_TOTEMS = "Tótems: las ranuras vacías ya no se quedan como cuadros negros en combate tras colocar un tótem."
 L.NEWS_0_54_1_CASTBAR = "Una barra de lanzamiento acoplada debajo o encima de un marco cuenta como el marco para los hechizos al pasar el ratón."
 L.NEWS_OPEN_MANA_WARN = "Abrir el aviso de maná"
+L.NEWS_0_55_0_THEMES = "Novedad: temas (beta). Los addons Forever ahora pueden llevar un aspecto común: Madera, Pergamino, Tecnología, Piedra rúnica, Vidriera, Cómic, Escarcha, Píxel, Swiss Clean, Consola y Pitwall, cada uno con sus propios colores. Elige uno en las opciones del addon, en Tema."
+L.NEWS_0_55_0_FAMILY = "Funciona por sí solo, pero luce mejor cuando tus otros addons Forever llevan el mismo tema: \"Aplicar a todos los addons Forever\" los cambia con un clic. Clásico sigue siendo el predeterminado, y volver a Clásico siempre restaura exactamente tus ajustes anteriores."
+L.NEWS_0_55_0_BETA = "Es una beta: si algo se ve raro, un comentario con una captura de pantalla ayuda mucho."
+L.NEWS_0_55_0_TOTEMS = "Tótems: las ranuras vacías ya no dejan cuadros negros en combate."
+L.NEWS_0_55_0_RAID_TOOLS = "Herramientas de banda: el asa pliega y despliega la barra también en combate."
+L.NEWS_OPEN_THEME = "Abrir el tema"
 
 -- Themes (Core/Themes.lua)
 L.SECTION_theme = "Tema (beta)"

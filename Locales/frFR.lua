@@ -1572,6 +1572,12 @@ L.NEWS_0_54_0_EXTRAS = "Nouvel onglet Extras sur le cadre du joueur : l'alerte d
 L.NEWS_0_54_1_TOTEMS = "Totems : les emplacements vides ne restent plus des carrés noirs en combat après la pose d'un totem."
 L.NEWS_0_54_1_CASTBAR = "Une barre d'incantation ancrée sous ou au-dessus d'un cadre compte comme le cadre pour les sorts au survol."
 L.NEWS_OPEN_MANA_WARN = "Ouvrir l'alerte de mana"
+L.NEWS_0_55_0_THEMES = "Nouveau : les thèmes (bêta). Les addons Forever peuvent désormais porter un style commun : Bois, Parchemin, Technologie, Pierre runique, Vitrail, Bande dessinée, Givre, Pixel, Swiss Clean, Console et Pitwall, chacun avec ses propres couleurs. Choisissez-en un dans les options de l'addon, sous Thème."
+L.NEWS_0_55_0_FAMILY = "Il fonctionne seul, mais rend mieux quand vos autres addons Forever portent le même thème — « Appliquer à tous les addons Forever » les bascule en un clic. Classique reste le thème par défaut, et revenir à Classique restaure toujours exactement vos réglages précédents."
+L.NEWS_0_55_0_BETA = "C'est une bêta : si quelque chose semble bizarre, un commentaire avec une capture d'écran aide beaucoup."
+L.NEWS_0_55_0_TOTEMS = "Totems : les emplacements vides ne laissent plus de carrés noirs en combat."
+L.NEWS_0_55_0_RAID_TOOLS = "Outils de raid : la poignée replie et déplie la barre en combat aussi."
+L.NEWS_OPEN_THEME = "Ouvrir le thème"
 
 -- Themes (Core/Themes.lua)
 L.SECTION_theme = "Thème (bêta)"

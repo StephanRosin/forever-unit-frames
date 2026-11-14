@@ -1600,6 +1600,12 @@ L.NEWS_0_54_0_EXTRAS = "New Extras tab on the player frame: the low mana warning
 L.NEWS_0_54_1_TOTEMS = "Totems: empty slots no longer stay black boxes in combat after you set a totem."
 L.NEWS_0_54_1_CASTBAR = "A cast bar docked below or above a frame counts as the frame for mouseover casts."
 L.NEWS_OPEN_MANA_WARN = "Open the mana warning"
+L.NEWS_0_55_0_THEMES = "New: Themes (beta). Forever addons can now wear a shared look: Wood, Parchment, Tech, Runestone, Stained Glass, Comic, Frost, Pixel, Swiss Clean, Console and Pitwall, each with its own colour choices. Pick one in the addon's options under Theme."
+L.NEWS_0_55_0_FAMILY = "It works on its own, but looks best when your other Forever addons wear the same theme — \"Apply to all Forever addons\" switches them in one click. Classic stays the default, and switching back to Classic always restores your previous settings exactly."
+L.NEWS_0_55_0_BETA = "This is a beta: if something looks off, a comment with a screenshot helps a lot."
+L.NEWS_0_55_0_TOTEMS = "Totems: empty slots in combat no longer leave black boxes."
+L.NEWS_0_55_0_RAID_TOOLS = "Raid tools: the handle folds and unfolds the bar in combat too."
+L.NEWS_OPEN_THEME = "Open the theme"
 
 -- Themes (Core/Themes.lua)
 L.SECTION_theme = "Theme (beta)"
