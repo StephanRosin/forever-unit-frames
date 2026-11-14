@@ -32,6 +32,9 @@ local LATIN_CLIENTS = { enUS = true, enGB = true, deDE = true, frFR = true, esES
 -- bottom right), ornamentInset = how far in from the border's outer
 -- corner (negative: further out), hardShadow = offset of a solid shadow.
 -- borderPadding shows the backdrop round the bars.
+-- fontOutline: the client's OUTLINE, never SOFT. With the theme fonts
+-- SOFT (Elements/Texts.lua) showed black text in game; why is not known
+-- (the text has its font by GetFont, its black copies draw on top).
 Themes.SPECS = {
     CLASSIC = {},
     -- Oak boards round the bars, a brass rim, brass rivets.
@@ -39,7 +42,7 @@ Themes.SPECS = {
         font = "Cinzel", bar = "FUF Wood",
         look = { borderShow = true, borderStyle = "BRONZE", borderSize = 3, borderPadding = 4, cornerRadius = 3,
             backgroundColor = { 0.1, 0.06, 0.02, 0.85 }, titleBackground = false,
-            shadowEnabled = true, shadowAlpha = 60, shadowSize = 6, fontOutline = "SOFT" },
+            shadowEnabled = true, shadowAlpha = 60, shadowSize = 6, fontOutline = "OUTLINE" },
         art = { back = "WoodBack", ornament = "Rivet", corners = { 1, 2, 3, 4 }, ornamentSize = 11, ornamentInset = 1 },
     },
     -- Dark navy with a faint grid, a thin cyan line, corner brackets.
@@ -47,7 +50,7 @@ Themes.SPECS = {
         font = "Space Grotesk", bar = "FUF Tech",
         look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = { 0.25, 0.88, 0.94, 0.9 },
             borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.02, 0.05, 0.08, 0.92 },
-            titleBackground = false, shadowEnabled = false, fontOutline = "SOFT" },
+            titleBackground = false, shadowEnabled = false, fontOutline = "OUTLINE" },
         art = { back = "TechBack", ornament = "Bracket", corners = { 1, 2, 3, 4 }, ornamentSize = 12, ornamentInset = -3,
             ornamentColor = { 0.25, 0.88, 0.94, 1 } },
     },
@@ -56,7 +59,7 @@ Themes.SPECS = {
         font = "IM Fell English SC", bar = "FUF Parchment", fontSizeAdd = 1,
         look = { borderShow = true, borderStyle = "FLAT", borderSize = 2, borderColor = { 0.29, 0.2, 0.12, 1 },
             borderPadding = 4, cornerRadius = 2, backgroundColor = { 0.22, 0.15, 0.07, 0.6 }, titleBackground = false,
-            shadowEnabled = true, shadowAlpha = 45, shadowSize = 5, fontOutline = "SOFT" },
+            shadowEnabled = true, shadowAlpha = 45, shadowSize = 5, fontOutline = "OUTLINE" },
         art = { back = "ParchmentBack", ornament = "Seal", corners = { 3 }, ornamentSize = 22, ornamentInset = -6 },
     },
     -- Grey granite, a dark chiselled edge, glowing runes.
@@ -64,7 +67,7 @@ Themes.SPECS = {
         font = "Marcellus", bar = "FUF Stone", fontSizeAdd = 1,
         look = { borderShow = true, borderStyle = "FLAT", borderSize = 2, borderColor = { 0.1, 0.1, 0.12, 1 },
             borderPadding = 5, cornerRadius = 0, backgroundColor = { 0.04, 0.05, 0.06, 0.92 },
-            titleBackground = false, shadowEnabled = true, shadowAlpha = 70, shadowSize = 6, fontOutline = "SOFT" },
+            titleBackground = false, shadowEnabled = true, shadowAlpha = 70, shadowSize = 6, fontOutline = "OUTLINE" },
         art = { back = "StoneBack", ornament = "Rune", corners = { 1, 2 }, ornamentSize = 14, ornamentInset = 2,
             ornamentColor = { 0.35, 0.95, 0.85, 1 } },
     },
@@ -89,7 +92,7 @@ Themes.SPECS = {
         font = "Cormorant SC", bar = "FUF Frost", fontSizeAdd = 2,
         look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = { 0.86, 0.96, 1, 0.8 },
             borderPadding = 2, cornerRadius = 6, backgroundColor = { 0.04, 0.12, 0.22, 0.6 },
-            titleBackground = false, shadowEnabled = true, shadowAlpha = 55, shadowSize = 8, fontOutline = "SOFT" },
+            titleBackground = false, shadowEnabled = true, shadowAlpha = 55, shadowSize = 8, fontOutline = "OUTLINE" },
         art = { back = "FrostBack", tint = { 1, 1, 1, 0.75 } },
     },
     -- A light pixel frame, scan lines, a solid shadow.
@@ -144,6 +147,24 @@ local function scopesOf(p)
     for _, scope in ipairs(ns.Settings.SCOPES) do
         if type(p[scope]) ~= "table" then p[scope] = {} end
     end
+end
+
+-- Raised whenever SPECS change a look: theme sets made before are made
+-- anew from CLASSIC (Themes.Upgrade), so a changed theme shows as it is
+-- now. CLASSIC is never touched.
+Themes.REVISION = 2
+
+-- The active profile's stored theme sets; stale ones (an older
+-- REVISION) dropped.
+local function storedSets()
+    local sets = ns.UnitProfiles.ThemeSets()
+    if sets.revision ~= Themes.REVISION then
+        for _, id in ipairs(Themes.IDS) do
+            if id ~= Themes.CLASSIC then sets[id] = nil end
+        end
+        sets.revision = Themes.REVISION
+    end
+    return sets
 end
 
 function Themes.Current()
@@ -212,7 +233,7 @@ function Themes.Switch(id)
     if why then return nil, why end
     local current = Themes.Current()
     if id == current then return true end
-    local sets = ns.UnitProfiles.ThemeSets()
+    local sets = storedSets()
     sets[current] = copy(ns.Config.Profile())
     local nextSet = sets[id]
     if not nextSet then
@@ -236,7 +257,7 @@ function Themes.Reset()
     if id == Themes.CLASSIC then return nil, "CLASSIC" end
     local why = refuse()
     if why then return nil, why end
-    local base = ns.UnitProfiles.ThemeSets()[Themes.CLASSIC]
+    local base = storedSets()[Themes.CLASSIC]
     if not base then return nil, "NO_CLASSIC" end
     use(seed(id, base))
     return true
@@ -244,7 +265,7 @@ end
 
 -- The themes with stored settings to copy from, in IDS order.
 function Themes.Stored()
-    local sets, list = ns.UnitProfiles.ThemeSets(), {}
+    local sets, list = storedSets(), {}
     for _, id in ipairs(Themes.IDS) do
         if sets[id] and id ~= Themes.Current() then list[#list + 1] = id end
     end
@@ -277,7 +298,7 @@ end
 function Themes.CopyPlacement(from)
     local why = refuse()
     if why then return nil, why end
-    local source = ns.UnitProfiles.ThemeSets()[from]
+    local source = storedSets()[from]
     if not source then return nil, "GONE" end
     local keys, undo = Themes.PlacementKeys(), {}
     for _, scope in ipairs(ns.Settings.SCOPES) do
@@ -294,4 +315,19 @@ function Themes.Restore(undo)
     if refuse() then return nil end
     for scope, saved in pairs(undo) do ns.Config.Restore(scope, saved) end
     return true
+end
+
+-- At login, before any frame exists (Core/Boot.lua): a theme in use made
+-- under an older REVISION is made anew from CLASSIC, quietly (no event:
+-- nothing listens yet; the next save writes it).
+function Themes.Upgrade()
+    local sets = ns.UnitProfiles.ThemeSets()
+    if sets.revision == Themes.REVISION then return end
+    local current = Themes.Current()
+    local base = sets[Themes.CLASSIC]
+    storedSets()
+    if current == Themes.CLASSIC or not base then return end
+    local fresh = ns.Settings.Sanitise(seed(current, base))
+    local profile = ns.Config.Profile()
+    for _, scope in ipairs(ns.Settings.SCOPES) do profile[scope] = fresh[scope] or {} end
 end

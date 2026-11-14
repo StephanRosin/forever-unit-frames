@@ -110,3 +110,20 @@ H.check("refused: no outline under an empty text", fs.softCopies[1]:IsShown(), f
 M.RunTimers()
 H.check("tried again: taken", (fs:GetFont()), "Fonts\\new.ttf")
 H.check("tried again: outline back", fs.softCopies[1]:IsShown(), true)
+
+-- A theme stored under an older revision is made anew; Classic stays.
+ns = H.LoadAddon()
+db = { profiles = { Default = { general = { theme = "WOOD", borderPadding = 0 }, player = { width = 280, x = 10 } } },
+    themeSets = { Default = { CLASSIC = { player = { width = 280, x = 10 } },
+        TECH = { general = { theme = "TECH" }, player = { x = 99 } } } } }
+ns.Config.Use(ns.Storage.Load(db))
+ns.Storage.Attach(db)
+ns.Themes.Upgrade()
+H.check("upgrade: the theme in use made anew", ns.Config.Get("general", "borderPadding"), 4)
+H.check("upgrade: from classic", ns.Config.Get("player", "x"), 10)
+H.check("upgrade: stale set dropped", db.themeSets.Default.TECH, nil)
+H.check("upgrade: classic kept", db.themeSets.Default.CLASSIC.player.width, 280)
+H.check("upgrade: revision noted", db.themeSets.Default.revision, ns.Themes.REVISION)
+ns.Config.Set("general", "borderPadding", 2)
+ns.Themes.Upgrade()
+H.check("upgrade: once only", ns.Config.Get("general", "borderPadding"), 2)

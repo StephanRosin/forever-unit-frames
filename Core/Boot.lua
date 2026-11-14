@@ -30,6 +30,8 @@ ns.On("PLAYER_LOGIN", function()
     ns.News.Begin(ForeverUnitFramesDB)
     ns.Config.Use(ns.Storage.Load(ForeverUnitFramesDB))
     ns.Storage.Attach(ForeverUnitFramesDB)
+    -- A theme whose look changed since it was stored (Core/Themes.lua).
+    ns.Themes.Upgrade()
     -- Before anything writes a text: frames, movers, the options window.
     ns.Locale.Apply()
     -- Migrates or waits for an old macro backup, or deletes it.
