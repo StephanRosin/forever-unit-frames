@@ -112,6 +112,19 @@ for _, spec in pairs(Themes.SPECS) do
     for key in pairs(spec.look or {}) do THEMED[#THEMED + 1] = key end
 end
 
+-- The comic's colours, the same in every Forever addon: the paper's tint
+-- (the unit frames' comic has no yellow or red accent). Stored account wide
+-- outside the theme sets (UnitProfiles); GREY is the comic as it is.
+Themes.COMIC_COLORS = { "GREY", "YELLOW", "BLUE", "RED", "GREEN", "PURPLE" }
+local COMIC_PAPER = {
+    GREY = { 0.70, 0.70, 0.70 },
+    YELLOW = { 0.86, 0.76, 0.36 },
+    BLUE = { 0.45, 0.60, 0.86 },
+    RED = { 0.86, 0.44, 0.40 },
+    GREEN = { 0.50, 0.76, 0.46 },
+    PURPLE = { 0.70, 0.52, 0.84 },
+}
+
 -- A raid cell is small and sits among others: its ring and corners stay
 -- slim, and it gets no ornaments or solid shadow (Elements/ThemeArt.lua).
 local CELL_BORDER_MAX, CELL_RADIUS_MAX = 2, 4
@@ -222,6 +235,34 @@ end
 local function use(p)
     ns.Config.Import(ns.Settings.Sanitise(copy(p)))
     ns.Storage.Save()
+end
+
+-- The comic colour chosen; an unknown one stored reads as GREY.
+function Themes.ComicColor()
+    local id = ns.UnitProfiles.ComicColor()
+    return COMIC_PAPER[id] and id or "GREY"
+end
+
+-- The backdrop's tint under spec: the comic's paper in its colour (unit
+-- frames, raid cells and the Smart Buffs window alike).
+function Themes.Tint(spec)
+    local tint = spec.art and spec.art.tint
+    if spec ~= Themes.SPECS.COMIC or not tint then return tint end
+    local paper = COMIC_PAPER[Themes.ComicColor()]
+    return { paper[1], paper[2], paper[3], tint[4] }
+end
+
+-- Repaints at once where the comic shows (unit frames or raid cells),
+-- restyling secure frames as Switch does.
+function Themes.SetComicColor(id)
+    if not COMIC_PAPER[id] then return nil, "UNKNOWN" end
+    local shown = Themes.Current() == "COMIC" or ns.RaidCell.Theme() == "COMIC"
+    local why = shown and refuse()
+    if why then return nil, why end
+    ns.UnitProfiles.SetComicColor(id ~= "GREY" and id or nil)
+    ns.Fire("CONFIG_CHANGED", nil, nil)
+    ns.Fire("RAID_CONFIG_CHANGED", "general", "cellTheme")
+    return true
 end
 
 -- Moves to theme id: the current settings are kept for the current
@@ -338,4 +379,7 @@ _G.ForeverThemes["ForeverUnitFrames"] = {
     title = "Forever Unit Frames",
     Current = Themes.Current,
     Switch = Themes.Switch,
+    ComicColors = Themes.COMIC_COLORS,
+    ComicColor = Themes.ComicColor,
+    SetComicColor = Themes.SetComicColor,
 }

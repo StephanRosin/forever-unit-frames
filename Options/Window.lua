@@ -298,7 +298,7 @@ end
 
 -- Defined with the other blocks below; a section's action button, a
 -- tab's note, the theme's "Take positions from" list.
-local actionBlock, noteBlock, themeCopyRow
+local actionBlock, noteBlock, themeCopyRow, comicColorRow
 
 -- General > Frames: after the master switch, one switch per frame, the
 -- frame's own "enabled".
@@ -371,7 +371,10 @@ local function addSections(page, stack, scope, tab)
             stack.add(sectionHeader(page, section.id))
             addSectionRows(page, stack, scope, section, keys)
             if section.frames then frameSwitches(page, stack) end
-            if section.themeCopy then stack.add(themeCopyRow(page)) end
+            if section.themeCopy then
+                stack.add(comicColorRow(page))
+                stack.add(themeCopyRow(page))
+            end
             for _, id in ipairs(section.actions or {}) do stack.add(actionBlock(page, id)) end
         end
         if section.raidKeys then
@@ -446,6 +449,26 @@ function actionBlock(page, id)
     function block:SetEnabled(on) button:SetEnabled(on) end
     block:SetHeight(BUTTON_H + 12)
     return block
+end
+
+-- The comic's colour, kept apart from the theme sets; chosen under
+-- another theme it waits for the comic.
+function comicColorRow(page)
+    local row = Widgets.Dropdown(page, {
+        label = L.COMIC_COLOR,
+        items = function()
+            local items = {}
+            for _, id in ipairs(ns.Themes.COMIC_COLORS) do items[#items + 1] = { value = id, text = L["COMIC_COLOR_" .. id] } end
+            return items
+        end,
+        get = function() return ns.Themes.ComicColor() end,
+        set = function(id)
+            local ok, why = ns.Themes.SetComicColor(id)
+            if not ok then ns.Print(L["THEME_REFUSED_" .. why]) end
+        end,
+    })
+    row:Refresh()
+    return row
 end
 
 -- The positions another theme's set has, taken over into the current

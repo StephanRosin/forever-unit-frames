@@ -79,6 +79,11 @@ function UnitProfiles.ThemeSets()
     return sets
 end
 
+-- The comic's colour (Core/Themes.lua): account wide, in no profile or
+-- theme set.
+function UnitProfiles.ComicColor() return db.comicColor end
+function UnitProfiles.SetComicColor(id) db.comicColor = id end
+
 function UnitProfiles.Write(profile)
     db.profiles[active] = copy(profile)
     -- An older version reads only this key; the mirror keeps its Default.

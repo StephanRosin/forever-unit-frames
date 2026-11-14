@@ -187,3 +187,37 @@ end
 H.check("tech: no corner pieces", ns.Themes.SPECS.TECH.art.ornament, nil)
 H.check("comic: paper at 0.7", ns.Themes.SPECS.COMIC.art.tint[1], 0.7)
 H.check("comic: no fill over the paper", ns.Themes.SPECS.COMIC.look.backgroundColor[4], 0)
+
+-- The comic's colours: the paper only (no yellow or red accent here), kept
+-- apart from the theme sets; unit frames, raid cells and Smart Buffs alike.
+do
+    ns.RaidProfiles.Attach(db)   -- as at login: the cells' theme is asked too
+    local entry = _G.ForeverThemes.ForeverUnitFrames
+    local texture = CreateFrame("Frame"):CreateTexture()
+    local function paper()
+        ns.ThemeArt.Paint(texture, ns.Themes.SPECS.COMIC)
+        return table.concat(texture._color, ",")
+    end
+    H.check("comic colours: list", table.concat(entry.ComicColors, ","), "GREY,YELLOW,BLUE,RED,GREEN,PURPLE")
+    H.check("comic colours: grey by default", entry.ComicColor(), "GREY")
+    H.checkTrue("comic colours: to comic", ns.Themes.Switch("COMIC"))
+    H.check("comic grey: paper as today", paper(), "0.7,0.7,0.7,1")
+    H.checkTrue("comic blue: set", entry.SetComicColor("BLUE"))
+    H.check("comic blue: paper", paper(), "0.45,0.6,0.86,1")
+    H.check("comic colour: frost untouched", ns.Themes.Tint(ns.Themes.SPECS.FROST)[1], 1)
+    H.check("comic colour: unknown refused", select(2, ns.Themes.SetComicColor("NOPE")), "UNKNOWN")
+    M.combat = true
+    H.check("comic colour: combat refused under the comic", select(2, ns.Themes.SetComicColor("RED")), "COMBAT")
+    M.combat = false
+    H.check("comic colour: in no profile", ns.Config.Profile().general.comicColor, nil)
+    H.checkTrue("comic colour: away to wood", ns.Themes.Switch("WOOD"))
+    H.checkTrue("comic colour: chosen under wood", ns.Themes.SetComicColor("RED"))
+    H.checkTrue("comic colour: back to comic", ns.Themes.Switch("COMIC"))
+    H.check("comic colour: survives the switch", entry.ComicColor() .. " " .. paper(), "RED 0.86,0.44,0.4,1")
+    db.comicColor = "NOPE"
+    H.check("comic colour: unknown stored reads grey", ns.Themes.ComicColor(), "GREY")
+    H.checkTrue("comic grey back: set", ns.Themes.SetComicColor("GREY"))
+    H.check("comic grey back: paper", paper(), "0.7,0.7,0.7,1")
+    H.check("comic grey back: nothing stored", db.comicColor, nil)
+    ns.Themes.Switch("CLASSIC")
+end
