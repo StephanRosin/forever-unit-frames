@@ -8,7 +8,8 @@ Per theme (Core/Themes.lua):
   the client multiplies it with the bar colour.
 Ornaments, 32 x 32, drawn for the top-left corner (the addon mirrors them):
 * Rivet.tga (wood), Bracket.tga (tech), Rune.tga (runestone, white:
-  tinted), Seal.tga (parchment).
+  tinted), Seal.tga (parchment), PitwallWedge.tga (pitwall title wedge,
+  white: tinted).
 
 Run from the repository root:  python3 tools/make_themes.py
 The output is deterministic; re-running it must not change the files.
@@ -158,6 +159,33 @@ def pixel(rng):
     return rgba(r, g, b)
 
 
+def swiss(rng):
+    # Flat #0a0a0a; the 1 % noise only keeps the tiling invisible.
+    v = 10 / 255 + rng.random((TILE, TILE)) * 0.01
+    return rgba(v, v, v)
+
+
+def console(rng):
+    # Flat #0f0f13 with a faint scanline (2 px of every 4, 4 % white).
+    y = np.mgrid[0:TILE, 0:TILE][0]
+    scan = (y % 4 < 2) * 0.04
+    base = np.array([0x0f, 0x0f, 0x13]) / 255
+    r, g, b = (base[i] + (1 - base[i]) * scan for i in range(3))
+    return rgba(r, g, b)
+
+
+def pitwall(rng):
+    # Carbon: #0b0c0e with a +-45 degree weave of 2 px stripes (2.5 % / 2 % white).
+    y, x = np.mgrid[0:TILE, 0:TILE]
+    a = ((x + y) % 4 < 2) * 0.025
+    b = ((x - y) % 4 < 2) * 0.02
+    base = np.array([0x0b, 0x0c, 0x0e]) / 255
+    c = base[:, None, None]
+    c = c + (1 - c) * a
+    c = c + (1 - c) * b
+    return rgba(*c)
+
+
 # Bars -----------------------------------------------------------------------
 
 def bar_from(v):
@@ -226,6 +254,27 @@ def pixel_bar(rng):
     return bar_from(v)
 
 
+def swiss_bar(rng):
+    return bar_from(np.ones((BAR_H, BAR_W)))
+
+
+def dashes(on, off):
+    """White vertical-edged segments, transparent gaps (the track shows)."""
+    x = np.arange(BAR_W) % (on + off) < on
+    a = np.repeat(x[None, :].astype(float), BAR_H, axis=0)
+    ones = np.ones_like(a)
+    return rgba(ones, ones, ones, a)
+
+
+def console_bar(rng):
+    return dashes(6, 2)
+
+
+def pitwall_bar(rng):
+    # LED segments: 14 px lit, 2 px gap.
+    return dashes(14, 2)
+
+
 # Ornaments --------------------------------------------------------------------
 
 def rivet():
@@ -289,6 +338,17 @@ def seal():
     return img.resize((ORN, ORN), Image.LANCZOS)
 
 
+def pitwall_wedge():
+    """A wedge slanted 12 degrees, ~10 px wide, white: the addon tints it."""
+    size = ORN * 4
+    img = Image.new("RGBA", (size, size), (255, 255, 255, 0))
+    d = ImageDraw.Draw(img)
+    w = 10 * 4
+    shift = size * np.tan(np.radians(12))
+    d.polygon([(0, size), (w, size), (w + shift, 0), (shift, 0)], fill=(255, 255, 255, 255))
+    return img.resize((ORN, ORN), Image.LANCZOS)
+
+
 THEMES = {
     "Wood": (wood, wood_bar),
     "Tech": (tech, tech_bar),
@@ -298,6 +358,9 @@ THEMES = {
     "Comic": (comic, comic_bar),
     "Frost": (frost, frost_bar),
     "Pixel": (pixel, pixel_bar),
+    "Swiss": (swiss, swiss_bar),
+    "Console": (console, console_bar),
+    "Pitwall": (pitwall, pitwall_bar),
 }
 
 
@@ -310,6 +373,7 @@ def main():
     save(bracket(), "Bracket.tga")
     save(rune(), "Rune.tga")
     save(seal(), "Seal.tga")
+    save(pitwall_wedge(), "PitwallWedge.tga")
 
 
 if __name__ == "__main__":
