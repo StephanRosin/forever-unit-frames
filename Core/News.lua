@@ -183,6 +183,9 @@ News.ENTRIES = {
         lines = { "NEWS_0_54_0_SHIELD_BAR", "NEWS_0_54_0_EXTRAS" },
         action = { text = "NEWS_OPEN_SHIELDS", run = function() ns.Options.Open("player", "extras") end },
     },
+    ["0.54.1"] = {
+        lines = { "NEWS_0_54_1_TOTEMS", "NEWS_0_54_1_CASTBAR" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

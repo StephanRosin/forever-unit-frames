@@ -1590,4 +1590,6 @@ L.NEWS_0_53_1_ENCHANTS = "Weapon enchants (oils, stones, poisons) get a row of t
 L.NEWS_0_53_1_TOTEMS = "Totems: empty slots no longer flash a black box in combat when you set a totem."
 L.NEWS_0_54_0_SHIELD_BAR = "Shield watch: an absorb bar that empties as your shield takes damage. Beside the icons (left or right) or free, with designs, size, offset and a red-to-green colour mode. Full after your own shield."
 L.NEWS_0_54_0_EXTRAS = "New Extras tab on the player frame: the low mana warning and the shield watch moved there from Bars."
+L.NEWS_0_54_1_TOTEMS = "Totems: empty slots no longer stay black boxes in combat after you set a totem."
+L.NEWS_0_54_1_CASTBAR = "A cast bar docked below or above a frame counts as the frame for mouseover casts."
 L.NEWS_OPEN_MANA_WARN = "Open the mana warning"

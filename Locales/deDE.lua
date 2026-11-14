@@ -1562,4 +1562,6 @@ L.NEWS_0_53_1_ENCHANTS = "Waffenverzauberungen (Öle, Steine, Gifte) bekommen ei
 L.NEWS_0_53_1_TOTEMS = "Totems: Leere Plätze blitzen im Kampf nicht mehr als schwarzes Kästchen auf, wenn du ein Totem setzt."
 L.NEWS_0_54_0_SHIELD_BAR = "Schildwache: eine Absorb-Leiste, die sich leert, wenn dein Schild Schaden nimmt. Neben den Symbolen (links oder rechts) oder frei, mit Designs, Größe, Versatz und Farbmodus Rot bis Grün. Voll nach deinem eigenen Schild."
 L.NEWS_0_54_0_EXTRAS = "Neuer Reiter Extras beim Spielerrahmen: Manawarnung und Schildwache sind von Leisten dorthin umgezogen."
+L.NEWS_0_54_1_TOTEMS = "Totems: Leere Plätze bleiben im Kampf nach einem Totem nicht mehr als schwarze Kästchen stehen."
+L.NEWS_0_54_1_CASTBAR = "Eine unter oder über dem Rahmen angedockte Zauberleiste zählt für Mouseover-Zauber zum Rahmen."
 L.NEWS_OPEN_MANA_WARN = "Mana-Warnung öffnen"

@@ -1562,4 +1562,6 @@ L.NEWS_0_53_1_ENCHANTS = "Les enchantements d'arme (huiles, pierres, poisons) on
 L.NEWS_0_53_1_TOTEMS = "Totems : les emplacements vides n'affichent plus de carré noir en combat quand vous posez un totem."
 L.NEWS_0_54_0_SHIELD_BAR = "Surveillance des boucliers : une barre d'absorption qui se vide quand votre bouclier encaisse. À côté des icônes (gauche ou droite) ou libre, avec styles, taille, décalage et un mode de couleur du rouge au vert. Pleine après votre propre bouclier."
 L.NEWS_0_54_0_EXTRAS = "Nouvel onglet Extras sur le cadre du joueur : l'alerte de mana faible et la surveillance des boucliers y ont été déplacées depuis Barres."
+L.NEWS_0_54_1_TOTEMS = "Totems : les emplacements vides ne restent plus des carrés noirs en combat après la pose d'un totem."
+L.NEWS_0_54_1_CASTBAR = "Une barre d'incantation ancrée sous ou au-dessus d'un cadre compte comme le cadre pour les sorts au survol."
 L.NEWS_OPEN_MANA_WARN = "Ouvrir l'alerte de mana"

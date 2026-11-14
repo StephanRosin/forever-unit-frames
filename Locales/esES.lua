@@ -1563,4 +1563,6 @@ L.NEWS_0_53_1_ENCHANTS = "Los encantamientos de arma (aceites, piedras, venenos)
 L.NEWS_0_53_1_TOTEMS = "Tótems: las ranuras vacías ya no muestran un cuadro negro en combate al colocar un tótem."
 L.NEWS_0_54_0_SHIELD_BAR = "Vigilancia de escudos: una barra de absorción que se vacía cuando tu escudo recibe daño. Junto a los iconos (izquierda o derecha) o libre, con diseños, tamaño, desplazamiento y un modo de color de rojo a verde. Llena tras tu propio escudo."
 L.NEWS_0_54_0_EXTRAS = "Nueva pestaña Extras en el marco del jugador: el aviso de maná bajo y la vigilancia de escudos se han movido allí desde Barras."
+L.NEWS_0_54_1_TOTEMS = "Tótems: las ranuras vacías ya no se quedan como cuadros negros en combate tras colocar un tótem."
+L.NEWS_0_54_1_CASTBAR = "Una barra de lanzamiento acoplada debajo o encima de un marco cuenta como el marco para los hechizos al pasar el ratón."
 L.NEWS_OPEN_MANA_WARN = "Abrir el aviso de maná"
