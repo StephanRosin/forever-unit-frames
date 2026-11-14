@@ -19,6 +19,8 @@ Profiles, export, import and reset are on the **Profiles** page at the bottom of
 
 ### Theme (beta)
 
+Button: **Apply to all Forever addons**.
+
 Button: **Reset theme**.
 
 <table>

@@ -433,10 +433,15 @@ local ACTIONS = {
     applyFontToFrames = function() Config.ClearFrameOverrides(ns.Settings.TEXT_STYLE_KEYS) end,
     positionsFromBlizzard = function() ns.Blizzard.TakeLayout() end,
     positionsUndo = function() ns.Blizzard.UndoLayout() end,
+    themeApplyAll = function() ns.Print(L.THEME_APPLIED_ALL:format(ns.Themes.ApplyToAll())) end,
     themeReset = function()
         local ok, why = ns.Themes.Reset()
         if not ok then ns.Print(L["THEME_REFUSED_" .. why]) end
     end,
+}
+-- Actions offered only now and then (the page restacks them, as folds).
+local ACTION_SHOWN = {
+    themeApplyAll = function() return ns.Themes.HasOthers() end,
 }
 -- The buttons by action id, for the tests and for disarming on close.
 Options.actionButtons = {}
@@ -449,6 +454,7 @@ function actionBlock(page, id)
     hint:SetPoint("LEFT", button, "RIGHT", FOOTER_GAP, 0)
     hint:SetText(L["ACTION_HINT_" .. id])
     Options.actionButtons[id] = button
+    block.visible = ACTION_SHOWN[id]
     function block:SetEnabled(on) button:SetEnabled(on) end
     block:SetHeight(BUTTON_H + 12)
     return block

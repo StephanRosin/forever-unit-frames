@@ -18,7 +18,7 @@ Schema.GENERAL = {
     { id = "frames", sections = {
         -- The theme first: it swaps every other setting (Core/Themes.lua).
         -- themeCopy: the "Take positions from" list (Options/Window.lua).
-        { id = "theme", keys = { "theme" }, themeCopy = true, actions = { "themeReset" } },
+        { id = "theme", keys = { "theme" }, themeCopy = true, actions = { "themeApplyAll", "themeReset" } },
         { id = "frames", keys = { "unitFrames" }, frames = true,
             actions = { "positionsFromBlizzard", "positionsUndo" } },
         { id = "minimap", keys = { "minimapShow", "minimapAngle" } },
