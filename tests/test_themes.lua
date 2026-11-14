@@ -146,3 +146,11 @@ do
     H.check("docked: frame ornament hidden", frame.themeOrnaments[4]:IsShown(), false)
     H.check("docked: block shadow", frame.themeBlockShadow:IsShown(), true)
 end
+
+-- The entry for other addons' theme pickers.
+do
+    local entry = _G.ForeverThemes and _G.ForeverThemes.ForeverUnitFrames
+    H.checkTrue("registry: entry", entry)
+    H.checkTrue("registry: switch", entry.Switch("FROST"))
+    H.check("registry: current", entry.Current(), "FROST")
+end

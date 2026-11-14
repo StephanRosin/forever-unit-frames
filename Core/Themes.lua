@@ -331,3 +331,11 @@ function Themes.Upgrade()
     local profile = ns.Config.Profile()
     for _, scope in ipairs(ns.Settings.SCOPES) do profile[scope] = fresh[scope] or {} end
 end
+
+-- For a theme picker in another addon (one entry per Forever addon).
+_G.ForeverThemes = _G.ForeverThemes or {}
+_G.ForeverThemes["ForeverUnitFrames"] = {
+    title = "Forever Unit Frames",
+    Current = Themes.Current,
+    Switch = Themes.Switch,
+}
