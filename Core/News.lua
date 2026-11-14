@@ -178,6 +178,11 @@ News.ENTRIES = {
     ["0.53.1"] = {
         lines = { "NEWS_0_53_1_ENCHANTS", "NEWS_0_53_1_TOTEMS" },
     },
+    -- The bar is off by default: the button opens where it is switched on.
+    ["0.54.0"] = {
+        lines = { "NEWS_0_54_0_SHIELD_BAR", "NEWS_0_54_0_EXTRAS" },
+        action = { text = "NEWS_OPEN_SHIELDS", run = function() ns.Options.Open("player", "extras") end },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

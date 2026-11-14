@@ -1560,4 +1560,6 @@ L.NEWS_0_53_0_PROFILES = "L'importation demande confirmation, et « Copier depui
 L.NEWS_0_53_0_FIXES = "La surbrillance de la cible suit aussi votre cible sur les familiers à côté de leur maître."
 L.NEWS_0_53_1_ENCHANTS = "Les enchantements d'arme (huiles, pierres, poisons) ont leur propre rangée avant vos améliorations ; les rangées d'améliorations ne se désorganisent plus."
 L.NEWS_0_53_1_TOTEMS = "Totems : les emplacements vides n'affichent plus de carré noir en combat quand vous posez un totem."
+L.NEWS_0_54_0_SHIELD_BAR = "Surveillance des boucliers : une barre d'absorption qui se vide quand votre bouclier encaisse. À côté des icônes (gauche ou droite) ou libre, avec styles, taille, décalage et un mode de couleur du rouge au vert. Pleine après votre propre bouclier."
+L.NEWS_0_54_0_EXTRAS = "Nouvel onglet Extras sur le cadre du joueur : l'alerte de mana faible et la surveillance des boucliers y ont été déplacées depuis Barres."
 L.NEWS_OPEN_MANA_WARN = "Ouvrir l'alerte de mana"
