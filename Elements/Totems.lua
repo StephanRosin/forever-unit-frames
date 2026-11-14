@@ -190,19 +190,27 @@ local function curve()
     return leftCurve
 end
 
-local function alphaFromTimeLeft(art, slot)
-    art:SetAlpha(GetTotemDuration(slot):EvaluateRemainingDuration(curve()))
+local function timeLeftAlpha(slot)
+    return GetTotemDuration(slot):EvaluateRemainingDuration(curve())
 end
 
--- Border and swipe of a slot by "has a totem" as well (secret: only
--- through the widget). Reported: in combat, right after a totem was set,
--- empty slots showed a black box for a moment although their time left
--- made them clear; an empty slot has no icon, so border and swipe were
--- that box. plain = true shows both again.
-local function frameBy(art, have, plain)
-    for _, part in ipairs({ art.border, art.cooldown }) do
-        if plain then part:SetAlpha(1)
-        elseif not pcall(part.SetAlphaFromBoolean, part, have, 1, 0) then part:SetAlpha(1) end
+-- With secret data a slot is seen only if both say so: the whole icon by
+-- "has a totem" (SetAlphaFromBoolean), its parts (icon, border, swipe) by
+-- the time left. Reported twice from combat: empty slots stayed black
+-- boxes until it ended; their time left did not clear them, and the icon
+-- (empty, so black) followed only that. Anything refused is shown.
+-- plain = true: all visible.
+local function seenBy(art, slot, have, plain)
+    local parts = { art.icon, art.border, art.cooldown }
+    if plain then
+        art:SetAlpha(1)
+        for _, part in ipairs(parts) do part:SetAlpha(1) end
+        return
+    end
+    if not pcall(art.SetAlphaFromBoolean, art, have, 1, 0) then art:SetAlpha(1) end
+    local ok, alpha = pcall(timeLeftAlpha, slot)
+    for _, part in ipairs(parts) do
+        if not (ok and pcall(part.SetAlpha, part, alpha)) then part:SetAlpha(1) end
     end
 end
 
@@ -216,12 +224,7 @@ local function showSlot(s)
         art.icon:SetTexture(icon)
         showDuration(art, slot, start, duration)
         art:Show()
-        -- An empty slot, or one with no time left, is transparent (time
-        -- left implies a totem); else by "has a totem"; else visible.
-        if not pcall(alphaFromTimeLeft, art, slot) and not pcall(art.SetAlphaFromBoolean, art, have, 1, 0) then
-            art:SetAlpha(1)
-        end
-        frameBy(art, have)
+        seenBy(art, slot, have)
         return nil
     end
     -- Blizzard's totem frame shows no totem without a duration.
@@ -232,8 +235,7 @@ local function showSlot(s)
     end
     art.icon:SetTexture(icon)
     showDuration(art, slot, start, duration)
-    art:SetAlpha(1)
-    frameBy(art, nil, true)
+    seenBy(art, slot, nil, true)
     art:Show()
     return true
 end
@@ -243,8 +245,7 @@ local sampleStart
 
 local function showSample(s, i)
     AuraButton.ShowSample(s.art, Totems.SAMPLES[(i - 1) % #Totems.SAMPLES + 1], sampleStart)
-    s.art:SetAlpha(1)
-    frameBy(s.art, nil, true)
+    seenBy(s.art, nil, nil, true)
     s.art.sample = true
 end
 

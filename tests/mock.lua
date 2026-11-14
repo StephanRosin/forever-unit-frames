@@ -1073,6 +1073,9 @@ function methods:SetFixedFrameStrata(v) self._fixedStrata = v end
 function methods:SetHighlightTexture(t, blend) self._highlight = { t, blend } end
 function methods:GetFrameStrata() return self._strata end
 function methods:SetClipsChildren(v) self._clips = v end
+-- SetHitRectInsets(left, right, top, bottom); protected in combat below.
+function methods:SetHitRectInsets(l, r, t, b) self._hitInsets = { l, r, t, b } end
+function methods:GetHitRectInsets() return unpack(self._hitInsets or { 0, 0, 0, 0 }) end
 function methods:GetEffectiveScale() return M.scale end
 function methods:SetScale(v)
     assert(type(v) == "number" and v > 0, "SetScale: scale must be a positive number")
@@ -1445,7 +1448,7 @@ function methods:SetClampedToScreen() end
 -- (ADDON_ACTION_BLOCKED in the client).
 for _, method in ipairs({ "SetShown", "SetPoint", "ClearAllPoints", "SetSize", "SetWidth", "SetHeight",
                           "SetAttribute", "SetParent", "EnableMouse", "SetAllPoints",
-                          "SetPassThroughButtons" }) do
+                          "SetPassThroughButtons", "SetHitRectInsets" }) do
     local original = methods[method]
     if original then
         methods[method] = function(self, ...)

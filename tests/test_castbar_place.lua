@@ -92,3 +92,22 @@ H.check("castbar off: plain spacing", header:GetAttribute("yOffset"), -spacing)
 C.Set("party", "castbarEnabled", true)
 C.Set("party", "partyOrientation", "HORIZONTAL")
 H.check("horizontal: castbars do not widen the step", header:GetAttribute("xOffset"), spacing)
+
+-- Docked, hovering the castbar is hovering the unit (mouseover casts,
+-- reported on CurseForge): the unit button's hit area covers it.
+do
+    local depth = ns.Castbar.DockedDepth("target")
+    C.Set("target", "castbarPosition", "BELOW")
+    H.check("below: hit area down over the castbar", table.concat({ t:GetHitRectInsets() }, ","), "0,0,0," .. -depth)
+    C.Set("target", "castbarPosition", "ABOVE")
+    H.check("above: hit area up over the castbar", table.concat({ t:GetHitRectInsets() }, ","), "0,0," .. -depth .. ",0")
+    C.Set("target", "castbarPosition", "DETACHED")
+    H.check("detached: the plain frame", table.concat({ t:GetHitRectInsets() }, ","), "0,0,0,0")
+    C.Set("target", "castbarPosition", "BELOW")
+    M.combat = true
+    C.Set("target", "castbarPosition", "ABOVE")
+    H.check("in combat: waits", table.concat({ t:GetHitRectInsets() }, ","), "0,0,0," .. -depth)
+    M.SetCombat(false)
+    H.check("after combat: follows", table.concat({ t:GetHitRectInsets() }, ","), "0,0," .. -depth .. ",0")
+    C.Set("target", "castbarPosition", "BELOW")
+end

@@ -439,9 +439,23 @@ function Castbar.AttachMover(frame)
     ns.AfterCombat("castbarStyle:" .. frame.key, function() Castbar.Style(frame) end)
 end
 
+-- Docked, the castbar looks part of the frame but lies outside the unit
+-- button: hovering it found no unit for mouseover casts (reported on
+-- CurseForge). The button's hit area grows over it; out of combat only,
+-- the button is secure.
+-- shortcut: the area stays clickable while no cast shows; the room is
+-- the frame's anyway (DockedDepth keeps it free).
+local function hitArea(frame)
+    local depth, placement = Castbar.DockedDepth(frame.key), Castbar.Placement(frame.key)
+    local top = placement == "ABOVE" and -depth or 0
+    local bottom = placement == "BELOW" and -depth or 0
+    ns.AfterCombat("castbarHit:" .. frame.key, function() frame:SetHitRectInsets(0, 0, top, bottom) end, "last")
+end
+
 function Castbar.Style(frame)
     local bar = frame.castbar
     if not bar then return end
+    hitArea(frame)
     local scope = frame.key
     local placement = Castbar.Placement(scope)
     local height = barHeight(scope)
