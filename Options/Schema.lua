@@ -233,7 +233,7 @@ Schema.FRAME = {
             "shieldsSwipe", "shieldsTime", "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY", "shieldsTimeFont",
             "shieldsTimeSize", "shieldsTimeOutline", "shieldsTimeColor", "shieldsBar", "shieldsBarStyle", "shieldsBarWidth",
             "shieldsBarHeight", "shieldsBarAnchor", "shieldsBarSide", "shieldsBarX", "shieldsBarY", "shieldsBarFreeX", "shieldsBarFreeY",
-            "shieldsBarColorMode", "shieldsBarColor" },
+            "shieldsBarTexture", "shieldsBarGlow", "shieldsBarColorMode", "shieldsBarColor" },
             placement = { "shieldsGrowth", "shieldsAnchor", "shieldsX", "shieldsY", "shieldsFramePoint", "shieldsPoint",
                 "shieldsFrameX", "shieldsFrameY", "shieldsTotalPoint", "shieldsTotalX", "shieldsTotalY",
                 "shieldsTimePoint", "shieldsTimeX", "shieldsTimeY", "shieldsBarAnchor", "shieldsBarSide", "shieldsBarX", "shieldsBarY",

@@ -30,7 +30,8 @@ local EXPECTED = {
     shieldsBarX = { "KN", "int", 0 }, shieldsBarY = { "KO", "int", 0 },
     shieldsBarAnchor = { "KP", "enum", "ICONS" }, shieldsBarFreeX = { "KQ", "int", -340 },
     shieldsBarFreeY = { "KT", "int", -140 }, shieldsBarColorMode = { "KU", "enum", "FIXED" },
-    shieldsBarSide = { "KV", "enum", "LEFT" },
+    shieldsBarSide = { "KV", "enum", "LEFT" }, shieldsBarTexture = { "KW", "media", "Flat" },
+    shieldsBarGlow = { "KZ", "bool", false },
 }
 for key, want in pairs(EXPECTED) do
     local def = S.Get(key)
@@ -374,6 +375,22 @@ C.Set("player", "shieldsBar", true)
 C.Set("player", "shieldsBarAnchor", "ICONS")
 H.check("bar at the icons again: the host's child", bar:GetParent(), sw.barHost)
 H.check("bar at the icons again: beside them", select(2, bar:GetPoint(1)), container)
+-- Its own texture, plain colour by default (a white bar on the frame's
+-- shaded texture stayed grey); empty: the frame's.
+H.check("bar: plain texture by default", bar._texture, ns.Media.StatusBar("Flat"))
+C.Set("player", "barTexture", "Blizzard")
+H.check("bar: not the frame's texture", bar._texture, ns.Media.StatusBar("Flat"))
+C.Set("player", "shieldsBarTexture", "")
+H.check("bar: empty, the frame's", bar._texture, ns.Media.StatusBar("Blizzard"))
+C.Set("player", "shieldsBarTexture", "Flat")
+C.Set("player", "barTexture", "Flat")
+-- Glow: the fill added once more on top.
+H.check("bar: no glow by default", bar.glow:IsShown(), false)
+C.Set("player", "shieldsBarGlow", true)
+H.checkTrue("bar: glow", bar.glow:IsShown())
+H.check("bar glow: added", bar.glow._blend, "ADD")
+H.check("bar glow: in the fill's clip", bar.glow:GetParent(), bar.gate)
+C.Set("player", "shieldsBarGlow", false)
 -- Colour mode: red at the bottom to green at the top, over the whole bar,
 -- seen where the fill is.
 H.check("bar fixed: no gradient", bar.gradient:IsShown(), false)

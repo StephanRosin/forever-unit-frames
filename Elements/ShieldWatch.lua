@@ -251,6 +251,10 @@ function ShieldWatch.Build(frame)
     stripes:SetAllPoints(gate)
     bar.stripes = stripes
     bar.gradient = gate:CreateTexture(nil, "ARTWORK")
+    -- Glow: the fill once more, added on top.
+    bar.glow = gate:CreateTexture(nil, "ARTWORK", nil, 2)
+    bar.glow:SetBlendMode("ADD")
+    bar.glow:SetAllPoints(gate)
     local c = ShieldWatch.LINE_COLOR
     bar.lines = {}
     for i = 1, ShieldWatch.SEGMENTS - 1 + 4 do
@@ -508,7 +512,9 @@ local function placeBar(frame)
     end
     sw.barHost:SetFrameLevel(sw.holder:GetFrameLevel() + 2)
     bar:SetFrameLevel(sw.holder:GetFrameLevel() + 2)
-    bar:SetStatusBarTexture(ns.Media.StatusBar(setting(scope, "barTexture")))
+    local own = setting(scope, "shieldsBarTexture")
+    local texture = ns.Media.StatusBar(own ~= "" and own or setting(scope, "barTexture"))
+    bar:SetStatusBarTexture(texture)
     local c = setting(scope, "shieldsBarColor")
     local gradient = setting(scope, "shieldsBarColorMode") == "GRADIENT"
     -- With the gradient the fill only measures; the gradient is seen.
@@ -519,10 +525,14 @@ local function placeBar(frame)
     gate:SetFrameLevel(bar:GetFrameLevel() + 1)
     local g = bar.gradient
     g:SetAllPoints(bar)
-    g:SetTexture(ns.Media.StatusBar(setting(scope, "barTexture")))
+    g:SetTexture(texture)
     local lo, hi = ShieldWatch.GRADIENT_EMPTY, ShieldWatch.GRADIENT_FULL
     g:SetGradient("VERTICAL", CreateColor(lo[1], lo[2], lo[3], lo[4]), CreateColor(hi[1], hi[2], hi[3], hi[4]))
     g:SetShown(gradient)
+    -- In the gradient mode it lights the gradient, white.
+    bar.glow:SetTexture(texture)
+    if gradient then bar.glow:SetVertexColor(1, 1, 1, 0.35) else bar.glow:SetVertexColor(c[1], c[2], c[3], 0.6) end
+    bar.glow:SetShown(setting(scope, "shieldsBarGlow") == true)
     bar.stripes:SetShown(style == "STRIPES")
     -- Lines 1..SEGMENTS-1 split the bar's height; the last four frame the fill.
     local one, n = Pixel.One(bar), ShieldWatch.SEGMENTS

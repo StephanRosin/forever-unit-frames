@@ -747,6 +747,13 @@ shields({ key = "shieldsBarWidth", code = "KJ", type = "int", min = 2, max = 64,
 shields({ key = "shieldsBarColor", code = "KK", type = "color", default = { 1, 0.85, 0.3, 1 } })
 -- One colour, or a gradient red (bottom) to green (top) over the whole
 -- height, seen as far as the fill reaches. Stored by index: append only.
+-- Its own texture, plain colour by default: the frame's textures are
+-- shaded grey, a white bar on them stayed grey (reported). Empty: the
+-- frame's.
+shields({ key = "shieldsBarTexture", code = "KW", type = "media", mediaKind = "statusbar",
+    emptyText = "TEXTURE_OF_FRAME", default = "Flat" })
+-- A bright layer added on the fill (additive), so it stands out.
+shields({ key = "shieldsBarGlow", code = "KZ", type = "bool", default = false })
 shields({ key = "shieldsBarColorMode", code = "KU", type = "enum", values = { "FIXED", "GRADIENT" }, default = "FIXED" })
 -- Its look. Stored by index: append only.
 shields({ key = "shieldsBarStyle", code = "KL", type = "enum", values = { "FLAT", "STRIPES", "SEGMENTS", "FRAMED" },

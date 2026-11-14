@@ -85,6 +85,8 @@ The icons of your active absorb shields and the exact total of all your absorbs,
 <tr><td><b>Bar offset Y</b></td><td></td><td>-200 – 200</td><td>0</td><td>Player</td></tr>
 <tr><td><b>Bar X</b></td><td></td><td>-4000 – 4000</td><td>-340</td><td>Player</td></tr>
 <tr><td><b>Bar Y</b></td><td></td><td>-4000 – 4000</td><td>-140</td><td>Player</td></tr>
+<tr><td><b>Bar texture</b></td><td></td><td>Texture, or the frame's texture</td><td>Flat</td><td>Player</td></tr>
+<tr><td><b>Glow</b></td><td>Brightens the fill</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
 <tr><td><b>Bar color mode</b></td><td>Green at the top, red at the bottom: the fuller, the greener its top</td><td>Fixed, Red to green</td><td>Fixed</td><td>Player</td></tr>
 <tr><td><b>Bar color</b></td><td></td><td>Color</td><td><code>#ffd94d</code></td><td>Player</td></tr>
 </tbody>
