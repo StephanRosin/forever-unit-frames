@@ -99,7 +99,7 @@ H.check("console amber: backdrop kept", f.themeBack._texture, PATH .. "ConsoleBa
 H.check("console amber: setting untouched", rgb(Config.Get("player", "borderColor")), "0.306,0.929,0.690,1.000")
 
 -- Pitwall: calm black backdrop, the name row a black strip with the red
--- wedge at its start, solid bars on a black track, green health.
+-- wedge at its start, solid bars on a black track, health in the player's colour.
 H.checkTrue("pitwall: switch", Themes.Switch("PITWALL"))
 restyle()
 H.check("pitwall: font", Config.Get("player", "fontFace"), "Titillium Web")
@@ -107,7 +107,7 @@ H.check("pitwall: bar", Config.Get("player", "barTexture"), "FUF Swiss")
 H.check("pitwall: flat backdrop, no weave", f.themeBack._texture, PATH .. "SwissBack")
 H.check("pitwall: black track", rgb(Config.Get("player", "backgroundColor")), "0.039,0.039,0.039,1.000")
 H.check("pitwall: track on the health bar", rgb(f.healthBg._color), "0.039,0.039,0.039,1.000")
-H.check("pitwall: health green", rgb({ ns.Health.ColorFor(f) }), "0.133,0.773,0.369,1.000")
+H.check("pitwall: health not forced", ns.Themes.SPECS.PITWALL.look.healthColorMode, nil)
 H.check("pitwall: no corner wedge", f.themeOrnaments[1]:IsShown(), false)
 H.check("pitwall: title strip", f.title._texture .. " " .. rgb(f.title._color),
     "Interface\\Buttons\\WHITE8X8 0.000,0.000,0.000,1.000")
