@@ -494,8 +494,9 @@ local RAID_TAB_EXTRA = {
         { "Folding the bar", {
         "Docked or free, a handle on the bar's left edge folds it out and in; folded in, only the handle shows."
             .. " `/fuf tools` and a right-click on the raid minimap button do the same, from anywhere (nothing"
-            .. " happens while the bar does not show). The bar is a protected frame: in combat the fold waits for"
-            .. " the end of combat, and the chat says so. Folding is not a setting a template or its Undo touches.",
+            .. " happens while the bar does not show). In combat only the handle folds it (the bar is a protected"
+            .. " frame, the handle's click is secure); `/fuf tools` and the minimap button then wait for the end of"
+            .. " combat, and the chat says so. Folding is not a setting a template or its Undo touches.",
         "",
         } },
         -- Raid/Tools.lua: Tools.Marks, Tools.Leads, Tools.IsLeader.

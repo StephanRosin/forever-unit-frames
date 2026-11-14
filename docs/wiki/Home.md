@@ -57,7 +57,8 @@ Source: [GitHub](https://github.com/StephanRosin/forever-unit-frames)
   assistants; everyone an assistant, party to raid and back and the loot method for the leader. It sits behind
   a handle on the right edge of the raid panel, or free where you drag it, with the handle on its left edge.
   Click the handle, type `/fuf tools` or right-click the raid minimap button to fold the bar out or in. It
-  folds and follows changes of who leads only out of combat (a fold asked for in combat comes after it).
+  follows changes of who leads only out of combat; in combat only the handle folds it (`/fuf tools` and the
+  minimap button wait for the end of combat).
 - The **Profiles** tab (beside the sizes) starts with the role templates, the looks and the setup wizard's
   button (see [[Templates|Raid-Templates]]). Below them it keeps your own profiles (all three sizes or one, under a
   name, for every character of your account), copies one size onto another (everything, or without layout and sizes)

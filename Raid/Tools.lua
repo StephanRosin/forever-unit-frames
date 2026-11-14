@@ -12,8 +12,8 @@ local _, ns = ...
 -- frames are on, hidden when solo, and while test mode is on, so it can
 -- be placed. A handle on its left edge folds it out and in (folded in,
 -- only the handle shows), as do /fuf tools and a right-click on the raid
--- minimap button (Tools.Fold): out of combat, a fold asked for in combat
--- waits for its end. Docked, bar and handle hang on the main panel's
+-- minimap button (Tools.Fold; in combat only the handle, a secure click,
+-- folds at once, the others wait for its end). Docked, bar and handle hang on the main panel's
 -- right edge (the panel's anchor never moves in combat) and follow the
 -- panel (while the panel is hidden, they stand at the free position
 -- instead); free, the bar has its own mover (the raid window's lock) and
@@ -25,7 +25,8 @@ local _, ns = ...
 -- SecureTemplates.lua) make the bar protected: it is
 -- built, shown, hidden, sized and moved only out of combat
 -- (ns.AfterCombat); a change of the group in combat waits for its end.
--- No secure snippets: a secure button's action is the client's own
+-- One secure snippet: the handle's fold (Tools.FOLD_SNIPPET), so the
+-- markers can be reached in combat. A secure button's action is the client's own
 -- (it calls SetRaidTarget, PlaceRaidMarker or ClearRaidMarker in secure
 -- code). The other tools are plain buttons that call the group functions
 -- Blizzard's raid manager calls (C_PartyInfo, InitiateRolePoll).
@@ -561,10 +562,10 @@ end
 -- The fold asked for in combat (nil: none), set when combat ends.
 local foldAsked
 
--- The handle's click, /fuf tools and the raid minimap button's
--- right-click: folds the bar out or in; nothing (and no word) while the
--- bar does not show. In combat the fold waits for its end, and the chat
--- says so; asked for twice, it is back where it was.
+-- /fuf tools and the raid minimap button's right-click: folds the bar out
+-- or in; nothing (and no word) while the bar does not show. In combat the
+-- fold waits for its end (only the handle's secure click works then), and
+-- the chat says so; asked for twice, it is back where it was.
 function Tools.Fold()
     if not Tools.IsShown() then return false end
     if InCombatLockdown() then
@@ -580,15 +581,29 @@ function Tools.Fold()
     return ns.RaidConfig.Set("general", "toolsOpen", not general("toolsOpen"))
 end
 
-local function createHandle()
-    local handle = CreateFrame("Button", Tools.NAME .. "Handle", UIParent)
+-- The handle folds the bar in a secure snippet, so it works in combat
+-- too: the bar is protected (its secure buttons), only secure code may
+-- show or hide it then. PostClick keeps the fold (applied again out of
+-- combat by Tools.Refresh).
+Tools.FOLD_SNIPPET = [[
+    local bar = self:GetFrameRef("bar")
+    if bar:IsShown() then bar:Hide() else bar:Show() end
+]]
+
+local function createHandle(bar)
+    local handle = CreateFrame("Button", Tools.NAME .. "Handle", UIParent, "SecureHandlerClickTemplate")
     handle:SetSize(Tools.HANDLE_W, Tools.HANDLE_H)
     local bg = handle:CreateTexture(nil, "BACKGROUND")
     bg:SetAllPoints(handle)
     bg:SetColorTexture(0, 0, 0, 0.6)
     handle.text = Style.Text(handle, 12, "text")
     handle.text:SetPoint("CENTER")
-    handle:SetScript("OnClick", function() Tools.Fold() end)
+    handle:SetFrameRef("bar", bar)
+    handle:SetAttribute("_onclick", Tools.FOLD_SNIPPET)
+    handle:SetScript("PostClick", function()
+        ns.RaidConfig.Set("general", "toolsOpen", bar:IsShown())
+        paintHandle()
+    end)
     tooltip(handle, "RAID_TOOLS_TITLE")
     handle:Hide()
     return handle
@@ -597,12 +612,12 @@ end
 -- Built once, out of combat, after the raid profile is attached.
 function Tools.Create()
     if Tools.bar then return Tools.bar end
-    local bar = CreateFrame("Frame", Tools.NAME, UIParent)
+    local bar = CreateFrame("Frame", Tools.NAME, UIParent, "SecureFrameTemplate")
     local bg = bar:CreateTexture(nil, "BACKGROUND")
     bg:SetAllPoints(bar)
     bg:SetColorTexture(0, 0, 0, 0.6)
     Tools.bar = bar
-    Tools.handle = createHandle()
+    Tools.handle = createHandle(bar)
     for _, row in ipairs(Tools.rows) do row.frame = row.build(bar) end
     ns.Movers.Attach(bar, Tools.MoverSpec())
     Tools.Refresh()

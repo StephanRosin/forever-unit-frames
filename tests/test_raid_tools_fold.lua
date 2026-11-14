@@ -2,8 +2,8 @@
 -- free bar has the docked bar's handle too, on its left edge (folded in:
 -- only the handle); /fuf tools and a right-click on the raid minimap
 -- button fold it out and in, docked or free; nothing while the bar does
--- not show. In combat the fold waits for its end (the bar is protected)
--- and the chat says so. The fold is a state of the screen (uiState).
+-- not show. In combat these wait for its end (the bar is protected; only
+-- the handle's secure click folds it then) and the chat says so. The fold is a state of the screen (uiState).
 local M = H.M
 local ns = H.LoadAddon()
 M.units.player = { name = "Me", class = "MAGE", health = 1, healthMax = 1, isPlayer = true }
@@ -37,8 +37,8 @@ H.checkTrue("free: handle shown", handle:IsShown())
 H.check("free: folded in", bar:IsShown(), false)
 H.check("free: the handle left of the bar", point(handle), "TOPRIGHT mover TOPLEFT -" .. Tools.DOCK_GAP .. " 0")
 H.check("free: points out", handle.text:GetText(), ">")
-H.check("free: not protected", handle:IsProtected(), false)
-handle:GetScript("OnClick")(handle)
+H.check("free: a secure click", handle:IsProtected(), true)
+handle:Click()
 H.check("free: the handle folds out", open(), true)
 H.checkTrue("free: bar shown", bar:IsShown())
 H.check("free: the bar at its mover", point(bar), "TOPLEFT mover TOPLEFT 0 0")
@@ -98,7 +98,7 @@ H.check("after combat: folded out", open(), true)
 H.checkTrue("after combat: bar shown", bar:IsShown())
 M.combat = true
 M.FireEvent("PLAYER_REGEN_DISABLED")
-handle:GetScript("OnClick")(handle)
+slash("tools")
 button:GetScript("OnClick")(button, "RightButton")
 M.SetCombat(false)
 H.check("twice in combat: still out", open(), true)

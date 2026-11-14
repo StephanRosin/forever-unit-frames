@@ -1597,6 +1597,7 @@ function M.Reset()
         if template and template:find("DisableUntrustedLayoutScriptsTemplate") then w._layoutForbidden = true end
         if kind == "AuraContainer" then M.NewAuraContainer(w, template) end
         if template and template:find("Secure") then w._protected = true end
+        if template and template:find("SecureHandler") then M.SecureHandler(w, template) end
         if kind == "StatusBar" then
             w._barTex = newWidget("Texture", nil, w)
             -- Timer bars (SimpleStatusBarAPIDocumentation.lua): the client
@@ -3469,6 +3470,52 @@ local function secureStroke(button, mouseButton, down)
     end
     return kind
 end
+-- Secure handlers (SecureHandlerTemplates.xml, SecureHandlers.lua):
+-- SetFrameRef only out of combat (it sets attributes), and a click
+-- template's OnClick runs its "_onclick" snippet in secure code. The
+-- snippet sees self, button and down; self:GetFrameRef(label) hands out a
+-- frame handle whose Show, Hide and IsShown work in combat only on a
+-- protected frame (RestrictedFrames.lua GetHandleFrame).
+local function frameHandle(frame)
+    local function writable()
+        if M.combat and not M.IsProtectedTree(frame) then error("Invalid frame handle", 3) end
+        return frame
+    end
+    return {
+        Show = function() writable():Show() end,
+        Hide = function() writable():Hide() end,
+        IsShown = function() return frame:IsShown() end,
+        GetFrameRef = function(_, label) return frame._refs[label] and frameHandle(frame._refs[label]) end,
+    }
+end
+function M.SecureHandler(w, template)
+    w._refs = {}
+    function w:SetFrameRef(label, ref)
+        assert(not M.combat, "SetFrameRef sets attributes: not in combat")
+        self._refs[label] = ref
+    end
+    if template ~= "SecureHandlerClickTemplate" then return end
+    w._scripts.OnClick = function(self, button, down)
+        local body = self:GetAttribute("_onclick")
+        if not body then return end
+        local snippet = assert(loadstring("local self, button, down = ...\n" .. body))
+        setfenv(snippet, {})
+        M.secureDepth = M.secureDepth + 1
+        local ok, err = pcall(snippet, frameHandle(self), button, down)
+        M.secureDepth = M.secureDepth - 1
+        if not ok then error(err, 0) end
+    end
+end
+
+-- Button:Click: PreClick, OnClick, PostClick, as the client runs them.
+function methods:Click(button, down)
+    button = button or "LeftButton"
+    for _, script in ipairs({ "PreClick", "OnClick", "PostClick" }) do
+        local fn = self._scripts[script]
+        if fn then fn(self, button, down) end
+    end
+end
+
 -- A mouse click: the down stroke, then the up stroke, each one the button
 -- is registered for (RegisterForClicks). Returns the type that ran (the
 -- last one, if both strokes ran one), or nil.

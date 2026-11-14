@@ -1,6 +1,6 @@
 -- The raid tools bar docked (Raid/Tools.lua): a handle on the main
--- panel's right edge folds the bar out and in, out of combat only (a fold
--- asked for in combat waits for its end); both hang from the panel's
+-- panel's right edge folds the bar out and in, in combat too (a secure
+-- click: the bar is protected); both hang from the panel's
 -- anchor and follow the panel's size; free, the bar has its own mover
 -- and the handle stands left of it. The raid window's rows.
 local M = H.M
@@ -38,10 +38,10 @@ local width = Header.width
 H.check("handle on the panel's right edge", point(handle), "TOPLEFT anchor TOPLEFT " .. (width + 4) .. " 0")
 H.check("its size", handle:GetWidth() .. "x" .. handle:GetHeight(), "12x32")
 H.check("points out", handle.text:GetText(), ">")
-H.check("not protected", handle:IsProtected(), false)
+H.check("a secure click", handle:IsProtected(), true)
 
 -- A click folds it out, and in again.
-handle:GetScript("OnClick")(handle)
+handle:Click()
 H.check("folded out", RC.Get("general", "toolsOpen"), true)
 H.checkTrue("bar shown", bar:IsShown())
 H.check("bar beyond the handle", point(bar), "TOPLEFT anchor TOPLEFT " .. (width + 4 + 12 + 4) .. " 0")
@@ -57,16 +57,22 @@ H.check("bar follows", point(bar), "TOPLEFT anchor TOPLEFT " .. (Header.width + 
 RC.Set("r20", "x", -500)
 H.check("they hang from the panel's anchor", point(bar), "TOPLEFT anchor TOPLEFT " .. (Header.width + 20) .. " 0")
 
--- In combat the fold waits for its end; nothing protected is touched.
+-- In combat the handle folds at once (reported on CurseForge: markers
+-- could not be reached mid fight); nothing is blocked.
 local chat = #M.chat
 M.combat = true
 M.FireEvent("PLAYER_REGEN_DISABLED")
-handle:GetScript("OnClick")(handle)
-H.check("combat: stays out", RC.Get("general", "toolsOpen"), true)
-H.checkTrue("combat: the chat says so", M.chat[chat + 1] and M.chat[chat + 1]:find("when combat ends", 1, true))
+handle:Click()
+H.check("combat: folded in", bar:IsShown(), false)
+H.check("combat: kept", RC.Get("general", "toolsOpen"), false)
+H.check("combat: points out", handle.text:GetText(), ">")
+H.check("combat: nothing in chat", #M.chat, chat)
+handle:Click()
+H.checkTrue("combat: out again", bar:IsShown())
 H.check("combat: nothing blocked", #M.blocked, 0)
+handle:Click()
 M.SetCombat(false)
-H.check("after combat: folded in", bar:IsShown(), false)
+H.check("after combat: still folded in", bar:IsShown(), false)
 
 -- No mover while docked; free: the handle left of the bar, its own mover.
 ns.Movers.Unlock("raid")
