@@ -42,7 +42,7 @@ Unit frames built for **WoW: Forever**, in the spirit of Shadowed Unit Frames. E
 - Icons for role, raid marker, leader, master looter, ready check, incoming summon and another phase; members out of range fade; lines in the cell show aggro and your target.
 - **Special panels:** main tanks, main assists, your own tanks, favorites (right-click a cell to add a player) and the raid's pets, each in a panel of its own.
 - **Own panels:** up to nine panels of your own beside the main panel; drag a block from one panel to another (a "Healers" panel beside the groups).
-- **Raid tools bar** in place of Blizzard's raid manager: raid target icons, ready check, role poll, world markers, everyone assistant, party/raid conversion and the loot method.
+- **Raid tools bar** in place of Blizzard's raid manager: raid target icons, ready check, role poll, world markers, everyone assistant, party/raid conversion and the loot method. A handle on its edge folds it out and in, in combat too.
 - **Click-casting:** spells, items, macros, target, focus, assist and the menu on up to 40 mouse combinations over the raid cells and every unit frame (player, pet, target, target of target, focus, party; switchable per frame), and keys that cast on the member under the mouse. The spell and its rank are picked from lists (Max follows new ranks, or a fixed rank); editable in the raid window and under General in the unit frames' window. Steps aside while Clique is loaded.
 - **Buff watch:** missing and expiring group buffs of your class in a small window and on the cells; a click or the smart buff key casts the next one, out of combat.
 - **Templates and setup wizard:** role templates (healer, tank, DPS, dispel only), looks (Forever, Flat, Classic) and a wizard that sets role, look and click-casting in a few steps. Named profiles of all sizes or one for every character of your account; copy, reset, export and import all sizes or one; one step of undo.
@@ -77,7 +77,7 @@ In a "Status" tab per frame.
 - Latency zone on the player castbar (off by default): the part of the bar where casting again is safe, at the bar's end, left or right, with an X offset.
 - The player castbar can run alongside Blizzard's, or hide it.
 - **Five-second rule** on the player's mana bar: a glowing spark runs along the bar for five seconds after you spend mana (direction, size and color selectable), with an optional countdown and dimming.
-- **Shield watch** (player): icons of your active shields (Power Word: Shield, Ice Barrier, Mana Shield, wards, Sacrifice, protection potions and absorb items) and the exact total of all your absorbs, live in combat, freely placed.
+- **Shield watch** (player): icons of your active shields (Power Word: Shield, Ice Barrier, Mana Shield, wards, Sacrifice, protection potions and absorb items) and the exact total of all your absorbs, live in combat, freely placed. Optionally an absorb bar that empties as the shield takes damage, in four designs, a fixed colour or red to green, with its own texture and a glow.
 - Combat numbers placed left, center or right with their own font, size and outline; the player and pet frames can stay in full while you are in a group.
 
 ## Threat bar
@@ -97,6 +97,11 @@ In a "Status" tab per frame.
 - The title row's background can be switched off on its own, so the bars keep theirs and the missing health stays visible.
 - Global font settings with "Apply to all frames".
 
+## Themes (beta)
+Forever addons can now wear a shared look: Wood, Parchment, Tech, Runestone, Stained Glass, Comic, Frost, Pixel, Swiss Clean, Console and Pitwall, each with its own colour choices. Pick one in the options under Theme. It works on its own, but looks best when your other Forever addons wear the same theme — "Apply to all Forever addons" switches them in one click. Classic stays the default, and switching back to Classic always restores your previous settings exactly.
+
+A theme dresses every frame, its docked castbar and the raid cells with its backdrop, ring, ornaments, font and bar texture. Each theme keeps all its settings of its own; the first time, it starts from your Classic settings. "Take positions from" copies the positions of another theme (with undo), "Reset theme" starts it anew from Classic. The theme fonts ship with the addon (SIL Open Font License).
+
 ## Options
 - `/fuf` opens a movable options window: frames on the left, tabs on top.
 - General > Frames: every frame with an on/off switch in one list.
@@ -108,7 +113,7 @@ In a "Status" tab per frame.
 - Settings are stored compactly. They can be exported and imported as a string. Importing a profile keeps your own language.
 
 ## Commands
-`/fuf` (options), `/fuf raid` (raid frames' options), `/fuf raid off` / `/fuf raid on`, `/fuf news` (what's new in this version), `/fuf tools` (folds the raid tools bar), `/fuf unlock`, `/fuf lock`, `/fuf status`, `/fuf reset <frame|all>`, `/fuf set <scope> <setting> <value>`
+`/fuf` (options), `/fuf raid` (raid frames' options), `/fuf raid off` / `/fuf raid on`, `/fuf news` (what's new in this version), `/fuf tools` (folds the raid tools bar; in combat only its handle folds at once), `/fuf unlock`, `/fuf lock`, `/fuf status`, `/fuf reset <frame|all>`, `/fuf set <scope> <setting> <value>`
 
 ## Notes
 - Made for WoW: Forever only. It relies on Forever's API and will not load on other clients.
