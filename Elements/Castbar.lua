@@ -489,7 +489,7 @@ function Castbar.Style(frame)
         local w, h = size(scope)
         local radius = ns.Corners.Clamp(ns.Corners.Radius(scope), w, h)
         ns.Corners.Fit(bar.clip, bar.box, radius)
-        ns.Border.Draw(bar, scope, bar.box, radius, ns.Themes.Accent(ns.Themes.Current(), "ring"))
+        ns.Border.Draw(bar, scope, bar.box, radius, ns.Themes.Rim(ns.Themes.Current()))
     else
         ns.Corners.Fit(bar.clip, frame.unitBox, ns.Shape.Radius(frame))
         ns.Border.Hide(bar)

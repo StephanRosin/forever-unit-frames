@@ -104,7 +104,7 @@ function Shape.Style(frame)
     placeUnitBox(frame, side)
     ns.Corners.Fit(frame.clip, frame, radius)
     -- A raid cell names its own theme (Raid/Cell.lua).
-    local rim = ns.Themes.Accent(frame.themeOf and frame.themeOf() or ns.Themes.Current(), "ring")
+    local rim = ns.Themes.Rim(frame.themeOf and frame.themeOf() or ns.Themes.Current())
     ns.Border.Draw(frame.frameRing, scope, frame.frameRing, radius, rim)
     ns.Border.Draw(frame.blockRing, scope, frame.blockRing, radius, rim)
     Shape.Refresh(frame)

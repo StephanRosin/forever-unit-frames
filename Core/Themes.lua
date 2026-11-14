@@ -40,10 +40,10 @@ local LATIN_CLIENTS = { enUS = true, enGB = true, deDE = true, frFR = true, esES
 -- (the text has its font by GetFont, its black copies draw on top).
 Themes.SPECS = {
     CLASSIC = {},
-    -- Oak boards round the bars, a brass rim, brass rivets.
+    -- Oak boards round the bars, a gold rim (as in every Forever addon), brass rivets.
     WOOD = {
         font = "Cinzel", bar = "FUF Wood",
-        look = { borderShow = true, borderStyle = "BRONZE", borderSize = 3, borderPadding = 4, cornerRadius = 3,
+        look = { borderShow = true, borderStyle = "GOLD", borderSize = 3, borderPadding = 4, cornerRadius = 3,
             backgroundColor = { 0.1, 0.06, 0.02, 0.85 }, titleBackground = false,
             shadowEnabled = true, shadowAlpha = 60, shadowSize = 6, fontOutline = "OUTLINE" },
         art = { back = "WoodBack", ornament = "Rivet", corners = { 1, 2, 3, 4 }, ornamentSize = 11, ornamentInset = 1 },
@@ -153,7 +153,8 @@ end
 -- their art.accent instead (Themes.Accent).
 local GREY_MEAN = { WoodBack = 0.800, TechBack = 0.705, ParchmentBack = 0.799, StoneBack = 0.800,
     GlassBack = 0.777, FrostBack = 0.796, PixelBack = 0.800 }
-local function colour(id, back, accent) return { id = id, back = back, accent = accent } end
+-- rim: the ring's colour under this colour (the same in every Forever addon).
+local function colour(id, back, accent, rim) return { id = id, back = back, accent = accent, rim = rim } end
 Themes.COLORS = {
     WOOD = {
         colour("OAK"),
@@ -211,7 +212,7 @@ Themes.COLORS = {
         colour("BLACK", { 0.03, 0.03, 0.04 }, { 0, 0.89, 0.21 }),
         colour("TEAL", { 0.02, 0.17, 0.22 }, { 0.16, 0.68, 1 }),
         colour("PURPLE", { 0.15, 0.1, 0.25 }, { 1, 0.47, 0.66 }),
-        colour("HANDHELD", { 0.059, 0.122, 0.059 }, { 0.784, 0.941, 0.439 }),
+        colour("HANDHELD", { 0.059, 0.122, 0.059 }, { 0.784, 0.941, 0.439 }, { 0.784, 0.941, 0.439 }),
     },
     SWISS = {
         colour("RED"),
@@ -272,7 +273,7 @@ function Themes.CellLook(id, key, own)
         return size > 0 and size + add or size
     end
     if key == "borderSize" then return math.min(look.borderSize, CELL_BORDER_MAX) end
-    if key == "borderColor" then return Themes.Accent(id, "ring") or look.borderColor end
+    if key == "borderColor" then return Themes.Rim(id) or look.borderColor end
     if key == "cornerRadius" then return math.min(look.cornerRadius, CELL_RADIUS_MAX) end
     return look[key]
 end
@@ -293,7 +294,7 @@ end
 -- Raised whenever SPECS change a look: theme sets made before are made
 -- anew from CLASSIC (Themes.Upgrade), so a changed theme shows as it is
 -- now. CLASSIC is never touched.
-Themes.REVISION = 4
+Themes.REVISION = 5
 
 -- The active profile's stored theme sets; stale ones (an older
 -- REVISION) dropped.
@@ -408,6 +409,14 @@ function Themes.Accent(id, where)
     if not art or art.accent ~= where then return nil end
     local c = colourOf(id, Themes.Color(id))
     return c and c.accent and { c.accent[1], c.accent[2], c.accent[3], 1 }
+end
+
+-- The ring's colour under theme id's colour, where it is not the theme's
+-- own: Console's accent, Pixel's Handheld green. Nothing else tints a ring.
+function Themes.Rim(id)
+    local c = colourOf(id, Themes.Color(id))
+    if c and c.rim then return { c.rim[1], c.rim[2], c.rim[3], 1 } end
+    return Themes.Accent(id, "ring")
 end
 
 -- The backdrop's texture under spec: the grey one under a colour.

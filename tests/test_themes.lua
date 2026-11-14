@@ -20,7 +20,7 @@ H.checkTrue("switch to wood", Themes.Switch("WOOD"))
 H.check("wood: current", Themes.Current(), "WOOD")
 H.check("wood: keeps the position", Config.Get("player", "x"), -200)
 H.check("wood: keeps an element's place", Config.Get("player", "shieldsBarX"), 5)
-H.check("wood: its border", Config.Get("player", "borderStyle"), "BRONZE")
+H.check("wood: its border", Config.Get("player", "borderStyle"), "GOLD")
 H.check("wood: its bar", Config.Get("player", "barTexture"), "FUF Wood")
 H.check("wood: frame override gone, General's look", Config.Get("player", "cornerRadius"), 3)
 H.check("wood: its font", Config.Get("player", "fontFace"), "Cinzel")
@@ -251,3 +251,61 @@ do
     ns.Themes.Switch("CLASSIC")
 end
 
+
+-- Every theme's ring in the family's colour (ForeverQuestLog's Themes.lua);
+-- Pitwall has none there: its ring is the carbon's own colour.
+do
+    local FAMILY = {
+        WOOD = "GOLD",
+        TECH = "0.25,0.88,0.94,0.9", PARCHMENT = "0.29,0.2,0.12,1", RUNESTONE = "0.1,0.1,0.12,1",
+        GLASS = "0.07,0.06,0.05,1", COMIC = "0.07,0.07,0.07,1", FROST = "0.86,0.96,1,0.8",
+        PIXEL = "1,0.95,0.91,1", SWISS = "0.165,0.165,0.165,1", CONSOLE = "0.306,0.929,0.69,1",
+        PITWALL = "0.043,0.047,0.055,1",
+    }
+    for _, id in ipairs(ns.Themes.IDS) do
+        local look = ns.Themes.SPECS[id].look
+        if look then
+            local ring = look.borderStyle == "FLAT" and table.concat(look.borderColor, ",") or look.borderStyle
+            H.check(id .. ": ring in the family's colour", ring, FAMILY[id])
+            local cell = ns.Themes.CellLook(id, "borderStyle") == "FLAT"
+                and table.concat(ns.Themes.CellLook(id, "borderColor"), ",") or ns.Themes.CellLook(id, "borderStyle")
+            H.check(id .. ": cell ring the same", cell, FAMILY[id])
+        end
+    end
+end
+
+-- The ring under every theme and every colour, as drawn, the same in every
+-- Forever addon: the theme's own, but Console's accent and Pixel's Handheld.
+do
+    local function rgb(c) return string.format("%.3f,%.3f,%.3f,%.3f", c[1], c[2], c[3], c[4] or 1) end
+    local OVERRIDE = {
+        CONSOLE = { MINT = "0.306,0.929,0.690,1.000", AMBER = "1.000,0.690,0.000,1.000",
+            PHOSPHOR = "0.224,1.000,0.078,1.000", VIOLET = "0.627,0.471,1.000,1.000" },
+        PIXEL = { HANDHELD = "0.784,0.941,0.439,1.000" },
+    }
+    _G.ForeverUnitFramesDB = nil
+    H.M.FireEvent("PLAYER_LOGIN")
+    H.M.RunTimers()
+    local f = ns.Frames.player
+    for _, id in ipairs(ns.Themes.IDS) do
+        local look = ns.Themes.SPECS[id].look
+        if look then
+            ns.Themes.Switch(id)
+            for _, colourId in ipairs(ns.Themes.Colors(id)) do
+                ns.Themes.SetColor(colourId)
+                H.M.RunTimers()
+                ns.Single.StyleAll(f)
+                local want = (OVERRIDE[id] or {})[colourId]
+                    or (look.borderStyle == "FLAT" and rgb(look.borderColor) or look.borderStyle)
+                local drawn = look.borderStyle == "FLAT" and rgb(f.frameRing.border[1]._color)
+                    or ns.Config.Get("player", "borderStyle")
+                H.check(id .. " " .. colourId .. ": ring", drawn, want)
+                local cellStyle = ns.Themes.CellLook(id, "borderStyle")
+                H.check(id .. " " .. colourId .. ": cell ring", cellStyle == "FLAT"
+                    and rgb(ns.Themes.CellLook(id, "borderColor")) or cellStyle, want)
+            end
+            ns.Themes.SetColor(ns.Themes.Colors(id)[1])
+        end
+    end
+    ns.Themes.Switch("CLASSIC")
+end

@@ -117,7 +117,7 @@ H.checkTrue("pixel handheld: set", Themes.SetColor("HANDHELD"))
 restyle()
 H.check("pixel handheld: grey texture tinted", f.themeBack._texture .. " " .. rgb(f.themeBack._color),
     PATH .. "PixelBackGrey " .. rgb({ 0.059 / 0.8, 0.122 / 0.8, 0.059 / 0.8, 1 }))
-H.check("pixel handheld: ring as pixel's", rgb(f.frameRing.border[1]._color), "1.000,0.950,0.910,1.000")
+H.check("pixel handheld: ring its green", rgb(f.frameRing.border[1]._color), "0.784,0.941,0.439,1.000")
 
 -- Back to Classic: nothing of the themes stayed.
 H.checkTrue("classic: switch", Themes.Switch("CLASSIC"))
