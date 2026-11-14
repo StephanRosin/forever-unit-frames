@@ -111,6 +111,26 @@ M.RunTimers()
 H.check("tried again: taken", (fs:GetFont()), "Fonts\\new.ttf")
 H.check("tried again: outline back", fs.softCopies[1]:IsShown(), true)
 
+-- A fresh font is set again a little later, through another font, with
+-- its text written anew: a first use can leave the text blank in game.
+do
+    local t = UIParent:CreateFontString()
+    t:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
+    t:SetText("Ayla")
+    local seen, plain = {}, t.SetFont
+    t.SetFont = function(self, path, ...) seen[#seen + 1] = path; return plain(self, path, ...) end
+    ns.Texts.SetFont(t, "Fonts\\fresh.ttf", 12, "OUTLINE")
+    seen = {}
+    M.RunTimers()
+    H.check("redraw: through another font", seen[1], "Fonts\\FRIZQT__.TTF")
+    H.check("redraw: back to its own", (t:GetFont()), "Fonts\\fresh.ttf")
+    H.check("redraw: text kept", t:GetText(), "Ayla")
+    seen = {}
+    ns.Texts.SetFont(t, "Fonts\\fresh.ttf", 12, "OUTLINE")
+    M.RunTimers()
+    H.check("redraw: once per font", #seen, 1)
+end
+
 -- A theme stored under an older revision is made anew; Classic stays.
 ns = H.LoadAddon()
 db = { profiles = { Default = { general = { theme = "WOOD", borderPadding = 0 }, player = { width = 280, x = 10 } } },

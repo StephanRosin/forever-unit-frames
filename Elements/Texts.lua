@@ -363,6 +363,34 @@ end
 -- How often, and how far apart, a refused font is tried again.
 local FONT_RETRIES, FONT_RETRY_DELAY = 8, 0.25
 
+-- A font file used for the first time can leave a text blank although
+-- GetFont reports it (seen in game: empty texts until the theme was
+-- chosen a second time). Setting it again a little later, through
+-- another font, as that second choice did, draws them.
+-- Aura buttons' texts are off limits while auras are secret (combat):
+-- the redraw waits, a minute at most (a fight that long drops it).
+local REDRAW_DELAYS = { 0.5, 2 }
+local function aurasSecret()
+    local should = C_Secrets and C_Secrets.ShouldAurasBeSecret
+    return should ~= nil and should() == true
+end
+local function redrawLater(fs, font, size, flags, wanted)
+    local waits = 60
+    local function redraw()
+        if fs.fontWanted ~= wanted then return end
+        if aurasSecret() then
+            waits = waits - 1
+            if waits > 0 then C_Timer.After(1, redraw) end
+            return
+        end
+        fs:SetFont("Fonts\\FRIZQT__.TTF", size, flags)
+        fs:SetFont(font, size, flags)
+        local text = fs:GetText()
+        if text then fs:SetText(""); fs:SetText(text) end
+    end
+    for _, delay in ipairs(REDRAW_DELAYS) do C_Timer.After(delay, redraw) end
+end
+
 -- Sets font, size and outline style of a text. Returns nothing.
 function Texts.SetFont(fs, font, size, outline, retries)
     local soft = outline == "SOFT"
@@ -371,6 +399,10 @@ function Texts.SetFont(fs, font, size, outline, retries)
     local wanted = font .. "|" .. size .. "|" .. outline
     fs.fontWanted = wanted
     local taken = hasFont(fs, font)
+    if taken and fs.fontDrawn ~= wanted then
+        fs.fontDrawn = wanted
+        redrawLater(fs, font, size, flags, wanted)
+    end
     if not taken then
         retries = retries or FONT_RETRIES
         if retries > 0 then
