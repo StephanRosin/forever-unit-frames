@@ -482,7 +482,8 @@ function AuraContainers.Style(frame)
     apply(frame)
 end
 
-ns.On("PLAYER_REGEN_ENABLED", function()
+-- Buttons the client refused to restyle (auras were secret): again now.
+ns.OnAurasFree(function()
     for frame in pairs(stale) do
         if not waiting[frame] then apply(frame) end
     end

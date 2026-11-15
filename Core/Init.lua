@@ -29,6 +29,18 @@ function ns.On(event, fn)
     list[#list + 1] = fn
 end
 
+-- fn() once aura buttons can be restyled again: combat ended, or a
+-- restriction that keeps auras secret out of combat (an instance, an
+-- encounter, a PvP match) was lifted. Restyles refused meanwhile wait for
+-- this; waiting for combat's end alone left them in the old font after
+-- an instance (CurseForge, 0.55.0).
+function ns.OnAurasFree(fn)
+    ns.On("PLAYER_REGEN_ENABLED", fn)
+    ns.On("ADDON_RESTRICTION_STATE_CHANGED", function(_, _, state)
+        if state == Enum.AddOnRestrictionState.Inactive and not InCombatLockdown() then fn() end
+    end)
+end
+
 -- Internal (addon-only) events, e.g. "CONFIG_CHANGED". Never registered
 -- with the client.
 local internal = {}

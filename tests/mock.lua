@@ -2644,6 +2644,9 @@ function M.Reset()
         CustomAuraButtonDispelTypeTextureStyle = { Border = 0, BorderWithIcon = 1, Icon = 2, PreserveAsset = 3,
             CustomAsset = 4 },
         SecrecyLevel = { NeverSecret = 0, AlwaysSecret = 1, ContextuallySecret = 2 },
+        -- RestrictedActionsConstantsDocumentation.lua
+        AddOnRestrictionState = { Inactive = 0, Activating = 1, Active = 2 },
+        AddOnRestrictionType = { Combat = 0, Encounter = 1, ChallengeMode = 2, PvPMatch = 3, Map = 4, Chat = 5 },
     }
 
     -- Auras: M.units[unit].auras lists { auraInstanceID, icon, applications,

@@ -693,7 +693,7 @@ ns.On("UNIT_SPELLCAST_SUCCEEDED", function(_, unit, _, spellID)
 end)
 
 -- Buttons the client refused to restyle (auras were secret): again now.
-ns.On("PLAYER_REGEN_ENABLED", function()
+ns.OnAurasFree(function()
     forEachBlock(function(frame)
         if frame.shields.stale then restyle(frame) end
     end)

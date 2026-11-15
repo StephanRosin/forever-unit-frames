@@ -558,7 +558,7 @@ function CellAuras.Release(frame)
     auras.container:SetUnit("none")
 end
 
-ns.On("PLAYER_REGEN_ENABLED", function()
+ns.OnAurasFree(function()
     for frame in pairs(stale) do
         if not waiting[frame] then apply(frame) end
     end
