@@ -1680,6 +1680,8 @@ L.NEWS_0_60_0_FONT = "Fonts: when the game refuses a theme font after /reload, B
 L.NEWS_0_60_0_SOUND = "Low mana warning: it can play a sound (raid warning, ready check, alarm clock or whisper; none by default). No sound while WoW Forever keeps your mana secret."
 L.NEWS_0_60_1_FIXES = "Fixes: no empty texts while a theme font loads; the low mana warning sounds and tells the chat again once your mana is readable; the unit frames follow Forever Themes after a profile switch, reset or import."
 L.NEWS_0_61_0_SQUARE = "Portrait: new option Square 2D picture crops the game's round picture to a square (Options, frame, Portrait)."
+L.NEWS_0_62_0_SPACING = "Spacing & boxes (Layout tab): gaps between title row, health, power, portrait and castbar turn the frame's parts into separate boxes, with a box border of their own."
+L.NEWS_0_62_0_ROLE = "Group icons (Status tab): the role icon can sit on the portrait, with its own size, corner and offset."
 L.NEWS_OPEN_THEME = "Open the theme"
 
 -- Themes (Core/Themes.lua)

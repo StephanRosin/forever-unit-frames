@@ -1652,6 +1652,8 @@ L.NEWS_0_60_0_FONT = "Schriften: lehnt das Spiel nach /reload eine Theme-Schrift
 L.NEWS_0_60_0_SOUND = "Mana-Warnung: kann einen Ton spielen (Schlachtzugswarnung, Bereitschaftscheck, Wecker oder Flüstern; standardmässig keiner). Kein Ton, solange WoW Forever dein Mana geheim hält."
 L.NEWS_0_60_1_FIXES = "Korrekturen: keine leeren Texte, während eine Theme-Schrift lädt; die Mana-Warnung spielt ihren Ton und meldet sich im Chat wieder, sobald dein Mana lesbar ist; die Einheitenfenster folgen Forever Themes nach Profilwechsel, Zurücksetzen oder Import."
 L.NEWS_0_61_0_SQUARE = "Porträt: neue Option „2D-Bild eckig“ schneidet das runde Bild des Spiels quadratisch zu (Optionen, Fenster, Porträt)."
+L.NEWS_0_62_0_SPACING = "Abstände & Kästen (Reiter Anordnung): Abstände zwischen Titelzeile, Leben, Ressource, Porträt und Zauberleiste machen die Teile des Fensters zu getrennten Kästen, mit eigenem Kastenrahmen."
+L.NEWS_0_62_0_ROLE = "Gruppensymbole (Reiter Status): das Rollensymbol kann auf dem Porträt sitzen, mit eigener Grösse, Ecke und Versatz."
 L.NEWS_OPEN_THEME = "Theme öffnen"
 
 -- Themes (Core/Themes.lua)
