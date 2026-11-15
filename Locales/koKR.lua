@@ -619,6 +619,10 @@ L.HINT_combatAnimation = "결투: 칼이 부딪힘. 튀어나오기: 튀어나�
 L.SETTING_auraTimeX = "남은 시간 X"
 L.SETTING_auraTimeY = "남은 시간 Y"
 L.HINT_auraTimeX = "오라 아이콘의 남은 시간을 가운데에서 옮깁니다"
+L.SETTING_auraTimeScale = "남은 시간 크기 (%)"
+L.SETTING_auraTimeShort = "짧은 남은 시간"
+L.HINT_auraTimeScale = "오라 아이콘의 남은 시간 크기 (아이콘 크기의 %)"
+L.HINT_auraTimeShort = "15분 또는 12:45 대신 15m처럼 짧은 단위 하나로 표시해 아이콘 안에 들어가게 합니다"
 L.SETTING_auraBorderSize = "테두리 두께"
 
 L.SETTING_partyPetLayout = "소환수 배치"

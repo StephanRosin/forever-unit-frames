@@ -643,6 +643,10 @@ L.HINT_combatAnimation = "Duelo: espadas chocando. Destello: aparece. Pulso: lat
 L.SETTING_auraTimeX = "Tiempo restante X"
 L.SETTING_auraTimeY = "Tiempo restante Y"
 L.HINT_auraTimeX = "Mueve el tiempo de los iconos de aura desde su centro"
+L.SETTING_auraTimeScale = "Tamaño del tiempo restante (%)"
+L.SETTING_auraTimeShort = "Tiempo restante corto"
+L.HINT_auraTimeScale = "El tiempo de los iconos de aura, en porcentaje del tamaño del icono"
+L.HINT_auraTimeShort = "Una sola unidad corta, como 15m en lugar de 15 min o 12:45, para que el tiempo quepa en el icono"
 L.SETTING_auraBorderSize = "Grosor del borde"
 
 -- Party pet layout.

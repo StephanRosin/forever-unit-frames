@@ -17,6 +17,8 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <tr><td><b>Border thickness</b></td><td></td><td>1 – 6</td><td>1</td><td>all</td></tr>
 <tr><td><b>Time left X</b></td><td>Moves the time on buff and debuff icons from their centre</td><td>-32 – 32</td><td>0</td><td>all</td></tr>
 <tr><td><b>Time left Y</b></td><td></td><td>-32 – 32</td><td>0</td><td>all</td></tr>
+<tr><td><b>Time left size (%)</b></td><td>The time on buff and debuff icons, in per cent of the icon size</td><td>30 – 100</td><td>50</td><td>all</td></tr>
+<tr><td><b>Short time left</b></td><td>One short unit, such as 15m instead of 15 min or 12:45, so the time fits inside the icon</td><td>On, Off</td><td>Off</td><td>all</td></tr>
 </tbody>
 </table>
 

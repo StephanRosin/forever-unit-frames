@@ -1381,6 +1381,9 @@ function methods:SetCooldown(start, duration) self._cooldown = { start, duration
 function methods:SetCooldownFromDurationObject(duration) self._cooldown = { object = duration } end
 function methods:Clear() self._cooldown = nil end
 function methods:SetHideCountdownNumbers(v) self._hideNumbers = v end
+-- FrameAPICooldownDocumentation.lua: a NumericFormatter, nil for the
+-- client's own format.
+function methods:SetCountdownFormatter(f) self._formatter = f end
 function methods:SetDrawSwipe(v) self._drawSwipe = v end
 function methods:SetReverse(v) self._reverse = v end
 function methods:SetDrawEdge(v) self._drawEdge = v end
@@ -1933,7 +1936,17 @@ function M.Reset()
     -- StringUtilDocumentation.lua: a number (secret allowed) as a whole
     -- number, rounded down; zero gives an empty text. A secret in gives a
     -- secret text.
-    _G.C_StringUtil = { TruncateWhenZero = function(n)
+    -- SecondsFormatterAPIDocumentation.lua: a formatter records its setup
+    -- (f._set[method] = argument).
+    local function secondsFormatter()
+        local f = { _set = {} }
+        for _, name in ipairs({ "SetDefaultAbbreviation", "SetRounding", "SetCanRoundUpLastUnit", "SetMinInterval",
+            "SetMaxIntervalCurve", "SetDesiredUnitCount", "SetStripIntervalWhitespace" }) do
+            f[name] = function(self, v) self._set[name] = v end
+        end
+        return f
+    end
+    _G.C_StringUtil = { CreateSecondsFormatter = secondsFormatter, TruncateWhenZero = function(n)
         local v = M.Reveal(n)
         assert(type(v) == "number", "TruncateWhenZero: number")
         local whole = math.floor(v)
@@ -2639,6 +2652,11 @@ function M.Reset()
         StatusBarTimerDirection = { ElapsedTime = 0, RemainingTime = 1 },
         UITextureSliceMode = { Stretched = 0, Tiled = 1 },
         LuaCurveType = { Linear = 0, Step = 1, Cosine = 2, Cubic = 3 },
+        -- SecondsFormatterSharedDocumentation.lua
+        SecondsFormatterAbbreviation = { None = 0, Truncate = 1, OneLetter = 2 },
+        SecondsFormatterInterval = { Seconds = 0, Minutes = 1, Hours = 2, Days = 3 },
+        SecondsFormatterIntervalWhitespace = { Preserve = 0, Strip = 1, StripIgnoreLocale = 2 },
+        SecondsFormatterRounding = { RoundUp = 0, Truncate = 1 },
         UnitAuraSortRule = { Unsorted = 0, Default = 1, BigDefensive = 2, Expiration = 3, ExpirationOnly = 4,
             Name = 5, NameOnly = 6 },
         CustomAuraButtonDispelTypeTextureStyle = { Border = 0, BorderWithIcon = 1, Icon = 2, PreserveAsset = 3,

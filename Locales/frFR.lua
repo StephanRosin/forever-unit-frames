@@ -642,6 +642,10 @@ L.HINT_combatAnimation = "Duel : épées croisées. Éclat : surgit. Pulsation :
 L.SETTING_auraTimeX = "Temps restant X"
 L.SETTING_auraTimeY = "Temps restant Y"
 L.HINT_auraTimeX = "Déplace le temps des icônes d’aura depuis leur centre"
+L.SETTING_auraTimeScale = "Taille du temps restant (%)"
+L.SETTING_auraTimeShort = "Temps restant court"
+L.HINT_auraTimeScale = "Le temps des icônes d’aura, en pourcentage de leur taille"
+L.HINT_auraTimeShort = "Une seule unité courte, comme 15m au lieu de 15 min ou 12:45, pour que le temps tienne dans l’icône"
 L.SETTING_auraBorderSize = "Épaisseur de la bordure"
 
 -- Party pet layout.

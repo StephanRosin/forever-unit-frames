@@ -438,6 +438,11 @@ Settings.Define({ key = "auraBorderSize", code = "AW", scope = "inherit", type =
 -- The time left on every aura icon, moved from the icon's centre.
 Settings.Define({ key = "auraTimeX", code = "AT", scope = "inherit", type = "int", min = -32, max = 32, default = 0 })
 Settings.Define({ key = "auraTimeY", code = "AU", scope = "inherit", type = "int", min = -32, max = 32, default = 0 })
+-- Its size, in per cent of the icon's (the stack count stays at half).
+Settings.Define({ key = "auraTimeScale", code = "AS", scope = "inherit", type = "int", min = 30, max = 100, default = 50 })
+-- One short unit ("15m") instead of the client's own format ("15 min",
+-- "12:45"), which can be wider than the icon.
+Settings.Define({ key = "auraTimeShort", code = "AF", scope = "inherit", type = "bool", default = false })
 
 -- Auras. Buffs and debuffs are two groups with the same settings, each
 -- configured on its own. Codes: J + letter for buffs, D + letter for

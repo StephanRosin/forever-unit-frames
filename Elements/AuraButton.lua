@@ -102,6 +102,44 @@ end
 -- (Raid/CellAuras.lua).
 AuraButton.DispelCurve = getDispelCurve
 
+-- The short time (auraTimeShort): one unit, letter abbreviated, set up like
+-- the client's own aura duration formatter (Blizzard_AuraContainerShared.lua):
+-- each unit is kept up to 1.5 times its range, so 90 seconds read "90s".
+-- Whitespace is stripped in every locale, so the time fits the icon.
+local MAX_INTERVAL_STRETCH = 1.5
+local SECONDS_IN = { Minutes = 60, Hours = 3600, Days = 86400 }
+local shortFormatter
+local function getShortFormatter()
+    if shortFormatter then return shortFormatter end
+    local f = C_StringUtil.CreateSecondsFormatter()
+    local curve = C_CurveUtil.CreateCurve()
+    curve:SetType(Enum.LuaCurveType.Step)
+    curve:AddPoint(0, Enum.SecondsFormatterInterval.Seconds)
+    for _, interval in ipairs({ "Minutes", "Hours", "Days" }) do
+        -- Points promote on exact matches: one past keeps the last whole value.
+        curve:AddPoint(1 + MAX_INTERVAL_STRETCH * SECONDS_IN[interval], Enum.SecondsFormatterInterval[interval])
+    end
+    f:SetDefaultAbbreviation(Enum.SecondsFormatterAbbreviation.OneLetter)
+    f:SetRounding(Enum.SecondsFormatterRounding.Truncate)
+    f:SetCanRoundUpLastUnit(true)
+    f:SetMinInterval(Enum.SecondsFormatterInterval.Seconds)
+    f:SetMaxIntervalCurve(curve)
+    f:SetDesiredUnitCount(1)
+    f:SetStripIntervalWhitespace(Enum.SecondsFormatterIntervalWhitespace.StripIgnoreLocale)
+    shortFormatter = f
+    return f
+end
+
+-- The short time on or off. A client without formatters keeps its own
+-- format; a button never switched keeps the client's untouched.
+local function formatTime(button, short)
+    local cooldown = button.cooldown
+    if not cooldown.SetCountdownFormatter or not C_StringUtil.CreateSecondsFormatter then return end
+    if short == (button.shortTime or false) then return end
+    cooldown:SetCountdownFormatter(short and getShortFormatter() or nil)
+    button.shortTime = short
+end
+
 -- Size, icon inset, countdown numbers and the buff border. Returns the
 -- count's font, size and outline setting.
 local function shape(button, scope, size, showTime)
@@ -117,16 +155,18 @@ local function shape(button, scope, size, showTime)
     local font = ns.Media.Font(Config.Get(scope, "fontFace"))
     local outline = Config.Get(scope, "fontOutline")
     local fontSize = math.max(6, math.floor(size * 0.5 + 0.5))
+    local timeSize = math.max(6, math.floor(size * Config.Get(scope, "auraTimeScale") / 100 + 0.5))
     button.count:ClearAllPoints()
     button.count:SetPoint("BOTTOMRIGHT", button, "BOTTOMRIGHT", 0, 0)
     button.count:SetJustifyH("RIGHT")
     local numbers = button.cooldown:GetCountdownFontString()
     if numbers then
-        numbers:SetFont(font, fontSize, ns.Texts.CountdownFlags(outline))
+        numbers:SetFont(font, timeSize, ns.Texts.CountdownFlags(outline))
         numbers:ClearAllPoints()
         numbers:SetPoint("CENTER", button, "CENTER", Config.Get(scope, "auraTimeX"), Config.Get(scope, "auraTimeY"))
     end
     button.cooldown:SetHideCountdownNumbers(not showTime)
+    formatTime(button, Config.Get(scope, "auraTimeShort") == true)
     button.plainBorder = Config.Get(scope, "borderColor")
     -- A buff whose border shows its caster (button.casterBorder, set by the
     -- aura groups) keeps that colour.

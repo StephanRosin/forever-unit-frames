@@ -47,7 +47,8 @@ Schema.GENERAL = {
     -- The aura icons' border and the spells hidden on every frame and raid
     -- cell.
     { id = "auras", sections = {
-        { id = "auraIcons", keys = { "auraBorder", "auraBorderSize", "auraTimeX", "auraTimeY" } },
+        { id = "auraIcons", keys = { "auraBorder", "auraBorderSize", "auraTimeX", "auraTimeY", "auraTimeScale",
+            "auraTimeShort" } },
         { id = "auraBlock", keys = { "auraBlockAccount" } },
     } },
     -- The bars as on a frame's Bars tab: health colours, textures, the
@@ -141,7 +142,8 @@ Schema.FRAME = {
     } },
     -- Buffs and debuffs: what shows first, then a block for your own.
     { id = "auras", sections = {
-        { id = "auraIcons", keys = { "auraBorder", "auraBorderSize", "auraTimeX", "auraTimeY" } },
+        { id = "auraIcons", keys = { "auraBorder", "auraBorderSize", "auraTimeX", "auraTimeY", "auraTimeScale",
+            "auraTimeShort" } },
         { id = "buffs", keys = { "buffsEnabled", "hideBlizzardAuras", "weaponEnchants", "buffsOnlyMine", "buffsHideTracking", "buffsHidePermanent", "buffsHideLonger", "buffsShowTime", "buffsAnchor", "buffsFramePoint",
             "buffsPoint", "buffsX", "buffsY", "buffsGrowth", "buffsRowGrowth", "buffsSize", "buffsSpacing", "buffsRowGap",
             "buffsPerRow", "buffsMax" },

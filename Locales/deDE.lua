@@ -642,6 +642,10 @@ L.HINT_combatAnimation = "Duell: kämpfende Schwerter. Aufschlag: springt auf. P
 L.SETTING_auraTimeX = "Restzeit X"
 L.SETTING_auraTimeY = "Restzeit Y"
 L.HINT_auraTimeX = "Verschiebt die Zeit auf Buff- und Debuff-Symbolen aus der Mitte"
+L.SETTING_auraTimeScale = "Restzeit-Grösse (%)"
+L.SETTING_auraTimeShort = "Kurze Restzeit"
+L.HINT_auraTimeScale = "Die Zeit auf Buff- und Debuff-Symbolen, in Prozent der Symbolgrösse"
+L.HINT_auraTimeShort = "Eine kurze Einheit, etwa 15m statt 15 Min. oder 12:45, damit die Zeit ins Symbol passt"
 L.SETTING_auraBorderSize = "Randstärke"
 
 -- Party pet layout.

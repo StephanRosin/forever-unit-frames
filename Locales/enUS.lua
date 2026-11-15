@@ -666,6 +666,10 @@ L.HINT_combatAnimation = "Duel: clashing swords. Burst: springs in. Pulse: breat
 L.SETTING_auraTimeX = "Time left X"
 L.SETTING_auraTimeY = "Time left Y"
 L.HINT_auraTimeX = "Moves the time on buff and debuff icons from their centre"
+L.SETTING_auraTimeScale = "Time left size (%)"
+L.SETTING_auraTimeShort = "Short time left"
+L.HINT_auraTimeScale = "The time on buff and debuff icons, in per cent of the icon size"
+L.HINT_auraTimeShort = "One short unit, such as 15m instead of 15 min or 12:45, so the time fits inside the icon"
 L.SETTING_auraBorderSize = "Border thickness"
 
 -- Party pet layout.
