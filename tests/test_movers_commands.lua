@@ -119,5 +119,8 @@ H.check("width unchanged after nan", ns.Config.Get("player", "width"), 220)
 run("set general fontFace garbage")
 H.checkTrue("bad media name rejected", M.chat[#M.chat]:find("Invalid"))
 
+run("set player fontFace Titillium Web")
+H.check("an older font name names its file", ns.Config.Get("player", "fontFace"), "Titillium Web SemiBold")
+
 run("reset nobody")
 H.checkTrue("unknown frame reported", M.chat[#M.chat]:find("Unknown frame"))

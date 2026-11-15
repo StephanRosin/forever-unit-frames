@@ -17,6 +17,8 @@ local function parseValue(def, raw)
     end
     if def.type == "enum" then return raw:upper() end
     if def.type == "media" then
+        -- Old font names ("Titillium Web") still name their file.
+        if def.mediaKind == "font" then raw = LibForeverThemes.FontName(raw) end
         for _, name in ipairs(ns.Media.List(def.mediaKind)) do
             if name == raw then return raw end
         end
