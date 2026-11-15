@@ -1589,6 +1589,10 @@ L.NEWS_0_55_0_FAMILY = "Es wirkt auch allein, sieht aber am besten aus, wenn dei
 L.NEWS_0_55_0_BETA = "Das ist eine Beta: Wenn etwas komisch aussieht, hilft ein Kommentar mit Screenshot sehr."
 L.NEWS_0_55_0_TOTEMS = "Totems: Leere Plätze hinterlassen im Kampf keine schwarzen Kästchen mehr."
 L.NEWS_0_55_0_RAID_TOOLS = "Schlachtzugswerkzeuge: Der Griff klappt die Leiste auch im Kampf ein und aus."
+L.NEWS_0_56_0_AURA_TIME = "Aura-Symbole: \"Restzeit-Grösse (%)\" legt fest, wie gross die Zeit ist, und \"Kurze Restzeit\" zeigt eine kurze Einheit (15m statt 15 Min. oder 12:45), damit die Zeit im Symbol bleibt. Allgemein > Auren oder pro Rahmen."
+L.NEWS_0_56_0_BAR_WIDTHS = "Leistengrössen: Gesundheits- und Ressourcenleiste können je schmaler als der Rahmen sein, links, mittig oder rechts. Im Reiter Anordnung jedes Rahmens."
+L.NEWS_0_56_0_MAIN_TANKS = "Schlachtzugsrahmen, Sonderfelder: \"Auch Spieler mit Tank-Rolle\" zeigt bei den Haupttanks alle mit der Gruppenrolle Tank, auch in einer Gruppe."
+L.NEWS_0_56_0_AURA_FONT = "In einem Dungeon geänderte Auren behalten eine Schrift."
 L.NEWS_OPEN_THEME = "Theme öffnen"
 
 -- Themes (Core/Themes.lua)

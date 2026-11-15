@@ -1617,6 +1617,10 @@ L.NEWS_0_55_0_FAMILY = "It works on its own, but looks best when your other Fore
 L.NEWS_0_55_0_BETA = "This is a beta: if something looks off, a comment with a screenshot helps a lot."
 L.NEWS_0_55_0_TOTEMS = "Totems: empty slots in combat no longer leave black boxes."
 L.NEWS_0_55_0_RAID_TOOLS = "Raid tools: the handle folds and unfolds the bar in combat too."
+L.NEWS_0_56_0_AURA_TIME = "Aura icons: \"Time left size (%)\" sets how big the time is, and \"Short time left\" shows one short unit (15m instead of 15 min. or 12:45), so the time stays inside the icon. General > Auras, or per frame."
+L.NEWS_0_56_0_BAR_WIDTHS = "Bar sizes: the health and power bars can each be narrower than the frame, placed left, centre or right. On each frame's Layout tab."
+L.NEWS_0_56_0_MAIN_TANKS = "Raid frames, Special panels: \"Also players with the Tank role\" adds everyone whose group role is Tank to the main tanks, in a party too."
+L.NEWS_0_56_0_AURA_FONT = "Auras changed inside a dungeon keep one font."
 L.NEWS_OPEN_THEME = "Open the theme"
 
 -- Themes (Core/Themes.lua)

@@ -194,6 +194,9 @@ News.ENTRIES = {
             "NEWS_0_55_0_TOTEMS", "NEWS_0_55_0_RAID_TOOLS" },
         action = { text = "NEWS_OPEN_THEME", run = function() ns.Options.Open("general", "frames") end },
     },
+    ["0.56.0"] = {
+        lines = { "NEWS_0_56_0_AURA_TIME", "NEWS_0_56_0_BAR_WIDTHS", "NEWS_0_56_0_MAIN_TANKS", "NEWS_0_56_0_AURA_FONT" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

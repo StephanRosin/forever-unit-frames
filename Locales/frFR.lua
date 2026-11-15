@@ -1589,6 +1589,10 @@ L.NEWS_0_55_0_FAMILY = "Il fonctionne seul, mais rend mieux quand vos autres add
 L.NEWS_0_55_0_BETA = "C'est une bêta : si quelque chose semble bizarre, un commentaire avec une capture d'écran aide beaucoup."
 L.NEWS_0_55_0_TOTEMS = "Totems : les emplacements vides ne laissent plus de carrés noirs en combat."
 L.NEWS_0_55_0_RAID_TOOLS = "Outils de raid : la poignée replie et déplie la barre en combat aussi."
+L.NEWS_0_56_0_AURA_TIME = "Icônes d’aura : \"Taille du temps restant (%)\" règle la taille du temps et \"Temps restant court\" affiche une seule unité courte (15m au lieu de 15 min ou 12:45) pour qu’il tienne dans l’icône. Général > Auras, ou par cadre."
+L.NEWS_0_56_0_BAR_WIDTHS = "Taille des barres : les barres de santé et de ressource peuvent être plus étroites que le cadre, à gauche, au centre ou à droite. Dans l’onglet Disposition de chaque cadre."
+L.NEWS_0_56_0_MAIN_TANKS = "Cadres de raid, panneaux spéciaux : \"Aussi les joueurs au rôle Tank\" ajoute aux tanks principaux tous ceux dont le rôle de groupe est Tank, en groupe aussi."
+L.NEWS_0_56_0_AURA_FONT = "Les auras changées dans un donjon gardent une seule police."
 L.NEWS_OPEN_THEME = "Ouvrir le thème"
 
 -- Themes (Core/Themes.lua)

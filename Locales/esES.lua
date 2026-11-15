@@ -1590,6 +1590,10 @@ L.NEWS_0_55_0_FAMILY = "Funciona por sí solo, pero luce mejor cuando tus otros 
 L.NEWS_0_55_0_BETA = "Es una beta: si algo se ve raro, un comentario con una captura de pantalla ayuda mucho."
 L.NEWS_0_55_0_TOTEMS = "Tótems: las ranuras vacías ya no dejan cuadros negros en combate."
 L.NEWS_0_55_0_RAID_TOOLS = "Herramientas de banda: el asa pliega y despliega la barra también en combate."
+L.NEWS_0_56_0_AURA_TIME = "Iconos de aura: \"Tamaño del tiempo restante (%)\" fija el tamaño del tiempo y \"Tiempo restante corto\" muestra una sola unidad corta (15m en lugar de 15 min o 12:45) para que quepa en el icono. General > Auras, o por marco."
+L.NEWS_0_56_0_BAR_WIDTHS = "Tamaño de las barras: las barras de salud y de recurso pueden ser más estrechas que el marco, a la izquierda, centradas o a la derecha. En la pestaña Diseño de cada marco."
+L.NEWS_0_56_0_MAIN_TANKS = "Marcos de banda, paneles especiales: \"También con rol de tanque\" añade a los tanques principales a todos con el rol de grupo Tanque, también en grupo."
+L.NEWS_0_56_0_AURA_FONT = "Las auras cambiadas dentro de una mazmorra conservan una sola fuente."
 L.NEWS_OPEN_THEME = "Abrir el tema"
 
 -- Themes (Core/Themes.lua)
