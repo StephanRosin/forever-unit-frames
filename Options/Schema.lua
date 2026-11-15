@@ -172,6 +172,8 @@ Schema.FRAME = {
             "dispelsSpacing", "dispelsRowGap", "dispelsPerRow", "dispelsMax" },
             placement = { "dispelsAnchor", "dispelsFramePoint", "dispelsPoint", "dispelsX", "dispelsY", "dispelsGrowth",
                 "dispelsRowGrowth" } },
+        -- Crowd control (and big defensives) over the portrait.
+        { id = "portraitAura", keys = { "portraitAura", "portraitAuraDefensive" } },
         -- The spells this frame hides (with the account's list).
         { id = "auraBlock", keys = { "auraBlock" } },
         { id = "totems", keys = { "totemsEnabled", "totemsSize", "totemsSpacing", "totemsDirection", "totemsFramePoint", "totemsPoint",

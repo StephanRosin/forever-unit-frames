@@ -125,7 +125,9 @@ local RULES = {
     { on("fsrSpark"), { "fsrSparkDirection", "fsrSparkWidth", "fsrSparkColor" } },
     { on("fsrText"), { "fsrTextPoint", "fsrTextTenths" } },
     { on("fsrDim"), { "fsrDimAlpha" } },
-    { isNot("portraitMode", "OFF"), { "portraitStyle", "portraitHeight", "portraitZoom", "portraitOffsetY" } },
+    { isNot("portraitMode", "OFF"), { "portraitStyle", "portraitHeight", "portraitZoom", "portraitOffsetY",
+        "portraitAura", "portraitAuraDefensive" } },
+    { on("portraitAura"), { "portraitAuraDefensive" } },
     { is("portraitMode", "TOP"), { "portraitHeight" } },
     { is("portraitStyle", "3D"), { "portraitZoom", "portraitOffsetY" } },
     -- Only matters while ours is off (Core/Blizzard.lua).

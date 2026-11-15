@@ -6,7 +6,7 @@ Buffs and debuffs, each with a block for your own, the party's dispellable debuf
 
 The **Auras** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
 
-**On this page:** [Aura icons](#aura-icons) · [Buffs](#buffs) · [Your own buffs](#your-own-buffs) · [Debuffs](#debuffs) · [Your own debuffs](#your-own-debuffs) · [Dispellable debuffs](#dispellable-debuffs) · [Hidden auras](#hidden-auras) · [Totems](#totems)
+**On this page:** [Aura icons](#aura-icons) · [Buffs](#buffs) · [Your own buffs](#your-own-buffs) · [Debuffs](#debuffs) · [Your own debuffs](#your-own-debuffs) · [Dispellable debuffs](#dispellable-debuffs) · [Portrait aura](#portrait-aura) · [Hidden auras](#hidden-auras) · [Totems](#totems)
 
 ## Aura icons
 
@@ -135,6 +135,16 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <tr><td><b>Row gap</b></td><td>Extra space between rows, e.g. for the time left below the icons</td><td>0 – 30</td><td>0</td><td>Party</td></tr>
 <tr><td><b>Icons per row</b></td><td>Auto: as many as fit the frame</td><td>0 – 40 (0: Auto)</td><td>Auto</td><td>Party</td></tr>
 <tr><td><b>Maximum icons</b></td><td></td><td>1 – 40</td><td>3</td><td>Party</td></tr>
+</tbody>
+</table>
+
+## Portrait aura
+
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Crowd control on the portrait</b></td><td>Stuns, fears, polymorphs and the like, big over the portrait (needs a portrait)</td><td>On, Off</td><td>Off</td><td>Player, Target, Focus, Party</td></tr>
+<tr><td><b>Big defensives too</b></td><td>Shield Wall, Divine Shield and the like; crowd control goes on top</td><td>On, Off</td><td>Off</td><td>Player, Target, Focus, Party</td></tr>
 </tbody>
 </table>
 

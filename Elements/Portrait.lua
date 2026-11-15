@@ -32,6 +32,8 @@ function Portrait.Style(frame)
     local threeD, class = style == "3D", style == "CLASS"
     local on = mode ~= "OFF"
     local bg, pic = frame.portraitBg, frame.portrait2D
+    -- The side of the square the portrait aura covers; nil: no portrait.
+    frame.portraitSide = nil
     bg:ClearAllPoints()
     pic:ClearAllPoints()
     pic:SetAllPoints(bg)
@@ -43,6 +45,7 @@ function Portrait.Style(frame)
         bg:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, top)
         local strip = frame.portraitStrip or 0
         bg:SetHeight(strip)
+        frame.portraitSide = strip
         -- The square picture's middle band, as wide as the strip.
         if class then
             -- Whole, as a square in the strip's middle.
@@ -60,6 +63,7 @@ function Portrait.Style(frame)
         local size = frame.layoutHeight or ns.Pixel.Snap(Config.Get(scope, "height"))
         bg:SetPoint(point, frame, point, 0, 0)
         bg:SetSize(size, size)
+        frame.portraitSide = size
     end
     if on then
         local c = Config.Get(scope, "backgroundColor")
@@ -193,3 +197,202 @@ function Portrait.Update(frame, event)
 end
 
 ns.RegisterElement(Portrait)
+
+-- Portrait aura --------------------------------------------------------------------
+-- The unit's crowd control big on its portrait (a CurseForge wish, as
+-- BigDebuffs does it), optionally its big defensives. Every aura is secret
+-- to addons in Forever, so the client picks the aura: one aura container
+-- (as Elements/AuraContainers.lua) with an aura slot per kind, one aura
+-- each, placed by us like the raid cells' centre icon (Raid/CellAuras.lua).
+-- CROWD_CONTROL and BIG_DEFENSIVE are filters the client evaluates itself
+-- (AuraUtil.AuraFilters); Blizzard uses them on nameplates and raid frames
+-- only. Both slots cover the portrait, crowd control above: it wins while
+-- both show. Made the first time it is switched on and configured out of
+-- combat only, like the dispel ring's container (Elements/Dispel.lua).
+local PortraitAura = { name = "PortraitAura", unitEvents = { "UNIT_AURA" } }
+ns.PortraitAura = PortraitAura
+
+PortraitAura.CC_FILTER = "HARMFUL|CROWD_CONTROL"
+-- Big defensives cast on the unit by itself (shield wall, divine shield);
+-- EXTERNAL_DEFENSIVE (pain suppression) has Blizzard's own frame.
+PortraitAura.DEFENSIVE_FILTER = "HELPFUL|BIG_DEFENSIVE"
+-- Above the aura icons (Auras.LEVELS): this icon is the one to see.
+PortraitAura.LEVELS = 13
+PortraitAura.SLOTS = {
+    { key = "defensive", filter = PortraitAura.DEFENSIVE_FILTER, isDebuff = false, level = 1 },
+    { key = "cc", filter = PortraitAura.CC_FILTER, isDebuff = true, level = 2 },
+}
+-- Test mode: a polymorph on the portrait.
+PortraitAura.SAMPLE = { icon = "Interface\\Icons\\Spell_Magic_PolymorphChicken", duration = 30 }
+
+local auraFrames = setmetatable({}, { __mode = "k" })
+local auraWaiting = setmetatable({}, { __mode = "k" })
+
+function PortraitAura.Applies(scope)
+    return ns.Settings.AppliesTo(ns.Settings.Get("portraitAura"), scope)
+end
+
+-- Whether slot key shows on frame: switched on, and a portrait to cover.
+function PortraitAura.Wanted(frame, key)
+    local scope = frame.key
+    if not Config.Get(scope, "portraitAura") or Config.Get(scope, "portraitMode") == "OFF" then return false end
+    return key == "cc" or Config.Get(scope, "portraitAuraDefensive") == true
+end
+
+local function auraTesting(frame) return ns.TestMode ~= nil and ns.TestMode.Covers(frame) end
+
+-- An icon as big as the portrait, on its middle, with the time left.
+-- Refused on a slot's button while auras are secret.
+local function placeIcon(frame, button, level)
+    button:SetFrameLevel(frame:GetFrameLevel() + PortraitAura.LEVELS + level)
+    button:ClearAllPoints()
+    button:SetPoint("CENTER", frame.portraitBg, "CENTER", 0, 0)
+    ns.AuraButton.Style(button, frame.key, ns.Pixel.Snap(frame.portraitSide or 0, nil, 1), true)
+end
+
+local function initIcon(frame, slot, button)
+    ns.AuraButton.Decorate(button, slot.isDebuff)
+    placeIcon(frame, button, slot.level)
+    ns.AuraContainers.Wire(button, slot.isDebuff)
+end
+
+-- The slots onto the container; a slot is made the first time it is
+-- wanted. A refused restyle is tried again when auras are free.
+local function applyAura(frame)
+    local p = frame.portraitAura
+    local container = p.container
+    p.stale = false
+    container:SetFrameLevel(frame:GetFrameLevel() + PortraitAura.LEVELS)
+    for _, slot in ipairs(PortraitAura.SLOTS) do
+        local on = PortraitAura.Wanted(frame, slot.key)
+        if on and not p.buttons[slot.key] then
+            p.buttons[slot.key] = container:AddAuraSlot(slot.key, slot.filter,
+                { initializeFrame = function(button) initIcon(frame, slot, button) end })
+        end
+        if p.buttons[slot.key] then
+            container:SetAuraSlotEnabled(slot.key, on)
+            if not pcall(placeIcon, frame, p.buttons[slot.key], slot.level) then p.stale = true end
+        end
+    end
+    container:SetShown(not auraTesting(frame))
+end
+
+-- The container, out of combat. A refusal (reported once) leaves the
+-- frame without a portrait aura for the session.
+local function buildAura(frame)
+    local p = frame.portraitAura
+    local ok, err = pcall(function()
+        local container = CreateFrame("AuraContainer", nil, frame, ns.AuraContainers.TEMPLATE)
+        p.container = container
+        container:SetEditModePreviewEnabled(false)
+        container:SetPoint("CENTER", frame.portraitBg, "CENTER", 0, 0)
+        applyAura(frame)
+        container:SetUnit(frame.unit or "none")
+    end)
+    if not ok then
+        if p.container then p.container:Hide() end
+        p.container, p.failed = nil, true
+        geterrorhandler()(err)
+        return false
+    end
+    auraFrames[frame] = true
+    return true
+end
+
+local function later(frame)
+    auraWaiting[frame] = true
+    ns.AfterCombat("portraitAura", PortraitAura.Flush)
+end
+
+-- Whether the frame has its container now; made when first wanted,
+-- after combat when that is in combat.
+local function ensureAura(frame)
+    local p = frame.portraitAura
+    if p.container then return true end
+    if frame.pretend or p.failed or not PortraitAura.Wanted(frame, "cc") then return false end
+    if not ns.AuraContainers.Supported() then return false end
+    if InCombatLockdown() then
+        later(frame)
+        return false
+    end
+    return buildAura(frame)
+end
+
+function PortraitAura.Flush()
+    local frames = {}
+    for frame in pairs(auraWaiting) do frames[#frames + 1] = frame end
+    for _, frame in ipairs(frames) do
+        auraWaiting[frame] = nil
+        if frame.portraitAura.container then applyAura(frame) else ensureAura(frame) end
+    end
+end
+
+-- Test mode's sample: a plain icon where the live one would be.
+local function showSample(frame)
+    local p = frame.portraitAura
+    local on = p.sampleStart ~= nil and PortraitAura.Wanted(frame, "cc")
+    if on and not p.sample then p.sample = ns.AuraButton.Create(frame, true) end
+    if not p.sample then return end
+    if not on then return ns.AuraButton.Clear(p.sample) end
+    placeIcon(frame, p.sample, PortraitAura.SLOTS[2].level)
+    ns.AuraButton.ShowSample(p.sample, PortraitAura.SAMPLE, p.sampleStart)
+end
+
+function PortraitAura.Build(frame)
+    if PortraitAura.Applies(frame.key) then frame.portraitAura = { buttons = {} } end
+end
+
+function PortraitAura.Style(frame)
+    local p = frame.portraitAura
+    if not p then return end
+    showSample(frame)
+    if frame.pretend then return end
+    if InCombatLockdown() then return later(frame) end
+    if p.container then applyAura(frame) else ensureAura(frame) end
+end
+
+-- A new unit is read by SetUnit; the same token (a new target) again.
+function PortraitAura.Update(frame, event)
+    local p = frame.portraitAura
+    if not p or frame.pretend or not ensureAura(frame) then return end
+    local container, unit = p.container, frame.unit or "none"
+    if container:GetUnit() ~= unit then
+        container:SetUnit(unit)
+    elseif event ~= "UNIT_AURA" then
+        container:UpdateAllAuras()
+    end
+end
+
+-- A party button made ahead of time (Units/Units.lua).
+function PortraitAura.Prepare(frame)
+    if frame.portraitAura then ensureAura(frame) end
+end
+
+function PortraitAura.Preview(frame, on)
+    local p = frame.portraitAura
+    if not p then return end
+    p.sampleStart = on and (p.sampleStart or GetTime()) or nil
+    showSample(frame)
+end
+
+-- Party slots reshuffled: the same token may be someone else now.
+ns.On("GROUP_ROSTER_UPDATE", function(event)
+    for frame in pairs(auraFrames) do
+        if frame.key == ns.Party.KEY and frame.unit and UnitExists(frame.unit) then PortraitAura.Update(frame, event) end
+    end
+end)
+
+-- Test mode hides the live icons (they show real auras only).
+ns.Listen("TEST_MODE", function()
+    for frame in pairs(auraFrames) do
+        if InCombatLockdown() then later(frame) else applyAura(frame) end
+    end
+end)
+
+ns.OnAurasFree(function()
+    for frame in pairs(auraFrames) do
+        if frame.portraitAura.stale and not auraWaiting[frame] then applyAura(frame) end
+    end
+end)
+
+ns.RegisterElement(PortraitAura)

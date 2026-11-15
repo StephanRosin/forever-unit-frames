@@ -211,6 +211,13 @@ Settings.Define({ key = "portraitHeight", code = "QH", scope = "frame", type = "
 -- and a vertical shift of the view in pixels (to bring the eyes in).
 Settings.Define({ key = "portraitZoom", code = "QZ", scope = "frame", type = "int", min = 100, max = 400, default = 100 })
 Settings.Define({ key = "portraitOffsetY", code = "QV", scope = "frame", type = "int", min = -100, max = 100, default = 0 })
+-- Portrait aura (Elements/Portrait.lua): the unit's crowd control big on
+-- its portrait, its big defensives too when asked; a CurseForge wish.
+local PORTRAIT_AURA = { player = true, target = true, focus = true, party = true }
+Settings.Define({ key = "portraitAura", code = "QC", scope = "frame", only = PORTRAIT_AURA, type = "bool",
+    default = false })
+Settings.Define({ key = "portraitAuraDefensive", code = "QK", scope = "frame", only = PORTRAIT_AURA, type = "bool",
+    default = false })
 
 -- Elite / rare marker: frames that show units other than you, your pet and
 -- your party (players are never elite).
