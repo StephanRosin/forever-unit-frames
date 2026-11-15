@@ -1619,6 +1619,10 @@ L.NEWS_0_58_0_THEME_FONTS = "Temas: dos opciones nuevas en General > Marcos y ad
 L.NEWS_0_58_0_ROLE_ICON = "Marcos de grupo: el icono de rol mantiene su sitio cuando el miembro también lleva la corona de líder."
 L.NEWS_0_58_1_MANA_CHAT = "Aviso de poco maná: un clic vuelve a avisar al grupo (WoW Forever ahora mantiene tu maná en secreto, por eso no decía nada). La línea dice \"[ALERTA] Me queda poco maná (< 20%)\" con tu propio umbral."
 L.NEWS_0_59_0_PORTRAIT_AURA = "Aura del retrato: el control de masas (aturdimientos, miedos, polimorfias...) aparece en grande sobre el retrato del jugador, objetivo, foco y grupo, con el tiempo restante; si quieres, también las defensivas grandes. Desactivado por defecto: pestaña Auras, «Aura del retrato»."
+L.NEWS_0_60_0_HUB = "Forever Themes: un addon nuevo que aplica un tema y un color a todos los addons Forever a la vez y viste a juego las ventanas de Blizzard. Los marcos de unidad lo siguen; el botón de abajo muestra su enlace de descarga."
+L.NEWS_0_60_0_DEFAULTS = "Temas: un tema que eliges por primera vez empieza con un aspecto ajustado (fondos de Madera, Tecnología y Escarcha; en Pitwall el objetivo muestra el aura del retrato). Los temas que ya usas no cambian."
+L.NEWS_0_60_0_FONT = "Fuentes: si el juego rechaza una fuente de tema tras /reload, la fuente de Blizzard la sustituye hasta que cargue, en lugar de textos vacíos y \"Font could not be loaded\"."
+L.NEWS_0_60_0_SOUND = "Aviso de maná bajo: puede reproducir un sonido (aviso de banda, comprobación de listos, despertador o susurro; ninguno por defecto). Sin sonido mientras WoW Forever mantenga tu maná en secreto."
 L.NEWS_OPEN_THEME = "Abrir el tema"
 
 -- Themes (Core/Themes.lua)
@@ -1650,6 +1654,9 @@ L.HINT_themePlatynatorFont = "Tus propios diseños de placas de nombre de Platyn
 L.HUB_follows = "Sigue a Forever Themes"
 L.HUB_fonts = "Se ajusta en Forever Themes"
 L.HUB_OPEN = "Abrir Forever Themes"
+L.HUB_missing = "Ajusta todos los addons Forever a la vez: Forever Themes"
+L.HUB_LINK = "Enlace de descarga"
+L.POPUP_HUB_LINK = "Copia el enlace (Ctrl+C) y ábrelo en tu navegador:"
 L.PLATYNATOR_RELOAD = "Platynator: /reload para aplicar la nueva fuente."
 L.THEME_APPLIED_ALL = "Tema aplicado a %d addons Forever más."
 L.THEME_COPY_FROM = "Tomar posiciones de"

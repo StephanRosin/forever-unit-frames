@@ -1646,6 +1646,10 @@ L.NEWS_0_58_0_THEME_FONTS = "Themes: two new options under General > Frames & ad
 L.NEWS_0_58_0_ROLE_ICON = "Party frames: the role icon keeps its place when the member also has the leader crown."
 L.NEWS_0_58_1_MANA_CHAT = "Low mana warning: a click tells your group again (WoW Forever now keeps your mana secret, so it stayed silent). The line reads \"[ALERT] I am low on mana (< 20%)\" with your own threshold."
 L.NEWS_0_59_0_PORTRAIT_AURA = "Portrait aura: crowd control (stuns, fears, polymorphs ...) shows big on the portrait of the player, target, focus and party frames, with the time left; big defensives optionally too. Off by default: Auras tab, \"Portrait aura\"."
+L.NEWS_0_60_0_HUB = "Forever Themes: a new addon that sets one theme and colour for all Forever addons at once and skins Blizzard's windows to match. The unit frames follow it; the button below shows its download link."
+L.NEWS_0_60_0_DEFAULTS = "Themes: a theme you pick for the first time starts with a tuned look (backgrounds of Wood, Tech and Frost; Pitwall's target shows the portrait aura). Themes you already use don't change."
+L.NEWS_0_60_0_FONT = "Fonts: when the game refuses a theme font after /reload, Blizzard's font stands in until the theme font loads, instead of empty texts and \"Font could not be loaded\"."
+L.NEWS_0_60_0_SOUND = "Low mana warning: it can play a sound (raid warning, ready check, alarm clock or whisper; none by default). No sound while WoW Forever keeps your mana secret."
 L.NEWS_OPEN_THEME = "Open the theme"
 
 -- Themes (Core/Themes.lua)
@@ -1677,6 +1681,9 @@ L.HINT_themePlatynatorFont = "Your own Platynator nameplate designs; shows after
 L.HUB_follows = "Follows Forever Themes"
 L.HUB_fonts = "Set in Forever Themes"
 L.HUB_OPEN = "Open Forever Themes"
+L.HUB_missing = "Theme all Forever addons at once: Forever Themes"
+L.HUB_LINK = "Download link"
+L.POPUP_HUB_LINK = "Copy the link (Ctrl+C) and open it in your browser:"
 L.PLATYNATOR_RELOAD = "Platynator: /reload to apply the new font."
 L.THEME_APPLIED_ALL = "Theme applied to %d other Forever addons."
 L.THEME_COPY_FROM = "Take positions from"

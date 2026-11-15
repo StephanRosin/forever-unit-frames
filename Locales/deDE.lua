@@ -1618,6 +1618,10 @@ L.NEWS_0_58_0_THEME_FONTS = "Themes: zwei neue Optionen unter Allgemein > Rahmen
 L.NEWS_0_58_0_ROLE_ICON = "Gruppenrahmen: Das Rollensymbol bleibt an seinem Platz, wenn das Mitglied auch die Anführerkrone trägt."
 L.NEWS_0_58_1_MANA_CHAT = "Mana-Warnung: Ein Klick meldet es wieder der Gruppe (WoW Forever hält dein Mana inzwischen geheim, darum blieb sie stumm). Die Zeile lautet \"[ALARM] Ich habe wenig Mana (< 20%)\" mit deiner eigenen Schwelle."
 L.NEWS_0_59_0_PORTRAIT_AURA = "Porträt-Aura: Kontrollverlust (Betäubung, Furcht, Verwandlung ...) erscheint gross auf dem Porträt von Spieler, Ziel, Fokus und Gruppe, mit Restzeit; auf Wunsch auch grosse Schutzzauber. Standardmässig aus: Reiter Auren, „Porträt-Aura“."
+L.NEWS_0_60_0_HUB = "Forever Themes: ein neues Addon stellt ein Theme und eine Farbe für alle Forever-Addons auf einmal ein und kleidet Blizzards Fenster passend ein. Die Einheitenfenster folgen ihm; der Knopf unten zeigt den Download-Link."
+L.NEWS_0_60_0_DEFAULTS = "Themes: ein Theme, das du zum ersten Mal wählst, beginnt mit einem abgestimmten Aussehen (Hintergründe von Holz, Technik und Frost; bei Pitwall zeigt das Ziel die Porträt-Aura). Themes, die du schon nutzt, ändern sich nicht."
+L.NEWS_0_60_0_FONT = "Schriften: lehnt das Spiel nach /reload eine Theme-Schrift ab, springt Blizzards Schrift ein, bis sie lädt, statt leerer Texte und „Font could not be loaded“."
+L.NEWS_0_60_0_SOUND = "Mana-Warnung: kann einen Ton spielen (Schlachtzugswarnung, Bereitschaftscheck, Wecker oder Flüstern; standardmässig keiner). Kein Ton, solange WoW Forever dein Mana geheim hält."
 L.NEWS_OPEN_THEME = "Theme öffnen"
 
 -- Themes (Core/Themes.lua)
@@ -1649,6 +1653,9 @@ L.HINT_themePlatynatorFont = "Deine eigenen Platynator-Namensplaketten; wirkt na
 L.HUB_follows = "Folgt Forever Themes"
 L.HUB_fonts = "In Forever Themes eingestellt"
 L.HUB_OPEN = "Forever Themes öffnen"
+L.HUB_missing = "Alle Forever-Addons auf einmal einstellen: Forever Themes"
+L.HUB_LINK = "Download-Link"
+L.POPUP_HUB_LINK = "Link kopieren (Strg+C) und im Browser öffnen:"
 L.PLATYNATOR_RELOAD = "Platynator: /reload, um die neue Schrift zu übernehmen."
 L.THEME_APPLIED_ALL = "Theme auf %d weitere Forever-Addons übertragen."
 L.THEME_COPY_FROM = "Positionen übernehmen von"

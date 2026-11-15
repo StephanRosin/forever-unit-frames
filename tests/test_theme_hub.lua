@@ -46,12 +46,22 @@ local function look(label, follow, hub)
     H.check(label .. ": follow line", O.hubBlocks.follows:IsShown(), follow)
     H.check(label .. ": apply to all", O.actionButtons.themeApplyAll:GetParent():IsShown(), not follow)
     H.check(label .. ": fonts line", O.hubBlocks.fonts:IsShown(), hub)
+    H.check(label .. ": download line", O.hubBlocks.missing:IsShown(), not hub)
     H.check(label .. ": Blizzard switch", rowFor("themeBlizzardFonts").enabledState, not hub)
     H.check(label .. ": Platynator switch", rowFor("themePlatynatorFont").enabledState, not hub)
     O.Close()
 end
 
 look("no hub", false, false)
+H.check("download text", O.hubBlocks.missing.text:GetText(), L.HUB_missing)
+H.check("download button", O.hubBlocks.missing.button.text:GetText(), L.HUB_LINK)
+O.hubBlocks.missing.button:GetScript("OnClick")()
+H.check("download: the link popup", M.popups[1], "FOREVERUNITFRAMES_HUB_LINK")
+H.check("download: its text", StaticPopupDialogs.FOREVERUNITFRAMES_HUB_LINK.text, L.POPUP_HUB_LINK)
+local shown = {}
+StaticPopupDialogs.FOREVERUNITFRAMES_HUB_LINK.OnShow({ GetEditBox = function() return {
+    SetText = function(_, t) shown.text = t end, HighlightText = function() end, SetFocus = function() end } end })
+H.check("download: the address", shown.text, "https://www.curseforge.com/wow/addons/forever-themes")
 
 local follows, opened = true, 0
 LibForeverThemes.SetHub({ Follows = function(folder) return follows and folder == "ForeverUnitFrames" end,

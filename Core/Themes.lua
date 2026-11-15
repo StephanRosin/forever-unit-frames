@@ -240,7 +240,9 @@ local function growFonts(p, add)
     end
 end
 
--- A new theme's settings: the base set (CLASSIC) with the theme's look.
+-- A new theme's settings: the base set (CLASSIC) with the theme's look
+-- and the shipped look of that theme on top (ns.THEME_PRESETS, Core/Preset.lua:
+-- the author's own sets, nothing that places a frame).
 local function seed(id, base)
     local spec = Themes.Spec(id)
     local p = copy(base)
@@ -258,9 +260,14 @@ local function seed(id, base)
     for _, key in ipairs({ "width", "height" }) do
         p.target[key] = ns.Config.ValueIn(p, "player", key)
     end
+    for scope, values in pairs(ns.THEME_PRESETS and ns.THEME_PRESETS[id] or {}) do
+        for key, value in pairs(values) do p[scope][key] = copy(value) end
+    end
     p.general.theme = id
     return p
 end
+-- For tools/theme-presets-from-sv.lua.
+Themes.Seed = seed
 
 local function refuse()
     if InCombatLockdown() then return "COMBAT" end

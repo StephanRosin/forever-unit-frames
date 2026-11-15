@@ -2988,6 +2988,10 @@ function M.Reset()
 
     _G.SlashCmdList = {}
     _G.UISpecialFrames = {}
+    -- Blizzard's text popups: StaticPopup_Show records the dialog's name.
+    _G.StaticPopupDialogs = {}
+    M.popups = {}
+    _G.StaticPopup_Show = function(which) M.popups[#M.popups + 1] = which end
     -- C_AddOns.GetAddOnMetadata(name, field): a field of an addon's TOC.
     -- The mock knows one: this addon's ## Version (M.addonVersion; tests
     -- set another before PLAYER_LOGIN); any other field or addon is nil.

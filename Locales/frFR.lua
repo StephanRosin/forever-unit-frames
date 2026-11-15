@@ -1618,6 +1618,10 @@ L.NEWS_0_58_0_THEME_FONTS = "Thèmes : deux nouvelles options sous Général > C
 L.NEWS_0_58_0_ROLE_ICON = "Cadres de groupe : l'icône de rôle garde sa place quand le membre porte aussi la couronne de chef."
 L.NEWS_0_58_1_MANA_CHAT = "Alerte de mana bas : un clic prévient de nouveau le groupe (WoW Forever garde désormais votre mana secret, elle restait muette). La ligne indique \"[ALERTE] Je suis à court de mana (< 20%)\" avec votre propre seuil."
 L.NEWS_0_59_0_PORTRAIT_AURA = "Aura du portrait : les contrôles (étourdissements, peurs, métamorphoses...) s'affichent en grand sur le portrait du joueur, de la cible, du focus et du groupe, avec le temps restant ; les grandes défensives aussi si vous le souhaitez. Désactivé par défaut : onglet Auras, « Aura du portrait »."
+L.NEWS_0_60_0_HUB = "Forever Themes : un nouvel addon qui applique un thème et une couleur à tous les addons Forever d’un coup et habille les fenêtres de Blizzard en accord. Les cadres d’unité le suivent ; le bouton ci-dessous affiche son lien de téléchargement."
+L.NEWS_0_60_0_DEFAULTS = "Thèmes : un thème choisi pour la première fois démarre avec un style peaufiné (fonds de Bois, Technologie et Givre ; sous Pitwall, la cible affiche l’aura du portrait). Les thèmes que vous utilisez déjà ne changent pas."
+L.NEWS_0_60_0_FONT = "Polices : si le jeu refuse une police de thème après /reload, la police de Blizzard la remplace jusqu’à ce qu’elle se charge, au lieu de textes vides et de « Font could not be loaded »."
+L.NEWS_0_60_0_SOUND = "Alerte de mana faible : elle peut jouer un son (avertissement de raid, appel, réveil ou chuchotement ; aucun par défaut). Aucun son tant que WoW Forever garde votre mana secret."
 L.NEWS_OPEN_THEME = "Ouvrir le thème"
 
 -- Themes (Core/Themes.lua)
@@ -1649,6 +1653,9 @@ L.HINT_themePlatynatorFont = "Vos propres modèles de barres de nom Platynator ;
 L.HUB_follows = "Suit Forever Themes"
 L.HUB_fonts = "Se règle dans Forever Themes"
 L.HUB_OPEN = "Ouvrir Forever Themes"
+L.HUB_missing = "Réglez tous les addons Forever d’un coup : Forever Themes"
+L.HUB_LINK = "Lien de téléchargement"
+L.POPUP_HUB_LINK = "Copiez le lien (Ctrl+C) et ouvrez-le dans votre navigateur :"
 L.PLATYNATOR_RELOAD = "Platynator : /reload pour appliquer la nouvelle police."
 L.THEME_APPLIED_ALL = "Thème appliqué à %d autres addons Forever."
 L.THEME_COPY_FROM = "Reprendre les positions de"

@@ -215,3 +215,30 @@ local PRESET = {
 }
 
 ns.Settings.ApplyPreset(PRESET)
+
+-- Each theme's shipped look, on top of its seed (Core/Themes.lua): only for a
+-- theme set made from now on; sets already stored stay as they are. Written
+-- by tools/theme-presets-from-sv.lua (no positions, sizes or personal values).
+ns.THEME_PRESETS = {
+    WOOD = {
+        general = {
+            backgroundColor = { 0.1, 0.06, 0.02, 0.85 },
+        },
+    },
+    TECH = {
+        general = {
+            backgroundColor = { 0.02, 0.05, 0.08, 0.92 },
+        },
+    },
+    FROST = {
+        general = {
+            backgroundColor = { 0.04, 0.12, 0.22, 0.6 },
+        },
+    },
+    PITWALL = {
+        target = {
+            portraitAura = true,
+            portraitAuraDefensive = true,
+        },
+    },
+}

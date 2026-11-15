@@ -1556,6 +1556,10 @@ L.NEWS_0_58_0_THEME_FONTS = "테마: 일반 > 프레임 및 애드온의 새 옵
 L.NEWS_0_58_0_ROLE_ICON = "파티 프레임: 파티장 왕관이 함께 있어도 역할 아이콘이 제자리를 지킵니다."
 L.NEWS_0_58_1_MANA_CHAT = "마나 부족 경고: 클릭하면 다시 파티에 알립니다 (WoW Forever가 이제 마나를 비밀로 유지해 알림이 나가지 않았습니다). 문구는 자신의 기준값과 함께 \"[경고] 마나가 부족합니다 (< 20%)\"입니다."
 L.NEWS_0_59_0_PORTRAIT_AURA = "초상화 오라: 군중 제어(기절, 공포, 변이 등)가 플레이어, 대상, 주시 대상, 파티 프레임의 초상화 위에 남은 시간과 함께 크게 표시됩니다. 원하면 큰 방어 효과도 표시합니다. 기본값은 꺼짐: 오라 탭, \"초상화 오라\"."
+L.NEWS_0_60_0_HUB = "Forever Themes: 모든 Forever 애드온에 한 번에 하나의 테마와 색상을 적용하고 블리자드 창도 그에 맞게 꾸미는 새 애드온입니다. 유닛 프레임이 이를 따릅니다. 아래 버튼은 다운로드 링크를 보여 줍니다."
+L.NEWS_0_60_0_DEFAULTS = "테마: 처음 고르는 테마는 다듬어진 모습으로 시작합니다(나무, 기술, 서리의 배경, 피트월에서는 대상의 초상화 오라). 이미 쓰는 테마는 바뀌지 않습니다."
+L.NEWS_0_60_0_FONT = "글꼴: /reload 후 게임이 테마 글꼴을 거부하면 빈 텍스트와 \"Font could not be loaded\" 대신 글꼴이 불러와질 때까지 블리자드 글꼴이 대신 표시됩니다."
+L.NEWS_0_60_0_SOUND = "마나 부족 경고: 소리를 재생할 수 있습니다(공격대 경보, 전투 준비, 자명종, 귓속말, 기본값은 없음). WoW Forever가 마나를 비밀로 하는 동안에는 소리가 나지 않습니다."
 L.NEWS_OPEN_THEME = "테마 열기"
 
 -- Themes (Core/Themes.lua)
@@ -1587,6 +1591,9 @@ L.HINT_themePlatynatorFont = "내 Platynator 이름표 디자인; /reload 후 �
 L.HUB_follows = "Forever Themes를 따름"
 L.HUB_fonts = "Forever Themes에서 설정"
 L.HUB_OPEN = "Forever Themes 열기"
+L.HUB_missing = "모든 Forever 애드온을 한 번에: Forever Themes"
+L.HUB_LINK = "다운로드 링크"
+L.POPUP_HUB_LINK = "링크를 복사(Ctrl+C)해 브라우저에서 여세요:"
 L.PLATYNATOR_RELOAD = "Platynator: 새 글꼴을 적용하려면 /reload 하세요."
 L.THEME_APPLIED_ALL = "테마를 다른 Forever 애드온 %d개에 적용했습니다."
 L.THEME_COPY_FROM = "위치 가져오기"

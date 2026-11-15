@@ -384,8 +384,8 @@ local function addSections(page, stack, scope, tab)
                 page.hasFolds = true   -- the colour row comes and goes with the theme
                 stack.add(themeCopyRow(page))
             end
-            if section.hub then
-                stack.add(hubBlock(page, section.hub))
+            for _, id in ipairs(section.hub or {}) do
+                stack.add(hubBlock(page, id))
                 page.hasFolds = true   -- the hub comes and goes while the game runs
             end
             for _, id in ipairs(section.actions or {}) do stack.add(actionBlock(page, id)) end
@@ -495,17 +495,41 @@ function themeColorRow(page)
     return row
 end
 
+-- WoW opens no browser: the hub's download link in Blizzard's text popup,
+-- selected for copying (also the news' button, Core/News.lua).
+local HUB_URL = "https://www.curseforge.com/wow/addons/forever-themes"
+if StaticPopupDialogs then
+    StaticPopupDialogs.FOREVERUNITFRAMES_HUB_LINK = {
+        text = "", button1 = OKAY or "OK", hasEditBox = 1, editBoxWidth = 350,
+        maxLetters = 0,   -- the edit box is shared; another dialog may leave its limit behind
+        OnShow = function(dialog)
+            local box = dialog.GetEditBox and dialog:GetEditBox()
+            if box then box:SetText(HUB_URL); box:HighlightText(); box:SetFocus() end
+        end,
+        EditBoxOnEnterPressed = function(box) box:GetParent():Hide() end,
+        EditBoxOnEscapePressed = function(box) box:GetParent():Hide() end,
+        timeout = 0, whileDead = true, hideOnEscape = true,
+    }
+end
+function Options.ShowHubLink()
+    StaticPopupDialogs.FOREVERUNITFRAMES_HUB_LINK.text = L.POPUP_HUB_LINK
+    StaticPopup_Show("FOREVERUNITFRAMES_HUB_LINK")
+end
+
 -- The hub "Forever Themes" (Core/Themes.lua): a line saying it holds a
--- section's rows, and a button to its window. section.hub: when it shows.
+-- section's rows, and a button to its window; without the hub (missing)
+-- a line naming it and its download link. section.hub: the blocks.
 local HUB_SHOWN = {
     follows = function() return ns.Themes.FollowsHub() end,
     fonts = function() return ns.Themes.Hub() ~= nil end,
+    missing = function() return ns.Themes.Hub() == nil end,
 }
-Options.hubBlocks = {}   -- by section.hub, for the tests
+Options.hubBlocks = {}   -- by id, for the tests
 function hubBlock(page, id)
     local block = newBlock(page)
-    local button = Widgets.Button(block, { text = L.HUB_OPEN, width = WIDE_BUTTON_W,
-        onClick = function() ns.Themes.Hub().OpenOptions() end })
+    local missing = id == "missing"
+    local button = Widgets.Button(block, { text = missing and L.HUB_LINK or L.HUB_OPEN, width = WIDE_BUTTON_W,
+        onClick = missing and Options.ShowHubLink or function() ns.Themes.Hub().OpenOptions() end })
     button:SetPoint("TOPLEFT", block, "TOPLEFT", INSET, -6)
     block.text = Style.Text(block, 10, "muted")
     block.text:SetPoint("LEFT", button, "RIGHT", FOOTER_GAP, 0)

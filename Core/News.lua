@@ -213,6 +213,12 @@ News.ENTRIES = {
     ["0.59.0"] = {
         lines = { "NEWS_0_59_0_PORTRAIT_AURA" },
     },
+    -- Forever Themes, the hub addon: the button shows its download link.
+    ["0.60.0"] = {
+        announce = true,
+        lines = { "NEWS_0_60_0_HUB", "NEWS_0_60_0_DEFAULTS", "NEWS_0_60_0_FONT", "NEWS_0_60_0_SOUND" },
+        action = { text = "HUB_LINK", run = function() ns.Options.ShowHubLink() end },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).
