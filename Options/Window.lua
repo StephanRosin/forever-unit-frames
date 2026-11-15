@@ -509,14 +509,14 @@ Options.hubBlocks = {}   -- by id, for the tests
 function hubBlock(page, id)
     local block = newBlock(page)
     local missing = id == "missing"
-    local button = Widgets.Button(block, { text = LibForeverThemes.Text(missing and "HUB_LINK" or "HUB_OPEN"),
+    local button = Widgets.Button(block, { text = LibForeverThemes.Text(missing and "HUB_LINK" or "HUB_OPEN", ns.Locale.Current()),
         width = WIDE_BUTTON_W,
-        onClick = missing and function() LibForeverThemes.ShowHubLink() end
+        onClick = missing and function() LibForeverThemes.ShowHubLink(nil, ns.Locale.Current()) end
             or function() ns.Themes.Hub().OpenOptions() end })
     button:SetPoint("TOPLEFT", block, "TOPLEFT", INSET, -6)
     block.text = Style.Text(block, 10, "muted")
     block.text:SetPoint("LEFT", button, "RIGHT", FOOTER_GAP, 0)
-    block.text:SetText(HUB_TEXT[id] and LibForeverThemes.Text(HUB_TEXT[id]) or L.HUB_fonts)
+    block.text:SetText(HUB_TEXT[id] and LibForeverThemes.Text(HUB_TEXT[id], ns.Locale.Current()) or L.HUB_fonts)
     block.button = button
     block.visible = HUB_SHOWN[id]
     function block:SetEnabled(on) button:SetEnabled(on) end

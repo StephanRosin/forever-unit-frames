@@ -73,6 +73,13 @@ H.check("fonts text", O.hubBlocks.fonts.text:GetText(), L.HUB_fonts)
 H.check("button text", O.hubBlocks.follows.button.text:GetText(), LibForeverThemes.Text("HUB_OPEN"))
 O.hubBlocks.fonts.button:GetScript("OnClick")()
 H.check("button opens the hub", opened, 1)
+-- The addon's own language, not the (English) client's.
+Config.Set("general", "language", "deDE")
+O.Open("general")
+O.SelectTab("frames")
+H.check("german addon, english client: line text", O.hubBlocks.follows.text:GetText(), "Folgt Forever Themes")
+O.Close()
+Config.Set("general", "language", "AUTO")
 follows = false
 look("own theme in the hub", false, true)
 
