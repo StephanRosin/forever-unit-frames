@@ -559,9 +559,11 @@ function CellAuras.Release(frame)
 end
 
 ns.OnAurasFree(function()
-    for frame in pairs(stale) do
-        if not waiting[frame] then apply(frame) end
-    end
+    local frames = {}
+    for frame in pairs(stale) do frames[#frames + 1] = frame end
+    ns.Spread(frames, function(frame)
+        if stale[frame] and not waiting[frame] then apply(frame) end
+    end)
 end)
 
 ns.RegisterElement(CellAuras)

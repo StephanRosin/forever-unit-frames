@@ -441,17 +441,23 @@ local function build(frame)
     return true
 end
 
-local function flush()
+local flush
+
+local function flushOne(frame)
+    if not waiting[frame] then return end
+    waiting[frame] = nil
+    if frame.auraContainers then
+        apply(frame)
+    elseif not frame.auraContainerFailed then
+        build(frame)
+    end
+end
+
+-- Spread over frames: a whole party restyled in one go ran too long.
+function flush()
     local frames = {}
     for frame in pairs(waiting) do frames[#frames + 1] = frame end
-    for _, frame in ipairs(frames) do
-        waiting[frame] = nil
-        if frame.auraContainers then
-            apply(frame)
-        elseif not frame.auraContainerFailed then
-            build(frame)
-        end
-    end
+    ns.Spread(frames, flushOne, function() ns.AfterCombat("auraContainers", flush) end)
 end
 
 local function later(frame)
@@ -472,10 +478,11 @@ function AuraContainers.Ensure(frame)
     return build(frame)
 end
 
--- Settings changed (Auras.Style): applied now, or after combat.
+-- Settings changed (Auras.Style): applied now, or after combat (also
+-- while combat's queued work runs: then spread with the rest).
 function AuraContainers.Style(frame)
     if not frame.auraContainers then return end
-    if InCombatLockdown() then
+    if InCombatLockdown() or ns.DrainingCombatWork() then
         later(frame)
         return
     end
@@ -484,9 +491,11 @@ end
 
 -- Buttons the client refused to restyle (auras were secret): again now.
 ns.OnAurasFree(function()
-    for frame in pairs(stale) do
-        if not waiting[frame] then apply(frame) end
-    end
+    local frames = {}
+    for frame in pairs(stale) do frames[#frames + 1] = frame end
+    ns.Spread(frames, function(frame)
+        if stale[frame] and not waiting[frame] then apply(frame) end
+    end)
 end)
 
 -- Live updates ----------------------------------------------------------------------

@@ -111,6 +111,7 @@ M.aurasSecret = false
 H.check("secret: icon kept its size", icon:GetWidth(), 20)
 M.combat = true
 M.SetCombat(false)
+M.RunTimers()
 H.check("after combat: resized", icon:GetWidth(), 24)
 RC.ResetScope("r10")
 H.check("no errors", #M.errors, 0)

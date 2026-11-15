@@ -100,6 +100,7 @@ H.check("combat: place kept", (anchor(oc)), "TOPLEFT>BOTTOMLEFT 10,-7")
 H.checkTrue("combat: still shown", oc:IsShown())
 H.check("combat: own part still off", dc._groups.own.enabled, false)
 M.SetCombat(false)
+M.RunTimers() -- the catch-up after combat is spread over frames
 -- With the rest again: the own container hides and stays for later.
 H.check("with the rest: hidden", oc:IsShown(), false)
 H.check("with the rest: its group off", oc._groups.own.enabled, false)
@@ -138,6 +139,7 @@ M.SetCombat(true)
 C.Set("focus", "debuffsOwnPlacement", "FREE")
 H.check("combat: none made", f.auraContainers.debuffs.ownContainer, nil)
 M.SetCombat(false)
+M.RunTimers() -- the catch-up after combat is spread over frames
 H.checkTrue("after combat: made", f.auraContainers.debuffs.ownContainer)
 H.check("after combat: unit", f.auraContainers.debuffs.ownContainer:GetUnit(), "focus")
 

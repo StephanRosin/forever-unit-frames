@@ -73,6 +73,7 @@ M.SetCombat(true)
 C.Set("target", "auraBlock", "")
 H.check("combat: unchanged", excluded(t, "buffs"), FIRE .. "," .. FOOD)
 M.SetCombat(false)
+M.RunTimers() -- the catch-up after combat is spread over frames
 H.check("after combat: applied", excluded(t, "buffs"), tostring(FIRE))
 H.check("no errors", #M.errors, 0)
 

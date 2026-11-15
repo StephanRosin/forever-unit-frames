@@ -87,6 +87,12 @@ function ns.AfterCombat(key, fn, mode)
     pending[key] = fn
 end
 
+-- Whether queued combat work is running now (its jobs should hand big
+-- per-frame work to ns.Spread).
+function ns.DrainingCombatWork()
+    return draining
+end
+
 function ns.PendingCombatWork()
     return #order
 end
@@ -117,6 +123,30 @@ local function drain()
         end
     end
     draining = false
+end
+
+-- fn(item) for each of items, from the next frame on, at most DRAIN_BUDGET
+-- ms per frame: catching up on many frames at once (after combat, with a
+-- group) tripped "script ran too long". Stops when combat starts again
+-- and calls onCombat (if given) for what is left.
+function ns.Spread(items, fn, onCombat)
+    local i = 1
+    local function step()
+        local clock = debugprofilestop
+        local start = clock and clock()
+        while i <= #items and not InCombatLockdown() do
+            fn(items[i])
+            i = i + 1
+            if clock and clock() - start > DRAIN_BUDGET then break end
+        end
+        if i > #items then return end
+        if InCombatLockdown() then
+            if onCombat then onCombat() end
+        else
+            C_Timer.After(0, step)
+        end
+    end
+    C_Timer.After(0, step)
 end
 
 ns.On("PLAYER_REGEN_ENABLED", function()
