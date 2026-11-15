@@ -128,6 +128,7 @@ SlashCmdList.FOREVERUNITFRAMES = function(msg)
             ns.Print(L.UNKNOWN_FRAME)
             return
         end
+        LibForeverThemes.HubSync()   -- a reset theme goes back to the hub's
         ns.Print(L.RESET_DONE)
     elseif cmd == "set" then
         local scope, key, raw = rest:match("^(%S+)%s+(%S+)%s+(.+)$")

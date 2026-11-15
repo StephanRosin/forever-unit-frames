@@ -16,14 +16,14 @@ local function restyle()
     ns.Single.StyleAll(f)
 end
 
-H.check("appended after pixel", table.concat(Themes.IDS, ",", 9), "PIXEL,SWISS,CONSOLE,PITWALL")
+H.check("appended after pixel", table.concat(ns.Settings.THEMES, ",", 9), "PIXEL,SWISS,CONSOLE,PITWALL")
 H.check("cell themes appended", table.concat(ns.RaidSettings.Get("cellTheme").values, ",", 10),
     "PIXEL,SWISS,CONSOLE,PITWALL")
 
 -- Every theme's files are there (in the embedded LibForeverThemes):
 -- backdrop, bar, ornament, font.
 local LIBMEDIA = "Libs/LibForeverThemes/Media/"
-for _, id in ipairs(Themes.IDS) do
+for _, id in ipairs(LibForeverThemes.SpecIds(Themes.SPECS)) do
     local spec = Themes.SPECS[id]
     local art = spec.art or {}
     for _, name in ipairs({ art.back, art.ornament }) do

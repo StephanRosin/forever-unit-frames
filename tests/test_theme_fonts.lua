@@ -158,9 +158,23 @@ H.check("classic: the copy in Platynator's font", designs.Copy.font.asset, "Robo
 H.check("snapshot forgotten", ForeverUnitFramesDB.platynator.snapshot, nil)
 H.checkTrue("frost", Themes.Switch("FROST"))
 H.check("frost: Julius", designs.DPS.font.asset, "Julius Sans One")
+-- Another Platynator profile themed meanwhile; a design in a library
+-- font's older name (another Forever addon's) counts as themed.
+local other = PLATYNATOR_CONFIG.Profiles.Other.designs
+designs.Alias = design("Titillium Web")
+_G.PLATYNATOR_CURRENT_PROFILE = "Other"
+H.checkTrue("tech", Themes.Switch("TECH"))
+H.check("tech: the other profile themed", other.DPS.font.asset, "Space Grotesk")
+_G.PLATYNATOR_CURRENT_PROFILE = "DEFAULT"
+H.checkTrue("frost again", Themes.Switch("FROST"))
+H.check("an older alias: Platynator's own later", ForeverUnitFramesDB.platynator.snapshot.DEFAULT.Alias,
+    "Roboto Condensed Bold")
 local before = #hints
 Config.Set("general", "themePlatynatorFont", false)
 H.check("option off: originals back", designs.DPS.font.asset, "Friz Quadrata TT")
+H.check("option off: the other profile back too", other.DPS.font.asset, "Lato")
+H.check("option off: the alias design in Platynator's font", designs.Alias.font.asset, "Roboto Condensed Bold")
+designs.Alias = nil
 H.check("option off: hint to /reload", #hints, before + 1)
 
 -- Without Platynator: harmless, nothing recorded.

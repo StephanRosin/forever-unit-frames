@@ -408,6 +408,9 @@ function Texts.SetFont(fs, font, size, outline, retries)
         redrawLater(fs, font, size, flags, wanted)
     end
     if not taken then
+        -- Blizzard's font meanwhile, from the first refusal on, so the
+        -- text never stays empty (a restyle with the same font neither).
+        fs:SetFont(FALLBACK_FONT, size, flags)
         retries = retries or FONT_RETRIES
         if retries > 0 then
             C_Timer.After(FONT_RETRY_DELAY, function()
@@ -415,8 +418,6 @@ function Texts.SetFont(fs, font, size, outline, retries)
                 if fs.fontWanted == wanted then Texts.SetFont(fs, font, size, outline, retries - 1) end
             end)
         else
-            -- Blizzard's font meanwhile, so the text never stays empty.
-            fs:SetFont(FALLBACK_FONT, size, flags)
             if fs.fontSlowFor ~= wanted then fs.fontSlowFor, fs.fontSlowLeft = wanted, SLOW_RETRIES end
             if fs.fontSlowLeft > 0 then
                 fs.fontSlowLeft = fs.fontSlowLeft - 1
@@ -428,15 +429,14 @@ function Texts.SetFont(fs, font, size, outline, retries)
     end
     if soft and not fs.softCopies then makeCopies(fs) end
     if not fs.softCopies then return end
-    -- No outline under a text that has no font yet.
-    fs.soft = soft and taken
+    fs.soft = soft
     -- Exactly one physical pixel: thinner than the client's OUTLINE.
     -- Recomputed on every restyle, which a UI scale or window size change
     -- triggers too.
     local step = ns.Pixel.One(fs)
     for i, copy in ipairs(fs.softCopies) do
         local x, y = SOFT_OFFSETS[i][1] * step, SOFT_OFFSETS[i][2] * step
-        copy:SetFont(font, size, "")
+        copy:SetFont(taken and font or FALLBACK_FONT, size, "")   -- the font the text really has
         copy:ClearAllPoints()
         copy:SetPoint("TOPLEFT", fs, "TOPLEFT", x, y)
         copy:SetPoint("BOTTOMRIGHT", fs, "BOTTOMRIGHT", x, y)

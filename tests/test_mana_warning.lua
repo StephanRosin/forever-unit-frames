@@ -233,3 +233,19 @@ M.Tick(31)
 mana(900)
 mana(100)
 H.check("sound: none plays nothing", #M.sounds, before + 1)
+
+-- Low while secret, then readable and still low: the sound and line follow.
+C.Set("player", "manaWarnSound", "RAID_WARNING")
+C.Set("player", "manaWarnChat", true)
+M.Tick(31)
+mana(900)
+local sounds, said = #M.sounds, #M.sent
+M.units.player.power = M.Secret(100)
+M.units.player.powerPercent = 0.1
+M.FireEvent("UNIT_POWER_FREQUENT", "player", "MANA")
+H.check("secret low: no sound", #M.sounds, sounds)
+mana(100)
+H.check("readable again, low: sound", #M.sounds, sounds + 1)
+H.check("readable again, low: chat line", #M.sent, said + 1)
+C.Set("player", "manaWarnSound", "NONE")
+C.Set("player", "manaWarnChat", false)

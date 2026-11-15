@@ -108,6 +108,7 @@ local function load(name)
     setActive(name)
     ns.Config.Import(ns.Settings.Sanitise(copy(db.profiles[name] or {})))
     ns.Storage.Save()
+    LibForeverThemes.HubSync()   -- a following addon gets the hub's theme back
 end
 
 local function changed() ns.Fire("UNIT_PROFILES_CHANGED") return true end
@@ -179,5 +180,6 @@ function UnitProfiles.Delete()
     db.themeSets[old] = nil
     ns.Config.Import(ns.Settings.Sanitise(copy(db.profiles[UnitProfiles.DEFAULT] or {})))
     ns.Storage.Save()
+    LibForeverThemes.HubSync()
     return changed()
 end

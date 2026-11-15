@@ -17,8 +17,6 @@ ns.Themes = Themes
 
 local Lib = LibForeverThemes
 Themes.CLASSIC = Lib.CLASSIC
--- The setting's list (stored by index), the same as LibForeverThemes' IDS.
-Themes.IDS = ns.Settings.THEMES
 
 -- Each theme's identity (backdrop, tint, ornaments, rule, title strip and
 -- wedge, ring colour, font, fontSizeAdd) is LibForeverThemes'; here only
@@ -38,7 +36,6 @@ Themes.IDS = ns.Settings.THEMES
 -- (the text has its font by GetFont, its black copies draw on top).
 -- Frost alone has none: a 1 px drop shadow (fontShadow, black) keeps its
 -- texts readable, white values on a priest's white health bar too.
-local T = Lib.THEMES
 Themes.SPECS = Lib.Specs({
     -- Oak boards round the bars, a gold rim (as in every Forever addon), brass rivets.
     WOOD = {
@@ -51,14 +48,14 @@ Themes.SPECS = Lib.Specs({
     -- Dark navy with a faint grid, a thin cyan line.
     TECH = {
         bar = "FUF Tech",
-        look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = T.TECH.rim,
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = Lib.THEMES.TECH.rim,
             borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.02, 0.05, 0.08, 0 },
             titleBackground = false, shadowEnabled = false, fontOutline = "OUTLINE" },
     },
     -- Parchment round the bars, a brown ink line, a wax seal.
     PARCHMENT = {
         bar = "FUF Parchment",
-        look = { borderShow = true, borderStyle = "FLAT", borderSize = 2, borderColor = T.PARCHMENT.rim,
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 2, borderColor = Lib.THEMES.PARCHMENT.rim,
             borderPadding = 4, cornerRadius = 2, backgroundColor = { 0.22, 0.15, 0.07, 0 }, titleBackground = false,
             shadowEnabled = true, shadowAlpha = 45, shadowSize = 5, fontOutline = "OUTLINE" },
         art = { ornamentSize = 22, ornamentInset = -6 },
@@ -66,7 +63,7 @@ Themes.SPECS = Lib.Specs({
     -- Grey granite, a dark chiselled edge, glowing runes.
     RUNESTONE = {
         bar = "FUF Stone",
-        look = { borderShow = true, borderStyle = "FLAT", borderSize = 2, borderColor = T.RUNESTONE.rim,
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 2, borderColor = Lib.THEMES.RUNESTONE.rim,
             borderPadding = 5, cornerRadius = 0, backgroundColor = { 0.04, 0.05, 0.06, 0 },
             titleBackground = false, shadowEnabled = true, shadowAlpha = 70, shadowSize = 6, fontOutline = "OUTLINE" },
         art = { ornamentSize = 14, ornamentInset = 2 },
@@ -74,14 +71,14 @@ Themes.SPECS = Lib.Specs({
     -- A mosaic of coloured glass round the bars, dark lead.
     GLASS = {
         bar = "FUF Glass",
-        look = { borderShow = true, borderStyle = "FLAT", borderSize = 3, borderColor = T.GLASS.rim,
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 3, borderColor = Lib.THEMES.GLASS.rim,
             borderPadding = 6, cornerRadius = 0, backgroundColor = { 0.05, 0.04, 0.06, 0.9 },
             titleBackground = true, shadowEnabled = true, shadowAlpha = 55, shadowSize = 6, fontOutline = "OUTLINE" },
     },
     -- Thick ink line, halftone paper, a solid shadow.
     COMIC = {
         bar = "FUF Comic",
-        look = { borderShow = true, borderStyle = "FLAT", borderSize = 3, borderColor = T.COMIC.rim,
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 3, borderColor = Lib.THEMES.COMIC.rim,
             borderPadding = 0, cornerRadius = 0, backgroundColor = { 0, 0, 0, 0 }, titleBackground = false,
             shadowEnabled = false, fontOutline = "THICKOUTLINE" },
         art = { hardShadow = 5 },
@@ -89,7 +86,7 @@ Themes.SPECS = Lib.Specs({
     -- Translucent ice, a pale rim, rounded.
     FROST = {
         bar = "FUF Frost",
-        look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = T.FROST.rim,
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = Lib.THEMES.FROST.rim,
             borderPadding = 2, cornerRadius = 6, backgroundColor = { 0.02, 0.07, 0.15, 0.45 },
             titleBackground = false, shadowEnabled = true, shadowAlpha = 55, shadowSize = 8, fontOutline = "NONE",
             fontShadow = true },
@@ -97,7 +94,7 @@ Themes.SPECS = Lib.Specs({
     -- A light pixel frame, scan lines, a solid shadow.
     PIXEL = {
         bar = "FUF Pixel",
-        look = { borderShow = true, borderStyle = "FLAT", borderSize = 3, borderColor = T.PIXEL.rim,
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 3, borderColor = Lib.THEMES.PIXEL.rim,
             borderPadding = 0, cornerRadius = 0, backgroundColor = { 0, 0, 0, 0 }, titleBackground = false,
             shadowEnabled = false, fontOutline = "OUTLINE" },
         art = { hardShadow = 4 },
@@ -106,7 +103,7 @@ Themes.SPECS = Lib.Specs({
     -- (a short bar at the top left, which the theme's colour paints).
     SWISS = {
         font = "Inter Tight", bar = "FUF Swiss",
-        look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = T.SWISS.rim,
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = Lib.THEMES.SWISS.rim,
             borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.039, 0.039, 0.039, 1 },
             titleBackground = false, shadowEnabled = false, fontOutline = "OUTLINE" },
         art = { ornament = "SwissBar", corners = { 1 }, ornamentSize = 12, ornamentHeight = 3,
@@ -116,7 +113,7 @@ Themes.SPECS = Lib.Specs({
     -- (dashed ones looked broken on health and power).
     CONSOLE = {
         font = "IBM Plex Mono", bar = "FUF Swiss",
-        look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = T.CONSOLE.rim,
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = Lib.THEMES.CONSOLE.rim,
             borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.306, 0.929, 0.69, 0 },
             titleBackground = false, shadowEnabled = false, fontOutline = "OUTLINE" },
         art = { accent = "ring" },
@@ -131,7 +128,7 @@ Themes.SPECS = Lib.Specs({
         -- The older name of the library's "Titillium Web SemiBold" (the same
         -- file): theme sets and Platynator designs hold it.
         font = "Titillium Web", bar = "FUF Swiss",
-        look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = T.PITWALL.rim,
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = Lib.THEMES.PITWALL.rim,
             borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.039, 0.039, 0.039, 1 },
             titleBackground = true, shadowEnabled = false, fontOutline = "OUTLINE" },
         art = { accent = "wedge" },
@@ -144,12 +141,6 @@ local THEMED = { "fontFace", "fontOutline", "barTexture" }
 for _, spec in pairs(Themes.SPECS) do
     for key in pairs(spec.look or {}) do THEMED[#THEMED + 1] = key end
 end
-
--- The theme colours are the library's (Lib.COLORS), the same in every
--- Forever addon. The unit frames take the backdrop only (no accent), but
--- for the themes whose colours keep the backdrop (art.accent). Colours are
--- stored account wide outside the theme sets (UnitProfiles.ThemeColors).
-Themes.COLORS = Lib.COLORS
 
 -- A raid cell is small and sits among others: its ring and corners stay
 -- slim, and it gets no ornaments or solid shadow (Elements/ThemeArt.lua).
@@ -194,17 +185,17 @@ end
 -- now. CLASSIC is never touched. The library's part counts too: a change
 -- there to what seeding copies (fonts, sizes, ring colour) raises it.
 local OWN_REVISION = 13
-Themes.REVISION = OWN_REVISION + Lib.SEED_REVISION * Lib.SEED_STEP
+Themes.REVISION = OWN_REVISION   -- tools/theme-presets-from-sv.lua reads it
 
--- The active profile's stored theme sets; stale ones (an older
--- REVISION) dropped.
+-- The active profile's stored theme sets; stale ones (Lib.NeedsReseed)
+-- dropped.
 local function storedSets()
     local sets = ns.UnitProfiles.ThemeSets()
-    if sets.revision ~= Themes.REVISION then
-        for _, id in ipairs(Themes.IDS) do
+    if Lib.NeedsReseed(sets, OWN_REVISION) then
+        for _, id in ipairs(Lib.SpecIds(Themes.SPECS)) do
             if id ~= Themes.CLASSIC then sets[id] = nil end
         end
-        sets.revision = Themes.REVISION
+        Lib.MarkSeeded(sets, OWN_REVISION)
     end
     return sets
 end
@@ -388,10 +379,10 @@ function Themes.Reset()
     return true
 end
 
--- The themes with stored settings to copy from, in IDS order.
+-- The themes with stored settings to copy from, in the library's order.
 function Themes.Stored()
     local sets, list = storedSets(), {}
-    for _, id in ipairs(Themes.IDS) do
+    for _, id in ipairs(Lib.SpecIds(Themes.SPECS)) do
         if sets[id] and id ~= Themes.Current() then list[#list + 1] = id end
     end
     return list
@@ -447,7 +438,7 @@ end
 -- nothing listens yet; the next save writes it).
 function Themes.Upgrade()
     local sets = ns.UnitProfiles.ThemeSets()
-    if sets.revision == Themes.REVISION then return end
+    if not Lib.NeedsReseed(sets, OWN_REVISION) then return end
     local current = Themes.Current()
     local base = sets[Themes.CLASSIC]
     storedSets()
@@ -477,10 +468,7 @@ function Themes.HasOthers() return #Lib.Others(ADDON) > 0 end
 -- (Core/BlizzardFonts.lua, Core/PlatynatorFonts.lua stand down).
 function Themes.Hub() return Lib.Hub() end
 -- Whether the hub sets our theme and colour now (the options grey them).
-function Themes.FollowsHub()
-    local hub = Lib.Hub()
-    return hub ~= nil and hub.Follows(ADDON) == true
-end
+function Themes.FollowsHub() return Lib.Follows(ADDON) end
 
 -- Every other addon onto this theme and, where that theme has it, this
 -- colour. Returns how many switched.

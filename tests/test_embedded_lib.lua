@@ -18,6 +18,8 @@ H.check("library loaded from our copy", Lib.FOLDER, "ForeverUnitFrames")
 H.check("first file in the TOC", H.TocFiles()[1], "Libs/LibForeverThemes/LibForeverThemes.lua")
 -- The setting stores the theme by index: its list must stay the library's.
 H.check("theme ids as the library's", table.concat(ns.Settings.THEMES, ","), table.concat(Lib.IDS, ","))
+H.check("theme ids as the specs'", table.concat(ns.Settings.THEMES, ","), table.concat(Lib.SpecIds(ns.Themes.SPECS), ","))
+H.check("switch: a library theme without a spec refused", select(2, ns.Themes.Switch("NOT_OURS")), "UNKNOWN")
 
 -- Fonts and bars from the library's media; Pitwall's older font name finds
 -- the same file and is no longer listed under it.

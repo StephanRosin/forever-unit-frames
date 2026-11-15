@@ -1650,12 +1650,7 @@ L.HINT_themeBlizzardFonts = "Barre d'incantation, durée des améliorations, ges
 L.SETTING_themePlatynatorFont = "Police du thème : Platynator"
 L.HINT_themePlatynatorFont = "Vos propres modèles de barres de nom Platynator ; visible après /reload"
 -- The hub "Forever Themes" holds the theme (following) or the font beyond the frames.
-L.HUB_follows = "Suit Forever Themes"
 L.HUB_fonts = "Se règle dans Forever Themes"
-L.HUB_OPEN = "Ouvrir Forever Themes"
-L.HUB_missing = "Réglez tous les addons Forever d’un coup : Forever Themes"
-L.HUB_LINK = "Lien de téléchargement"
-L.POPUP_HUB_LINK = "Copiez le lien (Ctrl+C) et ouvrez-le dans votre navigateur :"
 L.PLATYNATOR_RELOAD = "Platynator : /reload pour appliquer la nouvelle police."
 L.THEME_APPLIED_ALL = "Thème appliqué à %d autres addons Forever."
 L.THEME_COPY_FROM = "Reprendre les positions de"

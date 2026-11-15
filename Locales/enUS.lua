@@ -1678,12 +1678,7 @@ L.HINT_themeBlizzardFonts = "Cast bar, buff timers, Cooldown Manager, error mess
 L.SETTING_themePlatynatorFont = "Theme font for Platynator"
 L.HINT_themePlatynatorFont = "Your own Platynator nameplate designs; shows after /reload"
 -- The hub "Forever Themes" holds the theme (following) or the font beyond the frames.
-L.HUB_follows = "Follows Forever Themes"
 L.HUB_fonts = "Set in Forever Themes"
-L.HUB_OPEN = "Open Forever Themes"
-L.HUB_missing = "Theme all Forever addons at once: Forever Themes"
-L.HUB_LINK = "Download link"
-L.POPUP_HUB_LINK = "Copy the link (Ctrl+C) and open it in your browser:"
 L.PLATYNATOR_RELOAD = "Platynator: /reload to apply the new font."
 L.THEME_APPLIED_ALL = "Theme applied to %d other Forever addons."
 L.THEME_COPY_FROM = "Take positions from"

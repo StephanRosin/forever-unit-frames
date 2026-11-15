@@ -495,27 +495,6 @@ function themeColorRow(page)
     return row
 end
 
--- WoW opens no browser: the hub's download link in Blizzard's text popup,
--- selected for copying (also the news' button, Core/News.lua).
-local HUB_URL = "https://www.curseforge.com/wow/addons/forever-themes"
-if StaticPopupDialogs then
-    StaticPopupDialogs.FOREVERUNITFRAMES_HUB_LINK = {
-        text = "", button1 = OKAY or "OK", hasEditBox = 1, editBoxWidth = 350,
-        maxLetters = 0,   -- the edit box is shared; another dialog may leave its limit behind
-        OnShow = function(dialog)
-            local box = dialog.GetEditBox and dialog:GetEditBox()
-            if box then box:SetText(HUB_URL); box:HighlightText(); box:SetFocus() end
-        end,
-        EditBoxOnEnterPressed = function(box) box:GetParent():Hide() end,
-        EditBoxOnEscapePressed = function(box) box:GetParent():Hide() end,
-        timeout = 0, whileDead = true, hideOnEscape = true,
-    }
-end
-function Options.ShowHubLink()
-    StaticPopupDialogs.FOREVERUNITFRAMES_HUB_LINK.text = L.POPUP_HUB_LINK
-    StaticPopup_Show("FOREVERUNITFRAMES_HUB_LINK")
-end
-
 -- The hub "Forever Themes" (Core/Themes.lua): a line saying it holds a
 -- section's rows, and a button to its window; without the hub (missing)
 -- a line naming it and its download link. section.hub: the blocks.
@@ -524,16 +503,20 @@ local HUB_SHOWN = {
     fonts = function() return ns.Themes.Hub() ~= nil end,
     missing = function() return ns.Themes.Hub() == nil end,
 }
+-- The library's shared texts; fonts is ours.
+local HUB_TEXT = { follows = "HUB_FOLLOWS", missing = "HUB_MISSING" }
 Options.hubBlocks = {}   -- by id, for the tests
 function hubBlock(page, id)
     local block = newBlock(page)
     local missing = id == "missing"
-    local button = Widgets.Button(block, { text = missing and L.HUB_LINK or L.HUB_OPEN, width = WIDE_BUTTON_W,
-        onClick = missing and Options.ShowHubLink or function() ns.Themes.Hub().OpenOptions() end })
+    local button = Widgets.Button(block, { text = LibForeverThemes.Text(missing and "HUB_LINK" or "HUB_OPEN"),
+        width = WIDE_BUTTON_W,
+        onClick = missing and function() LibForeverThemes.ShowHubLink() end
+            or function() ns.Themes.Hub().OpenOptions() end })
     button:SetPoint("TOPLEFT", block, "TOPLEFT", INSET, -6)
     block.text = Style.Text(block, 10, "muted")
     block.text:SetPoint("LEFT", button, "RIGHT", FOOTER_GAP, 0)
-    block.text:SetText(L["HUB_" .. id])
+    block.text:SetText(HUB_TEXT[id] and LibForeverThemes.Text(HUB_TEXT[id]) or L.HUB_fonts)
     block.button = button
     block.visible = HUB_SHOWN[id]
     function block:SetEnabled(on) button:SetEnabled(on) end
@@ -646,6 +629,7 @@ local function runImport()
         return
     end
     Config.Import(profile)
+    LibForeverThemes.HubSync()   -- a following addon gets the hub's theme back
     Options.importArea:SetText("")
     showImportMessage(rejected > 0 and L.IMPORT_SKIPPED:format(rejected) or L.IMPORT_DONE, "accent")
 end
@@ -668,7 +652,7 @@ end
 
 local function resetBlock(page)
     local block = newBlock(page)
-    local button = confirmButton(block, L.RESET_ALL, function() Config.ResetAll() end)
+    local button = confirmButton(block, L.RESET_ALL, function() Config.ResetAll(); LibForeverThemes.HubSync() end)
     button:SetPoint("TOPLEFT", block, "TOPLEFT", INSET, -6)
     Options.resetAllButton = button
     function block:SetEnabled(on) button:SetEnabled(on) end
@@ -1144,7 +1128,10 @@ local function createFooterLeft(footer)
 end
 
 local function createFooterRight(footer)
-    local reset = confirmButton(footer, L.RESET_FRAME, function() Config.ResetScope(Options.currentScope) end)
+    local reset = confirmButton(footer, L.RESET_FRAME, function()
+        Config.ResetScope(Options.currentScope)
+        LibForeverThemes.HubSync()
+    end)
     reset:SetPoint("RIGHT", footer, "RIGHT", -FOOTER_INSET, 0)
     local copy = copyFromRow(footer)
     copy:SetPoint("RIGHT", reset, "LEFT", -FOOTER_GAP, 0)

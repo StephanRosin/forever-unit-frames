@@ -21,7 +21,7 @@ end
 local live = assert(db.profiles[name or "Default"], "no such profile")
 local sets = assert(db.themeSets and db.themeSets[name or "Default"], "the profile has no theme sets")
 local S, Config, Themes = ns.Settings, ns.Config, ns.Themes
-assert(sets.revision == Themes.REVISION, "theme sets of another REVISION: they no longer match a seed")
+assert(not LibForeverThemes.NeedsReseed(sets, Themes.REVISION), "theme sets of another REVISION: they no longer match a seed")
 local classic = S.Sanitise(assert(sets[Themes.CLASSIC], "no CLASSIC set"))
 
 local skip = { theme = true, width = true, height = true }
@@ -45,7 +45,7 @@ local function differs(set, seeded, scope, def)
 end
 
 local out = {}
-for _, id in ipairs(Themes.IDS) do
+for _, id in ipairs(LibForeverThemes.SpecIds(Themes.SPECS)) do
     local stored = id == live.general.theme and live or sets[id]
     if id ~= Themes.CLASSIC and type(stored) == "table" then
         local set = S.Sanitise(stored)

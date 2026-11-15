@@ -356,7 +356,9 @@ function ManaWarning.Update(frame)
         -- A secret share cannot tell low from not low: no sound.
         if not secret then ManaWarning.PlaySound(frame) end
     end
-    mw.low = low
+    -- A secret share counts as not yet said: truly low once readable, the
+    -- chat line and sound follow.
+    mw.low = low and not secret
 end
 
 -- Test mode: shown as if low, no chat.

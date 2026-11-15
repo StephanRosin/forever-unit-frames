@@ -1650,12 +1650,7 @@ L.HINT_themeBlizzardFonts = "Zauberleiste, Buff-Dauer, Abklingzeitenmanager, Feh
 L.SETTING_themePlatynatorFont = "Theme-Schrift für Platynator"
 L.HINT_themePlatynatorFont = "Deine eigenen Platynator-Namensplaketten; wirkt nach /reload"
 -- The hub "Forever Themes" holds the theme (following) or the font beyond the frames.
-L.HUB_follows = "Folgt Forever Themes"
 L.HUB_fonts = "In Forever Themes eingestellt"
-L.HUB_OPEN = "Forever Themes öffnen"
-L.HUB_missing = "Alle Forever-Addons auf einmal einstellen: Forever Themes"
-L.HUB_LINK = "Download-Link"
-L.POPUP_HUB_LINK = "Link kopieren (Strg+C) und im Browser öffnen:"
 L.PLATYNATOR_RELOAD = "Platynator: /reload, um die neue Schrift zu übernehmen."
 L.THEME_APPLIED_ALL = "Theme auf %d weitere Forever-Addons übertragen."
 L.THEME_COPY_FROM = "Positionen übernehmen von"

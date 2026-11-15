@@ -71,7 +71,6 @@ local ADDONS = {
         "contentShade" },
 }
 
-local reference
 for _, a in ipairs(ADDONS) do
     local name, layers = a[1], a[4]
     local ns = addon(a[2], a[3])
@@ -79,7 +78,6 @@ for _, a in ipairs(ADDONS) do
         print("  (skipped " .. name .. ": not next to this addon)")
     else
         local Themes = ns.Themes
-        reference = reference or Themes
         for id, want in pairs(CANON) do
             local s = Themes.SPECS[id]
             local tint, body
@@ -95,9 +93,9 @@ for _, a in ipairs(ADDONS) do
             H.check(name .. " " .. id .. ": backdrop tint", tint, want.tint)
             local skip = NO_BODY[name] == true or (NO_BODY[name] and NO_BODY[name][id])
             if not skip then H.check(name .. " " .. id .. ": body over it", body, want.body) end
-            for _, c in ipairs(reference.COLORS[id]) do
+            for _, c in ipairs(LibForeverThemes.COLORS[id]) do
                 local own
-                for _, o in ipairs(Themes.COLORS[id] or {}) do if o.id == c.id then own = o end end
+                for _, o in ipairs((Themes.COLORS or LibForeverThemes.COLORS)[id] or {}) do if o.id == c.id then own = o end end
                 H.check(name .. " " .. id .. " " .. c.id .. ": its backdrop colour",
                     own and own.back and str(own.back) or (own and "none"), c.back and str(c.back) or "none")
             end

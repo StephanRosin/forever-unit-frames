@@ -97,7 +97,8 @@ ns.RaidConfig.Set("general", "cellTheme", "FROST")
 H.check("cells: a theme of their own", Config.Get(Cell.KEY, "barTexture"), "FUF Frost")
 
 -- A font the client refuses at first use is tried again; until it takes,
--- the soft outline's black copies stay hidden (the text would show black).
+-- the text and its soft outline show Blizzard's font (never black copies
+-- under an empty text).
 local fs = UIParent:CreateFontString()
 local setFont, refusals = fs.SetFont, 1
 fs.SetFont = function(self, path, ...)
@@ -106,7 +107,8 @@ fs.SetFont = function(self, path, ...)
 end
 fs:Show()
 ns.Texts.SetFont(fs, "Fonts\\new.ttf", 12, "SOFT")
-H.check("refused: no outline under an empty text", fs.softCopies[1]:IsShown(), false)
+H.check("refused: Blizzard's font meanwhile", (fs:GetFont()), "Fonts\\FRIZQT__.TTF")
+H.check("refused: the outline in that font", (fs.softCopies[1]:GetFont()), "Fonts\\FRIZQT__.TTF")
 M.RunTimers()
 H.check("tried again: taken", (fs:GetFont()), "Fonts\\new.ttf")
 H.check("tried again: outline back", fs.softCopies[1]:IsShown(), true)
@@ -147,6 +149,19 @@ H.check("upgrade: revision noted", db.themeSets.Default.revision, ns.Themes.REVI
 ns.Config.Set("general", "borderPadding", 2)
 ns.Themes.Upgrade()
 H.check("upgrade: once only", ns.Config.Get("general", "borderPadding"), 2)
+
+-- Sets stored by the last release (revision 13, no seedRevision) are current:
+-- the move to Lib.NeedsReseed reseeds nothing.
+ns = H.LoadAddon()
+db = { profiles = { Default = { general = { theme = "WOOD", borderPadding = 2 } } },
+    themeSets = { Default = { revision = 13, CLASSIC = { player = { width = 280 } },
+        TECH = { general = { theme = "TECH" }, player = { x = 99 } } } } }
+ns.Config.Use(ns.Storage.Load(db))
+ns.Storage.Attach(db)
+ns.Themes.Upgrade()
+H.check("last release: the theme in use kept", ns.Config.Get("general", "borderPadding"), 2)
+H.check("last release: stored set kept", #ns.Themes.Stored(), 2)
+H.check("last release: TECH's set untouched", db.themeSets.Default.TECH.player.x, 99)
 
 -- Ornaments and the solid shadow sit at the ring's corners: around the
 -- frame, or around the frame and its docked castbar.
@@ -204,7 +219,7 @@ do
     H.check("colours: none under classic", #entry.Colors(), 0)
     H.check("colours: classic has no colour", entry.Color(), nil)
     H.check("colours: comic list", table.concat(entry.Colors("COMIC"), ","), "GREY,DARKGREY,BLACK,WHITE,YELLOW,BLUE,RED,GREEN,PURPLE")
-    for _, id in ipairs(ns.Themes.IDS) do
+    for _, id in ipairs(LibForeverThemes.SpecIds(ns.Themes.SPECS)) do
         local art = ns.Themes.SPECS[id].art
         if art then
             local colours = entry.Colors(id)
@@ -262,7 +277,7 @@ do
         PIXEL = "1,0.95,0.91,1", SWISS = "0.165,0.165,0.165,1", CONSOLE = "0.306,0.929,0.69,1",
         PITWALL = "0.043,0.047,0.055,1",
     }
-    for _, id in ipairs(ns.Themes.IDS) do
+    for _, id in ipairs(LibForeverThemes.SpecIds(ns.Themes.SPECS)) do
         local look = ns.Themes.SPECS[id].look
         if look then
             local ring = look.borderStyle == "FLAT" and table.concat(look.borderColor, ",") or look.borderStyle
@@ -287,7 +302,7 @@ do
     H.M.FireEvent("PLAYER_LOGIN")
     H.M.RunTimers()
     local f = ns.Frames.player
-    for _, id in ipairs(ns.Themes.IDS) do
+    for _, id in ipairs(LibForeverThemes.SpecIds(ns.Themes.SPECS)) do
         local look = ns.Themes.SPECS[id].look
         if look then
             ns.Themes.Switch(id)

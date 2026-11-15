@@ -1588,12 +1588,7 @@ L.HINT_themeBlizzardFonts = "시전 바, 강화 효과 지속시간, 재사용 �
 L.SETTING_themePlatynatorFont = "Platynator에 테마 글꼴"
 L.HINT_themePlatynatorFont = "내 Platynator 이름표 디자인; /reload 후 적용. 라틴 문자 클라이언트에서만 동작"
 -- The hub "Forever Themes" holds the theme (following) or the font beyond the frames.
-L.HUB_follows = "Forever Themes를 따름"
 L.HUB_fonts = "Forever Themes에서 설정"
-L.HUB_OPEN = "Forever Themes 열기"
-L.HUB_missing = "모든 Forever 애드온을 한 번에: Forever Themes"
-L.HUB_LINK = "다운로드 링크"
-L.POPUP_HUB_LINK = "링크를 복사(Ctrl+C)해 브라우저에서 여세요:"
 L.PLATYNATOR_RELOAD = "Platynator: 새 글꼴을 적용하려면 /reload 하세요."
 L.THEME_APPLIED_ALL = "테마를 다른 Forever 애드온 %d개에 적용했습니다."
 L.THEME_COPY_FROM = "위치 가져오기"

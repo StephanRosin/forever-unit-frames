@@ -20,7 +20,8 @@ _G.ForeverUnitFramesDB = nil
 M.FireEvent("ADDON_LOADED", "ForeverUnitFrames")
 M.FireEvent("PLAYER_LOGIN")
 M.RunTimers()
-ns.Print = function() end
+local printed = {}
+ns.Print = function(text) printed[#printed + 1] = text end
 local O, Themes, Config, L = ns.Options, ns.Themes, ns.Config, ns.L
 _G.ForeverThemes.FakeOther = { title = "Fake", Current = function() return "CLASSIC" end,
     Switch = function() return true end, Colors = function() return {} end, SetColor = function() return true end }
@@ -53,13 +54,13 @@ local function look(label, follow, hub)
 end
 
 look("no hub", false, false)
-H.check("download text", O.hubBlocks.missing.text:GetText(), L.HUB_missing)
-H.check("download button", O.hubBlocks.missing.button.text:GetText(), L.HUB_LINK)
+H.check("download text", O.hubBlocks.missing.text:GetText(), LibForeverThemes.Text("HUB_MISSING"))
+H.check("download button", O.hubBlocks.missing.button.text:GetText(), LibForeverThemes.Text("HUB_LINK"))
 O.hubBlocks.missing.button:GetScript("OnClick")()
-H.check("download: the link popup", M.popups[1], "FOREVERUNITFRAMES_HUB_LINK")
-H.check("download: its text", StaticPopupDialogs.FOREVERUNITFRAMES_HUB_LINK.text, L.POPUP_HUB_LINK)
+H.check("download: the link popup", M.popups[1], "LIBFOREVERTHEMES_HUB_LINK")
+H.check("download: its text", StaticPopupDialogs.LIBFOREVERTHEMES_HUB_LINK.text, LibForeverThemes.Text("HUB_COPY"))
 local shown = {}
-StaticPopupDialogs.FOREVERUNITFRAMES_HUB_LINK.OnShow({ GetEditBox = function() return {
+StaticPopupDialogs.LIBFOREVERTHEMES_HUB_LINK.OnShow({ GetEditBox = function() return {
     SetText = function(_, t) shown.text = t end, HighlightText = function() end, SetFocus = function() end } end })
 H.check("download: the address", shown.text, "https://www.curseforge.com/wow/addons/forever-themes")
 
@@ -67,21 +68,24 @@ local follows, opened = true, 0
 LibForeverThemes.SetHub({ Follows = function(folder) return follows and folder == "ForeverUnitFrames" end,
     OpenOptions = function() opened = opened + 1 end })
 look("following", true, true)
-H.check("line text", O.hubBlocks.follows.text:GetText(), L.HUB_follows)
+H.check("line text", O.hubBlocks.follows.text:GetText(), LibForeverThemes.Text("HUB_FOLLOWS"))
 H.check("fonts text", O.hubBlocks.fonts.text:GetText(), L.HUB_fonts)
-H.check("button text", O.hubBlocks.follows.button.text:GetText(), L.HUB_OPEN)
+H.check("button text", O.hubBlocks.follows.button.text:GetText(), LibForeverThemes.Text("HUB_OPEN"))
 O.hubBlocks.fonts.button:GetScript("OnClick")()
 H.check("button opens the hub", opened, 1)
 follows = false
 look("own theme in the hub", false, true)
 
--- The fonts stand down at the next refresh, values kept.
+-- The fonts stand down at the next refresh, values kept; the hub tells
+-- about the reload, not we.
+local printedBefore = #printed
 M.FireEvent("PLAYER_ENTERING_WORLD")
 H.check("hub: error line back", (fs:GetFont()), FRIZ)
 H.check("hub: no damage font stored", ForeverUnitFramesDB.damageFont, nil)
 Config.Set("general", "fontSize", 13)
 H.check("hub: design back to the user's", dps.font.asset, "Lato")
 H.check("hub: snapshot dropped", ForeverUnitFramesDB.platynator.snapshot, nil)
+H.check("hub: no /reload line of ours", #printed, printedBefore)
 H.check("hub: Blizzard value kept", Config.Get("general", "themeBlizzardFonts"), true)
 H.check("hub: Platynator value kept", Config.Get("general", "themePlatynatorFont"), true)
 Themes.Switch("WOOD")
@@ -91,6 +95,23 @@ H.check("hub: a theme switch writes nothing", (fs:GetFont()) .. "|" .. dps.font.
 LibForeverThemes.SetHub(nil)
 M.FireEvent("PLAYER_ENTERING_WORLD")
 H.check("no hub again: error line themed", (fs:GetFont()), ns.Media.Font(Themes.Font()))
+
+local synced = 0
+LibForeverThemes.SetHub({ Follows = function() return true end, Sync = function() synced = synced + 1 end })
+-- A profile switch, reset or import replaced the theme: the hub puts its own back.
+ns.UnitProfiles.SaveAs("Second")
+H.check("save as: no sync", synced, 0)
+ns.UnitProfiles.Switch(ns.UnitProfiles.DEFAULT)
+H.check("profile switch: hub synced", synced, 1)
+ns.UnitProfiles.Switch("Second")
+ns.UnitProfiles.Delete()
+H.check("profile delete: hub synced", synced, 3)
+O.Open("profiles")
+O.resetAllButton:GetScript("OnClick")(O.resetAllButton)
+O.resetAllButton:GetScript("OnClick")(O.resetAllButton)
+O.Close()
+H.check("reset all: hub synced", synced, 4)
+LibForeverThemes.SetHub(nil)
 
 _G.ForeverThemes.FakeOther = nil
 _G.UIErrorsFrame, _G.PLATYNATOR_CONFIG, _G.ForeverUnitFramesDB = nil, nil, nil

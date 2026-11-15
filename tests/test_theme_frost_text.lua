@@ -25,7 +25,7 @@ for _, field in ipairs({ "title", "healthLeft", "healthRight", "powerLeft" }) do
     H.check("frost " .. field .. ": no outline, shadow", look(field), " 1,-1")
 end
 
-for _, id in ipairs(Themes.IDS) do
+for _, id in ipairs(LibForeverThemes.SpecIds(Themes.SPECS)) do
     local outline = Themes.SPECS[id].look and Themes.SPECS[id].look.fontOutline
     if id == "FROST" then
         H.check("frost: no outline in the look", outline, "NONE")

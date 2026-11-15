@@ -1651,12 +1651,7 @@ L.HINT_themeBlizzardFonts = "Barra de lanzamiento, duración de beneficios, gest
 L.SETTING_themePlatynatorFont = "Fuente del tema: Platynator"
 L.HINT_themePlatynatorFont = "Tus propios diseños de placas de nombre de Platynator; se ve tras /reload"
 -- The hub "Forever Themes" holds the theme (following) or the font beyond the frames.
-L.HUB_follows = "Sigue a Forever Themes"
 L.HUB_fonts = "Se ajusta en Forever Themes"
-L.HUB_OPEN = "Abrir Forever Themes"
-L.HUB_missing = "Ajusta todos los addons Forever a la vez: Forever Themes"
-L.HUB_LINK = "Enlace de descarga"
-L.POPUP_HUB_LINK = "Copia el enlace (Ctrl+C) y ábrelo en tu navegador:"
 L.PLATYNATOR_RELOAD = "Platynator: /reload para aplicar la nueva fuente."
 L.THEME_APPLIED_ALL = "Tema aplicado a %d addons Forever más."
 L.THEME_COPY_FROM = "Tomar posiciones de"

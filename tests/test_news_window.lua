@@ -33,7 +33,9 @@ for version, entry in pairs(News.ENTRIES) do
         H.check(version .. ": " .. key, type(rawget(ns.Locales.enUS, key)), "string")
     end
     if entry.action then
-        H.check(version .. ": action text", type(rawget(ns.Locales.enUS, entry.action.text)), "string")
+        local text = entry.action.text
+        H.check(version .. ": action text", type(type(text) == "function" and text()
+            or rawget(ns.Locales.enUS, text)), "string")
         H.check(version .. ": action", type(entry.action.run), "function")
     end
 end

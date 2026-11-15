@@ -16,13 +16,28 @@ end
 
 local chat = #M.chat
 ns.Texts.SetFont(fs, WANTED, 12, "NONE")
+H.check("Blizzard's font from the first refusal", (fs:GetFont()), "Fonts\\FRIZQT__.TTF")
 M.RunTimers(1)
 H.check("Blizzard's font while refused", (fs:GetFont()), "Fonts\\FRIZQT__.TTF")
+ns.Texts.SetFont(fs, WANTED, 12, "NONE")
+H.check("a restyle with the same font: still Blizzard's", (fs:GetFont()), "Fonts\\FRIZQT__.TTF")
 H.check("no chat message", #M.chat, chat)
 
 refuse = false
 M.RunTimers()
 H.check("the wanted font once loadable", (fs:GetFont()), WANTED)
+
+-- Soft outline while refused: the copies take the font the text has, so
+-- the outline shows; the wanted one once loadable.
+local fs3 = CreateFrame("Frame"):CreateFontString()
+fs3.SetFont = fs.SetFont
+refuse = true
+ns.Texts.SetFont(fs3, WANTED, 12, "SOFT")
+H.check("soft: outline shown", fs3.soft, true)
+H.check("soft: copies in Blizzard's font", (fs3.softCopies[1]:GetFont()), "Fonts\\FRIZQT__.TTF")
+refuse = false
+M.RunTimers()
+H.check("soft: copies in the wanted font", (fs3.softCopies[1]:GetFont()), WANTED)
 
 -- Refused for good: the slow tries end, the fallback stays.
 local fs2 = CreateFrame("Frame"):CreateFontString()

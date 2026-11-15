@@ -229,7 +229,7 @@ local function render()
     local action = entry.action
     NewsWindow.actionButton:SetShown(action ~= nil)
     if action then
-        NewsWindow.actionButton.text:SetText(L[action.text])
+        NewsWindow.actionButton.text:SetText(type(action.text) == "function" and action.text() or L[action.text])
         fitActionButton()
     end
     fitHeight(#entry.lines)

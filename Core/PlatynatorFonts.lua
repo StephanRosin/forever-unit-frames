@@ -20,11 +20,11 @@ ns.PlatynatorFonts = PlatynatorFonts
 -- Platynator's own font (its Core/Constants.lua DefaultFont).
 local PLATYNATOR_DEFAULT = "Roboto Condensed Bold"
 
--- The active profile's own designs and its name; nil when Platynator's
--- saved variables do not look as expected.
-local function designs()
+-- A profile's own designs (default: the active one) and its name; nil
+-- when Platynator's saved variables do not look as expected.
+local function designs(name)
     local config = _G.PLATYNATOR_CONFIG
-    local name = _G.PLATYNATOR_CURRENT_PROFILE or "DEFAULT"
+    name = name or _G.PLATYNATOR_CURRENT_PROFILE or "DEFAULT"
     local profile = type(config) == "table" and type(config.Profiles) == "table" and config.Profiles[name]
     if type(profile) ~= "table" or type(profile.designs) ~= "table" then return nil end
     return profile.designs, name
@@ -35,19 +35,24 @@ local function fontOf(design)
         and type(design.font.asset) == "string" and design.font
 end
 
+-- Every font a Forever addon may have put into a design: the library's
+-- (an older alias by Lib.FontName) and Glass' Morpheus.
 local function themeFonts()
-    local set = {}
-    for _, spec in pairs(ns.Themes.SPECS) do
-        if spec.font then set[spec.font] = true end
-    end
+    local set = { Morpheus = true }
+    for _, f in ipairs(LibForeverThemes.FONTS) do set[f.name] = true end
     return set
 end
 
 local function registerFonts()
     local lsm = LibStub and LibStub("LibSharedMedia-3.0", true)
     if not lsm then return end
-    for font in pairs(themeFonts()) do
-        lsm:Register("font", font, ns.Media.Font(font), lsm.LOCALE_BIT_western)
+    local done = {}
+    for _, spec in pairs(ns.Themes.SPECS) do
+        local font = spec.font
+        if font and not done[font] then
+            done[font] = true
+            lsm:Register("font", font, ns.Media.Font(font), lsm.LOCALE_BIT_western)
+        end
     end
 end
 
@@ -64,18 +69,20 @@ local function apply(store, font)
     for name, design in pairs(list) do
         local f = fontOf(design)
         if f then
-            if snap[name] == nil then snap[name] = ours[f.asset] and PLATYNATOR_DEFAULT or f.asset end
+            if snap[name] == nil then snap[name] = ours[LibForeverThemes.FontName(f.asset)] and PLATYNATOR_DEFAULT or f.asset end
             f.asset = font
         end
     end
 end
 
+-- Every profile themed since (the user may have switched Platynator's).
 local function restore(store)
-    local list, profile = designs()
-    local snap = list and store.snapshot and store.snapshot[profile]
-    for name, asset in pairs(snap or {}) do
-        local f = fontOf(list[name])
-        if f then f.asset = asset end
+    for profile, snap in pairs(store.snapshot or {}) do
+        local list = designs(profile)
+        for name, asset in pairs(list and snap or {}) do
+            local f = fontOf(list[name])
+            if f then f.asset = asset end
+        end
     end
     store.snapshot = nil
 end
@@ -92,7 +99,8 @@ function PlatynatorFonts.Refresh()
     ForeverUnitFramesDB.platynator = store
     if font then apply(store, font) else restore(store) end
     store.font = font
-    ns.Print(ns.L.PLATYNATOR_RELOAD)
+    -- With the hub there, its own message covers the reload.
+    if not ns.Themes.Hub() then ns.Print(ns.L.PLATYNATOR_RELOAD) end
 end
 
 -- Platynator loading: fonts to LibSharedMedia, new designs get the font.
