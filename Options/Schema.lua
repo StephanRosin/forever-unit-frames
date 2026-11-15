@@ -91,7 +91,7 @@ Schema.FRAME = {
         { id = "position", keys = { "x", "y", "bossSpacing" } },
         { id = "barHeights", keys = { "titlePercent", "healthPercent", "powerPercent", "powerEnabled", "powerHideEmpty",
             "healthBarWidth", "powerBarWidth", "barAlign" } },
-        { id = "portrait", keys = { "portraitMode", "portraitStyle", "portraitHeight", "portraitZoom", "portraitOffsetY" } },
+        { id = "portrait", keys = { "portraitMode", "portraitStyle", "portraitSquare", "portraitHeight", "portraitZoom", "portraitOffsetY" } },
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },
         -- Everything about how see-through the frame is: its opacity, then

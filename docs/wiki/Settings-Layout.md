@@ -63,6 +63,7 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 <tbody>
 <tr><td><b>Portrait</b></td><td>Left/right: a square as tall as the frame. Above health: a full-width strip; the frame grows by its height</td><td>Off, Left, Right, Above health bar</td><td>Player, Target: Left; Target of Target, Focus, Pet, Party, Boss: Off</td><td>all</td></tr>
 <tr><td><b>Portrait style</b></td><td>2D picture, 3D model or class icon</td><td>2D, 3D (model), Class icon</td><td>Player, Target: 3D (model); Target of Target, Focus, Pet, Party, Boss: 2D</td><td>all</td></tr>
+<tr><td><b>Square 2D picture</b></td><td>The game's round picture, cropped to a square</td><td>On, Off</td><td>Off</td><td>all</td></tr>
 <tr><td><b>Strip height</b></td><td></td><td>10 – 120</td><td>30</td><td>all</td></tr>
 <tr><td><b>3D zoom (%)</b></td><td>100: the game's portrait framing; more zooms in on the face</td><td>100 – 400</td><td>100</td><td>all</td></tr>
 <tr><td><b>3D offset Y</b></td><td>Moves the model up or down, e.g. to bring the eyes into the strip. Models differ</td><td>-100 – 100</td><td>0</td><td>all</td></tr>

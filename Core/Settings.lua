@@ -204,6 +204,8 @@ Settings.Define({ key = "portraitMode", code = "PM", scope = "frame", type = "en
 -- CLASS: a player's class icon; units without a class get the 2D picture.
 Settings.Define({ key = "portraitStyle", code = "PS", scope = "frame", type = "enum",
     values = { "2D", "3D", "CLASS" }, default = "2D" })
+-- The game's 2D picture is round; square crops its inner square (a CurseForge wish).
+Settings.Define({ key = "portraitSquare", code = "QQ", scope = "frame", type = "bool", default = false })
 -- TOP: a strip as wide as the frame between title row and health bar; the
 -- frame grows by its height.
 Settings.Define({ key = "portraitHeight", code = "QH", scope = "frame", type = "int", min = 10, max = 120, default = 30 })

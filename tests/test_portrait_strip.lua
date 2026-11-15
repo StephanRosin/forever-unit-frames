@@ -37,3 +37,18 @@ C.Set("player", "portraitMode", "LEFT")
 H.check("frame back to its height", f:GetHeight(), h)
 H.check("full picture again", f.portrait2D._texCoord[3], 0)
 H.check("square again", f.portraitBg:GetWidth(), h)
+
+-- Square 2D: the round picture's inner square, in the strip its middle band.
+C.Set("player", "portraitStyle", "2D")
+C.Set("player", "portraitSquare", true)
+local tc = f.portrait2D._texCoord
+H.check("square: inner square", table.concat({ tc[1], tc[2], tc[3], tc[4] }, " "), "0.15 0.85 0.15 0.85")
+C.Set("player", "portraitMode", "TOP")
+tc = f.portrait2D._texCoord
+H.check("square strip: inner width", tc[1] .. " " .. tc[2], "0.15 0.85")
+H.check("square strip: band of the inner square", tc[3], 0.5 - 30 / w * 0.7 / 2)
+C.Set("player", "portraitMode", "LEFT")
+M.units.player.classToken = nil
+C.Set("player", "portraitStyle", "CLASS")
+C.Set("player", "portraitSquare", false)
+H.check("round again", f.portrait2D._texCoord[1], 0)

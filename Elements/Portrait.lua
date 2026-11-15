@@ -25,6 +25,24 @@ function Portrait.Build(frame)
     ns.Corners.Add(frame, frame.portrait2D)
 end
 
+-- The inner square of the round picture: 0.5 - 0.5 / sqrt(2), a little in
+-- so the round edge never shows.
+Portrait.SQUARE_INSET = 0.15
+
+-- The 2D picture's coords: whole or its inner square, in the TOP strip
+-- only the middle band of that.
+local function pictureCoords(frame)
+    local scope = frame.key
+    local inset = Config.Get(scope, "portraitSquare") and Portrait.SQUARE_INSET or 0
+    local lo, hi = inset, 1 - inset
+    if Config.Get(scope, "portraitMode") == "TOP" then
+        local band = math.min(1, (frame.portraitStrip or 0) / ns.Single.Size(scope)) * (hi - lo) / 2
+        frame.portrait2D:SetTexCoord(lo, hi, 0.5 - band, 0.5 + band)
+    else
+        frame.portrait2D:SetTexCoord(lo, hi, lo, hi)
+    end
+end
+
 function Portrait.Style(frame)
     local scope = frame.key
     local mode = Config.Get(scope, "portraitMode")
@@ -38,7 +56,7 @@ function Portrait.Style(frame)
     pic:ClearAllPoints()
     pic:SetAllPoints(bg)
     -- The class icon keeps its own coords (the class sheet's cell).
-    if not class then pic:SetTexCoord(0, 1, 0, 1) end
+    if not class then pictureCoords(frame) end
     if mode == "TOP" then
         local top = -(frame.titleHeight or 0)
         bg:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, top)
@@ -46,16 +64,12 @@ function Portrait.Style(frame)
         local strip = frame.portraitStrip or 0
         bg:SetHeight(strip)
         frame.portraitSide = strip
-        -- The square picture's middle band, as wide as the strip.
+        -- The class icon whole; the picture's middle band (pictureCoords).
         if class then
             -- Whole, as a square in the strip's middle.
             pic:ClearAllPoints()
             pic:SetPoint("CENTER", bg, "CENTER", 0, 0)
             pic:SetSize(strip, strip)
-        else
-            local w = ns.Single.Size(scope)
-            local band = math.min(1, strip / w) / 2
-            pic:SetTexCoord(0, 1, 0.5 - band, 0.5 + band)
         end
     elseif on then
         local point = mode == "LEFT" and "TOPLEFT" or "TOPRIGHT"
@@ -112,11 +126,11 @@ local function updatePicture(frame)
     pcall(SetPortraitTexture, frame.portrait2D, frame.unit)
 end
 
--- The class icon; the 2D picture, uncropped, for a unit without a class.
+-- The class icon; the 2D picture for a unit without a class.
 local function updateClassIcon(frame)
     local token = ns.Texts.ClassToken(frame.unit)
     if token and ns.Texts.DrawClassIcon(frame.portrait2D, token) then return end
-    frame.portrait2D:SetTexCoord(0, 1, 0, 1)
+    pictureCoords(frame)
     updatePicture(frame)
 end
 
