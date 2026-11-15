@@ -1625,6 +1625,7 @@ L.NEWS_0_60_0_DEFAULTS = "Thèmes : un thème choisi pour la première fois dém
 L.NEWS_0_60_0_FONT = "Polices : si le jeu refuse une police de thème après /reload, la police de Blizzard la remplace jusqu’à ce qu’elle se charge, au lieu de textes vides et de « Font could not be loaded »."
 L.NEWS_0_60_0_SOUND = "Alerte de mana faible : elle peut jouer un son (avertissement de raid, appel, réveil ou chuchotement ; aucun par défaut). Aucun son tant que WoW Forever garde votre mana secret."
 L.NEWS_0_60_1_FIXES = "Corrections : plus de textes vides pendant le chargement d’une police de thème ; l’alerte de mana faible joue son son et écrit de nouveau dans la discussion dès que votre mana est lisible ; les cadres d’unité suivent Forever Themes après un changement de profil, une réinitialisation ou une importation."
+L.NEWS_0_61_0_SQUARE = "Portrait : nouvelle option « Image 2D carrée », qui recadre l'image ronde du jeu en carré (Options, cadre, Portrait)."
 L.NEWS_OPEN_THEME = "Ouvrir le thème"
 
 -- Themes (Core/Themes.lua)

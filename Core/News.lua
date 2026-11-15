@@ -223,6 +223,9 @@ News.ENTRIES = {
     ["0.60.1"] = {
         lines = { "NEWS_0_60_1_FIXES" },
     },
+    ["0.61.0"] = {
+        lines = { "NEWS_0_61_0_SQUARE" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

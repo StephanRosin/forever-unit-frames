@@ -1626,6 +1626,7 @@ L.NEWS_0_60_0_DEFAULTS = "Temas: un tema que eliges por primera vez empieza con 
 L.NEWS_0_60_0_FONT = "Fuentes: si el juego rechaza una fuente de tema tras /reload, la fuente de Blizzard la sustituye hasta que cargue, en lugar de textos vacíos y \"Font could not be loaded\"."
 L.NEWS_0_60_0_SOUND = "Aviso de maná bajo: puede reproducir un sonido (aviso de banda, comprobación de listos, despertador o susurro; ninguno por defecto). Sin sonido mientras WoW Forever mantenga tu maná en secreto."
 L.NEWS_0_60_1_FIXES = "Correcciones: sin textos vacíos mientras carga una fuente de tema; el aviso de maná bajo vuelve a sonar y a escribir en el chat en cuanto tu maná es legible; los marcos de unidad siguen a Forever Themes tras cambiar de perfil, restablecer o importar."
+L.NEWS_0_61_0_SQUARE = "Retrato: nueva opción «Imagen 2D cuadrada», recorta la imagen redonda del juego en un cuadrado (Opciones, marco, Retrato)."
 L.NEWS_OPEN_THEME = "Abrir el tema"
 
 -- Themes (Core/Themes.lua)
