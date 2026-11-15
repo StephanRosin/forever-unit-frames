@@ -360,11 +360,12 @@ local function hasFont(fs, font)
     local function plain(p) return (p:lower():gsub("/", "\\")) end
     return plain(path) == plain(font)
 end
--- How often, and how far apart, a refused font is tried again.
+-- How often, and how far apart, a refused font is tried again: quickly
+-- first, then slowly for two more minutes. First use of a file can take
+-- seconds when many fonts load at once (login, /reload, theme switch).
 local FONT_RETRIES, FONT_RETRY_DELAY = 40, 0.25
--- First use of a file can take seconds when many fonts load at once
--- (theme switch); report each file only once.
-local refusedFonts = {}
+local SLOW_RETRIES, SLOW_RETRY_DELAY = 24, 5
+local FALLBACK_FONT = "Fonts\\FRIZQT__.TTF"
 
 -- A font file used for the first time can leave a text blank although
 -- GetFont reports it (seen in game: empty texts until the theme was
@@ -413,9 +414,16 @@ function Texts.SetFont(fs, font, size, outline, retries)
                 -- Restyled since: that call has its own tries.
                 if fs.fontWanted == wanted then Texts.SetFont(fs, font, size, outline, retries - 1) end
             end)
-        elseif not refusedFonts[font] then
-            refusedFonts[font] = true
-            ns.Print(("Font could not be loaded: %s"):format(font))
+        else
+            -- Blizzard's font meanwhile, so the text never stays empty.
+            fs:SetFont(FALLBACK_FONT, size, flags)
+            if fs.fontSlowFor ~= wanted then fs.fontSlowFor, fs.fontSlowLeft = wanted, SLOW_RETRIES end
+            if fs.fontSlowLeft > 0 then
+                fs.fontSlowLeft = fs.fontSlowLeft - 1
+                C_Timer.After(SLOW_RETRY_DELAY, function()
+                    if fs.fontWanted == wanted then Texts.SetFont(fs, font, size, outline, 0) end
+                end)
+            end
         end
     end
     if soft and not fs.softCopies then makeCopies(fs) end

@@ -213,3 +213,23 @@ mana(100)
 M.RunTimers(0.6)
 H.check("back before the fade ended: stays", mw.holder:IsShown(), true)
 H.check("back: fading in", mw.fadeIn:IsPlaying(), true)
+
+-- Sound (asked for on CurseForge): none by default; the chosen one each
+-- time it comes up, at most every 30 s, never in test mode.
+H.check("sound: none by default", C.Get("player", "manaWarnSound"), "NONE")
+C.Set("player", "manaWarnChat", false)
+C.Set("player", "manaWarnSound", "RAID_WARNING")
+M.Tick(31)
+local before = #M.sounds
+mana(900)
+mana(100)
+H.check("sound: plays when it comes up", #M.sounds, before + 1)
+H.check("sound: raid warning on Master", M.sounds[#M.sounds][1] .. "/" .. M.sounds[#M.sounds][2], "8959/Master")
+mana(900)
+mana(100)
+H.check("sound: quiet within 30 s", #M.sounds, before + 1)
+C.Set("player", "manaWarnSound", "NONE")
+M.Tick(31)
+mana(900)
+mana(100)
+H.check("sound: none plays nothing", #M.sounds, before + 1)

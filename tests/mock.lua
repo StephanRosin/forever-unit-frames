@@ -1491,6 +1491,8 @@ function M.Reset()
     M.frames = {}
     M.widgets = {}         -- every widget created, in creation order
     M.chat = {}
+    M.sounds = {}          -- PlaySound(id, channel) calls
+    _G.PlaySound = function(id, channel) table.insert(M.sounds, { id, channel }); return true end
     M.combat = false
     M.shiftDown, M.ctrlDown, M.altDown = false, false, false
     M.form = nil

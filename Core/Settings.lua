@@ -1049,6 +1049,9 @@ manaWarn({ key = "manaWarnFade", code = "QA", type = "bool", default = true })
 manaWarn({ key = "manaWarnFadeTime", code = "QB", type = "int", min = 1, max = 30, default = 3 })
 -- A line to the group's chat each time it comes up.
 manaWarn({ key = "manaWarnChat", code = "MP", type = "bool", default = false })
+-- A sound each time it comes up (Elements/ManaWarning.lua SOUNDS).
+manaWarn({ key = "manaWarnSound", code = "QM", type = "enum", values = { "NONE", "RAID_WARNING", "READY_CHECK", "ALARM", "WHISPER" },
+    default = "NONE" })
 -- A click on it (with manaWarnClickKey held): the chat line, or an item, a
 -- spell or a macro text (manaWarnClickWhat) through a secure button.
 manaWarn({ key = "manaWarnClick", code = "MU", type = "enum", values = { "NONE", "CHAT", "ITEM", "SPELL", "MACRO" },

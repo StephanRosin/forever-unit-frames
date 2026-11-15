@@ -26,6 +26,7 @@ The **Extras** tab on each frame's page in `/fuf`. The last column says which fr
 <tr><td><b>Fade in and out</b></td><td></td><td>On, Off</td><td>On</td><td>Player</td></tr>
 <tr><td><b>Fade time (1/10 s)</b></td><td></td><td>1 – 30</td><td>3</td><td>Player</td></tr>
 <tr><td><b>Tell the group when it comes up</b></td><td>A line in party or raid chat; at most every 30 s, never solo</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
+<tr><td><b>Sound</b></td><td>Plays each time the warning comes up; at most every 30 s</td><td>None, Raid warning, Ready check, Alarm clock, Whisper</td><td>None</td><td>Player</td></tr>
 <tr><td><b>Click on it</b></td><td>Item, spell, macro: in combat the place stays clickable while it is hidden</td><td>Nothing, Tell the group, Use an item, Cast a spell, Macro text</td><td>Nothing</td><td>Player</td></tr>
 <tr><td><b>Key to hold</b></td><td></td><td>None, Shift, Ctrl, Alt</td><td>Shift</td><td>Player</td></tr>
 <tr><td><b>Item, spell or macro</b></td><td>A name or ID; a macro: /use Major Mana Potion</td><td>Text (a spell name or ID)</td><td>(none)</td><td>Player</td></tr>

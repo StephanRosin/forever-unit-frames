@@ -229,7 +229,7 @@ Schema.FRAME = {
     { id = "extras", sections = {
         -- The low mana warning (Elements/ManaWarning.lua), the player only.
         { id = "manaWarn", keys = { "manaWarn", "manaWarnBelow", "manaWarnGroupOnly", "manaWarnOutOfCombat", "manaWarnShow", "manaWarnIcon",
-            "manaWarnSize", "manaWarnFontSize", "manaWarnColor", "manaWarnPulse", "manaWarnFade", "manaWarnFadeTime", "manaWarnChat", "manaWarnClick", "manaWarnClickKey",
+            "manaWarnSize", "manaWarnFontSize", "manaWarnColor", "manaWarnPulse", "manaWarnFade", "manaWarnFadeTime", "manaWarnChat", "manaWarnSound", "manaWarnClick", "manaWarnClickKey",
             "manaWarnClickWhat", "manaWarnX",
             "manaWarnY" },
             placement = { "manaWarnX", "manaWarnY" } },

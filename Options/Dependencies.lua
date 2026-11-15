@@ -137,7 +137,7 @@ local RULES = {
     -- Elements/ManaWarning.lua: everything with the warning; the icon's
     -- rows with an icon shown, the text's with a text.
     { on("manaWarn"), { "manaWarnBelow", "manaWarnGroupOnly", "manaWarnOutOfCombat", "manaWarnShow", "manaWarnIcon", "manaWarnSize",
-        "manaWarnFontSize", "manaWarnColor", "manaWarnPulse", "manaWarnFade", "manaWarnFadeTime", "manaWarnChat", "manaWarnClick", "manaWarnClickKey",
+        "manaWarnFontSize", "manaWarnColor", "manaWarnPulse", "manaWarnFade", "manaWarnFadeTime", "manaWarnChat", "manaWarnSound", "manaWarnClick", "manaWarnClickKey",
         "manaWarnClickWhat", "manaWarnX", "manaWarnY" } },
     { on("manaWarnFade"), { "manaWarnFadeTime" } },
     { isNot("manaWarnClick", "NONE"), { "manaWarnClickKey", "manaWarnClickWhat" } },

@@ -313,6 +313,21 @@ setShown = function(mw, scope, show, instant)
     end)
 end
 
+-- Blizzard's sound kit IDs (SOUNDKIT names differ between clients).
+ManaWarning.SOUNDS = { RAID_WARNING = 8959, READY_CHECK = 8960, ALARM = 12889, WHISPER = 3081 }
+
+-- The chosen sound, on the Master channel (heard with effects muted); not
+-- twice within CHAT_GAP when the share hovers around the line.
+function ManaWarning.PlaySound(frame)
+    local mw = frame.manaWarning
+    local id = ManaWarning.SOUNDS[setting(frame.key, "manaWarnSound")]
+    if not id then return end
+    local now = GetTime()
+    if mw.soundAt and now - mw.soundAt < ManaWarning.CHAT_GAP then return end
+    mw.soundAt = now
+    PlaySound(id, "Master")
+end
+
 function ManaWarning.Update(frame)
     local mw = frame.manaWarning
     if not (mw and mw.styled) then return end
@@ -336,8 +351,10 @@ function ManaWarning.Update(frame)
     if secret then mw.holder:SetAlpha(secretAlpha(mw, scope)) end
     ns.Pulse.Set({ mw.icon, mw.text }, low and setting(scope, "manaWarnPulse") == true)
     -- Once each time it comes up.
-    if low and not mw.low and not mw.preview and setting(scope, "manaWarnChat") == true then
-        ManaWarning.Announce(frame)
+    if low and not mw.low and not mw.preview then
+        if setting(scope, "manaWarnChat") == true then ManaWarning.Announce(frame) end
+        -- A secret share cannot tell low from not low: no sound.
+        if not secret then ManaWarning.PlaySound(frame) end
     end
     mw.low = low
 end
