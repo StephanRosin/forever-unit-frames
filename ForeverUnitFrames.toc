@@ -61,6 +61,7 @@ Elements\Classification.lua
 Elements\CombatFeedback.lua
 Elements\ThemeArt.lua
 Elements\Shape.lua
+Elements\Boxes.lua
 Elements\Totems.lua
 Elements\ShieldWatch.lua
 Elements\ComboPoints.lua

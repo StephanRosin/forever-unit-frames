@@ -356,7 +356,9 @@ end
 -- style, size, padding, colour, shadow; rounded by radius (default: the
 -- scope's corner radius; callers clamp it to the box). color, when given,
 -- replaces a FLAT ring's colour (a theme colour, Themes.Accent).
-function Border.Draw(owner, scope, box, radius, color)
+-- shadowOwner (optional) holds the shadow instead of owner: a frame below
+-- its neighbours, so the shadow never falls on them (Elements/Boxes.lua).
+function Border.Draw(owner, scope, box, radius, color, shadowOwner)
     local ring = pieces(owner)
     local size, padding = Border.Size(scope), Border.Padding(scope)
     radius = radius or ns.Corners.Radius(scope)
@@ -379,7 +381,11 @@ function Border.Draw(owner, scope, box, radius, color)
         paintFlat(ring.line, metal.LINE)
     end
     showRing(ring.line, hasLine)
-    drawShadow(owner, scope, box, radius)
+    if shadowOwner then
+        shadowOwner.shadow = shadowOwner.shadow or newShadow(shadowOwner)
+        hideShadow(owner.shadow)
+    end
+    drawShadow(shadowOwner or owner, scope, box, radius)
 end
 
 -- A plain ring in one colour (the elite / rare ring, Elements/

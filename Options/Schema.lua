@@ -90,7 +90,7 @@ Schema.FRAME = {
         { id = "size", keys = { "width", "height" } },
         { id = "position", keys = { "x", "y", "bossSpacing" } },
         { id = "barHeights", keys = { "titlePercent", "healthPercent", "powerPercent", "powerEnabled", "powerHideEmpty",
-            "healthBarWidth", "powerBarWidth", "barAlign" } },
+            "healthBarWidth", "powerBarWidth", "barAlign", "barSpacing" } },
         { id = "portrait", keys = { "portraitMode", "portraitStyle", "portraitSquare", "portraitHeight", "portraitZoom", "portraitOffsetY" } },
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },

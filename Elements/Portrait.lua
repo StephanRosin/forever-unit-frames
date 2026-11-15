@@ -58,7 +58,8 @@ function Portrait.Style(frame)
     -- The class icon keeps its own coords (the class sheet's cell).
     if not class then pictureCoords(frame) end
     if mode == "TOP" then
-        local top = -(frame.titleHeight or 0)
+        -- Below the title row, and its gap when the parts stand apart.
+        local top = -(frame.stripTop or frame.titleHeight or 0)
         bg:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, top)
         bg:SetPoint("TOPRIGHT", frame, "TOPRIGHT", 0, top)
         local strip = frame.portraitStrip or 0

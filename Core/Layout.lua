@@ -44,6 +44,14 @@ function Layout.PortraitInsets(mode, height)
     return 0, 0
 end
 
+-- The gap between a frame's stacked parts (barSpacing): count gaps must
+-- fit into room, the height health can give up; a gap too large for that
+-- shrinks to its share (whole units, never below 0).
+function Layout.PartGap(gap, room, count)
+    if count <= 0 then return 0 end
+    return math.max(0, math.min(gap, math.floor(room / count)))
+end
+
 -- Aura icons ------------------------------------------------------------------
 -- Icons grow in a primary direction and wrap into rows that run across
 -- it. Offsets are measured from the corner the icons grow away from.

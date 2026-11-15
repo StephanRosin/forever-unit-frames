@@ -53,6 +53,7 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 <tr><td><b>Health bar width (%)</b></td><td>The health bar's share of the frame width; the rest shows the frame background</td><td>20 – 100</td><td>100</td><td>all</td></tr>
 <tr><td><b>Power bar width (%)</b></td><td>The power bar's share of the frame width; the rest shows the frame background</td><td>20 – 100</td><td>100</td><td>all</td></tr>
 <tr><td><b>Narrow bars sit</b></td><td>Where a bar narrower than the frame sits</td><td>Left, Center, Right</td><td>Left</td><td>all</td></tr>
+<tr><td><b>Spacing between parts</b></td><td>Gap between title row, bars, portrait and footer row; each part gets its own border and background. 0: one block</td><td>0 – 8</td><td>0</td><td>all</td></tr>
 </tbody>
 </table>
 

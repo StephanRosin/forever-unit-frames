@@ -88,18 +88,20 @@ function ThemeArt.Build(frame)
     frame.themeWedge:Hide()
 end
 
-local function placeShadowAround(shadow, box, offset, extent)
+-- The solid shadow behind box's ring (extent: its reach), offset down
+-- and right.
+function ThemeArt.PlaceShadow(shadow, box, offset, extent)
     shadow:ClearAllPoints()
     shadow:SetPoint("TOPLEFT", box, "TOPLEFT", offset - extent, extent - offset)
     shadow:SetPoint("BOTTOMRIGHT", box, "BOTTOMRIGHT", offset + extent, -offset - extent)
     shadow:SetColorTexture(SHADOW_COLOR[1], SHADOW_COLOR[2], SHADOW_COLOR[3], SHADOW_COLOR[4])
 end
 
-local function placeShadow(frame, art, extent)
-    frame.themeShadowOn = art.hardShadow ~= nil
+local function placeShadow(frame, art, extent, apart)
+    frame.themeShadowOn = art.hardShadow ~= nil and not apart
     if frame.themeShadowOn then
-        placeShadowAround(frame.themeShadow, frame, art.hardShadow, extent)
-        placeShadowAround(frame.themeBlockShadow, frame.unitBox or frame, art.hardShadow, extent)
+        ThemeArt.PlaceShadow(frame.themeShadow, frame, art.hardShadow, extent)
+        ThemeArt.PlaceShadow(frame.themeBlockShadow, frame.unitBox or frame, art.hardShadow, extent)
     end
     ThemeArt.Refresh(frame, frame.blockRing ~= nil and frame.blockRing:IsShown())
 end
@@ -126,15 +128,15 @@ function ThemeArt.Refresh(frame, joined)
 end
 
 -- The backdrop out to the ring's inner edge.
-local function placeBackAround(back, clip, box, padding, radius)
+function ThemeArt.PlaceBack(back, clip, box, padding, radius)
     back:ClearAllPoints()
     back:SetPoint("TOPLEFT", box, "TOPLEFT", -padding, padding)
     back:SetPoint("BOTTOMRIGHT", box, "BOTTOMRIGHT", padding, -padding)
     ns.Corners.Fit(clip, back, radius > 0 and radius + padding or 0)
 end
 local function placeBack(frame, padding, radius)
-    placeBackAround(frame.themeBack, frame.themeClip, frame, padding, radius)
-    placeBackAround(frame.themeBlockBack, frame.themeBlockClip, frame.unitBox or frame, padding, radius)
+    ThemeArt.PlaceBack(frame.themeBack, frame.themeClip, frame, padding, radius)
+    ThemeArt.PlaceBack(frame.themeBlockBack, frame.themeBlockClip, frame.unitBox or frame, padding, radius)
 end
 
 -- Ornaments sit at the ring's outer corners, art.ornamentInset inwards
@@ -241,12 +243,15 @@ function ThemeArt.Style(frame)
     local spec = ns.Themes.Spec(id)
     local art = spec.art or {}
     local extent = ns.Border.Extent(scope)
+    -- Apart (barSpacing), backdrop and shadow are each part's own
+    -- (Elements/Boxes.lua): the gaps show nothing.
+    local apart = ns.Shape.Apart(frame)
     ThemeArt.Paint(frame.themeBack, spec)
     ThemeArt.Paint(frame.themeBlockBack, spec)
-    frame.themeBackOn = frame.themeBack:IsShown()
+    frame.themeBackOn = frame.themeBack:IsShown() and not apart
     placeOrnaments(frame, id, art, extent)
     placeRule(frame, art, extent)
-    placeShadow(frame, art, extent)
+    placeShadow(frame, art, extent, apart)
     placeTitle(frame, id, art)
 end
 

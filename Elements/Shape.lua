@@ -24,6 +24,22 @@ ns.Shape = Shape
 
 local Config = ns.Config
 
+-- Whether the frame's parts stand apart (barSpacing, Elements/Boxes.lua):
+-- each has its own ring, and a docked castbar or the threat bar never
+-- joins the frame.
+function Shape.Apart(frame)
+    return ns.Single.BoxGap(frame.key) > 0
+end
+
+-- Apart, a part's textures are rounded only at the frame's outer corners
+-- (the one mask, Core/Corners.lua), yet its ring at all four: a square
+-- corner stays under the ring while radius * (sqrt 2 - 1) <= the ring's
+-- reach.
+local SQUARE_CORNER = math.sqrt(2) - 1
+local function apartRadius(scope)
+    return math.floor(ns.Border.Extent(scope) / SQUARE_CORNER + 1e-6)
+end
+
 -- The frame's mask shape by which of its sides join another row: the
 -- corners away from it stay round; joined on both sides, none are.
 local function frameShape(top, bottom)
@@ -48,6 +64,7 @@ end
 function Shape.Radius(frame)
     local w, h = ns.Single.Size(frame.key)
     local radius = ns.Corners.Clamp(ns.Corners.Radius(frame.key), w, h)
+    if Shape.Apart(frame) then return math.min(radius, apartRadius(frame.key)) end
     if dockSide(frame) then
         radius = math.min(radius, math.floor(ns.Castbar.Height(frame.key) + 1e-6))
     end
@@ -65,16 +82,18 @@ function Shape.CastbarBelow(frame)
 end
 
 -- The docked castbar's side ("BELOW", "ABOVE" or nil) and how far its
--- slot reaches out from the frame (its height; 0 without one).
+-- slot reaches out from the frame (its height and the parts' gap; 0
+-- without one).
 function Shape.DockReach(frame)
     local side = dockSide(frame)
     if not side then return nil, 0 end
-    return side, ns.Castbar.Height(frame.key)
+    return side, ns.Castbar.Height(frame.key) + ns.Single.BoxGap(frame.key)
 end
 
 local function placeUnitBox(frame, side)
     local _, reach = Shape.DockReach(frame)
     local threat = ns.ThreatBar and ns.ThreatBar.Height(frame.key) or 0
+    if threat > 0 then threat = threat + ns.Single.BoxGap(frame.key) end
     local box = frame.unitBox
     box:ClearAllPoints()
     box:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, side == "ABOVE" and reach or 0)
@@ -105,8 +124,15 @@ function Shape.Style(frame)
     ns.Corners.Fit(frame.clip, frame, radius)
     -- A raid cell names its own theme (Raid/Cell.lua).
     local rim = ns.Themes.Rim(frame.themeOf and frame.themeOf() or ns.Themes.Current())
-    ns.Border.Draw(frame.frameRing, scope, frame.frameRing, radius, rim)
-    ns.Border.Draw(frame.blockRing, scope, frame.blockRing, radius, rim)
+    -- Apart, each part has its own ring (Elements/Boxes.lua); the holders
+    -- stay for the glows and the elite ring around the whole frame.
+    if Shape.Apart(frame) then
+        ns.Border.Hide(frame.frameRing)
+        ns.Border.Hide(frame.blockRing)
+    else
+        ns.Border.Draw(frame.frameRing, scope, frame.frameRing, radius, rim)
+        ns.Border.Draw(frame.blockRing, scope, frame.blockRing, radius, rim)
+    end
     Shape.Refresh(frame)
 end
 
@@ -116,8 +142,9 @@ end
 -- on, so it joins the frame's bottom for good.
 function Shape.Refresh(frame)
     local side = frame.dockSide
-    local castbar = side ~= nil and frame.castbar:IsShown()
-    local threat = ns.ThreatBar and ns.ThreatBar.Active(frame.key) or false
+    local apart = Shape.Apart(frame)
+    local castbar = not apart and side ~= nil and frame.castbar:IsShown()
+    local threat = not apart and ns.ThreatBar and ns.ThreatBar.Active(frame.key) or false
     local top = castbar and side == "ABOVE"
     local bottom = (castbar and side == "BELOW") or threat
     local joined = top or bottom

@@ -373,7 +373,7 @@ function Castbar.DockedDepth(scope)
     if not Castbar.Applies(scope) or not Config.Get(scope, "castbarEnabled") or not Castbar.Docked(scope) then
         return 0
     end
-    return barHeight(scope) + ns.Border.Extent(scope)
+    return barHeight(scope) + ns.Border.Extent(scope) + ns.Single.BoxGap(scope)
 end
 
 -- Whole castbar size, icon included: the frame's width.
@@ -411,11 +411,13 @@ local function anchor(bar, frame, scope, inset)
         bar:SetPoint("BOTTOMLEFT", frame.portraitBg, "BOTTOMLEFT", inset, 0)
         bar:SetPoint("BOTTOMRIGHT", frame.portraitBg, "BOTTOMRIGHT", 0, 0)
     elseif placement == "ABOVE" then
-        bar:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", inset, 0)
-        bar:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", 0, 0)
+        local gap = ns.Single.BoxGap(scope)
+        bar:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", inset, gap)
+        bar:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", 0, gap)
     else
-        bar:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", inset, 0)
-        bar:SetPoint("TOPRIGHT", frame, "BOTTOMRIGHT", 0, 0)
+        local gap = ns.Single.BoxGap(scope)
+        bar:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", inset, -gap)
+        bar:SetPoint("TOPRIGHT", frame, "BOTTOMRIGHT", 0, -gap)
     end
 end
 
@@ -486,8 +488,9 @@ function Castbar.Style(frame)
     bar.box:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", 0, 0)
     -- Docked, the castbar is part of the unit's block: rounded with it and
     -- inside its border (Elements/Shape.lua). Detached, it is a block of
-    -- its own with its own border.
-    if placement == "DETACHED" then
+    -- its own with its own border, as it is docked while the frame's parts
+    -- stand apart (barSpacing).
+    if placement == "DETACHED" or (placement ~= "PORTRAIT" and ns.Shape.Apart(frame)) then
         local w, h = size(scope)
         local radius = ns.Corners.Clamp(ns.Corners.Radius(scope), w, h)
         ns.Corners.Fit(bar.clip, bar.box, radius)

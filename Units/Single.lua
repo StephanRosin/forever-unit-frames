@@ -22,6 +22,15 @@ function Single.Footer(scope)
     return Pixel.Snap(Config.Get(scope, "footerHeight"))
 end
 
+-- The room between two of the frame's parts (barSpacing): the spacing
+-- the user sees between two borders, plus both borders' reach; 0 while
+-- the parts form one block.
+function Single.BoxGap(scope)
+    local spacing = Config.Get(scope, "barSpacing")
+    if spacing <= 0 then return 0 end
+    return Pixel.Snap(spacing, nil, 1) + 2 * ns.Border.Extent(scope)
+end
+
 -- Width and height of a unit frame of scope, on the pixel grid.
 function Single.Size(scope)
     return Pixel.Snap(Config.Get(scope, "width")),
@@ -106,8 +115,6 @@ local function layoutBars(frame)
     -- footer row are not theirs.
     local strip, footer = Single.PortraitStrip(scope), Single.Footer(scope)
     local rowsHeight = height == configured and Config.Get(scope, "height") or height - strip - footer
-    height = height - strip - footer
-    frame.layoutHeight, frame.portraitStrip, frame.footerHeight = height, strip, footer
     -- Hidden for a unit without power (Elements/Power.lua): health takes the row.
     local powerOn = Config.Get(scope, "powerEnabled") and not frame.powerEmpty
     local th, _, ph = Layout.Rows(rowsHeight, Config.Get(scope, "titlePercent"),
@@ -116,8 +123,20 @@ local function layoutBars(frame)
     local pixel = Pixel.Snap(1, nil, 1)
     local titleH = th > 0 and Pixel.Snap(th, nil, 1) or 0
     local powerH = powerShown and Pixel.Snap(ph, nil, 1) or 0
-    local healthH = math.max(height - titleH - powerH, pixel)
+    -- Apart (barSpacing): a gap below the title row and the strip, above
+    -- the power bar and the footer; health gives up the room.
+    local parts = (titleH > 0 and 1 or 0) + (strip > 0 and 1 or 0) + (powerShown and 1 or 0) + (footer > 0 and 1 or 0)
+    local gap = Pixel.Snap(Layout.PartGap(Single.BoxGap(scope), height - strip - footer - titleH - powerH - pixel, parts))
+    local titleGap, stripGap = titleH > 0 and gap or 0, strip > 0 and gap or 0
+    local powerGap, footerGap = powerShown and gap or 0, footer > 0 and gap or 0
+    height = height - strip - footer - stripGap - footerGap
+    frame.layoutHeight, frame.portraitStrip, frame.footerHeight = height, strip, footer
+    frame.boxGap, frame.stripTop = gap, titleH + titleGap
+    local healthH = math.max(height - titleH - powerH - titleGap - powerGap, pixel)
+    frame.healthHeight, frame.powerHeight = healthH, powerH
     local left, right = Layout.PortraitInsets(Config.Get(scope, "portraitMode"), height)
+    if left > 0 then left = left + gap end
+    if right > 0 then right = right + gap end
     local title = frame.title
     title:ClearAllPoints()
     title:SetPoint("TOPLEFT", frame, "TOPLEFT", left, 0)
@@ -144,15 +163,16 @@ local function layoutBars(frame)
     end
     frame.healthWidth, frame.overhealLane = healthW - lane, lane
     frame.health:ClearAllPoints()
-    frame.health:SetPoint("TOPLEFT", frame, "TOPLEFT", left + healthBefore, -(titleH + strip))
-    frame.health:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -(right + healthAfter + lane), -(titleH + strip))
+    local healthTop = titleH + titleGap + strip + stripGap
+    frame.health:SetPoint("TOPLEFT", frame, "TOPLEFT", left + healthBefore, -healthTop)
+    frame.health:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -(right + healthAfter + lane), -healthTop)
     frame.health:SetHeight(healthH)
     if frame.power then
         local powerW, powerBefore, powerAfter = barSpan(scope, "powerBarWidth", width)
         frame.power:ClearAllPoints()
-        frame.power:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", left + powerBefore, footer)
+        frame.power:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", left + powerBefore, footer + footerGap)
         local powerLane = Config.Get(scope, "powerMatchesHealth") and lane or 0
-        frame.power:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -(right + powerAfter + powerLane), footer)
+        frame.power:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -(right + powerAfter + powerLane), footer + footerGap)
         frame.powerWidth = powerW - powerLane
         frame.power:SetHeight(powerShown and powerH or pixel)
         frame.power:SetShown(powerShown)
@@ -160,8 +180,11 @@ local function layoutBars(frame)
 end
 
 -- The rows again without restyling, e.g. when the power bar comes or goes;
--- plain frames only, so fine in combat.
-Single.LayoutBars = layoutBars
+-- plain frames only, so fine in combat. The parts' own rings follow.
+function Single.LayoutBars(frame)
+    layoutBars(frame)
+    ns.Boxes.Style(frame)
+end
 
 -- What shows and hides an enabled frame: the unit watch (shown while its
 -- unit exists), or for the player hidden in a group the game's visibility

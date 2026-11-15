@@ -415,6 +415,7 @@ function ThreatBar.Style(frame)
     bar:SetShown(active)
     if not active then return end
     local _, below = ns.Shape.CastbarBelow(frame)
+    below = below + ns.Single.BoxGap(scope)
     bar:ClearAllPoints()
     bar:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", 0, -below)
     bar:SetPoint("TOPRIGHT", frame, "BOTTOMRIGHT", 0, -below)
@@ -424,7 +425,17 @@ function ThreatBar.Style(frame)
     bar.bg:SetTexture(tex)
     local bg = Config.Get(scope, "backgroundColor")
     bar.bg:SetVertexColor(bg[1], bg[2], bg[3], bg[4])
-    ns.Corners.Fit(bar.clip, frame.unitBox, ns.Shape.Radius(frame))
+    -- Apart (barSpacing), a part of its own with its own ring; else the
+    -- frame's last row, inside the frame's ring.
+    if ns.Shape.Apart(frame) then
+        local w, h = ns.Pixel.Snap(Config.Get(scope, "width")), ThreatBar.Height(scope)
+        local radius = ns.Corners.Clamp(ns.Shape.Radius(frame), w, h)
+        ns.Corners.Fit(bar.clip, bar, radius)
+        ns.Border.Draw(bar, scope, bar, radius, ns.Themes.Rim(ns.Themes.Current()))
+    else
+        ns.Corners.Fit(bar.clip, frame.unitBox, ns.Shape.Radius(frame))
+        ns.Border.Hide(bar)
+    end
     local font = ns.Media.Font(Config.Get(scope, "fontFace"))
     local size = math.min(Config.Get(scope, "fontSize"), Config.Get(scope, "threatBarHeight"))
     local outline = Config.Get(scope, "fontOutline")
