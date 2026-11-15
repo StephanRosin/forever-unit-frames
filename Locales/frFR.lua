@@ -1604,6 +1604,7 @@ L.NEWS_0_57_0_FROST = "Thème Givre : titres et texte en Julius Sans One avec un
 L.NEWS_0_57_0_BACKGROUNDS = "Thèmes : chaque thème et chaque couleur ont désormais le même fond de fenêtre dans tous les addons Forever."
 L.NEWS_0_58_0_THEME_FONTS = "Thèmes : deux nouvelles options sous Général > Cadres et addon donnent la police du thème à la barre d'incantation, à la durée des améliorations, au gestionnaire de temps de recharge et aux messages d'erreur de Blizzard, ainsi qu'aux barres de nom de Platynator. Les deux restent désactivées tant que vous ne les activez pas."
 L.NEWS_0_58_0_ROLE_ICON = "Cadres de groupe : l'icône de rôle garde sa place quand le membre porte aussi la couronne de chef."
+L.NEWS_0_58_1_MANA_CHAT = "Alerte de mana bas : un clic prévient de nouveau le groupe (WoW Forever garde désormais votre mana secret, elle restait muette). La ligne indique \"[ALERTE] Je suis à court de mana (< 20%)\" avec votre propre seuil."
 L.NEWS_OPEN_THEME = "Ouvrir le thème"
 
 -- Themes (Core/Themes.lua)
