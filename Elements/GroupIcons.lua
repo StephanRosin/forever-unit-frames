@@ -19,7 +19,8 @@ local _, ns = ...
 -- * role (off by default): the assigned role as a round badge, the raid
 --   cells' too (Raid/CellRole.lua).
 --   With groupRolePortrait it leaves the row for a corner of the
---   portrait while the frame shows one (placeRole).
+--   portrait while the frame shows one (placeRole), with its own size,
+--   point and offset there.
 --   UnitGroupRolesAssigned is secret while the unit's identity is
 --   restricted (SecretWhenUnitIdentityRestricted): then none.
 -- Master looter: the client has the loot method (C_PartyInfo.GetLootMethod,
@@ -200,22 +201,25 @@ local function placeOwn(frame, g)
     end
 end
 
--- The role on the portrait: the strip's left end, or the square's bottom
--- corner towards the bars; clear of the portrait aura (centre) and the
--- elite and class badges (top corners). Above a 3D model: the holder's
--- level is.
+-- The role's point on the portrait for AUTO: the strip's left end, or the
+-- square's bottom corner towards the bars; clear of the portrait aura
+-- (centre) and the elite and class badges (top corners).
+GroupIcons.ROLE_AUTO_POINT = { TOP = "LEFT", LEFT = "BOTTOMRIGHT", RIGHT = "BOTTOMLEFT" }
+
+-- Its point on the portrait, ROLE_INSET in from the edges that point
+-- touches, plus the own offset. Above a 3D model: the holder's level is.
 local function placeRole(frame, g)
-    local mode = want(frame, "portraitMode")
+    local point = want(frame, "groupRolePortraitPoint")
+    if point == "AUTO" then point = GroupIcons.ROLE_AUTO_POINT[want(frame, "portraitMode")] end
     local inset = Pixel.Snap(ROLE_INSET)
-    local point, x, y = "BOTTOMRIGHT", -inset, inset
-    if mode == "TOP" then
-        point, x, y = "LEFT", inset, 0
-    elseif mode == "RIGHT" then
-        point, x = "BOTTOMLEFT", inset
-    end
+    local x = point:find("LEFT") and inset or point:find("RIGHT") and -inset or 0
+    local y = point:find("BOTTOM") and inset or point:find("TOP") and -inset or 0
+    local size = want(frame, "groupRoleSize")
+    size = size > 0 and Pixel.Snap(size, nil, 1) or g.size
     g.role:ClearAllPoints()
-    g.role:SetPoint(point, frame.portraitBg, point, x, y)
-    g.role:SetSize(g.size, g.size)
+    g.role:SetPoint(point, frame.portraitBg, point, x + Pixel.Snap(want(frame, "groupRoleX")),
+        y + Pixel.Snap(want(frame, "groupRoleY")))
+    g.role:SetSize(size, size)
 end
 
 -- Plain frames only: allowed in combat (party buttons restyle then too).

@@ -45,7 +45,7 @@ do
         end
     end
     H.checkTrue("in the group icons' section after the others",
-        keys and keys:find("groupPhase,groupRole,groupRolePortrait,groupIconSize", 1, true))
+        keys and keys:find("groupPhase,groupRole,groupRolePortrait,groupRoleSize,groupIconSize", 1, true))
     -- One art for both: the raid cells' role icons.
     H.check("the raid cells' art", ns.RaidRole.TEXTURE, ns.GroupIcons.ROLE_TEXTURE)
     H.check("healer art", ns.GroupIcons.ROLE_TEXTURE.HEALER, "Interface\\AddOns\\ForeverUnitFrames\\Media\\IconRoleHealer.tga")
@@ -190,4 +190,65 @@ do
     C.Set("party", "portraitMode", "OFF")
     H.check("no portrait: back in the row", select(2, a.role:GetPoint(1)), a.holder)
     H.check("no portrait: row with the role slot", a.holder:GetWidth(), ns.Layout.IconRowWidth(3, size, gap))
+end
+
+-- The role on the portrait: its own size (0: the icon size), point (AUTO:
+-- the corner per mode, as before) and offset, added to the inset; the
+-- point and offset folded with the section's other placement rows.
+do
+    local ns = boot()
+    local C, S = ns.Config, ns.Settings
+    for key, code in pairs({ groupRoleSize = "LA", groupRolePortraitPoint = "LT", groupRoleX = "LH", groupRoleY = "LJ" }) do
+        H.check(key .. ": code", S.Get(key).code, code)
+        H.check(key .. ": not on target", S.AppliesTo(S.Get(key), "target"), false)
+    end
+    H.check("size: Auto by default", S.Default(S.Get("groupRoleSize"), "party"), 0)
+    H.check("point: AUTO by default", S.Default(S.Get("groupRolePortraitPoint"), "party"), "AUTO")
+    H.check("point: label", ns.L.SETTING_groupRolePortraitPoint, "Role: point on the portrait")
+    H.check("point: AUTO's label", ns.Schema.EnumText(S.Get("groupRolePortraitPoint"), "AUTO"), "Automatic")
+    local section
+    for _, tab in ipairs(ns.Schema.Tabs("party")) do
+        for _, sec in ipairs(tab.sections or {}) do
+            if sec.id == "groupIcons" then section = sec end
+        end
+    end
+    local placement = table.concat(section.placement, ",")
+    H.checkTrue("point and offsets folded", placement:find("groupRolePortraitPoint,groupRoleX,groupRoleY", 1, true))
+    H.check("size not folded", placement:find("groupRoleSize", 1, true), nil)
+    local active = ns.Options.ROW_ACTIVE
+    C.Set("party", "groupRole", true)
+    H.check("greyed while the portrait switch is off", active.groupRoleX("party"), false)
+    C.Set("party", "groupRolePortrait", true)
+    H.checkTrue("active with both on", active.groupRoleX("party"))
+    C.Set("party", "groupRole", false)
+    H.check("greyed while the role is off", active.groupRoleSize("party"), false)
+    C.Set("party", "groupRole", true)
+
+    M.units.party1 = { name = "Ann", health = 5, healthMax = 10, role = "HEALER" }
+    M.SetGroup({ "party1" })
+    local f = ns.Party.buttons[1]
+    local a = f.groupIcons
+    local inset = ns.Pixel.Snap(2)
+    C.Set("party", "portraitMode", "LEFT")
+    C.Set("party", "groupIconSize", 20)
+    H.check("size 0: follows the icon size", a.role:GetWidth(), ns.Pixel.Snap(20, nil, 1))
+    C.Set("party", "groupRoleSize", 28)
+    H.check("own size", a.role:GetWidth(), ns.Pixel.Snap(28, nil, 1))
+    H.check("own size: the row's icons keep theirs", a.holder:GetHeight(), ns.Pixel.Snap(20, nil, 1))
+    local p = point(a.role, "BOTTOMRIGHT")
+    H.checkTrue("AUTO: the corner as before", p and p[2] == f.portraitBg and p[4] == -inset and p[5] == inset)
+    C.Set("party", "groupRolePortraitPoint", "TOPLEFT")
+    C.Set("party", "groupRoleX", 4)
+    C.Set("party", "groupRoleY", -4)
+    p = point(a.role, "TOPLEFT")
+    H.checkTrue("own point on the portrait", p and p[2] == f.portraitBg and p[3] == "TOPLEFT")
+    H.check("offset X added to the inset", p and p[4], inset + ns.Pixel.Snap(4))
+    H.check("offset Y added to the inset", p and p[5], -inset + ns.Pixel.Snap(-4))
+    C.Set("party", "groupRolePortraitPoint", "CENTER")
+    p = point(a.role, "CENTER")
+    H.check("centre: no inset", p and p[4], ns.Pixel.Snap(4))
+    -- Without a portrait the row's size and place, whatever the own ones.
+    C.Set("party", "portraitMode", "OFF")
+    H.check("no portrait: in the row", select(2, a.role:GetPoint(1)), a.holder)
+    H.check("no portrait: the row's size", a.role:GetWidth(), ns.Pixel.Snap(20, nil, 1))
 end

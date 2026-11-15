@@ -116,11 +116,15 @@ Where the marker (Marker style) sits: **Automatic** is its usual place, on the p
 <tr><td><b>In another phase</b></td><td></td><td>On, Off</td><td>On</td><td>Player, Party</td></tr>
 <tr><td><b>Role (tank, healer, damage)</b></td><td>The role assigned in the group</td><td>On, Off</td><td>Off</td><td>Player, Party</td></tr>
 <tr><td><b>Role on the portrait</b></td><td>While a portrait shows: the role on its corner instead of in the row</td><td>On, Off</td><td>Off</td><td>Player, Party</td></tr>
+<tr><td><b>Role: size</b></td><td>On the portrait; Auto: the icon size</td><td>8 – 64 (0: Auto)</td><td>Auto</td><td>Player, Party</td></tr>
 <tr><td><b>Icon size</b></td><td></td><td>8 – 48</td><td>16</td><td>Player, Party</td></tr>
 <tr><td><b>Point on the frame</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Top left</td><td>Player, Party</td></tr>
 <tr><td><b>Point of the icons</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Left</td><td>Player, Party</td></tr>
 <tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>2</td><td>Player, Party</td></tr>
 <tr><td><b>Offset Y</b></td><td></td><td>-200 – 200</td><td>0</td><td>Player, Party</td></tr>
+<tr><td><b>Role: point on the portrait</b></td><td>Automatic: the corner that suits the portrait mode</td><td>Automatic, Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right</td><td>Automatic</td><td>Player, Party</td></tr>
+<tr><td><b>Role: offset X</b></td><td></td><td>-200 – 200</td><td>0</td><td>Player, Party</td></tr>
+<tr><td><b>Role: offset Y</b></td><td></td><td>-200 – 200</td><td>0</td><td>Player, Party</td></tr>
 </tbody>
 </table>
 

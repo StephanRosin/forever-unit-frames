@@ -938,6 +938,19 @@ Settings.Define({ key = "groupRole", code = "LG", scope = "frame", only = GROUP,
 -- frame shows one (Elements/GroupIcons.lua); off by default.
 Settings.Define({ key = "groupRolePortrait", code = "LQ", scope = "frame", only = GROUP, type = "bool",
     default = false })
+-- The role there: its size (0, Auto: groupIconSize), its point on the
+-- portrait (AUTO: the corner per portrait mode, Elements/GroupIcons.lua)
+-- and an offset from it. Stored by index: append only.
+local ROLE_POINTS = { "AUTO" }
+for _, point in ipairs(Settings.POINTS) do ROLE_POINTS[#ROLE_POINTS + 1] = point end
+Settings.Define({ key = "groupRoleSize", code = "LA", scope = "frame", only = GROUP, type = "int", min = 0, lowest = 8,
+    max = 64, default = 0, zeroText = "AUTO" })
+Settings.Define({ key = "groupRolePortraitPoint", code = "LT", scope = "frame", only = GROUP, type = "enum",
+    values = ROLE_POINTS, default = "AUTO" })
+Settings.Define({ key = "groupRoleX", code = "LH", scope = "frame", only = GROUP, type = "int", min = -200, max = 200,
+    default = 0 })
+Settings.Define({ key = "groupRoleY", code = "LJ", scope = "frame", only = GROUP, type = "int", min = -200, max = 200,
+    default = 0 })
 Settings.Define({ key = "groupIconSize", code = "LS", scope = "frame", only = GROUP, type = "int", min = 8, max = 48,
     default = 16 })
 Settings.Define({ key = "groupIconFramePoint", code = "LF", scope = "frame", only = GROUP, type = "enum",
