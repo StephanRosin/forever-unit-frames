@@ -47,9 +47,9 @@ local RULES = {
     { on("cellBorder"), { "cellBorderStyle", "cellBorderSize", "cellBorderColor" } },
     { isNot("cellBorderStyle", "GOLD"), { "cellBorderColor" } },
     { isNot("cellBorderStyle", "BRONZE"), { "cellBorderColor" } },
-    -- Elements/Health.lua: the fixed colour only for STATIC (by class,
-    -- others take the reaction colour).
-    { is("healthColorMode", "STATIC"), { "healthColor" } },
+    -- Elements/Health.lua: the fixed colour only for STATIC and
+    -- INVERTED_STATIC (by class, others take the reaction colour).
+    { function() return get("healthColorMode"):find("STATIC") ~= nil end, { "healthColor" } },
     -- Elements/Texts.lua: a name in the class colour never takes the
     -- plain one. Without a second line its size goes unused; its colour
     -- still paints the status words (dead, offline, AFK).

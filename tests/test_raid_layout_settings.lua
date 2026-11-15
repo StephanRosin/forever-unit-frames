@@ -25,7 +25,7 @@ H.check("grouping values", values("groupBy"), "GROUP,CLASS,ROLE,NONE")
 H.check("sort values", values("sortBy"), "INDEX,NAME,ROLE")
 H.check("direction values", values("blockDirection"), "HORIZONTAL,VERTICAL")
 H.check("growth values", values("cellGrowth"), "DOWN,RIGHT")
-H.check("health colour values", values("healthColorMode"), "CLASS,STATIC,GRADIENT")
+H.check("health colour values, append only", values("healthColorMode"), "CLASS,STATIC,GRADIENT,INVERTED_CLASS,INVERTED_STATIC")
 H.check("power strip values", values("powerStrip"), "ALL,MANA,HEALERS,OFF")
 H.check("second line values", values("secondLine"), "DEFICIT,PERCENT,CURRENT,NONE")
 

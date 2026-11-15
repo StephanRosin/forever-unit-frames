@@ -878,6 +878,9 @@ L.RAID_ENUM_cellGrowth_RIGHT = "Vers la droite"
 L.RAID_ENUM_healthColorMode_CLASS = "Classe"
 L.RAID_ENUM_healthColorMode_STATIC = "Couleur fixe"
 L.RAID_ENUM_healthColorMode_GRADIENT = "Dégradé selon la santé"
+L.RAID_ENUM_healthColorMode_INVERTED_CLASS = "Santé manquante : couleur de classe"
+L.RAID_ENUM_healthColorMode_INVERTED_STATIC = "Santé manquante : couleur fixe"
+L.RAID_HINT_healthColorMode = "Santé manquante : la barre reste sombre et se remplit de couleur là où la santé manque ; le sombre est la couleur de fond"
 L.RAID_ENUM_powerStrip_ALL = "Tout le monde"
 L.RAID_ENUM_powerStrip_MANA = "Utilisateurs de mana"
 L.RAID_ENUM_powerStrip_HEALERS = "Soigneurs"
@@ -1595,6 +1598,7 @@ L.NEWS_0_56_0_MAIN_TANKS = "Cadres de raid, panneaux spéciaux : \"Aussi les jou
 L.NEWS_0_56_0_AURA_FONT = "Les auras changées dans un donjon gardent une seule police."
 L.NEWS_0_56_1_CAST_ICON = "Barre d'incantation : l'icône du sort s'affiche de nouveau avec les coins arrondis (elle était cachée en Classique)."
 L.NEWS_0_56_1_OPTIONS = "Options : la première page affiche ses réglages dès l'ouverture de la fenêtre."
+L.NEWS_0_57_0_INVERTED_HEALTH = "Cadres de raid, Cellule > Barres : \"Couleur de la santé\" peut désormais montrer la santé manquante : \"Santé manquante : couleur de classe\" ou \"Santé manquante : couleur fixe\" gardent la barre sombre et colorent la santé perdue."
 L.NEWS_OPEN_THEME = "Ouvrir le thème"
 
 -- Themes (Core/Themes.lua)

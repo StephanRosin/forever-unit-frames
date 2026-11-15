@@ -66,6 +66,44 @@ H.check("a mage's blue", r < 1, true)
 H.check("class colour wins", color(cell.texts.healthLeft._color), table.concat({ r, g, b, 1 }, " "))
 H.check("second line keeps its colour", color(cell.texts.healthRight._color), "0.6 0.6 0.6 1")
 
+-- Missing health in colour (Elements/Health.lua): the fill dark (the
+-- background colour, its alpha folded in, opaque), the background in
+-- the class or fixed colour; the value stays what the client gave.
+local function rgb(c) return string.format("%.2f %.2f %.2f %s", c[1], c[2], c[3], tostring(c[4])) end
+RC.Set("r10", "healthColorMode", "INVERTED_CLASS")
+H.check("inverted: the class colour behind", color(cell.healthBg._color), table.concat({ r, g, b, 1 }, " "))
+H.check("inverted: the fill dark", rgb(cell.health._color), "0.08 0.08 0.08 nil")
+H.check("inverted: value untouched", cell.health:GetValue(), 60)
+RC.Set("r10", "healthColorMode", "INVERTED_STATIC")
+H.check("inverted fixed: the fixed colour behind", color(cell.healthBg._color), "0.1 0.2 0.3 1")
+H.check("inverted fixed: the fill dark", rgb(cell.health._color), "0.08 0.08 0.08 nil")
+H.check("inverted: the cell knows", ns.Health.IsInverted(cell), true)
+M.units[cell.unit].dead = true
+ns.Single.UpdateAll(cell)
+local grey = ns.UnitStatus.GREY
+local greyText = table.concat({ grey[1], grey[2], grey[3] }, " ")
+H.check("inverted dead: background grey", table.concat(cell.healthBg._color, " ", 1, 3), greyText)
+H.check("inverted dead: fill grey", table.concat(cell.health._color, " ", 1, 3), greyText)
+M.units[cell.unit].dead = nil
+M.units[cell.unit].offline = true
+ns.Single.UpdateAll(cell)
+H.check("inverted offline: background grey", table.concat(cell.healthBg._color, " ", 1, 3), greyText)
+H.check("inverted offline: fill grey", table.concat(cell.health._color, " ", 1, 3), greyText)
+M.units[cell.unit].offline = nil
+RC.Set("r10", "healthColorMode", "CLASS")
+H.check("back: background colour again", color(cell.healthBg._color), "0.1 0.1 0.1 0.8")
+H.check("back: fill in the class colour", table.concat(cell.health._color, " ", 1, 3), table.concat({ r, g, b }, " "))
+
+-- Test mode shows it: each pretend member's class colour behind.
+RC.Set("r10", "healthColorMode", "INVERTED_CLASS")
+M.units.player = { name = "Me", class = "MAGE", isPlayer = true, health = 50, healthMax = 100, healthMissing = 50 }
+ns.RaidTestMode.Set(true)
+local fake = ns.RaidCell.fakes[1]
+local c = RAID_CLASS_COLORS[fake.sample.class]
+H.check("pretend: its class colour behind", color(fake.healthBg._color), table.concat({ c.r, c.g, c.b, 1 }, " "))
+H.check("pretend: the fill dark", rgb(fake.health._color), "0.08 0.08 0.08 nil")
+ns.RaidTestMode.Set(false)
+
 -- A unit frame keeps white texts.
 local party = CreateFrame("Button", nil, UIParent, "SecureUnitButtonTemplate")
 party.key = "party"

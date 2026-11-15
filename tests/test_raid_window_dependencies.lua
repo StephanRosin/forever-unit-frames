@@ -40,6 +40,7 @@ local CASES = {
     { "cellBorderStyle", "BRONZE", "SHADED", { "cellBorderColor" }, { cellBorder = true } },
     { "healthColorMode", "CLASS", "STATIC", { "healthColor" } },
     { "healthColorMode", "GRADIENT", "STATIC", { "healthColor" } },
+    { "healthColorMode", "INVERTED_CLASS", "INVERTED_STATIC", { "healthColor" } },
     { "nameClassColor", true, false, { "nameColor" } },
     { "secondLine", "NONE", "PERCENT", { "secondFontSize" } },
     { "healPrediction", false, true, { "overheal" } },

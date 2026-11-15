@@ -200,6 +200,9 @@ News.ENTRIES = {
     ["0.56.1"] = {
         lines = { "NEWS_0_56_1_CAST_ICON", "NEWS_0_56_1_OPTIONS" },
     },
+    ["0.57.0"] = {
+        lines = { "NEWS_0_57_0_INVERTED_HEALTH" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

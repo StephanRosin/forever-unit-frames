@@ -187,9 +187,11 @@ RaidSettings.Define({ key = "cellCornerRadius", code = "CR", scope = "frame", cl
     default = { r10 = 4, r20 = 3, _ = 2 } })
 
 -- The cell (Raid/Cell.lua). Health in the class colour, a fixed colour
--- (healthColor), or a gradient by health. Stored by index: append only.
+-- (healthColor), or a gradient by health; INVERTED_* paint the missing
+-- health in the class or fixed colour and the health dark
+-- (Elements/Health.lua). Stored by index: append only.
 RaidSettings.Define({ key = "healthColorMode", code = "HM", scope = "frame", class = "behaviour", type = "enum",
-    values = { "CLASS", "STATIC", "GRADIENT" }, default = "CLASS" })
+    values = { "CLASS", "STATIC", "GRADIENT", "INVERTED_CLASS", "INVERTED_STATIC" }, default = "CLASS" })
 RaidSettings.Define({ key = "healthColor", code = "HC", scope = "frame", class = "behaviour", type = "color",
     default = { 0.2, 0.75, 0.3, 1 } })
 -- The bars' texture and the colour behind them.

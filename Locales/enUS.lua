@@ -902,6 +902,9 @@ L.RAID_ENUM_cellGrowth_RIGHT = "Right"
 L.RAID_ENUM_healthColorMode_CLASS = "Class"
 L.RAID_ENUM_healthColorMode_STATIC = "Fixed color"
 L.RAID_ENUM_healthColorMode_GRADIENT = "Gradient by health"
+L.RAID_ENUM_healthColorMode_INVERTED_CLASS = "Missing health: class color"
+L.RAID_ENUM_healthColorMode_INVERTED_STATIC = "Missing health: fixed color"
+L.RAID_HINT_healthColorMode = "Missing health: the bar stays dark and fills with color where health is missing; the dark is the Background color"
 L.RAID_ENUM_powerStrip_ALL = "Everyone"
 L.RAID_ENUM_powerStrip_MANA = "Mana users"
 L.RAID_ENUM_powerStrip_HEALERS = "Healers"
@@ -1623,6 +1626,7 @@ L.NEWS_0_56_0_MAIN_TANKS = "Raid frames, Special panels: \"Also players with the
 L.NEWS_0_56_0_AURA_FONT = "Auras changed inside a dungeon keep one font."
 L.NEWS_0_56_1_CAST_ICON = "Cast bar: the spell icon shows again with rounded corners (it was hidden under Classic)."
 L.NEWS_0_56_1_OPTIONS = "Options: the first page shows its settings right away when the window opens."
+L.NEWS_0_57_0_INVERTED_HEALTH = "Raid frames, Cell > Bars: \"Health color\" can now show missing health instead: \"Missing health: class color\" or \"Missing health: fixed color\" keep the bar dark and fill in the health a player has lost."
 L.NEWS_OPEN_THEME = "Open the theme"
 
 -- Themes (Core/Themes.lua)

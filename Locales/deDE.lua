@@ -878,6 +878,9 @@ L.RAID_ENUM_cellGrowth_RIGHT = "Nach rechts"
 L.RAID_ENUM_healthColorMode_CLASS = "Klasse"
 L.RAID_ENUM_healthColorMode_STATIC = "Feste Farbe"
 L.RAID_ENUM_healthColorMode_GRADIENT = "Verlauf nach Gesundheit"
+L.RAID_ENUM_healthColorMode_INVERTED_CLASS = "Fehlende Gesundheit: Klassenfarbe"
+L.RAID_ENUM_healthColorMode_INVERTED_STATIC = "Fehlende Gesundheit: feste Farbe"
+L.RAID_HINT_healthColorMode = "Fehlende Gesundheit: Die Leiste bleibt dunkel und füllt sich farbig, wo Gesundheit fehlt; das Dunkel ist die Hintergrundfarbe"
 L.RAID_ENUM_powerStrip_ALL = "Alle"
 L.RAID_ENUM_powerStrip_MANA = "Manaklassen"
 L.RAID_ENUM_powerStrip_HEALERS = "Heiler"
@@ -1595,6 +1598,7 @@ L.NEWS_0_56_0_MAIN_TANKS = "Schlachtzugsrahmen, Sonderfelder: \"Auch Spieler mit
 L.NEWS_0_56_0_AURA_FONT = "In einem Dungeon geänderte Auren behalten eine Schrift."
 L.NEWS_0_56_1_CAST_ICON = "Zauberleiste: Das Zaubersymbol ist mit runden Ecken wieder sichtbar (unter Klassisch war es verschwunden)."
 L.NEWS_0_56_1_OPTIONS = "Optionen: Die erste Seite zeigt ihre Einstellungen sofort beim Öffnen des Fensters."
+L.NEWS_0_57_0_INVERTED_HEALTH = "Schlachtzugsrahmen, Zelle > Leisten: \"Gesundheitsfarbe\" kann jetzt die fehlende Gesundheit zeigen: \"Fehlende Gesundheit: Klassenfarbe\" oder \"Fehlende Gesundheit: feste Farbe\" lassen die Leiste dunkel und füllen die verlorene Gesundheit farbig."
 L.NEWS_OPEN_THEME = "Theme öffnen"
 
 -- Themes (Core/Themes.lua)

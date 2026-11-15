@@ -843,6 +843,9 @@ L.RAID_ENUM_cellGrowth_RIGHT = "오른쪽"
 L.RAID_ENUM_healthColorMode_CLASS = "직업"
 L.RAID_ENUM_healthColorMode_STATIC = "고정 색상"
 L.RAID_ENUM_healthColorMode_GRADIENT = "생명력에 따른 그라데이션"
+L.RAID_ENUM_healthColorMode_INVERTED_CLASS = "잃은 생명력: 직업 색상"
+L.RAID_ENUM_healthColorMode_INVERTED_STATIC = "잃은 생명력: 고정 색상"
+L.RAID_HINT_healthColorMode = "잃은 생명력: 바는 어둡게 유지되고 잃은 생명력 부분이 색상으로 채워집니다. 어두운 색은 배경 색상입니다"
 L.RAID_ENUM_powerStrip_ALL = "모두"
 L.RAID_ENUM_powerStrip_MANA = "마나 사용자"
 L.RAID_ENUM_powerStrip_HEALERS = "치유 전담"
@@ -1533,6 +1536,7 @@ L.NEWS_0_56_0_MAIN_TANKS = "공격대 프레임, 특수 패널: \"방어 전담 
 L.NEWS_0_56_0_AURA_FONT = "던전 안에서 바뀐 오라도 같은 글꼴을 유지합니다."
 L.NEWS_0_56_1_CAST_ICON = "시전 바: 둥근 모서리에서도 주문 아이콘이 다시 보입니다 (클래식에서 숨겨져 있었습니다)."
 L.NEWS_0_56_1_OPTIONS = "설정: 창을 열면 첫 페이지의 설정이 바로 표시됩니다."
+L.NEWS_0_57_0_INVERTED_HEALTH = "공격대 프레임, 셀 > 바: 이제 \"생명력 색상\"으로 잃은 생명력을 표시할 수 있습니다. \"잃은 생명력: 직업 색상\" 또는 \"잃은 생명력: 고정 색상\"은 바를 어둡게 두고 잃은 생명력을 색상으로 채웁니다."
 L.NEWS_OPEN_THEME = "테마 열기"
 
 -- Themes (Core/Themes.lua)

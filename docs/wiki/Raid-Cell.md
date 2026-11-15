@@ -25,7 +25,7 @@ Heals, shields and the power strip keep the unit frames' standard colors.
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
-<tr><td><b>Health color</b></td><td></td><td>Class, Fixed color, Gradient by health</td><td>Class</td></tr>
+<tr><td><b>Health color</b></td><td>Missing health: the bar stays dark and fills with color where health is missing; the dark is the Background color</td><td>Class, Fixed color, Gradient by health, Missing health: class color, Missing health: fixed color</td><td>Class</td></tr>
 <tr><td><b>Fixed health color</b></td><td></td><td>Color</td><td><code>#33bf4d</code></td></tr>
 <tr><td><b>Bar texture</b></td><td></td><td>Texture</td><td>Raid</td></tr>
 <tr><td><b>Background color</b></td><td></td><td>Color</td><td><code>#000000</code>, 60 % opaque</td></tr>

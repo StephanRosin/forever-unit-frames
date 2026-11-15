@@ -879,6 +879,9 @@ L.RAID_ENUM_cellGrowth_RIGHT = "Hacia la derecha"
 L.RAID_ENUM_healthColorMode_CLASS = "Clase"
 L.RAID_ENUM_healthColorMode_STATIC = "Color fijo"
 L.RAID_ENUM_healthColorMode_GRADIENT = "Degradado según la salud"
+L.RAID_ENUM_healthColorMode_INVERTED_CLASS = "Salud perdida: color de clase"
+L.RAID_ENUM_healthColorMode_INVERTED_STATIC = "Salud perdida: color fijo"
+L.RAID_HINT_healthColorMode = "Salud perdida: la barra queda oscura y se llena de color donde falta salud; el oscuro es el color de fondo"
 L.RAID_ENUM_powerStrip_ALL = "Todos"
 L.RAID_ENUM_powerStrip_MANA = "Usuarios de maná"
 L.RAID_ENUM_powerStrip_HEALERS = "Sanadores"
@@ -1596,6 +1599,7 @@ L.NEWS_0_56_0_MAIN_TANKS = "Marcos de banda, paneles especiales: \"También con 
 L.NEWS_0_56_0_AURA_FONT = "Las auras cambiadas dentro de una mazmorra conservan una sola fuente."
 L.NEWS_0_56_1_CAST_ICON = "Barra de lanzamiento: el icono del hechizo vuelve a verse con esquinas redondeadas (estaba oculto en Clásico)."
 L.NEWS_0_56_1_OPTIONS = "Opciones: la primera página muestra sus ajustes en cuanto se abre la ventana."
+L.NEWS_0_57_0_INVERTED_HEALTH = "Marcos de banda, Celda > Barras: \"Color de salud\" ahora puede mostrar la salud perdida: \"Salud perdida: color de clase\" o \"Salud perdida: color fijo\" dejan la barra oscura y colorean la salud que ha perdido un jugador."
 L.NEWS_OPEN_THEME = "Abrir el tema"
 
 -- Themes (Core/Themes.lua)

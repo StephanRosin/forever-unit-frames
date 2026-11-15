@@ -113,6 +113,16 @@ function Health.IsTapDenied(frame)
     return Secrets.Bool(UnitIsTapDenied, unit) == true
 end
 
+-- Raid cells only (Raid/Settings.lua): the colour of CLASS or STATIC
+-- shows where health is missing, the fill is dark. Only the two colours
+-- swap places; value and fill direction stay, so secret health is still
+-- just handed to the bar.
+local INVERTED = { INVERTED_CLASS = "CLASS", INVERTED_STATIC = "STATIC" }
+
+function Health.IsInverted(frame)
+    return INVERTED[Config.Get(frame.key, "healthColorMode")] ~= nil
+end
+
 function Health.ColorFor(frame)
     local scope, unit = frame.key, frame.unit
     if Health.IsTapDenied(frame) then
@@ -120,6 +130,7 @@ function Health.ColorFor(frame)
         return t[1], t[2], t[3]
     end
     local mode = Config.Get(scope, "healthColorMode")
+    mode = INVERTED[mode] or mode
     if mode == "CLASS" or mode == "REACTION" then
         return Health.FrameColor(frame, mode)
     end
@@ -171,6 +182,25 @@ end
 -- even when the player is at full health.
 Health.SAMPLE = 0.6
 
+-- The bar in a colour: its fill, or when inverted its background, the
+-- fill then opaque in the background colour with that colour's alpha
+-- folded in (as it looks over black): a 60 % black fill over the colour
+-- would look muddy, and a theme's faint tint (Console: mint at 10 %)
+-- stays dark. A dead, ghost or offline unit greys both parts.
+local function paint(frame, r, g, b, status)
+    if not Health.IsInverted(frame) then
+        frame.health:SetStatusBarColor(r, g, b)
+        return
+    end
+    frame.healthBg:SetVertexColor(r, g, b, 1)
+    if status then
+        frame.health:SetStatusBarColor(r, g, b)
+        return
+    end
+    local bg = Config.Get(frame.key, "backgroundColor")
+    frame.health:SetStatusBarColor(bg[1] * bg[4], bg[2] * bg[4], bg[3] * bg[4])
+end
+
 -- Dead, ghost and offline units (Elements/UnitStatus.lua) are grey; an
 -- offline member's bar is full, as on Blizzard's party frames.
 function Health.Update(frame)
@@ -187,10 +217,11 @@ function Health.Update(frame)
     end
     if status then
         local grey = ns.UnitStatus.GREY
-        frame.health:SetStatusBarColor(grey[1], grey[2], grey[3])
+        paint(frame, grey[1], grey[2], grey[3], true)
         return
     end
-    frame.health:SetStatusBarColor(Health.ColorFor(frame))
+    local r, g, b = Health.ColorFor(frame)
+    paint(frame, r, g, b)
 end
 
 -- Live values come back with the next Update (test mode runs one).
