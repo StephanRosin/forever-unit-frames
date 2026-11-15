@@ -336,9 +336,11 @@ function Castbar.Build(frame)
     bar.text = bar:CreateFontString(nil, "OVERLAY")
     bar.time = bar:CreateFontString(nil, "OVERLAY")
     -- The castbar's whole rectangle, icon included: a detached castbar's
-    -- corners are rounded and its border goes around it.
+    -- corners are rounded and its border goes around it. The spell icon
+    -- itself stays unmasked: in game a corner mask hid it entirely
+    -- (CurseForge, 0.55.0), its slot behind it keeps the rounding.
     bar.box = CreateFrame("Frame", nil, bar)
-    for _, texture in ipairs({ bar.bg, bar.remain, bar.lag, bar.interrupt, bar.iconBg, bar.icon }) do
+    for _, texture in ipairs({ bar.bg, bar.remain, bar.lag, bar.interrupt, bar.iconBg }) do
         ns.Corners.Add(bar, texture)
     end
     ns.Corners.Add(bar, function() return bar:GetStatusBarTexture() end)

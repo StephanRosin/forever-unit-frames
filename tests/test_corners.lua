@@ -156,11 +156,12 @@ H.check("no masks stacked", masked(f.healthBg), 1)
 H.check("new radius: its file", f.clip.mask._texture, Co.MaskFile(8, "ALL"))
 H.check("new radius: its margins", f.clip.mask._slice[1], 8)
 
--- Castbar: its own mask, icon (and the slot behind it) included.
+-- Castbar: its own mask, the icon's slot included; the spell icon itself
+-- unmasked (a masked spell icon vanished in game).
 H.check("castbar background rounded", masked(bar.bg), 1)
 H.check("castbar channel paint rounded", masked(bar.remain), 1)
 H.check("castbar fill rounded", masked(bar:GetStatusBarTexture()), 1)
-H.check("castbar icon rounded", masked(bar.icon), 1)
+H.check("castbar icon unmasked", masked(bar.icon), 0)
 H.check("castbar icon slot rounded", masked(bar.iconBg), 1)
 H.check("castbar: its own mask", bar.bg._masks[1], bar.clip.mask)
 H.check("docked castbar: mask over the unit box", bar.clip.mask._allPoints, f.unitBox)
