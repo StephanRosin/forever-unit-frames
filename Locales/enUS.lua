@@ -1650,6 +1650,7 @@ L.NEWS_0_60_0_HUB = "Forever Themes: a new addon that sets one theme and colour 
 L.NEWS_0_60_0_DEFAULTS = "Themes: a theme you pick for the first time starts with a tuned look (backgrounds of Wood, Tech and Frost; Pitwall's target shows the portrait aura). Themes you already use don't change."
 L.NEWS_0_60_0_FONT = "Fonts: when the game refuses a theme font after /reload, Blizzard's font stands in until the theme font loads, instead of empty texts and \"Font could not be loaded\"."
 L.NEWS_0_60_0_SOUND = "Low mana warning: it can play a sound (raid warning, ready check, alarm clock or whisper; none by default). No sound while WoW Forever keeps your mana secret."
+L.NEWS_0_60_1_FIXES = "Fixes: no empty texts while a theme font loads; the low mana warning sounds and tells the chat again once your mana is readable; the unit frames follow Forever Themes after a profile switch, reset or import."
 L.NEWS_OPEN_THEME = "Open the theme"
 
 -- Themes (Core/Themes.lua)

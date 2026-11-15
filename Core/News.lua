@@ -220,6 +220,9 @@ News.ENTRIES = {
         action = { text = function() return LibForeverThemes.Text("HUB_LINK", ns.Locale.Current()) end,
             run = function() LibForeverThemes.ShowHubLink(nil, ns.Locale.Current()) end },
     },
+    ["0.60.1"] = {
+        lines = { "NEWS_0_60_1_FIXES" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

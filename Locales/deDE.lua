@@ -1622,6 +1622,7 @@ L.NEWS_0_60_0_HUB = "Forever Themes: ein neues Addon stellt ein Theme und eine F
 L.NEWS_0_60_0_DEFAULTS = "Themes: ein Theme, das du zum ersten Mal wählst, beginnt mit einem abgestimmten Aussehen (Hintergründe von Holz, Technik und Frost; bei Pitwall zeigt das Ziel die Porträt-Aura). Themes, die du schon nutzt, ändern sich nicht."
 L.NEWS_0_60_0_FONT = "Schriften: lehnt das Spiel nach /reload eine Theme-Schrift ab, springt Blizzards Schrift ein, bis sie lädt, statt leerer Texte und „Font could not be loaded“."
 L.NEWS_0_60_0_SOUND = "Mana-Warnung: kann einen Ton spielen (Schlachtzugswarnung, Bereitschaftscheck, Wecker oder Flüstern; standardmässig keiner). Kein Ton, solange WoW Forever dein Mana geheim hält."
+L.NEWS_0_60_1_FIXES = "Korrekturen: keine leeren Texte, während eine Theme-Schrift lädt; die Mana-Warnung spielt ihren Ton und meldet sich im Chat wieder, sobald dein Mana lesbar ist; die Einheitenfenster folgen Forever Themes nach Profilwechsel, Zurücksetzen oder Import."
 L.NEWS_OPEN_THEME = "Theme öffnen"
 
 -- Themes (Core/Themes.lua)
