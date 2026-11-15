@@ -1256,9 +1256,12 @@ function Options.SelectTab(id)
             local page = pageFor(scope, tab)
             if page.onShow then page.onShow() end
             Options.page, Options.currentTab, Options.rows = page, id, page.rows
-            frame.scrollChild:SetHeight(page.height)
             frame.scroll:SetVerticalScroll(0)
             page:Show()
+            -- Scroll child height and UpdateScrollChildRect: without the
+            -- latter the window's very first page stayed empty in game
+            -- until a tab switch (seen with General > Frames, 0.55.0).
+            Options.PageResized(page)
             forEachRow(function(row) row:Refresh() end)
             paintTabs()
             applyLock()

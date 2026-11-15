@@ -19,6 +19,13 @@ local function tabIds(scope)
 end
 
 O.Open()
+-- The very first page has its scroll rect worked out on opening: without
+-- UpdateScrollChildRect it stayed empty in game until a tab switch.
+do
+    local scroll = O.frame.scroll
+    H.check("first page: scroll range from its height", scroll:GetVerticalScrollRange(),
+        math.max(0, O.page.height - scroll:GetHeight()))
+end
 -- Navigation lists every frame.
 for _, key in ipairs({ "player", "target", "targettarget", "pet", "focus", "party" }) do
     H.checkTrue("nav entry " .. key, O.navButtons[key])
