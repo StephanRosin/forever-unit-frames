@@ -15,123 +15,111 @@ local _, ns = ...
 local Themes = {}
 ns.Themes = Themes
 
-Themes.CLASSIC = "CLASSIC"
+local Lib = LibForeverThemes
+Themes.CLASSIC = Lib.CLASSIC
+-- The setting's list (stored by index), the same as LibForeverThemes' IDS.
 Themes.IDS = ns.Settings.THEMES
 
--- The theme fonts have Latin letters only: on a client whose names are
--- written otherwise the frames keep their font.
-local LATIN_CLIENTS = { enUS = true, enGB = true, deDE = true, frFR = true, esES = true, esMX = true, itIT = true,
-    ptBR = true }
-
+-- Each theme's identity (backdrop, tint, ornaments, rule, title strip and
+-- wedge, ring colour, font, fontSizeAdd) is LibForeverThemes'; here only
+-- the unit frames' part on top (Lib.Specs).
 -- look: settings the theme sets in General (every frame follows General
--- for these, see seed). font, bar: the theme's font and bar texture;
--- fontSizeAdd: how much larger its font must be to read like the others.
--- art (Elements/ThemeArt.lua): back = backdrop file in Media/Themes,
--- tint = its colour, ornament = corner piece, corners = which ones
--- (Corners.POINTS order: 1 top left, 2 top right, 3 bottom left, 4
--- bottom right), ornamentInset = how far in from the border's outer
--- corner (negative: further out), ornamentHeight = its height when not
--- square, hardShadow = offset of a solid shadow, rule = a line this thick
--- in ruleColor along the top inside the ring, titleStrip = the title row's
--- colour, titleWedge = a piece at the title row's start in
--- titleWedgeColor (the name begins after it), accent = what the theme's
--- colour paints (Themes.Accent).
+-- for these, see seed). font: the theme's one font for every text (the
+-- library's title face, but the body face where the theme has a readable
+-- one of its own: Swiss, Console, Pitwall); bar: its bar texture.
+-- art (Elements/ThemeArt.lua), on top of the library's: ornamentSize,
+-- ornamentInset = how far in from the border's outer corner (negative:
+-- further out), ornamentHeight = its height when not square, hardShadow =
+-- offset of a solid shadow, accent = what the theme's colour paints
+-- (Themes.Accent).
 -- borderPadding shows the backdrop round the bars.
 -- fontOutline: the client's OUTLINE, never SOFT. With the theme fonts
 -- SOFT (Elements/Texts.lua) showed black text in game; why is not known
 -- (the text has its font by GetFont, its black copies draw on top).
 -- Frost alone has none: a 1 px drop shadow (fontShadow, black) keeps its
 -- texts readable, white values on a priest's white health bar too.
-Themes.SPECS = {
-    CLASSIC = {},
+local T = Lib.THEMES
+Themes.SPECS = Lib.Specs({
     -- Oak boards round the bars, a gold rim (as in every Forever addon), brass rivets.
     WOOD = {
-        font = "Cinzel", bar = "FUF Wood",
+        bar = "FUF Wood",
         look = { borderShow = true, borderStyle = "GOLD", borderSize = 3, borderPadding = 4, cornerRadius = 3,
             backgroundColor = { 0.1, 0.06, 0.02, 0 }, titleBackground = false,
             shadowEnabled = true, shadowAlpha = 60, shadowSize = 6, fontOutline = "OUTLINE" },
-        art = { back = "WoodBack", tint = { 0.5, 0.5, 0.5, 1 }, ornament = "Rivet", corners = { 1, 2, 3, 4 },
-            ornamentSize = 11, ornamentInset = 1 },
+        art = { ornamentSize = 11, ornamentInset = 1 },
     },
     -- Dark navy with a faint grid, a thin cyan line.
     TECH = {
-        font = "Space Grotesk", bar = "FUF Tech",
-        look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = { 0.25, 0.88, 0.94, 0.9 },
+        bar = "FUF Tech",
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = T.TECH.rim,
             borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.02, 0.05, 0.08, 0 },
             titleBackground = false, shadowEnabled = false, fontOutline = "OUTLINE" },
-        art = { back = "TechBack" },
     },
     -- Parchment round the bars, a brown ink line, a wax seal.
     PARCHMENT = {
-        font = "IM Fell English SC", bar = "FUF Parchment", fontSizeAdd = 1,
-        look = { borderShow = true, borderStyle = "FLAT", borderSize = 2, borderColor = { 0.29, 0.2, 0.12, 1 },
+        bar = "FUF Parchment",
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 2, borderColor = T.PARCHMENT.rim,
             borderPadding = 4, cornerRadius = 2, backgroundColor = { 0.22, 0.15, 0.07, 0 }, titleBackground = false,
             shadowEnabled = true, shadowAlpha = 45, shadowSize = 5, fontOutline = "OUTLINE" },
-        art = { back = "ParchmentBack", tint = { 0.45, 0.45, 0.45, 1 }, ornament = "Seal", corners = { 3 },
-            ornamentSize = 22, ornamentInset = -6 },
+        art = { ornamentSize = 22, ornamentInset = -6 },
     },
     -- Grey granite, a dark chiselled edge, glowing runes.
     RUNESTONE = {
-        font = "Marcellus", bar = "FUF Stone", fontSizeAdd = 1,
-        look = { borderShow = true, borderStyle = "FLAT", borderSize = 2, borderColor = { 0.1, 0.1, 0.12, 1 },
+        bar = "FUF Stone",
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 2, borderColor = T.RUNESTONE.rim,
             borderPadding = 5, cornerRadius = 0, backgroundColor = { 0.04, 0.05, 0.06, 0 },
             titleBackground = false, shadowEnabled = true, shadowAlpha = 70, shadowSize = 6, fontOutline = "OUTLINE" },
-        art = { back = "StoneBack", tint = { 0.55, 0.55, 0.55, 1 }, ornament = "Rune", corners = { 1, 2 },
-            ornamentSize = 14, ornamentInset = 2,
-            ornamentColor = { 0.35, 0.95, 0.85, 1 } },
+        art = { ornamentSize = 14, ornamentInset = 2 },
     },
     -- A mosaic of coloured glass round the bars, dark lead.
     GLASS = {
-        font = "Morpheus", bar = "FUF Glass", fontSizeAdd = 1,
-        look = { borderShow = true, borderStyle = "FLAT", borderSize = 3, borderColor = { 0.07, 0.06, 0.05, 1 },
+        bar = "FUF Glass",
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 3, borderColor = T.GLASS.rim,
             borderPadding = 6, cornerRadius = 0, backgroundColor = { 0.05, 0.04, 0.06, 0.9 },
             titleBackground = true, shadowEnabled = true, shadowAlpha = 55, shadowSize = 6, fontOutline = "OUTLINE" },
-        art = { back = "GlassBack" },
     },
     -- Thick ink line, halftone paper, a solid shadow.
     COMIC = {
-        font = "Bangers", bar = "FUF Comic", fontSizeAdd = 2,
-        look = { borderShow = true, borderStyle = "FLAT", borderSize = 3, borderColor = { 0.07, 0.07, 0.07, 1 },
+        bar = "FUF Comic",
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 3, borderColor = T.COMIC.rim,
             borderPadding = 0, cornerRadius = 0, backgroundColor = { 0, 0, 0, 0 }, titleBackground = false,
             shadowEnabled = false, fontOutline = "THICKOUTLINE" },
-        -- The same paper in every Forever addon: ComicBack at 0.7.
-        art = { back = "ComicBack", tint = { 0.7, 0.7, 0.7, 1 }, hardShadow = 5 },
+        art = { hardShadow = 5 },
     },
     -- Translucent ice, a pale rim, rounded.
     FROST = {
-        font = "Julius Sans One", bar = "FUF Frost",
-        look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = { 0.86, 0.96, 1, 0.8 },
+        bar = "FUF Frost",
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = T.FROST.rim,
             borderPadding = 2, cornerRadius = 6, backgroundColor = { 0.02, 0.07, 0.15, 0.45 },
             titleBackground = false, shadowEnabled = true, shadowAlpha = 55, shadowSize = 8, fontOutline = "NONE",
             fontShadow = true },
-        art = { back = "FrostBack", tint = { 0.55, 0.55, 0.55, 0.85 } },
     },
     -- A light pixel frame, scan lines, a solid shadow.
     PIXEL = {
-        font = "VT323", bar = "FUF Pixel", fontSizeAdd = 4,
-        look = { borderShow = true, borderStyle = "FLAT", borderSize = 3, borderColor = { 1, 0.95, 0.91, 1 },
+        bar = "FUF Pixel",
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 3, borderColor = T.PIXEL.rim,
             borderPadding = 0, cornerRadius = 0, backgroundColor = { 0, 0, 0, 0 }, titleBackground = false,
             shadowEnabled = false, fontOutline = "OUTLINE" },
-        art = { back = "PixelBack", hardShadow = 4 },
+        art = { hardShadow = 4 },
     },
-    -- Swiss: flat black, a white rule along the top, one red accent on it.
+    -- Swiss: flat black, a white rule along the top, one red accent on it
+    -- (a short bar at the top left, which the theme's colour paints).
     SWISS = {
         font = "Inter Tight", bar = "FUF Swiss",
-        look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = { 0.165, 0.165, 0.165, 1 },
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = T.SWISS.rim,
             borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.039, 0.039, 0.039, 1 },
             titleBackground = false, shadowEnabled = false, fontOutline = "OUTLINE" },
-        art = { back = "SwissBack", rule = 3, ruleColor = { 0.949, 0.949, 0.949, 1 },
-            ornament = "SwissBar", corners = { 1 }, ornamentSize = 12, ornamentHeight = 3,
+        art = { ornament = "SwissBar", corners = { 1 }, ornamentSize = 12, ornamentHeight = 3,
             ornamentColor = { 1, 0.176, 0.125, 1 }, accent = "ornament" },
     },
     -- A terminal: near black with scan lines, a mint ring, solid bars
     -- (dashed ones looked broken on health and power).
     CONSOLE = {
         font = "IBM Plex Mono", bar = "FUF Swiss",
-        look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = { 0.306, 0.929, 0.69, 1 },
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = T.CONSOLE.rim,
             borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.306, 0.929, 0.69, 0 },
             titleBackground = false, shadowEnabled = false, fontOutline = "OUTLINE" },
-        art = { back = "ConsoleBack", accent = "ring" },
+        art = { accent = "ring" },
     },
     -- A timing screen: calm and black (the carbon weave read as stripes at
     -- frame size), the name row a black strip with the red wedge at its
@@ -140,14 +128,15 @@ Themes.SPECS = {
     -- carbon's own colour: none to see, but it keeps the auras clear of
     -- the padding (Border.Extent).
     PITWALL = {
+        -- The older name of the library's "Titillium Web SemiBold" (the same
+        -- file): theme sets and Platynator designs hold it.
         font = "Titillium Web", bar = "FUF Swiss",
-        look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = { 0.043, 0.047, 0.055, 1 },
+        look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = T.PITWALL.rim,
             borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.039, 0.039, 0.039, 1 },
             titleBackground = true, shadowEnabled = false, fontOutline = "OUTLINE" },
-        art = { back = "SwissBack", titleStrip = { 0, 0, 0, 1 }, titleWedge = "PitwallWedge",
-            titleWedgeColor = { 0.882, 0.024, 0, 1 }, accent = "wedge" },
+        art = { accent = "wedge" },
     },
-}
+})
 
 -- Settings a theme takes over on every frame: frames that had their own
 -- value follow General again, where the theme puts its look.
@@ -156,114 +145,11 @@ for _, spec in pairs(Themes.SPECS) do
     for key in pairs(spec.look or {}) do THEMED[#THEMED + 1] = key end
 end
 
--- Each theme's colours, the same in every Forever addon (none for CLASSIC).
--- The first is the theme as it is. Any other draws the backdrop from the
--- theme's grey texture (<back>Grey), tinted so its mean lands on `back`
--- (vertex colour = back / GREY_MEAN, at most 1), and brings its accent
--- (nil: the theme's own). The comic keeps its paper tint (COMIC_PAINT).
--- Swiss, Console and Pitwall keep their backdrop: their accent paints
--- their art.accent instead (Themes.Accent).
-local GREY_MEAN = { WoodBack = 0.800, TechBack = 0.705, ParchmentBack = 0.799, StoneBack = 0.800,
-    GlassBack = 0.777, FrostBack = 0.796, PixelBack = 0.800 }
--- rim: the ring's colour under this colour (the same in every Forever addon).
-local function colour(id, back, accent, rim) return { id = id, back = back, accent = accent, rim = rim } end
-Themes.COLORS = {
-    WOOD = {
-        colour("OAK"),
-        colour("WALNUT", { 0.15, 0.09, 0.06 }),
-        colour("BIRCH", { 0.38, 0.32, 0.22 }),
-        colour("CHERRY", { 0.3, 0.12, 0.08 }),
-        colour("EBONY", { 0.08, 0.07, 0.07 }),
-        colour("DRIFTWOOD", { 0.25, 0.24, 0.22 }),
-    },
-    TECH = {
-        colour("CYAN"),
-        colour("GREEN", { 0.02, 0.1, 0.05 }, { 0.3, 0.95, 0.45 }),
-        colour("AMBER", { 0.1, 0.07, 0.02 }, { 1, 0.75, 0.2 }),
-        colour("MAGENTA", { 0.09, 0.03, 0.1 }, { 0.95, 0.4, 0.95 }),
-        colour("BLUE", { 0.03, 0.05, 0.13 }, { 0.45, 0.65, 1 }),
-        colour("GREY", { 0.07, 0.07, 0.08 }, { 0.85, 0.88, 0.9 }),
-    },
-    PARCHMENT = {
-        colour("CLASSIC"),
-        colour("AGED", { 0.32, 0.25, 0.15 }),
-        colour("ASH", { 0.33, 0.33, 0.31 }),
-        colour("SEA", { 0.25, 0.3, 0.33 }),
-        colour("ROSE", { 0.36, 0.27, 0.26 }),
-        colour("DARK", { 0.2, 0.17, 0.13 }),
-    },
-    RUNESTONE = {
-        colour("GRANITE"),
-        colour("SANDSTONE", { 0.33, 0.27, 0.18 }, { 1, 0.8, 0.35 }),
-        colour("SLATE", { 0.15, 0.18, 0.25 }, { 0.55, 0.75, 1 }),
-        colour("MOSS", { 0.15, 0.22, 0.14 }, { 0.5, 1, 0.45 }),
-        colour("OBSIDIAN", { 0.07, 0.06, 0.09 }, { 0.75, 0.5, 1 }),
-    },
-    GLASS = {
-        colour("CATHEDRAL"),
-        colour("BLUE", { 0.08, 0.12, 0.28 }),
-        colour("GREEN", { 0.07, 0.2, 0.1 }),
-        colour("AMBER", { 0.28, 0.17, 0.05 }),
-        colour("VIOLET", { 0.18, 0.08, 0.26 }),
-        colour("RUBY", { 0.26, 0.05, 0.08 }),
-    },
-    FROST = {
-        colour("ICE"),
-        colour("DEEP", { 0.1, 0.18, 0.32 }, { 0.6, 0.85, 1 }),
-        colour("AURORA", { 0.1, 0.27, 0.24 }, { 0.55, 1, 0.8 }),
-        colour("VIOLET", { 0.22, 0.18, 0.33 }, { 0.85, 0.75, 1 }),
-        colour("SILVER", { 0.3, 0.31, 0.33 }, { 0.92, 0.92, 0.95 }),
-        colour("NIGHT", { 0.06, 0.08, 0.14 }, { 0.7, 0.85, 1 }),
-    },
-    PIXEL = {
-        colour("NAVY"),
-        colour("PLUM", { 0.23, 0.08, 0.16 }, { 1, 0.93, 0.15 }),
-        colour("FOREST", { 0, 0.2, 0.12 }, { 1, 0.93, 0.15 }),
-        colour("BROWN", { 0.2, 0.12, 0.08 }, { 1, 0.64, 0 }),
-        colour("GREY", { 0.18, 0.17, 0.16 }),
-        colour("BLACK", { 0.03, 0.03, 0.04 }, { 0, 0.89, 0.21 }),
-        colour("TEAL", { 0.02, 0.17, 0.22 }, { 0.16, 0.68, 1 }),
-        colour("PURPLE", { 0.15, 0.1, 0.25 }, { 1, 0.47, 0.66 }),
-        colour("HANDHELD", { 0.059, 0.122, 0.059 }, { 0.784, 0.941, 0.439 }, { 0.784, 0.941, 0.439 }),
-    },
-    SWISS = {
-        colour("RED"),
-        colour("BLUE", nil, { 0.176, 0.42, 1 }),
-        colour("YELLOW", nil, { 1, 0.82, 0 }),
-        colour("WHITE", nil, { 0.949, 0.949, 0.949 }),
-    },
-    CONSOLE = {
-        colour("MINT"),
-        colour("AMBER", nil, { 1, 0.69, 0 }),
-        colour("PHOSPHOR", nil, { 0.224, 1, 0.078 }),
-        colour("VIOLET", nil, { 0.627, 0.471, 1 }),
-    },
-    PITWALL = {
-        colour("RED"),
-        colour("ORANGE", nil, { 1, 0.541, 0 }),
-        colour("TEAL", nil, { 0, 0.631, 0.612 }),
-        colour("SILVER", nil, { 0.788, 0.808, 0.839 }),
-    },
-    COMIC = { colour("GREY"), colour("DARKGREY"), colour("BLACK"), colour("WHITE"), colour("YELLOW"),
-        colour("BLUE"), colour("RED"), colour("GREEN"), colour("PURPLE") },
-}
-
--- The unit frames take the backdrop only (no accent), but for the themes
--- whose colours keep the backdrop (art.accent). Colours are stored
--- account wide outside the theme sets (UnitProfiles.ThemeColors).
--- The comic's paper tint per colour (the unit frames' comic has no dark
--- ink that a dark paper would have to lighten); GREY is the comic as it is.
-local COMIC_PAPER = {
-    GREY = { 0.70, 0.70, 0.70 },
-    DARKGREY = { 0.38, 0.38, 0.38 },
-    BLACK = { 0.16, 0.16, 0.16 },
-    WHITE = { 1, 1, 1 },
-    YELLOW = { 0.86, 0.76, 0.36 },
-    BLUE = { 0.45, 0.60, 0.86 },
-    RED = { 0.86, 0.44, 0.40 },
-    GREEN = { 0.50, 0.76, 0.46 },
-    PURPLE = { 0.70, 0.52, 0.84 },
-}
+-- The theme colours are the library's (Lib.COLORS), the same in every
+-- Forever addon. The unit frames take the backdrop only (no accent), but
+-- for the themes whose colours keep the backdrop (art.accent). Colours are
+-- stored account wide outside the theme sets (UnitProfiles.ThemeColors).
+Themes.COLORS = Lib.COLORS
 
 -- A raid cell is small and sits among others: its ring and corners stay
 -- slim, and it gets no ornaments or solid shadow (Elements/ThemeArt.lua).
@@ -277,7 +163,7 @@ function Themes.CellLook(id, key, own)
     if not spec or id == Themes.CLASSIC then return nil end
     local look = spec.look
     if key == "barTexture" then return spec.bar end
-    if key == "fontFace" then return LATIN_CLIENTS[GetLocale()] and spec.font or nil end
+    if key == "fontFace" then return Lib.LatinClient() and spec.font or nil end
     if key == "fontSize" or key == "valueFontSize" then
         local add = spec.fontSizeAdd or 0
         if add == 0 then return nil end
@@ -305,8 +191,10 @@ end
 
 -- Raised whenever SPECS change a look: theme sets made before are made
 -- anew from CLASSIC (Themes.Upgrade), so a changed theme shows as it is
--- now. CLASSIC is never touched.
-Themes.REVISION = 13
+-- now. CLASSIC is never touched. The library's part counts too: a change
+-- there to what seeding copies (fonts, sizes, ring colour) raises it.
+local OWN_REVISION = 13
+Themes.REVISION = OWN_REVISION + Lib.SEED_REVISION * Lib.SEED_STEP
 
 -- The active profile's stored theme sets; stale ones (an older
 -- REVISION) dropped.
@@ -333,7 +221,7 @@ end
 -- Core/PlatynatorFonts.lua): nil under Classic and where its letters
 -- are missing.
 function Themes.Font()
-    return LATIN_CLIENTS[GetLocale()] and Themes.Spec(Themes.Current()).font or nil
+    return Lib.LatinClient() and Themes.Spec(Themes.Current()).font or nil
 end
 
 -- The font sizes one larger by add, in General and wherever a frame has
@@ -364,7 +252,7 @@ local function seed(id, base)
     end
     for key, value in pairs(spec.look or {}) do p.general[key] = copy(value) end
     p.general.barTexture = spec.bar
-    if spec.font and LATIN_CLIENTS[GetLocale()] then p.general.fontFace = spec.font end
+    if spec.font and Lib.LatinClient() then p.general.fontFace = spec.font end
     growFonts(p, spec.fontSizeAdd or 0)
     -- The target as large as the player: the two sit side by side.
     for _, key in ipairs({ "width", "height" }) do
@@ -385,38 +273,22 @@ local function use(p)
     ns.Storage.Save()
 end
 
-local function colourOf(themeId, id)
-    for _, c in ipairs(Themes.COLORS[themeId] or {}) do
-        if c.id == id then return c end
-    end
-    return nil
-end
-
 -- A theme's colour ids in order (themeId defaults to the current theme;
 -- CLASSIC has none).
 function Themes.Colors(themeId)
-    local list = {}
-    for i, c in ipairs(Themes.COLORS[themeId or Themes.Current()] or {}) do list[i] = c.id end
-    return list
+    return Lib.Colors(themeId or Themes.Current())
 end
 
 -- A theme's colour chosen; an unknown one stored reads as its first.
 function Themes.Color(themeId)
     themeId = themeId or Themes.Current()
-    local colours = Themes.COLORS[themeId]
-    if not colours then return nil end
-    local id = ns.UnitProfiles.ThemeColors()[themeId]
-    return colourOf(themeId, id) and id or colours[1].id
+    return Lib.ValidColor(themeId, ns.UnitProfiles.ThemeColors()[themeId])
 end
 
--- spec's colour when it draws from the grey texture (not its first, not
--- the comic's paper). Raid cells and Smart Buffs pass their own theme's spec.
-local function greyPaint(spec)
+-- spec's theme id: raid cells and Smart Buffs pass their own theme's spec.
+local function idOf(spec)
     for id, s in pairs(Themes.SPECS) do
-        if s == spec then
-            local c = colourOf(id, Themes.Color(id))
-            return c and c.back and c or nil
-        end
+        if s == spec then return id end
     end
     return nil
 end
@@ -427,37 +299,32 @@ end
 function Themes.Accent(id, where)
     local art = Themes.Spec(id).art
     if not art or art.accent ~= where then return nil end
-    local c = colourOf(id, Themes.Color(id))
-    return c and c.accent and { c.accent[1], c.accent[2], c.accent[3], 1 }
+    local c = Lib.Paint(id, Themes.Color(id))
+    local accent = c and (c.accent or c.wedge)
+    return accent and { accent[1], accent[2], accent[3], 1 }
 end
 
 -- The ring's colour under theme id's colour, where it is not the theme's
 -- own: Console's accent, Pixel's Handheld green. Nothing else tints a ring.
 function Themes.Rim(id)
-    local c = colourOf(id, Themes.Color(id))
-    if c and c.rim then return { c.rim[1], c.rim[2], c.rim[3], 1 } end
+    local rim = Lib.Rim(id, Themes.Color(id))
+    if rim then return { rim[1], rim[2], rim[3], 1 } end
     return Themes.Accent(id, "ring")
 end
 
 -- The backdrop's texture under spec: the grey one under a colour.
 function Themes.Back(spec)
-    return greyPaint(spec) and spec.art.back .. "Grey" or spec.art.back
+    local id = idOf(spec)
+    return Lib.Back(spec.art, id, Themes.Color(id))
 end
 
 -- The backdrop's tint under spec: the comic's paper in its colour, or the
 -- grey texture tinted to the colour at the theme's alpha (unit frames, raid
 -- cells and the Smart Buffs window alike).
 function Themes.Tint(spec)
-    local tint = spec.art and spec.art.tint
-    if spec == Themes.SPECS.COMIC and tint then
-        local paper = COMIC_PAPER[Themes.Color("COMIC")]
-        return { paper[1], paper[2], paper[3], tint[4] }
-    end
-    local c = greyPaint(spec)
-    if not c then return tint end
-    local mean = GREY_MEAN[spec.art.back]
-    return { math.min(1, c.back[1] / mean), math.min(1, c.back[2] / mean), math.min(1, c.back[3] / mean),
-        tint and tint[4] or 1 }
+    if not spec.art then return nil end
+    local id = idOf(spec)
+    return Lib.Tint(spec.art, id, Themes.Color(id))
 end
 
 -- A theme's colour (themeId defaults to the current theme). Repaints at
@@ -465,11 +332,11 @@ end
 -- Switch would be, since it restyles secure frames.
 function Themes.SetColor(id, themeId)
     themeId = themeId or Themes.Current()
-    if not colourOf(themeId, id) then return nil, "UNKNOWN" end
+    if not Lib.Colour(themeId, id) then return nil, "UNKNOWN" end
     local shown = Themes.Current() == themeId or ns.RaidCell.Theme() == themeId
     local why = shown and refuse()
     if why then return nil, why end
-    ns.UnitProfiles.ThemeColors()[themeId] = id ~= Themes.COLORS[themeId][1].id and id or nil
+    ns.UnitProfiles.ThemeColors()[themeId] = id ~= Lib.COLORS[themeId][1].id and id or nil
     ns.Fire("CONFIG_CHANGED", nil, nil)
     ns.Fire("RAID_CONFIG_CHANGED", "general", "cellTheme")
     return true
@@ -584,50 +451,22 @@ function Themes.Upgrade()
 end
 
 -- For a theme picker in another addon (one entry per Forever addon).
-_G.ForeverThemes = _G.ForeverThemes or {}
-_G.ForeverThemes["ForeverUnitFrames"] = {
+local ADDON = "ForeverUnitFrames"
+Lib.Register(ADDON, {
     title = "Forever Unit Frames",
     Current = Themes.Current,
     Switch = Themes.Switch,
     Colors = Themes.Colors,
     Color = Themes.Color,
     SetColor = Themes.SetColor,
-}
+})
 
 -- "Apply to all Forever addons" (the options' theme rows): the other addons
--- in the list above. Each Forever addon has its own copy of this.
-local function otherThemes()
-    local list = {}
-    for folder, entry in pairs(_G.ForeverThemes) do
-        if folder ~= "ForeverUnitFrames" and type(entry) == "table" and type(entry.Switch) == "function" then
-            list[#list + 1] = entry
-        end
-    end
-    return list
-end
-
-function Themes.HasOthers() return #otherThemes() > 0 end
-
-local function listed(ids, id)
-    for _, v in ipairs(ids or {}) do
-        if v == id then return true end
-    end
-    return false
-end
+-- registered above.
+function Themes.HasOthers() return #Lib.Others(ADDON) > 0 end
 
 -- Every other addon onto this theme and, where that theme has it, this
--- colour (else it keeps its own). One without the theme refuses the switch
--- and is skipped. Returns how many switched.
+-- colour. Returns how many switched.
 function Themes.ApplyToAll()
-    local theme, color, switched = Themes.Current(), Themes.Color(), 0
-    for _, entry in ipairs(otherThemes()) do
-        if entry.Switch(theme) then
-            switched = switched + 1
-            if color and type(entry.Colors) == "function" and type(entry.SetColor) == "function"
-                and listed(entry.Colors(theme), color) then
-                entry.SetColor(color, theme)
-            end
-        end
-    end
-    return switched
+    return Lib.ApplyToAll(ADDON, Themes.Current(), Themes.Color())
 end

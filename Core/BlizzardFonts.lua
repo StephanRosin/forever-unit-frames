@@ -128,7 +128,7 @@ ns.On("PLAYER_LOGIN", function()
     if font then _G.DAMAGE_TEXT_FONT = ns.Media.Font(font) end
     ns.Listen("CONFIG_CHANGED", BlizzardFonts.Refresh)
 end)
--- A hidden text does not load a new font file (Core/Media.lua loads ours
+-- A hidden text does not load a new font file (LibForeverThemes loads ours
 -- while the addon loads); each loading screen also brings new buttons.
 ns.On("PLAYER_ENTERING_WORLD", function()
     if ns.booted then BlizzardFonts.Refresh() end

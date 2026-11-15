@@ -351,7 +351,7 @@ function Texts.CountdownFlags(outline)
 end
 
 -- Whether a text took the font asked for. A font file the client has not
--- loaded yet (the themes' own, Core/Media.lua) can be refused on first
+-- loaded yet (the themes' own, LibForeverThemes) can be refused on first
 -- use and leave the text without a font: drawn, only its black soft
 -- outline copies would show.
 local function hasFont(fs, font)

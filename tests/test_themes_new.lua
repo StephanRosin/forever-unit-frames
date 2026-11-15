@@ -8,7 +8,7 @@ _G.ForeverUnitFramesDB = nil
 M.FireEvent("PLAYER_LOGIN")
 M.RunTimers()
 local Themes, Config, C = ns.Themes, ns.Config, ns.Config
-local PATH = "Interface\\AddOns\\ForeverUnitFrames\\Media\\Themes\\"
+local PATH = "Interface\\AddOns\\ForeverUnitFrames\\Libs\\LibForeverThemes\\Media\\Themes\\"
 local f = ns.Frames.player
 local function rgb(c) return string.format("%.3f,%.3f,%.3f,%.3f", c[1], c[2], c[3], c[4] or 1) end
 local function restyle()
@@ -20,20 +20,22 @@ H.check("appended after pixel", table.concat(Themes.IDS, ",", 9), "PIXEL,SWISS,C
 H.check("cell themes appended", table.concat(ns.RaidSettings.Get("cellTheme").values, ",", 10),
     "PIXEL,SWISS,CONSOLE,PITWALL")
 
--- Every theme's files are there: backdrop, bar, ornament, font.
+-- Every theme's files are there (in the embedded LibForeverThemes):
+-- backdrop, bar, ornament, font.
+local LIBMEDIA = "Libs/LibForeverThemes/Media/"
 for _, id in ipairs(Themes.IDS) do
     local spec = Themes.SPECS[id]
     local art = spec.art or {}
     for _, name in ipairs({ art.back, art.ornament }) do
-        H.checkTrue(id .. ": " .. name .. ".tga shipped", H.ReadFile("Media/Themes/" .. name .. ".tga"))
+        H.checkTrue(id .. ": " .. name .. ".tga shipped", H.ReadFile(LIBMEDIA .. "Themes/" .. name .. ".tga"))
     end
     if spec.bar then
         local file = ns.Media.StatusBar(spec.bar):gsub("^Interface\\AddOns\\ForeverUnitFrames\\", ""):gsub("\\", "/")
-        H.checkTrue(id .. ": bar registered and shipped", file:find("^Media/") and H.ReadFile(file))
+        H.checkTrue(id .. ": bar registered and shipped", file:find("^" .. LIBMEDIA) and H.ReadFile(file .. ".tga"))
     end
     if spec.font and not ns.Media.Font(spec.font):find("^Fonts\\") then
         local file = ns.Media.Font(spec.font):gsub("^Interface\\AddOns\\ForeverUnitFrames\\", ""):gsub("\\", "/")
-        H.checkTrue(id .. ": font registered and shipped", file:find("^Media/Fonts/") and H.ReadFile(file))
+        H.checkTrue(id .. ": font registered and shipped", file:find("^" .. LIBMEDIA .. "Fonts/") and H.ReadFile(file))
     end
 end
 H.check("swiss: the body face", ns.Media.Font("Inter Tight"):match("[^\\]+$"), "InterTight-Regular.ttf")

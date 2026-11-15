@@ -194,7 +194,7 @@ do
     ns.RaidProfiles.Attach(db)   -- as at login: the cells' theme is asked too
     local entry = _G.ForeverThemes.ForeverUnitFrames
     local texture = CreateFrame("Frame"):CreateTexture()
-    local PATH = "Interface\\AddOns\\ForeverUnitFrames\\Media\\Themes\\"
+    local PATH = "Interface\\AddOns\\ForeverUnitFrames\\Libs\\LibForeverThemes\\Media\\Themes\\"
     local function rgb(t) return table.concat({ t[1], t[2], t[3], t[4] }, ",") end
     local function paint(id)
         ns.ThemeArt.Paint(texture, ns.Themes.SPECS[id])

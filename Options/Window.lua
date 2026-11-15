@@ -175,6 +175,12 @@ local ROW_BUILDERS = {
     end,
     media = function(parent, def, opts)
         opts.items = mediaItems(def)
+        -- A font stored under an older name (Pitwall's "Titillium Web")
+        -- shows under the one listed.
+        if def.mediaKind == "font" then
+            local get = opts.get
+            opts.get = function() return LibForeverThemes.FontName(get()) end
+        end
         return Widgets.Dropdown(parent, opts)
     end,
     color = function(parent, _, opts) return Widgets.Color(parent, opts) end,

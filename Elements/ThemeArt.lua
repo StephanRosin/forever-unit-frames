@@ -15,7 +15,8 @@ local ThemeArt = { name = "ThemeArt" }
 ns.ThemeArt = ThemeArt
 
 local Config = ns.Config
-local PATH = "Interface\\AddOns\\ForeverUnitFrames\\Media\\Themes\\"
+-- The textures come with the embedded LibForeverThemes, as Pitwall's wedge rule.
+local Lib = LibForeverThemes
 -- Texture coordinates of a top-left ornament for each corner
 -- (Corners.POINTS order): mirrored, never rotated.
 local MIRROR = { { 0, 1, 0, 1 }, { 1, 0, 0, 1 }, { 0, 1, 1, 0 }, { 1, 0, 1, 0 } }
@@ -29,7 +30,7 @@ function ThemeArt.Paint(texture, spec)
         texture:Hide()
         return
     end
-    texture:SetTexture(PATH .. ns.Themes.Back(spec), "REPEAT", "REPEAT")
+    texture:SetTexture(Lib.Texture(ns.Themes.Back(spec)), "REPEAT", "REPEAT")
     texture:SetHorizTile(true)
     texture:SetVertTile(true)
     local tint = ns.Themes.Tint(spec) or { 1, 1, 1, 1 }
@@ -148,7 +149,7 @@ local function placeOrnamentSet(pieces, box, art, wanted, extent, c)
             piece:ClearAllPoints()
             piece:SetPoint(point, box, point, dx, dy)
             piece:SetSize(size, art.ornamentHeight or size)
-            piece:SetTexture(PATH .. art.ornament)
+            piece:SetTexture(Lib.Texture(art.ornament))
             piece:SetTexCoord(unpack(MIRROR[i]))
             piece:SetVertexColor(c[1], c[2], c[3], c[4])
         end
@@ -164,13 +165,13 @@ local function placeOrnaments(frame, id, art, extent)
     placeOrnamentSet(frame.themeBlockOrnaments, frame.unitBox or frame, art, wanted, extent, c)
 end
 
--- The rule from the ring's outer top corners down art.rule pixels.
+-- The rule (a colour) from the ring's outer top corners down art.ruleSize pixels.
 local function placeRuleOn(rule, box, art, extent)
     rule:ClearAllPoints()
     rule:SetPoint("TOPLEFT", box, "TOPLEFT", -extent, extent)
     rule:SetPoint("TOPRIGHT", box, "TOPRIGHT", extent, extent)
-    rule:SetHeight(ns.Pixel.Snap(art.rule, nil, 1))
-    local c = art.ruleColor
+    rule:SetHeight(ns.Pixel.Snap(art.ruleSize, nil, 1))
+    local c = art.rule
     rule:SetColorTexture(c[1], c[2], c[3], c[4])
 end
 
@@ -185,22 +186,19 @@ end
 -- that part only, as wide as the title row is high, makes a bold wedge
 -- (the whole texture read as a stray stroke).
 -- Drawn h wide, its right edge runs from 0.98 h (top) to 0.62 h (bottom);
--- the text starts TITLE_GAP past it at the text's mid-height, as in every
--- Forever addon.
-local WEDGE_PART, TITLE_GAP = 0.53, 8
-local function wedgeReach(h, y) return math.floor(0.98 * h - 0.36 * y + 0.5) end
-
+-- the text starts Lib.TITLE_GAP past it at the text's mid-height, as in
+-- every Forever addon (LibForeverThemes).
 local function wedgeHeight(frame)
     if frame.themeOf or not frame.titleHeight then return 0 end
     local art = ns.Themes.Spec(Config.Get("general", "theme")).art
-    return art and art.titleWedge and frame.titleHeight or 0
+    return art and art.wedge and frame.titleHeight or 0
 end
 
 -- How far the title text moves right (beyond its usual 4) to clear the
 -- title wedge.
 function ThemeArt.TitleIndent(frame)
     local h = wedgeHeight(frame)
-    return h > 0 and wedgeReach(h, h / 2) + TITLE_GAP - 4 or 0
+    return h > 0 and Lib.WedgeReach(h, h / 2) + Lib.TITLE_GAP - 4 or 0
 end
 
 -- The title row as a strip of its own colour and the wedge at its start.
@@ -208,8 +206,8 @@ end
 local function placeTitle(frame, id, art)
     local wedge = frame.themeWedge
     local width = wedgeHeight(frame)
-    if art.titleStrip then
-        local c = art.titleStrip
+    if art.strip then
+        local c = art.strip
         frame.title:SetTexture(WHITE)
         frame.title:SetVertexColor(c[1], c[2], c[3], c[4])
     end
@@ -219,9 +217,9 @@ local function placeTitle(frame, id, art)
     wedge:SetPoint("TOPLEFT", frame.title, "TOPLEFT", 0, 0)
     wedge:SetPoint("BOTTOMLEFT", frame.title, "BOTTOMLEFT", 0, 0)
     wedge:SetWidth(width)
-    wedge:SetTexture(PATH .. art.titleWedge)
-    wedge:SetTexCoord(0, WEDGE_PART, 0, 1)
-    local c = ns.Themes.Accent(id, "wedge") or art.titleWedgeColor
+    wedge:SetTexture(Lib.Texture(art.wedge))
+    wedge:SetTexCoord(0, Lib.WEDGE_PART, 0, 1)
+    local c = ns.Themes.Accent(id, "wedge") or art.wedgeColor
     wedge:SetVertexColor(c[1], c[2], c[3], c[4])
 end
 

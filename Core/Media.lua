@@ -15,20 +15,6 @@ local builtin = {
         ["Arial Narrow"] = "Fonts\\ARIALN.TTF",
         ["Skurri"] = "Fonts\\skurri.ttf",
         ["Morpheus"] = "Fonts\\MORPHEUS.ttf",
-        -- The themes' fonts (Core/Themes.lua), Latin letters only; licences
-        -- in Media/Fonts.
-        ["Bangers"] = ADDON .. "Fonts\\Bangers-Regular.ttf",
-        ["Cinzel"] = ADDON .. "Fonts\\Cinzel-Bold.ttf",
-        ["IM Fell English SC"] = ADDON .. "Fonts\\IMFeENsc28P.ttf",
-        ["Julius Sans One"] = ADDON .. "Fonts\\JuliusSansOne-Regular.ttf",
-        ["Marcellus"] = ADDON .. "Fonts\\Marcellus-Regular.ttf",
-        ["Space Grotesk"] = ADDON .. "Fonts\\SpaceGrotesk-Bold.ttf",
-        ["VT323"] = ADDON .. "Fonts\\VT323-Regular.ttf",
-        -- Body faces of Swiss, Console, Pitwall: one face per frame, so
-        -- the readable text face, not the titles' display face.
-        ["Inter Tight"] = ADDON .. "Fonts\\InterTight-Regular.ttf",
-        ["IBM Plex Mono"] = ADDON .. "Fonts\\IBMPlexMono-Regular.ttf",
-        ["Titillium Web"] = ADDON .. "Fonts\\TitilliumWeb-SemiBold.ttf",
     },
     statusbar = {
         ["Flat"] = "Interface\\Buttons\\WHITE8X8",
@@ -36,32 +22,36 @@ local builtin = {
         ["Raid"] = "Interface\\RaidFrame\\Raid-Bar-Hp-Fill",
     },
 }
--- The themes' bar textures (tools/make_themes.py). Console and Pitwall
--- use Swiss's: their dashed and LED bars looked broken here.
+-- The themes' fonts (Latin letters only) and bar textures come with the
+-- embedded LibForeverThemes, which also loads its fonts early. Paths are
+-- asked at use: a newer copy of the library loading after us has its own.
+local Lib = LibForeverThemes
+-- Console and Pitwall use Swiss's bar: their dashed and LED bars looked broken here.
+local THEME_BARS = {}
 for _, name in ipairs({ "Wood", "Tech", "Parchment", "Stone", "Glass", "Comic", "Frost", "Pixel", "Swiss" }) do
-    builtin.statusbar["FUF " .. name] = ADDON .. "Themes\\" .. name .. "Bar.tga"
+    THEME_BARS["FUF " .. name] = name .. "Bar"
+end
+local function themed(kind, name)
+    if kind == "font" then return Lib.FontPath(name) end
+    return THEME_BARS[name] and Lib.Texture(THEME_BARS[name])
+end
+local function themedNames(kind)
+    local names = {}
+    if kind == "font" then
+        for _, f in ipairs(Lib.FONTS) do names[#names + 1] = f.name end
+    elseif kind == "statusbar" then
+        for name in pairs(THEME_BARS) do names[#names + 1] = name end
+    end
+    return names
 end
 local fallback = { font = "Friz Quadrata", statusbar = "Flat" }
-
--- Our own font files loaded while the addon loads: a file used for the
--- first time can be refused (Elements/Texts.lua tries again), so the
--- first restyle should not be its first use.
-do
-    local holder = CreateFrame("Frame")
-    holder:Hide()
-    for _, path in pairs(builtin.font) do
-        if path:find(ADDON, 1, true) then
-            holder:CreateFontString():SetFont(path, 12, "")
-        end
-    end
-end
 
 local function lsm()
     return LibStub and LibStub("LibSharedMedia-3.0", true)
 end
 
 local function fetch(kind, name)
-    local path = builtin[kind][name]
+    local path = builtin[kind][name] or themed(kind, name)
     if path then return path end
     local lib = lsm()
     if lib and name and lib:IsValid(kind, name) then return lib:Fetch(kind, name) end
@@ -77,6 +67,7 @@ function Media.Icon(name) return ADDON .. "Icon" .. name .. ".tga" end
 function Media.List(kind)
     local names, seen = {}, {}
     for name in pairs(builtin[kind]) do names[#names + 1] = name; seen[name] = true end
+    for _, name in ipairs(themedNames(kind)) do names[#names + 1] = name; seen[name] = true end
     local lib = lsm()
     if lib then
         for _, name in ipairs(lib:List(kind)) do
