@@ -423,7 +423,12 @@ function Raid.DefinePanel(p)
 end
 
 -- Main tanks (the raid assignment): on, a row above the main panel.
-Raid.DefinePanel({ id = "mainTanks", letter = "Q", show = true, perLine = 5, growth = "RIGHT", x = -600, y = 260 })
+local mainTanks = Raid.DefinePanel({ id = "mainTanks", letter = "Q", show = true, perLine = 5, growth = "RIGHT", x = -600,
+    y = 260 })
+-- Also everyone whose group role is Tank (Raid/SpecialPanels.lua), in a
+-- party too; off: only the raid assignment, as before.
+RaidSettings.Define({ key = "mainTanksRole", code = "QO", scope = "frame", class = "behaviour", type = "bool", default = false })
+table.insert(mainTanks.keys, 2, "mainTanksRole")
 -- Main assists (the raid assignment): off, a row above the main tanks.
 Raid.DefinePanel({ id = "mainAssists", letter = "W", show = false, perLine = 5, growth = "RIGHT", x = -600, y = 340 })
 -- My tanks (your own list): off, a column right of the main panel.

@@ -16,6 +16,7 @@ Players in a special panel stay in their group as well. The raid leader sets mai
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
 <tr><td><b>Show the panel</b></td><td></td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Also players with the Tank role</b></td><td>Everyone whose group role is Tank, in a party too (with "Raid view in a party"). Players without a role are not added</td><td>On, Off</td><td>Off</td></tr>
 <tr><td><b>Title above it</b></td><td></td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Cells per line</b></td><td>Then a new column (or row) of cells</td><td>1 – 40</td><td>5</td></tr>
 <tr><td><b>Cells grow</b></td><td></td><td>Down, Right</td><td>Right</td></tr>

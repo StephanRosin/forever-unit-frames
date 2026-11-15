@@ -70,7 +70,22 @@ function Special.New(id, how)
     return P
 end
 
-Special.New("mainTanks", { filter = function() return { roleFilter = "MAINTANK" } end })
+-- Main tanks with mainTanksRole: the group role Tank as well. Blizzard's
+-- header compares the role filter with the raid assignment and with
+-- UnitGroupRolesAssigned (TANK), in a party too (SecureGroupHeaders.lua).
+function Special.MainTanksFilter(size)
+    local byRole = ns.RaidConfig.Get(Raid.Scope(size), "mainTanksRole")
+    return { roleFilter = byRole and "MAINTANK,TANK" or "MAINTANK" }
+end
+Special.New("mainTanks", { filter = Special.MainTanksFilter })
+-- The header reads the roster again on GROUP_ROSTER_UPDATE only; a changed
+-- role is laid out again here as well, after combat if it comes in one.
+-- Not before the raid panels are built (their profiles are read then).
+ns.On("PLAYER_ROLES_ASSIGNED", function()
+    local P = Special.panels.mainTanks
+    if not P.anchor or not ns.RaidConfig.Get(Raid.Scope(Cell.Size()), "mainTanksRole") then return end
+    ns.AfterCombat("mainTanksRoles", P.Refresh)
+end)
 Special.New("mainAssists", { filter = function() return { roleFilter = "MAINASSIST" } end })
 
 local function nameList(id)

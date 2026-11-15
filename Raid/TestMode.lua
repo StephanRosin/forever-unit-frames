@@ -147,8 +147,15 @@ function Test.PanelMembers(id, size)
         end
         return list
     end
+    local taken = {}
     for _, i in ipairs(Test.PANELS[id] or {}) do
-        if all[i] then list[#list + 1] = all[i] end
+        if all[i] then list[#list + 1], taken[i] = all[i], true end
+    end
+    -- Main tanks by group role as well (mainTanksRole): every tank.
+    if id == "mainTanks" and ns.RaidConfig.Get(ns.Raid.Scope(size), "mainTanksRole") then
+        for i, m in ipairs(all) do
+            if m.assignedRole == "TANK" and not taken[i] then list[#list + 1] = m end
+        end
     end
     return list
 end

@@ -18,6 +18,15 @@ H.check("the warlock's", pets[2].name .. pets[2].class, "ImpWARLOCK")
 H.check("40: eight pets", #Test.PanelMembers("pets", 40), 8)
 H.check("a pet has no role", tostring(pets[1].role) .. "," .. tostring(pets[1].assignedRole), "NONE,NONE")
 H.check("your tanks, last first", Test.PanelMembers("myTanks", 10)[1].class, "WARRIOR")
+-- Main tanks by group role (mainTanksRole): every pretend tank as well,
+-- after the assigned ones; at 20 the second group's tank (11) joins.
+H.check("20: the assigned main tanks", #Test.PanelMembers("mainTanks", 20), 2)
+RC.Set("r20", "mainTanksRole", true)
+local byRole = Test.PanelMembers("mainTanks", 20)
+H.check("20 by role: the tank of group 3 too", #byRole, 3)
+H.check("20 by role: a tank", byRole[3].assignedRole, "TANK")
+H.check("20 by role: per size", #Test.PanelMembers("mainTanks", 10), 2)
+RC.Set("r20", "mainTanksRole", false)
 
 local function shown(list)
     local n = 0

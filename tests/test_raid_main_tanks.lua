@@ -12,7 +12,7 @@ ns.RaidSize.Update()
 -- The settings: per size, permanent codes, the growth stored like the
 -- main panel's.
 local CODES = { mainTanksShow = "QS", mainTanksTitle = "QT", mainTanksPerLine = "QL", mainTanksGrowth = "QG",
-    mainTanksX = "QX", mainTanksY = "QY" }
+    mainTanksX = "QX", mainTanksY = "QY", mainTanksRole = "QO" }
 for key, code in pairs(CODES) do
     local def = RS.Get(key)
     H.check(key .. " code", def and def.code, code)
@@ -20,11 +20,19 @@ for key, code in pairs(CODES) do
 end
 H.check("growth: the main panel's list", RS.Get("mainTanksGrowth").values, RS.Get("cellGrowth").values)
 local DEFAULTS = { mainTanksShow = true, mainTanksTitle = true, mainTanksPerLine = 5, mainTanksGrowth = "RIGHT",
-    mainTanksX = -600, mainTanksY = 260 }
+    mainTanksX = -600, mainTanksY = 260, mainTanksRole = false }
 for key, want in pairs(DEFAULTS) do H.check(key .. " default", RC.Get("r40", key), want) end
 H.check("listed as a panel", ns.Raid.PANELS[1].id, "mainTanks")
 H.check("its settings in order", table.concat(ns.Raid.PANELS[1].keys, ","),
-    "mainTanksShow,mainTanksTitle,mainTanksPerLine,mainTanksGrowth,mainTanksX,mainTanksY")
+    "mainTanksShow,mainTanksRole,mainTanksTitle,mainTanksPerLine,mainTanksGrowth,mainTanksX,mainTanksY")
+for _, size in ipairs({ "r10", "r20", "r40" }) do
+    H.check("by role: off at " .. size, RC.Get(size, "mainTanksRole"), false)
+end
+H.check("filter: the assignment", Special.MainTanksFilter(10).roleFilter, "MAINTANK")
+RC.Set("r10", "mainTanksRole", true)
+H.check("filter: and the Tank role", Special.MainTanksFilter(10).roleFilter, "MAINTANK,TANK")
+H.check("filter: per size", Special.MainTanksFilter(20).roleFilter, "MAINTANK")
+RC.Set("r10", "mainTanksRole", false)
 
 -- Built with the main panel.
 local P = Special.panels.mainTanks
@@ -126,6 +134,31 @@ RC.Set("general", "showInParty", true)
 M.RunTimers()
 H.check("party: the main tank", h:GetAttribute("child1").unit, "party1")
 H.checkTrue("party: shown", P.panel:IsShown())
+
+-- By group role (mainTanksRole): a party member whose role is Tank, as the
+-- header compares UnitGroupRolesAssigned. A role set later is read again
+-- on PLAYER_ROLES_ASSIGNED, after combat if it comes in one.
+M.units.party2 = { name = "Bo", class = "PALADIN", isPlayer = true, role = "TANK" }
+M.SetGroup({ "party1", "party2" })
+M.RunTimers()
+local scope = ns.Raid.Scope(ns.RaidCell.Size())
+H.check("role off: only the assignment", P.Count(1), 1)
+RC.Set(scope, "mainTanksRole", true)
+M.RunTimers()
+H.check("role on: the header's filter", h:GetAttribute("roleFilter"), "MAINTANK,TANK")
+H.check("role on: the tank too", P.Count(1), 2)
+M.units.player.role = "TANK"
+M.combat = true
+M.FireEvent("PLAYER_ROLES_ASSIGNED")
+H.check("role in combat: waits", P.Count(1), 2)
+M.SetCombat(false)
+M.RunTimers()
+H.check("role after combat: me too", P.Count(1), 3)
+H.check("role: nothing blocked", #M.blocked, 0)
+M.units.player.role, M.units.party2 = nil, nil
+RC.Set(scope, "mainTanksRole", false)
+M.SetGroup({ "party1" })
+M.RunTimers()
 RC.Set("general", "showInParty", false)
 H.check("party without the raid view: hidden", P.panel:IsShown(), false)
 
