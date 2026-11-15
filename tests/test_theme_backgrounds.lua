@@ -33,9 +33,16 @@ local function load(path, ns)
     chunk("X", ns)
     return ns
 end
+-- An addon on the embedded LibForeverThemes loads its copy first (next to
+-- Themes.lua or one folder up).
+local LIB = "/Libs/LibForeverThemes/LibForeverThemes.lua"
 local function addon(themes, media)
     local ns = stub()
     ns.Settings.THEMES, ns.Settings.DEFAULTS = {}, {}
+    local dir = themes:match("^(.*)/[^/]+$")
+    for _, lib in ipairs({ dir .. LIB, dir .. "/.." .. LIB }) do
+        if io.open(lib) then load(lib, ns) break end
+    end
     if media and not load(media, ns) then return nil end
     return load(themes, ns)
 end
