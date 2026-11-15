@@ -1610,6 +1610,7 @@ L.NEWS_0_57_0_BACKGROUNDS = "Themes: Jedes Theme und jede Farbe hat jetzt in all
 L.NEWS_0_58_0_THEME_FONTS = "Themes: zwei neue Optionen unter Allgemein > Rahmen & Addon geben Blizzards Zauberleiste, Buff-Dauer, Abklingzeitenmanager und Fehlermeldungen sowie Platynators Namensplaketten die Schrift des Themes. Beide sind aus, bis du sie einschaltest."
 L.NEWS_0_58_0_ROLE_ICON = "Gruppenrahmen: Das Rollensymbol bleibt an seinem Platz, wenn das Mitglied auch die Anführerkrone trägt."
 L.NEWS_0_58_1_MANA_CHAT = "Mana-Warnung: Ein Klick meldet es wieder der Gruppe (WoW Forever hält dein Mana inzwischen geheim, darum blieb sie stumm). Die Zeile lautet \"[ALARM] Ich habe wenig Mana (< 20%)\" mit deiner eigenen Schwelle."
+L.NEWS_0_59_0_PORTRAIT_AURA = "Porträt-Aura: Kontrollverlust (Betäubung, Furcht, Verwandlung ...) erscheint gross auf dem Porträt von Spieler, Ziel, Fokus und Gruppe, mit Restzeit; auf Wunsch auch grosse Schutzzauber. Standardmässig aus: Reiter Auren, „Porträt-Aura“."
 L.NEWS_OPEN_THEME = "Theme öffnen"
 
 -- Themes (Core/Themes.lua)

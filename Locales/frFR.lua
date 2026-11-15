@@ -1610,6 +1610,7 @@ L.NEWS_0_57_0_BACKGROUNDS = "Thèmes : chaque thème et chaque couleur ont déso
 L.NEWS_0_58_0_THEME_FONTS = "Thèmes : deux nouvelles options sous Général > Cadres et addon donnent la police du thème à la barre d'incantation, à la durée des améliorations, au gestionnaire de temps de recharge et aux messages d'erreur de Blizzard, ainsi qu'aux barres de nom de Platynator. Les deux restent désactivées tant que vous ne les activez pas."
 L.NEWS_0_58_0_ROLE_ICON = "Cadres de groupe : l'icône de rôle garde sa place quand le membre porte aussi la couronne de chef."
 L.NEWS_0_58_1_MANA_CHAT = "Alerte de mana bas : un clic prévient de nouveau le groupe (WoW Forever garde désormais votre mana secret, elle restait muette). La ligne indique \"[ALERTE] Je suis à court de mana (< 20%)\" avec votre propre seuil."
+L.NEWS_0_59_0_PORTRAIT_AURA = "Aura du portrait : les contrôles (étourdissements, peurs, métamorphoses...) s'affichent en grand sur le portrait du joueur, de la cible, du focus et du groupe, avec le temps restant ; les grandes défensives aussi si vous le souhaitez. Désactivé par défaut : onglet Auras, « Aura du portrait »."
 L.NEWS_OPEN_THEME = "Ouvrir le thème"
 
 -- Themes (Core/Themes.lua)

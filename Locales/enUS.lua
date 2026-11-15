@@ -1638,6 +1638,7 @@ L.NEWS_0_57_0_BACKGROUNDS = "Themes: every theme and colour now has the same win
 L.NEWS_0_58_0_THEME_FONTS = "Themes: two new options under General > Frames & addon put the theme's font on Blizzard's cast bar, buff timers, Cooldown Manager and error messages, and on Platynator's nameplates. Both are off until you switch them on."
 L.NEWS_0_58_0_ROLE_ICON = "Party frames: the role icon keeps its place when the member also has the leader crown."
 L.NEWS_0_58_1_MANA_CHAT = "Low mana warning: a click tells your group again (WoW Forever now keeps your mana secret, so it stayed silent). The line reads \"[ALERT] I am low on mana (< 20%)\" with your own threshold."
+L.NEWS_0_59_0_PORTRAIT_AURA = "Portrait aura: crowd control (stuns, fears, polymorphs ...) shows big on the portrait of the player, target, focus and party frames, with the time left; big defensives optionally too. Off by default: Auras tab, \"Portrait aura\"."
 L.NEWS_OPEN_THEME = "Open the theme"
 
 -- Themes (Core/Themes.lua)

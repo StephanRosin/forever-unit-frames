@@ -210,6 +210,9 @@ News.ENTRIES = {
     ["0.58.1"] = {
         lines = { "NEWS_0_58_1_MANA_CHAT" },
     },
+    ["0.59.0"] = {
+        lines = { "NEWS_0_59_0_PORTRAIT_AURA" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

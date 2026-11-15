@@ -1611,6 +1611,7 @@ L.NEWS_0_57_0_BACKGROUNDS = "Temas: cada tema y cada color tienen ahora el mismo
 L.NEWS_0_58_0_THEME_FONTS = "Temas: dos opciones nuevas en General > Marcos y addon ponen la fuente del tema en la barra de lanzamiento, la duración de beneficios, el gestor de tiempos de reutilización y los mensajes de error de Blizzard, y en las placas de nombre de Platynator. Ambas están desactivadas hasta que las actives."
 L.NEWS_0_58_0_ROLE_ICON = "Marcos de grupo: el icono de rol mantiene su sitio cuando el miembro también lleva la corona de líder."
 L.NEWS_0_58_1_MANA_CHAT = "Aviso de poco maná: un clic vuelve a avisar al grupo (WoW Forever ahora mantiene tu maná en secreto, por eso no decía nada). La línea dice \"[ALERTA] Me queda poco maná (< 20%)\" con tu propio umbral."
+L.NEWS_0_59_0_PORTRAIT_AURA = "Aura del retrato: el control de masas (aturdimientos, miedos, polimorfias...) aparece en grande sobre el retrato del jugador, objetivo, foco y grupo, con el tiempo restante; si quieres, también las defensivas grandes. Desactivado por defecto: pestaña Auras, «Aura del retrato»."
 L.NEWS_OPEN_THEME = "Abrir el tema"
 
 -- Themes (Core/Themes.lua)
