@@ -75,7 +75,7 @@ function ManaWarning.Build(frame)
     mw.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92)
     mw.text = holder:CreateFontString(nil, "OVERLAY")
     holder:SetScript("OnClick", function()
-        if ManaWarning.KeyHeld(frame.key) then ManaWarning.Announce(frame) end
+        if ManaWarning.KeyHeld(frame.key) then ManaWarning.Announce(frame, true) end
     end)
     -- Both strokes: SecureActionButton_OnClick acts on the one the player
     -- casts on (ActionButtonUseKeyDown), as Raid/Tools.lua.
@@ -247,18 +247,20 @@ local function locked()
 end
 
 -- One line to the group's chat with your share; nothing alone, nothing
--- while the client forbids addons the chat, nothing with a secret share,
--- and not twice within CHAT_GAP (a click too, against double clicks).
-function ManaWarning.Announce(frame)
+-- while the client forbids addons the chat, and not twice within CHAT_GAP
+-- (a click too, against double clicks). A secret share never reaches the
+-- chat: then only a click (the player saw the warning) sends, without it.
+function ManaWarning.Announce(frame, byClick)
     local mw = frame.manaWarning
     if not mw or mw.preview then return end
     local to = channel()
     local percent = ManaWarning.Percent()
-    if not to or not percent or locked() then return end
+    if not to or locked() or not (percent or byClick) then return end
     local now = GetTime()
     if mw.saidAt and now - mw.saidAt < ManaWarning.CHAT_GAP then return end
     mw.saidAt = now
-    SendChatMessage(ns.L.MANA_WARN_CHAT:format(math.floor(percent + 0.5)), to)
+    SendChatMessage(percent and ns.L.MANA_WARN_CHAT:format(math.floor(percent + 0.5))
+        or ns.L.MANA_WARN_CHAT_PLAIN, to)
 end
 
 -- Showing -----------------------------------------------------------------------------

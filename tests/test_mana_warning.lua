@@ -154,6 +154,12 @@ M.FireEvent("UNIT_POWER_FREQUENT", "player", "MANA")
 H.check("secret: block shown", mw.holder:IsShown(), true)
 H.check("secret: opaque below the line", M.Reveal(mw.holder:GetAlpha()), 1)
 H.check("secret: no chat", #M.sent, sent)
+-- A click still tells the group, without the secret share.
+M.shiftDown = true
+mw.holder:GetScript("OnClick")(mw.holder)
+M.shiftDown = false
+H.check("secret, click: a line", #M.sent, sent + 1)
+H.check("secret, click: no number", M.sent[#M.sent][1], ns.L.MANA_WARN_CHAT_PLAIN)
 M.units.player.powerPercent = 0.8
 M.FireEvent("UNIT_POWER_FREQUENT", "player", "MANA")
 H.check("secret: clear above the line", M.Reveal(mw.holder:GetAlpha()), 0)
