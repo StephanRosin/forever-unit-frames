@@ -22,7 +22,7 @@ ns.UnitIcons = UnitIcons
 local Config, Pixel, Secrets, Settings = ns.Config, ns.Pixel, ns.Secrets, ns.Settings
 
 UnitIcons.KINDS = { "combatIcon", "pvpIcon" }
-UnitIcons.COMBAT_ATLAS = "UI-HUD-UnitFrame-Player-CombatIcon"
+UnitIcons.COMBAT_TEXTURE = ns.Media.Icon("Combat")
 UnitIcons.PVP_ATLAS = {
     Alliance = "UI-HUD-UnitFrame-Player-PVP-AllianceIcon",
     Horde = "UI-HUD-UnitFrame-Player-PVP-HordeIcon",
@@ -76,8 +76,8 @@ function UnitIcons.Build(frame)
             tex:SetAllPoints(holder)
             local icon = { holder = holder, tex = tex }
             if kind == "combatIcon" then
-                tex:SetAtlas(UnitIcons.COMBAT_ATLAS)
-                icon.anim = ns.CombatAnimation.New(tex, UnitIcons.COMBAT_ATLAS)
+                tex:SetTexture(UnitIcons.COMBAT_TEXTURE)
+                icon.anim = ns.CombatAnimation.New(tex, UnitIcons.COMBAT_TEXTURE)
             end
             holder:Hide()
             icons[kind] = icon

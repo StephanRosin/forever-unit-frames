@@ -20,17 +20,15 @@ ns.Classification = Classification
 local Config, Secrets, Settings, L = ns.Config, ns.Secrets, ns.Settings, ns.L
 
 local GOLD, SILVER = { 1, 0.82, 0 }, { 0.78, 0.8, 0.85 }
--- Atlas names as Blizzard's nameplates use them for every game type
--- (Blizzard_NamePlateClassificationFrame.lua). Blizzard marks bosses with
--- the elite badge too; here a boss gets the target frame's high-level
--- icon (Blizzard_UnitFrame/Mainline/TargetFrame.xml), the elite badge if
--- the client lacks it.
+-- Elite badges: atlas names as Blizzard's nameplates use them for every
+-- game type (Blizzard_NamePlateClassificationFrame.lua), large enough to
+-- stay sharp. Boss skull and rare star are our own files (Media.Icon):
+-- Blizzard's are tiny and blur when scaled.
 Classification.MARKERS = {
-    boss = { atlas = "UI-HUD-UnitFrame-Target-HighLevelTarget_Icon", fallback = "nameplates-icon-elite-gold",
-        color = GOLD },
+    boss = { file = ns.Media.Icon("BossSkull"), color = GOLD },
     elite = { atlas = "nameplates-icon-elite-gold", color = GOLD },
     rareelite = { atlas = "nameplates-icon-elite-silver", color = SILVER },
-    rare = { atlas = "UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Star", color = SILVER },
+    rare = { file = ns.Media.Icon("RareStar"), color = SILVER },
 }
 -- Test mode shows this one.
 Classification.SAMPLE = "rareelite"
@@ -72,7 +70,6 @@ end
 -- The atlas to draw for a marker, or nil when the client has none.
 local function atlasOf(marker)
     if atlasKnown(marker.atlas) then return marker.atlas end
-    if marker.fallback and atlasKnown(marker.fallback) then return marker.fallback end
     return nil
 end
 
@@ -173,9 +170,10 @@ local function show(frame, kind, force)
     frame.eliteKind, frame.eliteBadge, frame.eliteDrawn = kind, badge, true
     local marker = Classification.MARKERS[kind or ""]
     local mode = frame.eliteMode
-    local atlas = marker and mode == "ICON" and atlasOf(marker)
-    -- A badge the client lacks falls back to the word.
-    if mode == "ICON" and not atlas then mode = "TEXT" end
+    local file = marker and marker.file
+    local atlas = marker and mode == "ICON" and not file and atlasOf(marker)
+    -- A badge the client lacks falls back to the word (own files always exist).
+    if mode == "ICON" and not (file or atlas) then mode = "TEXT" end
     local icon, text = frame.eliteIcon, frame.eliteText
     icon:SetShown(marker ~= nil and mode == "ICON")
     text:SetShown(marker ~= nil and mode == "TEXT")
@@ -183,7 +181,12 @@ local function show(frame, kind, force)
     if not marker or mode == "BORDER" then return end
     if mode == "ICON" then
         placeIcon(frame)
-        icon:SetAtlas(atlas)
+        if file then
+            icon:SetTexture(file)
+            icon:SetTexCoord(0, 1, 0, 1) -- an elite atlas drawn before left its sheet coordinates
+        else
+            icon:SetAtlas(atlas)
+        end
     else
         placeText(frame)
     end

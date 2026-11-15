@@ -1600,6 +1600,7 @@ L.NEWS_0_56_0_AURA_FONT = "Las auras cambiadas dentro de una mazmorra conservan 
 L.NEWS_0_56_1_CAST_ICON = "Barra de lanzamiento: el icono del hechizo vuelve a verse con esquinas redondeadas (estaba oculto en Clásico)."
 L.NEWS_0_56_1_OPTIONS = "Opciones: la primera página muestra sus ajustes en cuanto se abre la ventana."
 L.NEWS_0_57_0_INVERTED_HEALTH = "Marcos de banda, Celda > Barras: \"Color de salud\" ahora puede mostrar la salud perdida: \"Salud perdida: color de clase\" o \"Salud perdida: color fijo\" dejan la barra oscura y colorean la salud que ha perdido un jugador."
+L.NEWS_0_57_0_ICONS = "Iconos más nítidos: calavera de jefe, estrella rara, espadas de combate, corona de líder, guía, ayudante y los iconos de rol son ahora dibujos propios y se ven nítidos a cualquier tamaño."
 L.NEWS_OPEN_THEME = "Abrir el tema"
 
 -- Themes (Core/Themes.lua)

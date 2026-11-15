@@ -47,8 +47,8 @@ do
     H.checkTrue("in the group icons' section after the others",
         keys and keys:find("groupPhase,groupRole,groupIconSize", 1, true))
     -- One art for both: the raid cells' role icons.
-    H.check("the raid cells' art", ns.RaidRole.ATLAS, ns.GroupIcons.ROLE_ATLAS)
-    H.check("healer art", ns.GroupIcons.ROLE_ATLAS.HEALER, "UI-LFG-RoleIcon-Healer-Micro-GroupFinder")
+    H.check("the raid cells' art", ns.RaidRole.TEXTURE, ns.GroupIcons.ROLE_TEXTURE)
+    H.check("healer art", ns.GroupIcons.ROLE_TEXTURE.HEALER, "Interface\\AddOns\\ForeverUnitFrames\\Media\\IconRoleHealer.tga")
     -- Raid cells keep their own role icon.
     H.check("raid cells: never", ns.RaidCell.Resolve("groupRole"), false)
 end
@@ -69,8 +69,8 @@ do
     C.Set("party", "groupRole", true)
     C.Set("player", "groupRole", true)
     H.checkTrue("healer shown", a.role:IsShown())
-    H.check("healer art", a.role._atlas, "UI-LFG-RoleIcon-Healer-Micro-GroupFinder")
-    H.check("player: tank", p.role._atlas, "UI-LFG-RoleIcon-Tank-Micro-GroupFinder")
+    H.check("healer art", a.role._texture, "Interface\\AddOns\\ForeverUnitFrames\\Media\\IconRoleHealer.tga")
+    H.check("player: tank", p.role._texture, "Interface\\AddOns\\ForeverUnitFrames\\Media\\IconRoleTank.tga")
     H.check("no role: none", b.role:IsShown(), false)
     -- A slot of its own: the row is six icons wide.
     local size = ns.Pixel.Snap(16, nil, 1)
@@ -89,7 +89,7 @@ do
     M.units.party2.role = "DAMAGER"
     M.FireEvent("PLAYER_ROLES_ASSIGNED")
     H.checkTrue("damage shown", b.role:IsShown())
-    H.check("damage art", b.role._atlas, "UI-LFG-RoleIcon-DPS-Micro-GroupFinder")
+    H.check("damage art", b.role._texture, "Interface\\AddOns\\ForeverUnitFrames\\Media\\IconRoleDamage.tga")
 
     -- Secret role: nothing, no error.
     M.units.party1.role = M.Secret("HEALER")
@@ -108,13 +108,13 @@ do
     -- Test mode: the samples' roles.
     C.Set("party", "groupRole", true)
     ns.TestMode.Set(true)
-    H.check("sample: the player tanks", p.role._atlas, "UI-LFG-RoleIcon-Tank-Micro-GroupFinder")
+    H.check("sample: the player tanks", p.role._texture, "Interface\\AddOns\\ForeverUnitFrames\\Media\\IconRoleTank.tga")
     H.checkTrue("sample: player shown", p.role:IsShown())
     local fake = ns.Party.fakes[1].groupIcons
     H.checkTrue("sample: member 1 shown", fake.role:IsShown())
-    H.check("sample: member 1 heals", fake.role._atlas, "UI-LFG-RoleIcon-Healer-Micro-GroupFinder")
+    H.check("sample: member 1 heals", fake.role._texture, "Interface\\AddOns\\ForeverUnitFrames\\Media\\IconRoleHealer.tga")
     ns.TestMode.Set(false)
-    H.check("test mode off: the live role", p.role._atlas, "UI-LFG-RoleIcon-Tank-Micro-GroupFinder")
+    H.check("test mode off: the live role", p.role._texture, "Interface\\AddOns\\ForeverUnitFrames\\Media\\IconRoleTank.tga")
 end
 
 -- Raid cells: their own role icon only.

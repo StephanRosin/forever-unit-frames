@@ -21,8 +21,8 @@ local function point(region, name)
     end
 end
 
-local LEADER, GUIDE = "UI-HUD-UnitFrame-Player-Group-LeaderIcon", "UI-HUD-UnitFrame-Player-Group-GuideIcon"
-local ASSISTANT = "Interface\\GroupFrame\\UI-Group-AssistantIcon"
+local LEADER, GUIDE = "Interface\\AddOns\\ForeverUnitFrames\\Media\\IconLeader.tga", "Interface\\AddOns\\ForeverUnitFrames\\Media\\IconGuide.tga"
+local ASSISTANT = "Interface\\AddOns\\ForeverUnitFrames\\Media\\IconAssistant.tga"
 local READY, NOT_READY, WAITING = "UI-LFG-ReadyMark-Raid", "UI-LFG-DeclineMark-Raid", "UI-LFG-PendingMark-Raid"
 local REZ = "RaidFrame-Icon-Rez"
 
@@ -137,7 +137,7 @@ do
     M.units.player.leader = true
     M.SetGroup({ "party1", "party2" })
     H.check("player leads: icon", g.leader:IsShown(), true)
-    H.check("leader art", g.leader._atlas, LEADER)
+    H.check("leader art", g.leader._texture, LEADER)
     local a, b = ns.Party.buttons[1], ns.Party.buttons[2]
     H.check("member 1 not leader", a.groupIcons.leader:IsShown(), false)
     -- Leadership passes on.
@@ -149,7 +149,7 @@ do
     -- A guide (group finder restrictions) instead of the crown.
     M.lfgRestricted = true
     M.FireEvent("PARTY_LEADER_CHANGED")
-    H.check("guide art", a.groupIcons.leader._atlas, GUIDE)
+    H.check("guide art", a.groupIcons.leader._texture, GUIDE)
     M.lfgRestricted = false
     -- Assistants: Blizzard's raid roster icon.
     M.units.party2.assistant = true
@@ -282,7 +282,7 @@ do
     local ns = boot()
     H.checkTrue("test mode on", ns.TestMode.Set(true))
     local g = ns.Frames.player.groupIcons
-    H.check("player sample: leader", g.leader:IsShown() and g.leader._atlas, LEADER)
+    H.check("player sample: leader", g.leader:IsShown() and g.leader._texture, LEADER)
     H.check("player sample: ready", g.ready:IsShown() and g.ready._atlas, READY)
     local fakes = ns.Party.fakes
     H.check("member 1: ready", fakes[1].groupIcons.ready._atlas, READY)

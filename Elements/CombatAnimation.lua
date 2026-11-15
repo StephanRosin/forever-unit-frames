@@ -1,13 +1,13 @@
 local _, ns = ...
 
 -- Animation of the combat icons (the player's, Elements/StatusIcons.lua,
--- and everyone else's, Elements/UnitIcons.lua). Blizzard's combat icon is
+-- and everyone else's, Elements/UnitIcons.lua). The combat icon is
 -- a still image; this adds the client's own animation groups:
 -- * BURST: as the icon appears it springs in from bigger and flashes once
 --   (an additive copy of the art fading out), then stands still.
 -- * PULSE: while shown it breathes between full and faint.
--- * DUEL: our own art instead of Blizzard's still one, two swords clashing
---   in a loop while shown (Media/CombatDuel.tga, a 4 x 4 flipbook made by
+-- * DUEL: two swords clashing in a loop while shown instead of the still
+--   icon (Media/CombatDuel.tga, a 4 x 4 flipbook made by
 --   tools/make_combat_duel.py).
 -- Plain textures and animation groups: nothing protected, fine in combat.
 local CombatAnimation = {}
@@ -23,11 +23,11 @@ CombatAnimation.PULSE_SECONDS = 0.6
 CombatAnimation.DUEL_TEXTURE = "Interface\\AddOns\\ForeverUnitFrames\\Media\\CombatDuel"
 CombatAnimation.DUEL = { rows = 4, columns = 4, frames = 16, duration = 1.0 }
 
--- tex: the icon; atlas: its art, for the flash. Returns the controller.
-function CombatAnimation.New(tex, atlas)
+-- tex: the icon; texture: its still art, for the flash. Returns the controller.
+function CombatAnimation.New(tex, texture)
     local parent = tex:GetParent()
     local flash = parent:CreateTexture(nil, "OVERLAY", nil, 7)
-    flash:SetAtlas(atlas)
+    flash:SetTexture(texture)
     flash:SetBlendMode("ADD")
     flash:SetAllPoints(tex)
     flash:SetAlpha(0)
@@ -69,8 +69,8 @@ function CombatAnimation.New(tex, atlas)
     book:SetDuration(d.duration)
     duel:SetLooping("REPEAT")
 
-    return { tex = tex, atlas = atlas, flash = flash, burst = burst, shine = shine, pulse = pulse, duel = duel,
-        shown = false, art = "ATLAS" }
+    return { tex = tex, texture = texture, flash = flash, burst = burst, shine = shine, pulse = pulse, duel = duel,
+        shown = false, art = "STILL" }
 end
 
 local function stop(a)
@@ -81,16 +81,17 @@ local function stop(a)
     a.flash:SetAlpha(0)
 end
 
--- Blizzard's still art, or the duel sheet (DUEL only).
+-- The still art, or the duel sheet (DUEL only).
 local function useArt(a, duel)
-    local art = duel and "DUEL" or "ATLAS"
+    local art = duel and "DUEL" or "STILL"
     if a.art == art then return end
     a.art = art
     if duel then
         a.tex:SetTexture(CombatAnimation.DUEL_TEXTURE)
     else
         a.duel:Stop()
-        a.tex:SetAtlas(a.atlas)
+        a.tex:SetTexture(a.texture)
+        a.tex:SetTexCoord(0, 1, 0, 1) -- the flipbook left one cell's coordinates
     end
 end
 

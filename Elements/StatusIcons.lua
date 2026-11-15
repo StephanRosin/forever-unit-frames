@@ -2,9 +2,9 @@ local _, ns = ...
 
 -- Status icons of the player frame, as Blizzard's PlayerFrame has them: a
 -- combat icon while you are in combat and a resting icon while you rest
--- in an inn or a city. Blizzard's own art (Blizzard_UnitFrame/Mainline/
--- PlayerFrame.xml): the crossed swords atlas, and the resting "Zzz" as a
--- flipbook animated like Blizzard's (its art is drawn half again as big
+-- in an inn or a city. Crossed swords of our own (Media.Icon; Blizzard's
+-- atlas is tiny and blurs), and Blizzard's resting "Zzz" (Blizzard_UnitFrame/
+-- Mainline/PlayerFrame.xml) as a flipbook animated like Blizzard's (its art is drawn half again as big
 -- as its slot, as there).
 --
 -- A row on a plain holder frame anchored to the health bar (centred on it
@@ -22,7 +22,7 @@ ns.StatusIcons = StatusIcons
 local Config, Pixel = ns.Config, ns.Pixel
 
 StatusIcons.SCOPE = "player"
-StatusIcons.COMBAT_ATLAS = "UI-HUD-UnitFrame-Player-CombatIcon"
+StatusIcons.COMBAT_TEXTURE = ns.Media.Icon("Combat")
 StatusIcons.REST_ATLAS = "UI-HUD-UnitFrame-Player-Rest-Flipbook"
 -- Blizzard's flipbook: 7 rows of 6 cells, 42 frames in 1.5 seconds.
 StatusIcons.REST_FLIPBOOK = { rows = 7, columns = 6, frames = 42, duration = 1.5 }
@@ -55,10 +55,10 @@ function StatusIcons.Build(frame)
     if frame.key ~= StatusIcons.SCOPE then return end
     local holder = CreateFrame("Frame", nil, frame)
     local combat = holder:CreateTexture(nil, "ARTWORK")
-    combat:SetAtlas(StatusIcons.COMBAT_ATLAS)
+    combat:SetTexture(StatusIcons.COMBAT_TEXTURE)
     local resting, restAnim = newRestIcon(holder)
     frame.statusIcons = { holder = holder, combat = combat, resting = resting, restAnim = restAnim,
-        combatAnim = ns.CombatAnimation.New(combat, StatusIcons.COMBAT_ATLAS) }
+        combatAnim = ns.CombatAnimation.New(combat, StatusIcons.COMBAT_TEXTURE) }
 end
 
 local function wanted(key) return Config.Get(StatusIcons.SCOPE, key) end

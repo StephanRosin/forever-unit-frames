@@ -44,8 +44,9 @@ H.check("elite", kindOf({ classification = "elite" }), "elite")
 H.check("rare", kindOf({ classification = "rare" }), "rare")
 H.check("rare elite", kindOf({ classification = "rareelite" }), "rareelite")
 H.check("world boss", kindOf({ classification = "worldboss" }), "boss")
-H.check("boss: its own badge", Cl.MARKERS.boss.atlas, "UI-HUD-UnitFrame-Target-HighLevelTarget_Icon")
-H.check("boss: the elite badge if missing", Cl.MARKERS.boss.fallback, "nameplates-icon-elite-gold")
+H.check("boss: our skull", Cl.MARKERS.boss.file, "Interface\\AddOns\\ForeverUnitFrames\\Media\\IconBossSkull.tga")
+H.check("rare: our star", Cl.MARKERS.rare.file, "Interface\\AddOns\\ForeverUnitFrames\\Media\\IconRareStar.tga")
+H.check("elite keeps Blizzard's badge", Cl.MARKERS.elite.atlas, "nameplates-icon-elite-gold")
 H.check("boss mob", kindOf({ classification = "elite", bossMob = true }), "boss")
 H.check("normal", kindOf({ classification = "normal" }), nil)
 H.check("trivial", kindOf({ classification = "trivial" }), nil)
@@ -95,7 +96,7 @@ C.Set("target", "portraitMode", "LEFT")
 M.FireEvent("UNIT_CLASSIFICATION_CHANGED", "target")
 H.checkTrue("badge shown", icon:IsShown())
 H.check("word hidden", text:IsShown(), false)
-H.check("rare star", icon._atlas, "UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Star")
+H.check("rare star", icon._texture, "Interface\\AddOns\\ForeverUnitFrames\\Media\\IconRareStar.tga")
 p = { icon:GetPoint(1) }
 H.check("on the portrait", p[2], f.portraitBg)
 H.check("outer corner", p[1], "TOPLEFT")
@@ -106,10 +107,16 @@ H.check("right: outer corner", icon:GetPoint(1), "TOPRIGHT")
 H.checkTrue("sticks out to the right", select(4, icon:GetPoint(1)) > 0)
 M.units.target.classification = "worldboss"
 M.FireEvent("UNIT_CLASSIFICATION_CHANGED", "target")
-H.check("boss badge", icon._atlas, "UI-HUD-UnitFrame-Target-HighLevelTarget_Icon")
+H.check("boss badge", icon._texture, "Interface\\AddOns\\ForeverUnitFrames\\Media\\IconBossSkull.tga")
+H.check("boss: square", icon:GetWidth(), icon:GetHeight())
 M.units.target.classification = "elite"
 M.FireEvent("UNIT_CLASSIFICATION_CHANGED", "target")
 H.check("elite badge", icon._atlas, "nameplates-icon-elite-gold")
+M.units.target.classification = "worldboss"
+M.FireEvent("UNIT_CLASSIFICATION_CHANGED", "target")
+H.check("after the elite atlas: the whole skull", table.concat(icon._texCoord, ","), "0,1,0,1")
+M.units.target.classification = "elite"
+M.FireEvent("UNIT_CLASSIFICATION_CHANGED", "target")
 H.check("sticks out above", select(5, icon:GetPoint(1)), ns.Pixel.Snap(ns.Pixel.Snap(46 * 0.45) / 3))
 -- A castbar docked on top: the badge stays below its top edge.
 C.Set("target", "castbarPosition", "ABOVE")
@@ -207,7 +214,6 @@ H.check("section title", L.SECTION_eliteMarker, "Elite / rare marker")
 -- Atlases the client does not know (fresh load: lookups are cached).
 ns = H.LoadAddon()
 M.atlases["nameplates-icon-elite-gold"] = nil
-M.atlases["UI-HUD-UnitFrame-Target-HighLevelTarget_Icon"] = nil
 _G.ForeverUnitFramesDB = nil
 M.FireEvent("PLAYER_LOGIN")
 M.RunTimers()
@@ -220,19 +226,11 @@ H.checkTrue("no atlas: the word", f.eliteText:IsShown())
 H.check("no atlas: word text", f.eliteText:GetText(), ns.L.CLASS_elite)
 M.units.target.classification = "rare"
 M.FireEvent("UNIT_CLASSIFICATION_CHANGED", "target")
-H.checkTrue("known atlas: badge", f.eliteIcon:IsShown())
+H.checkTrue("own file: badge", f.eliteIcon:IsShown())
+M.units.target.classification = "worldboss"
+M.FireEvent("UNIT_CLASSIFICATION_CHANGED", "target")
+H.check("boss without the elite atlas: still our skull", f.eliteIcon:IsShown() and f.eliteIcon._texture, "Interface\\AddOns\\ForeverUnitFrames\\Media\\IconBossSkull.tga")
 M.atlases["nameplates-icon-elite-gold"] = true
-ns = H.LoadAddon()
-M.atlases["UI-HUD-UnitFrame-Target-HighLevelTarget_Icon"] = nil
-_G.ForeverUnitFramesDB = nil
-M.FireEvent("PLAYER_LOGIN")
-M.RunTimers()
-f = ns.Frames.target
-ns.Config.Set("target", "portraitMode", "LEFT")
-M.units.target = { name = "Ogre", health = 1, healthMax = 1, classification = "worldboss" }
-M.FireEvent("PLAYER_TARGET_CHANGED")
-H.check("no boss atlas: the elite badge", f.eliteIcon._atlas, "nameplates-icon-elite-gold")
-H.checkTrue("no boss atlas: shown", f.eliteIcon:IsShown())
 
 -- The shipped look: target 70 high, portrait left, buffs just above the
 -- frame's top left. The badge draws over them.

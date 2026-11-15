@@ -31,7 +31,7 @@ local t = f.texts
 local function text(fs) return fs._text or (fs._fmt and fs._fmt:format(unpack(fs._args))) end
 H.check("power left", text(t.footerLeft), "200 / 300")
 H.check("health right", text(t.footerRight), "500 / 1000")
-H.checkTrue("role icon", (t.footerCenter:GetText() or ""):find("UI-LFG-RoleIcon-Tank", 1, true))
+H.checkTrue("role icon", (t.footerCenter:GetText() or ""):find("|TInterface\\AddOns\\ForeverUnitFrames\\Media\\IconRoleTank.tga:", 1, true))
 H.checkTrue("centre shown", t.footerCenter:IsShown())
 
 -- Value events update their own numbers, power on the footer too.

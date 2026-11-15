@@ -1742,11 +1742,7 @@ function M.Reset()
     M.atlases = { ["classicon-warrior"] = true, ["classicon-warlock"] = true,
         -- Classification badges (Blizzard_NamePlateClassificationFrame.lua).
         ["nameplates-icon-elite-gold"] = true, ["nameplates-icon-elite-silver"] = true,
-        ["UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Star"] = true,
-        -- The target frame's high-level (boss) icon (Blizzard_UnitFrame/Mainline/TargetFrame.xml).
-        ["UI-HUD-UnitFrame-Target-HighLevelTarget_Icon"] = true,
-        -- Group icons (PartyFrameTemplates.xml, ReadyCheck.lua, CompactUnitFrame.lua).
-        ["UI-HUD-UnitFrame-Player-Group-LeaderIcon"] = true, ["UI-HUD-UnitFrame-Player-Group-GuideIcon"] = true,
+        -- Group icons (ReadyCheck.lua, CompactUnitFrame.lua).
         ["UI-LFG-ReadyMark-Raid"] = true, ["UI-LFG-DeclineMark-Raid"] = true, ["UI-LFG-PendingMark-Raid"] = true,
         ["RaidFrame-Icon-Rez"] = true }
     _G.C_Texture = {

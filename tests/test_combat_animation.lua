@@ -53,7 +53,9 @@ H.check("duel: no burst", a.burst:IsPlaying(), false)
 M.FireEvent("PLAYER_REGEN_ENABLED")
 H.check("duel: stops out of combat", a.duel:IsPlaying(), false)
 C.Set("player", "combatAnimation", "BURST")
-H.check("back to Blizzard's art", p.statusIcons.combat._atlas, ns.StatusIcons.COMBAT_ATLAS)
+H.check("back to our still art", p.statusIcons.combat._texture, "Interface\\AddOns\\ForeverUnitFrames\\Media\\IconCombat.tga")
+H.check("whole texture again, not one flipbook cell", table.concat(p.statusIcons.combat._texCoord, ","), "0,1,0,1")
+H.check("the flash is our art too", a.flash._texture, ns.StatusIcons.COMBAT_TEXTURE)
 C.Set("player", "combatAnimation", "OFF")
 M.FireEvent("PLAYER_REGEN_DISABLED")
 H.check("off: no burst", a.burst:IsPlaying(), false)
@@ -63,6 +65,7 @@ M.FireEvent("PLAYER_REGEN_ENABLED")
 -- Someone else's ------------------------------------------------------------------------
 C.Set("target", "combatIcon", true)
 local ta = t.unitIcons.combatIcon.anim
+H.check("someone else's icon: our art", t.unitIcons.combatIcon.tex._texture, ns.StatusIcons.COMBAT_TEXTURE)
 M.units.target.inCombat = true
 M.FireEvent("UNIT_FLAGS", "target")
 H.checkTrue("target pulls: burst", ta.burst:IsPlaying())

@@ -25,13 +25,13 @@ H.check("icon point: unknown", Cell.IconPoint(cell(1), "rez"), nil)
 
 -- Leader and assistant, at the top left, the profile's icon size.
 H.checkTrue("leader shown", ann.leader:IsShown())
-H.check("crown", ann.leader._atlas, GroupIcons.LEADER.leader.atlas)
+H.check("crown", ann.leader._texture, GroupIcons.LEADER.leader)
 local p, rel, relPoint, x, y = ann.leader:GetPoint(1)
 H.checkTrue("top left, inside", p == "TOPLEFT" and rel == cell(1) and relPoint == "TOPLEFT" and x == 1 and y == -1)
 H.check("icon size", ann.leader:GetWidth(), 14)
 H.check("holder over the cell", ann.holder._allPoints, cell(1))
 H.checkTrue("assistant shown", bob.leader:IsShown())
-H.check("assistant icon", bob.leader._texture, GroupIcons.LEADER.assistant.file)
+H.check("assistant icon", bob.leader._texture, GroupIcons.LEADER.assistant)
 H.check("Cid: neither", cid.leader:IsShown(), false)
 
 -- The master looter: raid index 2.
@@ -85,7 +85,7 @@ ns.RaidTestMode.Set(true)
 local f1, f2, f4 = Cell.fakes[1].groupIcons, Cell.fakes[2].groupIcons, Cell.fakes[4].groupIcons
 H.checkTrue("pretend: you lead", f1.leader:IsShown())
 H.checkTrue("pretend: you loot", f1.looter:IsShown())
-H.check("pretend: member 2 assists", f2.leader._texture, GroupIcons.LEADER.assistant.file)
+H.check("pretend: member 2 assists", f2.leader._texture, GroupIcons.LEADER.assistant)
 H.check("pretend: member 4 not ready", f4.ready._atlas, GroupIcons.READY.notready)
 H.check("pretend: member 3 nothing", Cell.fakes[3].groupIcons.ready:IsShown(), false)
 ns.RaidTestMode.Set(false)

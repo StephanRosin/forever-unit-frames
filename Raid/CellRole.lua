@@ -1,7 +1,7 @@
 local _, ns = ...
 
--- The assigned role on a raid cell, in the group finder's small role
--- icons (Elements/GroupIcons.lua: ROLE_ATLAS, shared with the unit
+-- The assigned role on a raid cell, in our round role badges
+-- (Elements/GroupIcons.lua: ROLE_TEXTURE, shared with the unit
 -- frames' role icon): tank and healer, damage too when asked
 -- (roleIconDamager). At its own point (Raid/Cell.lua: Cell.IconPoint),
 -- the profile's icon size. UnitGroupRolesAssigned is secret while the
@@ -14,7 +14,7 @@ ns.RaidRole = Role
 local Cell, Pixel = ns.RaidCell, ns.Pixel
 local get = Cell.Get
 
-Role.ATLAS = ns.GroupIcons.ROLE_ATLAS
+Role.TEXTURE = ns.GroupIcons.ROLE_TEXTURE
 -- With the other icons (Elements/GroupIcons.lua).
 Role.LEVELS = 18
 
@@ -29,10 +29,10 @@ end
 -- Any time: the icon for r.role, or none.
 local function refresh(frame)
     local r = frame.raidRole
-    local atlas = Role.ATLAS[r.role or ""]
-    local shown = atlas ~= nil and Cell.IconPoint(frame, "role") ~= nil
+    local texture = Role.TEXTURE[r.role or ""]
+    local shown = texture ~= nil and Cell.IconPoint(frame, "role") ~= nil
         and (r.role ~= "DAMAGER" or get("roleIconDamager") == true)
-    if shown then r.icon:SetAtlas(atlas) end
+    if shown then r.icon:SetTexture(texture) end
     r.icon:SetShown(shown)
 end
 

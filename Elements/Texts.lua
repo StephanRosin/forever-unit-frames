@@ -238,9 +238,9 @@ end
 -- as tall as the font; empty without a role.
 local function setRole(fs, unit, opts)
     local role = opts.sampleRole or ns.GroupIcons.UnitRole(unit)
-    local atlas = role and ns.GroupIcons.ROLE_ATLAS[role]
+    local texture = role and ns.GroupIcons.ROLE_TEXTURE[role]
     local size = opts.roleSize or 0
-    fs:SetText(atlas and ("|A:%s:%d:%d|a"):format(atlas, size, size) or "")
+    fs:SetText(texture and ("|T%s:%d:%d|t"):format(texture, size, size) or "")
 end
 
 -- sample (optional): plain health numbers that replace the unit's for

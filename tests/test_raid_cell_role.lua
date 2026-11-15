@@ -17,8 +17,8 @@ M.RunTimers()
 local function role(i) return Header.headers[1]:GetAttribute("child" .. i).raidRole end
 local tank, ann, bob, cid = role(1), role(2), role(3), role(4)
 H.checkTrue("tank shown", tank.icon:IsShown())
-H.check("tank icon", tank.icon._atlas, Role.ATLAS.TANK)
-H.check("healer icon", ann.icon._atlas, Role.ATLAS.HEALER)
+H.check("tank icon", tank.icon._texture, Role.TEXTURE.TANK)
+H.check("healer icon", ann.icon._texture, Role.TEXTURE.HEALER)
 H.check("damage: not by default", bob.icon:IsShown(), false)
 H.check("no role: none", cid.icon:IsShown(), false)
 local p, rel, relPoint, x, y = tank.icon:GetPoint(1)
@@ -28,7 +28,7 @@ H.check("above the cell's auras", tank.holder:GetFrameLevel(),
     Header.headers[1]:GetAttribute("child1"):GetFrameLevel() + Role.LEVELS)
 
 RC.Set("r10", "roleIconDamager", true)
-H.check("damage shown", bob.icon._atlas, Role.ATLAS.DAMAGER)
+H.check("damage shown", bob.icon._texture, Role.TEXTURE.DAMAGER)
 RC.Set("r10", "roleIconPoint", "BOTTOMLEFT")
 p, rel, relPoint, x, y = tank.icon:GetPoint(1)
 H.checkTrue("moved", p == "BOTTOMLEFT" and x == 1 and y == 1)
@@ -40,7 +40,7 @@ H.checkTrue("on again", tank.icon:IsShown())
 -- Roles change: the icons follow; secret ones show nothing.
 M.units.raid4.role = "HEALER"
 M.FireEvent("PLAYER_ROLES_ASSIGNED")
-H.check("new healer", cid.icon._atlas, Role.ATLAS.HEALER)
+H.check("new healer", cid.icon._texture, Role.TEXTURE.HEALER)
 M.units.raid1.role = M.Secret("TANK")
 M.FireEvent("PLAYER_ROLES_ASSIGNED")
 H.check("secret role: none", tank.icon:IsShown(), false)
@@ -50,7 +50,7 @@ H.check("player frame: none", ns.Frames.player.raidRole, nil)
 
 -- Test mode: the pretend members' roles.
 ns.RaidTestMode.Set(true)
-H.check("pretend tank", Cell.fakes[1].raidRole.icon._atlas, Role.ATLAS.TANK)
+H.check("pretend tank", Cell.fakes[1].raidRole.icon._texture, Role.TEXTURE.TANK)
 H.checkTrue("pretend healer", Cell.fakes[2].raidRole.icon:IsShown())
 H.check("pretend damage: hidden", Cell.fakes[3].raidRole.icon:IsShown(), false)
 ns.RaidTestMode.Set(false)

@@ -20,6 +20,7 @@ local builtin = {
         ["Bangers"] = ADDON .. "Fonts\\Bangers-Regular.ttf",
         ["Cinzel"] = ADDON .. "Fonts\\Cinzel-Bold.ttf",
         ["IM Fell English SC"] = ADDON .. "Fonts\\IMFeENsc28P.ttf",
+        ["Josefin Sans"] = ADDON .. "Fonts\\JosefinSans-Bold.ttf",
         ["Marcellus"] = ADDON .. "Fonts\\Marcellus-Regular.ttf",
         ["Space Grotesk"] = ADDON .. "Fonts\\SpaceGrotesk-Bold.ttf",
         ["VT323"] = ADDON .. "Fonts\\VT323-Regular.ttf",
@@ -69,6 +70,9 @@ end
 
 function Media.Font(name) return fetch("font", name) end
 function Media.StatusBar(name) return fetch("statusbar", name) end
+-- Our own 64 px icons (tools/art/icons): Blizzard's atlases for these are
+-- 11-21 px and blur when scaled; their -2x versions are not in the client.
+function Media.Icon(name) return ADDON .. "Icon" .. name .. ".tga" end
 
 function Media.List(kind)
     local names, seen = {}, {}

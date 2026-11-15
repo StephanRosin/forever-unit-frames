@@ -1,11 +1,12 @@
 local _, ns = ...
 
--- Group icons on the player and party frames, in Blizzard's own art:
--- * leader: the crown of the Mainline party and player frames
+-- Group icons on the player and party frames, in Blizzard's own art except
+-- where that is too small to stay sharp (leader and role: our own, Media.Icon):
+-- * leader: a crown as on the Mainline party and player frames
 --   (PartyFrameTemplates.xml / PlayerFrame.xml, LeaderIcon), the guide
 --   icon instead while group finder restrictions apply (GuideIcon,
---   PartyMemberFrameMixin:UpdateLeader); an assistant gets the raid
---   roster's icon (Blizzard_RaidUI.lua, UI-Group-AssistantIcon).
+--   PartyMemberFrameMixin:UpdateLeader); an assistant gets its own icon
+--   as in the raid roster (Blizzard_RaidUI.lua).
 -- * ready check: the raid frames' marks (CompactUnitFrameReadyCheckMixin,
 --   READY_CHECK_*_TEXTURE_RAID in ReadyCheck.lua). After the check the
 --   result stays CUF_READY_CHECK_DECAY_TIME seconds; no answer counts as
@@ -15,9 +16,8 @@ local _, ns = ...
 -- * incoming summon and another phase: the raid frames' centre icons
 --   (CompactUnitFrame.lua, "IncomingSummon*", "InOtherPhase"), the phase only
 --   within DISTANCE_THRESHOLD_SQUARED of you, as there.
--- * role (off by default): the assigned role in the group finder's small
---   role icons (GetMicroIconForRole, Blizzard_SharedXMLBase/
---   TextureUtil.lua), the raid cells' too (Raid/CellRole.lua).
+-- * role (off by default): the assigned role as a round badge, the raid
+--   cells' too (Raid/CellRole.lua).
 --   UnitGroupRolesAssigned is secret while the unit's identity is
 --   restricted (SecretWhenUnitIdentityRestricted): then none.
 -- Master looter: the client has the loot method (C_PartyInfo.GetLootMethod,
@@ -43,9 +43,8 @@ ns.GroupIcons = GroupIcons
 
 local Config, Pixel, Layout, Secrets, Settings = ns.Config, ns.Pixel, ns.Layout, ns.Secrets, ns.Settings
 
-GroupIcons.LEADER = { leader = { atlas = "UI-HUD-UnitFrame-Player-Group-LeaderIcon" },
-    guide = { atlas = "UI-HUD-UnitFrame-Player-Group-GuideIcon" },
-    assistant = { file = "Interface\\GroupFrame\\UI-Group-AssistantIcon" } }
+GroupIcons.LEADER = { leader = ns.Media.Icon("Leader"), guide = ns.Media.Icon("Guide"),
+    assistant = ns.Media.Icon("Assistant") }
 GroupIcons.READY = { ready = "UI-LFG-ReadyMark-Raid", notready = "UI-LFG-DeclineMark-Raid",
     waiting = "UI-LFG-PendingMark-Raid" }
 GroupIcons.REZ_ATLAS = "RaidFrame-Icon-Rez"
@@ -54,8 +53,8 @@ GroupIcons.SUMMON = { pending = "RaidFrame-Icon-SummonPending", accepted = "Raid
 GroupIcons.PHASE_ATLAS = "RaidFrame-Icon-Phasing"
 -- DISTANCE_THRESHOLD_SQUARED (CompactUnitFrame.lua).
 GroupIcons.PHASE_DISTANCE_SQUARED = 250 * 250
-GroupIcons.ROLE_ATLAS = { TANK = "UI-LFG-RoleIcon-Tank-Micro-GroupFinder",
-    HEALER = "UI-LFG-RoleIcon-Healer-Micro-GroupFinder", DAMAGER = "UI-LFG-RoleIcon-DPS-Micro-GroupFinder" }
+GroupIcons.ROLE_TEXTURE = { TANK = ns.Media.Icon("RoleTank"), HEALER = ns.Media.Icon("RoleHealer"),
+    DAMAGER = ns.Media.Icon("RoleDamage") }
 GroupIcons.LOOTER_TEXTURE = "Interface\\AddOns\\ForeverUnitFrames\\Media\\MasterLooter.tga"
 -- The icons a raid cell places on their own.
 GroupIcons.OWN_POINTS = { "leader", "looter", "ready", "summon", "phase" }
@@ -130,11 +129,6 @@ local function arrange(g, shown)
     end
 end
 
-local function drawLeader(icon, kind)
-    local art = GroupIcons.LEADER[kind]
-    if art.atlas then icon:SetAtlas(art.atlas) else icon:SetTexture(art.file) end
-end
-
 -- Any time, combat included: which icons show, from what the frame knows
 -- (g.leaderKind, g.readyStatus, g.hasRez, g.isLooter, g.role) or its test mode
 -- sample. A raid cell's icons keep their own places.
@@ -149,9 +143,9 @@ function GroupIcons.Refresh(frame)
     local rez = want(frame, "groupResurrect") and data.rez == true
     local summon = want(frame, "groupSummon") and GroupIcons.SUMMON[data.summon or ""] or nil
     local phase = want(frame, "groupPhase") and data.phase == true
-    local role = want(frame, "groupRole") and GroupIcons.ROLE_ATLAS[data.role or ""] or nil
-    if kind then drawLeader(g.leader, kind) end
-    if role then g.role:SetAtlas(role) end
+    local role = want(frame, "groupRole") and GroupIcons.ROLE_TEXTURE[data.role or ""] or nil
+    if kind then g.leader:SetTexture(GroupIcons.LEADER[kind]) end
+    if role then g.role:SetTexture(role) end
     g.role:SetShown(role ~= nil)
     if status then g.ready:SetAtlas(GroupIcons.READY[status]) end
     g.leader:SetShown(kind ~= nil)
