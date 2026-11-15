@@ -204,7 +204,7 @@ Schema.FRAME = {
             "petHappinessFramePoint", "petHappinessPoint", "petHappinessX", "petHappinessY" },
             placement = { "petHappinessFramePoint", "petHappinessPoint", "petHappinessX", "petHappinessY" } },
         { id = "groupIcons", keys = { "groupLeader", "groupReadyCheck", "groupResurrect", "groupSummon", "groupPhase", "groupRole",
-            "groupIconSize",
+            "groupRolePortrait", "groupIconSize",
             "groupIconFramePoint", "groupIconPoint", "groupIconX", "groupIconY" },
             placement = { "groupIconFramePoint", "groupIconPoint", "groupIconX", "groupIconY" } },
         { id = "comboPoints", keys = { "comboPoints", "comboHideEmpty", "comboShape", "comboSize", "comboSpacing", "comboColor",

@@ -45,7 +45,7 @@ do
         end
     end
     H.checkTrue("in the group icons' section after the others",
-        keys and keys:find("groupPhase,groupRole,groupIconSize", 1, true))
+        keys and keys:find("groupPhase,groupRole,groupRolePortrait,groupIconSize", 1, true))
     -- One art for both: the raid cells' role icons.
     H.check("the raid cells' art", ns.RaidRole.TEXTURE, ns.GroupIcons.ROLE_TEXTURE)
     H.check("healer art", ns.GroupIcons.ROLE_TEXTURE.HEALER, "Interface\\AddOns\\ForeverUnitFrames\\Media\\IconRoleHealer.tga")
@@ -130,4 +130,64 @@ do
             H.check("cell: no group role icon", cell.groupIcons.role:IsShown(), false)
         end
     end
+end
+
+-- On the portrait (groupRolePortrait): off by default; while a portrait
+-- shows, the role leaves the row (no slot kept) for a corner of it,
+-- clear of its centre; without a portrait it is back in the row.
+do
+    local ns = boot()
+    local C, S = ns.Config, ns.Settings
+    local def = S.Get("groupRolePortrait")
+    H.check("portrait: code", def and def.code, "LQ")
+    H.check("portrait: off by default", def and S.Default(def, "party"), false)
+    H.check("portrait: not on target", def and S.AppliesTo(def, "target"), false)
+    H.check("portrait: label", ns.L.SETTING_groupRolePortrait, "Role on the portrait")
+    H.check("portrait: greyed while the role is off", ns.Options.ROW_ACTIVE.groupRolePortrait("party"), false)
+    C.Set("party", "groupRole", true)
+    H.checkTrue("portrait: active with the role", ns.Options.ROW_ACTIVE.groupRolePortrait("party"))
+
+    M.units.party1 = { name = "Ann", health = 5, healthMax = 10, role = "HEALER" }
+    M.SetGroup({ "party1" })
+    local f = ns.Party.buttons[1]
+    local a = f.groupIcons
+    local size, gap = ns.Pixel.Snap(16, nil, 1), ns.Pixel.Snap(2)
+    local inset = ns.Pixel.Snap(2)
+    C.Set("party", "portraitMode", "LEFT")
+    H.check("switch off: role still in the row", select(2, a.role:GetPoint(1)), a.holder)
+
+    C.Set("party", "groupRolePortrait", true)
+    H.check("left: row of five, no role slot", a.holder:GetWidth(), ns.Layout.IconRowWidth(5, size, gap))
+    local p = point(a.role, "BOTTOMRIGHT")
+    H.checkTrue("left: on the portrait's bottom right", p and p[2] == f.portraitBg and p[3] == "BOTTOMRIGHT")
+    H.check("left: inset", p and p[4], -inset)
+    H.checkTrue("left: shown", a.role:IsShown())
+    H.check("left: icon size", a.role:GetWidth(), size)
+    -- No empty crown slot kept for a role that is not in the row.
+    M.units.party1.readyCheck = "ready"
+    M.FireEvent("READY_CHECK")
+    H.check("left: ready check first in the row", point(a.ready, "TOPLEFT")[4], 0)
+
+    C.Set("party", "portraitMode", "RIGHT")
+    p = point(a.role, "BOTTOMLEFT")
+    H.checkTrue("right: on the portrait's bottom left", p and p[2] == f.portraitBg)
+
+    C.Set("party", "portraitMode", "TOP")
+    p = point(a.role, "LEFT")
+    H.checkTrue("top: the strip's left end", p and p[2] == f.portraitBg and p[3] == "LEFT")
+    H.check("top: vertically centred", p and p[5], 0)
+
+    -- Only the role on: the row is empty, the holder still shows.
+    for _, key in ipairs({ "groupLeader", "groupReadyCheck", "groupResurrect", "groupSummon", "groupPhase" }) do
+        C.Set("party", key, false)
+    end
+    H.checkTrue("alone: holder shown", a.holder:IsShown())
+    H.checkTrue("alone: role shown", a.role:IsShown())
+    H.checkTrue("above the 3D model", a.holder:GetFrameLevel() > f.portrait3D:GetFrameLevel())
+    C.Set("party", "groupLeader", true)
+    C.Set("party", "groupReadyCheck", true)
+
+    C.Set("party", "portraitMode", "OFF")
+    H.check("no portrait: back in the row", select(2, a.role:GetPoint(1)), a.holder)
+    H.check("no portrait: row with the role slot", a.holder:GetWidth(), ns.Layout.IconRowWidth(3, size, gap))
 end

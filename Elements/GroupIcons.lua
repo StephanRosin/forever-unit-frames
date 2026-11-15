@@ -18,6 +18,8 @@ local _, ns = ...
 --   within DISTANCE_THRESHOLD_SQUARED of you, as there.
 -- * role (off by default): the assigned role as a round badge, the raid
 --   cells' too (Raid/CellRole.lua).
+--   With groupRolePortrait it leaves the row for a corner of the
+--   portrait while the frame shows one (placeRole).
 --   UnitGroupRolesAssigned is secret while the unit's identity is
 --   restricted (SecretWhenUnitIdentityRestricted): then none.
 -- Master looter: the client has the loot method (C_PartyInfo.GetLootMethod,
@@ -65,6 +67,8 @@ GroupIcons.READY_DECAY = 11
 GroupIcons.LEVELS = 18
 -- Gap between two slots, in pixels.
 local GAP = 2
+-- The role on the portrait: in from its edges by this many pixels.
+local ROLE_INSET = 2
 
 -- Test mode: the player leads, tanks and is ready; the pretend party
 -- answers the check (member 2 not ready, dead, with a resurrection
@@ -105,6 +109,11 @@ end
 
 local function want(frame, key) return Config.Get(frame.key, key) end
 
+-- The role on the portrait instead of in the row (groupRolePortrait).
+local function roleOnPortrait(frame)
+    return want(frame, "groupRolePortrait") and want(frame, "portraitMode") ~= "OFF"
+end
+
 -- The slots switched on, left to right.
 local function slots(frame)
     local g, list = frame.groupIcons, {}
@@ -113,7 +122,7 @@ local function slots(frame)
     if want(frame, "groupResurrect") then list[#list + 1] = g.rez end
     if want(frame, "groupSummon") then list[#list + 1] = g.summon end
     if want(frame, "groupPhase") then list[#list + 1] = g.phase end
-    if want(frame, "groupRole") then list[#list + 1] = g.role end
+    if want(frame, "groupRole") and not roleOnPortrait(frame) then list[#list + 1] = g.role end
     return list
 end
 
@@ -162,9 +171,10 @@ function GroupIcons.Refresh(frame)
     -- Crown, then role, at the anchor's end; with a role the crown's slot is
     -- kept even when empty, so members' roles stay in one column.
     local roleLast = Layout.IconRowJustify(g.point or "LEFT") == 1
+    local rowRole = g.role:IsShown() and not roleOnPortrait(frame)
     local head = {}
-    if g.leader:IsShown() then head[1] = g.leader elseif g.role:IsShown() and want(frame, "groupLeader") then head[1] = false end
-    if g.role:IsShown() then head[#head + 1] = g.role end
+    if g.leader:IsShown() then head[1] = g.leader elseif rowRole and want(frame, "groupLeader") then head[1] = false end
+    if rowRole then head[#head + 1] = g.role end
     local rest = {}
     for _, icon in ipairs({ g.ready, g.rez, g.summon, g.phase }) do
         if icon:IsShown() then rest[#rest + 1] = icon end
@@ -190,6 +200,24 @@ local function placeOwn(frame, g)
     end
 end
 
+-- The role on the portrait: the strip's left end, or the square's bottom
+-- corner towards the bars; clear of the portrait aura (centre) and the
+-- elite and class badges (top corners). Above a 3D model: the holder's
+-- level is.
+local function placeRole(frame, g)
+    local mode = want(frame, "portraitMode")
+    local inset = Pixel.Snap(ROLE_INSET)
+    local point, x, y = "BOTTOMRIGHT", -inset, inset
+    if mode == "TOP" then
+        point, x, y = "LEFT", inset, 0
+    elseif mode == "RIGHT" then
+        point, x = "BOTTOMLEFT", inset
+    end
+    g.role:ClearAllPoints()
+    g.role:SetPoint(point, frame.portraitBg, point, x, y)
+    g.role:SetSize(g.size, g.size)
+end
+
 -- Plain frames only: allowed in combat (party buttons restyle then too).
 function GroupIcons.Style(frame)
     local g, scope = frame.groupIcons, frame.key
@@ -211,7 +239,9 @@ function GroupIcons.Style(frame)
     g.holder:ClearAllPoints()
     g.holder:SetPoint(g.point, frame, Config.Get(scope, "groupIconFramePoint"),
         Pixel.Snap(Config.Get(scope, "groupIconX")), Pixel.Snap(Config.Get(scope, "groupIconY")))
-    g.holder:SetShown(n > 0)
+    local portraitRole = want(frame, "groupRole") and roleOnPortrait(frame)
+    if portraitRole then placeRole(frame, g) end
+    g.holder:SetShown(n > 0 or portraitRole)
     GroupIcons.Refresh(frame)
 end
 

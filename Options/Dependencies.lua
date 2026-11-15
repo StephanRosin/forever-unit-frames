@@ -219,6 +219,7 @@ local RULES = {
     -- (the player's).
     { anyOn({ "combatIcon", "statusCombat" }), { "combatAnimation" } },
     { anyOn({ "groupLeader", "groupReadyCheck", "groupResurrect", "groupSummon", "groupPhase", "groupRole" }), iconRows("groupIcon") },
+    { on("groupRole"), { "groupRolePortrait" } },
     { on("rangeFade"), { "rangeAlpha" } },
     { on("targetHighlight"), { "targetHighlightColor", "targetHighlightSize" } },
     { on("combatFeedback"), { "combatFeedbackPoint", "combatFeedbackX", "combatFeedbackY", "combatFeedbackFont",

@@ -918,6 +918,10 @@ Settings.Define({ key = "groupPhase", code = "LP", scope = "frame", only = GROUP
 -- The assigned role (tank, healer, damage) as a fourth icon in the row, in
 -- the raid cells' art; off by default.
 Settings.Define({ key = "groupRole", code = "LG", scope = "frame", only = GROUP, type = "bool", default = false })
+-- The role on a corner of the portrait instead of in the row, while the
+-- frame shows one (Elements/GroupIcons.lua); off by default.
+Settings.Define({ key = "groupRolePortrait", code = "LQ", scope = "frame", only = GROUP, type = "bool",
+    default = false })
 Settings.Define({ key = "groupIconSize", code = "LS", scope = "frame", only = GROUP, type = "int", min = 8, max = 48,
     default = 16 })
 Settings.Define({ key = "groupIconFramePoint", code = "LF", scope = "frame", only = GROUP, type = "enum",
