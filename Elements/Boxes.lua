@@ -1,12 +1,17 @@
 local _, ns = ...
 
--- The frame's parts standing apart (barSpacing, a CurseForge wish): title
+-- The frame's parts standing apart (spacing*, a CurseForge wish): title
 -- row, portrait, health bar (its overheal lane included), power bar and
 -- footer each get their own ring, drop shadow and theme backdrop, so the
 -- gaps between them show nothing (Units/Single.lua lays out the gaps,
 -- Elements/Shape.lua and Elements/ThemeArt.lua drop the frame's own ring,
 -- backdrop and shadow). A docked castbar and the threat bar draw their
--- own ring (Elements/Castbar.lua, Elements/ThreatBar.lua).
+-- own ring here too (Elements/Castbar.lua, Elements/ThreatBar.lua).
+--
+-- The ring: the parts' own border (boxBorder*: flat, one colour, no
+-- padding), independent of the frame's. Under a theme other than CLASSIC
+-- the theme's border art stays (the frame's border settings, which the
+-- theme sets); only boxBorderShow applies there.
 --
 -- Per part, made when first needed: a ring holder, anchored on the part;
 -- below the frame its backdrop holder, and below that its shadow holder,
@@ -16,6 +21,46 @@ local Boxes = { name = "Boxes" }
 ns.Boxes = Boxes
 
 local Config = ns.Config
+
+-- Apart, a part's textures are rounded only at the frame's outer corners
+-- (the one mask, Core/Corners.lua), yet its ring at all four: a square
+-- corner stays under the ring while radius * (sqrt 2 - 1) <= the ring's
+-- reach.
+local SQUARE_CORNER = math.sqrt(2) - 1
+
+-- Whether the parts take their own plain border (CLASSIC), not the theme's.
+function Boxes.Plain()
+    return Config.Get("general", "theme") == ns.Themes.CLASSIC
+end
+
+-- How far a part's ring reaches out from it; 0 without one.
+function Boxes.Extent(scope)
+    if not Config.Get(scope, "boxBorderShow") then return 0 end
+    if not Boxes.Plain() then return ns.Border.Extent(scope) end
+    return ns.Pixel.Snap(Config.Get(scope, "boxBorderSize"), nil, 1)
+end
+
+-- The parts' corner radius before clamping to a part (see SQUARE_CORNER).
+function Boxes.Radius(scope)
+    local radius = Boxes.Plain() and Config.Get(scope, "boxCornerRadius") or ns.Corners.Radius(scope)
+    return math.min(math.floor(radius), math.floor(Boxes.Extent(scope) / SQUARE_CORNER + 1e-6))
+end
+
+-- Draws the parts' ring on owner around box (w x h), its shadow on
+-- shadowOwner (optional); returns the radius used, for the box's mask.
+function Boxes.DrawRing(owner, frame, box, w, h, shadowOwner)
+    local scope = frame.key
+    local radius = ns.Corners.Clamp(Boxes.Radius(scope), w, h)
+    local own = { shadowOwner = shadowOwner }
+    if not Config.Get(scope, "boxBorderShow") then
+        own.size = 0
+    elseif Boxes.Plain() then
+        own.size, own.color = Boxes.Extent(scope), Config.Get(scope, "boxBorderColor")
+    end
+    local id = frame.themeOf and frame.themeOf() or ns.Themes.Current()
+    ns.Border.Draw(owner, scope, box, radius, ns.Themes.Rim(id), own)
+    return radius
+end
 
 local function newBox(frame)
     local level = frame:GetFrameLevel()
@@ -66,12 +111,12 @@ local function drawBox(frame, box, part, look)
     box.ring:ClearAllPoints()
     box.ring:SetPoint("TOPLEFT", region, "TOPLEFT", 0, 0)
     box.ring:SetPoint("BOTTOMRIGHT", region, "BOTTOMRIGHT", extra, 0)
-    local radius = ns.Corners.Clamp(ns.Shape.Radius(frame), w, h)
-    ns.Border.Draw(box.ring, scope, box.ring, radius, look.rim, box.shade)
-    ns.ThemeArt.PlaceBack(box.back, box.clip, box.ring, ns.Border.Padding(scope), radius)
+    local radius = Boxes.DrawRing(box.ring, frame, box.ring, w, h, box.shade)
+    local padding = Boxes.Plain() and 0 or ns.Border.Padding(scope)
+    ns.ThemeArt.PlaceBack(box.back, box.clip, box.ring, padding, radius)
     ns.ThemeArt.Paint(box.back, look.spec)
     local offset = look.spec.art and look.spec.art.hardShadow
-    if offset then ns.ThemeArt.PlaceShadow(box.hard, box.ring, offset, ns.Border.Extent(scope)) end
+    if offset then ns.ThemeArt.PlaceShadow(box.hard, box.ring, offset, Boxes.Extent(scope)) end
     box.hard:SetShown(offset ~= nil)
     showBox(box, true)
 end
@@ -86,7 +131,7 @@ function Boxes.Style(frame)
     if not ns.Shape.Apart(frame) then return end
     frame.boxes = boxes
     local id = frame.themeOf and frame.themeOf() or Config.Get("general", "theme")
-    local look = { spec = ns.Themes.Spec(id), rim = ns.Themes.Rim(id) }
+    local look = { spec = ns.Themes.Spec(id) }
     for _, part in ipairs(Boxes.Parts(frame)) do
         local name = part[1]
         boxes[name] = boxes[name] or newBox(frame)

@@ -189,10 +189,26 @@ Settings.Define({ key = "healthBarWidth", code = "HW", scope = "frame", type = "
 Settings.Define({ key = "powerBarWidth", code = "PI", scope = "frame", type = "int", min = 20, max = 100, default = 100 })
 Settings.Define({ key = "barAlign", code = "BJ", scope = "frame", type = "enum", values = { "LEFT", "CENTER", "RIGHT" },
     default = "LEFT" })
--- Room between the frame's parts (title row, bars, portrait, footer, a
--- docked castbar): each part then has its own background and border
--- (Elements/Boxes.lua); the frame grows by the gaps. 0: one block.
-Settings.Define({ key = "barSpacing", code = "SG", scope = "frame", type = "int", min = 0, max = 8, default = 0 })
+-- The frame's parts apart (Elements/Boxes.lua): four gaps, each the
+-- room the player sees between two borders. Any gap above 0 sets every
+-- part apart (title row, portrait, health, power, footer, a docked
+-- castbar and threat bar), each with a border and background of its own;
+-- the frame grows by the gaps. All 0: one block. Title: below the title
+-- row and above the footer row; power: between health and power;
+-- portrait: between portrait and bars; docked: between the frame and a
+-- docked castbar or threat bar, and between those two.
+Settings.Define({ key = "spacingTitle", code = "GT", scope = "frame", type = "int", min = 0, max = 8, default = 0 })
+Settings.Define({ key = "spacingPower", code = "GP", scope = "frame", type = "int", min = 0, max = 8, default = 0 })
+Settings.Define({ key = "spacingPortrait", code = "GQ", scope = "frame", type = "int", min = 0, max = 8, default = 0 })
+Settings.Define({ key = "spacingDocked", code = "GD", scope = "frame", type = "int", min = 0, max = 8, default = 0 })
+-- The parts' own border while they stand apart, independent of the
+-- frame's: as the frame border's defaults (one black pixel, square). A
+-- theme other than CLASSIC keeps its own border art on the parts; size,
+-- colour and radius are the plain look's.
+Settings.Define({ key = "boxBorderShow", code = "BU", scope = "frame", type = "bool", default = true })
+Settings.Define({ key = "boxBorderSize", code = "BK", scope = "frame", type = "int", min = 1, max = 8, default = 1 })
+Settings.Define({ key = "boxBorderColor", code = "BX", scope = "frame", type = "color", default = { 0, 0, 0, 1 } })
+Settings.Define({ key = "boxCornerRadius", code = "BR", scope = "frame", type = "int", min = 0, max = 12, default = 0 })
 Settings.Define({ key = "x", code = "X", scope = "frame", type = "int", min = -4000, max = 4000,
     default = { player = -300, target = 300, targettarget = 480, targettargettarget = 604, pet = -352, pettarget = -222, focus = -300, focustarget = -152, party = -760, boss = 560, _ = 0 } })
 Settings.Define({ key = "y", code = "Y", scope = "frame", type = "int", min = -4000, max = 4000,

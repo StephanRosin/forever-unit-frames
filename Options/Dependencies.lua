@@ -95,6 +95,9 @@ local function iconRows(prefix, extra)
     return keys
 end
 
+-- The four gaps of the frame's parts (Units/Single.lua).
+local GAP_KEYS = { "spacingTitle", "spacingPower", "spacingPortrait", "spacingDocked" }
+
 -- { test, rows }: every test of a row must pass.
 local RULES = {
     -- Elements/Pulse.lua: only a shown highlight pulses.
@@ -103,6 +106,13 @@ local RULES = {
     -- and the gold style paints its own shades.
     { on("borderShow"), { "borderStyle", "borderSize", "borderPadding", "borderColor" } },
     { isNot("borderStyle", "GOLD"), { "borderColor" } },
+    -- Elements/Boxes.lua: the parts' border only while they stand apart;
+    -- its size, colour and radius in the plain look (CLASSIC) only, a
+    -- theme keeps its own border art.
+    { anywhere(GAP_KEYS, function(scope) return not applies(scope, GAP_KEYS[1]) or ns.Single.Apart(scope) end),
+        { "boxBorderShow", "boxBorderSize", "boxBorderColor", "boxCornerRadius" } },
+    { on("boxBorderShow"), { "boxBorderSize", "boxBorderColor", "boxCornerRadius" } },
+    { function() return ns.Boxes.Plain() end, { "boxBorderSize", "boxBorderColor", "boxCornerRadius" } },
     { isNot("borderStyle", "BRONZE"), { "borderColor" } },
     { on("shadowEnabled"), { "shadowAlpha", "shadowSize" } },
     { on("titleClassIcon"), { "classIconSize", "classIconX", "classIconY", "classIconRing", "classIconRingColor" } },
@@ -125,7 +135,7 @@ local RULES = {
     { on("fsrSpark"), { "fsrSparkDirection", "fsrSparkWidth", "fsrSparkColor" } },
     { on("fsrText"), { "fsrTextPoint", "fsrTextTenths" } },
     { on("fsrDim"), { "fsrDimAlpha" } },
-    { isNot("portraitMode", "OFF"), { "portraitStyle", "portraitSquare", "portraitHeight", "portraitZoom", "portraitOffsetY",
+    { isNot("portraitMode", "OFF"), { "spacingPortrait", "portraitStyle", "portraitSquare", "portraitHeight", "portraitZoom", "portraitOffsetY",
         "portraitAura", "portraitAuraDefensive" } },
     { on("portraitAura"), { "portraitAuraDefensive" } },
     { is("portraitMode", "TOP"), { "portraitHeight" } },

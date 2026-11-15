@@ -243,7 +243,7 @@ function ThemeArt.Style(frame)
     local spec = ns.Themes.Spec(id)
     local art = spec.art or {}
     local extent = ns.Border.Extent(scope)
-    -- Apart (barSpacing), backdrop and shadow are each part's own
+    -- Apart (spacing*), backdrop and shadow are each part's own
     -- (Elements/Boxes.lua): the gaps show nothing.
     local apart = ns.Shape.Apart(frame)
     ThemeArt.Paint(frame.themeBack, spec)

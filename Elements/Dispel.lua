@@ -82,7 +82,7 @@ local function placeRing(edges, frame, reach, thick)
 end
 
 -- What the ring goes round: the frame, or while its parts stand apart
--- (barSpacing) the health bar's box (Elements/Boxes.lua): a ring round
+-- (spacing*) the health bar's box (Elements/Boxes.lua): a ring round
 -- the whole frame ran across the gaps.
 local function ringBox(frame)
     local box = ns.Shape.Apart(frame) and frame.boxes and frame.boxes.health
@@ -92,6 +92,7 @@ end
 local function ringSize(frame)
     local scope = frame.key
     local thick = math.max(ns.Border.Size(scope), Pixel.Snap(Dispel.MIN_THICKNESS, nil, 1))
+    if ns.Shape.Apart(frame) then return ns.Boxes.Extent(scope), thick end
     return ns.Border.Extent(scope), thick
 end
 

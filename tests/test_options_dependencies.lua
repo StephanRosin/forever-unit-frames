@@ -45,7 +45,12 @@ local CASES = {
     { "target", "powerEnabled", false, true, { "powerHideEmpty" } },
     { "player", "powerCostPrediction", false, true, { "powerCostColor" } },
     { "player", "druidMana", false, true, { "druidManaHeight" } },
-    { "player", "portraitMode", "OFF", "LEFT", { "portraitStyle" } },
+    { "player", "portraitMode", "OFF", "LEFT", { "portraitStyle", "spacingPortrait" } },
+    -- The parts' border: only while a gap sets them apart, its look only
+    -- with it shown (Elements/Boxes.lua).
+    { "player", "spacingPower", 0, 3, { "boxBorderShow", "boxBorderSize", "boxBorderColor", "boxCornerRadius" } },
+    { "player", "boxBorderShow", false, true, { "boxBorderSize", "boxBorderColor", "boxCornerRadius" },
+        { spacingTitle = 2 } },
     { "target", "eliteMarker", false, true, { "eliteMarkerStyle", "eliteMarkerFramePoint", "eliteMarkerPoint",
         "eliteMarkerX", "eliteMarkerY" }, { eliteMarkerStyle = "MARKER", eliteMarkerFramePoint = "TOP" } },
     { "target", "eliteMarkerStyle", "BORDER", "MARKER", { "eliteMarkerFramePoint", "eliteMarkerPoint",

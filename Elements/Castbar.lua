@@ -373,7 +373,8 @@ function Castbar.DockedDepth(scope)
     if not Castbar.Applies(scope) or not Config.Get(scope, "castbarEnabled") or not Castbar.Docked(scope) then
         return 0
     end
-    return barHeight(scope) + ns.Border.Extent(scope) + ns.Single.BoxGap(scope)
+    local reach = ns.Single.Apart(scope) and ns.Boxes.Extent(scope) or ns.Border.Extent(scope)
+    return barHeight(scope) + reach + ns.Single.Gap(scope, "docked")
 end
 
 -- Whole castbar size, icon included: the frame's width.
@@ -411,11 +412,11 @@ local function anchor(bar, frame, scope, inset)
         bar:SetPoint("BOTTOMLEFT", frame.portraitBg, "BOTTOMLEFT", inset, 0)
         bar:SetPoint("BOTTOMRIGHT", frame.portraitBg, "BOTTOMRIGHT", 0, 0)
     elseif placement == "ABOVE" then
-        local gap = ns.Single.BoxGap(scope)
+        local gap = ns.Single.Gap(scope, "docked")
         bar:SetPoint("BOTTOMLEFT", frame, "TOPLEFT", inset, gap)
         bar:SetPoint("BOTTOMRIGHT", frame, "TOPRIGHT", 0, gap)
     else
-        local gap = ns.Single.BoxGap(scope)
+        local gap = ns.Single.Gap(scope, "docked")
         bar:SetPoint("TOPLEFT", frame, "BOTTOMLEFT", inset, -gap)
         bar:SetPoint("TOPRIGHT", frame, "BOTTOMRIGHT", 0, -gap)
     end
@@ -488,13 +489,16 @@ function Castbar.Style(frame)
     bar.box:SetPoint("BOTTOMRIGHT", bar, "BOTTOMRIGHT", 0, 0)
     -- Docked, the castbar is part of the unit's block: rounded with it and
     -- inside its border (Elements/Shape.lua). Detached, it is a block of
-    -- its own with its own border, as it is docked while the frame's parts
-    -- stand apart (barSpacing).
-    if placement == "DETACHED" or (placement ~= "PORTRAIT" and ns.Shape.Apart(frame)) then
+    -- its own with its own border; so is a docked one while the frame's
+    -- parts stand apart, in the parts' border (Elements/Boxes.lua).
+    if placement == "DETACHED" then
         local w, h = size(scope)
         local radius = ns.Corners.Clamp(ns.Corners.Radius(scope), w, h)
         ns.Corners.Fit(bar.clip, bar.box, radius)
         ns.Border.Draw(bar, scope, bar.box, radius, ns.Themes.Rim(ns.Themes.Current()))
+    elseif placement ~= "PORTRAIT" and ns.Shape.Apart(frame) then
+        local w, h = size(scope)
+        ns.Corners.Fit(bar.clip, bar.box, ns.Boxes.DrawRing(bar, frame, bar.box, w, h))
     else
         ns.Corners.Fit(bar.clip, frame.unitBox, ns.Shape.Radius(frame))
         ns.Border.Hide(bar)

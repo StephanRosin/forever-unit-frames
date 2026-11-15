@@ -24,20 +24,11 @@ ns.Shape = Shape
 
 local Config = ns.Config
 
--- Whether the frame's parts stand apart (barSpacing, Elements/Boxes.lua):
--- each has its own ring, and a docked castbar or the threat bar never
--- joins the frame.
+-- Whether the frame's parts stand apart (Units/Single.lua, Elements/
+-- Boxes.lua): each has its own ring, and a docked castbar or the threat
+-- bar never joins the frame.
 function Shape.Apart(frame)
-    return ns.Single.BoxGap(frame.key) > 0
-end
-
--- Apart, a part's textures are rounded only at the frame's outer corners
--- (the one mask, Core/Corners.lua), yet its ring at all four: a square
--- corner stays under the ring while radius * (sqrt 2 - 1) <= the ring's
--- reach.
-local SQUARE_CORNER = math.sqrt(2) - 1
-local function apartRadius(scope)
-    return math.floor(ns.Border.Extent(scope) / SQUARE_CORNER + 1e-6)
+    return ns.Single.Apart(frame.key)
 end
 
 -- The frame's mask shape by which of its sides join another row: the
@@ -63,8 +54,8 @@ end
 -- The threat bar's row (Elements/ThreatBar.lua) is held to the same rule.
 function Shape.Radius(frame)
     local w, h = ns.Single.Size(frame.key)
+    if Shape.Apart(frame) then return ns.Corners.Clamp(ns.Boxes.Radius(frame.key), w, h) end
     local radius = ns.Corners.Clamp(ns.Corners.Radius(frame.key), w, h)
-    if Shape.Apart(frame) then return math.min(radius, apartRadius(frame.key)) end
     if dockSide(frame) then
         radius = math.min(radius, math.floor(ns.Castbar.Height(frame.key) + 1e-6))
     end
@@ -87,13 +78,13 @@ end
 function Shape.DockReach(frame)
     local side = dockSide(frame)
     if not side then return nil, 0 end
-    return side, ns.Castbar.Height(frame.key) + ns.Single.BoxGap(frame.key)
+    return side, ns.Castbar.Height(frame.key) + ns.Single.Gap(frame.key, "docked")
 end
 
 local function placeUnitBox(frame, side)
     local _, reach = Shape.DockReach(frame)
     local threat = ns.ThreatBar and ns.ThreatBar.Height(frame.key) or 0
-    if threat > 0 then threat = threat + ns.Single.BoxGap(frame.key) end
+    if threat > 0 then threat = threat + ns.Single.Gap(frame.key, "docked") end
     local box = frame.unitBox
     box:ClearAllPoints()
     box:SetPoint("TOPLEFT", frame, "TOPLEFT", 0, side == "ABOVE" and reach or 0)

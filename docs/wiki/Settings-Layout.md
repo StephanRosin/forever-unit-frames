@@ -6,7 +6,7 @@ Size, position, the rows of the frame, portrait, border and corners, shadow, and
 
 The **Layout** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
 
-**On this page:** [Display](#display) · [Size](#size) · [Position](#position) · [Bar sizes](#bar-sizes) · [Portrait](#portrait) · [Border and corners](#border-and-corners) · [Shadow](#shadow) · [Visibility and fading](#visibility-and-fading) · [Click-casting](#click-casting)
+**On this page:** [Display](#display) · [Size](#size) · [Position](#position) · [Bar sizes](#bar-sizes) · [Spacing & boxes](#spacing--boxes) · [Portrait](#portrait) · [Border and corners](#border-and-corners) · [Shadow](#shadow) · [Visibility and fading](#visibility-and-fading) · [Click-casting](#click-casting)
 
 ## Display
 
@@ -53,7 +53,22 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 <tr><td><b>Health bar width (%)</b></td><td>The health bar's share of the frame width; the rest shows the frame background</td><td>20 – 100</td><td>100</td><td>all</td></tr>
 <tr><td><b>Power bar width (%)</b></td><td>The power bar's share of the frame width; the rest shows the frame background</td><td>20 – 100</td><td>100</td><td>all</td></tr>
 <tr><td><b>Narrow bars sit</b></td><td>Where a bar narrower than the frame sits</td><td>Left, Center, Right</td><td>Left</td><td>all</td></tr>
-<tr><td><b>Spacing between parts</b></td><td>Gap between title row, bars, portrait and footer row; each part gets its own border and background. 0: one block</td><td>0 – 8</td><td>0</td><td>all</td></tr>
+</tbody>
+</table>
+
+## Spacing & boxes
+
+<table>
+<thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
+<tbody>
+<tr><td><b>Gap at title and footer</b></td><td>Room below the title row and above the footer row. Any gap above 0 sets the parts apart, each in a box of its own</td><td>0 – 8</td><td>0</td><td>all</td></tr>
+<tr><td><b>Gap between health and power</b></td><td>Room between the health and power bars</td><td>0 – 8</td><td>0</td><td>all</td></tr>
+<tr><td><b>Gap beside the portrait</b></td><td>Room between the portrait and the bars</td><td>0 – 8</td><td>0</td><td>all</td></tr>
+<tr><td><b>Gap to castbar and threat bar</b></td><td>Room to a castbar or threat bar docked to the frame, and between the two</td><td>0 – 8</td><td>0</td><td>all</td></tr>
+<tr><td><b>Border around each box</b></td><td>Only while the parts stand apart; a theme keeps its own border art</td><td>On, Off</td><td>On</td><td>all</td></tr>
+<tr><td><b>Box border size</b></td><td>Plain look only; a theme keeps its own</td><td>1 – 8</td><td>1</td><td>all</td></tr>
+<tr><td><b>Box border color</b></td><td>Plain look only; a theme keeps its own</td><td>Color</td><td><code>#000000</code></td><td>all</td></tr>
+<tr><td><b>Box corner radius</b></td><td>Plain look only; kept small enough for the border to cover the bars' corners</td><td>0 – 12</td><td>0</td><td>all</td></tr>
 </tbody>
 </table>
 

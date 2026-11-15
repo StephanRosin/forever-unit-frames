@@ -298,23 +298,23 @@ end
 
 -- A soft band `size` wide just outside scope's ring around box, rounded
 -- with it. Shared by the drop shadow and the glow.
-local function placeBand(band, scope, box, radius, size)
+local function placeBand(band, scope, box, radius, size, reach)
     for _, piece in ipairs(ringPieces(band)) do piece:Show() end
-    local reach = Border.Extent(scope)
+    reach = reach or Border.Extent(scope)
     -- The ring's outer radius; square stays square, as the ring does.
     local outer = radius > 0 and radius + reach or 0
     placeShadowEdges(band, box, reach, outer, size)
     placeShadowCorners(band, box, reach, outer, size)
 end
 
-local function drawShadow(owner, scope, box, radius)
+local function drawShadow(owner, scope, box, radius, reach)
     local shadow = owner.shadow
     local size = Border.ShadowSize(scope)
     if size == 0 then
         hideShadow(shadow)
         return
     end
-    placeBand(shadow, scope, box, radius, size)
+    placeBand(shadow, scope, box, radius, size, reach)
     local alpha = Config.Get(scope, "shadowAlpha") / 100
     for _, piece in ipairs(ringPieces(shadow)) do piece:SetVertexColor(0, 0, 0, alpha) end
 end
@@ -356,14 +356,19 @@ end
 -- style, size, padding, colour, shadow; rounded by radius (default: the
 -- scope's corner radius; callers clamp it to the box). color, when given,
 -- replaces a FLAT ring's colour (a theme colour, Themes.Accent).
--- shadowOwner (optional) holds the shadow instead of owner: a frame below
--- its neighbours, so the shadow never falls on them (Elements/Boxes.lua).
-function Border.Draw(owner, scope, box, radius, color, shadowOwner)
+-- own (optional, the frame's parts apart, Elements/Boxes.lua): a flat
+-- ring of own.size (0: none) and own.color with no padding instead of
+-- scope's border; own.shadowOwner holds the shadow instead of owner, a
+-- frame below the parts, so no shadow falls on a neighbour.
+local NOTHING = {}
+function Border.Draw(owner, scope, box, radius, color, own)
+    own = own or NOTHING
     local ring = pieces(owner)
     local size, padding = Border.Size(scope), Border.Padding(scope)
+    if own.size then size, padding, color = own.size, 0, own.color end
     radius = radius or ns.Corners.Radius(scope)
     local corner = placeRing(ring, box, size, padding, radius)
-    local style = Config.Get(scope, "borderStyle")
+    local style = own.size and "FLAT" or Config.Get(scope, "borderStyle")
     local metal = Border.SHADED[style]
     if style == "SHADED" then metal = Border.ShadesOf(Config.Get(scope, "borderColor")) end
     if metal then
@@ -381,11 +386,12 @@ function Border.Draw(owner, scope, box, radius, color, shadowOwner)
         paintFlat(ring.line, metal.LINE)
     end
     showRing(ring.line, hasLine)
+    local shadowOwner = own.shadowOwner
     if shadowOwner then
         shadowOwner.shadow = shadowOwner.shadow or newShadow(shadowOwner)
         hideShadow(owner.shadow)
     end
-    drawShadow(shadowOwner or owner, scope, box, radius)
+    drawShadow(shadowOwner or owner, scope, box, radius, size > 0 and padding + size or 0)
 end
 
 -- A plain ring in one colour (the elite / rare ring, Elements/
