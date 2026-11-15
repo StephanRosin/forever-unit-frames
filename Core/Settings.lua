@@ -191,7 +191,7 @@ Settings.Define({ key = "barAlign", code = "BJ", scope = "frame", type = "enum",
     default = "LEFT" })
 -- Room between the frame's parts (title row, bars, portrait, footer, a
 -- docked castbar): each part then has its own background and border
--- (Elements/Boxes.lua), health gives up the height. 0: one block.
+-- (Elements/Boxes.lua); the frame grows by the gaps. 0: one block.
 Settings.Define({ key = "barSpacing", code = "SG", scope = "frame", type = "int", min = 0, max = 8, default = 0 })
 Settings.Define({ key = "x", code = "X", scope = "frame", type = "int", min = -4000, max = 4000,
     default = { player = -300, target = 300, targettarget = 480, targettargettarget = 604, pet = -352, pettarget = -222, focus = -300, focustarget = -152, party = -760, boss = 560, _ = 0 } })

@@ -31,10 +31,25 @@ function Single.BoxGap(scope)
     return Pixel.Snap(spacing, nil, 1) + 2 * ns.Border.Extent(scope)
 end
 
+-- All the gaps between the frame's parts, as the settings lay them out:
+-- below the title row and the strip, above the power bar and the footer.
+-- Added to the configured height like strip and footer, so the parts keep
+-- the heights they have without gaps. A unit's power bar hidden for want
+-- of power (Elements/Power.lua) leaves its gap to health.
+function Single.Gaps(scope)
+    local gap = Single.BoxGap(scope)
+    if gap == 0 then return 0 end
+    local count = (Config.Get(scope, "titlePercent") > 0 and 1 or 0)
+        + (Single.PortraitStrip(scope) > 0 and 1 or 0)
+        + ((Config.Get(scope, "powerEnabled") and Config.Get(scope, "powerPercent") > 0) and 1 or 0)
+        + (Single.Footer(scope) > 0 and 1 or 0)
+    return gap * count
+end
+
 -- Width and height of a unit frame of scope, on the pixel grid.
 function Single.Size(scope)
     return Pixel.Snap(Config.Get(scope, "width")),
-        Pixel.Snap(Config.Get(scope, "height")) + Single.PortraitStrip(scope) + Single.Footer(scope)
+        Pixel.Snap(Config.Get(scope, "height")) + Single.PortraitStrip(scope) + Single.Footer(scope) + Single.Gaps(scope)
 end
 
 -- The size a frame's contents are laid out for: its configured size, or
@@ -114,7 +129,7 @@ local function layoutBars(frame)
     -- while that differs (see Single.LayoutSize); a portrait strip and the
     -- footer row are not theirs.
     local strip, footer = Single.PortraitStrip(scope), Single.Footer(scope)
-    local rowsHeight = height == configured and Config.Get(scope, "height") or height - strip - footer
+    local rowsHeight = height == configured and Config.Get(scope, "height") or height - strip - footer - Single.Gaps(scope)
     -- Hidden for a unit without power (Elements/Power.lua): health takes the row.
     local powerOn = Config.Get(scope, "powerEnabled") and not frame.powerEmpty
     local th, _, ph = Layout.Rows(rowsHeight, Config.Get(scope, "titlePercent"),
@@ -124,14 +139,14 @@ local function layoutBars(frame)
     local titleH = th > 0 and Pixel.Snap(th, nil, 1) or 0
     local powerH = powerShown and Pixel.Snap(ph, nil, 1) or 0
     -- Apart (barSpacing): a gap below the title row and the strip, above
-    -- the power bar and the footer; health gives up the room.
-    local parts = (titleH > 0 and 1 or 0) + (strip > 0 and 1 or 0) + (powerShown and 1 or 0) + (footer > 0 and 1 or 0)
-    local gap = Pixel.Snap(Layout.PartGap(Single.BoxGap(scope), height - strip - footer - titleH - powerH - pixel, parts))
+    -- the power bar and the footer (Single.Gaps); a gap not used goes to
+    -- health.
+    local gap = Single.BoxGap(scope)
     local titleGap, stripGap = titleH > 0 and gap or 0, strip > 0 and gap or 0
     local powerGap, footerGap = powerShown and gap or 0, footer > 0 and gap or 0
     height = height - strip - footer - stripGap - footerGap
     frame.layoutHeight, frame.portraitStrip, frame.footerHeight = height, strip, footer
-    frame.boxGap, frame.stripTop = gap, titleH + titleGap
+    frame.stripTop = titleH + titleGap
     local healthH = math.max(height - titleH - powerH - titleGap - powerGap, pixel)
     frame.healthHeight, frame.powerHeight = healthH, powerH
     local left, right = Layout.PortraitInsets(Config.Get(scope, "portraitMode"), height)

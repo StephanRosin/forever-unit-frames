@@ -1,17 +1,11 @@
 local M = H.M
 local ns = H.LoadAddon()
-local S, Layout = ns.Settings, ns.Layout
+local S = ns.Settings
 
 -- The frame's parts apart (barSpacing, Units/Single.lua, Elements/Boxes.lua).
 H.check("code", S.Get("barSpacing").code, "SG")
 H.check("per frame", S.Get("barSpacing").scope, "frame")
 H.check("one block by default", S.Default(S.Get("barSpacing"), "player"), 0)
-
--- The gaps fit into the room health can give up.
-H.check("gap fits", Layout.PartGap(6, 40, 2), 6)
-H.check("gap shrinks to its share", Layout.PartGap(6, 10, 2), 5)
-H.check("no room: no gap", Layout.PartGap(6, -3, 2), 0)
-H.check("no gaps to make", Layout.PartGap(6, 40, 0), 0)
 
 ns.Config.Use({})
 ns.Single.CreateAll()
@@ -31,17 +25,18 @@ H.check("0: no gap", ns.Single.BoxGap("player"), 0)
 H.check("0: frame ring drawn", f.frameRing.border[1]:IsShown(), true)
 H.check("0: no boxes", f.boxes, nil)
 
--- 4: the spacing plus both borders' reach between the parts; health gives
--- up the height, title and power keep theirs.
+-- 4: the spacing plus both borders' reach between the parts; the frame
+-- grows by the gaps, every part keeps its height.
 C.Set("player", "barSpacing", 4)
 local reach = ns.Border.Extent("player")
 local gap = 4 + 2 * reach
 H.check("gap: spacing and two borders", ns.Single.BoxGap("player"), gap)
-H.check("frame keeps its size", f:GetHeight(), h)
+H.check("two gaps: below title, above power", ns.Single.Gaps("player"), 2 * gap)
+H.check("frame grows by the gaps", f:GetHeight(), h + 2 * gap)
 H.check("title keeps its height", f.titleHeight, titleH)
 H.check("power keeps its height", f.powerHeight, powerH)
+H.check("health keeps its height", f.healthHeight, healthH)
 H.check("health below title and gap", y(f.health), -(titleH + gap))
-H.check("health gives up two gaps", f.healthHeight, healthH - 2 * gap)
 H.check("power at the bottom", y(f.power), 0)
 H.check("frame ring off", f.frameRing.border[1]:IsShown(), false)
 H.check("frame ring holder stays (glows, elite ring)", f.frameRing:IsShown(), true)
@@ -56,13 +51,15 @@ H.check("the frame's backdrop is off", f.themeBackOn, false)
 -- to power.
 C.Set("player", "portraitMode", "LEFT")
 H.check("portrait: bars right of square and gap", x(f.health), f.layoutHeight + gap)
-H.check("portrait: square as tall as the rows", f.portraitBg:GetHeight(), h)
+H.check("portrait: square from title to power, gaps included", f.portraitBg:GetHeight(), h + 2 * gap)
 H.check("portrait: own box", f.boxes.portrait.ring:IsShown(), true)
 
 -- Footer: one more gap above it, the square ends above it.
 C.Set("player", "footerHeight", 12)
+H.check("footer: frame grows by it and its gap", f:GetHeight(), h + 3 * gap + 12)
 H.check("footer: power above footer and gap", y(f.power), 12 + gap)
-H.check("footer: square ends above the gap", f.layoutHeight, h - gap)
+H.check("footer: square ends above the gap", f.layoutHeight, h + 2 * gap)
+H.check("footer: health keeps its height", f.healthHeight, healthH)
 H.check("footer: own box", f.boxes.footer.ring:IsShown(), true)
 C.Set("player", "footerHeight", 0)
 H.check("footer gone: its box hides", f.boxes.footer.ring:IsShown(), false)
@@ -71,29 +68,37 @@ H.check("footer gone: its box hides", f.boxes.footer.ring:IsShown(), false)
 C.Set("player", "portraitMode", "TOP")
 H.check("strip below title and gap", y(f.portraitBg), -(titleH + gap))
 H.check("health below strip and gap", y(f.health), -(titleH + gap + f.portraitStrip + gap))
+H.check("strip: health keeps its height", f.healthHeight, healthH)
 
--- No power: health takes the row, the power box goes.
+-- Power off: no gap for it, health takes the row.
 C.Set("player", "portraitMode", "OFF")
 C.Set("player", "powerEnabled", false)
-H.check("no power: health to the bottom", f.healthHeight, h - titleH - gap)
-H.check("no power: no power box", f.boxes.power.ring:IsShown(), false)
+H.check("power off: one gap", ns.Single.Gaps("player"), gap)
+H.check("power off: health to the bottom", f.healthHeight, h - titleH)
+H.check("power off: no power box", f.boxes.power.ring:IsShown(), false)
 C.Set("player", "powerEnabled", true)
+-- A unit without power (Elements/Power.lua): health takes the row and its gap.
+f.powerEmpty = true
+ns.Single.LayoutBars(f)
+H.check("unit without power: health takes row and gap", f.healthHeight, healthH + powerH + gap)
+H.check("unit without power: no power box", f.boxes.power.ring:IsShown(), false)
+f.powerEmpty = nil
+ns.Single.LayoutBars(f)
+
+-- The dispel ring goes round the health box, not across the gaps.
+H.check("dispel ring round the health box", select(2, f.dispel.ring.edges[1]:GetPoint(1)), f.boxes.health.ring)
 
 -- The overheal lane belongs to the health box.
 C.Set("player", "healPrediction", true)
 C.Set("player", "healOverflow", true)
 H.check("lane: in the health box", select(4, f.boxes.health.ring:GetPoint(2)), f.overhealLane)
 
--- A frame too small: the gaps shrink, health keeps a pixel.
-C.Set("player", "barSpacing", 8)
-C.Set("player", "height", 20)
-H.check("small frame: health keeps a pixel", f.healthHeight >= 1, true)
-
 -- Back to 0: everything as before.
-C.Set("player", "height", h)
 C.Set("player", "barSpacing", 0)
 C.Set("player", "healOverflow", false)
 H.check("back: health right below the title", y(f.health), -titleH)
 H.check("back: health height", f.healthHeight, healthH)
 H.check("back: frame ring", f.frameRing.border[1]:IsShown(), true)
 H.check("back: boxes hidden", f.boxes.title.ring:IsShown(), false)
+H.check("back: frame height", f:GetHeight(), h)
+H.check("back: dispel ring round the frame", select(2, f.dispel.ring.edges[1]:GetPoint(1)), f)

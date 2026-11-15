@@ -81,6 +81,14 @@ local function placeRing(edges, frame, reach, thick)
     right:SetWidth(thick)
 end
 
+-- What the ring goes round: the frame, or while its parts stand apart
+-- (barSpacing) the health bar's box (Elements/Boxes.lua): a ring round
+-- the whole frame ran across the gaps.
+local function ringBox(frame)
+    local box = ns.Shape.Apart(frame) and frame.boxes and frame.boxes.health
+    return box and box.ring or frame
+end
+
 local function ringSize(frame)
     local scope = frame.key
     local thick = math.max(ns.Border.Size(scope), Pixel.Snap(Dispel.MIN_THICKNESS, nil, 1))
@@ -153,7 +161,7 @@ local function initButton(frame, button)
     pcall(button.SetMouseClickEnabled, button, false)
     pcall(button.SetMouseMotionEnabled, button, false)
     local edges = newEdges(button)
-    placeRing(edges, frame, ringSize(frame))
+    placeRing(edges, ringBox(frame), ringSize(frame))
     local options = { style = Enum.CustomAuraButtonDispelTypeTextureStyle.PreserveAsset,
         customDispelColorCurve = ns.AuraButton.DispelCurve() }
     for _, edge in ipairs(edges) do button:AddDispelTypeTexture(edge, options) end
@@ -169,7 +177,7 @@ local function apply(frame)
     d.stale = false
     local reach, thick = ringSize(frame)
     for _, edges in ipairs(d.buttons) do
-        if not pcall(placeRing, edges, frame, reach, thick) then d.stale = true end
+        if not pcall(placeRing, edges, ringBox(frame), reach, thick) then d.stale = true end
         ns.Pulse.Set(edges, pulsing(frame))
     end
     d.container:SetFrameLevel(frame:GetFrameLevel() + Dispel.LEVELS)
@@ -231,7 +239,7 @@ end
 function Dispel.Style(frame)
     local d = frame.dispel
     if not d then return end
-    placeRing(d.ring.edges, frame, ringSize(frame))
+    placeRing(d.ring.edges, ringBox(frame), ringSize(frame))
     ns.Pulse.Set(d.ring.edges, pulsing(frame))
     if d.sample then showPlain(frame, d.sample) end
     if not d.container then return end
