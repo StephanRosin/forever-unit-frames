@@ -1601,6 +1601,8 @@ L.NEWS_0_56_1_CAST_ICON = "Barra de lanzamiento: el icono del hechizo vuelve a v
 L.NEWS_0_56_1_OPTIONS = "Opciones: la primera página muestra sus ajustes en cuanto se abre la ventana."
 L.NEWS_0_57_0_INVERTED_HEALTH = "Marcos de banda, Celda > Barras: \"Color de salud\" ahora puede mostrar la salud perdida: \"Salud perdida: color de clase\" o \"Salud perdida: color fijo\" dejan la barra oscura y colorean la salud que ha perdido un jugador."
 L.NEWS_0_57_0_ICONS = "Iconos más nítidos: calavera de jefe, estrella rara, espadas de combate, corona de líder, guía, ayudante y los iconos de rol son ahora dibujos propios y se ven nítidos a cualquier tamaño."
+L.NEWS_0_57_0_FROST = "Tema Escarcha: títulos y texto en Julius Sans One con una sombra suave y sin contorno, más fácil de leer."
+L.NEWS_0_57_0_BACKGROUNDS = "Temas: cada tema y cada color tienen ahora el mismo fondo de ventana en todos los addons Forever."
 L.NEWS_OPEN_THEME = "Abrir el tema"
 
 -- Themes (Core/Themes.lua)

@@ -1600,6 +1600,8 @@ L.NEWS_0_56_1_CAST_ICON = "Zauberleiste: Das Zaubersymbol ist mit runden Ecken w
 L.NEWS_0_56_1_OPTIONS = "Optionen: Die erste Seite zeigt ihre Einstellungen sofort beim Öffnen des Fensters."
 L.NEWS_0_57_0_INVERTED_HEALTH = "Schlachtzugsrahmen, Zelle > Leisten: \"Gesundheitsfarbe\" kann jetzt die fehlende Gesundheit zeigen: \"Fehlende Gesundheit: Klassenfarbe\" oder \"Fehlende Gesundheit: feste Farbe\" lassen die Leiste dunkel und füllen die verlorene Gesundheit farbig."
 L.NEWS_0_57_0_ICONS = "Schärfere Symbole: Boss-Schädel, Rar-Stern, Kampfschwerter, Anführerkrone, Mentor, Assistent und die Rollensymbole sind jetzt eigene Grafiken und bleiben in jeder Grösse scharf."
+L.NEWS_0_57_0_FROST = "Theme Frost: Überschriften und Text in Julius Sans One mit weichem Schatten ohne Kontur, besser lesbar."
+L.NEWS_0_57_0_BACKGROUNDS = "Themes: Jedes Theme und jede Farbe hat jetzt in allen Forever-Addons denselben Fensterhintergrund."
 L.NEWS_OPEN_THEME = "Theme öffnen"
 
 -- Themes (Core/Themes.lua)

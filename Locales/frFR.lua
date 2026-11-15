@@ -1600,6 +1600,8 @@ L.NEWS_0_56_1_CAST_ICON = "Barre d'incantation : l'icône du sort s'affiche de n
 L.NEWS_0_56_1_OPTIONS = "Options : la première page affiche ses réglages dès l'ouverture de la fenêtre."
 L.NEWS_0_57_0_INVERTED_HEALTH = "Cadres de raid, Cellule > Barres : \"Couleur de la santé\" peut désormais montrer la santé manquante : \"Santé manquante : couleur de classe\" ou \"Santé manquante : couleur fixe\" gardent la barre sombre et colorent la santé perdue."
 L.NEWS_0_57_0_ICONS = "Icônes plus nettes : crâne de boss, étoile rare, épées de combat, couronne de chef, guide, assistant et icônes de rôle sont désormais nos propres dessins et restent nets à toute taille."
+L.NEWS_0_57_0_FROST = "Thème Givre : titres et texte en Julius Sans One avec une ombre douce et sans contour, plus lisibles."
+L.NEWS_0_57_0_BACKGROUNDS = "Thèmes : chaque thème et chaque couleur ont désormais le même fond de fenêtre dans tous les addons Forever."
 L.NEWS_OPEN_THEME = "Ouvrir le thème"
 
 -- Themes (Core/Themes.lua)

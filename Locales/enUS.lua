@@ -1628,6 +1628,8 @@ L.NEWS_0_56_1_CAST_ICON = "Cast bar: the spell icon shows again with rounded cor
 L.NEWS_0_56_1_OPTIONS = "Options: the first page shows its settings right away when the window opens."
 L.NEWS_0_57_0_INVERTED_HEALTH = "Raid frames, Cell > Bars: \"Health color\" can now show missing health instead: \"Missing health: class color\" or \"Missing health: fixed color\" keep the bar dark and fill in the health a player has lost."
 L.NEWS_0_57_0_ICONS = "Sharper icons: boss skull, rare star, combat swords, leader crown, guide, assistant and the role icons are now our own art and stay crisp at any size."
+L.NEWS_0_57_0_FROST = "Frost theme: headings and text in Julius Sans One with a soft shadow and no outline, easier to read."
+L.NEWS_0_57_0_BACKGROUNDS = "Themes: every theme and colour now has the same window background in all Forever addons."
 L.NEWS_OPEN_THEME = "Open the theme"
 
 -- Themes (Core/Themes.lua)

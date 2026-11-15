@@ -201,7 +201,8 @@ News.ENTRIES = {
         lines = { "NEWS_0_56_1_CAST_ICON", "NEWS_0_56_1_OPTIONS" },
     },
     ["0.57.0"] = {
-        lines = { "NEWS_0_57_0_INVERTED_HEALTH", "NEWS_0_57_0_ICONS" },
+        lines = { "NEWS_0_57_0_INVERTED_HEALTH", "NEWS_0_57_0_ICONS", "NEWS_0_57_0_FROST",
+            "NEWS_0_57_0_BACKGROUNDS" },
     },
 }
 
