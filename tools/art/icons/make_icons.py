@@ -159,8 +159,13 @@ def tank():
     ]}
     return [badge("Badge", "#5aa8ff", "#123e86"),
             path_shape("Shield", [shield], SYMBOL, stroke(10)),
-            path_shape("Boss", [poly([(122, 70), (134, 70), (134, 190), (122, 190)]),
-                                poly([(84, 104), (172, 104), (172, 116), (84, 116)])], "#3a6fb8")]
+            # No cross on the shield: it read like the healer's plus. A shaded half and a boss instead.
+            path_shape("Half", [{"closed": True, "op": "combine", "knots": [
+                [128, 50], [128, 204],
+                {"anchor": [128, 204], "in": [128, 204], "out": [96, 190], "smooth": False},
+                {"anchor": [80, 120], "in": [80, 166], "out": [80, 120], "smooth": True},
+                [80, 64]]}], "#8fb4e0"),
+            path_shape("Boss", [ellipse(128, 118, 22, 22)], "#3a6fb8")]
 
 
 def healer():
