@@ -1594,6 +1594,8 @@ L.NEWS_0_56_0_AURA_TIME = "Iconos de aura: \"Tamaño del tiempo restante (%)\" f
 L.NEWS_0_56_0_BAR_WIDTHS = "Tamaño de las barras: las barras de salud y de recurso pueden ser más estrechas que el marco, a la izquierda, centradas o a la derecha. En la pestaña Diseño de cada marco."
 L.NEWS_0_56_0_MAIN_TANKS = "Marcos de banda, paneles especiales: \"También con rol de tanque\" añade a los tanques principales a todos con el rol de grupo Tanque, también en grupo."
 L.NEWS_0_56_0_AURA_FONT = "Las auras cambiadas dentro de una mazmorra conservan una sola fuente."
+L.NEWS_0_56_1_CAST_ICON = "Barra de lanzamiento: el icono del hechizo vuelve a verse con esquinas redondeadas (estaba oculto en Clásico)."
+L.NEWS_0_56_1_OPTIONS = "Opciones: la primera página muestra sus ajustes en cuanto se abre la ventana."
 L.NEWS_OPEN_THEME = "Abrir el tema"
 
 -- Themes (Core/Themes.lua)

@@ -1593,6 +1593,8 @@ L.NEWS_0_56_0_AURA_TIME = "Aura-Symbole: \"Restzeit-Grösse (%)\" legt fest, wie
 L.NEWS_0_56_0_BAR_WIDTHS = "Leistengrössen: Gesundheits- und Ressourcenleiste können je schmaler als der Rahmen sein, links, mittig oder rechts. Im Reiter Anordnung jedes Rahmens."
 L.NEWS_0_56_0_MAIN_TANKS = "Schlachtzugsrahmen, Sonderfelder: \"Auch Spieler mit Tank-Rolle\" zeigt bei den Haupttanks alle mit der Gruppenrolle Tank, auch in einer Gruppe."
 L.NEWS_0_56_0_AURA_FONT = "In einem Dungeon geänderte Auren behalten eine Schrift."
+L.NEWS_0_56_1_CAST_ICON = "Zauberleiste: Das Zaubersymbol ist mit runden Ecken wieder sichtbar (unter Klassisch war es verschwunden)."
+L.NEWS_0_56_1_OPTIONS = "Optionen: Die erste Seite zeigt ihre Einstellungen sofort beim Öffnen des Fensters."
 L.NEWS_OPEN_THEME = "Theme öffnen"
 
 -- Themes (Core/Themes.lua)

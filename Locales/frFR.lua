@@ -1593,6 +1593,8 @@ L.NEWS_0_56_0_AURA_TIME = "Icônes d’aura : \"Taille du temps restant (%)\" r�
 L.NEWS_0_56_0_BAR_WIDTHS = "Taille des barres : les barres de santé et de ressource peuvent être plus étroites que le cadre, à gauche, au centre ou à droite. Dans l’onglet Disposition de chaque cadre."
 L.NEWS_0_56_0_MAIN_TANKS = "Cadres de raid, panneaux spéciaux : \"Aussi les joueurs au rôle Tank\" ajoute aux tanks principaux tous ceux dont le rôle de groupe est Tank, en groupe aussi."
 L.NEWS_0_56_0_AURA_FONT = "Les auras changées dans un donjon gardent une seule police."
+L.NEWS_0_56_1_CAST_ICON = "Barre d'incantation : l'icône du sort s'affiche de nouveau avec les coins arrondis (elle était cachée en Classique)."
+L.NEWS_0_56_1_OPTIONS = "Options : la première page affiche ses réglages dès l'ouverture de la fenêtre."
 L.NEWS_OPEN_THEME = "Ouvrir le thème"
 
 -- Themes (Core/Themes.lua)

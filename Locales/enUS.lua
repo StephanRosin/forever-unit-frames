@@ -1621,6 +1621,8 @@ L.NEWS_0_56_0_AURA_TIME = "Aura icons: \"Time left size (%)\" sets how big the t
 L.NEWS_0_56_0_BAR_WIDTHS = "Bar sizes: the health and power bars can each be narrower than the frame, placed left, centre or right. On each frame's Layout tab."
 L.NEWS_0_56_0_MAIN_TANKS = "Raid frames, Special panels: \"Also players with the Tank role\" adds everyone whose group role is Tank to the main tanks, in a party too."
 L.NEWS_0_56_0_AURA_FONT = "Auras changed inside a dungeon keep one font."
+L.NEWS_0_56_1_CAST_ICON = "Cast bar: the spell icon shows again with rounded corners (it was hidden under Classic)."
+L.NEWS_0_56_1_OPTIONS = "Options: the first page shows its settings right away when the window opens."
 L.NEWS_OPEN_THEME = "Open the theme"
 
 -- Themes (Core/Themes.lua)

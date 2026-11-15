@@ -197,6 +197,9 @@ News.ENTRIES = {
     ["0.56.0"] = {
         lines = { "NEWS_0_56_0_AURA_TIME", "NEWS_0_56_0_BAR_WIDTHS", "NEWS_0_56_0_MAIN_TANKS", "NEWS_0_56_0_AURA_FONT" },
     },
+    ["0.56.1"] = {
+        lines = { "NEWS_0_56_1_CAST_ICON", "NEWS_0_56_1_OPTIONS" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).
