@@ -221,7 +221,7 @@ do
         PATH .. "PixelBackGrey " .. rgb({ 0.23 / 0.8, 0.08 / 0.8, 0.16 / 0.8, 1 }))
     H.checkTrue("frost deep: set for a theme not in use", entry.SetColor("DEEP", "FROST"))
     H.check("frost deep: keeps the alpha", paint("FROST"),
-        PATH .. "FrostBackGrey " .. rgb({ 0.1 / 0.796, 0.18 / 0.796, 0.32 / 0.796, 0.75 }))
+        PATH .. "FrostBackGrey " .. rgb({ 0.1 / 0.796, 0.18 / 0.796, 0.32 / 0.796, 0.85 }))
     H.check("colours: each theme its own", entry.Color() .. " " .. entry.Color("FROST"), "PLUM DEEP")
     H.check("colour: unknown refused", select(2, ns.Themes.SetColor("NOPE")), "UNKNOWN")
     H.check("colour: another theme's id refused", select(2, ns.Themes.SetColor("OAK")), "UNKNOWN")

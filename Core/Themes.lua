@@ -48,15 +48,16 @@ Themes.SPECS = {
     WOOD = {
         font = "Cinzel", bar = "FUF Wood",
         look = { borderShow = true, borderStyle = "GOLD", borderSize = 3, borderPadding = 4, cornerRadius = 3,
-            backgroundColor = { 0.1, 0.06, 0.02, 0.85 }, titleBackground = false,
+            backgroundColor = { 0.1, 0.06, 0.02, 0 }, titleBackground = false,
             shadowEnabled = true, shadowAlpha = 60, shadowSize = 6, fontOutline = "OUTLINE" },
-        art = { back = "WoodBack", ornament = "Rivet", corners = { 1, 2, 3, 4 }, ornamentSize = 11, ornamentInset = 1 },
+        art = { back = "WoodBack", tint = { 0.5, 0.5, 0.5, 1 }, ornament = "Rivet", corners = { 1, 2, 3, 4 },
+            ornamentSize = 11, ornamentInset = 1 },
     },
     -- Dark navy with a faint grid, a thin cyan line.
     TECH = {
         font = "Space Grotesk", bar = "FUF Tech",
         look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = { 0.25, 0.88, 0.94, 0.9 },
-            borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.02, 0.05, 0.08, 0.92 },
+            borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.02, 0.05, 0.08, 0 },
             titleBackground = false, shadowEnabled = false, fontOutline = "OUTLINE" },
         art = { back = "TechBack" },
     },
@@ -64,17 +65,19 @@ Themes.SPECS = {
     PARCHMENT = {
         font = "IM Fell English SC", bar = "FUF Parchment", fontSizeAdd = 1,
         look = { borderShow = true, borderStyle = "FLAT", borderSize = 2, borderColor = { 0.29, 0.2, 0.12, 1 },
-            borderPadding = 4, cornerRadius = 2, backgroundColor = { 0.22, 0.15, 0.07, 0.6 }, titleBackground = false,
+            borderPadding = 4, cornerRadius = 2, backgroundColor = { 0.22, 0.15, 0.07, 0 }, titleBackground = false,
             shadowEnabled = true, shadowAlpha = 45, shadowSize = 5, fontOutline = "OUTLINE" },
-        art = { back = "ParchmentBack", ornament = "Seal", corners = { 3 }, ornamentSize = 22, ornamentInset = -6 },
+        art = { back = "ParchmentBack", tint = { 0.45, 0.45, 0.45, 1 }, ornament = "Seal", corners = { 3 },
+            ornamentSize = 22, ornamentInset = -6 },
     },
     -- Grey granite, a dark chiselled edge, glowing runes.
     RUNESTONE = {
         font = "Marcellus", bar = "FUF Stone", fontSizeAdd = 1,
         look = { borderShow = true, borderStyle = "FLAT", borderSize = 2, borderColor = { 0.1, 0.1, 0.12, 1 },
-            borderPadding = 5, cornerRadius = 0, backgroundColor = { 0.04, 0.05, 0.06, 0.92 },
+            borderPadding = 5, cornerRadius = 0, backgroundColor = { 0.04, 0.05, 0.06, 0 },
             titleBackground = false, shadowEnabled = true, shadowAlpha = 70, shadowSize = 6, fontOutline = "OUTLINE" },
-        art = { back = "StoneBack", ornament = "Rune", corners = { 1, 2 }, ornamentSize = 14, ornamentInset = 2,
+        art = { back = "StoneBack", tint = { 0.55, 0.55, 0.55, 1 }, ornament = "Rune", corners = { 1, 2 },
+            ornamentSize = 14, ornamentInset = 2,
             ornamentColor = { 0.35, 0.95, 0.85, 1 } },
     },
     -- A mosaic of coloured glass round the bars, dark lead.
@@ -96,18 +99,18 @@ Themes.SPECS = {
     },
     -- Translucent ice, a pale rim, rounded.
     FROST = {
-        font = "Cinzel", bar = "FUF Frost",
+        font = "Julius Sans One", bar = "FUF Frost",
         look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = { 0.86, 0.96, 1, 0.8 },
-            borderPadding = 2, cornerRadius = 6, backgroundColor = { 0.04, 0.12, 0.22, 0.6 },
+            borderPadding = 2, cornerRadius = 6, backgroundColor = { 0.02, 0.07, 0.15, 0.45 },
             titleBackground = false, shadowEnabled = true, shadowAlpha = 55, shadowSize = 8, fontOutline = "NONE",
             fontShadow = true },
-        art = { back = "FrostBack", tint = { 1, 1, 1, 0.75 } },
+        art = { back = "FrostBack", tint = { 0.55, 0.55, 0.55, 0.85 } },
     },
     -- A light pixel frame, scan lines, a solid shadow.
     PIXEL = {
         font = "VT323", bar = "FUF Pixel", fontSizeAdd = 4,
         look = { borderShow = true, borderStyle = "FLAT", borderSize = 3, borderColor = { 1, 0.95, 0.91, 1 },
-            borderPadding = 0, cornerRadius = 0, backgroundColor = { 0, 0, 0, 1 }, titleBackground = false,
+            borderPadding = 0, cornerRadius = 0, backgroundColor = { 0, 0, 0, 0 }, titleBackground = false,
             shadowEnabled = false, fontOutline = "OUTLINE" },
         art = { back = "PixelBack", hardShadow = 4 },
     },
@@ -126,7 +129,7 @@ Themes.SPECS = {
     CONSOLE = {
         font = "IBM Plex Mono", bar = "FUF Swiss",
         look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = { 0.306, 0.929, 0.69, 1 },
-            borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.306, 0.929, 0.69, 0.1 },
+            borderPadding = 3, cornerRadius = 0, backgroundColor = { 0.306, 0.929, 0.69, 0 },
             titleBackground = false, shadowEnabled = false, fontOutline = "OUTLINE" },
         art = { back = "ConsoleBack", accent = "ring" },
     },
@@ -303,7 +306,7 @@ end
 -- Raised whenever SPECS change a look: theme sets made before are made
 -- anew from CLASSIC (Themes.Upgrade), so a changed theme shows as it is
 -- now. CLASSIC is never touched.
-Themes.REVISION = 11
+Themes.REVISION = 13
 
 -- The active profile's stored theme sets; stale ones (an older
 -- REVISION) dropped.
