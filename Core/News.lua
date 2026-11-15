@@ -204,6 +204,9 @@ News.ENTRIES = {
         lines = { "NEWS_0_57_0_INVERTED_HEALTH", "NEWS_0_57_0_ICONS", "NEWS_0_57_0_FROST",
             "NEWS_0_57_0_BACKGROUNDS" },
     },
+    ["0.58.0"] = {
+        lines = { "NEWS_0_58_0_THEME_FONTS" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

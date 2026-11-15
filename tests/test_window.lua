@@ -9,16 +9,17 @@ local found = false
 for _, name in ipairs(UISpecialFrames) do if name == "ForeverUnitFramesOptions" then found = true end end
 H.checkTrue("ESC closes window", found)
 
--- General page: the Frames tab first, the theme at its top, then the
--- master switch;
+-- General page: the Frames tab first, the theme at its top, its font
+-- beyond the frames, then the master switch;
 -- Appearance starts with the font.
 ns.Options.Select("general")
 H.check("general opens on Frames", ns.Options.currentTab, "frames")
 local keys = {}
 for _, row in ipairs(ns.Options.rows) do if row.key then keys[#keys + 1] = row.key end end
 H.check("first general row: the theme", keys[1], "theme")
-H.check("then the master switch", keys[2], "unitFrames")
-H.check("then a frame's own switch", keys[3], "enabled")
+H.check("then the theme's fonts", keys[2] .. " " .. keys[3], "themeBlizzardFonts themePlatynatorFont")
+H.check("then the master switch", keys[4], "unitFrames")
+H.check("then a frame's own switch", keys[5], "enabled")
 ns.Options.SelectTab("appearance")
 keys = {}
 for _, row in ipairs(ns.Options.rows) do if row.key then keys[#keys + 1] = row.key end end

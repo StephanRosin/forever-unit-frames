@@ -120,6 +120,14 @@ Settings.THEMES = { "CLASSIC", "WOOD", "TECH", "PARCHMENT", "RUNESTONE", "GLASS"
     "CONSOLE", "PITWALL" }
 Settings.Define({ key = "theme", code = "XT", scope = "general", type = "enum", values = Settings.THEMES,
     default = "CLASSIC" })
+-- The theme's font beyond the unit frames: some of Blizzard's texts
+-- (Core/BlizzardFonts.lua) and Platynator's nameplates
+-- (Core/PlatynatorFonts.lua). Off until switched on. Personal: every
+-- theme's set and every profile keeps the player's choice.
+Settings.Define({ key = "themeBlizzardFonts", code = "XB", scope = "general", type = "bool", personal = true,
+    default = false })
+Settings.Define({ key = "themePlatynatorFont", code = "XP", scope = "general", type = "bool", personal = true,
+    default = false })
 -- Click-casting on the unit frames (decision 76): the raid window's
 -- bindings (Raid/ClickCast.lua) on the player, pet, target, target of
 -- target, focus, party member and party pet buttons. One switch on General, each

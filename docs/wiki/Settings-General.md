@@ -8,7 +8,7 @@ Profiles, export, import and reset are on the **Profiles** page at the bottom of
 
 **On this page:**
 
-- **[Frames & addon](#frames--addon):** [Theme (beta)](#theme-beta) · [Which frames are shown](#which-frames-are-shown) · [Minimap button](#minimap-button)
+- **[Frames & addon](#frames--addon):** [Theme (beta)](#theme-beta) · [Theme font beyond the frames](#theme-font-beyond-the-frames) · [Which frames are shown](#which-frames-are-shown) · [Minimap button](#minimap-button)
 - **[Click-casting](#click-casting-1)**
 - **[Appearance](#appearance):** [Font](#font) · [Presentation](#presentation) · [Title row](#title-row) · [Border and corners](#border-and-corners) · [Shadow](#shadow) · [Visibility and fading](#visibility-and-fading)
 - **[Auras](#auras):** [Aura icons](#aura-icons) · [Hidden auras](#hidden-auras)
@@ -27,6 +27,16 @@ Button: **Reset theme**.
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
 <tr><td><b>Theme</b></td><td>Beta: each theme keeps its own settings, at first those of Classic. Themes are made to match the other Forever addons and look best when you use several of them with the same theme.</td><td>Classic (your layout), Wooden plaque, Technology / AI, Parchment &amp; seal, Runestone, Stained glass, Comic, Frost, Pixel, Swiss Clean, Console, Pitwall</td><td>Classic (your layout)</td></tr>
+</tbody>
+</table>
+
+### Theme font beyond the frames
+
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Theme font for Blizzard texts</b></td><td>Cast bar, buff timers, Cooldown Manager, error messages; damage numbers after relogging</td><td>On, Off</td><td>Off</td></tr>
+<tr><td><b>Theme font for Platynator</b></td><td>Your own Platynator nameplate designs; shows after /reload</td><td>On, Off</td><td>Off</td></tr>
 </tbody>
 </table>
 

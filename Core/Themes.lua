@@ -329,6 +329,13 @@ function Themes.Spec(id)
     return Themes.SPECS[id] or Themes.SPECS.CLASSIC
 end
 
+-- The theme's font for texts beyond the frames (Core/BlizzardFonts.lua,
+-- Core/PlatynatorFonts.lua): nil under Classic and where its letters
+-- are missing.
+function Themes.Font()
+    return LATIN_CLIENTS[GetLocale()] and Themes.Spec(Themes.Current()).font or nil
+end
+
 -- The font sizes one larger by add, in General and wherever a frame has
 -- its own.
 local function growFonts(p, add)

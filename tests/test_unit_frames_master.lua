@@ -83,9 +83,11 @@ C.Set("general", "unitFrames", true)
 O.Close()
 M.RunTimers()
 
--- Its words, at the top of the General tab, right after the theme.
+-- Its words, at the top of the General tab, right after the theme and
+-- the theme's font beyond the frames.
 H.check("the theme first", ns.Schema.GENERAL[1].sections[1].keys[1], "theme")
-local first = ns.Schema.GENERAL[1].sections[2]
+H.check("then the theme's fonts", ns.Schema.GENERAL[1].sections[2].id, "themeFonts")
+local first = ns.Schema.GENERAL[1].sections[3]
 H.check("then the master switch", first.keys[1], "unitFrames")
 H.check("label", L.SETTING_unitFrames, "Use unit frames")
 H.checkTrue("the hint names the /reload", L.HINT_unitFrames:find("/reload", 1, true))

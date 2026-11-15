@@ -136,3 +136,5 @@ Core\News.lua
 Options\News.lua
 Core\Debug.lua
 Core\Boot.lua
+Core\BlizzardFonts.lua
+Core\PlatynatorFonts.lua
