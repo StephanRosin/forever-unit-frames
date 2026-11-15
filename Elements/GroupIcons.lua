@@ -156,10 +156,15 @@ function GroupIcons.Refresh(frame)
     g.phase:SetShown(phase)
     if g.looter then g.looter:SetShown(data.looter == true and frame.iconPoint(frame, "looter") ~= nil) end
     if frame.iconPoint then return end
+    -- The role sits at the anchor's end, so a crown or ready mark next to it
+    -- does not move it (members' roles stay in one column).
+    local roleLast = Layout.IconRowJustify(g.point or "LEFT") == 1
     local shown = {}
-    for _, icon in ipairs({ g.leader, g.ready, g.rez, g.summon, g.phase, g.role }) do
+    if not roleLast and g.role:IsShown() then shown[1] = g.role end
+    for _, icon in ipairs({ g.leader, g.ready, g.rez, g.summon, g.phase }) do
         if icon:IsShown() then shown[#shown + 1] = icon end
     end
+    if roleLast and g.role:IsShown() then shown[#shown + 1] = g.role end
     arrange(g, shown)
 end
 

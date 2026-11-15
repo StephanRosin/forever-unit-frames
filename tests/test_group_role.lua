@@ -78,10 +78,11 @@ do
     H.check("role sized like the others", a.role:GetWidth(), size)
     -- Alone in the row: packed to the anchor's side like the others.
     H.check("first slot when alone", point(a.role, "TOPLEFT")[4], 0)
-    -- After the leader when both show.
+    -- A crown does not move the role: it stays at the anchor's end, the crown next to it.
     M.units.party1.leader = true
     M.FireEvent("PARTY_LEADER_CHANGED")
-    H.check("after the leader", point(a.role, "TOPLEFT")[4], size + ns.Pixel.Snap(2))
+    H.check("role stays put beside the leader", point(a.role, "TOPLEFT")[4], 0)
+    H.check("leader next to the role", point(a.leader, "TOPLEFT")[4], size + ns.Pixel.Snap(2))
     M.units.party1.leader = nil
     M.FireEvent("PARTY_LEADER_CHANGED")
 
