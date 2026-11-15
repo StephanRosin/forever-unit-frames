@@ -1604,6 +1604,7 @@ L.NEWS_0_57_0_ICONS = "Iconos más nítidos: calavera de jefe, estrella rara, es
 L.NEWS_0_57_0_FROST = "Tema Escarcha: títulos y texto en Julius Sans One con una sombra suave y sin contorno, más fácil de leer."
 L.NEWS_0_57_0_BACKGROUNDS = "Temas: cada tema y cada color tienen ahora el mismo fondo de ventana en todos los addons Forever."
 L.NEWS_0_58_0_THEME_FONTS = "Temas: dos opciones nuevas en General > Marcos y addon ponen la fuente del tema en la barra de lanzamiento, la duración de beneficios, el gestor de tiempos de reutilización y los mensajes de error de Blizzard, y en las placas de nombre de Platynator. Ambas están desactivadas hasta que las actives."
+L.NEWS_0_58_0_ROLE_ICON = "Marcos de grupo: el icono de rol mantiene su sitio cuando el miembro también lleva la corona de líder."
 L.NEWS_OPEN_THEME = "Abrir el tema"
 
 -- Themes (Core/Themes.lua)

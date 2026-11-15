@@ -1603,6 +1603,7 @@ L.NEWS_0_57_0_ICONS = "Schärfere Symbole: Boss-Schädel, Rar-Stern, Kampfschwer
 L.NEWS_0_57_0_FROST = "Theme Frost: Überschriften und Text in Julius Sans One mit weichem Schatten ohne Kontur, besser lesbar."
 L.NEWS_0_57_0_BACKGROUNDS = "Themes: Jedes Theme und jede Farbe hat jetzt in allen Forever-Addons denselben Fensterhintergrund."
 L.NEWS_0_58_0_THEME_FONTS = "Themes: zwei neue Optionen unter Allgemein > Rahmen & Addon geben Blizzards Zauberleiste, Buff-Dauer, Abklingzeitenmanager und Fehlermeldungen sowie Platynators Namensplaketten die Schrift des Themes. Beide sind aus, bis du sie einschaltest."
+L.NEWS_0_58_0_ROLE_ICON = "Gruppenrahmen: Das Rollensymbol bleibt an seinem Platz, wenn das Mitglied auch die Anführerkrone trägt."
 L.NEWS_OPEN_THEME = "Theme öffnen"
 
 -- Themes (Core/Themes.lua)

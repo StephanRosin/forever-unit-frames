@@ -205,7 +205,7 @@ News.ENTRIES = {
             "NEWS_0_57_0_BACKGROUNDS" },
     },
     ["0.58.0"] = {
-        lines = { "NEWS_0_58_0_THEME_FONTS" },
+        lines = { "NEWS_0_58_0_THEME_FONTS", "NEWS_0_58_0_ROLE_ICON" },
     },
 }
 
