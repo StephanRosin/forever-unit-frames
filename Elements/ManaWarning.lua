@@ -246,10 +246,11 @@ local function locked()
     return C_ChatInfo and C_ChatInfo.InChatMessagingLockdown and C_ChatInfo.InChatMessagingLockdown() == true
 end
 
--- One line to the group's chat with your share; nothing alone, nothing
--- while the client forbids addons the chat, and not twice within CHAT_GAP
--- (a click too, against double clicks). A secret share never reaches the
--- chat: then only a click (the player saw the warning) sends, without it.
+-- One line to the group's chat naming the threshold (manaWarnBelow, a
+-- setting, never the secret share); nothing alone, nothing while the client
+-- forbids addons the chat, and not twice within CHAT_GAP (a click too,
+-- against double clicks). With a secret share only a click sends: the
+-- player saw the warning, the automatic line cannot know it is low.
 function ManaWarning.Announce(frame, byClick)
     local mw = frame.manaWarning
     if not mw or mw.preview then return end
@@ -259,8 +260,7 @@ function ManaWarning.Announce(frame, byClick)
     local now = GetTime()
     if mw.saidAt and now - mw.saidAt < ManaWarning.CHAT_GAP then return end
     mw.saidAt = now
-    SendChatMessage(percent and ns.L.MANA_WARN_CHAT:format(math.floor(percent + 0.5))
-        or ns.L.MANA_WARN_CHAT_PLAIN, to)
+    SendChatMessage(ns.L.MANA_WARN_CHAT:format(setting(frame.key, "manaWarnBelow")), to)
 end
 
 -- Showing -----------------------------------------------------------------------------

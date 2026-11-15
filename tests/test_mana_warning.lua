@@ -76,7 +76,7 @@ C.Set("player", "manaWarnChat", true)
 mana(900)
 mana(100)
 H.check("auto: one line", #M.sent, 1)
-H.check("auto: the text", M.sent[1][1], L.MANA_WARN_CHAT:format(10))
+H.check("auto: the text names the threshold", M.sent[1][1], L.MANA_WARN_CHAT:format(C.Get("player", "manaWarnBelow")))
 H.check("auto: party chat", M.sent[1][2], "PARTY")
 mana(90)
 H.check("still low: no second line", #M.sent, 1)
@@ -159,7 +159,7 @@ M.shiftDown = true
 mw.holder:GetScript("OnClick")(mw.holder)
 M.shiftDown = false
 H.check("secret, click: a line", #M.sent, sent + 1)
-H.check("secret, click: no number", M.sent[#M.sent][1], ns.L.MANA_WARN_CHAT_PLAIN)
+H.check("secret, click: the threshold, not the share", M.sent[#M.sent][1], ns.L.MANA_WARN_CHAT:format(C.Get("player", "manaWarnBelow")))
 M.units.player.powerPercent = 0.8
 M.FireEvent("UNIT_POWER_FREQUENT", "player", "MANA")
 H.check("secret: clear above the line", M.Reveal(mw.holder:GetAlpha()), 0)
