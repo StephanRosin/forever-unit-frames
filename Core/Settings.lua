@@ -174,6 +174,13 @@ Settings.Define({ key = "healOverflow", code = "OV", scope = "frame", type = "bo
 Settings.Define({ key = "healBeyond", code = "OB", scope = "frame", type = "bool", default = false })
 -- With the overheal lane: the power bar ends where the health bar ends.
 Settings.Define({ key = "powerMatchesHealth", code = "OM", scope = "frame", type = "bool", default = false })
+-- The health and power bars narrower than their row, each in per cent of
+-- it, both placed in the row by barAlign; the room beside a narrow bar
+-- shows the frame's background.
+Settings.Define({ key = "healthBarWidth", code = "HW", scope = "frame", type = "int", min = 20, max = 100, default = 100 })
+Settings.Define({ key = "powerBarWidth", code = "PI", scope = "frame", type = "int", min = 20, max = 100, default = 100 })
+Settings.Define({ key = "barAlign", code = "BJ", scope = "frame", type = "enum", values = { "LEFT", "CENTER", "RIGHT" },
+    default = "LEFT" })
 Settings.Define({ key = "x", code = "X", scope = "frame", type = "int", min = -4000, max = 4000,
     default = { player = -300, target = 300, targettarget = 480, targettargettarget = 604, pet = -352, pettarget = -222, focus = -300, focustarget = -152, party = -760, boss = 560, _ = 0 } })
 Settings.Define({ key = "y", code = "Y", scope = "frame", type = "int", min = -4000, max = 4000,

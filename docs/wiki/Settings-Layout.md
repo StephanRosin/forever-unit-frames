@@ -6,7 +6,7 @@ Size, position, the rows of the frame, portrait, border and corners, shadow, and
 
 The **Layout** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
 
-**On this page:** [Display](#display) · [Size](#size) · [Position](#position) · [Bar heights](#bar-heights) · [Portrait](#portrait) · [Border and corners](#border-and-corners) · [Shadow](#shadow) · [Visibility and fading](#visibility-and-fading) · [Click-casting](#click-casting)
+**On this page:** [Display](#display) · [Size](#size) · [Position](#position) · [Bar sizes](#bar-sizes) · [Portrait](#portrait) · [Border and corners](#border-and-corners) · [Shadow](#shadow) · [Visibility and fading](#visibility-and-fading) · [Click-casting](#click-casting)
 
 ## Display
 
@@ -40,7 +40,7 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 </tbody>
 </table>
 
-## Bar heights
+## Bar sizes
 
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
@@ -50,6 +50,9 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 <tr><td><b>Power bar height (%)</b></td><td>Share of the frame height; room left over goes to health and power</td><td>0 – 90</td><td>Player, Target, Target of Target, Pet, Boss: 25; Focus: 21; Party: 7</td><td>all</td></tr>
 <tr><td><b>Show power bar</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
 <tr><td><b>Hide without power</b></td><td>NPCs without mana, rage or energy: no empty bar</td><td>On, Off</td><td>Target: On; Target of Target, Focus, Boss: Off</td><td>Target, Target of Target, Focus, Boss</td></tr>
+<tr><td><b>Health bar width (%)</b></td><td>The health bar's share of the frame width; the rest shows the frame background</td><td>20 – 100</td><td>100</td><td>all</td></tr>
+<tr><td><b>Power bar width (%)</b></td><td>The power bar's share of the frame width; the rest shows the frame background</td><td>20 – 100</td><td>100</td><td>all</td></tr>
+<tr><td><b>Narrow bars sit</b></td><td>Where a bar narrower than the frame sits</td><td>Left, Center, Right</td><td>Left</td><td>all</td></tr>
 </tbody>
 </table>
 

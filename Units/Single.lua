@@ -78,6 +78,22 @@ local function place(frame)
     end
 end
 
+-- A bar's share of its row (healthBarWidth, powerBarWidth), placed by
+-- barAlign: its width and the room left of it and right of it, on the
+-- pixel grid.
+local FULL_ROW = 100
+local function barSpan(scope, key, rowWidth)
+    local share = Config.Get(scope, key)
+    -- The whole row as before: a row in combat may be off the grid.
+    if share >= FULL_ROW then return rowWidth, 0, 0 end
+    local width = Pixel.Snap(rowWidth * share / FULL_ROW)
+    local free = rowWidth - width
+    local align = Config.Get(scope, "barAlign")
+    local before = align == "RIGHT" and free or align == "CENTER" and Pixel.Snap(free / 2) or 0
+    return width, before, free - before
+end
+Single.BarSpan = barSpan
+
 -- The split is worked out in whole units, then put on the pixel grid:
 -- title row and power bar are snapped, health takes the rest of the
 -- (snapped) frame height, so the rows always fill the frame exactly.
@@ -119,23 +135,25 @@ local function layoutBars(frame)
     local width = frameWidth - left - right
     frame.titleWidth = width
     -- The overheal lane (Elements/HealPrediction.lua) takes the end of
-    -- the health bar's row; the title row keeps the full width, the power
-    -- bar too unless it is set to match the health bar.
+    -- the health bar; the title row keeps the full width, the power bar
+    -- its own unless it is set to match the health bar.
+    local healthW, healthBefore, healthAfter = barSpan(scope, "healthBarWidth", width)
     local lane = 0
     if Config.Get(scope, "healPrediction") and Config.Get(scope, "healOverflow") then
-        lane = Pixel.Snap(Layout.OverhealLane(width))
+        lane = Pixel.Snap(Layout.OverhealLane(healthW))
     end
-    frame.healthWidth, frame.overhealLane = width - lane, lane
+    frame.healthWidth, frame.overhealLane = healthW - lane, lane
     frame.health:ClearAllPoints()
-    frame.health:SetPoint("TOPLEFT", frame, "TOPLEFT", left, -(titleH + strip))
-    frame.health:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -(right + lane), -(titleH + strip))
+    frame.health:SetPoint("TOPLEFT", frame, "TOPLEFT", left + healthBefore, -(titleH + strip))
+    frame.health:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -(right + healthAfter + lane), -(titleH + strip))
     frame.health:SetHeight(healthH)
     if frame.power then
+        local powerW, powerBefore, powerAfter = barSpan(scope, "powerBarWidth", width)
         frame.power:ClearAllPoints()
-        frame.power:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", left, footer)
+        frame.power:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", left + powerBefore, footer)
         local powerLane = Config.Get(scope, "powerMatchesHealth") and lane or 0
-        frame.power:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -(right + powerLane), footer)
-        frame.powerWidth = width - powerLane
+        frame.power:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -(right + powerAfter + powerLane), footer)
+        frame.powerWidth = powerW - powerLane
         frame.power:SetHeight(powerShown and powerH or pixel)
         frame.power:SetShown(powerShown)
     end
