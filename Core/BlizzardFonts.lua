@@ -84,8 +84,12 @@ local function restoreAll()
     end
 end
 
--- The theme font's name while the option is on, else nil.
+-- The theme font's name while the option is on, else nil. Nil while the
+-- hub "Forever Themes" is there: it owns these texts, ours go back and
+-- the damage font is no longer stored (the option's value stays, the hub
+-- takes it over).
 local function wanted()
+    if ns.Themes.Hub() then return nil end
     return ns.Config.Get("general", "themeBlizzardFonts") and ns.Themes.Font() or nil
 end
 

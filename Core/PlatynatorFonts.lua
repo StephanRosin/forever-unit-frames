@@ -84,7 +84,9 @@ end
 -- font changed. Nothing without Platynator.
 function PlatynatorFonts.Refresh()
     if not designs() then return end
-    local font = ns.Config.Get("general", "themePlatynatorFont") and ns.Themes.Font() or nil
+    -- The hub "Forever Themes" owns Platynator's font: the user's
+    -- originals back, the snapshot forgotten (the option's value stays).
+    local font = not ns.Themes.Hub() and ns.Config.Get("general", "themePlatynatorFont") and ns.Themes.Font() or nil
     local store = ForeverUnitFramesDB.platynator or {}
     if font == store.font then return end
     ForeverUnitFramesDB.platynator = store
@@ -98,7 +100,7 @@ end
 function PlatynatorFonts.OnLoaded()
     registerFonts()
     local store = ForeverUnitFramesDB and ForeverUnitFramesDB.platynator
-    if store and store.font then apply(store, store.font) end
+    if store and store.font and not ns.Themes.Hub() then apply(store, store.font) end
 end
 
 ns.On("ADDON_LOADED", function(_, name) if name == "Platynator" then PlatynatorFonts.OnLoaded() end end)

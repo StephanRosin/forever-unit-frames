@@ -465,6 +465,16 @@ Lib.Register(ADDON, {
 -- registered above.
 function Themes.HasOthers() return #Lib.Others(ADDON) > 0 end
 
+-- The hub addon "Forever Themes" (LibForeverThemes §2.12): nil without it.
+-- While it is there it owns the theme font beyond the frames
+-- (Core/BlizzardFonts.lua, Core/PlatynatorFonts.lua stand down).
+function Themes.Hub() return Lib.Hub() end
+-- Whether the hub sets our theme and colour now (the options grey them).
+function Themes.FollowsHub()
+    local hub = Lib.Hub()
+    return hub ~= nil and hub.Follows(ADDON) == true
+end
+
 -- Every other addon onto this theme and, where that theme has it, this
 -- colour. Returns how many switched.
 function Themes.ApplyToAll()

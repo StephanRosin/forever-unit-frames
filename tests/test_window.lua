@@ -17,9 +17,10 @@ H.check("general opens on Frames", ns.Options.currentTab, "frames")
 local keys = {}
 for _, row in ipairs(ns.Options.rows) do if row.key then keys[#keys + 1] = row.key end end
 H.check("first general row: the theme", keys[1], "theme")
-H.check("then the theme's fonts", keys[2] .. " " .. keys[3], "themeBlizzardFonts themePlatynatorFont")
-H.check("then the master switch", keys[4], "unitFrames")
-H.check("then a frame's own switch", keys[5], "enabled")
+H.check("then its colour", keys[2], "themeColor")
+H.check("then the theme's fonts", keys[3] .. " " .. keys[4], "themeBlizzardFonts themePlatynatorFont")
+H.check("then the master switch", keys[5], "unitFrames")
+H.check("then a frame's own switch", keys[6], "enabled")
 ns.Options.SelectTab("appearance")
 keys = {}
 for _, row in ipairs(ns.Options.rows) do if row.key then keys[#keys + 1] = row.key end end

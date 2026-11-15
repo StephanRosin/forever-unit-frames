@@ -306,7 +306,7 @@ end
 
 -- Defined with the other blocks below; a section's action button, a
 -- tab's note, the theme's "Take positions from" list.
-local actionBlock, noteBlock, themeCopyRow, themeColorRow
+local actionBlock, noteBlock, themeCopyRow, themeColorRow, hubBlock
 
 -- General > Frames: after the master switch, one switch per frame, the
 -- frame's own "enabled".
@@ -384,6 +384,10 @@ local function addSections(page, stack, scope, tab)
                 page.hasFolds = true   -- the colour row comes and goes with the theme
                 stack.add(themeCopyRow(page))
             end
+            if section.hub then
+                stack.add(hubBlock(page, section.hub))
+                page.hasFolds = true   -- the hub comes and goes while the game runs
+            end
             for _, id in ipairs(section.actions or {}) do stack.add(actionBlock(page, id)) end
         end
         if section.raidKeys then
@@ -447,7 +451,8 @@ local ACTIONS = {
 }
 -- Actions offered only now and then (the page restacks them, as folds).
 local ACTION_SHOWN = {
-    themeApplyAll = function() return ns.Themes.HasOthers() end,
+    -- Following the hub "Forever Themes": the hub applies it to all.
+    themeApplyAll = function() return ns.Themes.HasOthers() and not ns.Themes.FollowsHub() end,
 }
 -- The buttons by action id, for the tests and for disarming on close.
 Options.actionButtons = {}
@@ -485,8 +490,32 @@ function themeColorRow(page)
         end,
     })
     row.visible = function() return #ns.Themes.Colors() > 0 end
+    row.key = "themeColor"   -- greyed while following the hub (ROW_ACTIVE)
     row:Refresh()
     return row
+end
+
+-- The hub "Forever Themes" (Core/Themes.lua): a line saying it holds a
+-- section's rows, and a button to its window. section.hub: when it shows.
+local HUB_SHOWN = {
+    follows = function() return ns.Themes.FollowsHub() end,
+    fonts = function() return ns.Themes.Hub() ~= nil end,
+}
+Options.hubBlocks = {}   -- by section.hub, for the tests
+function hubBlock(page, id)
+    local block = newBlock(page)
+    local button = Widgets.Button(block, { text = L.HUB_OPEN, width = WIDE_BUTTON_W,
+        onClick = function() ns.Themes.Hub().OpenOptions() end })
+    button:SetPoint("TOPLEFT", block, "TOPLEFT", INSET, -6)
+    block.text = Style.Text(block, 10, "muted")
+    block.text:SetPoint("LEFT", button, "RIGHT", FOOTER_GAP, 0)
+    block.text:SetText(L["HUB_" .. id])
+    block.button = button
+    block.visible = HUB_SHOWN[id]
+    function block:SetEnabled(on) button:SetEnabled(on) end
+    block:SetHeight(BUTTON_H + 12)
+    Options.hubBlocks[id] = block
+    return block
 end
 
 -- The positions another theme's set has, taken over into the current
@@ -847,6 +876,12 @@ local ROW_ACTIVE = {
     rangeFriendlyYards = function() return ns.Range.ReactionOn("friendly") end,
     rangeHostileSpell = function() return ns.Range.ReactionOn("hostile") end,
     rangeHostileYards = function() return ns.Range.ReactionOn("hostile") end,
+    -- The hub "Forever Themes" sets the theme (following) and owns the
+    -- font beyond the frames; the values stay (the hub takes them over).
+    theme = function() return not ns.Themes.FollowsHub() end,
+    themeColor = function() return not ns.Themes.FollowsHub() end,
+    themeBlizzardFonts = function() return ns.Themes.Hub() == nil end,
+    themePlatynatorFont = function() return ns.Themes.Hub() == nil end,
 }
 Options.ROW_ACTIVE = ROW_ACTIVE
 
@@ -1264,6 +1299,8 @@ function Options.SelectTab(id)
             Options.page, Options.currentTab, Options.rows = page, id, page.rows
             frame.scroll:SetVerticalScroll(0)
             page:Show()
+            -- Shown-or-not rows (the hub may have come or changed since).
+            if page.hasFolds then page.Restack() end
             -- Scroll child height and UpdateScrollChildRect: without the
             -- latter the window's very first page stayed empty in game
             -- until a tab switch (seen with General > Frames, 0.55.0).

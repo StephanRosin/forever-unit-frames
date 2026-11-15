@@ -18,9 +18,11 @@ Schema.GENERAL = {
     { id = "frames", sections = {
         -- The theme first: it swaps every other setting (Core/Themes.lua).
         -- themeCopy: the "Take positions from" list (Options/Window.lua).
-        { id = "theme", keys = { "theme" }, themeCopy = true, actions = { "themeApplyAll", "themeReset" } },
+        -- hub: the line and button of the hub "Forever Themes" (Options/Window.lua).
+        { id = "theme", keys = { "theme" }, themeCopy = true, hub = "follows",
+            actions = { "themeApplyAll", "themeReset" } },
         -- The theme's font on Blizzard's texts and Platynator's nameplates.
-        { id = "themeFonts", keys = { "themeBlizzardFonts", "themePlatynatorFont" } },
+        { id = "themeFonts", keys = { "themeBlizzardFonts", "themePlatynatorFont" }, hub = "fonts" },
         { id = "frames", keys = { "unitFrames" }, frames = true,
             actions = { "positionsFromBlizzard", "positionsUndo" } },
         { id = "minimap", keys = { "minimapShow", "minimapAngle" } },
