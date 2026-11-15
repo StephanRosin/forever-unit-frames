@@ -40,9 +40,8 @@ local LATIN_CLIENTS = { enUS = true, enGB = true, deDE = true, frFR = true, esES
 -- fontOutline: the client's OUTLINE, never SOFT. With the theme fonts
 -- SOFT (Elements/Texts.lua) showed black text in game; why is not known
 -- (the text has its font by GetFont, its black copies draw on top).
--- Frost alone has none: Cormorant's hairlines drowned in it; a 1 px drop
--- shadow (fontShadow, black) keeps its texts readable, white values on a
--- priest's white health bar too.
+-- Frost alone has none: a 1 px drop shadow (fontShadow, black) keeps its
+-- texts readable, white values on a priest's white health bar too.
 Themes.SPECS = {
     CLASSIC = {},
     -- Oak boards round the bars, a gold rim (as in every Forever addon), brass rivets.
@@ -97,7 +96,7 @@ Themes.SPECS = {
     },
     -- Translucent ice, a pale rim, rounded.
     FROST = {
-        font = "Cormorant SC", bar = "FUF Frost", fontSizeAdd = 2,
+        font = "Cinzel", bar = "FUF Frost",
         look = { borderShow = true, borderStyle = "FLAT", borderSize = 1, borderColor = { 0.86, 0.96, 1, 0.8 },
             borderPadding = 2, cornerRadius = 6, backgroundColor = { 0.04, 0.12, 0.22, 0.6 },
             titleBackground = false, shadowEnabled = true, shadowAlpha = 55, shadowSize = 8, fontOutline = "NONE",
@@ -304,7 +303,7 @@ end
 -- Raised whenever SPECS change a look: theme sets made before are made
 -- anew from CLASSIC (Themes.Upgrade), so a changed theme shows as it is
 -- now. CLASSIC is never touched.
-Themes.REVISION = 10
+Themes.REVISION = 11
 
 -- The active profile's stored theme sets; stale ones (an older
 -- REVISION) dropped.

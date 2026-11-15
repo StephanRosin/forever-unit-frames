@@ -19,7 +19,6 @@ local builtin = {
         -- in Media/Fonts.
         ["Bangers"] = ADDON .. "Fonts\\Bangers-Regular.ttf",
         ["Cinzel"] = ADDON .. "Fonts\\Cinzel-Bold.ttf",
-        ["Cormorant SC"] = ADDON .. "Fonts\\CormorantSC-Bold.ttf",
         ["IM Fell English SC"] = ADDON .. "Fonts\\IMFeENsc28P.ttf",
         ["Marcellus"] = ADDON .. "Fonts\\Marcellus-Regular.ttf",
         ["Space Grotesk"] = ADDON .. "Fonts\\SpaceGrotesk-Bold.ttf",
