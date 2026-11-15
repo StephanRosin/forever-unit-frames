@@ -122,10 +122,13 @@ local function arrange(g, shown)
     if not g.size then return end
     local free = g.holder:GetWidth() - Layout.IconRowWidth(#shown, g.size, g.gap)
     local start = Pixel.Snap(free * Layout.IconRowJustify(g.point))
-    for i, icon in ipairs(shown) do
-        icon:ClearAllPoints()
-        icon:SetPoint("TOPLEFT", g.holder, "TOPLEFT", start + (i - 1) * (g.size + g.gap), 0)
-        icon:SetSize(g.size, g.size)
+    for i = 1, #shown do
+        local icon = shown[i]
+        if icon then -- false: a kept empty slot
+            icon:ClearAllPoints()
+            icon:SetPoint("TOPLEFT", g.holder, "TOPLEFT", start + (i - 1) * (g.size + g.gap), 0)
+            icon:SetSize(g.size, g.size)
+        end
     end
 end
 
@@ -156,15 +159,21 @@ function GroupIcons.Refresh(frame)
     g.phase:SetShown(phase)
     if g.looter then g.looter:SetShown(data.looter == true and frame.iconPoint(frame, "looter") ~= nil) end
     if frame.iconPoint then return end
-    -- The role sits at the anchor's end, so a crown or ready mark next to it
-    -- does not move it (members' roles stay in one column).
+    -- Crown, then role, at the anchor's end; with a role the crown's slot is
+    -- kept even when empty, so members' roles stay in one column.
     local roleLast = Layout.IconRowJustify(g.point or "LEFT") == 1
-    local shown = {}
-    if not roleLast and g.role:IsShown() then shown[1] = g.role end
-    for _, icon in ipairs({ g.leader, g.ready, g.rez, g.summon, g.phase }) do
-        if icon:IsShown() then shown[#shown + 1] = icon end
+    local head = {}
+    if g.leader:IsShown() then head[1] = g.leader elseif g.role:IsShown() and want(frame, "groupLeader") then head[1] = false end
+    if g.role:IsShown() then head[#head + 1] = g.role end
+    local rest = {}
+    for _, icon in ipairs({ g.ready, g.rez, g.summon, g.phase }) do
+        if icon:IsShown() then rest[#rest + 1] = icon end
     end
-    if roleLast and g.role:IsShown() then shown[#shown + 1] = g.role end
+    local shown = {}
+    local first, second = roleLast and rest or head, roleLast and head or rest
+    if roleLast then head[1], head[#head] = head[#head], head[1] end
+    for i = 1, #first do shown[#shown + 1] = first[i] end
+    for i = 1, #second do shown[#shown + 1] = second[i] end
     arrange(g, shown)
 end
 
