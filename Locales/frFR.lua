@@ -1656,6 +1656,7 @@ L.NEWS_0_60_1_FIXES = "Corrections : plus de textes vides pendant le chargement 
 L.NEWS_0_61_0_SQUARE = "Portrait : nouvelle option « Image 2D carrée », qui recadre l'image ronde du jeu en carré (Options, cadre, Portrait)."
 L.NEWS_0_62_0_SPACING = "Espacements et cases (onglet Disposition) : des espaces entre la ligne de titre, la vie, la ressource, le portrait et la barre d'incantation font des parties du cadre des cases séparées, avec leur propre bordure."
 L.NEWS_0_62_0_ROLE = "Icônes de groupe (onglet État) : l'icône de rôle peut se placer sur le portrait, avec sa propre taille, son coin et son décalage."
+L.NEWS_0_63_0_ENCHANTS = "Améliorations (onglet Auras) : « Dans la rangée des buffs » place vos enchantements d'arme au début de la première rangée d'améliorations au lieu d'une rangée à part."
 L.NEWS_OPEN_THEME = "Ouvrir le thème"
 
 -- Themes (Core/Themes.lua)

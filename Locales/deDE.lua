@@ -1656,6 +1656,7 @@ L.NEWS_0_60_1_FIXES = "Korrekturen: keine leeren Texte, während eine Theme-Schr
 L.NEWS_0_61_0_SQUARE = "Porträt: neue Option „2D-Bild eckig“ schneidet das runde Bild des Spiels quadratisch zu (Optionen, Fenster, Porträt)."
 L.NEWS_0_62_0_SPACING = "Abstände & Kästen (Reiter Anordnung): Abstände zwischen Titelzeile, Leben, Ressource, Porträt und Zauberleiste machen die Teile des Fensters zu getrennten Kästen, mit eigenem Kastenrahmen."
 L.NEWS_0_62_0_ROLE = "Gruppensymbole (Reiter Status): das Rollensymbol kann auf dem Porträt sitzen, mit eigener Grösse, Ecke und Versatz."
+L.NEWS_0_63_0_ENCHANTS = "Buffs (Reiter Auren): „In der Buff-Reihe“ setzt die Waffenverzauberungen an den Anfang der ersten Buff-Reihe statt in eine eigene Reihe."
 L.NEWS_OPEN_THEME = "Theme öffnen"
 
 -- Themes (Core/Themes.lua)

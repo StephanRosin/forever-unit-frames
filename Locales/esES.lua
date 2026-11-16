@@ -1657,6 +1657,7 @@ L.NEWS_0_60_1_FIXES = "Correcciones: sin textos vacíos mientras carga una fuent
 L.NEWS_0_61_0_SQUARE = "Retrato: nueva opción «Imagen 2D cuadrada», recorta la imagen redonda del juego en un cuadrado (Opciones, marco, Retrato)."
 L.NEWS_0_62_0_SPACING = "Espacios y cajas (pestaña Diseño): los espacios entre la fila del título, la salud, el recurso, el retrato y la barra de lanzamiento convierten las partes del marco en cajas separadas, con su propio borde."
 L.NEWS_0_62_0_ROLE = "Iconos de grupo (pestaña Estado): el icono de rol puede ir sobre el retrato, con su propio tamaño, esquina y desplazamiento."
+L.NEWS_0_63_0_ENCHANTS = "Beneficios (pestaña Auras): «En la fila de beneficios» coloca tus encantamientos de arma al principio de la primera fila de beneficios en lugar de una fila propia."
 L.NEWS_OPEN_THEME = "Abrir el tema"
 
 -- Themes (Core/Themes.lua)

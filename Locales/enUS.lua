@@ -1684,6 +1684,7 @@ L.NEWS_0_60_1_FIXES = "Fixes: no empty texts while a theme font loads; the low m
 L.NEWS_0_61_0_SQUARE = "Portrait: new option Square 2D picture crops the game's round picture to a square (Options, frame, Portrait)."
 L.NEWS_0_62_0_SPACING = "Spacing & boxes (Layout tab): gaps between title row, health, power, portrait and castbar turn the frame's parts into separate boxes, with a box border of their own."
 L.NEWS_0_62_0_ROLE = "Group icons (Status tab): the role icon can sit on the portrait, with its own size, corner and offset."
+L.NEWS_0_63_0_ENCHANTS = "Buffs (Auras tab): \"Enchants in the buff row\" puts your weapon enchants at the start of the first buff row instead of a row of their own."
 L.NEWS_OPEN_THEME = "Open the theme"
 
 -- Themes (Core/Themes.lua)
