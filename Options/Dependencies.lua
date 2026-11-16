@@ -196,6 +196,7 @@ local RULES = {
         "partyTargetY" } },
     { on("buffsEnabled"), auraRows("buffs", {}) },
     { on("buffsEnabled"), { "weaponEnchants" } },
+    { on("weaponEnchants"), { "weaponEnchantsSameRow" } },
     { on("debuffsEnabled"), auraRows("debuffs", {}) },
     { on("dispelsEnabled"), auraRows("dispels", {}) },
     { on("buffsHighlightOwn"), ownRows("buffs", { "OwnSize", "OwnSameRow", "OwnPlacement" }) },

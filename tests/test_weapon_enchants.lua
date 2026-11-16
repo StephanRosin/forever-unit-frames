@@ -131,3 +131,39 @@ M.Tick(W.INTERVAL / 2)
 H.check("timer: not yet", p.enchantLead, 2)
 M.Tick(W.INTERVAL)
 H.check("timer: updated", p.enchantLead, 1)
+
+-- In the buff row (CurseForge wish): the container stays at the anchor
+-- and keeps its rows; its first group, "lead", holds one buff as wide as
+-- the enchants and without height, so only the first row starts after
+-- them (the client's flow layout: the next group's groupSpacing adds the
+-- last gap). Settings apply at once, no update needed.
+H.check("same row: off by default", C.Get("player", "weaponEnchantsSameRow"), false)
+local container = p.auraContainers.buffs.container
+H.check("lead: the first group", container._groupOrder[1], "lead")
+H.check("lead: off while not wanted", container._groups.lead.enabled, false)
+M.weaponEnchants[1] = { { hasEnchant = true, timeLeft = 60000, charges = 0, enchantIconID = 2, enchantID = 2 } }
+W.Update(p)
+H.check("same row: two enchants", p.enchantLead, 2)
+C.Set("player", "weaponEnchantsSameRow", true)
+local lead = container._groups.lead
+_, _, _, cx, cy = container:GetPoint(1)
+H.check("same row: container at the anchor", cx, bx)
+H.check("same row: container not a row on", cy, by)
+H.check("same row: rows keep their length", container._flow.lineSize, AC.Flow(g).lineSize)
+H.check("lead: on", lead.enabled, true)
+H.check("lead: one buff", lead.max, 1)
+H.check("lead: any buff the group shows", lead.filter, g.filter)
+H.check("lead: as long as two enchants", lead.layout.elementWidth + g.spacing, 2 * step)
+H.check("lead: no height", lead.layout.elementHeight, 0)
+H.check("lead: no gap of its own", lead.layout.elementSpacing, 0)
+H.check("next group adds the last gap", container._groups.other.layout.groupSpacing, g.spacing)
+local spacer = lead.frames[1]
+H.check("lead's button: no size", spacer and spacer:GetWidth(), 0)
+H.check("icons stay at the anchor", select(4, b2:GetPoint(1)) - bx, step)
+M.weaponEnchants[1] = nil
+W.Update(p)
+H.check("one enchant: lead one icon long", lead.layout.elementWidth, g.size)
+C.Set("player", "weaponEnchantsSameRow", false)
+_, _, _, cx, cy = container:GetPoint(1)
+H.check("off again: a row on", math.abs(by - cy), rowStep)
+H.check("off again: lead off", lead.enabled, false)

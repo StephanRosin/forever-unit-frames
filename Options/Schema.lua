@@ -153,7 +153,7 @@ Schema.FRAME = {
     { id = "auras", sections = {
         { id = "auraIcons", keys = { "auraBorder", "auraBorderSize", "auraTimeX", "auraTimeY", "auraTimeScale",
             "auraTimeShort" } },
-        { id = "buffs", keys = { "buffsEnabled", "hideBlizzardAuras", "weaponEnchants", "buffsOnlyMine", "buffsHideTracking", "buffsHidePermanent", "buffsHideLonger", "buffsShowTime", "buffsAnchor", "buffsFramePoint",
+        { id = "buffs", keys = { "buffsEnabled", "hideBlizzardAuras", "weaponEnchants", "weaponEnchantsSameRow", "buffsOnlyMine", "buffsHideTracking", "buffsHidePermanent", "buffsHideLonger", "buffsShowTime", "buffsAnchor", "buffsFramePoint",
             "buffsPoint", "buffsX", "buffsY", "buffsGrowth", "buffsRowGrowth", "buffsSize", "buffsSpacing", "buffsRowGap",
             "buffsPerRow", "buffsMax" },
             placement = { "buffsAnchor", "buffsFramePoint", "buffsPoint", "buffsX", "buffsY", "buffsGrowth", "buffsRowGrowth" } },

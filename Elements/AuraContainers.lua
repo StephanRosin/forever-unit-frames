@@ -144,6 +144,31 @@ function AuraContainers.FreePart(group)
     return describe(group, group.enabled and group.ownFree, group.ownFilter, group.ownSize, false)
 end
 
+-- The player's buffs' "lead" group: on while the weapon enchants sit in
+-- the first row; one buff (any the group shows) as wide as the enchants
+-- along the row, without height. The next group's groupSpacing adds the
+-- last gap.
+function AuraContainers.LeadPart(frame)
+    local group, n = frame.auras.buffs, frame.enchantLead or 0
+    local length = math.max(n * (group.size + group.spacing) - group.spacing, 0)
+    local horizontal = HORIZONTAL[group.primary]
+    return {
+        enabled = group.enabled and n > 0 and ns.Config.Get(frame.key, "weaponEnchantsSameRow") == true,
+        filter = group.filter,
+        max = 1,
+        layout = { elementWidth = horizontal and length or 0, elementHeight = horizontal and 0 or length,
+            elementSpacing = 0, lineSpacing = 0, groupSpacing = 0, groupLineSpacing = 0, forceNewLine = false },
+        candidateFilters = AuraContainers.CandidateFilters(group),
+    }
+end
+
+-- The lead's button only holds room: no look, no size, no mouse.
+function AuraContainers.InitSpacer(button)
+    button:SetSize(0, 0)
+    pcall(button.SetMouseClickEnabled, button, false)
+    pcall(button.SetMouseMotionEnabled, button, false)
+end
+
 -- A buff's border colour by caster (own or other group), or nil.
 function AuraContainers.CasterBorder(group, own)
     if not group.casterBorder then return nil end
@@ -239,6 +264,14 @@ local function create(frame, key, made)
     made[key] = entry
     -- Blizzard's Edit Mode would fill it with made-up auras.
     container:SetEditModePreviewEnabled(false)
+    -- First: it leads the flow.
+    if frame.key == "player" and key == "buffs" then
+        local p = AuraContainers.LeadPart(frame)
+        container:AddAuraGroup("lead", p.filter, { maxFrameCount = p.max, layout = p.layout,
+            candidateFilters = p.candidateFilters, initializeFrame = AuraContainers.InitSpacer })
+        container:SetAuraGroupEnabled("lead", p.enabled)
+        entry.lead = true
+    end
     for _, part in ipairs(AuraContainers.PARTS) do
         local p, own = AuraContainers.Part(group, part), part == "own"
         container:AddAuraGroup(part, p.filter, { maxFrameCount = p.max, layout = p.layout,
@@ -309,12 +342,18 @@ end
 -- moving the container along the row (as before 0.53.1) moved and
 -- shortened every row (reported: rows broken with an enchant on). So the
 -- container moves on by one row and its rows keep their length.
+-- weaponEnchantsSameRow: in the first row instead. The container stays
+-- at the anchor and its first group, "lead", holds one buff at the
+-- enchants' length and no height: an empty stretch at the start of the
+-- first row only (AnchorUtil.ApplyFlowLayout; groups filter on their own,
+-- so the buff still shows in its group).
 local STEP_DIRECTION = { RIGHT = { 1, 0 }, LEFT = { -1, 0 }, UP = { 0, 1 }, DOWN = { 0, -1 } }
 
 function AuraContainers.Lead(frame, key)
     if key ~= "buffs" then return 0, 0, 0 end
     local n = frame.enchantLead or 0
     if n == 0 then return 0, 0, 0 end
+    if ns.Config.Get(frame.key, "weaponEnchantsSameRow") then return 0, 0, 0 end
     local group = frame.auras[key]
     local step = group.size + group.spacing + (group.rowGap or 0)
     local d = STEP_DIRECTION[ns.Layout.AuraRowDirection(group.primary, group.row)] or STEP_DIRECTION.DOWN
@@ -345,17 +384,6 @@ local function lineSize(frame, key, flow)
     return math.max(flow.lineSize, frame.auras[key].size)
 end
 
--- The weapon enchants changed in number: the buffs make room, combat
--- included (the container is a plain frame).
-function AuraContainers.Relead(frame)
-    local entry = frame.auraContainers and frame.auraContainers.buffs
-    if not entry then return end
-    local flow = AuraContainers.Flow(frame.auras.buffs)
-    entry.container:SetFlowLayoutMaximumLineSize(lineSize(frame, "buffs", flow))
-    entry.container:ClearAllPoints()
-    place(frame, "buffs")
-end
-
 local function setFlow(container, flow, size)
     container:SetFlowLayoutAxis(flow.axis)
     container:SetFlowLayoutAnchorPoint(flow.anchor)
@@ -369,6 +397,18 @@ local function setPart(container, part, p)
     container:SetAuraGroupLayout(part, p.layout)
     container:SetAuraGroupCandidateFilters(part, p.candidateFilters)
     container:SetAuraGroupEnabled(part, p.enabled)
+end
+
+-- The weapon enchants changed in number: the buffs make room, combat
+-- included (the container is a plain frame).
+function AuraContainers.Relead(frame)
+    local entry = frame.auraContainers and frame.auraContainers.buffs
+    if not entry then return end
+    if entry.lead then setPart(entry.container, "lead", AuraContainers.LeadPart(frame)) end
+    local flow = AuraContainers.Flow(frame.auras.buffs)
+    entry.container:SetFlowLayoutMaximumLineSize(lineSize(frame, "buffs", flow))
+    entry.container:ClearAllPoints()
+    place(frame, "buffs")
 end
 
 -- A container onto unit: a new unit is read by SetUnit; the same token
@@ -394,6 +434,7 @@ local function apply(frame)
         local container, flow = entry.container, AuraContainers.Flow(group)
         setFlow(container, flow, lineSize(frame, key, flow))
         for _, part in ipairs(AuraContainers.PARTS) do setPart(container, part, AuraContainers.Part(group, part, entry.apart)) end
+        if entry.lead then setPart(container, "lead", AuraContainers.LeadPart(frame)) end
         if own then
             local ownFlow = AuraContainers.Flow(group.free)
             setFlow(own, ownFlow, ownFlow.lineSize)

@@ -999,6 +999,11 @@ Settings.Define({ key = "threatGlow", code = "TH", scope = "frame", type = "bool
 -- enchantments before the buffs (Elements/AuraContainers.lua).
 Settings.Define({ key = "weaponEnchants", code = "WE", scope = "frame", only = { player = true }, type = "bool",
     default = true })
+-- At the start of the buffs' first row instead of a row of their own
+-- (CurseForge wish): the container's "lead" group keeps the room free
+-- (Elements/AuraContainers.lua); the further rows start at the anchor.
+Settings.Define({ key = "weaponEnchantsSameRow", code = "WS", scope = "frame", only = { player = true },
+    type = "bool", default = false })
 -- Threat bar (Elements/ThreatBar.lua): your threat on your target, as a
 -- row below the player frame (and its docked castbar); on the pet's
 -- target frame the pet's threat there. Warn: the share at which it turns
