@@ -45,13 +45,21 @@ H.check("the buffs make room for one", p.enchantLead, 1)
 local g = p.auras.buffs
 local step = g.size + g.spacing
 local rowStep = g.size + g.spacing + (g.rowGap or 0)
-local _, _, _, bx, by = b:GetPoint(1)
-local _, _, _, cx, cy = p.auraContainers.buffs.container:GetPoint(1)
+local container = p.auraContainers.buffs.container
+local bx, by = ns.Auras.AnchorOffset(p, "buffs", ns.Auras.AnchorRegion(p, "buffs", true))
+local _, _, _, cx, cy = container:GetPoint(1)
 -- Reported: moving the buffs along the row broke every row (the client
 -- lays them out and knows no indented first row). The enchants get a row
 -- of their own; the buffs' rows stay as they are, one row on.
 H.check("buffs: one row on (the way rows go)", math.abs(by - cy), rowStep)
 H.check("buffs: not moved along the row", cx, bx)
+-- Reported: hung from the buffs' anchor, the enchants stayed behind when a
+-- second row moved the container (its point across the rows' direction).
+-- They hang from the container's first corner, one row back.
+local point, rel, relPoint, ex, ey = b:GetPoint(1)
+H.check("icon: hangs from the container", rel, container)
+H.check("icon: at its first corner", point .. relPoint, g.corner .. g.corner)
+H.check("icon: one row back", ex .. "," .. ey, "0," .. (cy - by > 0 and -rowStep or rowStep))
 H.check("buffs: rows keep their length", p.auraContainers.buffs.container._flow.lineSize, AC.Flow(g).lineSize)
 
 -- A second one (off hand): two icons, the buffs two steps on.
@@ -138,7 +146,6 @@ H.check("timer: updated", p.enchantLead, 1)
 -- them (the client's flow layout: the next group's groupSpacing adds the
 -- last gap). Settings apply at once, no update needed.
 H.check("same row: off by default", C.Get("player", "weaponEnchantsSameRow"), false)
-local container = p.auraContainers.buffs.container
 H.check("lead: the first group", container._groupOrder[1], "lead")
 H.check("lead: off while not wanted", container._groups.lead.enabled, false)
 M.weaponEnchants[1] = { { hasEnchant = true, timeLeft = 60000, charges = 0, enchantIconID = 2, enchantID = 2 } }
@@ -159,7 +166,17 @@ H.check("lead: no gap of its own", lead.layout.elementSpacing, 0)
 H.check("next group adds the last gap", container._groups.other.layout.groupSpacing, g.spacing)
 local spacer = lead.frames[1]
 H.check("lead's button: no size", spacer and spacer:GetWidth(), 0)
-H.check("icons stay at the anchor", select(4, b2:GetPoint(1)) - bx, step)
+H.check("same row: icons in the lead's room", select(4, b:GetPoint(1)) .. "," .. select(5, b:GetPoint(1))
+    .. "," .. select(4, b2:GetPoint(1)), "0,0," .. (g.primary == "LEFT" and -step or step))
+-- RegenCOE's case: rows down, the container hung by its bottom. A second
+-- row moves the container up; the icons go with it.
+C.Set("player", "buffsRowGrowth", "DOWN")
+C.Set("player", "buffsPoint", "BOTTOMLEFT")
+H.check("point across the rows: corner at the top", p.auras.buffs.corner, "TOPLEFT")
+point, rel, relPoint = b:GetPoint(1)
+H.check("point across the rows: icon follows the first row", rel == container and point .. relPoint, "TOPLEFTTOPLEFT")
+C.Set("player", "buffsRowGrowth", nil)
+C.Set("player", "buffsPoint", nil)
 M.weaponEnchants[1] = nil
 W.Update(p)
 H.check("one enchant: lead one icon long", lead.layout.elementWidth, g.size)

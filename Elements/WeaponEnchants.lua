@@ -11,9 +11,9 @@ local _, ns = ...
 -- which ask the latter. Older clients without C_Item.GetWeaponEnchantInfo
 -- fall back to GetWeaponEnchantInfo().
 --
--- Plain buttons (Elements/AuraButton.lua), at the buffs' anchor, size and
--- look; the buff container moves on by as many icons
--- (AuraContainers.Lead). Nothing here is protected, so it all works in
+-- Plain buttons (Elements/AuraButton.lua) at the buffs' size and look,
+-- hung from the buff container: a row of their own before its first row
+-- (AuraContainers.Lead), or the room its "lead" group keeps free. Nothing here is protected, so it all works in
 -- combat. Tooltip: the weapon's own, which lists the enchant.
 local WeaponEnchants = {}
 ns.WeaponEnchants = WeaponEnchants
@@ -126,23 +126,29 @@ local function button(frame, i)
     return b
 end
 
--- Size, look and place of icon i: at the buffs' anchor, one step on per
--- icon along their growth direction.
+-- Size, look and place of icon i: one step on per icon along the buffs'
+-- growth direction, from the corner their first row starts in. Hung from
+-- the buff container itself, not from the buffs' anchor: the container
+-- hangs by its own point, so with a point across the rows' direction
+-- (rows down, point at the bottom) a second row moves the first one
+-- (reported: the enchants stayed behind, the buffs went up a row). The
+-- row of their own lies one row back (AuraContainers.Lead).
+-- shortcut: with no buff shown and such a point, the empty container is
+-- 1 px and the icons sit a row off until a buff comes; fine while nobody asks.
 local STEP = { RIGHT = { 1, 0 }, LEFT = { -1, 0 }, UP = { 0, 1 }, DOWN = { 0, -1 } }
 
 local function place(frame, b, i)
     local group = frame.auras.buffs
-    local scope = frame.key
+    local entry = frame.auraContainers and frame.auraContainers.buffs
+    if not entry then return end
     -- As high as the buff container.
     holder(frame):SetFrameLevel(frame:GetFrameLevel() + ns.Auras.LEVELS)
-    ns.AuraButton.Style(b, scope, group.size, group.showTime)
-    local region = ns.Auras.AnchorRegion(frame, "buffs", true)
-    local x, y = ns.Auras.AnchorOffset(frame, "buffs", region)
+    ns.AuraButton.Style(b, frame.key, group.size, group.showTime)
     local d = STEP[group.primary] or STEP.RIGHT
     local step = (i - 1) * (group.size + group.spacing)
+    local _, rx, ry = ns.AuraContainers.Lead(frame, "buffs")
     b:ClearAllPoints()
-    b:SetPoint(Config.Get(scope, "buffsPoint"), region, Config.Get(scope, "buffsFramePoint"),
-        x + d[1] * step, y + d[2] * step)
+    b:SetPoint(group.corner, entry.container, group.corner, d[1] * step - rx, d[2] * step - ry)
 end
 
 local function show(b, e)
