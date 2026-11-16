@@ -58,6 +58,11 @@ Settings.Define({ key = "backgroundColor", code = "BC", scope = "inherit", type 
 -- The title row (name, level) takes the background colour too; off, it is
 -- clear and only the bars keep a background (their empty part stays seen).
 Settings.Define({ key = "titleBackground", code = "NB", scope = "inherit", type = "bool", default = true })
+-- The health bar's empty part (missing health) in a colour of its own
+-- (CurseForge wish); off, it shows the background colour as before, which
+-- the themes set.
+Settings.Define({ key = "healthMissingCustom", code = "HZ", scope = "inherit", type = "bool", default = false })
+Settings.Define({ key = "healthMissingColor", code = "HQ", scope = "inherit", type = "color", default = { 0.45, 0.08, 0.08, 0.8 } })
 -- Outer border (Core/Border.lua): one ring around the unit, a docked
 -- castbar included. Hidden keeps size and padding for later. Styles are
 -- stored by index: append only.

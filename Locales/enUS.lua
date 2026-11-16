@@ -262,6 +262,9 @@ L.SECTION_auraIcons = "Aura icons"
 L.SETTING_auraBorder = "Border around the icons"
 L.SETTING_titleBackground = "Background behind the name"
 L.HINT_titleBackground = "Off: only the bars keep a background"
+L.SETTING_healthMissingCustom = "Missing health color"
+L.HINT_healthMissingCustom = "Own color for the empty part of the health bar; off, it shows the background color"
+L.SETTING_healthMissingColor = "Color of missing health"
 L.HINT_auraBorder = "Debuffs: shows the dispel type (magic, curse, poison, disease)"
 L.SECTION_partyTargets = "Targets"
 L.SETTING_partyTargets = "Show their targets"
@@ -1685,6 +1688,8 @@ L.NEWS_0_61_0_SQUARE = "Portrait: new option Square 2D picture crops the game's 
 L.NEWS_0_62_0_SPACING = "Spacing & boxes (Layout tab): gaps between title row, health, power, portrait and castbar turn the frame's parts into separate boxes, with a box border of their own."
 L.NEWS_0_62_0_ROLE = "Group icons (Status tab): the role icon can sit on the portrait, with its own size, corner and offset."
 L.NEWS_0_63_0_ENCHANTS = "Buffs (Auras tab): \"Enchants in the buff row\" puts your weapon enchants at the start of the first buff row instead of a row of their own."
+L.NEWS_0_64_0_MISSING = "Bars tab, Textures: \"Missing health color\" gives the empty part of the health bar a color of its own."
+L.NEWS_0_64_0_ENCHANT_ROW = "Fix: with \"Enchants in the buff row\", the enchants now move with the first buff row when a second row is added."
 L.NEWS_OPEN_THEME = "Open the theme"
 
 -- Themes (Core/Themes.lua)

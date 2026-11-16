@@ -197,6 +197,8 @@ Auras hidden by spell, such as a campfire or a food buff: the list under General
 <tr><td><b>Bar texture</b></td><td></td><td>Texture</td><td>Raid</td></tr>
 <tr><td><b>Background color</b></td><td></td><td>Color</td><td><code>#000000</code>, 60 % opaque</td></tr>
 <tr><td><b>Background behind the name</b></td><td>Off: only the bars keep a background</td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Missing health color</b></td><td>Own color for the empty part of the health bar; off, it shows the background color</td><td>On, Off</td><td>Off</td></tr>
+<tr><td><b>Color of missing health</b></td><td></td><td>Color</td><td><code>#731414</code>, 80 % opaque</td></tr>
 </tbody>
 </table>
 

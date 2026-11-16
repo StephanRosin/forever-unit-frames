@@ -243,6 +243,9 @@ L.SECTION_auraIcons = "오라 아이콘"
 L.SETTING_auraBorder = "아이콘 테두리"
 L.SETTING_titleBackground = "이름 배경"
 L.HINT_titleBackground = "끄면 바에만 배경이 남습니다"
+L.SETTING_healthMissingCustom = "잃은 생명력 색상"
+L.HINT_healthMissingCustom = "생명력 바의 빈 부분에 별도 색상을 씁니다. 끄면 배경 색상이 보입니다"
+L.SETTING_healthMissingColor = "잃은 생명력 색상"
 L.HINT_auraBorder = "약화 효과: 해제 유형 표시 (마법, 저주, 독, 질병)"
 L.SECTION_partyTargets = "대상"
 L.SETTING_partyTargets = "파티원의 대상 표시"
@@ -1595,6 +1598,8 @@ L.NEWS_0_61_0_SQUARE = "초상화: 새 옵션 „사각형 2D 그림“이 게�
 L.NEWS_0_62_0_SPACING = "간격 및 상자 (레이아웃 탭): 제목 줄, 생명력, 자원, 초상화, 시전 바 사이에 간격을 두면 프레임의 각 부분이 자체 테두리를 가진 별도의 상자가 됩니다."
 L.NEWS_0_62_0_ROLE = "그룹 아이콘 (상태 탭): 역할 아이콘을 초상화 위에 표시할 수 있으며, 크기·모서리·오프셋을 따로 정할 수 있습니다."
 L.NEWS_0_63_0_ENCHANTS = "버프 (오라 탭): \"무기 강화를 버프 줄에\"를 켜면 무기 강화가 별도의 줄 대신 첫 번째 버프 줄의 맨 앞에 표시됩니다."
+L.NEWS_0_64_0_MISSING = "바 설정 탭, 텍스처: \"잃은 생명력 색상\"으로 생명력 바의 빈 부분에 별도 색상을 지정합니다."
+L.NEWS_0_64_0_ENCHANT_ROW = "수정: \"무기 강화를 버프 줄에\"를 켜면 두 번째 줄이 생길 때 무기 강화가 첫 번째 버프 줄과 함께 움직입니다."
 L.NEWS_OPEN_THEME = "테마 열기"
 
 -- Themes (Core/Themes.lua)

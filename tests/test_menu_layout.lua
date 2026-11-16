@@ -49,7 +49,7 @@ local function tabIds(scope)
 end
 H.check("General tabs", tabIds("general"), "frames,clickCast,appearance,auras,bars,status")
 H.check("General: master switch in Frames", where("general", "unitFrames"), "frames:frames")
-H.check("General: textures on Bars", keysOf("general", "bars", "textures"), "barTexture,backgroundColor,titleBackground")
+H.check("General: textures on Bars", keysOf("general", "bars", "textures"), "barTexture,backgroundColor,titleBackground,healthMissingCustom,healthMissingColor")
 H.check("General: Bars in a frame page's order", (function()
     for _, tab in ipairs(ns.Schema.Tabs("general")) do
         if tab.id == "bars" then

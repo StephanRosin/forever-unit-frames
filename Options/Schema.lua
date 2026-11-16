@@ -60,7 +60,7 @@ Schema.GENERAL = {
     { id = "bars", sections = {
         { id = "health", keys = { "healthColorMode", "healthColor", "reactionFriendlyColor", "reactionNeutralColor",
             "reactionHostileColor" } },
-        { id = "textures", keys = { "barTexture", "backgroundColor", "titleBackground" } },
+        { id = "textures", keys = { "barTexture", "backgroundColor", "titleBackground", "healthMissingCustom", "healthMissingColor" } },
         { id = "absorbs", keys = { "absorbMode", "absorbColor" } },
         { id = "healPrediction", keys = { "healMyColor", "healOtherColor" } },
         { id = "powerColors", keys = { "powerColorMode", "powerColorMana", "powerColorRage", "powerColorFocus", "powerColorEnergy" } },
@@ -122,7 +122,7 @@ Schema.FRAME = {
     { id = "bars", sections = {
         { id = "health", keys = { "healthColorMode", "healthColor", "reactionFriendlyColor", "reactionNeutralColor",
             "reactionHostileColor", "tapDenied" } },
-        { id = "textures", keys = { "barTexture", "backgroundColor", "titleBackground" } },
+        { id = "textures", keys = { "barTexture", "backgroundColor", "titleBackground", "healthMissingCustom", "healthMissingColor" } },
         { id = "absorbs", keys = { "absorbEnabled", "absorbMode", "absorbColor" } },
         { id = "healPrediction", keys = { "healPrediction", "healOverflow", "healBeyond", "powerMatchesHealth", "healMyColor", "healOtherColor" } },
         { id = "powerColors", keys = { "powerColorMode", "powerColorMana", "powerColorRage", "powerColorFocus", "powerColorEnergy" } },

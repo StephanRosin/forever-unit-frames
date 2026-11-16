@@ -241,6 +241,9 @@ L.SECTION_auraIcons = "Aurensymbole"
 L.SETTING_auraBorder = "Rand um die Symbole"
 L.SETTING_titleBackground = "Hintergrund hinter dem Namen"
 L.HINT_titleBackground = "Aus: nur die Leisten behalten einen Hintergrund"
+L.SETTING_healthMissingCustom = "Farbe fehlender Gesundheit"
+L.HINT_healthMissingCustom = "Eigene Farbe für den leeren Teil der Gesundheitsleiste; aus, zeigt er die Hintergrundfarbe"
+L.SETTING_healthMissingColor = "Farbe der fehlenden Gesundheit"
 L.HINT_auraBorder = "Debuffs: zeigt die Bannart (Magie, Fluch, Gift, Krankheit)"
 L.SECTION_partyTargets = "Ziele"
 L.SETTING_partyTargets = "Ihre Ziele anzeigen"
@@ -1657,6 +1660,8 @@ L.NEWS_0_61_0_SQUARE = "Porträt: neue Option „2D-Bild eckig“ schneidet das 
 L.NEWS_0_62_0_SPACING = "Abstände & Kästen (Reiter Anordnung): Abstände zwischen Titelzeile, Leben, Ressource, Porträt und Zauberleiste machen die Teile des Fensters zu getrennten Kästen, mit eigenem Kastenrahmen."
 L.NEWS_0_62_0_ROLE = "Gruppensymbole (Reiter Status): das Rollensymbol kann auf dem Porträt sitzen, mit eigener Grösse, Ecke und Versatz."
 L.NEWS_0_63_0_ENCHANTS = "Buffs (Reiter Auren): „In der Buff-Reihe“ setzt die Waffenverzauberungen an den Anfang der ersten Buff-Reihe statt in eine eigene Reihe."
+L.NEWS_0_64_0_MISSING = "Reiter Leisten, Texturen: „Farbe fehlender Gesundheit“ gibt dem leeren Teil der Gesundheitsleiste eine eigene Farbe."
+L.NEWS_0_64_0_ENCHANT_ROW = "Korrektur: Mit „In der Buff-Reihe“ wandern die Waffenverzauberungen jetzt mit der ersten Buff-Reihe mit, wenn eine zweite Reihe dazukommt."
 L.NEWS_OPEN_THEME = "Theme öffnen"
 
 -- Themes (Core/Themes.lua)

@@ -242,6 +242,9 @@ L.SECTION_auraIcons = "Iconos de auras"
 L.SETTING_auraBorder = "Borde alrededor de los iconos"
 L.SETTING_titleBackground = "Fondo detrás del nombre"
 L.HINT_titleBackground = "Desactivado: solo las barras conservan fondo"
+L.SETTING_healthMissingCustom = "Color de salud perdida"
+L.HINT_healthMissingCustom = "Color propio para la parte vacía de la barra de salud; desactivado, muestra el color de fondo"
+L.SETTING_healthMissingColor = "Color de la salud perdida"
 L.HINT_auraBorder = "Perjuicios: muestra el tipo (magia, maldición, veneno, enfermedad)"
 L.SECTION_partyTargets = "Objetivos"
 L.SETTING_partyTargets = "Mostrar sus objetivos"
@@ -1658,6 +1661,8 @@ L.NEWS_0_61_0_SQUARE = "Retrato: nueva opción «Imagen 2D cuadrada», recorta l
 L.NEWS_0_62_0_SPACING = "Espacios y cajas (pestaña Diseño): los espacios entre la fila del título, la salud, el recurso, el retrato y la barra de lanzamiento convierten las partes del marco en cajas separadas, con su propio borde."
 L.NEWS_0_62_0_ROLE = "Iconos de grupo (pestaña Estado): el icono de rol puede ir sobre el retrato, con su propio tamaño, esquina y desplazamiento."
 L.NEWS_0_63_0_ENCHANTS = "Beneficios (pestaña Auras): «En la fila de beneficios» coloca tus encantamientos de arma al principio de la primera fila de beneficios en lugar de una fila propia."
+L.NEWS_0_64_0_MISSING = "Pestaña Barras, Texturas: «Color de salud perdida» da a la parte vacía de la barra de salud un color propio."
+L.NEWS_0_64_0_ENCHANT_ROW = "Corrección: con «En la fila de beneficios», los encantamientos de arma se mueven ahora con la primera fila de beneficios cuando aparece una segunda fila."
 L.NEWS_OPEN_THEME = "Abrir el tema"
 
 -- Themes (Core/Themes.lua)

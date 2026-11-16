@@ -120,6 +120,7 @@ local RULES = {
     -- Elements/Health.lua: the fixed colour only for STATIC.
     { is("healthColorMode", "STATIC"), { "healthColor" } },
     { on("absorbEnabled"), { "absorbMode", "absorbColor" } },
+    { on("healthMissingCustom"), { "healthMissingColor" } },
     { on("healPrediction"), { "healOverflow", "healBeyond", "healMyColor", "healOtherColor", "powerMatchesHealth" } },
     -- Units/Single.lua: the lane only with heal prediction and overflow.
     { on("healOverflow"), { "powerMatchesHealth" } },

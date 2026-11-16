@@ -169,7 +169,8 @@ function Health.Style(frame)
     frame.health:SetStatusBarTexture(tex)
     frame.healthBg:SetTexture(tex)
     local bg = Config.Get(scope, "backgroundColor")
-    frame.healthBg:SetVertexColor(bg[1], bg[2], bg[3], bg[4])
+    local missing = Config.Get(scope, "healthMissingCustom") and Config.Get(scope, "healthMissingColor") or bg
+    frame.healthBg:SetVertexColor(missing[1], missing[2], missing[3], missing[4])
     frame.title:SetTexture(tex)
     -- Clear when the title row has no background: the bars keep theirs.
     local titleAlpha = Config.Get(scope, "titleBackground") and bg[4] or 0
