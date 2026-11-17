@@ -395,6 +395,22 @@ local function redrawLater(fs, font, size, flags, wanted)
     for _, delay in ipairs(REDRAW_DELAYS) do C_Timer.After(delay, redraw) end
 end
 
+-- A refused font tried again later; while auras are secret (combat) an
+-- aura button's text is forbidden, so the try waits without using one up,
+-- ten minutes at most (a fight that long drops it, like the redraw).
+local SECRET_WAITS = 120
+local function retryLater(fs, delay, wanted, try, waits)
+    C_Timer.After(delay, function()
+        if fs.fontWanted ~= wanted then return end   -- restyled since: that call has its own tries
+        if aurasSecret() then
+            waits = (waits or SECRET_WAITS) - 1
+            if waits > 0 then retryLater(fs, SLOW_RETRY_DELAY, wanted, try, waits) end
+            return
+        end
+        try()
+    end)
+end
+
 -- Sets font, size and outline style of a text. Returns nothing.
 function Texts.SetFont(fs, font, size, outline, retries)
     local soft = outline == "SOFT"
@@ -413,17 +429,12 @@ function Texts.SetFont(fs, font, size, outline, retries)
         fs:SetFont(FALLBACK_FONT, size, flags)
         retries = retries or FONT_RETRIES
         if retries > 0 then
-            C_Timer.After(FONT_RETRY_DELAY, function()
-                -- Restyled since: that call has its own tries.
-                if fs.fontWanted == wanted then Texts.SetFont(fs, font, size, outline, retries - 1) end
-            end)
+            retryLater(fs, FONT_RETRY_DELAY, wanted, function() Texts.SetFont(fs, font, size, outline, retries - 1) end)
         else
             if fs.fontSlowFor ~= wanted then fs.fontSlowFor, fs.fontSlowLeft = wanted, SLOW_RETRIES end
             if fs.fontSlowLeft > 0 then
                 fs.fontSlowLeft = fs.fontSlowLeft - 1
-                C_Timer.After(SLOW_RETRY_DELAY, function()
-                    if fs.fontWanted == wanted then Texts.SetFont(fs, font, size, outline, 0) end
-                end)
+                retryLater(fs, SLOW_RETRY_DELAY, wanted, function() Texts.SetFont(fs, font, size, outline, 0) end)
             end
         end
     end
