@@ -128,7 +128,8 @@ end
 -- rest start at the first row.
 function AuraContainers.Part(group, part, apart)
     if apart == nil then apart = group.ownFree end
-    local split = group.highlightOwn or group.casterBorder
+    -- Out of sight the client knows no casters: "PLAYER" and "!PLAYER" both take every aura.
+    local split = (group.highlightOwn or group.casterBorder) and not group.far
     if part == "own" then
         return describe(group, group.enabled and split and not apart, group.ownFilter, group.ownSize, false)
     elseif split then
@@ -141,7 +142,7 @@ end
 -- The one group of the container for yours placed freely: yours at the
 -- own size; off unless they are placed freely.
 function AuraContainers.FreePart(group)
-    return describe(group, group.enabled and group.ownFree, group.ownFilter, group.ownSize, false)
+    return describe(group, group.enabled and group.ownFree and not group.far, group.ownFilter, group.ownSize, false)
 end
 
 -- The player's buffs' "lead" group: on while the weapon enchants sit in
@@ -428,6 +429,7 @@ local function apply(frame)
     local refusedNow = false
     for _, key in ipairs(groupKeys(frame)) do
         local group, entry = frame.auras[key], frame.auraContainers[key]
+        group.far = frame.auraFar
         local own, was = ownContainer(frame, entry, group), entry.apart
         refusedNow = refusedNow or (entry.ownFailed and group.ownFree)
         entry.apart = own ~= nil and group.ownFree or false
@@ -554,6 +556,35 @@ function AuraContainers.Refresh(frame, event)
         if entry.apart then refreshOne(entry.ownContainer, unit, event) end
     end
 end
+
+-- Out of sight (another zone, beyond about 100 yards) a group member's auras come without
+-- their caster: yours and the rest are not told apart then, else every aura shows twice
+-- (CurseForge). Checked each second; the containers take it in combat too (plain frames).
+function AuraContainers.CheckFar(frame)
+    if not frame.auraContainers or testing(frame) then return end
+    local unit = frame.unit or "none"
+    local exists, seen = ns.Secrets.Bool(UnitExists, unit), ns.Secrets.Bool(UnitIsVisible, unit)
+    if exists == nil or (exists and seen == nil) then return end   -- secret: as it was
+    local far = exists and not seen
+    if far == (frame.auraFar or false) then return end
+    frame.auraFar = far
+    for _, key in ipairs(groupKeys(frame)) do
+        local group, entry = frame.auras[key], frame.auraContainers[key]
+        group.far = far
+        for _, part in ipairs(AuraContainers.PARTS) do
+            setPart(entry.container, part, AuraContainers.Part(group, part, entry.apart))
+        end
+        if entry.ownContainer then setPart(entry.ownContainer, "own", AuraContainers.FreePart(group)) end
+    end
+end
+
+local farTimer, farElapsed = CreateFrame("Frame"), 0
+farTimer:SetScript("OnUpdate", function(_, seconds)
+    farElapsed = farElapsed + seconds
+    if farElapsed < 1 then return end
+    farElapsed = 0
+    for frame in pairs(all) do AuraContainers.CheckFar(frame) end
+end)
 
 -- Party slots reshuffled: party2 (and partypet2) may now be someone else
 -- under the same token, which the container does not notice by itself.
