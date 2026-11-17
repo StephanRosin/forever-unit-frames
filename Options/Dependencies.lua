@@ -110,7 +110,9 @@ local RULES = {
     -- its size, colour and radius in the plain look (CLASSIC) only, a
     -- theme keeps its own border art.
     { anywhere(GAP_KEYS, function(scope) return not applies(scope, GAP_KEYS[1]) or ns.Single.Apart(scope) end),
-        { "boxBorderShow", "boxBorderSize", "boxBorderColor", "boxCornerRadius" } },
+        { "boxBorderShow", "boxBorderSize", "boxBorderColor", "boxCornerRadius",
+            "spacingFill", "spacingFillColor", "spacingFillPadding" } },
+    { on("spacingFill"), { "spacingFillColor", "spacingFillPadding" } },
     { on("boxBorderShow"), { "boxBorderSize", "boxBorderColor", "boxCornerRadius" } },
     { function() return ns.Boxes.Plain() end, { "boxBorderSize", "boxBorderColor", "boxCornerRadius" } },
     { isNot("borderStyle", "BRONZE"), { "borderColor" } },

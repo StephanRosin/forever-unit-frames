@@ -235,6 +235,9 @@ News.ENTRIES = {
     ["0.64.0"] = {
         lines = { "NEWS_0_64_0_MISSING", "NEWS_0_64_0_ENCHANT_ROW" },
     },
+    ["0.65.0"] = {
+        lines = { "NEWS_0_65_0_FILL" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

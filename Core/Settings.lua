@@ -214,6 +214,12 @@ Settings.Define({ key = "boxBorderShow", code = "BU", scope = "frame", type = "b
 Settings.Define({ key = "boxBorderSize", code = "BK", scope = "frame", type = "int", min = 1, max = 8, default = 1 })
 Settings.Define({ key = "boxBorderColor", code = "BX", scope = "frame", type = "color", default = { 0, 0, 0, 1 } })
 Settings.Define({ key = "boxCornerRadius", code = "BR", scope = "frame", type = "int", min = 0, max = 12, default = 0 })
+-- Apart, the gaps filled: one plate in spacingFillColor behind all parts,
+-- reaching spacingFillPadding past their borders, as one block with
+-- seams (Elements/Boxes.lua). Off: the gaps show nothing.
+Settings.Define({ key = "spacingFill", code = "GU", scope = "frame", type = "bool", default = false })
+Settings.Define({ key = "spacingFillColor", code = "GW", scope = "frame", type = "color", default = { 0, 0, 0, 1 } })
+Settings.Define({ key = "spacingFillPadding", code = "GC", scope = "frame", type = "int", min = 0, max = 8, default = 2 })
 Settings.Define({ key = "x", code = "X", scope = "frame", type = "int", min = -4000, max = 4000,
     default = { player = -300, target = 300, targettarget = 480, targettargettarget = 604, pet = -352, pettarget = -222, focus = -300, focustarget = -152, party = -760, boss = 560, _ = 0 } })
 Settings.Define({ key = "y", code = "Y", scope = "frame", type = "int", min = -4000, max = 4000,

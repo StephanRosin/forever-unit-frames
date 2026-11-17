@@ -244,11 +244,13 @@ function ThemeArt.Style(frame)
     local art = spec.art or {}
     local extent = ns.Border.Extent(scope)
     -- Apart (spacing*), backdrop and shadow are each part's own
-    -- (Elements/Boxes.lua): the gaps show nothing.
+    -- (Elements/Boxes.lua): the gaps show nothing. Filled (spacingFill),
+    -- the frame's backdrop lies over the plate instead of the parts' own.
     local apart = ns.Shape.Apart(frame)
+    local filled = apart and Config.Get(scope, "spacingFill")
     ThemeArt.Paint(frame.themeBack, spec)
     ThemeArt.Paint(frame.themeBlockBack, spec)
-    frame.themeBackOn = frame.themeBack:IsShown() and not apart
+    frame.themeBackOn = frame.themeBack:IsShown() and (not apart or filled)
     placeOrnaments(frame, id, art, extent)
     placeRule(frame, art, extent)
     placeShadow(frame, art, extent, apart)

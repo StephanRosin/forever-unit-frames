@@ -94,7 +94,8 @@ Schema.FRAME = {
         -- The parts apart: the four gaps, then the parts' own border
         -- (Elements/Boxes.lua).
         { id = "spacing", keys = { "spacingTitle", "spacingPower", "spacingPortrait", "spacingDocked",
-            "boxBorderShow", "boxBorderSize", "boxBorderColor", "boxCornerRadius" } },
+            "boxBorderShow", "boxBorderSize", "boxBorderColor", "boxCornerRadius",
+            "spacingFill", "spacingFillColor", "spacingFillPadding" } },
         { id = "portrait", keys = { "portraitMode", "portraitStyle", "portraitSquare", "portraitHeight", "portraitZoom", "portraitOffsetY" } },
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },

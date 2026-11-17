@@ -156,3 +156,32 @@ H.check("back: frame ring", f.frameRing.border[1]:IsShown(), true)
 H.check("back: boxes hidden", f.boxes.title.ring:IsShown(), false)
 H.check("back: frame height", f:GetHeight(), h)
 H.check("back: dispel ring round the frame", select(2, f.dispel.ring.edges[1]:GetPoint(1)), f)
+
+-- spacingFill: one plate behind all parts, out to their rings plus the
+-- padding; the parts' shadows off, so none falls into the seams.
+H.check("fill off by default", S.Default(S.Get("spacingFill"), "player"), false)
+H.check("fill code", S.Get("spacingFill").code, "GU")
+H.check("fill colour code", S.Get("spacingFillColor").code, "GW")
+H.check("fill padding code", S.Get("spacingFillPadding").code, "GC")
+H.check("fill off: no plate", f.boxFill == nil or not f.boxFill:IsShown(), true)
+C.Set("player", "spacingFill", true)
+H.check("fill without a gap: one block, no plate", f.boxFill == nil or not f.boxFill:IsShown(), true)
+C.Set("player", "spacingPower", 2)
+C.Set("player", "spacingFillPadding", 3)
+C.Set("player", "spacingFillColor", { 0.1, 0.2, 0.3, 1 })
+local plate = f.boxFill
+H.checkTrue("fill: plate shown", plate and plate:IsShown())
+local reach = ns.Boxes.Extent("player") + 3
+H.check("fill: plate past the rings by the padding", x(plate, 1), -reach)
+H.check("fill: plate top", y(plate, 1), reach)
+H.check("fill: plate right", x(plate, 2), reach)
+H.check("fill: plate bottom", y(plate, 2), -reach)
+H.check("fill: plate on the frame's backdrop holder", plate:GetParent(), f.themeUnder)
+H.checkTrue("fill: plate below the frame's backdrop",
+    select(2, plate:GetDrawLayer()) < select(2, f.themeBack:GetDrawLayer()))
+H.check("fill: parts' backdrops off", f.boxes.health.under:IsShown(), false)
+H.check("fill: parts' shadows off", f.boxes.health.shade:IsShown(), false)
+C.Set("player", "spacingFill", false)
+H.check("fill off again: plate gone", plate:IsShown(), false)
+H.check("fill off again: shadows back", f.boxes.health.shade:IsShown(), true)
+H.check("fill off again: backdrops back", f.boxes.health.under:IsShown(), true)

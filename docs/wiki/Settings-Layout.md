@@ -69,6 +69,9 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 <tr><td><b>Box border size</b></td><td>Plain look only; a theme keeps its own</td><td>1 – 8</td><td>1</td><td>all</td></tr>
 <tr><td><b>Box border color</b></td><td>Plain look only; a theme keeps its own</td><td>Color</td><td><code>#000000</code></td><td>all</td></tr>
 <tr><td><b>Box corner radius</b></td><td>Plain look only; kept small enough for the border to cover the bars' corners</td><td>0 – 12</td><td>0</td><td>all</td></tr>
+<tr><td><b>Fill the gaps</b></td><td>One plate behind all parts, so the gaps show as seams in its color</td><td>On, Off</td><td>Off</td><td>all</td></tr>
+<tr><td><b>Gap fill color</b></td><td>The plate behind the parts and the color of the seams</td><td>Color</td><td><code>#000000</code></td><td>all</td></tr>
+<tr><td><b>Fill padding</b></td><td>How far the plate reaches past the parts all around</td><td>0 – 8</td><td>2</td><td>all</td></tr>
 </tbody>
 </table>
 

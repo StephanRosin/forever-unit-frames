@@ -16,7 +16,8 @@ local _, ns = ...
 -- Per part, made when first needed: a ring holder, anchored on the part;
 -- below the frame its backdrop holder, and below that its shadow holder,
 -- so no part's shadow falls on its neighbour's backdrop. Ornaments, the
--- rule, the glows and the elite ring stay the whole frame's.
+-- rule, the glows and the elite ring stay the whole frame's. With
+-- spacingFill one plate lies behind all parts and fills the gaps.
 local Boxes = { name = "Boxes" }
 ns.Boxes = Boxes
 
@@ -105,6 +106,28 @@ function Boxes.Parts(frame)
     return parts
 end
 
+-- The plate behind all parts while the gaps are filled (spacingFill),
+-- out to their rings plus the padding. It lies on the frame's own
+-- backdrop holder below that backdrop, which then stands in for the
+-- parts' own (Elements/ThemeArt.lua): holders of one frame level draw in
+-- no fixed order, layers of one holder do. A docked castbar or threat
+-- bar stays a box of its own outside it.
+local function drawFill(frame, fill)
+    if not fill then
+        if frame.boxFill then frame.boxFill:Hide() end
+        return
+    end
+    frame.boxFill = frame.boxFill or frame.themeUnder:CreateTexture(nil, "BACKGROUND", nil, -7)
+    local scope, plate = frame.key, frame.boxFill
+    local reach = Boxes.Extent(scope) + ns.Pixel.Snap(Config.Get(scope, "spacingFillPadding"))
+    local c = Config.Get(scope, "spacingFillColor")
+    plate:ClearAllPoints()
+    plate:SetPoint("TOPLEFT", frame, "TOPLEFT", -reach, reach)
+    plate:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", reach, -reach)
+    plate:SetColorTexture(c[1], c[2], c[3], c[4])
+    plate:Show()
+end
+
 local function drawBox(frame, box, part, look)
     local _, region, extra, w, h = part[1], part[2], part[3], part[4], part[5]
     local scope = frame.key
@@ -119,6 +142,10 @@ local function drawBox(frame, box, part, look)
     if offset then ns.ThemeArt.PlaceShadow(box.hard, box.ring, offset, Boxes.Extent(scope)) end
     box.hard:SetShown(offset ~= nil)
     showBox(box, true)
+    -- On the plate the frame's backdrop is the parts' (see drawFill), and
+    -- a part's shadow would fall into the seams.
+    box.under:SetShown(not look.fill)
+    box.shade:SetShown(not look.fill)
 end
 
 function Boxes.Build() end
@@ -128,10 +155,13 @@ function Boxes.Build() end
 function Boxes.Style(frame)
     local boxes = frame.boxes or {}
     for _, box in pairs(boxes) do showBox(box, false) end
-    if not ns.Shape.Apart(frame) then return end
+    local apart = ns.Shape.Apart(frame)
+    local fill = apart and Config.Get(frame.key, "spacingFill")
+    drawFill(frame, fill)
+    if not apart then return end
     frame.boxes = boxes
     local id = frame.themeOf and frame.themeOf() or Config.Get("general", "theme")
-    local look = { spec = ns.Themes.Spec(id) }
+    local look = { spec = ns.Themes.Spec(id), fill = fill }
     for _, part in ipairs(Boxes.Parts(frame)) do
         local name = part[1]
         boxes[name] = boxes[name] or newBox(frame)
