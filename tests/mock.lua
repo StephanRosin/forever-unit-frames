@@ -1644,9 +1644,10 @@ function M.Reset()
             local cond, action = clause:match("^%[(.-)%]%s*(%a+)$")
             if not cond then action = clause:match("^(%a+)$") end
             local match = cond == nil or (cond == "group:raid" and M.inRaid) or (cond == "nogroup:raid" and not M.inRaid)
-                or (cond == "group" and IsInGroup())
-            assert(cond == nil or cond == "group:raid" or cond == "nogroup:raid" or cond == "group",
-                "mock: unknown condition " .. tostring(cond))
+                or (cond == "group" and IsInGroup()) or (cond == "combat" and M.combat)
+                or (cond == "combat,group" and M.combat and IsInGroup())
+            assert(cond == nil or cond == "group:raid" or cond == "nogroup:raid" or cond == "group"
+                or cond == "combat" or cond == "combat,group", "mock: unknown condition " .. tostring(cond))
             if match then
                 -- The state driver is secure code: it may show and hide
                 -- protected frames in combat.
@@ -1667,9 +1668,12 @@ function M.Reset()
         assert(not M.combat, "UnregisterStateDriver: in combat")
         M.drivers[frame] = nil
     end
+    function M.EvaluateDrivers()
+        for frame, values in pairs(M.drivers) do evaluate(frame, values) end
+    end
     function M.SetRaid(on)
         M.inRaid = on
-        for frame, values in pairs(M.drivers) do evaluate(frame, values) end
+        M.EvaluateDrivers()
     end
     -- Instance and group size (Raid/Size.lua). M.instance holds what
     -- GetInstanceInfo reports as instanceType and maxPlayers; in a raid

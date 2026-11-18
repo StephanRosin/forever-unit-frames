@@ -11,10 +11,11 @@ local _, ns = ...
 --
 -- Item, spell and macro need a secure button, and the client lets no one
 -- show, hide or switch the mouse of a secure button in combat (nor of its
--- parents). So it is a frame of its own on UIParent over the block, shown
--- whenever such a click is set, low mana or not: in combat a click with
--- the key held on the empty place does it too. The block itself stays an
--- ordinary frame that comes and goes.
+-- parents). So it is a frame of its own on UIParent over the block, behind
+-- a visibility driver: out of combat it follows the warning, in combat the
+-- driver shows it (mana has no macro condition), so there a click with the
+-- key held on the empty place does it too (CurseForge 18.11.2026). The
+-- block itself stays an ordinary frame that comes and goes.
 --
 -- The player's own mana is not secret today. Should it be, the share
 -- cannot be compared: the block's opacity then comes from a step curve of
@@ -37,7 +38,7 @@ ManaWarning.CHAT_GAP = 30
 ManaWarning.SAMPLE_PERCENT = 15
 
 local function setting(scope, key) return Config.Get(scope, key) end
-local setShown
+local setShown, syncClick
 
 local function enabled(scope)
     return ns.FrameEnabled(scope) and setting(scope, "manaWarn") == true
@@ -159,7 +160,24 @@ local function configureClick(frame)
         click:SetFrameStrata(mw.holder:GetFrameStrata())
         click:SetFrameLevel(mw.holder:GetFrameLevel() + 2)
     end
-    click:SetShown(on)
+    mw.clickOn = on
+    syncClick(mw, scope)
+end
+
+-- The secure button's driver, out of combat: shown while the warning
+-- shows; otherwise only in combat (and in a group, when the warning wants
+-- one), where nothing else may show it once mana runs low.
+syncClick = function(mw, scope)
+    if InCombatLockdown() then return end
+    local want = "hide"
+    if mw.clickOn and mw.visible then
+        want = "show"
+    elseif mw.clickOn then
+        want = setting(scope, "manaWarnGroupOnly") == true and "[combat,group] show; hide" or "[combat] show; hide"
+    end
+    if want == mw.clickState then return end
+    mw.clickState = want
+    RegisterStateDriver(mw.click, "visibility", want)
 end
 
 -- Icon on the left, the text after it; either alone in the middle.
@@ -348,6 +366,7 @@ function ManaWarning.Update(frame)
     end
     -- A secret share: shown all along, its opacity the curve's (no fade).
     setShown(mw, scope, low, secret)
+    syncClick(mw, scope)
     if secret then mw.holder:SetAlpha(secretAlpha(mw, scope)) end
     ns.Pulse.Set({ mw.icon, mw.text }, low and setting(scope, "manaWarnPulse") == true)
     -- Once each time it comes up.

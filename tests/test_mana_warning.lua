@@ -126,6 +126,30 @@ C.Set("player", "manaWarnClick", "MACRO")
 C.Set("player", "manaWarnClickWhat", "/use Major Mana Potion")
 M.SecureClick(mw.click, "LeftButton")
 H.check("macro text", M.secureUsed[#M.secureUsed][2], "/use Major Mana Potion")
+-- Mana full: no click on the empty place (CurseForge 18.11.2026); in
+-- combat the driver shows it, the client cannot hide it there.
+mana(900)
+H.check("mana full: button hidden", mw.click:IsShown(), false)
+H.check("mana full: click does nothing", M.SecureClick(mw.click, "LeftButton"), nil)
+M.combat = true
+M.FireEvent("PLAYER_REGEN_DISABLED")
+M.EvaluateDrivers()
+H.check("combat: driver shows it", mw.click:IsShown(), true)
+M.combat = false
+M.FireEvent("PLAYER_REGEN_ENABLED")
+M.EvaluateDrivers()
+H.check("combat over: hidden again", mw.click:IsShown(), false)
+local group = M.group
+M.group = {}
+C.Set("player", "manaWarnGroupOnly", true)
+M.combat = true
+M.EvaluateDrivers()
+H.check("group only, alone in combat: hidden", mw.click:IsShown(), false)
+M.combat = false
+M.group = group
+C.Set("player", "manaWarnGroupOnly", false)
+mana(100)
+H.check("low again: button back", mw.click:IsShown(), true)
 M.shiftDown = false
 C.Set("player", "manaWarnClickKey", "NONE")
 H.check("no key: a plain click", M.SecureClick(mw.click, "LeftButton"), "macro")
