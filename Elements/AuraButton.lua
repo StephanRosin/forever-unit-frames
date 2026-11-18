@@ -161,7 +161,9 @@ local function shape(button, scope, size, showTime)
     button.count:SetJustifyH("RIGHT")
     local numbers = button.cooldown:GetCountdownFontString()
     if numbers then
-        numbers:SetFont(font, timeSize, ns.Texts.CountdownFlags(outline))
+        -- Through Texts.SetFont: a refused font is tried again (else the
+        -- time kept the old font, per icon differently; CurseForge).
+        ns.Texts.SetFont(numbers, font, timeSize, ns.Texts.CountdownFlags(outline))
         numbers:ClearAllPoints()
         numbers:SetPoint("CENTER", button, "CENTER", Config.Get(scope, "auraTimeX"), Config.Get(scope, "auraTimeY"))
     end
