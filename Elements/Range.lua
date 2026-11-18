@@ -23,7 +23,8 @@ local _, ns = ...
 --    to the next source. A spell blocked by the client (ADDON_ACTION_
 --    BLOCKED / _FORBIDDEN naming IsSpellInRange) is not asked again this
 --    session.
--- 3. Group members (party tokens, or a target or focus in the group):
+-- 3. Group members out of sight (UnitIsVisible false): out of range.
+--    Group members (party tokens, or a target or focus in the group):
 --    UnitInRange, as Blizzard's raid frames (CompactUnitFrame_UpdateInRange:
 --    out of range = checked and not in range). Both answers are documented
 --    with SecretReturns. A secret "in range" goes untouched to
@@ -459,6 +460,9 @@ ns.On("PLAYER_LOGIN", function() ns.AfterCombat("rangeItems", loadItems) end)
 function Range.InRange(unit)
     if unit == "player" or Secrets.Bool(UnitIsUnit, unit, "player") then return true end
     local group = groupToken(unit) or Secrets.Bool(UnitInParty, unit) == true
+    -- Out of sight (another zone, ~100 yards): no spell, distance or
+    -- UnitInRange answers, which read as unknown (CurseForge).
+    if group and Secrets.Call(UnitIsVisible, unit) == false then return false end
     local reaction = reactionOf(unit)
     if reaction then
         local how, r = method(reaction), nil

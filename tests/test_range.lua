@@ -274,3 +274,17 @@ do
     M.Tick(0.25)
     H.check("target of target back in range", ns.Frames.targettarget:GetAlpha(), 1)
 end
+
+-- A group member out of sight (another zone): nothing measures, yet the
+-- frame fades (CurseForge); back in sight, measured again.
+do
+    local ns = boot()
+    M.units.party1 = { name = "Ann", isPlayer = true, health = 5, healthMax = 10,
+        visible = false, rangeChecked = false }
+    M.SetGroup({ "party1" })
+    local b = ns.Party.buttons[1]
+    H.check("out of sight: faded", b:GetAlpha(), 0.5)
+    M.units.party1.visible, M.units.party1.rangeChecked = true, nil
+    M.Tick(0.25)
+    H.check("in sight and in range: full", b:GetAlpha(), 1)
+end
