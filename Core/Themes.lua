@@ -20,7 +20,8 @@ Themes.CLASSIC = Lib.CLASSIC
 
 -- Each theme's identity (backdrop, tint, ornaments, rule, title strip and
 -- wedge, ring colour, font, fontSizeAdd) is LibForeverThemes'; here only
--- the unit frames' part on top (Lib.Specs).
+-- the unit frames' part on top (Lib.Specs). The HD themes (`true`) take
+-- their base theme's part, over a finer backdrop of their own.
 -- look: settings the theme sets in General (every frame follows General
 -- for these, see seed). font: the theme's one font for every text (the
 -- library's title face, but the body face where the theme has a readable
@@ -133,7 +134,9 @@ Themes.SPECS = Lib.Specs({
             titleBackground = true, shadowEnabled = false, fontOutline = "OUTLINE" },
         art = { accent = "wedge" },
     },
-})
+}, true)
+-- Glass HD is there to show its glass: the dark fill over it at 60 % (Glass: 90 %).
+Themes.SPECS.GLASS_HD.look.backgroundColor[4] = 0.6
 
 -- Settings a theme takes over on every frame: frames that had their own
 -- value follow General again, where the theme puts its look.
@@ -251,7 +254,9 @@ local function seed(id, base)
     for _, key in ipairs({ "width", "height" }) do
         p.target[key] = ns.Config.ValueIn(p, "player", key)
     end
-    for scope, values in pairs(ns.THEME_PRESETS and ns.THEME_PRESETS[id] or {}) do
+    -- An HD theme without a preset of its own takes its base theme's.
+    local presets = ns.THEME_PRESETS or {}
+    for scope, values in pairs(presets[id] or presets[Lib.BaseTheme(id)] or {}) do
         for key, value in pairs(values) do p[scope][key] = copy(value) end
     end
     p.general.theme = id

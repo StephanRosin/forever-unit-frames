@@ -122,7 +122,7 @@ Settings.Define({ key = "unitFrames", code = "UU", scope = "general", type = "bo
 -- own (Core/Themes.lua). CLASSIC is the player's own layout. Stored by
 -- index: append only.
 Settings.THEMES = { "CLASSIC", "WOOD", "TECH", "PARCHMENT", "RUNESTONE", "GLASS", "COMIC", "FROST", "PIXEL", "SWISS",
-    "CONSOLE", "PITWALL" }
+    "CONSOLE", "PITWALL", "WOOD_HD", "TECH_HD", "PARCHMENT_HD", "RUNESTONE_HD", "GLASS_HD", "COMIC_HD", "FROST_HD" }
 Settings.Define({ key = "theme", code = "XT", scope = "general", type = "enum", values = Settings.THEMES,
     default = "CLASSIC" })
 -- The theme's font beyond the unit frames: some of Blizzard's texts

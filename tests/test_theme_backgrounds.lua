@@ -13,13 +13,17 @@ local CANON = {
     COMIC = { tint = "0.7,0.7,0.7,1" }, FROST = { tint = "0.55,0.55,0.55,0.85", body = "0.02,0.07,0.15,0.45" },
     PIXEL = { tint = "1,1,1,1" }, SWISS = { tint = "1,1,1,1" }, CONSOLE = { tint = "1,1,1,1" },
     PITWALL = { tint = "1,1,1,1" },
+    -- HD: the backdrop untinted at the base's alpha, the base's body (Glass HD's lighter, to show the glass).
+    WOOD_HD = { tint = "1,1,1,1" }, TECH_HD = { tint = "1,1,1,1" }, PARCHMENT_HD = { tint = "1,1,1,1" },
+    RUNESTONE_HD = { tint = "1,1,1,1" }, GLASS_HD = { tint = "1,1,1,1", body = "0.05,0.04,0.06,0.6" },
+    COMIC_HD = { tint = "1,1,1,1" }, FROST_HD = { tint = "1,1,1,0.85", body = "0.02,0.07,0.15,0.45" },
 }
 -- Swiss and Pitwall: an opaque #0a0a0a over SwissBack is that backdrop's own black.
 local SWISS_BLACK = "0.039,0.039,0.039,1"
 -- Exceptions, each for a reason: the minimap has no body (the map); the
 -- Group Finder's comic list keeps its dark body (unoutlined text on paper);
 -- the InfoPanel's Pitwall shade is its cards.
-local NO_BODY = { FSM = true, FGF = { COMIC = true }, FIP = { PITWALL = true } }
+local NO_BODY = { FSM = true, FGF = { COMIC = true, COMIC_HD = true }, FIP = { PITWALL = true } }
 
 local function stub()
     return setmetatable({}, { __index = function(t, k) local s = stub(); rawset(t, k, s); return s end,
@@ -85,7 +89,7 @@ for _, a in ipairs(ADDONS) do
                 tint, body = layers(s)
                 tint = str(tint or { 1, 1, 1, 1 })
             else -- Quest Log and InfoPanel: a texture setting, darkened in Media.lua, at bgAlpha.
-                local d = ns.Media.Tint(s.look.bgTexture)
+                local d = (s.art or {}).tile and 1 or ns.Media.Tint(s.look.bgTexture)   -- HD: drawn white
                 tint, body = str({ d, d, d }, s.look.bgAlpha / 100), (s.art or {})[a[5]]
             end
             body = body and body[4] > 0 and str(body) or nil

@@ -281,10 +281,11 @@ do
         local look = ns.Themes.SPECS[id].look
         if look then
             local ring = look.borderStyle == "FLAT" and table.concat(look.borderColor, ",") or look.borderStyle
-            H.check(id .. ": ring in the family's colour", ring, FAMILY[id])
+            local family = FAMILY[LibForeverThemes.BaseTheme(id)]
+            H.check(id .. ": ring in the family's colour", ring, family)
             local cell = ns.Themes.CellLook(id, "borderStyle") == "FLAT"
                 and table.concat(ns.Themes.CellLook(id, "borderColor"), ",") or ns.Themes.CellLook(id, "borderStyle")
-            H.check(id .. ": cell ring the same", cell, FAMILY[id])
+            H.check(id .. ": cell ring the same", cell, family)
         end
     end
 end

@@ -16,9 +16,10 @@ local function restyle()
     ns.Single.StyleAll(f)
 end
 
-H.check("appended after pixel", table.concat(ns.Settings.THEMES, ",", 9), "PIXEL,SWISS,CONSOLE,PITWALL")
+H.check("appended after pixel", table.concat(ns.Settings.THEMES, ",", 9),
+    "PIXEL,SWISS,CONSOLE,PITWALL,WOOD_HD,TECH_HD,PARCHMENT_HD,RUNESTONE_HD,GLASS_HD,COMIC_HD,FROST_HD")
 H.check("cell themes appended", table.concat(ns.RaidSettings.Get("cellTheme").values, ",", 10),
-    "PIXEL,SWISS,CONSOLE,PITWALL")
+    "PIXEL,SWISS,CONSOLE,PITWALL,WOOD_HD,TECH_HD,PARCHMENT_HD,RUNESTONE_HD,GLASS_HD,COMIC_HD,FROST_HD")
 
 -- Every theme's files are there (in the embedded LibForeverThemes):
 -- backdrop, bar, ornament, font.

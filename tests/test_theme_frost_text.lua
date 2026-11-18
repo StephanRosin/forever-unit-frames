@@ -27,9 +27,10 @@ end
 
 for _, id in ipairs(LibForeverThemes.SpecIds(Themes.SPECS)) do
     local outline = Themes.SPECS[id].look and Themes.SPECS[id].look.fontOutline
-    if id == "FROST" then
-        H.check("frost: no outline in the look", outline, "NONE")
-    elseif id == "COMIC" then
+    local base = LibForeverThemes.BaseTheme(id)
+    if base == "FROST" then
+        H.check(id .. ": no outline in the look", outline, "NONE")
+    elseif base == "COMIC" then
         H.check(id .. ": thick outline kept", outline, "THICKOUTLINE")
     elseif id ~= "CLASSIC" then
         H.check(id .. ": outline kept", outline, "OUTLINE")
