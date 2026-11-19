@@ -202,13 +202,24 @@ end
 
 -- Every attribute of every slot with its value (nil: cleared), as
 -- { name, value } pairs. values: binding by setting key; a key missing
--- takes its default.
-function ClickCast.Plan(values)
+-- takes its default. xml: what the XML itself sets (no fallback below).
+function ClickCast.Plan(values, xml)
     local defaults = ClickCast.DefaultValues()
+    local function bindingOf(key)
+        local binding = values[key]
+        if binding == nil then binding = defaults[key] end
+        return binding
+    end
     local plan = {}
     for _, slot in ipairs(Raid.CLICK_SLOTS) do
-        local binding = values[slot.key]
-        if binding == nil then binding = defaults[slot.key] end
+        local binding = bindingOf(slot.key)
+        -- An empty slot with modifiers falls back to the plain click's
+        -- "*type"; a "target" there needs Blizzard's interaction binding,
+        -- which only the plain click has: so it targets by the macro
+        -- (CurseForge 19.11.2026: Shift/Ctrl/Alt-click did not target).
+        if not xml and binding == "" and slot.prefix ~= "*" and bindingOf("click" .. slot.button) == "target" then
+            binding = "target"
+        end
         local set = slotAttributes(slot, binding)
         for _, attr in ipairs(ATTRIBUTES) do
             plan[#plan + 1] = { slot.prefix .. attr .. slot.button, set[attr] }
@@ -332,7 +343,7 @@ end
 
 -- The bindings' and the XML's attribute values, by name.
 local function planned()
-    return valuesOf(ClickCast.Plan(ClickCast.Values())), valuesOf(ClickCast.Plan(ClickCast.DefaultValues()))
+    return valuesOf(ClickCast.Plan(ClickCast.Values())), valuesOf(ClickCast.Plan(ClickCast.DefaultValues(), true))
 end
 
 function ClickCast.ApplyAll()

@@ -26,10 +26,10 @@ local function all(name, want)
     end
     return want
 end
--- The defaults: what the XML gives, nothing else.
+-- The defaults: what the XML gives, and Shift-left targets by the macro.
 H.check("left targets", all("*type1", "target"), "target")
 H.check("right menu", all("*type2", "togglemenu"), "togglemenu")
-H.check("shift-left: nothing of its own", all("shift-type1", nil), nil)
+H.check("shift-left: targets by the macro", all("shift-type1", "macro"), "macro")
 
 -- A binding: every cell at once, out of combat.
 M.known[2061] = true

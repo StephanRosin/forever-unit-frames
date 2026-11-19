@@ -50,7 +50,8 @@ for _, key in ipairs(ALL) do
     H.checkTrue(key .. ": exists", f)
     H.check(key .. ": left targets", f:GetAttribute("*type1"), "target")
     H.check(key .. ": right menu", f:GetAttribute("*type2"), "togglemenu")
-    H.check(key .. ": nothing else", f:GetAttribute("ctrl-type1"), nil)
+    H.check(key .. ": ctrl-left targets by the macro", f:GetAttribute("ctrl-type1"), "macro")
+    H.check(key .. ": nothing else", f:GetAttribute("ctrl-type2"), nil)
 end
 
 -- A binding reaches every frame.

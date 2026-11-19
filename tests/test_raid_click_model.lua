@@ -35,26 +35,40 @@ H.check("raising lookup: a name kept", select(2, pcall(CC.TypedValue, "spell", "
 C_Spell.GetSpellInfo = getSpellInfo
 
 -- Attributes: the plain click as the wildcard, modified ones by prefix.
-local function attrs(values)
-    local plan = CC.Plan(values)
+-- xml: without the fallback of empty modified slots to Target (below).
+local function attrs(values, xml)
+    local plan = CC.Plan(values, xml)
     local out = {}
     for _, a in ipairs(plan) do if a[2] ~= nil then out[#out + 1] = a[1] .. "=" .. a[2] end end
     table.sort(out)
     return table.concat(out, " ")
 end
-H.check("the defaults: as the XML", attrs({}), "*type1=target *type2=togglemenu")
+H.check("the defaults: as the XML", attrs({}, true), "*type1=target *type2=togglemenu")
 H.check("every slot's attributes named", #CC.Plan({}), 40 * 4)
-H.check("a spell on shift-left", attrs({ click1Shift = "spell:Flash Heal" }),
+H.check("a spell on shift-left", attrs({ click1Shift = "spell:Flash Heal" }, true),
     "*type1=target *type2=togglemenu shift-spell1=Flash Heal shift-type1=spell")
 H.check("ctrl-shift order", attrs({ click1 = "", click1ShiftCtrl = "focus" }), "*type2=togglemenu ctrl-shift-type1=focus")
-H.check("assist on middle", attrs({ click3 = "assist", click2 = "" }), "*type1=target *type3=assist")
+H.check("assist on middle", attrs({ click3 = "assist", click2 = "" }, true), "*type1=target *type3=assist")
 H.check("an item by name", attrs({ click1 = "item:Bandage", click2 = "" }), "*item1=Bandage *type1=item")
 H.check("an item by ID", attrs({ click1 = "item:13446", click2 = "" }), "*item1=item:13446 *type1=item")
 H.check("a macro", attrs({ click1 = "", click2 = "", click4Alt = "macro:/say hi" }),
     "alt-macrotext4=/say hi alt-type4=macro")
 H.check("a spell without a name: nothing", attrs({ click1 = "spell:", click2 = "" }), "")
+-- An empty modified left click with Target on the plain one targets by
+-- the macro (Blizzard drops "target" there; CurseForge 19.11.2026);
+-- a slot of its own, another plain left, other buttons: untouched.
+local plan = {}
+for _, a in ipairs(CC.Plan({ click1Ctrl = "assist" })) do plan[a[1]] = a[2] end
+H.check("empty shift-left: the macro", plan["shift-type1"], "macro")
+H.check("its text", plan["shift-macrotext1"], CC.TARGET_MACRO)
+H.check("alt-ctrl-shift-left too", plan["alt-ctrl-shift-type1"], "macro")
+H.check("a slot of its own stays", plan["ctrl-type1"], "assist")
+H.check("plain left stays target", plan["*type1"], "target")
+H.check("shift-right untouched", plan["shift-type2"], nil)
+H.check("plain left a spell: no fallback", attrs({ click1 = "spell:Flash Heal", click2 = "" }),
+    "*spell1=Flash Heal *type1=spell")
 -- Off: what the cells' XML gives.
-H.check("off plan", attrs(CC.DefaultValues()), "*type1=target *type2=togglemenu")
+H.check("off plan", attrs(CC.DefaultValues(), true), "*type1=target *type2=togglemenu")
 -- Bindings as stored.
 RC.Set("general", "click5Ctrl", "spell:Lesser Heal")
 H.check("stored bindings", CC.Values().click5Ctrl, "spell:Lesser Heal")

@@ -36,10 +36,11 @@ local function click(mouseButton, shift)
 end
 
 -- The client, as modelled: plain left and right act; a modified click
--- that falls back to target or the menu does nothing.
+-- that falls back to target or the menu does nothing, so an empty
+-- modified left click targets by the macro (CurseForge 19.11.2026).
 H.check("left targets", click("LeftButton"), "target")
 H.check("right: the menu", click("RightButton"), "togglemenu")
-H.check("shift-left falls back to target: blocked", click("LeftButton", true), nil)
+H.check("shift-left targets by the macro", click("LeftButton", true), "macro")
 H.check("shift-right falls back to the menu: blocked", click("RightButton", true), nil)
 -- A spell bound in Blizzard's click-binding window wins over ours.
 M.clickBindings[#M.clickBindings + 1] = { button = "MiddleButton", modifiers = 1, type = 1 }
