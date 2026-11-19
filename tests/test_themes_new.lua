@@ -17,9 +17,9 @@ local function restyle()
 end
 
 H.check("appended after pixel", table.concat(ns.Settings.THEMES, ",", 9),
-    "PIXEL,SWISS,CONSOLE,PITWALL,WOOD_HD,TECH_HD,PARCHMENT_HD,RUNESTONE_HD,GLASS_HD,COMIC_HD,FROST_HD")
+    "PIXEL,SWISS,CONSOLE,PITWALL,WOOD_HD,TECH_HD,PARCHMENT_HD,RUNESTONE_HD,GLASS_HD,COMIC_HD,FROST_HD,AZEROTH,GOBLIN")
 H.check("cell themes appended", table.concat(ns.RaidSettings.Get("cellTheme").values, ",", 10),
-    "PIXEL,SWISS,CONSOLE,PITWALL,WOOD_HD,TECH_HD,PARCHMENT_HD,RUNESTONE_HD,GLASS_HD,COMIC_HD,FROST_HD")
+    "PIXEL,SWISS,CONSOLE,PITWALL,WOOD_HD,TECH_HD,PARCHMENT_HD,RUNESTONE_HD,GLASS_HD,COMIC_HD,FROST_HD,AZEROTH,GOBLIN")
 
 -- Every theme's files are there (in the embedded LibForeverThemes):
 -- backdrop, bar, ornament, font.

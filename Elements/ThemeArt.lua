@@ -64,6 +64,16 @@ function ThemeArt.Build(frame)
     frame.themeBlockBack:Hide()
     ns.Corners.Add(blockUnder, frame.themeBlockBack)
     frame.themeBlockClip = ns.Corners.Clipper(blockUnder)
+    -- The material frame round the ring's outside (Azeroth, Goblin), in
+    -- the same two sets as the shadow; below the frame, so auras beside
+    -- it stay on top.
+    frame.themeFrame, frame.themeBlockFrame = {}, {}
+    for i = 1, 4 do
+        frame.themeFrame[i] = under:CreateTexture(nil, "BORDER")
+        frame.themeFrame[i]:Hide()
+        frame.themeBlockFrame[i] = blockUnder:CreateTexture(nil, "BORDER")
+        frame.themeBlockFrame[i]:Hide()
+    end
     -- Above the border rings and the texts' overlay.
     frame.themeOver = CreateFrame("Frame", nil, frame)
     frame.themeOver:SetAllPoints(frame)
@@ -120,6 +130,11 @@ function ThemeArt.Refresh(frame, joined)
     local rule = frame.themeRuleOn == true
     frame.themeRule:SetShown(rule and not joined)
     frame.themeBlockRule:SetShown(rule and joined)
+    local framed = frame.themeFrameOn == true
+    for i = 1, 4 do
+        frame.themeFrame[i]:SetShown(framed and not joined)
+        frame.themeBlockFrame[i]:SetShown(framed and joined)
+    end
     local wanted = frame.themeOrnamentsOn or {}
     for i = 1, 4 do
         frame.themeOrnaments[i]:SetShown(wanted[i] == true and not joined)
@@ -165,6 +180,39 @@ local function placeOrnaments(frame, id, art, extent)
     local c = ns.Themes.Accent(id, "ornament") or art.ornamentColor or { 1, 1, 1, 1 }
     placeOrnamentSet(frame.themeOrnaments, frame, art, wanted, extent, c)
     placeOrnamentSet(frame.themeBlockOrnaments, frame.unitBox or frame, art, wanted, extent, c)
+end
+
+-- The frame's four strips round box's ring (extent: its reach), size
+-- wide; top and bottom run across the corners. The material repeats at
+-- its own size.
+local function placeFrameOn(strips, box, art, extent, size)
+    local o = extent + size
+    local spots = {
+        { "TOPLEFT", -o, o, "TOPRIGHT", o, extent },
+        { "BOTTOMLEFT", -o, -extent, "BOTTOMRIGHT", o, -o },
+        { "TOPLEFT", -o, extent, "BOTTOMLEFT", -extent, -extent },
+        { "TOPRIGHT", extent, extent, "BOTTOMRIGHT", o, -extent },
+    }
+    for i, strip in ipairs(strips) do
+        local p = spots[i]
+        strip:ClearAllPoints()
+        strip:SetPoint("TOPLEFT", box, p[1], p[2], p[3])
+        strip:SetPoint("BOTTOMRIGHT", box, p[4], p[5], p[6])
+        strip:SetTexture(Lib.Texture(art.frame), "REPEAT", "REPEAT")
+        strip:SetHorizTile(true)
+        strip:SetVertTile(true)
+        strip:SetVertexColor(1, 1, 1, 1)
+    end
+end
+
+-- The frame's width (0 without one): only round a ring (extent > 0).
+local function placeFrame(frame, art, extent)
+    local size = (art.frame and extent > 0) and ns.Pixel.Snap(art.frameSize, nil, 1) or 0
+    frame.themeFrameOn = size > 0
+    if size == 0 then return 0 end
+    placeFrameOn(frame.themeFrame, frame, art, extent, size)
+    placeFrameOn(frame.themeBlockFrame, frame.unitBox or frame, art, extent, size)
+    return size
 end
 
 -- The rule (a colour) from the ring's outer top corners down art.ruleSize pixels.
@@ -235,6 +283,7 @@ function ThemeArt.Style(frame)
         ThemeArt.Paint(frame.themeBlockBack, cell)
         frame.themeBackOn = frame.themeBack:IsShown()
         frame.themeShadowOn, frame.themeOrnamentsOn, frame.themeRuleOn = false, nil, false
+        frame.themeFrameOn = false
         frame.themeWedge:Hide()
         ThemeArt.Refresh(frame, false)
         return
@@ -251,12 +300,66 @@ function ThemeArt.Style(frame)
     ThemeArt.Paint(frame.themeBack, spec)
     ThemeArt.Paint(frame.themeBlockBack, spec)
     frame.themeBackOn = frame.themeBack:IsShown() and (not apart or filled)
-    placeOrnaments(frame, id, art, extent)
+    -- Apart, the parts have no common ring to frame.
+    local framed = placeFrame(frame, art, apart and 0 or extent)
+    -- On a frame, the ornaments sit on its outer corners.
+    placeOrnaments(frame, id, art, extent + framed)
     placeRule(frame, art, extent)
     placeShadow(frame, art, extent, apart)
     placeTitle(frame, id, art)
 end
 
 function ThemeArt.Update() end
+
+-- A window's title banner (Azeroth: red, its ends a swallowtail; Goblin:
+-- warning stripes) under theme id, along owner's top, made on first use.
+-- The swallowtail banner is height high, the title on it; the stripes
+-- only STRIPE_H high, in the window's padding (text on them is
+-- unreadable), and only where stripes is true. Returns the banner ends'
+-- width (the title moves in by it), 0 for stripes, nil for none.
+-- Never 0 high: SetHeight(0) draws a texture at its file's height in game.
+local STRIPE_H, BANNER_END = 5, 0.5
+function ThemeArt.Banner(owner, id, height, stripes)
+    local art = ns.Themes.Spec(id).art
+    local tiled = art and art.banner and art.bannerTile == true
+    local shown = art and art.banner and height > 0 and (stripes or not tiled)
+    local b = owner.themeBanner
+    if not shown then
+        if b then
+            b.band:Hide()
+            for _, e in ipairs(b.ends) do e:Hide() end
+        end
+        return nil
+    end
+    if not b then
+        b = { band = owner:CreateTexture(nil, "BORDER"), ends = {} }
+        for i = 1, 2 do b.ends[i] = owner:CreateTexture(nil, "BORDER") end
+        owner.themeBanner = b
+    end
+    local h = tiled and STRIPE_H or height
+    local w = (not tiled and art.bannerEnd) and math.floor(h * BANNER_END + 0.5) or 0
+    for i, e in ipairs(b.ends) do
+        e:SetShown(w > 0)
+        if w > 0 then
+            local point = i == 1 and "TOPLEFT" or "TOPRIGHT"
+            e:ClearAllPoints()
+            e:SetPoint(point, owner, point, 0, 0)
+            e:SetSize(w, h)
+            e:SetTexture(Lib.Texture(art.bannerEnd))
+            -- The right end mirrored.
+            if i == 1 then e:SetTexCoord(0, 1, 0, 1) else e:SetTexCoord(1, 0, 0, 1) end
+        end
+    end
+    local band = b.band
+    band:ClearAllPoints()
+    band:SetPoint("TOPLEFT", owner, "TOPLEFT", w, 0)
+    band:SetPoint("TOPRIGHT", owner, "TOPRIGHT", -w, 0)
+    band:SetHeight(h)
+    band:SetTexture(Lib.Texture(art.banner), tiled and "REPEAT" or nil, tiled and "REPEAT" or nil)
+    band:SetHorizTile(tiled)
+    band:SetVertTile(tiled)
+    band:Show()
+    return w
+end
 
 ns.RegisterElement(ThemeArt)

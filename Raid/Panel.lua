@@ -121,9 +121,11 @@ local function setAttributes(header, attributes, filter)
     header:SetAttribute("_ignore", nil)
 end
 
--- A title row across the top of frame: the cells' font, gold, centred.
+-- A title row across the top of frame: the cells' font, gold, centred;
+-- on the theme's banner where it has one (Azeroth, ThemeArt.Banner).
 local function styleTitle(title, frame, height, text)
     local C = ns.Config
+    ns.ThemeArt.Banner(frame, Cell.Theme(), height, false)
     ns.Texts.SetFont(title, ns.Media.Font(C.Get(Cell.KEY, "fontFace")), Panel.TITLE_SIZE,
         C.Get(Cell.KEY, "fontOutline"))
     title:ClearAllPoints()
@@ -141,6 +143,7 @@ end
 local function styleBlockTitle(d, block, s)
     if s.titleHeight == 0 then
         d.title:Hide()
+        ns.ThemeArt.Banner(d, ns.Themes.CLASSIC, 0)
         return
     end
     styleTitle(d.title, d, s.titleHeight, Layout.Title(block))
@@ -317,6 +320,7 @@ function Panel.New(spec)
         local text = spec.title and spec.title() or ""
         if text == "" or width == 0 then
             if P.title then P.title:Hide() end
+            ns.ThemeArt.Banner(P.panel, ns.Themes.CLASSIC, 0)
             return height
         end
         local row = Pixel.Snap(Panel.TITLE_HEIGHT)

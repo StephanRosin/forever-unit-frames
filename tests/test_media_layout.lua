@@ -3,7 +3,7 @@ local ns = H.LoadAddon()
 H.check("known font", ns.Media.Font("Arial Narrow"), "Fonts\\ARIALN.TTF")
 H.check("unknown font falls back", ns.Media.Font("Nope"), "Fonts\\FRIZQT__.TTF")
 H.check("bar texture", ns.Media.StatusBar("Flat"), "Interface\\Buttons\\WHITE8X8")
-H.check("font list sorted", ns.Media.List("font")[1], "Arial Narrow")
+H.check("font list sorted", ns.Media.List("font")[1], "Alegreya")
 
 local L = ns.Layout
 -- Two rows (no title): health, power.

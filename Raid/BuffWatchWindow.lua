@@ -39,6 +39,23 @@ Window.rows = {}
 Panel.others[#Panel.others + 1] = Window
 
 local function general(key) return ns.RaidConfig.Get("general", key) end
+
+-- The title on a theme's swallowtail banner (Azeroth, ThemeArt.Banner):
+-- gold, as on the quest log's; never ink on red.
+local BANNER_GOLD = { 1, 0.82, 0 }
+
+-- Whether the cells' theme puts the title on a banner (not mere stripes).
+local function bannered()
+    local art = ns.Themes.Spec(ns.RaidCell.Theme()).art
+    return art ~= nil and art.banner ~= nil and art.bannerEnd ~= nil
+end
+
+-- Where the blocks start: below the header, or below the banner (title
+-- plus padding above and below it) with the same gap.
+function Window.Top()
+    local header = Window.PADDING + Window.HEADER_H + Window.LINE_GAP
+    return bannered() and header + Window.PADDING or header
+end
 local function testing() return ns.RaidTestMode ~= nil and ns.RaidTestMode.IsOn() end
 
 -- Whether some member misses a watched buff or has it running out.
@@ -105,13 +122,14 @@ end
 local function linesOf(st)
     if st.unknown then return { L.RAID_BUFF_UNKNOWN } end
     local items = st.preview and sampleItems() or Names.Of(st)
-    return Names.Pack(items, Window.WIDTH - 2 * Window.PADDING - Window.NAMES_INDENT, measure)
+    return Names.Pack(items, Window.WIDTH - 2 * Window.PADDING - Window.NAMES_INDENT, measure,
+        ns.Themes.Spec(ns.RaidCell.Theme()).ink)
 end
 
 -- Its size: the header, a block per watched buff.
 function Window.Size()
     local entries = states()
-    local h = 2 * Window.PADDING + Window.HEADER_H + Window.LINE_GAP
+    local h = Window.Top() + Window.PADDING
     for i = 1, math.min(#entries, Window.MAX_ROWS) do
         h = h + Window.BlockHeight(#linesOf(entries[i]))
     end
@@ -219,13 +237,19 @@ end
 
 local function paint(colorKey)
     if not Window.frame then return end
-    Style.Paint(Window.title, colorKey)
+    if not bannered() then
+        Style.Paint(Window.title, colorKey)
+        return
+    end
+    -- Muted (combat): the gold dimmed, as the other colours are.
+    local k = colorKey == "muted" and Style.COLORS.muted[1] / Style.COLORS.text[1] or 1
+    Window.title:SetTextColor(BANNER_GOLD[1] * k, BANNER_GOLD[2] * k, BANNER_GOLD[3] * k, 1)
 end
 
 -- Out of combat: the blocks of the state, top-down, their casts. Returns the window's height, as Window.Size counts it.
 local function render()
     local entries = states()
-    local y = Window.PADDING + Window.HEADER_H + Window.LINE_GAP
+    local y = Window.Top()
     for i = 1, math.max(#Window.rows, math.min(#entries, Window.MAX_ROWS)) do
         local st = i <= Window.MAX_ROWS and entries[i] or nil
         local r = st and row(i) or Window.rows[i]
@@ -273,11 +297,37 @@ local function place(w, h)
     end
 end
 
--- The raid cells' theme (Raid/Cell.lua): its backdrop and title font;
--- Classic the plain dark glass.
+-- The header under a theme's banner (ThemeArt.Banner): the title and the
+-- gear clear its ends, the rule gives way to the banner's lower edge.
+local function placeHeader(id)
+    local f = Window.frame
+    local inset = ns.ThemeArt.Banner(f, id, Window.HEADER_H + 2 * Window.PADDING, true) or 0
+    Window.title:ClearAllPoints()
+    Window.title:SetPoint("TOPLEFT", f, "TOPLEFT", Window.PADDING + inset, -Window.PADDING)
+    Window.gear:ClearAllPoints()
+    Window.gear:SetPoint("TOPRIGHT", f, "TOPRIGHT", -(Window.PADDING + inset), -Window.PADDING)
+    Window.rule:SetShown(not bannered())
+end
+
+-- The names in a theme's ink on its light parchment (Azeroth), without
+-- the dark shadow; else the window's light text.
+local function inkLines(ink)
+    local c = ink or Style.COLORS.text
+    for _, r in ipairs(Window.rows) do
+        for _, line in ipairs(r.lines) do
+            line:SetTextColor(c[1], c[2], c[3], 1)
+            line:SetShadowOffset(ink and 0 or 1, ink and 0 or -1)
+        end
+    end
+end
+
+-- The raid cells' theme (Raid/Cell.lua): its backdrop, banner and title
+-- font; Classic the plain dark glass.
 local function applyTheme()
     local id = ns.RaidCell.Theme()
     local spec = ns.Themes.Spec(id)
+    placeHeader(id)
+    inkLines(spec.ink)
     local bg = Window.bg
     bg:SetVertexColor(1, 1, 1, 1)
     if spec.art and spec.art.back then
