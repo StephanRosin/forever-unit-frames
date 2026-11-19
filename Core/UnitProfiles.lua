@@ -106,7 +106,8 @@ end
 local function load(name)
     ns.Storage.Save()   -- the current one, before it is left
     setActive(name)
-    ns.Config.Import(ns.Settings.Sanitise(copy(db.profiles[name] or {})))
+    -- A profile not loaded since the HD themes became colours: its sets made one.
+    ns.Config.Import(ns.Themes.MergeHD(ns.Settings.Sanitise(copy(db.profiles[name] or {}))))
     ns.Storage.Save()
     LibForeverThemes.HubSync()   -- a following addon gets the hub's theme back
 end

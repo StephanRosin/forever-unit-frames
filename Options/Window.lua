@@ -170,7 +170,7 @@ local ROW_BUILDERS = {
     end,
     bool = function(parent, _, opts) return Widgets.Checkbox(parent, opts) end,
     enum = function(parent, def, opts)
-        opts.items = enumItems(def, opts.enumText)
+        opts.items = opts.items or enumItems(def, opts.enumText)
         return Widgets.Dropdown(parent, opts)
     end,
     media = function(parent, def, opts)
@@ -230,6 +230,8 @@ end
 -- setting for its own set (Core/Themes.lua).
 local SETTERS = {
     theme = function(v)
+        -- The base of the HD theme shown: it stays (its colours pick HD).
+        if v == LibForeverThemes.BaseTheme(ns.Themes.Current()) then return true end
         local ok, why = ns.Themes.Switch(v)
         if not ok then ns.Print(L["THEME_REFUSED_" .. why]) end
         return ok
@@ -244,6 +246,17 @@ local function settingRow(parent, scope, key)
         set = SETTERS[key] or function(v) return Config.Set(scope, key, v) end,
         scope = scope,
     }
+    -- HD themes are colours of their base (themeColorRow), not in the list.
+    if key == "theme" then
+        opts.items = function()
+            local items = {}
+            for _, id in ipairs(LibForeverThemes.MenuIds(def.values)) do
+                items[#items + 1] = { value = id, text = Schema.EnumText(def, id) }
+            end
+            return items
+        end
+        opts.get = function() return LibForeverThemes.BaseTheme(ns.Themes.Current()) end
+    end
     if isFrameScope(scope) and def.scope == "inherit" then opts.inherit = inheritOpts(scope, key) end
     local row = ROW_BUILDERS[def.type](parent, def, opts)
     row.key = key
@@ -472,20 +485,26 @@ function actionBlock(page, id)
 end
 
 -- The current theme's colours, kept apart from the theme sets; none
--- (the row hidden) under Classic.
+-- (the row hidden) under Classic. The base's colours, then its HD
+-- theme's ("HD Carbon"): picking one of those switches to the HD theme
+-- (the same settings), a plain one back.
 function themeColorRow(page)
+    local Lib = LibForeverThemes
     local row = Widgets.Dropdown(page, {
         label = L.OPT_THEME_COLOR,
         items = function()
-            local theme, items = ns.Themes.Current(), {}
-            for _, id in ipairs(ns.Themes.Colors()) do
-                items[#items + 1] = { value = id, text = L["THEME_COLOR_" .. theme .. "_" .. id] }
+            local items = {}
+            for _, e in ipairs(Lib.MenuColors(ns.Themes.SPECS, ns.Themes.Current())) do
+                local text = L["THEME_COLOR_" .. e.theme .. "_" .. e.color]
+                items[#items + 1] = { value = Lib.MenuValue(e.theme, e.color), text = e.hd and "HD " .. text or text }
             end
             return items
         end,
-        get = function() return ns.Themes.Color() end,
-        set = function(id)
-            local ok, why = ns.Themes.SetColor(id)
+        get = function() return Lib.MenuValue(ns.Themes.Current(), ns.Themes.Color()) end,
+        set = function(value)
+            local theme, color = Lib.ParseMenuValue(value)
+            local ok, why = ns.Themes.Switch(theme)
+            if ok then ok, why = ns.Themes.SetColor(color, theme) end
             if not ok then ns.Print(L["THEME_REFUSED_" .. why]) end
         end,
     })

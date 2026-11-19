@@ -177,6 +177,19 @@ local function copy(v)
     return t
 end
 
+-- Whether a and b hold the same settings; the theme ids (general.theme,
+-- and the library's own field on a merged set) do not count.
+local function same(a, b)
+    if type(a) ~= "table" or type(b) ~= "table" then return a == b end
+    for k, v in pairs(a) do
+        if k ~= "theme" and not same(v, b[k]) then return false end
+    end
+    for k in pairs(b) do
+        if k ~= "theme" and a[k] == nil then return false end
+    end
+    return true
+end
+
 local function scopesOf(p)
     for _, scope in ipairs(ns.Settings.SCOPES) do
         if type(p[scope]) ~= "table" then p[scope] = {} end
@@ -354,19 +367,33 @@ function Themes.Switch(id)
     if why then return nil, why end
     local current = Themes.Current()
     if id == current then return true end
+    -- A base and its HD theme share one set (Lib.SetKey): the settings
+    -- stay, only the look keys where the two specs differ follow (Glass
+    -- HD's thinner fill), unless the player changed them.
+    if Lib.SetKey(id) == Lib.SetKey(current) then
+        local p = copy(ns.Config.Profile())
+        local oldLook = Themes.Spec(current).look or {}
+        for key, value in pairs(Themes.Spec(id).look or {}) do
+            if not same(oldLook[key], value) and same(p.general[key], oldLook[key]) then p.general[key] = copy(value) end
+        end
+        p.general.theme = id
+        use(p)
+        return true
+    end
     local sets = storedSets()
-    sets[current] = copy(ns.Config.Profile())
-    local nextSet = sets[id]
+    sets[Lib.SetKey(current)] = copy(ns.Config.Profile())
+    local nextSet = sets[Lib.SetKey(id)]
     if not nextSet then
         -- CLASSIC is never made from a theme: without a stored one (a
         -- profile imported with a theme) the settings stay as they are.
         local base = sets[Themes.CLASSIC] or ns.Config.Profile()
         nextSet = id == Themes.CLASSIC and copy(base) or seed(id, base)
-        nextSet.general = nextSet.general or {}
-        nextSet.general.theme = id
     end
+    -- The family's set may have been stored under its other member.
+    nextSet.general = nextSet.general or {}
+    nextSet.general.theme = id
     -- The live set is the profile: no stale copy stays behind.
-    sets[id] = nil
+    sets[Lib.SetKey(id)] = nil
     use(nextSet)
     return true
 end
@@ -384,11 +411,12 @@ function Themes.Reset()
     return true
 end
 
--- The themes with stored settings to copy from, in the library's order.
+-- The themes with stored settings to copy from, in the library's order
+-- (an HD theme's are its base's).
 function Themes.Stored()
     local sets, list = storedSets(), {}
-    for _, id in ipairs(Lib.SpecIds(Themes.SPECS)) do
-        if sets[id] and id ~= Themes.Current() then list[#list + 1] = id end
+    for _, id in ipairs(Lib.MenuIds(Lib.SpecIds(Themes.SPECS))) do
+        if sets[id] and id ~= Lib.SetKey(Themes.Current()) then list[#list + 1] = id end
     end
     return list
 end
@@ -438,10 +466,37 @@ function Themes.Restore(undo)
     return true
 end
 
+-- Up to 0.65.7 a base and its HD theme had a set each: made one, once per
+-- profile (Lib.MergeHD; at login and when a profile is loaded). p: the
+-- active profile's settings about to be live; returns the ones to use
+-- instead, or p itself. A stored HD set wins when it differs from seeding
+-- that HD theme afresh from the stored CLASSIC set, or the base has none.
+function Themes.MergeHD(p)
+    local sets = ns.UnitProfiles.ThemeSets()
+    local current = type(p.general) == "table" and p.general.theme or Themes.CLASSIC
+    local merged = Lib.MergeHD(sets, current, copy(p), function(hdId, set)
+        local classic = sets[Themes.CLASSIC] or (current == Themes.CLASSIC and p)
+        return not (classic and same(set, ns.Settings.Sanitise(seed(hdId, classic))))
+    end)
+    -- The library names a set's theme in .theme; ours is general.theme.
+    for _, set in pairs(sets) do
+        if type(set) == "table" then set.theme = nil end
+    end
+    if not merged then return p end
+    merged.theme = nil
+    merged.general.theme = current
+    return merged
+end
+
 -- At login, before any frame exists (Core/Boot.lua): a theme in use made
 -- under an older REVISION is made anew from CLASSIC, quietly (no event:
 -- nothing listens yet; the next save writes it).
 function Themes.Upgrade()
+    local profile = ns.Config.Profile()
+    local merged = Themes.MergeHD(profile)
+    if merged ~= profile then
+        for _, scope in ipairs(ns.Settings.SCOPES) do profile[scope] = merged[scope] or {} end
+    end
     local sets = ns.UnitProfiles.ThemeSets()
     if not Lib.NeedsReseed(sets, OWN_REVISION) then return end
     local current = Themes.Current()
@@ -449,7 +504,6 @@ function Themes.Upgrade()
     storedSets()
     if current == Themes.CLASSIC or not base then return end
     local fresh = ns.Settings.Sanitise(seed(current, base))
-    local profile = ns.Config.Profile()
     for _, scope in ipairs(ns.Settings.SCOPES) do profile[scope] = fresh[scope] or {} end
 end
 
