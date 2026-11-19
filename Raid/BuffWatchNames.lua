@@ -12,7 +12,7 @@ ns.RaidBuffNames = Names
 
 local Secrets, L = ns.Secrets, ns.L
 
-Names.MAX_LINES, Names.SPACE, Names.GREY, Names.DIM, Names.FADE = 2, "  ", "ff808080", 0.6, 0.4
+Names.MAX_LINES, Names.SPACE, Names.GREY, Names.DIM = 2, "  ", "ff808080", 0.6
 
 function Names.Of(st)
     local list = {}
@@ -43,22 +43,12 @@ local function hex(r, g, b)
     return ("ff%02x%02x%02x"):format(r * 255, g * 255, b * 255)
 end
 
--- ink: a theme's dark ink on light parchment (Themes.InkColor), where
--- running out fades towards the grey instead of darkening.
-local function colour(item, ink)
+local function colour(item)
     if not item.reach then return Names.GREY end
     local c = item.class and RAID_CLASS_COLORS and RAID_CLASS_COLORS[item.class]
     local r, g, b = 1, 1, 1
     if c then r, g, b = c.r, c.g, c.b end
-    if ink then
-        r, g, b = ns.Themes.InkColor(r, g, b, ink)
-        if not item.missing then
-            local grey = 0.5
-            r, g, b = r + (grey - r) * Names.FADE, g + (grey - g) * Names.FADE, b + (grey - b) * Names.FADE
-        end
-    elseif not item.missing then
-        r, g, b = r * Names.DIM, g * Names.DIM, b * Names.DIM
-    end
+    if not item.missing then r, g, b = r * Names.DIM, g * Names.DIM, b * Names.DIM end
     return hex(r, g, b)
 end
 
@@ -67,14 +57,13 @@ function Names.Text(item)
 end
 
 -- In the window: the name alone.
-local function short(item, ink)
-    return "|c" .. colour(item, ink) .. item.name .. "|r"
+local function short(item)
+    return "|c" .. colour(item) .. item.name .. "|r"
 end
 
 -- Greedy: as many names as fit on a line; on the last line, room is
 -- kept for "+N" when names would remain.
--- ink: as colour's.
-function Names.Pack(list, width, measure, ink)
+function Names.Pack(list, width, measure)
     local lines, i = {}, 1
     for line = 1, Names.MAX_LINES do
         if i > #list then break end
@@ -85,7 +74,7 @@ function Names.Pack(list, width, measure, ink)
             local more = (line == Names.MAX_LINES and rest > 0) and (Names.SPACE .. L.RAID_BUFF_MORE:format(rest)) or ""
             if plain ~= "" and measure(plain .. add .. more) > width then break end
             plain = plain .. add
-            text = text .. (text == "" and "" or Names.SPACE) .. short(list[i], ink)
+            text = text .. (text == "" and "" or Names.SPACE) .. short(list[i])
             i = i + 1
         end
         lines[line] = text

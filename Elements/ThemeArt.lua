@@ -64,7 +64,7 @@ function ThemeArt.Build(frame)
     frame.themeBlockBack:Hide()
     ns.Corners.Add(blockUnder, frame.themeBlockBack)
     frame.themeBlockClip = ns.Corners.Clipper(blockUnder)
-    -- The material frame round the ring's outside (Azeroth, Goblin), in
+    -- The material frame round the ring's outside (Goblin), in
     -- the same two sets as the shadow; below the frame, so auras beside
     -- it stay on top.
     frame.themeFrame, frame.themeBlockFrame = {}, {}
@@ -311,7 +311,7 @@ end
 
 function ThemeArt.Update() end
 
--- A window's title banner (Azeroth: red, its ends a swallowtail; Goblin:
+-- A window's title banner (with bannerEnd: its ends a swallowtail; Goblin:
 -- warning stripes) under theme id, along owner's top, made on first use.
 -- The swallowtail banner is height high, the title on it; the stripes
 -- only STRIPE_H high, in the window's padding (text on them is

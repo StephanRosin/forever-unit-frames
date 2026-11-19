@@ -122,7 +122,7 @@ local function setAttributes(header, attributes, filter)
 end
 
 -- A title row across the top of frame: the cells' font, gold, centred;
--- on the theme's banner where it has one (Azeroth, ThemeArt.Banner).
+-- on the theme's banner where it has one (ThemeArt.Banner).
 local function styleTitle(title, frame, height, text)
     local C = ns.Config
     ns.ThemeArt.Banner(frame, Cell.Theme(), height, false)

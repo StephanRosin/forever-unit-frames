@@ -39,8 +39,6 @@ local ROWS = {
     footer = { left = "footerLeft", center = "footerCenter", right = "footerRight", width = "footerWidth" },
 }
 local ROW_ORDER = { "title", "health", "power", "footer" }
--- The rows whose texts lie on the backdrop, not on a bar (Themes.Ink).
-local ON_PARCHMENT = { title = true, footer = true }
 local SLOT_OF = {}
 for _, slot in ipairs(SLOTS) do SLOT_OF[slot.field] = slot end
 
@@ -81,13 +79,12 @@ end
 -- The level as text; coloured: wrapped in its difficulty colour, so it
 -- keeps it whatever colour the rest of the line has. A secret level is
 -- left out, as before.
-local function levelText(unit, colored, ink)
+local function levelText(unit, colored)
     local level = Secrets.Number(UnitLevel(unit))
     if not level then return "" end
     local text = level <= 0 and "??" or tostring(level)
     if not colored then return text end
     local r, g, b = Texts.DifficultyColor(level)
-    if ink then r, g, b = ns.Themes.InkColor(r, g, b, ink) end
     return ("|cff%02x%02x%02x%s|r"):format(r * 255, g * 255, b * 255, text)
 end
 
@@ -96,7 +93,7 @@ end
 -- presence asked with type(). A unit of unknown kind counts as a creature.
 -- The colour code for the class part of INFO ("%s" around it when none):
 -- a player's class colour, a creature's reaction colour, readable only.
-local function infoWrap(unit, isPlayer, scope, ink)
+local function infoWrap(unit, isPlayer, scope)
     local r, g, b
     if isPlayer then
         local ok, _, token = pcall(UnitClass, unit)
@@ -107,14 +104,13 @@ local function infoWrap(unit, isPlayer, scope, ink)
         if c then r, g, b = c[1], c[2], c[3] end
     end
     if not r or Secrets.IsSecret(r) then return "%s" end
-    if ink then r, g, b = ns.Themes.InkColor(r, g, b, ink) end
     return ("|cff%02x%02x%02x"):format(r * 255, g * 255, b * 255) .. "%s|r"
 end
 
 local function setInfo(fs, unit, opts)
-    local level = levelText(unit, opts.levelColored, opts.ink)
+    local level = levelText(unit, opts.levelColored)
     local isPlayer = Secrets.Bool(UnitIsPlayer, unit) == true
-    local wrap = opts.infoColor and infoWrap(unit, isPlayer, opts.scope, opts.ink) or "%s"
+    local wrap = opts.infoColor and infoWrap(unit, isPlayer, opts.scope) or "%s"
     if isPlayer then
         local class = UnitClass(unit)
         local race = UnitRace(unit)
@@ -266,9 +262,9 @@ function Texts.Apply(fs, tag, unit, kind, showSurname, sample, opts)
     elseif tag == "NAME" then
         Texts.SetName(fs, unit, showSurname)
     elseif tag == "NAME_LEVEL" then
-        Texts.SetName(fs, unit, showSurname, levelText(unit, opts.levelColored, opts.ink))
+        Texts.SetName(fs, unit, showSurname, levelText(unit, opts.levelColored))
     elseif tag == "LEVEL" then
-        fs:SetText(levelText(unit, opts.levelColored, opts.ink))
+        fs:SetText(levelText(unit, opts.levelColored))
     elseif tag == "INFO" then
         setInfo(fs, unit, opts)
     elseif tag == "ROLE" then
@@ -814,16 +810,12 @@ function Texts.Style(frame)
     local outline = Config.Get(scope, "fontOutline")
     local shadow = Config.Get(scope, "fontShadow")
     local valueSize = Config.Get(scope, "valueFontSize")
-    local ink = ns.Themes.Ink(frame)
     for _, slot in ipairs(SLOTS) do
         local fs = frame.texts[slot.field]
         -- Value texts (numbers, percent) may have a size of their own.
         local isValue = valueKind(slot, Config.Get(scope, slot.setting)) ~= nil
-        -- Ink on the parchment needs no outline (Themes.Ink).
-        local inked = ink and ON_PARCHMENT[slot.bar]
-        Texts.SetFont(fs, font, (isValue and valueSize > 0) and valueSize or size, inked and "NONE" or outline)
-        local shadowed = shadow and not inked
-        fs:SetShadowOffset(shadowed and 1 or 0, shadowed and -1 or 0)
+        Texts.SetFont(fs, font, (isValue and valueSize > 0) and valueSize or size, outline)
+        fs:SetShadowOffset(shadow and 1 or 0, shadow and -1 or 0)
         fs:ClearAllPoints()
         if not slot.center then
             -- The title clears a theme's title wedge (Elements/ThemeArt.lua).
@@ -864,26 +856,19 @@ function Texts.Style(frame)
     placeTitleEnd(frame)
 end
 
-local WHITE = { 1, 1, 1, 1 }
-
--- Title text colour: class (players) or reaction, or plain white; in a
--- theme's ink where the row lies on its parchment (Themes.Ink). The
+-- Title text colour: class (players) or reaction, or plain white. The
 -- right and centre title texts take it when they name the unit; values
 -- stay white.
-local function paintTitle(frame, ink)
+local function paintTitle(frame)
     local mode = Config.Get(frame.key, "titleColorMode")
-    local plain = ink or WHITE
-    local r, g, b = plain[1], plain[2], plain[3]
-    if mode ~= "WHITE" then
-        r, g, b = ns.Health.UnitColor(frame.unit, mode, frame.key)
-        if ink then r, g, b = ns.Themes.InkColor(r, g, b, ink) end
-    end
+    local r, g, b = 1, 1, 1
+    if mode ~= "WHITE" then r, g, b = ns.Health.UnitColor(frame.unit, mode, frame.key) end
     frame.texts.title:SetTextColor(r, g, b, 1)
     for field, key in pairs({ titleRight = "titleTextRight", titleCenter = "titleTextCenter" }) do
         if Texts.NAME_TAGS[Config.Get(frame.key, key)] then
             frame.texts[field]:SetTextColor(r, g, b, 1)
         else
-            frame.texts[field]:SetTextColor(plain[1], plain[2], plain[3], 1)
+            frame.texts[field]:SetTextColor(1, 1, 1, 1)
         end
     end
 end
@@ -895,14 +880,14 @@ Texts.NAME_TAGS = { NAME = true, NAME_LEVEL = true, INFO = true }
 -- Raid cells (Raid/Cell.lua) set frame.textColors: it returns the colours
 -- of a name and of the other texts in place of white (a name in the class
 -- or reaction colour keeps that). No unit frame sets it.
+local WHITE = { 1, 1, 1, 1 }
 
 local function plainColors(frame)
     if frame.textColors then return frame.textColors(frame) end
     return WHITE, WHITE
 end
 
--- The footer row, on the parchment, in ink like the title (paintTitle).
-local function paintBars(frame, wordSlot, ink)
+local function paintBars(frame, wordSlot)
     local mode = Config.Get(frame.key, "barNameColorMode")
     local name, other = plainColors(frame)
     local r, g, b, a = name[1], name[2], name[3], name[4]
@@ -913,17 +898,10 @@ local function paintBars(frame, wordSlot, ink)
     for _, slot in ipairs(SLOTS) do
         if slot.bar ~= "title" then
             local named = slot.field ~= wordSlot and Texts.NAME_TAGS[Config.Get(frame.key, slot.setting)]
-            local fs = frame.texts[slot.field]
-            if ink and ON_PARCHMENT[slot.bar] then
-                if named and mode ~= "WHITE" then
-                    fs:SetTextColor(ns.Themes.InkColor(r, g, b, ink))
-                else
-                    fs:SetTextColor(ink[1], ink[2], ink[3], 1)
-                end
-            elseif named then
-                fs:SetTextColor(r, g, b, a)
+            if named then
+                frame.texts[slot.field]:SetTextColor(r, g, b, a)
             else
-                fs:SetTextColor(other[1], other[2], other[3], other[4])
+                frame.texts[slot.field]:SetTextColor(other[1], other[2], other[3], other[4])
             end
         end
     end
@@ -993,11 +971,8 @@ function Texts.Update(frame, event)
         return
     end
     frame.textWord = word or false
-    local ink = ns.Themes.Ink(frame)
     for _, slot in ipairs(SLOTS) do
         local fs = frame.texts[slot.field]
-        -- Level and class colour codes in ink on the parchment.
-        opts.ink = ON_PARCHMENT[slot.bar] and ink or nil
         if slot.field == wordSlot then
             fs:SetText(word)
         elseif word and isHealthValue(frame, slot) then
@@ -1007,8 +982,8 @@ function Texts.Update(frame, event)
                 sample, opts)
         end
     end
-    paintTitle(frame, ink)
-    paintBars(frame, wordSlot, ink)
+    paintTitle(frame)
+    paintBars(frame, wordSlot)
     updateClassIcon(frame)
     Texts.UpdateAwayBadge(frame)
 end

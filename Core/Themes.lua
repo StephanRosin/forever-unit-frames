@@ -134,18 +134,6 @@ Themes.SPECS = Lib.Specs({
             titleBackground = true, shadowEnabled = false, fontOutline = "OUTLINE" },
         art = { accent = "wedge" },
     },
-    -- A window of the game's own world: light parchment in a walnut frame
-    -- (outside the gold ring), gold corners on the frame. No banner: a unit
-    -- frame has no title bar. The bars' texts stay light and outlined;
-    -- texts on the parchment itself (title and footer rows) are dark ink
-    -- without an outline (ink, Themes.Ink).
-    AZEROTH = {
-        font = "Alegreya", bar = "FUF Parchment", ink = { 0.14, 0.08, 0.04 },
-        look = { borderShow = true, borderStyle = "FLAT", borderSize = 2, borderColor = Lib.THEMES.AZEROTH.rim,
-            borderPadding = 3, cornerRadius = 0, backgroundColor = { 0, 0, 0, 0 }, titleBackground = false,
-            shadowEnabled = true, shadowAlpha = 60, shadowSize = 8, fontOutline = "OUTLINE" },
-        art = { ornamentSize = 14, ornamentInset = 0, frameSize = 5 },
-    },
     -- A goblin workshop: sooty sheet metal in a copper frame with rivets
     -- (its warning stripes only on a window with a title, Raid/BuffWatchWindow.lua).
     GOBLIN = {
@@ -349,44 +337,6 @@ function Themes.Rim(id)
     return Themes.Accent(id, "ring")
 end
 
--- Above this alpha a title row's own background hides the parchment: its
--- texts stay light.
-local INK_MAX_ROW_ALPHA = 0.5
-
--- The ink colour { r, g, b } for frame's title and footer rows, or nil
--- where they stay light: only a theme with ink (Azeroth's light
--- parchment), only while the rows show the backdrop.
-function Themes.Ink(frame)
-    local id = frame.themeOf and frame.themeOf() or Themes.Current()
-    local ink = Themes.Spec(id).ink
-    if not ink then return nil end
-    local scope = frame.key
-    local clear = not ns.Config.Get(scope, "titleBackground") or ns.Config.Get(scope, "backgroundColor")[4]
-        <= INK_MAX_ROW_ALPHA
-    return clear and ink or nil
-end
-
--- A colour (class, reaction, level) in dark ink on light parchment:
--- luminance at most this, about 6:1 there (small texts: the quest log's 0.13
--- read grey here). Plain darkening turned yellow
--- olive; yellow goes amber first (as Forever Quest Log's Themes.TitleInk).
--- A secret colour (class in combat) cannot be measured: ink then.
-local INK_LUMINANCE, AMBER, INK_GREY = 0.05, 0.68, 0.15
-local function luminance(r, g, b)
-    local function lin(v) return v <= 0.04045 and v / 12.92 or ((v + 0.055) / 1.055) ^ 2.4 end
-    return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
-end
-function Themes.InkColor(r, g, b, ink)
-    if ns.Secrets.IsSecret(r) then return ink[1], ink[2], ink[3] end
-    -- White and grey (a priest, a neutral level) darkened read as grey: ink.
-    if math.max(r, g, b) - math.min(r, g, b) < INK_GREY then return ink[1], ink[2], ink[3] end
-    if r > 0.8 and g > 0.8 and b < 0.3 then g = r * AMBER end
-    local lum = luminance(r, g, b)
-    if lum <= INK_LUMINANCE then return r, g, b end
-    local k = (INK_LUMINANCE / lum) ^ (1 / 2.2)
-    return r * k, g * k, b * k
-end
-
 -- The backdrop's texture under spec: the grey one under a colour.
 function Themes.Back(spec)
     local id = idOf(spec)
@@ -547,11 +497,29 @@ function Themes.MergeHD(p)
     return merged
 end
 
--- At login, before any frame exists (Core/Boot.lua): a theme in use made
+-- A theme that is gone (Azeroth, LibForeverThemes 13) still in raw, the
+-- stored profile before Settings.Sanitise dropped it: the profile's stored
+-- Classic set instead of p (without one p stays), the gone theme's set
+-- dropped. Returns the settings to use.
+function Themes.LeaveRemoved(raw, p)
+    local was = type(raw) == "table" and type(raw.general) == "table" and raw.general.theme
+    if not was or Themes.SPECS[was] then return p end
+    local sets = ns.UnitProfiles.ThemeSets()
+    local classic = sets[Themes.CLASSIC]
+    sets[Themes.CLASSIC], sets[was] = nil, nil
+    return classic and ns.Settings.Sanitise(copy(classic)) or p
+end
+
+-- At login, before any frame exists (Core/Boot.lua): a theme that is gone
+-- leaves for Classic (Themes.LeaveRemoved); a theme in use made
 -- under an older REVISION is made anew from CLASSIC, quietly (no event:
 -- nothing listens yet; the next save writes it).
 function Themes.Upgrade()
     local profile = ns.Config.Profile()
+    local kept = Themes.LeaveRemoved(ns.UnitProfiles.Stored(), profile)
+    if kept ~= profile then
+        for _, scope in ipairs(ns.Settings.SCOPES) do profile[scope] = kept[scope] or {} end
+    end
     local merged = Themes.MergeHD(profile)
     if merged ~= profile then
         for _, scope in ipairs(ns.Settings.SCOPES) do profile[scope] = merged[scope] or {} end

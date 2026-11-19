@@ -275,7 +275,7 @@ do
         TECH = "0.25,0.88,0.94,0.9", PARCHMENT = "0.29,0.2,0.12,1", RUNESTONE = "0.1,0.1,0.12,1",
         GLASS = "0.07,0.06,0.05,1", COMIC = "0.07,0.07,0.07,1", FROST = "0.86,0.96,1,0.8",
         PIXEL = "1,0.95,0.91,1", SWISS = "0.165,0.165,0.165,1", CONSOLE = "0.306,0.929,0.69,1",
-        PITWALL = "0.043,0.047,0.055,1", AZEROTH = "0.79,0.635,0.29,1", GOBLIN = "0.23,0.11,0.05,1",
+        PITWALL = "0.043,0.047,0.055,1", GOBLIN = "0.23,0.11,0.05,1",
     }
     for _, id in ipairs(LibForeverThemes.SpecIds(ns.Themes.SPECS)) do
         local look = ns.Themes.SPECS[id].look

@@ -26,7 +26,7 @@ Button: **Reset theme**.
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
-<tr><td><b>Theme</b></td><td>Beta: each theme keeps its own settings, at first those of Classic. Themes are made to match the other Forever addons and look best when you use several of them with the same theme.</td><td>Classic (your layout), Wooden plaque, Technology / AI, Parchment &amp; seal, Runestone, Stained glass, Comic, Frost, Pixel, Swiss Clean, Console, Pitwall, Wooden plaque HD, Technology / AI HD, Parchment &amp; seal HD, Runestone HD, Stained glass HD, Comic HD, Frost HD, Azeroth, Goblin workshop</td><td>Classic (your layout)</td></tr>
+<tr><td><b>Theme</b></td><td>Beta: each theme keeps its own settings, at first those of Classic. Themes are made to match the other Forever addons and look best when you use several of them with the same theme.</td><td>Classic (your layout), Wooden plaque, Technology / AI, Parchment &amp; seal, Runestone, Stained glass, Comic, Frost, Pixel, Swiss Clean, Console, Pitwall, Wooden plaque HD, Technology / AI HD, Parchment &amp; seal HD, Runestone HD, Stained glass HD, Comic HD, Frost HD, Goblin workshop</td><td>Classic (your layout)</td></tr>
 </tbody>
 </table>
 

@@ -40,8 +40,8 @@ Panel.others[#Panel.others + 1] = Window
 
 local function general(key) return ns.RaidConfig.Get("general", key) end
 
--- The title on a theme's swallowtail banner (Azeroth, ThemeArt.Banner):
--- gold, as on the quest log's; never ink on red.
+-- The title on a theme's swallowtail banner (banner with bannerEnd,
+-- ThemeArt.Banner): gold, as on the quest log's.
 local BANNER_GOLD = { 1, 0.82, 0 }
 
 -- Whether the cells' theme puts the title on a banner (not mere stripes).
@@ -122,8 +122,7 @@ end
 local function linesOf(st)
     if st.unknown then return { L.RAID_BUFF_UNKNOWN } end
     local items = st.preview and sampleItems() or Names.Of(st)
-    return Names.Pack(items, Window.WIDTH - 2 * Window.PADDING - Window.NAMES_INDENT, measure,
-        ns.Themes.Spec(ns.RaidCell.Theme()).ink)
+    return Names.Pack(items, Window.WIDTH - 2 * Window.PADDING - Window.NAMES_INDENT, measure)
 end
 
 -- Its size: the header, a block per watched buff.
@@ -309,25 +308,12 @@ local function placeHeader(id)
     Window.rule:SetShown(not bannered())
 end
 
--- The names in a theme's ink on its light parchment (Azeroth), without
--- the dark shadow; else the window's light text.
-local function inkLines(ink)
-    local c = ink or Style.COLORS.text
-    for _, r in ipairs(Window.rows) do
-        for _, line in ipairs(r.lines) do
-            line:SetTextColor(c[1], c[2], c[3], 1)
-            line:SetShadowOffset(ink and 0 or 1, ink and 0 or -1)
-        end
-    end
-end
-
 -- The raid cells' theme (Raid/Cell.lua): its backdrop, banner and title
 -- font; Classic the plain dark glass.
 local function applyTheme()
     local id = ns.RaidCell.Theme()
     local spec = ns.Themes.Spec(id)
     placeHeader(id)
-    inkLines(spec.ink)
     local bg = Window.bg
     bg:SetVertexColor(1, 1, 1, 1)
     if spec.art and spec.art.back then
