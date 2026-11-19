@@ -53,6 +53,7 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 <tr><td><b>Health bar width (%)</b></td><td>The health bar's share of the frame width; the rest shows the frame background</td><td>20 – 100</td><td>100</td><td>all</td></tr>
 <tr><td><b>Power bar width (%)</b></td><td>The power bar's share of the frame width; the rest shows the frame background</td><td>20 – 100</td><td>100</td><td>all</td></tr>
 <tr><td><b>Narrow bars sit</b></td><td>Where a bar narrower than the frame sits</td><td>Left, Center, Right</td><td>Left</td><td>all</td></tr>
+<tr><td><b>Fill from the right</b></td><td>Health and power fill from right to left, e.g. to mirror the player frame</td><td>On, Off</td><td>Off</td><td>all</td></tr>
 </tbody>
 </table>
 

@@ -29,6 +29,7 @@ end
 function Power.Style(frame)
     local tex = ns.Media.StatusBar(Config.Get(frame.key, "barTexture"))
     frame.power:SetStatusBarTexture(tex)
+    frame.power:SetReverseFill(Config.Get(frame.key, "barReverse"))
     frame.powerBg:SetTexture(tex)
     local bg = Config.Get(frame.key, "backgroundColor")
     frame.powerBg:SetVertexColor(bg[1], bg[2], bg[3], bg[4])

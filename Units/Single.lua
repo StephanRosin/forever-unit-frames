@@ -190,17 +190,21 @@ local function layoutBars(frame)
         lane = Pixel.Snap(Layout.OverhealLane(healthW))
     end
     frame.healthWidth, frame.overhealLane = healthW - lane, lane
+    -- Reversed bars fill to the left: the lane lies there.
+    local reverse = Config.Get(scope, "barReverse")
+    local laneLeft, laneRight = reverse and lane or 0, reverse and 0 or lane
     frame.health:ClearAllPoints()
     local healthTop = titleH + titleGap + strip + stripGap
-    frame.health:SetPoint("TOPLEFT", frame, "TOPLEFT", left + healthBefore, -healthTop)
-    frame.health:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -(right + healthAfter + lane), -healthTop)
+    frame.health:SetPoint("TOPLEFT", frame, "TOPLEFT", left + healthBefore + laneLeft, -healthTop)
+    frame.health:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -(right + healthAfter + laneRight), -healthTop)
     frame.health:SetHeight(healthH)
     if frame.power then
         local powerW, powerBefore, powerAfter = barSpan(scope, "powerBarWidth", width)
         frame.power:ClearAllPoints()
-        frame.power:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", left + powerBefore, footer + footerGap)
         local powerLane = Config.Get(scope, "powerMatchesHealth") and lane or 0
-        frame.power:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -(right + powerAfter + powerLane), footer + footerGap)
+        local powerLeft, powerRight = reverse and powerLane or 0, reverse and 0 or powerLane
+        frame.power:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", left + powerBefore + powerLeft, footer + footerGap)
+        frame.power:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -(right + powerAfter + powerRight), footer + footerGap)
         frame.powerWidth = powerW - powerLane
         frame.power:SetHeight(powerShown and powerH or pixel)
         frame.power:SetShown(powerShown)

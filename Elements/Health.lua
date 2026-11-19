@@ -167,6 +167,7 @@ function Health.Style(frame)
     local scope = frame.key
     local tex = ns.Media.StatusBar(Config.Get(scope, "barTexture"))
     frame.health:SetStatusBarTexture(tex)
+    frame.health:SetReverseFill(Config.Get(scope, "barReverse"))
     frame.healthBg:SetTexture(tex)
     local bg = Config.Get(scope, "backgroundColor")
     local missing = Config.Get(scope, "healthMissingCustom") and Config.Get(scope, "healthMissingColor") or bg

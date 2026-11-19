@@ -77,23 +77,27 @@ end
 function Absorb.Style(frame)
     local bar, scope = frame.absorb, frame.key
     local health, clip = frame.health, frame.absorbClip
+    -- Reversed bars (barReverse): everything mirrored, "end" is the left.
+    local reverse = Config.Get(scope, "barReverse")
+    local start, finish = reverse and "RIGHT" or "LEFT", reverse and "LEFT" or "RIGHT"
+    local lane = frame.overhealLane or 0
     clip:ClearAllPoints()
-    clip:SetPoint("TOPLEFT", health, "TOPLEFT", 0, 0)
-    clip:SetPoint("BOTTOMRIGHT", health, "BOTTOMRIGHT", frame.overhealLane or 0, 0)
+    clip:SetPoint("TOPLEFT", health, "TOPLEFT", reverse and -lane or 0, 0)
+    clip:SetPoint("BOTTOMRIGHT", health, "BOTTOMRIGHT", reverse and 0 or lane, 0)
     bar:ClearAllPoints()
     if Config.Get(scope, "absorbMode") == "END" then
-        -- From the bar's right end towards the left, over the health: seen
+        -- From the bar's end back towards its start, over the health: seen
         -- at full health too. No arithmetic with the (secret) values.
-        bar:SetReverseFill(true)
-        bar:SetPoint("TOPRIGHT", health, "TOPRIGHT", 0, 0)
-        bar:SetPoint("BOTTOMRIGHT", health, "BOTTOMRIGHT", 0, 0)
+        bar:SetReverseFill(not reverse)
+        bar:SetPoint("TOP" .. finish, health, "TOP" .. finish, 0, 0)
+        bar:SetPoint("BOTTOM" .. finish, health, "BOTTOM" .. finish, 0, 0)
     else
         -- After all incoming heals when they show, else right at the health.
         local after = Config.Get(scope, "healPrediction") and frame.healAll:GetStatusBarTexture()
             or health:GetStatusBarTexture()
-        bar:SetReverseFill(false)
-        bar:SetPoint("TOPLEFT", after, "TOPRIGHT", 0, 0)
-        bar:SetPoint("BOTTOMLEFT", after, "BOTTOMRIGHT", 0, 0)
+        bar:SetReverseFill(reverse)
+        bar:SetPoint("TOP" .. start, after, "TOP" .. finish, 0, 0)
+        bar:SetPoint("BOTTOM" .. start, after, "BOTTOM" .. finish, 0, 0)
     end
     bar:SetWidth(frame.healthWidth)
     bar:SetStatusBarTexture(Absorb.SHADE_TEXTURE)
@@ -113,8 +117,11 @@ function Absorb.Style(frame)
     gate:SetAllPoints(fill)
     -- At the end of the clip: the bar's, or the overheal lane's.
     glow:ClearAllPoints()
-    glow:SetPoint("TOPLEFT", clip, "TOPRIGHT", -Absorb.GLOW_OVERLAP, 0)
-    glow:SetPoint("BOTTOMLEFT", clip, "BOTTOMRIGHT", -Absorb.GLOW_OVERLAP, 0)
+    local overlap = reverse and Absorb.GLOW_OVERLAP or -Absorb.GLOW_OVERLAP
+    glow:SetPoint("TOP" .. start, clip, "TOP" .. finish, overlap, 0)
+    glow:SetPoint("BOTTOM" .. start, clip, "BOTTOM" .. finish, overlap, 0)
+    -- Mirrored with the bars: the glow fades away from the end.
+    if reverse then glow:SetTexCoord(1, 0, 0, 1) else glow:SetTexCoord(0, 1, 0, 1) end
     glow:SetWidth(Absorb.GLOW_WIDTH)
     glow:SetVertexColor(c[1], c[2], c[3], 1)
     local enabled = Config.Get(scope, "absorbEnabled")

@@ -64,9 +64,12 @@ function HealPrediction.Style(frame)
     local clip = frame.healClip
     local beyond = Config.Get(scope, "healBeyond")
     frame.healBeyond = beyond
+    -- Reversed bars (barReverse): everything mirrored, the heals run left.
+    local reverse = Config.Get(scope, "barReverse")
+    local reach = beyond and math.max(lane, frame.healthWidth) or lane
     clip:ClearAllPoints()
-    clip:SetPoint("TOPLEFT", health, "TOPLEFT", 0, 0)
-    clip:SetPoint("BOTTOMRIGHT", health, "BOTTOMRIGHT", beyond and math.max(lane, frame.healthWidth) or lane, 0)
+    clip:SetPoint("TOPLEFT", health, "TOPLEFT", reverse and -reach or 0, 0)
+    clip:SetPoint("BOTTOMRIGHT", health, "BOTTOMRIGHT", reverse and 0 or reach, 0)
     clip:SetShown(Config.Get(scope, "healPrediction"))
     for _, pair in ipairs({ { frame.healAll, "healOtherColor" }, { frame.healMine, "healMyColor" } }) do
         local bar, key = pair[1], pair[2]
@@ -74,8 +77,14 @@ function HealPrediction.Style(frame)
         local c = Config.Get(scope, key)
         bar:SetStatusBarColor(c[1], c[2], c[3], c[4])
         bar:ClearAllPoints()
-        bar:SetPoint("TOPLEFT", fill, "TOPRIGHT", 0, 0)
-        bar:SetPoint("BOTTOMLEFT", fill, "BOTTOMRIGHT", 0, 0)
+        bar:SetReverseFill(reverse)
+        if reverse then
+            bar:SetPoint("TOPRIGHT", fill, "TOPLEFT", 0, 0)
+            bar:SetPoint("BOTTOMRIGHT", fill, "BOTTOMLEFT", 0, 0)
+        else
+            bar:SetPoint("TOPLEFT", fill, "TOPRIGHT", 0, 0)
+            bar:SetPoint("BOTTOMLEFT", fill, "BOTTOMRIGHT", 0, 0)
+        end
         bar:SetWidth(frame.healthWidth)
         -- Past the frame the rounded mask must be off (Elements/Shape.lua
         -- puts it on the listed textures, which skip themselves then).
@@ -83,8 +92,13 @@ function HealPrediction.Style(frame)
     end
     local laneBg = frame.overhealBg
     laneBg:ClearAllPoints()
-    laneBg:SetPoint("TOPLEFT", health, "TOPRIGHT", 0, 0)
-    laneBg:SetPoint("BOTTOMRIGHT", health, "BOTTOMRIGHT", lane, 0)
+    if reverse then
+        laneBg:SetPoint("TOPRIGHT", health, "TOPLEFT", 0, 0)
+        laneBg:SetPoint("BOTTOMLEFT", health, "BOTTOMLEFT", -lane, 0)
+    else
+        laneBg:SetPoint("TOPLEFT", health, "TOPRIGHT", 0, 0)
+        laneBg:SetPoint("BOTTOMRIGHT", health, "BOTTOMRIGHT", lane, 0)
+    end
     laneBg:SetTexture(tex)
     local bg = Config.Get(scope, "backgroundColor")
     laneBg:SetVertexColor(bg[1], bg[2], bg[3], bg[4])

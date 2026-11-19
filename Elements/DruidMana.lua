@@ -42,6 +42,7 @@ function DruidMana.Style(frame)
     if not bar then return end
     local tex = ns.Media.StatusBar(Config.Get(DruidMana.SCOPE, "barTexture"))
     bar:SetStatusBarTexture(tex)
+    bar:SetReverseFill(Config.Get(DruidMana.SCOPE, "barReverse"))
     local c = Config.Get(DruidMana.SCOPE, "powerColorMana")
     bar:SetStatusBarColor(c[1], c[2], c[3])
     bar.bg:SetColorTexture(0, 0, 0, 0.6)
