@@ -1018,6 +1018,7 @@ function Widgets.KeyButton(parent, opts)
     local button = Widgets.Button(parent, { text = "", width = opts.width or Widgets.CONTROL_W, onClick = function() end })
     button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
     local waiting = false
+    local onKeyDown, onWheel
 
     function button.ShowValue()
         if waiting then return end
@@ -1027,6 +1028,8 @@ function Widgets.KeyButton(parent, opts)
     local function stop()
         if not waiting then return end
         waiting = false
+        button:SetScript("OnKeyDown", nil)
+        button:SetScript("OnMouseWheel", nil)
         button:EnableKeyboard(false)
         button:EnableMouseWheel(false)
         button:UnregisterEvent("GLOBAL_MOUSE_DOWN")
@@ -1045,6 +1048,11 @@ function Widgets.KeyButton(parent, opts)
         if focus then focus:ClearFocus() end
         waiting = true
         button.text:SetText(L.KEY_BUTTON_PROMPT)
+        -- Set only while waiting: a key script switches the keyboard on, and
+        -- the client gives a key to the topmost such button, waiting or not
+        -- (Key 4 waited, Key 9 took the key).
+        button:SetScript("OnKeyDown", onKeyDown)
+        button:SetScript("OnMouseWheel", onWheel)
         button:EnableKeyboard(true)
         button:EnableMouseWheel(true)
         button:RegisterEvent("GLOBAL_MOUSE_DOWN")
@@ -1058,19 +1066,19 @@ function Widgets.KeyButton(parent, opts)
             start()
         end
     end)
-    button:SetScript("OnKeyDown", function(_, key)
+    onKeyDown = function(_, key)
         if key == "ESCAPE" then
             stop()
         elseif not MODIFIER_KEYS[key] then
             button.Commit(heldModifiers() .. key)
         end
-    end)
+    end
     button:SetScript("OnMouseDown", function(_, mouse)
         if waiting and MOUSE_KEYS[mouse] then button.Commit(heldModifiers() .. MOUSE_KEYS[mouse]) end
     end)
-    button:SetScript("OnMouseWheel", function(_, delta)
+    onWheel = function(_, delta)
         button.Commit(heldModifiers() .. (delta > 0 and "MOUSEWHEELUP" or "MOUSEWHEELDOWN"))
-    end)
+    end
     button:SetScript("OnEvent", function(self)
         if not self:IsMouseOver() then stop() end
     end)

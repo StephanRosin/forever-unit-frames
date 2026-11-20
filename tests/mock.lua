@@ -973,7 +973,14 @@ function methods:GetFrameLevel() return self._level end
 function methods:GetChildren() return unpack(rawget(self, "_children") or {}) end
 function methods:GetName() return self._name end
 function methods:GetObjectType() return self._kind end
-function methods:SetScript(s, fn) self._scripts[s] = fn end
+-- As the client: a key script switches the frame's keyboard on (it then
+-- takes every key press, waiting or not).
+local KEY_SCRIPTS = { OnKeyDown = true, OnKeyUp = true, OnChar = true }
+function methods:SetScript(s, fn)
+    self._scripts[s] = fn
+    if fn and KEY_SCRIPTS[s] then self._keyboard = true end
+    if fn and s == "OnMouseWheel" then self._mouseWheel = true end
+end
 function methods:GetScript(s) return self._scripts[s] end
 function methods:HookScript(s, fn)
     local old = self._scripts[s]

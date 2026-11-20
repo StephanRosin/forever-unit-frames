@@ -83,6 +83,17 @@ RO.SelectTab("clickCast")
 
 -- A click-casting key: taken twice is refused, the border says so.
 local key1, key2 = rowFor("clickKey1").keyBox, rowFor("clickKey2").keyBox
+-- Only the button waiting takes keys (Email 21.11.2026: Key 4 waited, Z
+-- landed on Key 9, which held the keyboard since its key script was set).
+H.check("idle: no keyboard", rowFor("clickKey9").keyBox._keyboard and true or false, false)
+H.check("idle: no wheel (the page scrolls)", rowFor("clickKey9").keyBox._mouseWheel and true or false, false)
+key2:GetScript("OnClick")(key2, "LeftButton")
+M.PressKey(rowFor("clickKey9").keyBox, "Z")
+H.check("a key pressed meanwhile: not on another button", RC.Get("general", "clickKey9"), "")
+M.PressKey(key2, "Z")
+H.check("the waiting one takes it", RC.Get("general", "clickKey2"), "Z")
+H.check("done: no keyboard", key2._keyboard and true or false, false)
+key2:GetScript("OnClick")(key2, "RightButton")
 key1:GetScript("OnClick")(key1, "LeftButton")
 M.PressKey(key1, "G")
 H.check("click key stored", RC.Get("general", "clickKey1"), "G")
