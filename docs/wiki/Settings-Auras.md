@@ -29,6 +29,7 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <tbody>
 <tr><td><b>Show buffs</b></td><td></td><td>On, Off</td><td>Player, Target of Target, Pet, Boss: Off; Target, Focus, Party: On</td><td>all</td></tr>
 <tr><td><b>Hide Blizzard buffs and debuffs</b></td><td>Those at the minimap; /reload to show them again</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
+<tr><td><b>Right-click cancels a buff</b></td><td>In combat too, and with Shift</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
 <tr><td><b>Weapon enchants</b></td><td>Poisons, stones, Rockbiter Weapon and the like, before the buffs</td><td>On, Off</td><td>On</td><td>Player</td></tr>
 <tr><td><b>Enchants in the buff row</b></td><td>At the start of the first buff row instead of a row of their own</td><td>On, Off</td><td>Off</td><td>Player</td></tr>
 <tr><td><b>Only mine</b></td><td>Cast by you or your pet</td><td>On, Off</td><td>Player, Target, Target of Target, Focus, Pet, Boss: Off; Party: On</td><td>all</td></tr>

@@ -720,6 +720,11 @@ local function newAuraButton(container, group)
         assert(y == nil or type(y) == "number", "offsetY must be a number or nil")
         self._tooltipAnchor = { point, x or 0, y or 0 }
     end
+    -- As Blizzard_AuraButton.lua: a string of click tokens or nil.
+    function b:SetCancelAuraButtons(tokens)
+        assert(tokens == nil or type(tokens) == "string", "cancelAuraButtons must be a string or nil.")
+        self._cancelButtons = tokens
+    end
     function b:SetHideTooltipInCombat(v) self._tooltipHideInCombat = v == true end
     -- UntrustedScriptExecution: scripts an addon sets would never run.
     function b:SetScript() error("mock: an aura button runs no addon scripts", 2) end

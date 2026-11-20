@@ -406,6 +406,11 @@ Settings.Define({ key = "hideBlizzardCastbar", code = "CB", scope = "frame", onl
 -- (BuffFrame, DebuffFrame), for those who show them on the player frame.
 Settings.Define({ key = "hideBlizzardAuras", code = "BF", scope = "frame", only = { player = true },
     type = "bool", default = false })
+-- Player only: right-click on one of your buffs cancels it
+-- (AuraContainers.Clicks). Off by default: Shift + right-click (the aura
+-- menu) cancels too, the client knows no modifiers there.
+Settings.Define({ key = "cancelBuffs", code = "RC", scope = "frame", only = { player = true },
+    type = "bool", default = false })
 -- Single frames may detach their castbar (own mover) or lay it over their
 -- portrait; party and boss castbars dock above or below each frame.
 local CASTBAR_SINGLE = { player = true, target = true, targettarget = true, targettargettarget = true, focustarget = true, pet = true, pettarget = true, focus = true }

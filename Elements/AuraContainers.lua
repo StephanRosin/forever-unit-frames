@@ -207,6 +207,15 @@ function AuraContainers.Wire(button, isDebuff)
     pcall(button.SetMouseClickEnabled, button, false)
 end
 
+-- Clicks on a button: the player's buffs cancel on right-click when
+-- cancelBuffs is on (the client's own secure click, so in combat too);
+-- otherwise every click passes through to the unit button below.
+function AuraContainers.Clicks(button, frame, isDebuff)
+    local cancel = not isDebuff and frame.key == "player" and ns.Config.Get("player", "cancelBuffs") == true
+    if button.SetCancelAuraButtons then button:SetCancelAuraButtons(cancel and "RightButtonUp" or nil) end
+    pcall(button.SetMouseClickEnabled, button, cancel)
+end
+
 -- entry = { frame, key, isDebuff, buttons }; own: the button belongs to
 -- the "own" group (drawn at the own size).
 function AuraContainers.InitButton(entry, own, button)
@@ -219,6 +228,7 @@ function AuraContainers.InitButton(entry, own, button)
     AuraButton.Style(button, entry.frame.key, size, group.showTime)
     entry.buttons[#entry.buttons + 1] = { button = button, own = own }
     AuraContainers.Wire(button, entry.isDebuff)
+    AuraContainers.Clicks(button, entry.frame, entry.isDebuff)
 end
 
 -- Containers per frame ------------------------------------------------------------
@@ -329,7 +339,8 @@ local function restyle(entry, group)
     for _, record in ipairs(entry.buttons) do
         local size = record.own and group.ownSize or group.size
         record.button.casterBorder = AuraContainers.CasterBorder(group, record.own)
-        if not pcall(ns.AuraButton.Style, record.button, entry.frame.key, size, group.showTime) then
+        if not pcall(ns.AuraButton.Style, record.button, entry.frame.key, size, group.showTime)
+            or not pcall(AuraContainers.Clicks, record.button, entry.frame, entry.isDebuff) then
             refused = true
         end
     end
