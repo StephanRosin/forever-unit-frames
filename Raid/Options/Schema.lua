@@ -53,7 +53,7 @@ local function clickCastSections()
         end
         list[#list + 1] = { id = "click" .. b.name, keys = keys }
     end
-    local keys = {}
+    local keys = { "clickKeysSolo" }
     for _, slot in ipairs(ns.Raid.CLICK_KEYS) do
         keys[#keys + 1] = slot.key
         keys[#keys + 1] = slot.bind

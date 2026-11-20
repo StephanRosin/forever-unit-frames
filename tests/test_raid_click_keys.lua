@@ -24,6 +24,25 @@ RC.Set("general", "clickKey2Bind", "macro:/say hi")
 RC.Set("general", "clickKey3", "G")
 -- Solo: the raid frames do not show, no key is taken.
 H.check("solo: F keeps its binding", GetBindingAction("F", true), "")
+-- "Also without a group" (CurseForge 20.11.2026): bound solo while the
+-- player frame shows with its clickCast on.
+H.check("solo option off by default", RC.Get("general", "clickKeysSolo"), false)
+RC.Set("general", "clickKeysSolo", true)
+M.RunTimers()
+H.check("solo option: F clicks key 1", GetBindingAction("F", true), "CLICK ForeverUnitFramesClickKey1:LeftButton")
+ns.Config.Set("player", "clickCast", false)
+M.RunTimers()
+H.check("solo option, player clickCast off: free", GetBindingAction("F", true), "")
+ns.Config.ClearOverride("player", "clickCast")
+M.RunTimers()
+H.check("player clickCast back: bound", GetBindingAction("F", true) ~= "", true)
+ns.Config.Set("player", "enabled", false)
+M.RunTimers()
+H.check("solo option, player frame off: free", GetBindingAction("F", true), "")
+ns.Config.Set("player", "enabled", true)
+RC.Set("general", "clickKeysSolo", false)
+M.RunTimers()
+H.check("solo option off again: free", GetBindingAction("F", true), "")
 
 -- In a raid: bound.
 M.SetRaidRoster({ { name = "A", class = "PRIEST", subgroup = 1, unit = { health = 1, healthMax = 1 } } })

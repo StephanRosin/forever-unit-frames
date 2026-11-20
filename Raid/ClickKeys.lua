@@ -10,7 +10,8 @@ local _, ns = ...
 -- frames' party members show with their clickCast on (decision 76), and
 -- the macro's condition makes them act only on a friendly unit under the
 -- mouse. The player, target and focus frames alone do not bind them: the
--- keys would be taken all the time, solo too. Set and cleared out of
+-- keys would be taken all the time, solo too; only clickKeysSolo asks for
+-- that (the player frame on, its clickCast on). Set and cleared out of
 -- combat only; in combat the bindings stay as they were.
 local ClickKeys = {}
 ns.ClickKeys = ClickKeys
@@ -95,7 +96,12 @@ end
 function ClickKeys.Wanted()
     if not ns.ClickCast.On() then return false end
     if ns.RaidPanel.Active() then return true end
-    return ns.Config.Profile() ~= nil and ns.Config.Get(ns.Party.KEY, "clickCast") == true and partyShows()
+    if ns.Config.Profile() == nil then return false end
+    if ns.RaidConfig.Get("general", "clickKeysSolo") == true and ns.FrameEnabled("player")
+        and ns.Config.Get("player", "clickCast") == true then
+        return true
+    end
+    return ns.Config.Get(ns.Party.KEY, "clickCast") == true and partyShows()
 end
 
 local update
@@ -189,7 +195,7 @@ ClickKeys.Queue = update
 
 -- The settings that change the bindings: the keys, and what decides
 -- whether the raid frames show.
-local KEYS = { clickCast = true, enabled = true, showInParty = true }
+local KEYS = { clickCast = true, enabled = true, showInParty = true, clickKeysSolo = true }
 for _, slot in ipairs(Raid.CLICK_KEYS) do
     KEYS[slot.key], KEYS[slot.bind] = true, true
     ns.RaidPanel.UNRELATED_KEYS[slot.key], ns.RaidPanel.UNRELATED_KEYS[slot.bind] = true, true
@@ -210,5 +216,5 @@ ns.On("SPELLS_CHANGED", update)
 ns.RaidSpellbook.OnTextUpdate(update)
 -- The party's clickCast (decision 76; General's or the party's own).
 ns.Listen("CONFIG_CHANGED", function(_, key)
-    if key == nil or key == "clickCast" then update() end
+    if key == nil or key == "clickCast" or key == "enabled" or key == "unitFrames" then update() end
 end)
