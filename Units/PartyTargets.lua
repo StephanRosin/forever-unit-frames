@@ -172,10 +172,19 @@ function Targets.StyleAll(testing)
     showFakes(on and testing)
 end
 
--- Shown buttons refresh on a timer; a member's new target at once.
+-- Shown buttons refresh on a timer, one per tick in turn: all of them in
+-- one frame took 3 ms and more (a spike every POLL, measured in combat).
+-- Each still refreshes every POLL; a member's new target at once.
+local nextIndex = 1
 function Targets.Tick()
-    for _, button in ipairs(Targets.buttons) do
-        if button:IsShown() then Single.UpdateAll(button, Single.POLL) end
+    local buttons = Targets.buttons
+    for _ = 1, #buttons do
+        local button = buttons[nextIndex]
+        nextIndex = nextIndex % #buttons + 1
+        if button and button:IsShown() then
+            Single.UpdateAll(button, Single.POLL)
+            return
+        end
     end
 end
 
@@ -183,7 +192,7 @@ local driver = CreateFrame("Frame")
 local elapsed = 0
 driver:SetScript("OnUpdate", function(_, dt)
     elapsed = elapsed + dt
-    if elapsed < Targets.POLL then return end
+    if elapsed < Targets.POLL / math.max(#Targets.buttons, 1) then return end
     elapsed = 0
     Targets.Tick()
 end)

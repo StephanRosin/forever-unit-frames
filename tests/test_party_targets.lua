@@ -105,6 +105,20 @@ M.units.party1target.health = 8
 M.FireEvent("UNIT_TARGET", "party1")
 H.check("refreshed when the member changes target", t1.health:GetValue(), 8)
 
+-- Spread out: one shown button per tick, in turn, never all in one frame.
+local t2 = ns.Party.buttons[2].targetButton
+M.units.party2target = { name = "Wolf", health = 50, healthMax = 100, hostile = true }
+t2:Show()
+T.Tick(); T.Tick()
+M.units.party1target.health, M.units.party2target.health = 3, 4
+T.Tick()
+local one = (t1.health:GetValue() == 3) ~= (t2.health:GetValue() == 4)
+H.checkTrue("one button per tick", one)
+T.Tick()
+H.check("then the other: 1", t1.health:GetValue(), 3)
+H.check("then the other: 2", t2.health:GetValue(), 4)
+t2:Hide()
+
 -- A member's new unit (the header reorders, in combat too): the drawing
 -- unit follows; the secure side resolves it by itself.
 M.SetCombat(true)
