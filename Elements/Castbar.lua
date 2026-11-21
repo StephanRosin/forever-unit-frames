@@ -238,11 +238,17 @@ local function holdsPlace(scope)
     return ns.ThreatBar and ns.ThreatBar.Active(scope) and Castbar.Docked(scope) or false
 end
 
+-- Whether the bar's frame is your own party entry with castbarHideOwn on.
+local function hiddenOwn(bar)
+    return bar.frame ~= nil and bar.frame.unit == "player" and bar.scope == "party"
+        and Config.Get("party", "castbarHideOwn") == true
+end
+
 function Castbar.Stop(bar)
     bar.cast = nil
     stopTimer(bar)
     local scope = bar.scope
-    if not (Config.Get(scope, "castbarEnabled") and holdsPlace(scope)) then
+    if not (Config.Get(scope, "castbarEnabled") and holdsPlace(scope)) or hiddenOwn(bar) then
         setShown(bar, false)
         return
     end
@@ -347,6 +353,7 @@ function Castbar.Build(frame)
     bar.clip = ns.Corners.Clipper(bar)
     bar:SetScript("OnUpdate", Castbar.OnUpdate)
     bar:Hide()
+    bar.frame = frame
     frame.castbar = bar
 end
 
@@ -553,7 +560,7 @@ end
 function Castbar.Update(frame, event, _, castGUID)
     local bar = frame.castbar
     if not bar or bar.preview then return end
-    if not Config.Get(frame.key, "castbarEnabled") then
+    if not Config.Get(frame.key, "castbarEnabled") or hiddenOwn(bar) then
         Castbar.Stop(bar)
         return
     end

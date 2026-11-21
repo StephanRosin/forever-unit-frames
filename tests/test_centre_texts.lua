@@ -85,7 +85,10 @@ H.check("unset: centre hidden", c:IsShown(), false)
 C.Set("target", "textPowerCenter", "CURRENT_MAX")
 H.check("power centre: power values", table.concat(tx.powerCenter._args, ","), "10,100")
 H.check("power centre: on the power bar", point(tx.powerCenter, "LEFT")[2], t.power)
+H.check("power centre alone (left and right off): the whole bar", point(tx.powerCenter, "LEFT")[4], ns.Pixel.Snap(4))
+C.Set("target", "textPowerLeft", "CURRENT")
 H.check("power centre: power bar's third", point(tx.powerCenter, "LEFT")[4], ns.Pixel.Snap(t.powerWidth / 3))
+C.Set("target", "textPowerLeft", "NONE")
 C.Set("target", "textPowerCenter", "NONE")
 
 -- Title centre: the title texts keep to their thirds, the right one still
@@ -154,3 +157,21 @@ do
         H.check("raid cell: no " .. key, cell.Resolve(key), "NONE")
     end
 end
+
+-- Alone on its row (left and right off): the whole bar less 4 pixels
+-- (CurseForge 21.11.2026: a centred name cut after 4 letters).
+C.Set("target", "textHealthLeft", "NONE")
+C.Set("target", "textHealthRight", "NONE")
+C.Set("target", "textHealthCenter", "NAME")
+H.check("alone: from 4 pixels in", point(tx.healthCenter, "LEFT")[4], ns.Pixel.Snap(4))
+H.check("alone: to 4 pixels in", point(tx.healthCenter, "RIGHT")[4], -ns.Pixel.Snap(4))
+C.Set("target", "textHealthRight", "PERCENT")
+H.check("a right text again: the third", point(tx.healthCenter, "LEFT")[4], ns.Pixel.Snap(t.healthWidth / 3))
+-- The title row: alone too, but not while the class icon is on.
+C.Set("target", "titleText", "NONE")
+C.Set("target", "titleTextRight", "NONE")
+C.Set("target", "titleTextCenter", "NAME")
+C.Set("target", "titleClassIcon", false)
+H.check("title alone: whole row", point(tx.titleCenter, "LEFT")[4], ns.Pixel.Snap(4))
+C.Set("target", "titleClassIcon", true)
+H.check("title alone, class icon on: the third", point(tx.titleCenter, "LEFT")[4], ns.Pixel.Snap(t.titleWidth / 3))

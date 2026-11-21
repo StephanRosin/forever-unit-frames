@@ -227,7 +227,7 @@ Schema.FRAME = {
             "dispelHighlight", "dispelPulse", "hoverHighlight" } },
     } },
     { id = "castbar", sections = {
-        { id = "castbar", keys = { "castbarEnabled", "castbarAlwaysShow", "hideBlizzardCastbar", "castbarPosition", "castbarDock",
+        { id = "castbar", keys = { "castbarEnabled", "castbarAlwaysShow", "castbarHideOwn", "hideBlizzardCastbar", "castbarPosition", "castbarDock",
             "castbarHeight" } },
         { id = "castbarContent", keys = { "castbarIcon", "castbarName", "castbarTime", "castbarInterrupt", "castbarLatency", "castbarLatencyPoint",
             "castbarLatencyX" } },

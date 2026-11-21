@@ -765,8 +765,12 @@ end
 -- Centre texts (decision 59): a row whose centre text is set gives it the
 -- middle third of its bar, the left text the first and the right text the
 -- last, each cut off with "..." at its edge. The thirds are plain numbers
--- from the layout; nothing is measured. Rows without one keep the left
--- and right texts as Style placed them; the empty centre text is hidden.
+-- from the layout; nothing is measured. With the row's left and right
+-- texts both off, the centre text takes the whole bar less a small inset
+-- (CurseForge 21.11.2026: a centred name cut after 4 letters); not on the
+-- title row while the class icon is on (its badge may sit in the row).
+-- Rows without one keep the left and right texts as Style placed them;
+-- the empty centre text is hidden.
 -- Raid cells centre their texts their own way and never have one.
 local function placeCentres(frame)
     frame.centerShown, frame.centerThird = frame.centerShown or {}, frame.centerThird or {}
@@ -777,7 +781,10 @@ local function placeCentres(frame)
         frame.centerShown[bar] = on
         center:SetShown(on)
         if on then
-            local third = ns.Pixel.Snap((frame[row.width] or 0) / 3, center)
+            local alone = Config.Get(frame.key, SLOT_OF[row.left].setting) == "NONE"
+                and Config.Get(frame.key, SLOT_OF[row.right].setting) == "NONE"
+                and not (bar == "title" and classIconWanted(frame))
+            local third = ns.Pixel.Snap(alone and 4 or (frame[row.width] or 0) / 3, center)
             frame.centerThird[bar] = third
             center:SetPoint("LEFT", frame[bar], "LEFT", third, 0)
             center:SetPoint("RIGHT", frame[bar], "RIGHT", -third, 0)

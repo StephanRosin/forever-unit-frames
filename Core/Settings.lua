@@ -398,6 +398,11 @@ local CASTBAR = { player = true, target = true, targettarget = true, targettarge
     boss = true }
 Settings.Define({ key = "castbarEnabled", code = "CE", scope = "frame", only = CASTBAR, type = "bool",
     default = { player = false, pet = false, _ = true } })
+-- Party only: no castbar on your own entry (party "show yourself" or
+-- "show when solo"; CurseForge 21.11.2026: the player's cast shows on
+-- Blizzard's bar already). Its room stays, the members line up.
+Settings.Define({ key = "castbarHideOwn", code = "CC", scope = "frame", only = { party = true },
+    type = "bool", default = false })
 -- Player only: conceals Blizzard's PlayerCastingBarFrame. Independent of
 -- castbarEnabled -- some players want both cast bars shown at once.
 Settings.Define({ key = "hideBlizzardCastbar", code = "CB", scope = "frame", only = { player = true },
