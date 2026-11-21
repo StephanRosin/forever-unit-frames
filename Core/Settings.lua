@@ -362,10 +362,15 @@ Settings.Define({ key = "partyPetGap", code = "PG", scope = "frame", only = PART
 -- The pets' health bar texts (Units/PartyPets.lua); PARTY: the party's own.
 Settings.Define({ key = "partyPetTextLeft", code = "PD", scope = "frame", only = PARTY, type = "enum", values = TEXT_TAGS,
     default = "NAME" })
-local PET_TEXT_RIGHT = { "PARTY" }
-for _, tag in ipairs(TEXT_TAGS) do PET_TEXT_RIGHT[#PET_TEXT_RIGHT + 1] = tag end
+local LIKE_PARTY = { "PARTY" }
+for _, tag in ipairs(TEXT_TAGS) do LIKE_PARTY[#LIKE_PARTY + 1] = tag end
+Settings.LIKE_PARTY_TAGS = LIKE_PARTY
 Settings.Define({ key = "partyPetTextRight", code = "PF", scope = "frame", only = PARTY, type = "enum",
-    values = PET_TEXT_RIGHT, default = "PARTY" })
+    values = LIKE_PARTY, default = "PARTY" })
+-- The centre takes room from both sides: the party's centre text left a
+-- pet's name only "...".
+Settings.Define({ key = "partyPetTextCenter", code = "PO", scope = "frame", only = PARTY, type = "enum",
+    values = LIKE_PARTY, default = "PARTY" })
 -- Moves the whole pet list from its place below the block (positive:
 -- right, up), e.g. past buffs that hang below the members.
 Settings.Define({ key = "partyPetsX", code = "PJ", scope = "frame", only = PARTY, type = "int", min = -400, max = 400,
@@ -411,6 +416,8 @@ Settings.Define({ key = "partyTargetTextLeft", code = "YL", scope = "frame", onl
     default = "NAME" })
 Settings.Define({ key = "partyTargetTextRight", code = "YR", scope = "frame", only = PARTY, type = "enum", values = TEXT_TAGS,
     default = "PERCENT" })
+Settings.Define({ key = "partyTargetTextCenter", code = "YC", scope = "frame", only = PARTY, type = "enum",
+    values = Settings.LIKE_PARTY_TAGS, default = "PARTY" })
 
 -- Castbar (off by default on the player and pet frames)
 local CASTBAR = { player = true, target = true, targettarget = true, targettargettarget = true, focustarget = true, pet = true, pettarget = true, focus = true, party = true,

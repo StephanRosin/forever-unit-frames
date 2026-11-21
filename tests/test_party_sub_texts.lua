@@ -22,3 +22,13 @@ H.check("pet left set", C.Get(P, "textHealthLeft"), "NONE")
 H.check("pet right: its own", C.Get(P, "textHealthRight"), "PERCENT")
 C.Set("party", "partyPetTextRight", "PARTY")
 H.check("pet right: the party's again", C.Get(P, "textHealthRight"), "DEFICIT")
+
+-- The centre: the party's by default, else its own (a pet's name had only "...").
+C.Set("party", "textHealthCenter", "CURRENT")
+H.check("pet centre: the party's", C.Get(P, "textHealthCenter"), "CURRENT")
+H.check("target centre: the party's", C.Get(T, "textHealthCenter"), "CURRENT")
+C.Set("party", "partyPetTextCenter", "NONE")
+C.Set("party", "partyTargetTextCenter", "NONE")
+H.check("pet centre: none", C.Get(P, "textHealthCenter"), "NONE")
+H.check("target centre: none", C.Get(T, "textHealthCenter"), "NONE")
+H.check("the party keeps its own", C.Get("party", "textHealthCenter"), "CURRENT")

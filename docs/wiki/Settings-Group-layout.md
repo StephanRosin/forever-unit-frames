@@ -39,6 +39,7 @@ Click-casting on the party: Appearance tab, or General > Click-casting for all f
 <tr><td><b>Pets offset X</b></td><td>Moves the pets: the list, or each pet beside its owner</td><td>-400 – 400</td><td>0</td><td>Party</td></tr>
 <tr><td><b>Pets offset Y</b></td><td>Moves the pets: the list, or each pet beside its owner</td><td>-400 – 400</td><td>0</td><td>Party</td></tr>
 <tr><td><b>Left text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>Name</td><td>Party</td></tr>
+<tr><td><b>Center text</b></td><td></td><td>Like the party, None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>Like the party</td><td>Party</td></tr>
 <tr><td><b>Right text</b></td><td></td><td>Like the party, None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>Like the party</td><td>Party</td></tr>
 </tbody>
 </table>
@@ -69,6 +70,7 @@ Click-casting on the party: Appearance tab, or General > Click-casting for all f
 <tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>4</td><td>Party</td></tr>
 <tr><td><b>Offset Y</b></td><td></td><td>-200 – 200</td><td>-43</td><td>Party</td></tr>
 <tr><td><b>Left text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>Name</td><td>Party</td></tr>
+<tr><td><b>Center text</b></td><td></td><td>Like the party, None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>Like the party</td><td>Party</td></tr>
 <tr><td><b>Right text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>Percent</td><td>Party</td></tr>
 </tbody>
 </table>

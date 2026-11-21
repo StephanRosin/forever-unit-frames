@@ -40,6 +40,8 @@ local function resolve(key)
     if fixed ~= nil then return fixed end
     if key == "textHealthLeft" then return get("partyTargetTextLeft") end
     if key == "textHealthRight" then return get("partyTargetTextRight") end
+    -- PARTY: nil, so the party frame's own centre text.
+    if key == "textHealthCenter" and get("partyTargetTextCenter") ~= "PARTY" then return get("partyTargetTextCenter") end
     if key == "width" then return get("partyTargetWidth") end
     if key == "height" then return get("partyTargetHeight") end
     -- A marker no taller than the frame.

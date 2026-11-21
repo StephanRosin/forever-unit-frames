@@ -81,6 +81,7 @@ local function resolve(key)
     if key == "textHealthLeft" then return get("partyPetTextLeft") end
     -- PARTY: nil, so the party frame's own right text.
     if key == "textHealthRight" and get("partyPetTextRight") ~= "PARTY" then return get("partyPetTextRight") end
+    if key == "textHealthCenter" and get("partyPetTextCenter") ~= "PARTY" then return get("partyPetTextCenter") end
     if key == "height" then return get("partyPetHeight") end
     if key == "width" then
         local width = get("partyPetWidth")
