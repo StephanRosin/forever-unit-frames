@@ -104,7 +104,6 @@ For this character, at every raid size; changes apply out of combat. A modified 
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
-<tr><td><b>Also without a group</b></td><td>Solo too: keys are always taken</td><td>On, Off</td><td>Off</td></tr>
 <tr><td><b>Key</b></td><td>Click to set</td><td>Text</td><td>(none)</td></tr>
 <tr><td><b>Casts</b></td><td>On the friendly unit under the mouse</td><td>Nothing, Cast a spell, Use an item, Run a macro</td><td>Nothing</td></tr>
 </tbody>

@@ -4,8 +4,8 @@ local _, ns = ...
 -- and unit are set out of combat to the buff watch's next cast
 -- (Raid/BuffWatch.lua: BuffWatch.Next), clicked by an override binding on
 -- the key the player chose (buffKey), as the click-casting keys are
--- (Raid/ClickKeys.lua). No secure snippet runs on this client and
--- attributes cannot change in combat: the button is emptied and the key
+-- (Raid/ClickKeys.lua). Attributes cannot change in combat and a snippet
+-- cannot read the buff watch: the button is emptied and the key
 -- let go as combat starts (PLAYER_REGEN_DISABLED fires before lockdown);
 -- after combat the next scan sets them again. After a roster change it
 -- casts nothing until the next scan (BuffWatch.armed: the unit tokens may

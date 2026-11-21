@@ -13,6 +13,13 @@ for _, id in ipairs({ 139, 6074, 2061 }) do M.known[id] = true end
 M.SetRaidRoster({ { name = "A", class = "PRIEST", subgroup = 1, unit = { health = 1, healthMax = 1 } } })
 M.RunTimers()
 local cell = ns.RaidCell.buttons[1]
+-- A key as bound while the mouse is over the cell (Raid/ClickKeys.lua).
+local function bound(key)
+    M.Hover(cell)
+    local action = GetBindingAction(key, true)
+    M.Leave(cell)
+    return action
+end
 
 -- Max: the name, cast by name (the highest rank the client knows).
 RC.Set("general", "click1Shift", "spell:Renew")
@@ -61,11 +68,11 @@ H.check("pending: no macro", Keys.MacroText("spell:139"), nil)
 H.check("pending: max unaffected", Keys.MacroText("spell:Renew"), "/cast [@mouseover,help,nodead] Renew")
 M.FireEvent("SPELLS_CHANGED")
 M.RunTimers(1)
-H.check("pending: the key not bound", GetBindingAction("F", true), "")
+H.check("pending: the key not bound", bound("F"), "")
 M.SpellTextArrives(139)
 M.RunTimers(1)
 H.check("text arrived: the rank", b1:GetAttribute("macrotext"), "/cast [@mouseover,help,nodead] Renew(Rank 1)")
-H.check("text arrived: bound", GetBindingAction("F", true), "CLICK ForeverUnitFramesClickKey1:LeftButton")
+H.check("text arrived: bound", bound("F"), "CLICK ForeverUnitFramesClickKey1:LeftButton")
 -- A spell of one rank has no rank text to wait for.
 M.spellTextPending[2061] = true
 H.check("one rank: the name", Keys.MacroText("spell:2061"), "/cast [@mouseover,help,nodead] Flash Heal")
@@ -112,7 +119,7 @@ local chat = #M.chat
 M.spellTextPending[139] = true
 M.FireEvent("SPELLS_CHANGED")
 M.RunTimers(1)
-H.check("waiting: unbound", GetBindingAction("F", true), "")
+H.check("waiting: unbound", bound("F"), "")
 -- One retry (a 2 s timer) alone.
 for i, t in ipairs(M.timers) do
     if t.sec == 2 then
@@ -122,10 +129,10 @@ for i, t in ipairs(M.timers) do
     end
 end
 M.RunTimers(1)
-H.check("still waiting after a retry", GetBindingAction("F", true), "")
+H.check("still waiting after a retry", bound("F"), "")
 M.RunTimers()
 H.check("given up: the bare name", b1:GetAttribute("macrotext"), "/cast [@mouseover,help,nodead] Renew")
-H.check("given up: bound", GetBindingAction("F", true), "CLICK ForeverUnitFramesClickKey1:LeftButton")
+H.check("given up: bound", bound("F"), "CLICK ForeverUnitFramesClickKey1:LeftButton")
 H.check("nothing in the chat", #M.chat, chat)
 M.SpellTextArrives(139)
 M.RunTimers()
@@ -134,7 +141,7 @@ H.check("text at last: the rank", b1:GetAttribute("macrotext"), "/cast [@mouseov
 M.spellTextPending[139] = true
 M.FireEvent("SPELLS_CHANGED")
 M.RunTimers(1)
-H.check("a new wait: unbound again", GetBindingAction("F", true), "")
+H.check("a new wait: unbound again", bound("F"), "")
 M.spellTextPending[139] = nil
 M.RunTimers()
 H.checkTrue("the text event registered (inspectable)", ns.RaidSpellbook.textEventRegistered)
@@ -151,7 +158,7 @@ RC.Set("general", "clickKey2", "G")
 M.spellTextPending[6074] = true
 RC.Set("general", "clickKey2Bind", "spell:6074")
 M.RunTimers(1)
-H.check("key 2 waits for its own text", GetBindingAction("G", true), "")
+H.check("key 2 waits for its own text", bound("G"), "")
 M.SpellTextArrives(6074)
 M.RunTimers(1)
 H.check("key 2: its rank", _G.ForeverUnitFramesClickKey2:GetAttribute("macrotext"),
@@ -160,7 +167,7 @@ H.check("key 2: its rank", _G.ForeverUnitFramesClickKey2:GetAttribute("macrotext
 RC.Set("general", "clickKey1Bind", "spell:Renew")
 RC.Set("general", "clickKey1Bind", "spell:139")
 M.RunTimers(1)
-H.check("key 1 changed back: waits again", GetBindingAction("F", true), "")
+H.check("key 1 changed back: waits again", bound("F"), "")
 M.spellTextPending[139] = nil
 M.RunTimers()
 

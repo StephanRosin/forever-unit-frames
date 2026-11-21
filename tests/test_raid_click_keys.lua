@@ -1,14 +1,13 @@
 -- Keys on mouse-over (Raid/ClickKeys.lua): a hidden secure button per key
--- with a /cast [@mouseover,help,nodead] macro, bound with an override
--- binding while the raid frames show; set and cleared out of combat only.
+-- with a /cast [@mouseover,help,nodead] macro; the key is bound only while
+-- the mouse is over a frame that takes the click bindings (secure
+-- snippets wrapped around its OnEnter, OnLeave and OnHide), in combat too.
 local M = H.M
 local ns = H.LoadAddon()
 local RC, Keys = ns.RaidConfig, ns.ClickKeys
-ns.Config.Use({})
-ns.RaidProfiles.Attach({})
-ns.RaidSize.Update()
-ns.RaidHeader.Create()
-ns.Party.Create()
+M.units.player = { name = "Me", class = "PRIEST", health = 1, healthMax = 1 }
+M.FireEvent("PLAYER_LOGIN")
+M.RunTimers()
 
 H.check("spell macro", Keys.MacroText("spell:Renew"), "/cast [@mouseover,help,nodead] Renew")
 H.check("item macro", Keys.MacroText("item:Linen Bandage"), "/use [@mouseover,help,nodead] Linen Bandage")
@@ -17,92 +16,108 @@ H.check("own macro", Keys.MacroText("macro:/cast [@mouseover] Heal"), "/cast [@m
 H.check("nothing", Keys.MacroText(""), nil)
 H.check("no spell yet", Keys.MacroText("spell:"), nil)
 
+local KEY1 = "CLICK ForeverUnitFramesClickKey1:LeftButton"
+-- A key as bound while the mouse is over frame.
+local function on(frame, key)
+    M.Hover(frame)
+    local action = GetBindingAction(key, true)
+    M.Leave(frame)
+    return action
+end
+
 RC.Set("general", "clickKey1", "F")
 RC.Set("general", "clickKey1Bind", "spell:Renew")
 RC.Set("general", "clickKey2", "SHIFT-F")
 RC.Set("general", "clickKey2Bind", "macro:/say hi")
 RC.Set("general", "clickKey3", "G")
--- Solo: the raid frames do not show, no key is taken.
-H.check("solo: F keeps its binding", GetBindingAction("F", true), "")
--- "Also without a group" (CurseForge 20.11.2026): bound solo while the
--- player frame shows with its clickCast on.
-H.check("solo option off by default", RC.Get("general", "clickKeysSolo"), false)
-RC.Set("general", "clickKeysSolo", true)
 M.RunTimers()
-H.check("solo option: F clicks key 1", GetBindingAction("F", true), "CLICK ForeverUnitFramesClickKey1:LeftButton")
-ns.Config.Set("player", "clickCast", false)
-M.RunTimers()
-H.check("solo option, player clickCast off: free", GetBindingAction("F", true), "")
-ns.Config.ClearOverride("player", "clickCast")
-M.RunTimers()
-H.check("player clickCast back: bound", GetBindingAction("F", true) ~= "", true)
-ns.Config.Set("player", "enabled", false)
-M.RunTimers()
-H.check("solo option, player frame off: free", GetBindingAction("F", true), "")
-ns.Config.Set("player", "enabled", true)
-RC.Set("general", "clickKeysSolo", false)
-M.RunTimers()
-H.check("solo option off again: free", GetBindingAction("F", true), "")
 
--- In a raid: bound.
-M.SetRaidRoster({ { name = "A", class = "PRIEST", subgroup = 1, unit = { health = 1, healthMax = 1 } } })
-M.RunTimers()
-H.check("F clicks key 1", GetBindingAction("F", true), "CLICK ForeverUnitFramesClickKey1:LeftButton")
+-- Solo, the player frame (CurseForge 20./21.11.2026: alone, the wheel on
+-- yourself; the zoom elsewhere).
+local player = ns.Frames.player
+H.check("no frame under the mouse: F keeps its binding", GetBindingAction("F", true), "")
+M.Hover(player)
+H.check("over the player frame: F clicks key 1", GetBindingAction("F", true), KEY1)
 H.check("SHIFT-F clicks key 2", GetBindingAction("SHIFT-F", true), "CLICK ForeverUnitFramesClickKey2:LeftButton")
 H.check("G has no binding: not taken", GetBindingAction("G", true), "")
+M.Leave(player)
+H.check("left: F free again", GetBindingAction("F", true), "")
 local b1 = _G.ForeverUnitFramesClickKey1
 H.check("a secure action button", b1._template, "SecureActionButtonTemplate")
 H.check("runs a macro", b1:GetAttribute("type"), "macro")
 H.check("its text", b1:GetAttribute("macrotext"), "/cast [@mouseover,help,nodead] Renew")
 H.check("key down and up", table.concat(b1._clicks, ","), "AnyUp,AnyDown")
 H.check("no mouse on it", b1._mouse, false)
--- A roster update that leaves the raid frames as they were binds nothing anew.
-do
-    local clears = 0
-    local real = _G.ClearOverrideBindings
-    _G.ClearOverrideBindings = function(...) clears = clears + 1; return real(...) end
-    M.SetRaidRoster({ { name = "A", class = "PRIEST", subgroup = 1, unit = { health = 1, healthMax = 1 } },
-        { name = "B", class = "MAGE", subgroup = 1, unit = { health = 1, healthMax = 1 } } })
-    M.RunTimers()
-    _G.ClearOverrideBindings = real
-    H.check("roster update, still a raid: not bound anew", clears, 0)
-    H.check("still bound", GetBindingAction("F", true) ~= "", true)
-end
+-- The player frame's own clickCast off: not there.
+ns.Config.Set("player", "clickCast", false)
+M.RunTimers()
+H.check("player clickCast off: none", on(player, "F"), "")
+ns.Config.ClearOverride("player", "clickCast")
+M.RunTimers()
+H.check("player clickCast back", on(player, "F"), KEY1)
 
--- A change re-binds; a key taken away is free again.
-RC.Set("general", "clickKey1", "R")
-H.check("F free again", GetBindingAction("F", true), "")
-H.check("R clicks key 1", GetBindingAction("R", true), "CLICK ForeverUnitFramesClickKey1:LeftButton")
-
--- In combat the bindings stay as they were; after combat they follow.
-M.SetCombat(true)
-RC.Set("general", "clickKey1", "T")
-M.SetRaidRoster({})
-M.SetRaid(false)
-M.FireEvent("GROUP_ROSTER_UPDATE")
-H.check("in combat: kept", GetBindingAction("R", true), "CLICK ForeverUnitFramesClickKey1:LeftButton")
-H.check("nothing blocked", #M.blocked, 0)
-M.SetCombat(false)
-H.check("after combat, solo: none", GetBindingAction("T", true) .. GetBindingAction("R", true), "")
-
--- Off: no key taken.
+-- A raid cell; a frame hiding under the mouse lets go (no OnLeave then).
 M.SetRaidRoster({ { name = "A", class = "PRIEST", subgroup = 1, unit = { health = 1, healthMax = 1 } } })
 M.RunTimers()
-H.check("in a raid again", GetBindingAction("T", true), "CLICK ForeverUnitFramesClickKey1:LeftButton")
-RC.Set("general", "clickCast", "OFF")
-H.check("off: none", GetBindingAction("T", true), "")
-RC.Set("general", "clickCast", "AUTO")
+local cell = ns.RaidCell.buttons[1]
+H.check("over a cell", on(cell, "F"), KEY1)
+M.Hover(cell)
+cell:Hide()
+H.check("cell hidden under the mouse: free", GetBindingAction("F", true), "")
+cell:Show()
+cell._mouseOver = nil
 
--- A party without the raid view: bound while the party frames take the
--- bindings.
+-- In combat: the snippets bind and free, nothing blocked.
+M.SetCombat(true)
+M.Hover(cell)
+H.check("combat: bound", GetBindingAction("F", true), KEY1)
+M.Leave(cell)
+H.check("combat: free again", GetBindingAction("F", true), "")
+-- A change in combat waits for its end.
+RC.Set("general", "clickKey1", "R")
+H.check("combat: the old key still", on(cell, "F"), KEY1)
+M.SetCombat(false)
+M.RunTimers()
+H.check("after combat: the new key", on(cell, "R"), KEY1)
+H.check("the old one gone", on(cell, "F"), "")
+H.check("nothing blocked", #M.blocked, 0)
+
+-- A frame under the mouse when the keys change takes them at once.
+M.Hover(cell)
+RC.Set("general", "clickKey1", "T")
+M.RunTimers()
+H.check("hovered while changed: the new key", GetBindingAction("T", true), KEY1)
+H.check("hovered while changed: the old one free", GetBindingAction("R", true), "")
+M.Leave(cell)
+
+-- Off: no key taken anywhere.
+RC.Set("general", "clickCast", "OFF")
+M.RunTimers()
+H.check("off: none on a cell", on(cell, "T"), "")
+H.check("off: none on the player", on(player, "T"), "")
+RC.Set("general", "clickCast", "AUTO")
+M.RunTimers()
+H.check("on again", on(cell, "T"), KEY1)
+-- The raid frames off: the cells take none.
+RC.Set("general", "enabled", false)
+M.RunTimers()
+H.check("raid frames off: the cell none", on(cell, "T"), "")
+RC.Set("general", "enabled", true)
+M.RunTimers()
+
+-- A party member's frame, its party switch.
 M.SetRaidRoster({})
 M.SetRaid(false)
 M.units.party1 = { name = "Ann", health = 1, healthMax = 1 }
 M.SetGroup({ "party1" })
 M.RunTimers()
-H.check("party: bound", GetBindingAction("T", true), "CLICK ForeverUnitFramesClickKey1:LeftButton")
+local member = ns.Party.header:GetAttribute("child1")
+H.check("over a party frame", on(member, "T"), KEY1)
 ns.Config.Set("party", "clickCast", false)
-H.check("party switched off: none", GetBindingAction("T", true), "")
+M.RunTimers()
+H.check("party switched off: none", on(member, "T"), "")
+ns.Config.Set("party", "clickCast", true)
+M.RunTimers()
 
 -- The warning: a key the player has bound to something else.
 H.check("W is taken", Keys.Taken("W"), "MOVEFORWARD")
@@ -118,34 +133,3 @@ M.bindings["CTRL-W"] = nil
 H.check("SHIFT-T: free", Keys.Taken("SHIFT-T"), nil)
 H.check("a sign after a modifier", Keys.Taken("CTRL--"), nil)
 H.check("nothing blocked at all", #M.blocked, 0)
-
--- Keys only while our frames show: the raid frames, or the party frames
--- (not merely being in a group). The raid frames off leave the party's
--- keys (decision 74, which revised 73).
-ns.Config.Set("party", "clickCast", true)
-H.check("party frames shown: bound", GetBindingAction("T", true), "CLICK ForeverUnitFramesClickKey1:LeftButton")
-RC.Set("general", "enabled", false)
-M.RunTimers()
-H.check("party, raid frames off: still bound", GetBindingAction("T", true), "CLICK ForeverUnitFramesClickKey1:LeftButton")
-RC.Set("general", "enabled", true)
-M.RunTimers()
-ns.Config.Set("party", "enabled", false)
-M.RunTimers()
-H.check("party frames off too: none", GetBindingAction("T", true), "")
-ns.Config.Set("party", "enabled", true)
-M.RunTimers()
-H.check("party frames back: bound", GetBindingAction("T", true), "CLICK ForeverUnitFramesClickKey1:LeftButton")
-RC.Set("general", "enabled", false)
-M.RunTimers()
--- A raid: the party frames hide in raids (the default), the raid frames
--- are off: nothing shows, no key is taken.
-M.SetGroup({})
-M.SetRaidRoster({ { name = "A", class = "PRIEST", subgroup = 1, unit = { health = 1, healthMax = 1 } } })
-M.RunTimers()
-H.check("party frames hidden in the raid", ns.Party.header:IsVisible(), false)
-H.check("raid, nothing of ours shows: none", GetBindingAction("T", true), "")
-RC.Set("general", "enabled", true)
-M.RunTimers()
-H.check("raid frames on: bound", GetBindingAction("T", true), "CLICK ForeverUnitFramesClickKey1:LeftButton")
-H.check("nothing blocked at the end", #M.blocked, 0)
-

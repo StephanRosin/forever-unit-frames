@@ -753,9 +753,11 @@ for i = 1, Raid.CLICK_KEY_COUNT do
         default = "" })
     Raid.CLICK_KEYS[i] = slot
 end
--- The keys also without a group, while the player frame shows with its
--- clickCast on (CurseForge 20.11.2026): they are then taken all the time.
-RaidSettings.Define({ key = "clickKeysSolo", code = "YT", scope = "general", type = "bool", default = false })
+-- Retired (0.70.0): the keys also without a group (0.69). They are bound
+-- only while the mouse is over a frame now, alone too. Its code stays
+-- taken so old strings still read; shown nowhere.
+RaidSettings.Define({ key = "clickKeysSolo", code = "YT", scope = "general", type = "bool", default = false,
+    retired = true })
 
 -- The buff watch (Raid/BuffWatch.lua, Raid/BuffWatchWindow.lua,
 -- Raid/SmartBuff.lua), per character: buffs differ per class, not per

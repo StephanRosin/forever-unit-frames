@@ -2,17 +2,15 @@ local _, ns = ...
 
 -- Keys that cast on the group member under the mouse (Raid/Settings.lua:
 -- Raid.CLICK_KEYS): a secure action button per key, never shown on screen
--- and never under the mouse, that runs a macro acting on @mouseover; the
--- key clicks it through an override binding (SetOverrideBindingClick).
--- Override bindings may not change in combat and no secure snippet runs on
--- this client, so a key cannot be bound only while a cell is hovered:
--- the keys are bound for as long as the raid frames show, or the unit
--- frames' party members show with their clickCast on (decision 76), and
--- the macro's condition makes them act only on a friendly unit under the
--- mouse. The player, target and focus frames alone do not bind them: the
--- keys would be taken all the time, solo too; only clickKeysSolo asks for
--- that (the player frame on, its clickCast on). Set and cleared out of
--- combat only; in combat the bindings stay as they were.
+-- and never under the mouse, that runs a macro acting on @mouseover. The
+-- keys are bound only while the mouse is over one of our frames that take
+-- the click bindings (ClickCast.Takes: raid cells, party, the unit frames
+-- with their clickCast on): secure snippets wrapped around each frame's
+-- OnEnter bind them to the buttons (SetBindingClick, an override binding
+-- owned by the frame), OnLeave and OnHide let them go (ClearBindings).
+-- Snippets run in combat too; elsewhere a key keeps its own job (the
+-- wheel zooms). The keys' list sits in the frame's attributes, written
+-- out of combat; a frame made in combat gets it after combat.
 local ClickKeys = {}
 ns.ClickKeys = ClickKeys
 
@@ -20,7 +18,6 @@ local Raid = ns.Raid
 
 ClickKeys.BUTTON_NAME = "ForeverUnitFramesClickKey"
 ClickKeys.buttons = {}
-local owner
 
 -- A spell as /cast takes it (ClickCast.CastValue): a name as stored (the
 -- highest rank known); a known spell ID (a fixed rank) as "Name(Rank 3)"
@@ -83,52 +80,64 @@ local function button(i)
     return b
 end
 
--- Whether the unit frames' party members show (switched on, not hidden
--- by their visibility driver, e.g. in a raid) in a group.
-local function partyShows()
-    local header = ns.Party.header
-    return header ~= nil and header:IsVisible() and IsInGroup()
+-- Whether the keys apply at all: click-casting on.
+function ClickKeys.Wanted()
+    return ns.ClickCast.On()
 end
 
--- Whether the keys are bound: click-casting on, and the raid frames
--- showing, or the party frames showing while they take the bindings (the
--- raid frames on or off, decision 74).
-function ClickKeys.Wanted()
-    if not ns.ClickCast.On() then return false end
-    if ns.RaidPanel.Active() then return true end
-    if ns.Config.Profile() == nil then return false end
-    if ns.RaidConfig.Get("general", "clickKeysSolo") == true and ns.FrameEnabled("player")
-        and ns.Config.Get("player", "clickCast") == true then
-        return true
+-- The wrapped frames' snippets (RestrictedFrames.lua: HANDLE:SetBindingClick
+-- takes the button's name).
+ClickKeys.ENTER = [[
+    local n = self:GetAttribute("fufkeys") or 0
+    for i = 1, n do
+        self:SetBindingClick(true, self:GetAttribute("fufkey" .. i), self:GetAttribute("fufkeybutton" .. i),
+            "LeftButton")
     end
-    return ns.Config.Get(ns.Party.KEY, "clickCast") == true and partyShows()
+]]
+ClickKeys.LEAVE = [[ self:ClearBindings() ]]
+-- The keys as bound now: { key, button name } pairs (ClickKeys.Update).
+ClickKeys.active = {}
+local wrapper
+
+-- Out of combat: a frame's keys (none when it does not take the click
+-- bindings), wrapped once. One under the mouse binds them at once.
+function ClickKeys.Apply(frame)
+    if InCombatLockdown() then return end
+    local list = (ClickKeys.Wanted() and ns.ClickCast.Takes(frame)) and ClickKeys.active or {}
+    if not frame.fufKeysWrapped then
+        if #list == 0 then return end
+        wrapper = wrapper or CreateFrame("Frame", nil, UIParent, "SecureHandlerBaseTemplate")
+        wrapper:WrapScript(frame, "OnEnter", ClickKeys.ENTER)
+        wrapper:WrapScript(frame, "OnLeave", ClickKeys.LEAVE)
+        wrapper:WrapScript(frame, "OnHide", ClickKeys.LEAVE)
+        frame.fufKeysWrapped = true
+    end
+    for i, pair in ipairs(list) do
+        frame:SetAttribute("fufkey" .. i, pair[1])
+        frame:SetAttribute("fufkeybutton" .. i, pair[2])
+    end
+    frame:SetAttribute("fufkeys", #list)
+    ClearOverrideBindings(frame)
+    if frame:IsVisible() and frame:IsMouseOver() then
+        for _, pair in ipairs(list) do SetOverrideBindingClick(frame, true, pair[1], pair[2], "LeftButton") end
+    end
+end
+
+function ClickKeys.ApplyAll()
+    if InCombatLockdown() then return end
+    for _, frame in ipairs(ns.ClickCast.Frames()) do ClickKeys.Apply(frame) end
 end
 
 local update
--- What the last Update found wanted (a roster update rarely changes it).
-local lastWanted
-
--- The party header shows and hides by its visibility driver (and by the
--- unit frames' settings): the keys follow, after combat if need be.
-local watched
-local function watchParty()
-    local header = ns.Party.header
-    if watched or not header then return end
-    watched = true
-    header:HookScript("OnShow", function() update() end)
-    header:HookScript("OnHide", function() update() end)
-end
-
 -- Out of combat only: the bindings anew.
 function ClickKeys.Update()
     if InCombatLockdown() or not ns.RaidConfig.Profile() then return end
-    lastWanted = ClickKeys.Wanted()
-    watchParty()
-    -- Nothing wanted and nothing bound: nothing made.
-    if not owner and not lastWanted then return end
-    owner = owner or CreateFrame("Frame", nil, UIParent)
-    ClearOverrideBindings(owner)
-    if not lastWanted then return end
+    local active = {}
+    ClickKeys.active = active
+    if not ClickKeys.Wanted() then
+        ClickKeys.ApplyAll()
+        return
+    end
     -- The spell list once for every key with a fixed rank.
     local list
     for _, slot in ipairs(Raid.CLICK_KEYS) do
@@ -150,9 +159,10 @@ function ClickKeys.Update()
         if key ~= "" and text then
             local b = button(i)
             b:SetAttribute("macrotext", text)
-            SetOverrideBindingClick(owner, false, key, b:GetName(), "LeftButton")
+            active[#active + 1] = { key, b:GetName() }
         end
     end
+    ClickKeys.ApplyAll()
     -- Only the keys waiting now keep their count.
     tries = waiting
     if stillWaiting and not retryQueued then
@@ -182,7 +192,7 @@ local function bound(key)
 end
 
 -- What the player has bound the key to otherwise (the raid window warns:
--- the key does that no longer while the raid frames show), or nil. A
+-- the key does that no longer while the mouse is over our frames), or nil. A
 -- chord bound to nothing does what its key alone does (the client falls
 -- back), so that is what it takes.
 function ClickKeys.Taken(key)
@@ -193,9 +203,9 @@ end
 update = function() ns.AfterCombat("clickKeys", ClickKeys.Update) end
 ClickKeys.Queue = update
 
--- The settings that change the bindings: the keys, and what decides
--- whether the raid frames show.
-local KEYS = { clickCast = true, enabled = true, showInParty = true, clickKeysSolo = true }
+-- The settings that change the keys: the keys, click-casting itself and
+-- the raid frames' switch (the cells take them only while it is on).
+local KEYS = { clickCast = true, enabled = true }
 for _, slot in ipairs(Raid.CLICK_KEYS) do
     KEYS[slot.key], KEYS[slot.bind] = true, true
     ns.RaidPanel.UNRELATED_KEYS[slot.key], ns.RaidPanel.UNRELATED_KEYS[slot.bind] = true, true
@@ -204,11 +214,6 @@ end
 ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
     if scope ~= nil and scope ~= "general" then return end
     if key == nil or KEYS[key] then update() end
-end)
--- Joining or leaving a raid or party; the party header's own showing is
--- watched above.
-ns.On("GROUP_ROSTER_UPDATE", function()
-    if ClickKeys.Wanted() ~= lastWanted then update() end
 end)
 -- A key's fixed rank is written by its rank text, read from the spell
 -- book: set again once the book is read or changes.

@@ -1,6 +1,6 @@
 -- Click-casting on the party frames works while the raid frames are off
 -- (decision 74): the party members get the bindings and the mouse-over
--- keys are bound while the party frames show. The raid cells' bindings
+-- keys bind over them. The raid cells' bindings
 -- and keys still follow the raid frames.
 local M = H.M
 
@@ -24,13 +24,17 @@ local b1 = ns.Party.header:GetAttribute("child1")
 H.check("raid off: no panel", ns.RaidHeader.anchor, nil)
 H.check("raid off: party binding", b1:GetAttribute("ctrl-type1"), "assist")
 H.check("raid off: left still targets", b1:GetAttribute("*type1"), "target")
-H.check("raid off: key bound while the party shows", GetBindingAction("F", true),
+M.Hover(b1)
+H.check("raid off: key bound over a party frame", GetBindingAction("F", true),
     "CLICK ForeverUnitFramesClickKey1:LeftButton")
+M.Leave(b1)
 -- The party switch off: the XML's again, no key.
 ns.Config.Set("party", "clickCast", false)
 M.RunTimers()
 H.check("party off: the XML's", b1:GetAttribute("ctrl-type1"), nil)
+M.Hover(b1)
 H.check("party off: no key", GetBindingAction("F", true), "")
+M.Leave(b1)
 ns.Config.Set("party", "clickCast", true)
 M.RunTimers()
 H.check("party on again", b1:GetAttribute("ctrl-type1"), "assist")

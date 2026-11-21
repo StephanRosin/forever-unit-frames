@@ -1613,7 +1613,7 @@ function M.Reset()
         w._template = template
         if template and template:find("DisableUntrustedLayoutScriptsTemplate") then w._layoutForbidden = true end
         if kind == "AuraContainer" then M.NewAuraContainer(w, template) end
-        if template and template:find("Secure") then w._protected = true end
+        if template and (template:find("Secure") or M.UNIT_BUTTON_TEMPLATES[template]) then w._protected = true end
         if template and template:find("SecureHandler") then M.SecureHandler(w, template) end
         if kind == "StatusBar" then
             w._barTex = newWidget("Texture", nil, w)
@@ -3533,6 +3533,36 @@ function M.SecureHandler(w, template)
         assert(not M.combat, "SetFrameRef sets attributes: not in combat")
         self._refs[label] = ref
     end
+    -- WrapScript (SecureHandlers.lua): the frame's script runs the snippet
+    -- first, in secure code, with a handle of the frame: GetAttribute,
+    -- and the frame's own override bindings (RestrictedFrames.lua:
+    -- SetBindingClick by the target's name, ClearBindings), allowed in
+    -- combat only on a protected frame (GetHandleFrame).
+    function w:WrapScript(frame, script, pre)
+        assert(not M.combat, "WrapScript: not in combat")
+        local function owner()
+            if M.combat and not M.IsProtectedTree(frame) then error("Invalid frame handle", 3) end
+            return frame
+        end
+        local handle = {
+            GetAttribute = function(_, name) return frame:GetAttribute(name) end,
+            SetBindingClick = function(_, priority, key, name, button)
+                assert(type(name) == "string" and not name:find(":"), "Invalid click target name")
+                SetOverrideBindingClick(owner(), priority, key, name, button)
+            end,
+            ClearBindings = function() ClearOverrideBindings(owner()) end,
+        }
+        local snippet = assert(loadstring("local self = ...\n" .. pre))
+        setfenv(snippet, {})
+        local inner = frame._scripts[script]
+        frame._scripts[script] = function(f, ...)
+            M.secureDepth = M.secureDepth + 1
+            local ok, err = pcall(snippet, handle)
+            M.secureDepth = M.secureDepth - 1
+            if not ok then error(err, 0) end
+            if inner then inner(f, ...) end
+        end
+    end
     if template ~= "SecureHandlerClickTemplate" then return end
     w._scripts.OnClick = function(self, button, down)
         local body = self:GetAttribute("_onclick")
@@ -3544,6 +3574,19 @@ function M.SecureHandler(w, template)
         M.secureDepth = M.secureDepth - 1
         if not ok then error(err, 0) end
     end
+end
+
+-- The mouse onto a frame and off it again: its OnEnter / OnLeave scripts
+-- (IsMouseOver says so meanwhile).
+function M.Hover(frame)
+    frame._mouseOver = true
+    local fn = frame._scripts.OnEnter
+    if fn then fn(frame, true) end
+end
+function M.Leave(frame)
+    frame._mouseOver = nil
+    local fn = frame._scripts.OnLeave
+    if fn then fn(frame, true) end
 end
 
 -- Button:Click: PreClick, OnClick, PostClick, as the client runs them.

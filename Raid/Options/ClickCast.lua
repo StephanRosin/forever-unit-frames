@@ -375,7 +375,6 @@ local function rows(page, tab, layout)
     local keysNote = RaidOptions.NoteBlock(page, L.RAID_CLICK_KEYS_NOTE)
     keysNote:SetHeight(KEYS_NOTE_H)
     list[#list + 1] = keysNote
-    list[#list + 1] = RaidOptions.SettingRow(page, "clickKeysSolo")
     for _, slot in ipairs(Raid.CLICK_KEYS) do list[#list + 1] = keyRow(page, slot, layout) end
     -- The page's note is the tab's (NoteBlock sets the last one built).
     page.note = note.text

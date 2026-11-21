@@ -75,10 +75,10 @@ H.check("off: no panel", ns.RaidHeader.anchor, nil)
 H.check("off: no tools bar", ns.RaidTools.bar, nil)
 H.check("off: no buff window", ns.RaidBuffWindow.frame, nil)
 H.check("off: no smart buff button", ns.SmartBuff.button, nil)
--- Click-casting itself stays on for the party frames (decision 74); in a
--- raid they are hidden, so no key is bound.
+-- Click-casting itself stays on for the party frames (decision 74); the
+-- keys bind only over a frame (none of ours under the mouse here).
 H.check("off: click-casting still on for the unit frames", ns.ClickCast.On(), true)
-H.check("off: no key bound", ns.ClickKeys.Wanted(), false)
+H.check("off: no key bound", GetBindingAction("F", true), "")
 M.FireEvent("READY_CHECK", "Two", 30)
 M.FireEvent("READY_CHECK_FINISHED")
 H.check("off: no ready counts", ns.RaidTools.readyCounts, nil)

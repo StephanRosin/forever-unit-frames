@@ -333,6 +333,8 @@ local function frames()
     return list
 end
 
+ClickCast.Frames, ClickCast.Takes = frames, takes
+
 -- Whether a frame holds bindings we wrote (to take back when off).
 local function anyWritten()
     for _, frame in ipairs(frames()) do
@@ -348,6 +350,8 @@ end
 
 function ClickCast.ApplyAll()
     if InCombatLockdown() or not ns.RaidConfig.Profile() then return end
+    -- The keys on mouse-over follow the same frames (Raid/ClickKeys.lua).
+    ns.ClickKeys.ApplyAll()
     if not ClickCast.On() and not anyWritten() then return end
     local values, defaults = planned()
     for _, frame in ipairs(frames()) do apply(frame, values, defaults) end
@@ -362,6 +366,7 @@ function ClickCast.Added(frame)
         applyAfterCombat()
         return
     end
+    ns.ClickKeys.Apply(frame)
     -- Click-casting off: a new frame keeps the XML's (apply asks the rest).
     if not ClickCast.On() then return end
     apply(frame, planned())
