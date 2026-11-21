@@ -112,6 +112,8 @@ L.ENUM_castbarLatencyPoint_END = "Bar end"; L.ENUM_castbarLatencyPoint_LEFT = "L
 L.SETTING_partyOrientation = "Orientation"
 L.SETTING_partyGrowReverse = "Grow upward"
 L.HINT_partyGrowReverse = "From the bottom up; from right to left when horizontal"
+L.SETTING_partyGrowCenter = "Grow from the middle"
+L.HINT_partyGrowCenter = "Always stays centred"
 L.SETTING_partySortRole = "Sort by role"
 L.HINT_partySortRole = "Tanks, healers, damage, then no role. A pet list keeps the group's order; pets beside their member follow"
 L.SETTING_partySpacing = "Spacing"

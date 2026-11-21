@@ -79,8 +79,11 @@ function Party.PetStep()
 end
 
 -- The corner the block grows away from, where member 1 sits: top-left,
--- or bottom-left (growing up) / top-right (growing left).
+-- or bottom-left (growing up) / top-right (growing left). From the middle:
+-- the middle of the edge across the growth, so the header (which sizes
+-- itself to its members) stays centred.
 function Party.Corner()
+    if get("partyGrowCenter") then return Party.Horizontal() and "TOP" or "LEFT" end
     if not get("partyGrowReverse") then return "TOPLEFT" end
     return Party.Horizontal() and "TOPRIGHT" or "BOTTOMLEFT"
 end
@@ -170,6 +173,8 @@ local function place(header)
     local w, h = Party.BlockSize()
     if corner == "TOPRIGHT" then x = x + Pixel.Snap(w) end
     if corner == "BOTTOMLEFT" then y = y - Pixel.Snap(h) end
+    if corner == "TOP" then x = x + Pixel.Snap(w) / 2 end
+    if corner == "LEFT" then y = y - Pixel.Snap(h) / 2 end
     header:SetPoint(corner, UIParent, "CENTER", x, y)
 end
 

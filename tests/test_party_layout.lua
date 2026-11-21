@@ -78,6 +78,24 @@ C.Set("party", "partyOrientation", "VERTICAL")
 C.Set("party", "partyGrowReverse", false)
 H.check("back down: point", header:GetAttribute("point"), "TOP")
 
+-- From the middle: the header hangs from the mover's centre line (it
+-- sizes itself to its members, so it stays centred); off by default.
+H.check("middle: off by default", C.Get("party", "partyGrowCenter"), false)
+C.Set("party", "partyGrowCenter", true)
+hp, hrel, hrelPoint = header:GetPoint(1)
+H.check("middle, column: from the left edge's middle", hp, "LEFT")
+H.check("middle, column: mover's", hrelPoint, "LEFT")
+H.check("middle, column: from the mover", hrel, header.mover)
+H.check("middle: still stacks down", header:GetAttribute("point"), "TOP")
+C.Set("party", "partyOrientation", "HORIZONTAL")
+hp, hrel, hrelPoint = header:GetPoint(1)
+H.check("middle, row: from the top edge's middle", hp, "TOP")
+H.check("middle, row: mover's", hrelPoint, "TOP")
+H.check("middle, row: fills left to right", header:GetAttribute("point"), "LEFT")
+C.Set("party", "partyOrientation", "VERTICAL")
+C.Set("party", "partyGrowCenter", false)
+H.check("middle off: corner again", P.Corner(), "TOPLEFT")
+
 -- Show player / show when solo go straight to the header.
 C.Set("party", "partyShowPlayer", true)
 H.checkTrue("show player", header:GetAttribute("showPlayer"))

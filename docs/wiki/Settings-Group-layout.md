@@ -17,6 +17,7 @@ Click-casting on the party: Appearance tab, or General > Click-casting for all f
 <tbody>
 <tr><td><b>Orientation</b></td><td></td><td>Vertical, Horizontal</td><td>Vertical</td><td>Party</td></tr>
 <tr><td><b>Grow upward</b></td><td>From the bottom up; from right to left when horizontal</td><td>On, Off</td><td>Off</td><td>Party</td></tr>
+<tr><td><b>Grow from the middle</b></td><td>Always stays centred</td><td>On, Off</td><td>Off</td><td>Party</td></tr>
 <tr><td><b>Sort by role</b></td><td>Tanks, healers, damage, then no role. A pet list keeps the group's order; pets beside their member follow</td><td>On, Off</td><td>Off</td><td>Party</td></tr>
 <tr><td><b>Spacing</b></td><td></td><td>0 – 60</td><td>27</td><td>Party</td></tr>
 <tr><td><b>Show yourself</b></td><td></td><td>On, Off</td><td>Off</td><td>Party</td></tr>
