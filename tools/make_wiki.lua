@@ -168,7 +168,9 @@ local SECTION_NOTE = {
         .. " frames do not depend on it: they have their own switch in `/fuf raid`.",
     healthText = "Each row (title, health and power) can have a center text as well. While one is set, the"
         .. " row's left and right texts keep to their third of the row and are cut off with \"...\" where they"
-        .. " reach it; empty, the left and right texts share the row as before.",
+        .. " reach it; empty, the left and right texts share the row as before. With the row's left and right"
+        .. " texts both on None, the center text takes the whole row (on the title row it stays clear of the"
+        .. " class icon on either side), so a centered name is not cut short.",
     eliteMarker = "Where the marker (Marker style) sits: **Automatic** is its usual place, on the portrait's corner"
         .. " or as a word above the frame's top right corner, out of the class icon's way; the offset moves it"
         .. " from there. A point on the frame puts the marker's own point there instead, plus the offset: for"

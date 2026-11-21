@@ -767,8 +767,8 @@ end
 -- last, each cut off with "..." at its edge. The thirds are plain numbers
 -- from the layout; nothing is measured. With the row's left and right
 -- texts both off, the centre text takes the whole bar less a small inset
--- (CurseForge 21.11.2026: a centred name cut after 4 letters); not on the
--- title row while the class icon is on (its badge may sit in the row).
+-- (CurseForge 21.11.2026: a centred name cut after 4 letters); on the
+-- title row as far from either end as the class badge reaches into it.
 -- Rows without one keep the left and right texts as Style placed them;
 -- the empty centre text is hidden.
 -- Raid cells centre their texts their own way and never have one.
@@ -783,8 +783,13 @@ local function placeCentres(frame)
         if on then
             local alone = Config.Get(frame.key, SLOT_OF[row.left].setting) == "NONE"
                 and Config.Get(frame.key, SLOT_OF[row.right].setting) == "NONE"
-                and not (bar == "title" and classIconWanted(frame))
-            local third = ns.Pixel.Snap(alone and 4 or (frame[row.width] or 0) / 3, center)
+            local inset = 4
+            -- The class badge in the title row: as much room on either side,
+            -- so the text stays centred and clear of it (styleBadge ran).
+            if bar == "title" and classIconWanted(frame) and frame.classBadgeInRow then
+                inset = math.max(inset, -frame.classBadgeBox.left - frame.titleRight + 2)
+            end
+            local third = ns.Pixel.Snap(alone and inset or (frame[row.width] or 0) / 3, center)
             frame.centerThird[bar] = third
             center:SetPoint("LEFT", frame[bar], "LEFT", third, 0)
             center:SetPoint("RIGHT", frame[bar], "RIGHT", -third, 0)
@@ -838,6 +843,7 @@ function Texts.Style(frame)
             fs:SetWordWrap(false)
         end
     end
+    styleBadge(frame)
     placeCentres(frame)
     if frame.centerTexts then
         local secondTag = Config.Get(scope, "textHealthRight")
@@ -853,7 +859,6 @@ function Texts.Style(frame)
     frame.texts.footerLeft:SetShown(footerOn)
     frame.texts.footerRight:SetShown(footerOn)
     frame.texts.footerCenter:SetShown(footerOn and frame.centerShown.footer)
-    styleBadge(frame)
     if not classIconWanted(frame) then
         showClassIcon(frame, false)
     else
