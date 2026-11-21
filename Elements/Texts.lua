@@ -323,6 +323,16 @@ local function follow(fs, method)
     end
 end
 
+-- A file onto a text, inside a family that adds the letters the file
+-- lacks (Media.Family: Cyrillic, Hangul, Hanzi). Only the family: a file
+-- once set with SetFont wins over any font object for good (in game,
+-- 21.11.2026). The file alone where the client makes no families.
+local function setFont(fs, font, size, flags)
+    local family = ns.Media.Family(font, size, flags)
+    if family and pcall(fs.SetFontObject, fs, family) then return end
+    fs:SetFont(font, size, flags)
+end
+
 local function makeCopies(fs)
     local parent = fs:GetParent()
     local layer, sublevel = fs:GetDrawLayer()
@@ -331,7 +341,7 @@ local function makeCopies(fs)
         local copy = parent:CreateFontString(nil, layer)
         copy:SetDrawLayer(layer, math.max(sublevel - 1, -8))
         local path, size = fs:GetFont()
-        copy:SetFont(path, size, "")
+        setFont(copy, path, size, "")
         copy:SetTextColor(0, 0, 0, 1)
         copy:SetShadowOffset(0, 0)
         copy:SetText(fs:GetText())
@@ -350,6 +360,7 @@ function Texts.CountdownFlags(outline)
     return outline
 end
 
+
 -- Whether a text took the font asked for. A font file the client has not
 -- loaded yet (the themes' own, LibForeverThemes) can be refused on first
 -- use and leave the text without a font: drawn, only its black soft
@@ -358,7 +369,8 @@ local function hasFont(fs, font)
     local path = fs:GetFont()
     if type(path) ~= "string" then return false end
     local function plain(p) return (p:lower():gsub("/", "\\")) end
-    return plain(path) == plain(font)
+    -- In a family the client reports the file of the text's alphabet.
+    return plain(path) == plain(font) or ns.Media.InFamily(font, path)
 end
 -- How often, and how far apart, a refused font is tried again: quickly
 -- first, then slowly for two more minutes. First use of a file can take
@@ -387,8 +399,8 @@ local function redrawLater(fs, font, size, flags, wanted)
             if waits > 0 then C_Timer.After(1, redraw) end
             return
         end
-        fs:SetFont("Fonts\\FRIZQT__.TTF", size, flags)
-        fs:SetFont(font, size, flags)
+        setFont(fs, FALLBACK_FONT, size, flags)
+        setFont(fs, font, size, flags)
         local text = fs:GetText()
         if text then fs:SetText(""); fs:SetText(text) end
     end
@@ -415,7 +427,7 @@ end
 function Texts.SetFont(fs, font, size, outline, retries)
     local soft = outline == "SOFT"
     local flags = (outline == "NONE" or soft) and "" or outline
-    fs:SetFont(font, size, flags)
+    setFont(fs, font, size, flags)
     local wanted = font .. "|" .. size .. "|" .. outline
     fs.fontWanted = wanted
     local taken = hasFont(fs, font)
@@ -426,7 +438,9 @@ function Texts.SetFont(fs, font, size, outline, retries)
     if not taken then
         -- Blizzard's font meanwhile, from the first refusal on, so the
         -- text never stays empty (a restyle with the same font neither).
-        fs:SetFont(FALLBACK_FONT, size, flags)
+        setFont(fs, FALLBACK_FONT, size, flags)
+        -- The next try makes a new family: this one may hold the refusal.
+        ns.Media.ForgetFamily(font, size, flags)
         retries = retries or FONT_RETRIES
         if retries > 0 then
             retryLater(fs, FONT_RETRY_DELAY, wanted, function() Texts.SetFont(fs, font, size, outline, retries - 1) end)
@@ -447,7 +461,7 @@ function Texts.SetFont(fs, font, size, outline, retries)
     local step = ns.Pixel.One(fs)
     for i, copy in ipairs(fs.softCopies) do
         local x, y = SOFT_OFFSETS[i][1] * step, SOFT_OFFSETS[i][2] * step
-        copy:SetFont(taken and font or FALLBACK_FONT, size, "")   -- the font the text really has
+        setFont(copy, taken and font or FALLBACK_FONT, size, "")   -- the font the text really has
         copy:ClearAllPoints()
         copy:SetPoint("TOPLEFT", fs, "TOPLEFT", x, y)
         copy:SetPoint("BOTTOMRIGHT", fs, "BOTTOMRIGHT", x, y)

@@ -1202,7 +1202,12 @@ function methods:GetFont()
     if not self._font then return nil end
     return self._font[1], self._font[2], self._font[3]
 end
-function methods:SetFontObject(o) self._fontObject = o end
+function methods:SetFontObject(o)
+    self._fontObject = o
+    -- A font family (CreateFontFamily, mocked by tests): its Latin member.
+    local roman = type(o) == "table" and o.members and o.members[1]
+    if roman then self._font = { roman.file, roman.height, roman.flags } end
+end
 function methods:SetText(t)
     if self._kind == "EditBox" or self._kind == "FontString" then
         assert(self._font or self._fontObject, self._kind .. ":SetText(): Font not set")

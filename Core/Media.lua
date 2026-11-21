@@ -59,6 +59,72 @@ local function fetch(kind, name)
 end
 
 function Media.Font(name) return fetch("font", name) end
+
+-- A font file draws only its own letters: Friz Quadrata and most others
+-- have no Cyrillic, Hangul or Hanzi, so such names became squares
+-- (CurseForge). Blizzard's own fonts are families: one file per alphabet
+-- (Blizzard_Fonts_Shared Fonts.xml). Media.Family makes one around the
+-- chosen file, which keeps the Latin letters; the rest come from the
+-- client's files for those alphabets. The _CYR files draw Latin letters
+-- a little differently, so they are not used for Latin. nil where the
+-- client cannot make families.
+local CYRILLIC = {
+    ["fonts\\frizqt__.ttf"] = "Fonts\\FRIZQT___CYR.TTF",
+    ["fonts\\morpheus.ttf"] = "Fonts\\MORPHEUS_CYR.TTF",
+    ["fonts\\skurri.ttf"] = "Fonts\\SKURRI_CYR.TTF",
+}
+-- Files that have Cyrillic themselves.
+local HAS_CYRILLIC = { ["fonts\\arialn.ttf"] = true, ["fonts\\frizqt___cyr.ttf"] = true,
+    ["fonts\\morpheus_cyr.ttf"] = true, ["fonts\\skurri_cyr.ttf"] = true }
+local OTHER_ALPHABETS = {
+    { alphabet = "korean", file = "Fonts\\2002.TTF" },
+    { alphabet = "simplifiedchinese", file = "Fonts\\ARKai_T.ttf" },
+    { alphabet = "traditionalchinese", file = "Fonts\\blei00d.TTF" },
+}
+local families, familyCount = {}, 0
+
+function Media.CyrillicFor(file)
+    local plain = file:lower():gsub("/", "\\")
+    if HAS_CYRILLIC[plain] then return file end
+    return CYRILLIC[plain] or "Fonts\\FRIZQT___CYR.TTF"
+end
+
+-- Whether path is one of the files a family around file draws with
+-- (GetFont names the one for the text's alphabet).
+function Media.InFamily(file, path)
+    if not next(families) then return false end
+    local function plain(p) return (p:lower():gsub("/", "\\")) end
+    path = plain(path)
+    if path == plain(Media.CyrillicFor(file)) then return true end
+    for _, other in ipairs(OTHER_ALPHABETS) do
+        if path == plain(other.file) then return true end
+    end
+    return false
+end
+
+function Media.ForgetFamily(file, size, flags)
+    families[file .. "|" .. size .. "|" .. flags] = nil
+end
+
+function Media.Family(file, size, flags)
+    if type(CreateFontFamily) ~= "function" or type(file) ~= "string" then return nil end
+    local key = file .. "|" .. size .. "|" .. flags
+    local family = families[key]
+    if family == nil then
+        local members = {
+            { alphabet = "roman", file = file, height = size, flags = flags },
+            { alphabet = "russian", file = Media.CyrillicFor(file), height = size, flags = flags },
+        }
+        for _, other in ipairs(OTHER_ALPHABETS) do
+            members[#members + 1] = { alphabet = other.alphabet, file = other.file, height = size, flags = flags }
+        end
+        familyCount = familyCount + 1
+        local ok, made = pcall(CreateFontFamily, "ForeverUnitFramesFont" .. familyCount, members)
+        family = ok and made or false
+        families[key] = family
+    end
+    return family or nil
+end
 function Media.StatusBar(name) return fetch("statusbar", name) end
 -- Our own 64 px icons (tools/art/icons): Blizzard's atlases for these are
 -- 11-21 px and blur when scaled; their -2x versions are not in the client.
