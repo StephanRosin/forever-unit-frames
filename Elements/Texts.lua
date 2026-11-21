@@ -330,7 +330,8 @@ end
 local function setFont(fs, font, size, flags)
     local family = ns.Media.Family(font, size, flags)
     if family and pcall(fs.SetFontObject, fs, family) then return end
-    fs:SetFont(font, size, flags)
+    -- A file the client refuses may raise: hasFont then sees the refusal.
+    pcall(fs.SetFont, fs, font, size, flags)
 end
 
 local function makeCopies(fs)

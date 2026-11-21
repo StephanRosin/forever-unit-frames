@@ -34,25 +34,17 @@ H.check("target: mouse off", TargetFrame._mouse, false)
 H.check("target: events off", next(TargetFrame._events), nil)
 H.check("target: child hidden", targetChild:IsShown(), false)
 H.checkTrue("target: child moved away", targetChild:GetParent() ~= TargetFrame)
--- The controller's menu: moved above our target frame.
+-- The controller's menu and the frame's showing stay Blizzard's own:
+-- touched from addon code they tainted the gamepad.
 ns.Frames.target = M.newWidget("Button", "FUFTarget")
 TargetFrame_OpenMenu(TargetFrame)
-local point, rel, relPoint, _, y = blizzardMenu:GetPoint(1)
-H.check("menu above ours", point .. relPoint, "BOTTOMLEFTTOPLEFT")
-H.check("menu on ours", rel, ns.Frames.target)
-H.check("menu gap", y, 4)
-ns.Frames.target:Hide()
-TargetFrame_OpenMenu(TargetFrame)
-H.check("ours hidden: Blizzard's place", (blizzardMenu:GetPoint(1)), "LEFT")
+H.check("menu left at Blizzard's place", (blizzardMenu:GetPoint(1)), "LEFT")
 ns.Frames.target = nil
 M.units.target = { name = "Boar" }
 TargetFrame:Hide()
 M.RunTimers()
-H.checkTrue("target: shown again after a hide", TargetFrame:IsShown())
+H.check("target: not shown again by ours", TargetFrame:IsShown(), false)
 M.units.target = nil
-TargetFrame:Hide()
-M.RunTimers()
-H.check("no target: stays hidden", TargetFrame:IsShown(), false)
 
 -- A disabled frame keeps Blizzard's.
 ns = H.LoadAddon()

@@ -61,6 +61,12 @@ M.SecureClick(ns.Frames.player, "RightButton")
 H.check("unknown counts as secret", #M.menu.elements, 0)
 C_Secrets.ShouldUnitIdentityBeSecret = nil
 
+-- The gamepad UI: an entry of ours taints the menu for the controller.
+_G.InputUtil = { IsGamepadUIEnabled = function() return true end }
+M.SecureClick(ns.Frames.player, "RightButton")
+H.check("gamepad: nothing of ours in it", #M.menu.elements, 0)
+_G.InputUtil = nil
+
 -- Test mode: frames show you, so they get your menu, each its own page.
 ns.TestMode.Set(true)
 M.RunTimers()

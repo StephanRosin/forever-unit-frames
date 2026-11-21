@@ -37,7 +37,10 @@ end
 -- secret name and its layout calculates with the title's size. Anything an
 -- addon adds taints the menu, the calculation then fails, and the menu stays
 -- unsized with its entries on top of each other. So nothing is added there.
+-- On the gamepad UI an added entry taints the menu as well, and closing
+-- it then gets SetPreferredGamepadInteractTarget blocked (CurseForge).
 function FrameMenu.CanAdd(contextData)
+    if InputUtil and InputUtil.IsGamepadUIEnabled and InputUtil.IsGamepadUIEnabled() then return false end
     local unit = contextData and contextData.unit
     local identitySecret = C_Secrets and C_Secrets.ShouldUnitIdentityBeSecret
     return not (unit and identitySecret) or ns.Secrets.Bool(identitySecret, unit) == false

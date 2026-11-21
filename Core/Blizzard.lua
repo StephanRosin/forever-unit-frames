@@ -27,9 +27,12 @@ function Blizzard.Conceal(frame)
         -- nothing and takes no clicks. Only the raid container, whose own
         -- secure children stayed clickable that way, moves under the
         -- hidden parent (concealContainer below).
+        -- The state driver hides it in secure code: a Hide from ours ran
+        -- Blizzard's OnHide scripts tainted, and the controller's code
+        -- later had SetPreferredGamepadInteractTarget blocked (CurseForge).
         frame:SetAlpha(0)
         frame:EnableMouse(false)
-        hide(frame)
+        RegisterStateDriver(frame, "visibility", "hide")
     else
         hide(frame)
         frame:SetParent(hiddenParent)
@@ -41,19 +44,9 @@ end
 -- bar) opens with it as the owner (TargetFrame_OpenMenu,
 -- Blizzard_GamepadActionBars/MainActionBarFrame.lua), and a menu closes
 -- while its owner is not visible (MenuManagerMixin, Blizzard_Menu/Menu.lua).
--- Blizzard anchors that menu beside TargetFrame; it is moved above ours.
 -- Without a target it hides (unit watch): shown, it blocked camera drags
--- at its place on some setups.
-local targetHooked
-
-local function placeMenu(owner)
-    local ours = ns.Frames.target
-    if owner ~= _G.TargetFrame or not ours or not ours:IsVisible() then return end
-    local menu = Menu and Menu.GetManager and Menu.GetManager():GetOpenMenu()
-    if not menu then return end
-    menu:ClearAllPoints()
-    menu:SetPoint("BOTTOMLEFT", ours, "TOPLEFT", 0, 4)
-end
+-- at its place on some setups. Nothing of ours touches that menu or shows
+-- the frame: from addon code both tainted the controller (CurseForge).
 local function concealTarget()
     local frame = _G.TargetFrame
     if not frame then return end
@@ -62,20 +55,6 @@ local function concealTarget()
     frame:SetAlpha(0)
     frame:EnableMouse(false)
     RegisterUnitWatch(frame)
-    if targetHooked then return end
-    targetHooked = true
-    -- A global function, not a frame method: safe to post-hook.
-    if _G.TargetFrame_OpenMenu then
-        hooksecurefunc("TargetFrame_OpenMenu", function(owner) pcall(placeMenu, owner) end)
-    end
-    -- Edit Mode may hide it with a target: shown once more, next frame.
-    frame:HookScript("OnHide", function()
-        C_Timer.After(0, function()
-            ns.AfterCombat("targetMenuOwner", function()
-                if UnitExists("target") then frame:Show() end
-            end)
-        end)
-    end)
 end
 
 -- Blizzard's party: the member buttons live in a pool on PartyFrame; the
