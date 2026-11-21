@@ -255,7 +255,7 @@ function Classification.Build(frame)
     frame.eliteLayer = layer
     frame.eliteIcon = layer:CreateTexture(nil, "OVERLAY")
     frame.eliteText = layer:CreateFontString(nil, "OVERLAY")
-    frame.eliteText:SetFont(ns.Media.Font(nil), 10, "")
+    ns.Texts.SetFont(frame.eliteText, ns.Media.Font(nil), 10, "NONE")   -- a plain SetFont would beat the family for good
     frame.eliteIcon:Hide()
     frame.eliteText:Hide()
 end

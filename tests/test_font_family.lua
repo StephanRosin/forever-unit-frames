@@ -66,3 +66,9 @@ H.check("another file does not", Media.InFamily("Fonts\\FRIZQT__.TTF", "Fonts\\A
 -- A client without families: the file alone.
 _G.CreateFontFamily = nil
 H.check("no families: nil", Media.Family("Fonts\\ARIALN.TTF", 30, ""), nil)
+
+-- Texts first given a plain file at creation (damage numbers)
+-- kept that file and its size for good: the family set later did nothing
+-- (CurseForge: tiny combat numbers since 0.73.0).
+local f = ns.Frames.player
+H.check("combat numbers: the size asked for", f.feedbackText._font[2], ns.CombatFeedback.Size("player"))

@@ -1197,7 +1197,8 @@ end
 function methods:GetDrawLayer() return self._layer, self._sublevel or 0 end
 -- FontString / EditBox. An EditBox without a font cannot take text in
 -- the client, so the mock refuses it too.
-function methods:SetFont(path, size, flags) self._font = { path, size, flags }; return true end
+local fileSet = setmetatable({}, { __mode = "k" })   -- off the widget: snapshots list its fields
+function methods:SetFont(path, size, flags) self._font = { path, size, flags }; fileSet[self] = true; return true end
 function methods:GetFont()
     if not self._font then return nil end
     return self._font[1], self._font[2], self._font[3]
@@ -1205,8 +1206,10 @@ end
 function methods:SetFontObject(o)
     self._fontObject = o
     -- A font family (CreateFontFamily, mocked by tests): its Latin member.
+    -- A file once set with SetFont wins over any font object for good, as
+    -- in the client (seen in game, 21.11.2026).
     local roman = type(o) == "table" and o.members and o.members[1]
-    if roman then self._font = { roman.file, roman.height, roman.flags } end
+    if roman and not fileSet[self] then self._font = { roman.file, roman.height, roman.flags } end
 end
 function methods:SetText(t)
     if self._kind == "EditBox" or self._kind == "FontString" then

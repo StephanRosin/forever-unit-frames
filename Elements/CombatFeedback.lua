@@ -56,7 +56,7 @@ function CombatFeedback.Build(frame)
     holder:SetAllPoints(frame.overlay)
     holder:Hide()
     local text = holder:CreateFontString(nil, "OVERLAY")
-    text:SetFont(ns.Media.Font(nil), 12, "")
+    ns.Texts.SetFont(text, ns.Media.Font(nil), 12, "NONE")   -- a plain SetFont would beat the family for good
     local fade = holder:CreateAnimationGroup()
     alphaStep(fade, 0, 1, CombatFeedback.FADE_IN, 1)
     alphaStep(fade, 1, 1, CombatFeedback.HOLD, 2)
