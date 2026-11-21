@@ -125,6 +125,10 @@ Where the marker (Marker style) sits: **Automatic** is its usual place, on the p
 <tr><td><b>Role: point on the portrait</b></td><td>Automatic: the corner that suits the portrait mode</td><td>Automatic, Top left, Top, Top right, Left, Center, Right, Bottom left, Bottom, Bottom right</td><td>Automatic</td><td>Player, Party</td></tr>
 <tr><td><b>Role: offset X</b></td><td></td><td>-200 – 200</td><td>0</td><td>Player, Party</td></tr>
 <tr><td><b>Role: offset Y</b></td><td></td><td>-200 – 200</td><td>0</td><td>Player, Party</td></tr>
+<tr><td><b>Leader on its own</b></td><td>Out of the row, at its own point on the frame</td><td>On, Off</td><td>Off</td><td>Player, Party</td></tr>
+<tr><td><b>Leader: point on the frame</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Top left</td><td>Player, Party</td></tr>
+<tr><td><b>Leader: offset X</b></td><td></td><td>-200 – 200</td><td>0</td><td>Player, Party</td></tr>
+<tr><td><b>Leader: offset Y</b></td><td></td><td>-200 – 200</td><td>0</td><td>Player, Party</td></tr>
 </tbody>
 </table>
 

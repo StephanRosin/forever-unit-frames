@@ -128,6 +128,38 @@ do
     H.check("resized", g.holder:GetHeight(), 20)
 end
 
+-- The crown on its own (groupLeaderApart): its own point on the frame, out
+-- of the row; off by default.
+do
+    local ns = boot()
+    local C, f = ns.Config, ns.Frames.player
+    local g = f.groupIcons
+    M.units.party1 = { name = "Ann", health = 5, healthMax = 10 }
+    M.units.player.leader = true
+    M.SetGroup({ "party1" })
+    H.check("apart: off by default", C.Get("player", "groupLeaderApart"), false)
+    H.checkTrue("in the row: from the holder", point(g.leader, "TOPLEFT") and point(g.leader, "TOPLEFT")[2] == g.holder)
+    C.Set("player", "groupLeaderApart", true)
+    C.Set("player", "groupLeaderPoint", "BOTTOMRIGHT")
+    C.Set("player", "groupLeaderX", -4)
+    C.Set("player", "groupLeaderY", 6)
+    local p = point(g.leader, "BOTTOMRIGHT")
+    H.checkTrue("apart: on the frame", p and p[2] == f)
+    H.check("apart: its point", p and p[3], "BOTTOMRIGHT")
+    H.check("apart: x", p and p[4], -4)
+    H.check("apart: y", p and p[5], 6)
+    H.check("apart: shown", g.leader:IsShown(), true)
+    H.check("apart: holder still shown", g.holder:IsShown(), true)
+    C.Set("player", "groupReadyCheck", false)
+    C.Set("player", "groupResurrect", false)
+    C.Set("player", "groupSummon", false)
+    C.Set("player", "groupPhase", false)
+    H.check("only the crown on: holder shown", g.holder:IsShown(), true)
+    C.Set("player", "groupReadyCheck", true)
+    C.Set("player", "groupLeaderApart", false)
+    H.checkTrue("back in the row", point(g.leader, "TOPLEFT") and point(g.leader, "TOPLEFT")[2] == g.holder)
+end
+
 -- Leader, guide and assistant ------------------------------------------------------
 do
     local ns = boot()

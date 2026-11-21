@@ -115,10 +115,15 @@ local function roleOnPortrait(frame)
     return want(frame, "groupRolePortrait") and want(frame, "portraitMode") ~= "OFF"
 end
 
+-- The crown at its own place (groupLeaderApart), not in the row.
+local function leaderApart(frame)
+    return want(frame, "groupLeader") and want(frame, "groupLeaderApart")
+end
+
 -- The slots switched on, left to right.
 local function slots(frame)
     local g, list = frame.groupIcons, {}
-    if want(frame, "groupLeader") then list[#list + 1] = g.leader end
+    if want(frame, "groupLeader") and not leaderApart(frame) then list[#list + 1] = g.leader end
     if want(frame, "groupReadyCheck") then list[#list + 1] = g.ready end
     if want(frame, "groupResurrect") then list[#list + 1] = g.rez end
     if want(frame, "groupSummon") then list[#list + 1] = g.summon end
@@ -174,7 +179,8 @@ function GroupIcons.Refresh(frame)
     local roleLast = Layout.IconRowJustify(g.point or "LEFT") == 1
     local rowRole = g.role:IsShown() and not roleOnPortrait(frame)
     local head = {}
-    if g.leader:IsShown() then head[1] = g.leader elseif rowRole and want(frame, "groupLeader") then head[1] = false end
+    local rowLeader = want(frame, "groupLeader") and not leaderApart(frame)
+    if rowLeader and g.leader:IsShown() then head[1] = g.leader elseif rowRole and rowLeader then head[1] = false end
     if rowRole then head[#head + 1] = g.role end
     local rest = {}
     for _, icon in ipairs({ g.ready, g.rez, g.summon, g.phase }) do
@@ -222,6 +228,14 @@ local function placeRole(frame, g)
     g.role:SetSize(size, size)
 end
 
+-- The crown on its own: its point on the frame, plus the offset.
+local function placeLeader(frame, g)
+    local point = want(frame, "groupLeaderPoint")
+    g.leader:ClearAllPoints()
+    g.leader:SetPoint(point, frame, point, Pixel.Snap(want(frame, "groupLeaderX")), Pixel.Snap(want(frame, "groupLeaderY")))
+    g.leader:SetSize(g.size, g.size)
+end
+
 -- Plain frames only: allowed in combat (party buttons restyle then too).
 function GroupIcons.Style(frame)
     local g, scope = frame.groupIcons, frame.key
@@ -245,7 +259,10 @@ function GroupIcons.Style(frame)
         Pixel.Snap(Config.Get(scope, "groupIconX")), Pixel.Snap(Config.Get(scope, "groupIconY")))
     local portraitRole = want(frame, "groupRole") and roleOnPortrait(frame)
     if portraitRole then placeRole(frame, g) end
-    g.holder:SetShown(n > 0 or portraitRole)
+    local apart = leaderApart(frame)
+    if apart then placeLeader(frame, g) end
+    -- The holder parents every icon: shown while any of them has a place.
+    g.holder:SetShown(n > 0 or portraitRole or apart)
     GroupIcons.Refresh(frame)
 end
 

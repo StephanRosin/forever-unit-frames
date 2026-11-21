@@ -237,6 +237,8 @@ local RULES = {
     { anyOn({ "groupLeader", "groupReadyCheck", "groupResurrect", "groupSummon", "groupPhase", "groupRole" }), iconRows("groupIcon") },
     { on("groupRole"), { "groupRolePortrait", "groupRoleSize", "groupRolePortraitPoint", "groupRoleX", "groupRoleY" } },
     { on("groupRolePortrait"), { "groupRoleSize", "groupRolePortraitPoint", "groupRoleX", "groupRoleY" } },
+    { on("groupLeader"), { "groupLeaderApart", "groupLeaderPoint", "groupLeaderX", "groupLeaderY" } },
+    { on("groupLeaderApart"), { "groupLeaderPoint", "groupLeaderX", "groupLeaderY" } },
     { on("rangeFade"), { "rangeAlpha" } },
     { on("targetHighlight"), { "targetHighlightColor", "targetHighlightSize" } },
     { on("combatFeedback"), { "combatFeedbackPoint", "combatFeedbackX", "combatFeedbackY", "combatFeedbackFont",

@@ -1003,6 +1003,15 @@ Settings.Define({ key = "groupRoleX", code = "LH", scope = "frame", only = GROUP
     default = 0 })
 Settings.Define({ key = "groupRoleY", code = "LJ", scope = "frame", only = GROUP, type = "int", min = -200, max = 200,
     default = 0 })
+-- The leader's crown out of the row, at its own point on the frame (the
+-- row keeps the rest); off by default.
+Settings.Define({ key = "groupLeaderApart", code = "LD", scope = "frame", only = GROUP, type = "bool", default = false })
+Settings.Define({ key = "groupLeaderPoint", code = "LE", scope = "frame", only = GROUP, type = "enum",
+    values = Settings.POINTS, default = "TOPLEFT" })
+Settings.Define({ key = "groupLeaderX", code = "LU", scope = "frame", only = GROUP, type = "int", min = -200, max = 200,
+    default = 0 })
+Settings.Define({ key = "groupLeaderY", code = "LK", scope = "frame", only = GROUP, type = "int", min = -200, max = 200,
+    default = 0 })
 Settings.Define({ key = "groupIconSize", code = "LS", scope = "frame", only = GROUP, type = "int", min = 8, max = 48,
     default = 16 })
 Settings.Define({ key = "groupIconFramePoint", code = "LF", scope = "frame", only = GROUP, type = "enum",
