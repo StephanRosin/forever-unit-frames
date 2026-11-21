@@ -192,13 +192,13 @@ local RULES = {
     -- Units/PartyPets.lua: the side only beside the owners. Show when
     -- solo needs no "show player": a solo header lists you anyway.
     { on("partyShowPets"), { "partyPetLayout", "partyPetSide", "partyPetWidth", "partyPetHeight", "partyPetGap",
-        "partyPetsX", "partyPetsY", "partyPetAuras", "partyPetAuraSize", "partyPetAuraMax", "partyPetAuraSide",
+        "partyPetsX", "partyPetsY", "partyPetTextLeft", "partyPetTextRight", "partyPetAuras", "partyPetAuraSize", "partyPetAuraMax", "partyPetAuraSide",
         "partyPetAuraX", "partyPetAuraY" } },
     { is("partyPetLayout", "BESIDE"), { "partyPetSide" } },
     { on("partyPetAuras"), { "partyPetAuraSize", "partyPetAuraMax", "partyPetAuraSide", "partyPetAuraX",
         "partyPetAuraY" } },
     { on("partyTargets"), { "partyTargetSide", "partyTargetWidth", "partyTargetHeight", "partyTargetX",
-        "partyTargetY" } },
+        "partyTargetY", "partyTargetTextLeft", "partyTargetTextRight" } },
     { on("buffsEnabled"), auraRows("buffs", {}) },
     { on("buffsEnabled"), { "weaponEnchants" } },
     { on("weaponEnchants"), { "weaponEnchantsSameRow" } },

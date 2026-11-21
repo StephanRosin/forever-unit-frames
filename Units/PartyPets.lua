@@ -34,7 +34,7 @@ local function get(key) return Config.Get(Party.KEY, key) end
 -- What a pet frame never shows, whatever the party frame does.
 local FIXED = {
     titlePercent = 0, powerEnabled = false, castbarEnabled = false, titleClassIcon = false,
-    portraitMode = "OFF", eliteMarker = false, combatFeedback = false, textHealthLeft = "NAME",
+    portraitMode = "OFF", eliteMarker = false, combatFeedback = false,
 }
 
 -- The pets' own aura layout: one row beside the pet, centred on it. The
@@ -78,6 +78,9 @@ local function resolve(key)
     if fixed ~= nil then return fixed end
     local aura = auraLayout(key)
     if aura ~= nil then return aura end
+    if key == "textHealthLeft" then return get("partyPetTextLeft") end
+    -- PARTY: nil, so the party frame's own right text.
+    if key == "textHealthRight" and get("partyPetTextRight") ~= "PARTY" then return get("partyPetTextRight") end
     if key == "height" then return get("partyPetHeight") end
     if key == "width" then
         local width = get("partyPetWidth")

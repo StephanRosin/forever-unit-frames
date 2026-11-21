@@ -111,11 +111,11 @@ Schema.FRAME = {
     { id = "group", note = "partyClickCast", sections = {
         { id = "group", keys = { "partyOrientation", "partyGrowReverse", "partySortRole", "partySpacing", "partyShowPlayer", "partyShowSolo", "partyHideInRaid" } },
         { id = "pets", keys = { "partyShowPets", "partyPetLayout", "partyPetSide", "partyPetWidth", "partyPetHeight",
-            "partyPetGap", "partyPetsX", "partyPetsY" } },
+            "partyPetGap", "partyPetsX", "partyPetsY", "partyPetTextLeft", "partyPetTextRight" } },
         { id = "petAuras", keys = { "partyPetAuras", "partyPetAuraSize", "partyPetAuraMax", "partyPetAuraSide",
             "partyPetAuraX", "partyPetAuraY" } },
         { id = "partyTargets", keys = { "partyTargets", "partyTargetSide", "partyTargetWidth", "partyTargetHeight",
-            "partyTargetX", "partyTargetY" } },
+            "partyTargetX", "partyTargetY", "partyTargetTextLeft", "partyTargetTextRight" } },
         -- The raid window's settings (Raid/Settings.lua), the same values:
         -- Options/Window.lua builds their rows with that window's.
         { id = "partyBuffs", keys = {}, raidKeys = { "buffKey", "buffSolo", "buffWatchShow" } },

@@ -31,14 +31,15 @@ local function get(key) return Config.Get(Party.KEY, key) end
 
 local FIXED = {
     titlePercent = 0, powerEnabled = false, castbarEnabled = false, titleClassIcon = false,
-    portraitMode = "OFF", eliteMarker = false, combatFeedback = false, textHealthLeft = "NAME",
-    textHealthRight = "PERCENT", buffsEnabled = false, debuffsEnabled = false, threatGlow = false,
+    portraitMode = "OFF", eliteMarker = false, combatFeedback = false, buffsEnabled = false, debuffsEnabled = false, threatGlow = false,
     dispelHighlight = false, groupLeader = false, groupReadyCheck = false, groupResurrect = false,
 }
 
 local function resolve(key)
     local fixed = FIXED[key]
     if fixed ~= nil then return fixed end
+    if key == "textHealthLeft" then return get("partyTargetTextLeft") end
+    if key == "textHealthRight" then return get("partyTargetTextRight") end
     if key == "width" then return get("partyTargetWidth") end
     if key == "height" then return get("partyTargetHeight") end
     -- A marker no taller than the frame.
