@@ -186,9 +186,11 @@ Settings.Define({ key = "healOverflow", code = "OV", scope = "frame", type = "bo
 -- Incoming heals drawn in full, past the frame's right edge when they
 -- overheal (up to one more bar width).
 Settings.Define({ key = "healBeyond", code = "OB", scope = "frame", type = "bool", default = false })
--- Health and power fill from the right, e.g. a target frame as the
--- player's mirror image; heals, shields, spell cost and the overheal lane
--- follow to the left.
+-- Health and power fill from bottom to top (barVertical) and/or the other
+-- way (barReverse: right to left, or top to bottom), e.g. a target frame
+-- as the player's mirror image; heals, shields, spell cost, the overheal
+-- lane and a druid's mana follow (Layout.Fill).
+Settings.Define({ key = "barVertical", code = "FV", scope = "frame", type = "bool", default = false })
 Settings.Define({ key = "barReverse", code = "RV", scope = "frame", type = "bool", default = false })
 -- With the overheal lane: the power bar ends where the health bar ends.
 Settings.Define({ key = "powerMatchesHealth", code = "OM", scope = "frame", type = "bool", default = false })

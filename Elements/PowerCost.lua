@@ -66,14 +66,19 @@ function PowerCost.Style(frame)
     local c = Config.Get(scope, "powerCostColor")
     p.bar:SetStatusBarColor(c[1], c[2], c[3], c[4])
     local fill = frame.power:GetStatusBarTexture()
-    -- Reversed bars (barReverse): the fill ends on its left side.
-    local reverse = Config.Get(scope, "barReverse")
-    local edge = reverse and "LEFT" or "RIGHT"
-    p.bar:SetReverseFill(not reverse)
+    -- The fill's direction (barVertical, barReverse): the cost runs back
+    -- from the fill's finish edge.
+    local Layout = ns.Layout
+    local dir = Layout.FillOf(scope)
+    p.bar:SetOrientation(dir.orientation)
+    p.bar:SetReverseFill(not dir.reverse)
     p.bar:ClearAllPoints()
-    p.bar:SetPoint("TOP" .. edge, fill, "TOP" .. edge, 0, 0)
-    p.bar:SetPoint("BOTTOM" .. edge, fill, "BOTTOM" .. edge, 0, 0)
-    p.bar:SetWidth(math.max(frame.powerWidth or frame.power:GetWidth() or 1, 1))
+    for _, side in ipairs(dir.sides) do
+        local point = Layout.Corner(dir, dir.finish, side)
+        p.bar:SetPoint(point, fill, point, 0, 0)
+    end
+    local length = math.max(frame.powerLength or frame.powerWidth or frame.power:GetWidth() or 1, 1)
+    if dir.vertical then p.bar:SetHeight(length) else p.bar:SetWidth(length) end
     if p.preview then PowerCost.Preview(frame, true) elseif not wanted(frame) then p.clip:Hide() end
 end
 

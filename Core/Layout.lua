@@ -30,6 +30,42 @@ function Layout.Rows(height, titlePercent, healthPercent, powerPercent, powerEna
     return titleH, math.max(1, rest - powerH), powerH
 end
 
+-- The bars' fill (barVertical, barReverse): left to right, right to
+-- left, bottom to top or top to bottom. start and finish are the edges
+-- the fill runs from and to, sides the two edges along it, orientation
+-- the status bar's.
+function Layout.Fill(vertical, reverse)
+    vertical, reverse = vertical == true, reverse == true
+    local f = { vertical = vertical, reverse = reverse, orientation = vertical and "VERTICAL" or "HORIZONTAL" }
+    if vertical then
+        f.start, f.finish, f.sides = reverse and "TOP" or "BOTTOM", reverse and "BOTTOM" or "TOP", { "LEFT", "RIGHT" }
+    else
+        f.start, f.finish, f.sides = reverse and "RIGHT" or "LEFT", reverse and "LEFT" or "RIGHT", { "TOP", "BOTTOM" }
+    end
+    return f
+end
+
+-- A frame's fill (its scope's settings).
+function Layout.FillOf(scope)
+    return Layout.Fill(ns.Config.Get(scope, "barVertical"), ns.Config.Get(scope, "barReverse"))
+end
+
+-- The point at one end of a bar, on one of its sides: "TOPRIGHT" for the
+-- right end's top side of a horizontal bar, "TOPLEFT" for the top end's
+-- left side of a vertical one.
+function Layout.Corner(fill, edge, side)
+    if fill.vertical then return edge .. side end
+    return side .. edge
+end
+
+-- A rectangle reaching reach past the bar's finish edge: the offsets of
+-- its TOPLEFT (x, y) and BOTTOMRIGHT (x, y) from the bar's.
+function Layout.Beyond(fill, reach)
+    local e = fill.finish
+    return e == "LEFT" and -reach or 0, e == "TOP" and reach or 0, e == "RIGHT" and reach or 0,
+        e == "BOTTOM" and -reach or 0
+end
+
 -- Width of the overheal lane at the end of a health bar of barWidth: 8 %,
 -- at least 4.
 function Layout.OverhealLane(barWidth)

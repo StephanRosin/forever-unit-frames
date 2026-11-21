@@ -84,8 +84,8 @@ Schema.TABS = {
     -- colours (Raid/Cell.lua): the note says so.
     { id = "cell", note = "cell", sections = {
         { id = "size", keys = { "cellWidth", "cellHeight" } },
-        { id = "bars", keys = { "healthColorMode", "healthColor", "barTexture", "backgroundColor", "powerStrip",
-            "powerStripHeight" } },
+        { id = "bars", keys = { "healthColorMode", "healthColor", "barTexture", "backgroundColor", "fillVertical",
+            "fillReverse", "powerStrip", "powerStripHeight" } },
         { id = "cellShape", keys = { "cellBorder", "cellBorderStyle", "cellBorderSize", "cellBorderColor",
             "cellCornerRadius" } },
         { id = "heals", keys = { "healPrediction", "overheal", "absorbs", "combatText" } },

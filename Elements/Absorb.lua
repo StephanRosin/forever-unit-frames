@@ -77,29 +77,37 @@ end
 function Absorb.Style(frame)
     local bar, scope = frame.absorb, frame.key
     local health, clip = frame.health, frame.absorbClip
-    -- Reversed bars (barReverse): everything mirrored, "end" is the left.
-    local reverse = Config.Get(scope, "barReverse")
-    local start, finish = reverse and "RIGHT" or "LEFT", reverse and "LEFT" or "RIGHT"
+    -- The fill's direction (barVertical, barReverse): "end" is its
+    -- finish edge, the lane lies past it.
+    local Layout = ns.Layout
+    local dir = Layout.FillOf(scope)
+    local start, finish = dir.start, dir.finish
     local lane = frame.overhealLane or 0
+    local x1, y1, x2, y2 = Layout.Beyond(dir, lane)
     clip:ClearAllPoints()
-    clip:SetPoint("TOPLEFT", health, "TOPLEFT", reverse and -lane or 0, 0)
-    clip:SetPoint("BOTTOMRIGHT", health, "BOTTOMRIGHT", reverse and 0 or lane, 0)
+    clip:SetPoint("TOPLEFT", health, "TOPLEFT", x1, y1)
+    clip:SetPoint("BOTTOMRIGHT", health, "BOTTOMRIGHT", x2, y2)
     bar:ClearAllPoints()
+    bar:SetOrientation(dir.orientation)
     if Config.Get(scope, "absorbMode") == "END" then
         -- From the bar's end back towards its start, over the health: seen
         -- at full health too. No arithmetic with the (secret) values.
-        bar:SetReverseFill(not reverse)
-        bar:SetPoint("TOP" .. finish, health, "TOP" .. finish, 0, 0)
-        bar:SetPoint("BOTTOM" .. finish, health, "BOTTOM" .. finish, 0, 0)
+        bar:SetReverseFill(not dir.reverse)
+        for _, side in ipairs(dir.sides) do
+            local point = Layout.Corner(dir, finish, side)
+            bar:SetPoint(point, health, point, 0, 0)
+        end
     else
         -- After all incoming heals when they show, else right at the health.
         local after = Config.Get(scope, "healPrediction") and frame.healAll:GetStatusBarTexture()
             or health:GetStatusBarTexture()
-        bar:SetReverseFill(reverse)
-        bar:SetPoint("TOP" .. start, after, "TOP" .. finish, 0, 0)
-        bar:SetPoint("BOTTOM" .. start, after, "BOTTOM" .. finish, 0, 0)
+        bar:SetReverseFill(dir.reverse)
+        for _, side in ipairs(dir.sides) do
+            bar:SetPoint(Layout.Corner(dir, start, side), after, Layout.Corner(dir, finish, side), 0, 0)
+        end
     end
-    bar:SetWidth(frame.healthWidth)
+    local length = frame.healthLength or frame.healthWidth
+    if dir.vertical then bar:SetHeight(length) else bar:SetWidth(length) end
     bar:SetStatusBarTexture(Absorb.SHADE_TEXTURE)
     local shade = Absorb.SHADE
     bar:SetStatusBarColor(shade, shade, shade, 1)
@@ -115,14 +123,22 @@ function Absorb.Style(frame)
     local gate, glow = bar.gate, bar.glow
     gate:ClearAllPoints()
     gate:SetAllPoints(fill)
-    -- At the end of the clip: the bar's, or the overheal lane's.
+    -- At the end of the clip: the bar's, or the overheal lane's. The
+    -- texture fades from its left edge: turned to fade away from the end.
     glow:ClearAllPoints()
-    local overlap = reverse and Absorb.GLOW_OVERLAP or -Absorb.GLOW_OVERLAP
-    glow:SetPoint("TOP" .. start, clip, "TOP" .. finish, overlap, 0)
-    glow:SetPoint("BOTTOM" .. start, clip, "BOTTOM" .. finish, overlap, 0)
-    -- Mirrored with the bars: the glow fades away from the end.
-    if reverse then glow:SetTexCoord(1, 0, 0, 1) else glow:SetTexCoord(0, 1, 0, 1) end
-    glow:SetWidth(Absorb.GLOW_WIDTH)
+    local overlap = Absorb.GLOW_OVERLAP
+    local dx = (finish == "RIGHT" and -overlap) or (finish == "LEFT" and overlap) or 0
+    local dy = (finish == "TOP" and -overlap) or (finish == "BOTTOM" and overlap) or 0
+    for _, side in ipairs(dir.sides) do
+        glow:SetPoint(Layout.Corner(dir, start, side), clip, Layout.Corner(dir, finish, side), dx, dy)
+    end
+    if finish == "RIGHT" then glow:SetTexCoord(0, 1, 0, 1)
+    elseif finish == "LEFT" then glow:SetTexCoord(1, 0, 0, 1)
+    -- Corners in the order UL, LL, UR, LR: the texture's left edge at the
+    -- bottom (fill upward) or the top (downward).
+    elseif finish == "TOP" then glow:SetTexCoord(1, 0, 0, 0, 1, 1, 0, 1)
+    else glow:SetTexCoord(0, 0, 1, 0, 0, 1, 1, 1) end
+    if dir.vertical then glow:SetHeight(Absorb.GLOW_WIDTH) else glow:SetWidth(Absorb.GLOW_WIDTH) end
     glow:SetVertexColor(c[1], c[2], c[3], 1)
     local enabled = Config.Get(scope, "absorbEnabled")
     clip:SetShown(enabled)

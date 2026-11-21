@@ -114,6 +114,8 @@ local MAPPED = {
     healthColor = function() return get("healthColor") end,
     barTexture = themed("barTexture", function() return get("barTexture") end),
     backgroundColor = themed("backgroundColor", function() return get("backgroundColor") end),
+    barVertical = function() return get("fillVertical") end,
+    barReverse = function() return get("fillReverse") end,
     powerEnabled = function() return get("powerStrip") ~= "OFF" end,
     healthPercent = function() return 100 - get("powerStripHeight") end,
     powerPercent = function() return get("powerStripHeight") end,

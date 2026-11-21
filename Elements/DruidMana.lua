@@ -2,8 +2,8 @@ local _, ns = ...
 
 -- A druid's mana while shapeshifted (bear: rage, cat: energy), as
 -- Blizzard's alternate mana bar shows it: a thin strip along the bottom of
--- the player's power bar, only while the power bar shows something other
--- than mana. Values may be secret: they go to the status bar as they are.
+-- the player's power bar (along its right edge while the bars fill
+-- vertically), only while the power bar shows something other than mana. Values may be secret: they go to the status bar as they are.
 -- A plain frame, so it follows forms in combat too.
 local DruidMana = { name = "DruidMana", unitEvents = { "UNIT_POWER_FREQUENT", "UNIT_MAXPOWER", "UNIT_DISPLAYPOWER" } }
 ns.DruidMana = DruidMana
@@ -42,15 +42,25 @@ function DruidMana.Style(frame)
     if not bar then return end
     local tex = ns.Media.StatusBar(Config.Get(DruidMana.SCOPE, "barTexture"))
     bar:SetStatusBarTexture(tex)
-    bar:SetReverseFill(Config.Get(DruidMana.SCOPE, "barReverse"))
+    local fill = ns.Layout.FillOf(DruidMana.SCOPE)
+    bar:SetOrientation(fill.orientation)
+    bar:SetReverseFill(fill.reverse)
     local c = Config.Get(DruidMana.SCOPE, "powerColorMana")
     bar:SetStatusBarColor(c[1], c[2], c[3])
     bar.bg:SetColorTexture(0, 0, 0, 0.6)
     bar:SetFrameLevel(frame.power:GetFrameLevel() + DruidMana.LEVELS)
     bar:ClearAllPoints()
-    bar:SetPoint("BOTTOMLEFT", frame.power, "BOTTOMLEFT", 0, 0)
-    bar:SetPoint("BOTTOMRIGHT", frame.power, "BOTTOMRIGHT", 0, 0)
-    bar:SetHeight(Pixel.Snap(Config.Get(DruidMana.SCOPE, "druidManaHeight"), nil, 1))
+    local thickness = Pixel.Snap(Config.Get(DruidMana.SCOPE, "druidManaHeight"), nil, 1)
+    if fill.vertical then
+        -- Filling upward or downward: a strip along the right edge.
+        bar:SetPoint("TOPRIGHT", frame.power, "TOPRIGHT", 0, 0)
+        bar:SetPoint("BOTTOMRIGHT", frame.power, "BOTTOMRIGHT", 0, 0)
+        bar:SetWidth(thickness)
+    else
+        bar:SetPoint("BOTTOMLEFT", frame.power, "BOTTOMLEFT", 0, 0)
+        bar:SetPoint("BOTTOMRIGHT", frame.power, "BOTTOMRIGHT", 0, 0)
+        bar:SetHeight(thickness)
+    end
     if bar.preview then DruidMana.Preview(frame, true) else DruidMana.Update(frame) end
 end
 

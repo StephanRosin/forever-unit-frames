@@ -199,6 +199,10 @@ RaidSettings.Define({ key = "barTexture", code = "TX", scope = "frame", class = 
     default = "Raid" })
 RaidSettings.Define({ key = "backgroundColor", code = "BG", scope = "frame", class = "behaviour", type = "color",
     default = { 0, 0, 0, 0.6 } })
+-- The bars' fill, as the unit frames' barVertical and barReverse: bottom
+-- to top, and the other way (right to left, top to bottom).
+RaidSettings.Define({ key = "fillVertical", code = "XV", scope = "frame", class = "behaviour", type = "bool", default = false })
+RaidSettings.Define({ key = "fillReverse", code = "XW", scope = "frame", class = "behaviour", type = "bool", default = false })
 -- Incoming heals, the overheal lane at the end of the health bar (heals
 -- past full health; never past the cell's edge), absorb shields, and the
 -- damage and heal numbers in the cell.

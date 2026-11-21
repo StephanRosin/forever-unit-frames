@@ -59,17 +59,21 @@ end
 function HealPrediction.Style(frame)
     local scope, health = frame.key, frame.health
     local lane = frame.overhealLane or 0
-    local fill = health:GetStatusBarTexture()
+    local healthFill = health:GetStatusBarTexture()
     local tex = ns.Media.StatusBar(Config.Get(scope, "barTexture"))
     local clip = frame.healClip
     local beyond = Config.Get(scope, "healBeyond")
     frame.healBeyond = beyond
-    -- Reversed bars (barReverse): everything mirrored, the heals run left.
-    local reverse = Config.Get(scope, "barReverse")
-    local reach = beyond and math.max(lane, frame.healthWidth) or lane
+    -- The fill's direction (barVertical, barReverse): the heals run on
+    -- from its finish, the lane and the reach lie past that edge.
+    local Layout = ns.Layout
+    local fill = Layout.FillOf(scope)
+    local length = frame.healthLength or frame.healthWidth
+    local reach = beyond and math.max(lane, length) or lane
+    local x1, y1, x2, y2 = Layout.Beyond(fill, reach)
     clip:ClearAllPoints()
-    clip:SetPoint("TOPLEFT", health, "TOPLEFT", reverse and -reach or 0, 0)
-    clip:SetPoint("BOTTOMRIGHT", health, "BOTTOMRIGHT", reverse and 0 or reach, 0)
+    clip:SetPoint("TOPLEFT", health, "TOPLEFT", x1, y1)
+    clip:SetPoint("BOTTOMRIGHT", health, "BOTTOMRIGHT", x2, y2)
     clip:SetShown(Config.Get(scope, "healPrediction"))
     for _, pair in ipairs({ { frame.healAll, "healOtherColor" }, { frame.healMine, "healMyColor" } }) do
         local bar, key = pair[1], pair[2]
@@ -77,28 +81,23 @@ function HealPrediction.Style(frame)
         local c = Config.Get(scope, key)
         bar:SetStatusBarColor(c[1], c[2], c[3], c[4])
         bar:ClearAllPoints()
-        bar:SetReverseFill(reverse)
-        if reverse then
-            bar:SetPoint("TOPRIGHT", fill, "TOPLEFT", 0, 0)
-            bar:SetPoint("BOTTOMRIGHT", fill, "BOTTOMLEFT", 0, 0)
-        else
-            bar:SetPoint("TOPLEFT", fill, "TOPRIGHT", 0, 0)
-            bar:SetPoint("BOTTOMLEFT", fill, "BOTTOMRIGHT", 0, 0)
+        bar:SetOrientation(fill.orientation)
+        bar:SetReverseFill(fill.reverse)
+        for _, side in ipairs(fill.sides) do
+            bar:SetPoint(Layout.Corner(fill, fill.start, side), healthFill, Layout.Corner(fill, fill.finish, side), 0, 0)
         end
-        bar:SetWidth(frame.healthWidth)
+        if fill.vertical then bar:SetHeight(length) else bar:SetWidth(length) end
         -- Past the frame the rounded mask must be off (Elements/Shape.lua
         -- puts it on the listed textures, which skip themselves then).
         if beyond and frame.clip then ns.Corners.SetMasked(bar:GetStatusBarTexture(), frame.clip.mask, false) end
     end
+    -- The lane: a strip lane deep past the finish edge, along the bar.
     local laneBg = frame.overhealBg
     laneBg:ClearAllPoints()
-    if reverse then
-        laneBg:SetPoint("TOPRIGHT", health, "TOPLEFT", 0, 0)
-        laneBg:SetPoint("BOTTOMLEFT", health, "BOTTOMLEFT", -lane, 0)
-    else
-        laneBg:SetPoint("TOPLEFT", health, "TOPRIGHT", 0, 0)
-        laneBg:SetPoint("BOTTOMRIGHT", health, "BOTTOMRIGHT", lane, 0)
+    for _, side in ipairs(fill.sides) do
+        laneBg:SetPoint(Layout.Corner(fill, fill.start, side), health, Layout.Corner(fill, fill.finish, side), 0, 0)
     end
+    if fill.vertical then laneBg:SetHeight(math.max(lane, 1)) else laneBg:SetWidth(math.max(lane, 1)) end
     laneBg:SetTexture(tex)
     local bg = Config.Get(scope, "backgroundColor")
     laneBg:SetVertexColor(bg[1], bg[2], bg[3], bg[4])

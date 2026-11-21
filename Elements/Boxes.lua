@@ -86,10 +86,13 @@ end
 
 -- The parts that show: name, region, extra width beside it (the overheal
 -- lane: right of it, left when negative, as with reversed bars), width and height (the layout's numbers: the regions'
--- own sizes may not be known yet).
+-- own sizes may not be known yet), extra height (the lane of vertical
+-- bars: above it, below when negative).
 function Boxes.Parts(frame)
     local parts = {}
-    local function add(name, region, extra, w, h) parts[#parts + 1] = { name, region, extra, w, h } end
+    local function add(name, region, extra, w, h, extraY)
+        parts[#parts + 1] = { name, region, extra, w, h, extraY or 0 }
+    end
     if frame.titleHeight > 0 then add("title", frame.title, 0, frame.titleWidth, frame.titleHeight) end
     local mode = Config.Get(frame.key, "portraitMode")
     if mode == "TOP" then
@@ -98,8 +101,13 @@ function Boxes.Parts(frame)
         add("portrait", frame.portraitBg, 0, frame.layoutHeight, frame.layoutHeight)
     end
     local lane = frame.overhealLane or 0
-    local side = Config.Get(frame.key, "barReverse") and -lane or lane
-    add("health", frame.health, side, frame.healthWidth + lane, frame.healthHeight)
+    local fill = ns.Layout.FillOf(frame.key)
+    local side = (fill.finish == "RIGHT" or fill.finish == "TOP") and lane or -lane
+    if fill.vertical then
+        add("health", frame.health, 0, frame.healthWidth, frame.healthHeight + lane, side)
+    else
+        add("health", frame.health, side, frame.healthWidth + lane, frame.healthHeight)
+    end
     if frame.power and frame.power:IsShown() then
         add("power", frame.power, 0, frame.powerWidth, frame.powerHeight)
     end
@@ -130,11 +138,11 @@ local function drawFill(frame, fill)
 end
 
 local function drawBox(frame, box, part, look)
-    local _, region, extra, w, h = part[1], part[2], part[3], part[4], part[5]
+    local _, region, extra, w, h, extraY = part[1], part[2], part[3], part[4], part[5], part[6] or 0
     local scope = frame.key
     box.ring:ClearAllPoints()
-    box.ring:SetPoint("TOPLEFT", region, "TOPLEFT", math.min(extra, 0), 0)
-    box.ring:SetPoint("BOTTOMRIGHT", region, "BOTTOMRIGHT", math.max(extra, 0), 0)
+    box.ring:SetPoint("TOPLEFT", region, "TOPLEFT", math.min(extra, 0), math.max(extraY, 0))
+    box.ring:SetPoint("BOTTOMRIGHT", region, "BOTTOMRIGHT", math.max(extra, 0), math.min(extraY, 0))
     local radius = Boxes.DrawRing(box.ring, frame, box.ring, w, h, box.shade)
     local padding = Boxes.Plain() and 0 or ns.Border.Padding(scope)
     ns.ThemeArt.PlaceBack(box.back, box.clip, box.ring, padding, radius)
