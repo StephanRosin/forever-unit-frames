@@ -254,8 +254,8 @@ local function storeKey(slot, text)
     return set(slot.key, key)
 end
 
--- What the key does otherwise, under the label: while the raid frames
--- show it casts instead.
+-- What the key does otherwise, under the label: over our frames it casts
+-- instead.
 local function takenText(slot)
     local action = ns.ClickKeys.Taken(get(slot.key))
     if not action then return "" end

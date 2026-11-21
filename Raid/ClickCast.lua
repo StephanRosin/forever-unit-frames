@@ -7,7 +7,7 @@ local _, ns = ...
 -- the secure attributes the client reads on a click (SecureTemplates.lua:
 -- SecureButton_GetModifiedAttribute): "*type1" for the plain left click,
 -- "shift-type1" for Shift and left, with "spell1", "item1", "macrotext1"
--- beside them. Static attributes only (no snippets on this client), and
+-- beside them. Static attributes only, and
 -- out of combat only: a cell a header makes in combat gets them after
 -- combat and does what the XML says until then (left target, right menu).
 -- Test mode's pretend cells and party targets are never touched.

@@ -3556,6 +3556,25 @@ function M.SecureHandler(w, template)
         setfenv(snippet, {})
         local inner = frame._scripts[script]
         frame._scripts[script] = function(f, ...)
+            -- As Wrapped_OnEnter/OnLeave: only with mouse motion, a leave
+            -- only after a wrapped enter; never on an unprotected frame.
+            local motion = ...
+            local run = M.IsProtectedTree(frame)
+            M.secureDepth = M.secureDepth + 1
+            if script == "OnEnter" then
+                if motion then frame:SetAttribute("_wrapentered", true) else run = false end
+            elseif script == "OnLeave" then
+                if motion and frame:GetAttribute("_wrapentered") then
+                    frame:SetAttribute("_wrapentered", nil)
+                else
+                    run = false
+                end
+            end
+            M.secureDepth = M.secureDepth - 1
+            if not run then
+                if inner then inner(f, ...) end
+                return
+            end
             M.secureDepth = M.secureDepth + 1
             local ok, err = pcall(snippet, handle)
             M.secureDepth = M.secureDepth - 1

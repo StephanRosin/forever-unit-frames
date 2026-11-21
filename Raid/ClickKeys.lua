@@ -100,7 +100,7 @@ ClickKeys.active = {}
 local wrapper
 
 -- Out of combat: a frame's keys (none when it does not take the click
--- bindings), wrapped once. One under the mouse binds them at once.
+-- bindings), wrapped once.
 function ClickKeys.Apply(frame)
     if InCombatLockdown() then return end
     local list = (ClickKeys.Wanted() and ns.ClickCast.Takes(frame)) and ClickKeys.active or {}
@@ -117,10 +117,10 @@ function ClickKeys.Apply(frame)
         frame:SetAttribute("fufkeybutton" .. i, pair[2])
     end
     frame:SetAttribute("fufkeys", #list)
+    -- Let go of the old keys; the new ones bind on the next enter. Bound
+    -- here, only a wrapped enter would let them go again (the client runs
+    -- OnLeave's snippet only after one: SecureHandlers.lua _wrapentered).
     ClearOverrideBindings(frame)
-    if frame:IsVisible() and frame:IsMouseOver() then
-        for _, pair in ipairs(list) do SetOverrideBindingClick(frame, true, pair[1], pair[2], "LeftButton") end
-    end
 end
 
 function ClickKeys.ApplyAll()

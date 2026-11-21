@@ -82,13 +82,15 @@ H.check("after combat: the new key", on(cell, "R"), KEY1)
 H.check("the old one gone", on(cell, "F"), "")
 H.check("nothing blocked", #M.blocked, 0)
 
--- A frame under the mouse when the keys change takes them at once.
+-- A frame under the mouse when the keys change lets the old ones go and
+-- takes the new ones on the next enter (bound now, no leave would follow).
 M.Hover(cell)
 RC.Set("general", "clickKey1", "T")
 M.RunTimers()
-H.check("hovered while changed: the new key", GetBindingAction("T", true), KEY1)
 H.check("hovered while changed: the old one free", GetBindingAction("R", true), "")
+H.check("hovered while changed: the new one not yet", GetBindingAction("T", true), "")
 M.Leave(cell)
+H.check("next enter: the new key", on(cell, "T"), KEY1)
 
 -- Off: no key taken anywhere.
 RC.Set("general", "clickCast", "OFF")

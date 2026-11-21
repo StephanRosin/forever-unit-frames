@@ -83,7 +83,7 @@ H.checkTrue("click-casting: Copy from", click:find("**Copy from**", 1, true))
 H.checkTrue("click-casting: Clear all", click:find("**Clear all**", 1, true))
 H.checkTrue("click-casting: a macro as written", click:find("runs it as written", 1, true))
 H.checkTrue("click-casting: Blizzard's bindings", click:find("Blizzard's own click bindings", 1, true))
-H.checkTrue("click-casting: party frames for keys", click:find("party frames) show", 1, true))
+H.checkTrue("click-casting: keys only over a frame", click:find("only while the mouse is over a frame", 1, true))
 
 -- The buff watch page: per character, out of combat only, the group form
 -- and its reagent, the blessings by class, the smart buff key apart from
