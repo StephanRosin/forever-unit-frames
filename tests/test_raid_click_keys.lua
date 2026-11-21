@@ -67,6 +67,35 @@ H.check("cell hidden under the mouse: free", GetBindingAction("F", true), "")
 cell:Show()
 cell._mouseOver = nil
 
+-- A leave the client gives without mouse motion skips the snippet (a menu
+-- opening under the mouse; CurseForge 21.11.2026, the wheel stuck with a
+-- target): once no unit is under the mouse the state driver frees them.
+local target = ns.Frames.target
+M.units.target = { name = "Foe", health = 1, healthMax = 1 }
+M.FireEvent("PLAYER_TARGET_CHANGED")
+M.RunTimers()
+for _, combat in ipairs({ false, true }) do
+    M.SetCombat(combat)
+    M.Hover(target)
+    H.check("target hovered: bound", GetBindingAction("F", true), KEY1)
+    target._mouseOver = nil
+    target:GetScript("OnLeave")(target, false)
+    H.check("left without motion: still bound", GetBindingAction("F", true), KEY1)
+    M.mouseoverExists = false
+    M.EvaluateDrivers()
+    H.check("no unit under the mouse: free (combat " .. tostring(combat) .. ")", GetBindingAction("F", true), "")
+    -- The next wrapped enter binds again (a fresh _wrapentered).
+    H.check("enter again", on(target, "F"), KEY1)
+end
+M.SetCombat(false)
+-- Another frame hiding while the mouse is over this one keeps the keys.
+M.Hover(cell)
+target:Hide()
+H.check("another frame hid: still bound", GetBindingAction("F", true), KEY1)
+target:Show()
+M.Leave(cell)
+H.check("left: free", GetBindingAction("F", true), "")
+
 -- In combat: the snippets bind and free, nothing blocked.
 M.SetCombat(true)
 M.Hover(cell)

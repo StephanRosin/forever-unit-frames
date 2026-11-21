@@ -6,10 +6,12 @@ local _, ns = ...
 -- keys are bound only while the mouse is over one of our frames that take
 -- the click bindings (ClickCast.Takes: raid cells, party, the unit frames
 -- with their clickCast on): secure snippets wrapped around each frame's
--- OnEnter bind them to the buttons (SetBindingClick, an override binding
--- owned by the frame), OnLeave and OnHide let them go (ClearBindings).
--- Snippets run in combat too; elsewhere a key keeps its own job (the
--- wheel zooms). The keys' list sits in the frame's attributes, written
+-- OnEnter bind them to the buttons (SetBindingClick, override bindings
+-- owned by one secure header), OnLeave and OnHide let them go
+-- (ClearBindings). The client skips a leave without mouse motion (a menu
+-- opening under the mouse, CurseForge 21.11.2026), so a state driver lets
+-- them go too once no unit is under the mouse. Snippets run in combat
+-- too; elsewhere a key keeps its own job (the wheel zooms). The keys' list sits in the frame's attributes, written
 -- out of combat; a frame made in combat gets it after combat.
 local ClickKeys = {}
 ns.ClickKeys = ClickKeys
@@ -88,13 +90,27 @@ end
 -- The wrapped frames' snippets (RestrictedFrames.lua: HANDLE:SetBindingClick
 -- takes the button's name).
 ClickKeys.ENTER = [[
+    owner:ClearBindings()
+    owner:SetAttribute("fufhovered", self)
     local n = self:GetAttribute("fufkeys") or 0
     for i = 1, n do
-        self:SetBindingClick(true, self:GetAttribute("fufkey" .. i), self:GetAttribute("fufkeybutton" .. i),
+        owner:SetBindingClick(true, self:GetAttribute("fufkey" .. i), self:GetAttribute("fufkeybutton" .. i),
             "LeftButton")
     end
 ]]
-ClickKeys.LEAVE = [[ self:ClearBindings() ]]
+-- Only the frame that bound them lets them go (another may hide meanwhile).
+ClickKeys.LEAVE = [[
+    if owner:GetAttribute("fufhovered") == self then
+        owner:SetAttribute("fufhovered", nil)
+        owner:ClearBindings()
+    end
+]]
+ClickKeys.UNHOVER = [[
+    if newstate == "off" then
+        self:SetAttribute("fufhovered", nil)
+        self:ClearBindings()
+    end
+]]
 -- The keys as bound now: { key, button name } pairs (ClickKeys.Update).
 ClickKeys.active = {}
 local wrapper
@@ -106,7 +122,12 @@ function ClickKeys.Apply(frame)
     local list = (ClickKeys.Wanted() and ns.ClickCast.Takes(frame)) and ClickKeys.active or {}
     if not frame.fufKeysWrapped then
         if #list == 0 then return end
-        wrapper = wrapper or CreateFrame("Frame", nil, UIParent, "SecureHandlerBaseTemplate")
+        if not wrapper then
+            wrapper = CreateFrame("Frame", nil, UIParent, "SecureHandlerStateTemplate")
+            wrapper:SetAttribute("_onstate-fufmouseover", ClickKeys.UNHOVER)
+            RegisterStateDriver(wrapper, "fufmouseover", "[@mouseover,exists] on; off")
+            ClickKeys.wrapper = wrapper
+        end
         wrapper:WrapScript(frame, "OnEnter", ClickKeys.ENTER)
         wrapper:WrapScript(frame, "OnLeave", ClickKeys.LEAVE)
         wrapper:WrapScript(frame, "OnHide", ClickKeys.LEAVE)
@@ -117,10 +138,6 @@ function ClickKeys.Apply(frame)
         frame:SetAttribute("fufkeybutton" .. i, pair[2])
     end
     frame:SetAttribute("fufkeys", #list)
-    -- Let go of the old keys; the new ones bind on the next enter. Bound
-    -- here, only a wrapped enter would let them go again (the client runs
-    -- OnLeave's snippet only after one: SecureHandlers.lua _wrapentered).
-    ClearOverrideBindings(frame)
 end
 
 function ClickKeys.ApplyAll()
@@ -134,6 +151,12 @@ function ClickKeys.Update()
     if InCombatLockdown() or not ns.RaidConfig.Profile() then return end
     local active = {}
     ClickKeys.active = active
+    -- The old keys go; the new ones bind on the next enter (bound here,
+    -- only a wrapped enter would let them go again: _wrapentered).
+    if wrapper then
+        ClearOverrideBindings(wrapper)
+        wrapper:SetAttribute("fufhovered", nil)
+    end
     if not ClickKeys.Wanted() then
         ClickKeys.ApplyAll()
         return

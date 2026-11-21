@@ -1651,20 +1651,32 @@ function M.Reset()
     M.inRaid = false
     M.drivers = setmetatable({}, { __mode = "k" })
     _G.IsInRaid = function() return M.inRaid end
-    local function evaluate(frame, values)
+    -- M.mouseoverExists: a unit under the mouse ([@mouseover,exists];
+    -- M.Hover sets it for a frame with a unit). Other states than
+    -- visibility set "state-<name>" to the value when it changes (the
+    -- client's throttled driver; tests call M.EvaluateDrivers).
+    M.mouseoverExists = false
+    M.stateDrivers = setmetatable({}, { __mode = "k" })
+    local function evaluate(frame, values, state)
         for clause in (values .. ";"):gmatch("%s*([^;]+);") do
             local cond, action = clause:match("^%[(.-)%]%s*(%a+)$")
             if not cond then action = clause:match("^(%a+)$") end
             local match = cond == nil or (cond == "group:raid" and M.inRaid) or (cond == "nogroup:raid" and not M.inRaid)
                 or (cond == "group" and IsInGroup()) or (cond == "combat" and M.combat)
                 or (cond == "combat,group" and M.combat and IsInGroup())
+                or (cond == "@mouseover,exists" and M.mouseoverExists)
             assert(cond == nil or cond == "group:raid" or cond == "nogroup:raid" or cond == "group"
-                or cond == "combat" or cond == "combat,group", "mock: unknown condition " .. tostring(cond))
+                or cond == "combat" or cond == "combat,group" or cond == "@mouseover,exists",
+                "mock: unknown condition " .. tostring(cond))
             if match then
                 -- The state driver is secure code: it may show and hide
                 -- protected frames in combat.
                 M.secureDepth = M.secureDepth + 1
-                if action == "show" then frame:Show() else frame:Hide() end
+                if state then
+                    if frame:GetAttribute("state-" .. state) ~= action then
+                        frame:SetAttribute("state-" .. state, action)
+                    end
+                elseif action == "show" then frame:Show() else frame:Hide() end
                 M.secureDepth = M.secureDepth - 1
                 return
             end
@@ -1672,16 +1684,28 @@ function M.Reset()
     end
     _G.RegisterStateDriver = function(frame, state, values)
         assert(not M.combat, "RegisterStateDriver: in combat")
-        assert(state == "visibility", "mock: only the visibility state")
+        if state ~= "visibility" then
+            M.stateDrivers[frame] = M.stateDrivers[frame] or {}
+            M.stateDrivers[frame][state] = values
+            evaluate(frame, values, state)
+            return
+        end
         M.drivers[frame] = values
         evaluate(frame, values)
     end
     _G.UnregisterStateDriver = function(frame, state)
         assert(not M.combat, "UnregisterStateDriver: in combat")
+        if state ~= "visibility" then
+            if M.stateDrivers[frame] then M.stateDrivers[frame][state] = nil end
+            return
+        end
         M.drivers[frame] = nil
     end
     function M.EvaluateDrivers()
         for frame, values in pairs(M.drivers) do evaluate(frame, values) end
+        for frame, states in pairs(M.stateDrivers) do
+            for state, values in pairs(states) do evaluate(frame, values, state) end
+        end
     end
     function M.SetRaid(on)
         M.inRaid = on
@@ -3515,17 +3539,45 @@ end
 -- snippet sees self, button and down; self:GetFrameRef(label) hands out a
 -- frame handle whose Show, Hide and IsShown work in combat only on a
 -- protected frame (RestrictedFrames.lua GetHandleFrame).
+local handles = setmetatable({}, { __mode = "k" })
 local function frameHandle(frame)
+    if handles[frame] then return handles[frame] end
     local function writable()
         if M.combat and not M.IsProtectedTree(frame) then error("Invalid frame handle", 3) end
         return frame
     end
-    return {
+    local h = {
         Show = function() writable():Show() end,
         Hide = function() writable():Hide() end,
         IsShown = function() return frame:IsShown() end,
         GetFrameRef = function(_, label) return frame._refs[label] and frameHandle(frame._refs[label]) end,
+        GetAttribute = function(_, name) return frame:GetAttribute(name) end,
+        -- RestrictedFrames.lua: no "_" names; values plain or a handle.
+        SetAttribute = function(_, name, value)
+            assert(type(name) == "string" and not name:match("^_"), "Invalid attribute name")
+            local tv = type(value)
+            assert(tv == "string" or tv == "nil" or tv == "number" or tv == "boolean"
+                or (tv == "table" and value._handle), "Invalid attribute value")
+            writable():SetAttribute(name, value)
+        end,
+        -- The frame's own override bindings, by the target's name.
+        SetBindingClick = function(_, priority, key, name, button)
+            assert(type(name) == "string" and not name:find(":"), "Invalid click target name")
+            SetOverrideBindingClick(writable(), priority, key, name, button)
+        end,
+        ClearBindings = function() ClearOverrideBindings(writable()) end,
+        _handle = true,
     }
+    handles[frame] = h
+    return h
+end
+local function runSnippet(body, signature, owner, ...)
+    local snippet = assert(loadstring("local " .. signature .. " = ...\n" .. body))
+    setfenv(snippet, { owner = owner })
+    M.secureDepth = M.secureDepth + 1
+    local ok, err = pcall(snippet, ...)
+    M.secureDepth = M.secureDepth - 1
+    if not ok then error(err, 0) end
 end
 function M.SecureHandler(w, template)
     w._refs = {}
@@ -3534,30 +3586,13 @@ function M.SecureHandler(w, template)
         self._refs[label] = ref
     end
     -- WrapScript (SecureHandlers.lua): the frame's script runs the snippet
-    -- first, in secure code, with a handle of the frame: GetAttribute,
-    -- and the frame's own override bindings (RestrictedFrames.lua:
-    -- SetBindingClick by the target's name, ClearBindings), allowed in
-    -- combat only on a protected frame (GetHandleFrame).
+    -- first, in secure code: self is the frame's handle, owner the
+    -- header's (RestrictedInfrastructure.lua). Only with mouse motion, a
+    -- leave only after a wrapped enter; never on an unprotected frame.
     function w:WrapScript(frame, script, pre)
         assert(not M.combat, "WrapScript: not in combat")
-        local function owner()
-            if M.combat and not M.IsProtectedTree(frame) then error("Invalid frame handle", 3) end
-            return frame
-        end
-        local handle = {
-            GetAttribute = function(_, name) return frame:GetAttribute(name) end,
-            SetBindingClick = function(_, priority, key, name, button)
-                assert(type(name) == "string" and not name:find(":"), "Invalid click target name")
-                SetOverrideBindingClick(owner(), priority, key, name, button)
-            end,
-            ClearBindings = function() ClearOverrideBindings(owner()) end,
-        }
-        local snippet = assert(loadstring("local self = ...\n" .. pre))
-        setfenv(snippet, {})
         local inner = frame._scripts[script]
         frame._scripts[script] = function(f, ...)
-            -- As Wrapped_OnEnter/OnLeave: only with mouse motion, a leave
-            -- only after a wrapped enter; never on an unprotected frame.
             local motion = ...
             local run = M.IsProtectedTree(frame)
             M.secureDepth = M.secureDepth + 1
@@ -3571,27 +3606,23 @@ function M.SecureHandler(w, template)
                 end
             end
             M.secureDepth = M.secureDepth - 1
-            if not run then
-                if inner then inner(f, ...) end
-                return
-            end
-            M.secureDepth = M.secureDepth + 1
-            local ok, err = pcall(snippet, handle)
-            M.secureDepth = M.secureDepth - 1
-            if not ok then error(err, 0) end
+            if run then runSnippet(pre, "self", frameHandle(w), frameHandle(frame)) end
             if inner then inner(f, ...) end
+        end
+    end
+    -- A state template runs "_onstate-<id>" when "state-<id>" changes.
+    if template == "SecureHandlerStateTemplate" then
+        w._scripts.OnAttributeChanged = function(self, name, value)
+            local id = type(name) == "string" and name:match("^state%-(.+)")
+            local body = id and self:GetAttribute("_onstate-" .. id)
+            if body then runSnippet(body, "self, stateid, newstate", frameHandle(self), frameHandle(self), id, value) end
         end
     end
     if template ~= "SecureHandlerClickTemplate" then return end
     w._scripts.OnClick = function(self, button, down)
         local body = self:GetAttribute("_onclick")
         if not body then return end
-        local snippet = assert(loadstring("local self, button, down = ...\n" .. body))
-        setfenv(snippet, {})
-        M.secureDepth = M.secureDepth + 1
-        local ok, err = pcall(snippet, frameHandle(self), button, down)
-        M.secureDepth = M.secureDepth - 1
-        if not ok then error(err, 0) end
+        runSnippet(body, "self, button, down", frameHandle(self), frameHandle(self), button, down)
     end
 end
 
@@ -3599,11 +3630,15 @@ end
 -- (IsMouseOver says so meanwhile).
 function M.Hover(frame)
     frame._mouseOver = true
+    M.mouseoverExists = frame:GetAttribute("unit") ~= nil
+    -- The client's driver sees it within 0.2 s; the mouse rests that long.
+    M.EvaluateDrivers()
     local fn = frame._scripts.OnEnter
     if fn then fn(frame, true) end
 end
 function M.Leave(frame)
     frame._mouseOver = nil
+    M.mouseoverExists = false
     local fn = frame._scripts.OnLeave
     if fn then fn(frame, true) end
 end
