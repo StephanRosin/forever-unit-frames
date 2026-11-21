@@ -85,7 +85,7 @@ Schema.TABS = {
     { id = "cell", note = "cell", sections = {
         { id = "size", keys = { "cellWidth", "cellHeight" } },
         { id = "bars", keys = { "healthColorMode", "healthColor", "barTexture", "backgroundColor", "fillVertical",
-            "fillReverse", "powerStrip", "powerStripHeight" } },
+            "fillReverse", "powerStrip", "powerStripHeight", "powerFill" } },
         { id = "cellShape", keys = { "cellBorder", "cellBorderStyle", "cellBorderSize", "cellBorderColor",
             "cellCornerRadius" } },
         { id = "heals", keys = { "healPrediction", "overheal", "absorbs", "combatText" } },

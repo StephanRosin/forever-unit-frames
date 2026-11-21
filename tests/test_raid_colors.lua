@@ -121,7 +121,7 @@ local function tab(id)
     end
 end
 H.check("bars section", table.concat(tab("cell").sections[2].keys, ","),
-    "healthColorMode,healthColor,barTexture,backgroundColor,fillVertical,fillReverse,powerStrip,powerStripHeight")
+    "healthColorMode,healthColor,barTexture,backgroundColor,fillVertical,fillReverse,powerStrip,powerStripHeight,powerFill")
 H.check("texts section", table.concat(tab("texts").sections[1].keys, ","),
     "nameClassColor,nameColor,secondLine,secondLineColor")
 H.check("fixed colour choice", ns.RaidSchema.EnumText(RS.Get("healthColorMode"), "STATIC"), "Fixed color")

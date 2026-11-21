@@ -203,6 +203,9 @@ RaidSettings.Define({ key = "backgroundColor", code = "BG", scope = "frame", cla
 -- to top, and the other way (right to left, top to bottom).
 RaidSettings.Define({ key = "fillVertical", code = "XV", scope = "frame", class = "behaviour", type = "bool", default = false })
 RaidSettings.Define({ key = "fillReverse", code = "XW", scope = "frame", class = "behaviour", type = "bool", default = false })
+-- The power strip's own fill, as the unit frames' powerFill.
+RaidSettings.Define({ key = "powerFill", code = "XZ", scope = "frame", class = "behaviour", type = "enum",
+    values = { "HEALTH", "LEFT_TO_RIGHT", "RIGHT_TO_LEFT", "BOTTOM_TO_TOP", "TOP_TO_BOTTOM" }, default = "HEALTH" })
 -- Incoming heals, the overheal lane at the end of the health bar (heals
 -- past full health; never past the cell's edge), absorb shields, and the
 -- damage and heal numbers in the cell.

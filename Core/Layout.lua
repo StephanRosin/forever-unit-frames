@@ -50,6 +50,15 @@ function Layout.FillOf(scope)
     return Layout.Fill(ns.Config.Get(scope, "barVertical"), ns.Config.Get(scope, "barReverse"))
 end
 
+-- The power bar's fill: its own powerFill, or the health bar's.
+local POWER_FILLS = { LEFT_TO_RIGHT = { false, false }, RIGHT_TO_LEFT = { false, true },
+    BOTTOM_TO_TOP = { true, false }, TOP_TO_BOTTOM = { true, true } }
+function Layout.PowerFillOf(scope)
+    local own = POWER_FILLS[ns.Config.Get(scope, "powerFill")]
+    if not own then return Layout.FillOf(scope) end
+    return Layout.Fill(own[1], own[2])
+end
+
 -- The point at one end of a bar, on one of its sides: "TOPRIGHT" for the
 -- right end's top side of a horizontal bar, "TOPLEFT" for the top end's
 -- left side of a vertical one.

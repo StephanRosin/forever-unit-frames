@@ -58,7 +58,7 @@ local RULES = {
     -- Units/Single.lua: the lane only with heal prediction.
     { on("healPrediction"), { "overheal" } },
     -- Raid/Cell.lua: no strip, no height.
-    { isNot("powerStrip", "OFF"), { "powerStripHeight" } },
+    { isNot("powerStrip", "OFF"), { "powerStripHeight", "powerFill" } },
     -- Raid/CellAuras.lua: the tint and the border are switches of their
     -- own and take the filter too.
     { on("dispelIcon"), { "dispelStyle", "dispelIconSize", "dispelSquarePoint", "dispelSquareSize" } },

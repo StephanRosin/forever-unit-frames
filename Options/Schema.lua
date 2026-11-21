@@ -90,7 +90,7 @@ Schema.FRAME = {
         { id = "size", keys = { "width", "height" } },
         { id = "position", keys = { "x", "y", "bossSpacing" } },
         { id = "barHeights", keys = { "titlePercent", "healthPercent", "powerPercent", "powerEnabled", "powerHideEmpty",
-            "healthBarWidth", "powerBarWidth", "barAlign", "barVertical", "barReverse" } },
+            "healthBarWidth", "powerBarWidth", "barAlign", "barVertical", "barReverse", "powerFill" } },
         -- The parts apart: the four gaps, then the parts' own border
         -- (Elements/Boxes.lua).
         { id = "spacing", keys = { "spacingTitle", "spacingPower", "spacingPortrait", "spacingDocked",

@@ -189,9 +189,14 @@ Settings.Define({ key = "healBeyond", code = "OB", scope = "frame", type = "bool
 -- Health and power fill from bottom to top (barVertical) and/or the other
 -- way (barReverse: right to left, or top to bottom), e.g. a target frame
 -- as the player's mirror image; heals, shields, spell cost, the overheal
--- lane and a druid's mana follow (Layout.Fill).
+-- lane follow (Layout.Fill); the power bar too unless powerFill says else.
 Settings.Define({ key = "barVertical", code = "FV", scope = "frame", type = "bool", default = false })
 Settings.Define({ key = "barReverse", code = "RV", scope = "frame", type = "bool", default = false })
+-- The power bar's own fill (a druid's mana and the spell cost follow it);
+-- HEALTH: as the health bar.
+Settings.POWER_FILLS = { "HEALTH", "LEFT_TO_RIGHT", "RIGHT_TO_LEFT", "BOTTOM_TO_TOP", "TOP_TO_BOTTOM" }
+Settings.Define({ key = "powerFill", code = "FZ", scope = "frame", type = "enum", values = Settings.POWER_FILLS,
+    default = "HEALTH" })
 -- With the overheal lane: the power bar ends where the health bar ends.
 Settings.Define({ key = "powerMatchesHealth", code = "OM", scope = "frame", type = "bool", default = false })
 -- The health and power bars narrower than their row, each in per cent of

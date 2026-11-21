@@ -54,7 +54,8 @@ The **Layout** tab on each frame's page in `/fuf`. The last column says which fr
 <tr><td><b>Power bar width (%)</b></td><td>The power bar's share of the frame width; the rest shows the frame background</td><td>20 – 100</td><td>100</td><td>all</td></tr>
 <tr><td><b>Narrow bars sit</b></td><td>Where a bar narrower than the frame sits</td><td>Left, Center, Right</td><td>Left</td><td>all</td></tr>
 <tr><td><b>Vertical fill</b></td><td>Health and power fill from bottom to top</td><td>On, Off</td><td>Off</td><td>all</td></tr>
-<tr><td><b>Reverse fill</b></td><td>Right to left, or top to bottom when vertical</td><td>On, Off</td><td>Off</td><td>all</td></tr>
+<tr><td><b>Reverse fill</b></td><td>From the right, or the top when vertical</td><td>On, Off</td><td>Off</td><td>all</td></tr>
+<tr><td><b>Power fill</b></td><td>Its own direction, or as the health bar</td><td>Like health, Left to right, Right to left, Bottom to top, Top to bottom</td><td>Like health</td><td>all</td></tr>
 </tbody>
 </table>
 

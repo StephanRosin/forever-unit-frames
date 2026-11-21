@@ -126,6 +126,8 @@ local RULES = {
     { on("healPrediction"), { "healOverflow", "healBeyond", "healMyColor", "healOtherColor", "powerMatchesHealth" } },
     -- Units/Single.lua: the lane only with heal prediction and overflow.
     { on("healOverflow"), { "powerMatchesHealth" } },
+    -- Vertical: no room past the frame, and the lane takes height, not width.
+    { isNot("barVertical", true), { "healBeyond", "powerMatchesHealth" } },
     -- Everything on the power bar goes with it.
     { on("powerEnabled"), { "powerPercent", "powerHideEmpty", "powerCostPrediction", "powerCostColor", "druidMana",
         "druidManaHeight", "textPowerLeft", "textPowerCenter", "textPowerRight", "fsrEnabled", "fsrSpark",

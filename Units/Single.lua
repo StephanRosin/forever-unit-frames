@@ -216,7 +216,7 @@ local function layoutBars(frame)
         frame.power:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT", left + powerBefore + powerLeft, footer + footerGap)
         frame.power:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -(right + powerAfter + powerRight), footer + footerGap)
         frame.powerWidth = powerW - powerLane
-        frame.powerLength = fill.vertical and (powerShown and powerH or pixel) or frame.powerWidth
+        frame.powerLength = Layout.PowerFillOf(scope).vertical and (powerShown and powerH or pixel) or frame.powerWidth
         frame.power:SetHeight(powerShown and powerH or pixel)
         frame.power:SetShown(powerShown)
     end
@@ -225,7 +225,15 @@ end
 -- The rows again without restyling, e.g. when the power bar comes or goes;
 -- plain frames only, so fine in combat. The parts' own rings follow.
 function Single.LayoutBars(frame)
+    local health, power = frame.healthLength, frame.powerLength
     layoutBars(frame)
+    -- Vertical bars: the power row coming or going changes the health
+    -- bar's length, which heals, shield and spell cost take as theirs.
+    if frame.healthLength ~= health then
+        ns.HealPrediction.Style(frame)
+        ns.Absorb.Style(frame)
+    end
+    if frame.powerLength ~= power and ns.PowerCost then ns.PowerCost.Style(frame) end
     ns.Boxes.Style(frame)
 end
 

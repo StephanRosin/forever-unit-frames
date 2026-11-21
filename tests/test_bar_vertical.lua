@@ -113,3 +113,50 @@ RC.Set(ns.Raid.Scope(ns.RaidCell.Size()), "fillReverse", true)
 M.RunTimers()
 H.checkTrue("cell: from the top", cell.health._reverse)
 H.check("nothing blocked", #M.blocked, 0)
+
+-- The power bar's own fill (powerFill): as health by default, else its own;
+-- a druid's mana and the spell cost follow the power bar.
+H.check("power fill: as health by default", C.Get("player", "powerFill"), "HEALTH")
+C.Set("player", "barVertical", true)
+H.check("power: vertical with health", p.power._orientation, "VERTICAL")
+C.Set("player", "powerFill", "LEFT_TO_RIGHT")
+H.check("power: its own, horizontal", p.power._orientation, "HORIZONTAL")
+H.check("health stays vertical", p.health._orientation, "VERTICAL")
+H.check("power length: its width", p.powerLength, p.powerWidth)
+if p.powerCost then H.check("spell cost follows the power bar", p.powerCost.bar._orientation, "HORIZONTAL") end
+if p.druidMana then H.check("druid mana follows the power bar", p.druidMana._orientation, "HORIZONTAL") end
+C.Set("player", "powerFill", "TOP_TO_BOTTOM")
+H.check("power: top to bottom", p.power._orientation .. tostring(not not p.power._reverse), "VERTICALtrue")
+C.Set("player", "barVertical", false)
+H.check("health horizontal, power still its own", p.power._orientation, "VERTICAL")
+C.Set("player", "powerFill", "HEALTH")
+
+-- Heals past the frame only sideways: vertical, the reach is the lane.
+C.Set("player", "barVertical", true)
+C.Set("player", "healBeyond", true)
+local _, _, _, _, y = p.healClip:GetPoint(1)
+H.check("vertical: heals not past the frame", y, p.overhealLane)
+H.check("vertical: rounded mask kept", p.healBeyond, false)
+C.Set("player", "healBeyond", false)
+
+-- The power row coming or going changes the health bar's height: heals
+-- and shield take the new length (Single.LayoutBars). The target hides an
+-- empty power bar (powerHideEmpty).
+local t = ns.Frames.target
+C.Set("target", "barVertical", true)
+C.Set("target", "powerHideEmpty", true)
+M.units.target = { name = "Foe", health = 5, healthMax = 10, power = 5, powerMax = 10 }
+M.FireEvent("PLAYER_TARGET_CHANGED")
+M.RunTimers()
+local full = t.healthHeight
+M.units.target = { name = "Wolf", health = 5, healthMax = 10, power = 0, powerMax = 0 }
+M.FireEvent("PLAYER_TARGET_CHANGED")
+M.RunTimers()
+H.checkTrue("no power: a taller health bar", t.healthHeight > full)
+H.check("heals as tall as the bar", t.healAll._h, t.healthHeight)
+H.check("shield too", t.absorb._h, t.healthHeight)
+M.units.target = { name = "Foe", health = 5, healthMax = 10, power = 5, powerMax = 10 }
+M.FireEvent("PLAYER_TARGET_CHANGED")
+M.RunTimers()
+H.check("power back: heals as tall as the bar again", t.healAll._h, full)
+C.Set("target", "barVertical", false)

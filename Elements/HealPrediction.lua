@@ -63,13 +63,14 @@ function HealPrediction.Style(frame)
     local tex = ns.Media.StatusBar(Config.Get(scope, "barTexture"))
     local clip = frame.healClip
     local beyond = Config.Get(scope, "healBeyond")
-    frame.healBeyond = beyond
     -- The fill's direction (barVertical, barReverse): the heals run on
     -- from its finish, the lane and the reach lie past that edge.
     local Layout = ns.Layout
     local fill = Layout.FillOf(scope)
+    frame.healBeyond = beyond and not fill.vertical
     local length = frame.healthLength or frame.healthWidth
-    local reach = beyond and math.max(lane, length) or lane
+    -- Past the frame only sideways: above or below lie the frame's own rows.
+    local reach = (beyond and not fill.vertical) and math.max(lane, length) or lane
     local x1, y1, x2, y2 = Layout.Beyond(fill, reach)
     clip:ClearAllPoints()
     clip:SetPoint("TOPLEFT", health, "TOPLEFT", x1, y1)
@@ -89,7 +90,9 @@ function HealPrediction.Style(frame)
         if fill.vertical then bar:SetHeight(length) else bar:SetWidth(length) end
         -- Past the frame the rounded mask must be off (Elements/Shape.lua
         -- puts it on the listed textures, which skip themselves then).
-        if beyond and frame.clip then ns.Corners.SetMasked(bar:GetStatusBarTexture(), frame.clip.mask, false) end
+        if beyond and not fill.vertical and frame.clip then
+            ns.Corners.SetMasked(bar:GetStatusBarTexture(), frame.clip.mask, false)
+        end
     end
     -- The lane: a strip lane deep past the finish edge, along the bar.
     local laneBg = frame.overhealBg

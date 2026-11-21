@@ -29,7 +29,7 @@ end
 function Power.Style(frame)
     local tex = ns.Media.StatusBar(Config.Get(frame.key, "barTexture"))
     frame.power:SetStatusBarTexture(tex)
-    local fill = ns.Layout.FillOf(frame.key)
+    local fill = ns.Layout.PowerFillOf(frame.key)
     frame.power:SetOrientation(fill.orientation)
     frame.power:SetReverseFill(fill.reverse)
     frame.powerBg:SetTexture(tex)

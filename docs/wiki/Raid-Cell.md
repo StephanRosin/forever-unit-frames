@@ -30,9 +30,10 @@ Heals, shields and the power strip keep the unit frames' standard colors.
 <tr><td><b>Bar texture</b></td><td></td><td>Texture</td><td>Raid</td></tr>
 <tr><td><b>Background color</b></td><td></td><td>Color</td><td><code>#000000</code>, 60 % opaque</td></tr>
 <tr><td><b>Vertical fill</b></td><td>The bars fill from bottom to top</td><td>On, Off</td><td>Off</td></tr>
-<tr><td><b>Reverse fill</b></td><td>Right to left, or top to bottom when vertical</td><td>On, Off</td><td>Off</td></tr>
+<tr><td><b>Reverse fill</b></td><td>From the right, or the top when vertical</td><td>On, Off</td><td>Off</td></tr>
 <tr><td><b>Power strip</b></td><td></td><td>Everyone, Mana users, Healers, Off</td><td>Mana users</td></tr>
 <tr><td><b>Power strip height (%)</b></td><td>Share of the cell's height; the health bar takes the rest</td><td>5 – 40</td><td>10</td></tr>
+<tr><td><b>Power strip fill</b></td><td>Its own direction, or as the health bar</td><td>Like health, Left to right, Right to left, Bottom to top, Top to bottom</td><td>Like health</td></tr>
 </tbody>
 </table>
 

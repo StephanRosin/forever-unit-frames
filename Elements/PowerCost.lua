@@ -69,7 +69,7 @@ function PowerCost.Style(frame)
     -- The fill's direction (barVertical, barReverse): the cost runs back
     -- from the fill's finish edge.
     local Layout = ns.Layout
-    local dir = Layout.FillOf(scope)
+    local dir = Layout.PowerFillOf(scope)
     p.bar:SetOrientation(dir.orientation)
     p.bar:SetReverseFill(not dir.reverse)
     p.bar:ClearAllPoints()
