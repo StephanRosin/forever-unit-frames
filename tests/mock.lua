@@ -1210,6 +1210,8 @@ function methods:SetFontObject(o)
     -- in the client (seen in game, 21.11.2026).
     local roman = type(o) == "table" and o.members and o.members[1]
     if roman and not fileSet[self] then self._font = { roman.file, roman.height, roman.flags } end
+    -- A font object brings its own shadow: none for a family made by code.
+    if roman then self._shadow = { 0, 0 } end
 end
 function methods:SetText(t)
     if self._kind == "EditBox" or self._kind == "FontString" then
@@ -1239,6 +1241,7 @@ function methods:SetFormattedText(fmt, ...)
     self._text = nil
 end
 function methods:SetShadowOffset(x, y) self._shadow = { x, y } end
+function methods:GetShadowOffset() local o = self._shadow or { 0, 0 }; return o[1], o[2] end
 function methods:SetJustifyH(v) self._justifyH = v end
 function methods:SetJustifyV(v) self._justifyV = v end
 function methods:SetWordWrap(v) self._wordWrap = not not v end

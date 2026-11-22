@@ -330,7 +330,14 @@ end
 -- 21.11.2026). The file alone where the client makes no families.
 local function setFont(fs, font, size, flags)
     local family = ns.Media.Family(font, size, flags)
-    if family and pcall(fs.SetFontObject, fs, family) then return end
+    -- A font object brings its own shadow (none): the text keeps its own
+    -- (fontShadow), or the redraw after login took it away (CurseForge
+    -- 22.11.2026).
+    local shadowX, shadowY = fs:GetShadowOffset()
+    if family and pcall(fs.SetFontObject, fs, family) then
+        fs:SetShadowOffset(shadowX, shadowY)
+        return
+    end
     -- A file the client refuses may raise: hasFont then sees the refusal.
     pcall(fs.SetFont, fs, font, size, flags)
 end

@@ -63,6 +63,16 @@ H.check("the twin counts", Media.InFamily("Fonts\\FRIZQT__.TTF", "Fonts\\FRIZQT_
 H.check("Korean too", Media.InFamily("Fonts\\FRIZQT__.TTF", "fonts/2002.ttf"), true)
 H.check("another file does not", Media.InFamily("Fonts\\FRIZQT__.TTF", "Fonts\\ARIALN.TTF"), false)
 
+-- The shadow survives the redraw a little after a new font (CurseForge
+-- 22.11.2026: after a relog the shadow was gone, though ticked): a font
+-- object brings its own shadow, none.
+C.Set("player", "fontShadow", true)
+C.Set("player", "fontFace", "Arial Narrow")
+M.RunTimers()
+local shadowed = ns.Frames.player.texts.healthLeft
+H.check("shadow kept after the redraw", select(1, shadowed:GetShadowOffset()), 1)
+H.check("shadow kept: below", select(2, shadowed:GetShadowOffset()), -1)
+
 -- A client without families: the file alone.
 _G.CreateFontFamily = nil
 H.check("no families: nil", Media.Family("Fonts\\ARIALN.TTF", 30, ""), nil)
