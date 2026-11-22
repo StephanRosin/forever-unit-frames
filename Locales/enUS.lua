@@ -1927,3 +1927,23 @@ L.RAID_ENUM_cellTheme_GLASS_HD = "Stained glass HD"
 L.RAID_ENUM_cellTheme_COMIC_HD = "Comic HD"
 L.RAID_ENUM_cellTheme_FROST_HD = "Frost HD"
 L.RAID_ENUM_cellTheme_GOBLIN = "Goblin workshop"
+
+-- Mirrored portrait, detached castbar width, free auras, text offsets.
+L.SETTING_portraitMirror = "Mirror the 2D picture"
+L.HINT_portraitMirror = "The face looks the other way"
+L.SETTING_castbarWidth = "Detached width"
+L.HINT_castbarWidth = "Icon included; Auto: the frame's width"
+L.ENUM_buffsAnchor_FREE = "Free (moved when unlocked)"; L.ENUM_debuffsAnchor_FREE = "Free (moved when unlocked)"; L.ENUM_dispelsAnchor_FREE = "Free (moved when unlocked)"
+L.SETTING_buffsFreeX = "Free X"; L.SETTING_debuffsFreeX = "Free X"
+L.SETTING_buffsFreeY = "Free Y"; L.SETTING_debuffsFreeY = "Free Y"
+L.MOVER_buffs = "%s buffs"
+L.MOVER_debuffs = "%s debuffs"
+for key, name in pairs({ titleText = "Left text", titleTextCenter = "Centre text", titleTextRight = "Right text",
+    textHealthLeft = "Left text", textHealthCenter = "Centre text", textHealthRight = "Right text",
+    textPowerLeft = "Left text", textPowerCenter = "Centre text", textPowerRight = "Right text",
+    footerTextLeft = "Left text", footerTextCenter = "Centre text", footerTextRight = "Right text" }) do
+    L["SETTING_" .. key .. "X"] = name .. " X"
+    L["SETTING_" .. key .. "Y"] = name .. " Y"
+    L["HINT_" .. key .. "X"] = "Moves the text from its place, in pixels"
+    L["HINT_" .. key .. "Y"] = "Moves the text from its place, in pixels"
+end

@@ -42,8 +42,8 @@ for _, tab in ipairs(ns.Schema.Tabs("target")) do
     for _, sec in ipairs(tab.sections or {}) do sections[sec.id] = table.concat(sec.keys, ",") end
 end
 H.checkTrue("title: left, centre, right", sections.titleText:find("titleText,titleTextCenter,titleTextRight", 1, true))
-H.check("health: left, centre, right", sections.healthText, "textHealthLeft,textHealthCenter,textHealthRight")
-H.check("power: left, centre, right", sections.powerText, "textPowerLeft,textPowerCenter,textPowerRight")
+H.check("health: left, centre, right", sections.healthText:match("^[^X]*,textHealthRight"), "textHealthLeft,textHealthCenter,textHealthRight")
+H.check("power: left, centre, right", sections.powerText:match("^[^X]*,textPowerRight"), "textPowerLeft,textPowerCenter,textPowerRight")
 
 -- Nothing set: empty, and the left and right texts as before -----------------------
 local t = ns.Frames.target

@@ -7,6 +7,17 @@ ns.Schema = Schema
 -- The border section holds the corners too ("Border and corners").
 local BORDER_KEYS = { "borderShow", "borderStyle", "borderSize", "borderPadding", "borderColor", "cornerRadius" }
 local SHADOW_KEYS = { "shadowEnabled", "shadowAlpha", "shadowSize" }
+-- keys, then each text's X and Y offset (Settings.TEXT_KEYS); texts:
+-- the texts, default the text keys among keys.
+local function textOffsets(keys, texts)
+    local out = {}
+    for _, key in ipairs(keys) do out[#out + 1] = key end
+    for _, key in ipairs(texts or keys) do
+        out[#out + 1] = key .. "X"
+        out[#out + 1] = key .. "Y"
+    end
+    return out
+end
 
 -- Structured like a frame's page: the switches, the look, the bars, the
 -- status.
@@ -105,7 +116,7 @@ Schema.FRAME = {
         { id = "spacing", keys = { "spacingTitle", "spacingPower", "spacingPortrait", "spacingDocked",
             "boxBorderShow", "boxBorderSize", "boxBorderColor", "boxCornerRadius",
             "spacingFill", "spacingFillColor", "spacingFillPadding" } },
-        { id = "portrait", keys = { "portraitMode", "portraitStyle", "portraitSquare", "portraitHeight", "portraitZoom", "portraitOffsetY" } },
+        { id = "portrait", keys = { "portraitMode", "portraitStyle", "portraitSquare", "portraitMirror", "portraitHeight", "portraitZoom", "portraitOffsetY" } },
         { id = "border", keys = BORDER_KEYS },
         { id = "shadow", keys = SHADOW_KEYS },
         -- Everything about how see-through the frame is: its opacity, then
@@ -145,11 +156,17 @@ Schema.FRAME = {
     -- first: the sizes of every text below.
     { id = "text", note = "texts", sections = {
         { id = "font", keys = { "fontFace", "fontSize", "valueFontSize", "fontOutline", "fontShadow" } },
-        { id = "titleText", keys = { "titleText", "titleTextCenter", "titleTextRight", "titleColorMode", "awayBadge", "titleClassIcon", "classIconSize",
-            "classIconX", "classIconY", "classIconRing", "classIconRingColor" }, placement = { "classIconX", "classIconY" } },
-        { id = "healthText", keys = { "textHealthLeft", "textHealthCenter", "textHealthRight" } },
-        { id = "powerText", keys = { "textPowerLeft", "textPowerCenter", "textPowerRight" } },
-        { id = "footerText", keys = { "footerHeight", "footerTextLeft", "footerTextCenter", "footerTextRight" } },
+        -- Each text's offset folds under Position (textOffsets).
+        { id = "titleText", keys = textOffsets({ "titleText", "titleTextCenter", "titleTextRight", "titleColorMode", "awayBadge", "titleClassIcon", "classIconSize",
+            "classIconX", "classIconY", "classIconRing", "classIconRingColor" }, { "titleText", "titleTextCenter", "titleTextRight" }),
+            placement = textOffsets({ "classIconX", "classIconY" }, { "titleText", "titleTextCenter", "titleTextRight" }) },
+        { id = "healthText", keys = textOffsets({ "textHealthLeft", "textHealthCenter", "textHealthRight" }),
+            placement = textOffsets({}, { "textHealthLeft", "textHealthCenter", "textHealthRight" }) },
+        { id = "powerText", keys = textOffsets({ "textPowerLeft", "textPowerCenter", "textPowerRight" }),
+            placement = textOffsets({}, { "textPowerLeft", "textPowerCenter", "textPowerRight" }) },
+        { id = "footerText", keys = textOffsets({ "footerHeight", "footerTextLeft", "footerTextCenter", "footerTextRight" },
+            { "footerTextLeft", "footerTextCenter", "footerTextRight" }),
+            placement = textOffsets({}, { "footerTextLeft", "footerTextCenter", "footerTextRight" }) },
         -- The damage and heal numbers shown inside the frame.
         { id = "combatFeedback", keys = { "combatFeedback", "combatFeedbackPoint", "combatFeedbackX",
             "combatFeedbackY", "combatFeedbackFont", "combatFeedbackSize", "combatFeedbackOutline" },
@@ -164,9 +181,10 @@ Schema.FRAME = {
         { id = "auraIcons", keys = { "auraBorder", "auraBorderSize", "auraTimeX", "auraTimeY", "auraTimeScale",
             "auraTimeShort" } },
         { id = "buffs", keys = { "buffsEnabled", "hideBlizzardAuras", "cancelBuffs", "weaponEnchants", "weaponEnchantsSameRow", "buffsOnlyMine", "buffsHideTracking", "buffsHidePermanent", "buffsHideLonger", "buffsShowTime", "buffsAnchor", "buffsFramePoint",
-            "buffsPoint", "buffsX", "buffsY", "buffsGrowth", "buffsRowGrowth", "buffsSize", "buffsSpacing", "buffsRowGap",
+            "buffsPoint", "buffsX", "buffsY", "buffsFreeX", "buffsFreeY", "buffsGrowth", "buffsRowGrowth", "buffsSize", "buffsSpacing", "buffsRowGap",
             "buffsPerRow", "buffsMax" },
-            placement = { "buffsAnchor", "buffsFramePoint", "buffsPoint", "buffsX", "buffsY", "buffsGrowth", "buffsRowGrowth" } },
+            placement = { "buffsAnchor", "buffsFramePoint", "buffsPoint", "buffsX", "buffsY", "buffsFreeX", "buffsFreeY",
+                "buffsGrowth", "buffsRowGrowth" } },
         { id = "buffsOwn", keys = { "buffsHighlightOwn", "buffsOwnSize", "buffsOwnSameRow",
             "buffsOwnPlacement", "buffsOwnFramePoint", "buffsOwnPoint", "buffsOwnX", "buffsOwnY", "buffsOwnGrowth",
             "buffsOwnRowGrowth", "buffsOwnPerRow", "buffsCasterBorder", "buffsOwnBorderColor",
@@ -174,10 +192,10 @@ Schema.FRAME = {
             placement = { "buffsOwnFramePoint", "buffsOwnPoint", "buffsOwnX", "buffsOwnY",
                 "buffsOwnGrowth", "buffsOwnRowGrowth" } },
         { id = "debuffs", keys = { "debuffsEnabled", "debuffsOnlyMine", "debuffsDispellable", "debuffsHidePermanent", "debuffsShowTime",
-            "debuffsAnchor", "debuffsFramePoint", "debuffsPoint", "debuffsX", "debuffsY", "debuffsGrowth",
-            "debuffsRowGrowth", "debuffsSize", "debuffsSpacing", "debuffsRowGap", "debuffsPerRow", "debuffsMax" },
-            placement = { "debuffsAnchor", "debuffsFramePoint", "debuffsPoint", "debuffsX", "debuffsY", "debuffsGrowth",
-                "debuffsRowGrowth" } },
+            "debuffsAnchor", "debuffsFramePoint", "debuffsPoint", "debuffsX", "debuffsY", "debuffsFreeX",
+            "debuffsFreeY", "debuffsGrowth", "debuffsRowGrowth", "debuffsSize", "debuffsSpacing", "debuffsRowGap", "debuffsPerRow", "debuffsMax" },
+            placement = { "debuffsAnchor", "debuffsFramePoint", "debuffsPoint", "debuffsX", "debuffsY", "debuffsFreeX",
+                "debuffsFreeY", "debuffsGrowth", "debuffsRowGrowth" } },
         { id = "debuffsOwn", keys = { "debuffsHighlightOwn",
             "debuffsOwnSize", "debuffsOwnSameRow", "debuffsOwnPlacement", "debuffsOwnFramePoint", "debuffsOwnPoint",
             "debuffsOwnX", "debuffsOwnY", "debuffsOwnGrowth", "debuffsOwnRowGrowth", "debuffsOwnPerRow" },
@@ -241,7 +259,7 @@ Schema.FRAME = {
             "castbarHeight" } },
         { id = "castbarContent", keys = { "castbarIcon", "castbarName", "castbarTime", "castbarInterrupt", "castbarLatency", "castbarLatencyPoint",
             "castbarLatencyX" } },
-        { id = "castbarDetached", keys = { "castbarX", "castbarY" } },
+        { id = "castbarDetached", keys = { "castbarWidth", "castbarX", "castbarY" } },
     } },
     -- Blocks of their own with a mover, the player only (their keys apply
     -- nowhere else, so the tab shows on the player's page only).

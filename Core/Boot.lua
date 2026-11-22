@@ -16,6 +16,7 @@ local function afterBuild()
     for _, frame in pairs(ns.Frames) do ns.Castbar.AttachMover(frame) end
     for _, frame in pairs(ns.Frames) do ns.ShieldWatch.AttachMover(frame) end
     for _, frame in pairs(ns.Frames) do ns.ManaWarning.AttachMover(frame) end
+    for _, frame in pairs(ns.Frames) do ns.Auras.AttachMovers(frame) end
 end
 
 local startRaid   -- below

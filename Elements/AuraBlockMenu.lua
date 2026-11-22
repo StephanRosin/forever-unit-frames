@@ -80,7 +80,7 @@ local function rowProbe(frame, key)
     end
     local x, y = ns.Auras.AnchorOffset(frame, key, region)
     local _, dx, dy = ns.AuraContainers.Lead(frame, key)
-    return put(probe(key), Config.Get(scope, key .. "Point"), region, Config.Get(scope, key .. "FramePoint"),
+    return put(probe(key), Config.Get(scope, key .. "Point"), region, ns.Auras.FramePoint(frame, key),
         x + dx, y + dy, w, h)
 end
 

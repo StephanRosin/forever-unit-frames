@@ -751,7 +751,16 @@ function Texts.Build(frame)
         -- Title and health texts sit on the overlay, above shields and
         -- heals; power texts on the power bar's text layer.
         local parent = slot.bar == "power" and frame.powerTextLayer or frame.overlay
-        frame.texts[slot.field] = parent:CreateFontString(nil, "OVERLAY")
+        local fs = parent:CreateFontString(nil, "OVERLAY")
+        -- Every point of the text carries its own offset (<setting>X / Y,
+        -- set in Style): it is placed in many spots (the row, the centre
+        -- third, the class badge, the away badge), and so moves as a whole.
+        fs.offsetX, fs.offsetY = 0, 0
+        local setPoint = fs.SetPoint
+        fs.SetPoint = function(self, point, region, relPoint, x, y)
+            return setPoint(self, point, region, relPoint, (x or 0) + self.offsetX, (y or 0) + self.offsetY)
+        end
+        frame.texts[slot.field] = fs
     end
 end
 
@@ -840,6 +849,13 @@ function Texts.Style(frame)
     local valueSize = Config.Get(scope, "valueFontSize")
     for _, slot in ipairs(SLOTS) do
         local fs = frame.texts[slot.field]
+        -- Raid cells place their two texts their own way, without offsets.
+        if frame.centerTexts then
+            fs.offsetX, fs.offsetY = 0, 0
+        else
+            fs.offsetX = ns.Pixel.Snap(Config.Get(scope, slot.setting .. "X"), fs)
+            fs.offsetY = ns.Pixel.Snap(Config.Get(scope, slot.setting .. "Y"), fs)
+        end
         -- Value texts (numbers, percent) may have a size of their own.
         local isValue = valueKind(slot, Config.Get(scope, slot.setting)) ~= nil
         Texts.SetFont(fs, font, (isValue and valueSize > 0) and valueSize or size, outline)

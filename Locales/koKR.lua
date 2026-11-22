@@ -1837,3 +1837,23 @@ L.RAID_ENUM_cellTheme_GLASS_HD = "스테인드글라스 HD"
 L.RAID_ENUM_cellTheme_COMIC_HD = "만화 HD"
 L.RAID_ENUM_cellTheme_FROST_HD = "서리 HD"
 L.RAID_ENUM_cellTheme_GOBLIN = "고블린 작업장"
+
+-- Mirrored portrait, detached castbar width, free auras, text offsets.
+L.SETTING_portraitMirror = "2D 그림 좌우 반전"
+L.HINT_portraitMirror = "얼굴이 반대쪽을 봅니다"
+L.SETTING_castbarWidth = "분리 시 너비"
+L.HINT_castbarWidth = "아이콘 포함; 자동: 프레임 너비"
+L.ENUM_buffsAnchor_FREE = "자유 (잠금 해제 시 이동)"; L.ENUM_debuffsAnchor_FREE = "자유 (잠금 해제 시 이동)"; L.ENUM_dispelsAnchor_FREE = "자유 (잠금 해제 시 이동)"
+L.SETTING_buffsFreeX = "자유 X"; L.SETTING_debuffsFreeX = "자유 X"
+L.SETTING_buffsFreeY = "자유 Y"; L.SETTING_debuffsFreeY = "자유 Y"
+L.MOVER_buffs = "%s 강화 효과"
+L.MOVER_debuffs = "%s 약화 효과"
+for key, name in pairs({ titleText = "왼쪽 텍스트", titleTextCenter = "가운데 텍스트", titleTextRight = "오른쪽 텍스트",
+    textHealthLeft = "왼쪽 텍스트", textHealthCenter = "가운데 텍스트", textHealthRight = "오른쪽 텍스트",
+    textPowerLeft = "왼쪽 텍스트", textPowerCenter = "가운데 텍스트", textPowerRight = "오른쪽 텍스트",
+    footerTextLeft = "왼쪽 텍스트", footerTextCenter = "가운데 텍스트", footerTextRight = "오른쪽 텍스트" }) do
+    L["SETTING_" .. key .. "X"] = name .. " X"
+    L["SETTING_" .. key .. "Y"] = name .. " Y"
+    L["HINT_" .. key .. "X"] = "텍스트를 제자리에서 픽셀 단위로 옮깁니다"
+    L["HINT_" .. key .. "Y"] = "텍스트를 제자리에서 픽셀 단위로 옮깁니다"
+end

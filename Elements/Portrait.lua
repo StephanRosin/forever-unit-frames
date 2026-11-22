@@ -30,16 +30,19 @@ end
 Portrait.SQUARE_INSET = 0.15
 
 -- The 2D picture's coords: whole or its inner square, in the TOP strip
--- only the middle band of that.
+-- only the middle band of that; mirrored when asked (portraitMirror).
 local function pictureCoords(frame)
     local scope = frame.key
     local inset = Config.Get(scope, "portraitSquare") and Portrait.SQUARE_INSET or 0
     local lo, hi = inset, 1 - inset
+    -- Mirrored: left and right swapped.
+    local left, right = lo, hi
+    if Config.Get(scope, "portraitMirror") then left, right = hi, lo end
     if Config.Get(scope, "portraitMode") == "TOP" then
         local band = math.min(1, (frame.portraitStrip or 0) / ns.Single.Size(scope)) * (hi - lo) / 2
-        frame.portrait2D:SetTexCoord(lo, hi, 0.5 - band, 0.5 + band)
+        frame.portrait2D:SetTexCoord(left, right, 0.5 - band, 0.5 + band)
     else
-        frame.portrait2D:SetTexCoord(lo, hi, lo, hi)
+        frame.portrait2D:SetTexCoord(left, right, lo, hi)
     end
 end
 

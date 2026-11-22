@@ -43,6 +43,7 @@ The **Castbar** tab on each frame's page in `/fuf`. The last column says which f
 <table>
 <thead><tr><th align="left" width="170">Option</th><th align="left" width="280">What it does</th><th align="left" width="160">Choices</th><th align="left" width="150">Default</th><th align="left" width="130">Frames</th></tr></thead>
 <tbody>
+<tr><td><b>Detached width</b></td><td>Icon included; Auto: the frame's width</td><td>0 – 800 (0: Auto)</td><td>Auto</td><td>Player, Target, Target of Target, Focus, Pet</td></tr>
 <tr><td><b>Detached X</b></td><td>Used when detached</td><td>-4000 – 4000</td><td>Player: -4; Target: 366; Target of Target: 480; Focus: -300; Pet: -352</td><td>Player, Target, Target of Target, Focus, Pet</td></tr>
 <tr><td><b>Detached Y</b></td><td>Used when detached</td><td>-4000 – 4000</td><td>Player: -160; Target, Target of Target, Pet: -300; Focus: -170</td><td>Player, Target, Target of Target, Focus, Pet</td></tr>
 </tbody>

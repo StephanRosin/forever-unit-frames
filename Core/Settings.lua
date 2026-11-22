@@ -296,6 +296,9 @@ Settings.Define({ key = "portraitStyle", code = "PS", scope = "frame", type = "e
     values = { "2D", "3D", "CLASS" }, default = "2D" })
 -- The game's 2D picture is round; square crops its inner square (a CurseForge wish).
 Settings.Define({ key = "portraitSquare", code = "QQ", scope = "frame", type = "bool", default = false })
+-- The 2D picture mirrored: the face looks the other way (a CurseForge wish).
+-- A 3D model cannot be mirrored, only turned; it faces the camera anyway.
+Settings.Define({ key = "portraitMirror", code = "QI", scope = "frame", type = "bool", default = false })
 -- TOP: a strip as wide as the frame between title row and health bar; the
 -- frame grows by its height.
 Settings.Define({ key = "portraitHeight", code = "QH", scope = "frame", type = "int", min = 10, max = 120, default = 30 })
@@ -503,6 +506,9 @@ Settings.Define({ key = "castbarX", code = "CX", scope = "frame", only = CASTBAR
     default = { target = 300, targettarget = 480, targettargettarget = 604, pet = -352, pettarget = -222, focus = -300, focustarget = -152, _ = 0 } })
 Settings.Define({ key = "castbarY", code = "CY", scope = "frame", only = CASTBAR_SINGLE, type = "int", min = -4000, max = 4000,
     default = { player = -160, focus = -170, _ = -300 } })
+-- A detached castbar's width, icon included; 0: the frame's (a CurseForge wish).
+Settings.Define({ key = "castbarWidth", code = "TA", scope = "frame", only = CASTBAR_SINGLE, type = "int", min = 0,
+    max = 800, default = 0, zeroText = "AUTO" })
 Settings.Define({ key = "castbarHeight", code = "CH", scope = "frame", only = CASTBAR, type = "int", min = 4, max = 60,
     default = { player = 18, target = 16, focus = 16, _ = 12 } })
 Settings.Define({ key = "castbarIcon", code = "CI", scope = "frame", only = CASTBAR, type = "bool", default = true })
@@ -575,6 +581,18 @@ Settings.Define({ key = "footerTextCenter", code = "FX", scope = "frame", type =
     default = "NONE" })
 Settings.Define({ key = "footerTextRight", code = "FR", scope = "frame", type = "enum", values = TEXT_TAGS,
     default = "NONE" })
+-- Each text moved from its place (a CurseForge wish): <text>X / <text>Y,
+-- pixels (Elements/Texts.lua). Codes: S + a letter for X, U + one for Y.
+Settings.TEXT_KEYS = { "titleText", "titleTextCenter", "titleTextRight", "textHealthLeft", "textHealthCenter",
+    "textHealthRight", "textPowerLeft", "textPowerCenter", "textPowerRight", "footerTextLeft", "footerTextCenter",
+    "footerTextRight" }
+local TEXT_X_CODES, TEXT_Y_CODES = "BCDFGHIJKLMQ", "ABDHIJKNOPQS"
+for i, key in ipairs(Settings.TEXT_KEYS) do
+    Settings.Define({ key = key .. "X", code = "S" .. TEXT_X_CODES:sub(i, i), scope = "frame", type = "int",
+        min = -200, max = 200, default = 0 })
+    Settings.Define({ key = key .. "Y", code = "U" .. TEXT_Y_CODES:sub(i, i), scope = "frame", type = "int",
+        min = -100, max = 100, default = 0 })
+end
 
 -- The border around every aura icon (plain colour on buffs, the dispel
 -- colour on debuffs). General, overridable per frame.
@@ -607,7 +625,11 @@ Settings.TRACKING_SPELLS = {
     5502, -- paladin: Sense Undead
     5500, -- warlock: Sense Demons
 }
-local AURA_ANCHORS = { "FRAME", "HEALTH", "POWER", "CASTBAR", "OTHER" }
+-- Stored by index: append only. FREE: on the screen, on a handle of its
+-- own; single frames only (valueOnly): the party and boss members share a
+-- scope, their auras would lie on top of each other.
+Settings.FREE_AURA_SCOPES = CASTBAR_SINGLE
+local AURA_ANCHORS = { "FRAME", "HEALTH", "POWER", "CASTBAR", "OTHER", "FREE" }
 local DIRECTIONS = { "RIGHT", "LEFT", "UP", "DOWN" }
 local AURA_SIZE = { party = 18, boss = 18, targettarget = 16, targettargettarget = 16, focustarget = 16, pet = 16, pettarget = 16, _ = 20 }
 -- Own auras (cast by you, your pet or vehicle) are drawn this much bigger
@@ -632,7 +654,7 @@ local AURA_SETTINGS = {
     -- leaves out auras without a duration too.
     { "HideLonger", "L", { type = "int", min = 0, max = 120, zeroText = "ENUM_OFF" } },
     { "ShowTime", "T", { type = "bool" } },
-    { "Anchor", "A", { type = "enum", values = AURA_ANCHORS } },
+    { "Anchor", "A", { type = "enum", values = AURA_ANCHORS, valueOnly = { FREE = Settings.FREE_AURA_SCOPES } } },
     { "FramePoint", "F", { type = "enum", values = Settings.POINTS } },
     { "Point", "O", { type = "enum", values = Settings.POINTS } },
     { "X", "X", { type = "int", min = -200, max = 200 } },
@@ -759,6 +781,15 @@ for _, group in ipairs(Settings.AURA_GROUPS) do
             Settings.Define(def)
         end
     end
+end
+
+-- A group anchored FREE (Elements/Auras.lua): its handle's centre from the
+-- screen's centre.
+for group, codes in pairs({ buffs = { "NA", "ND" }, debuffs = { "NE", "NF" } }) do
+    Settings.Define({ key = group .. "FreeX", code = codes[1], scope = "frame", only = Settings.FREE_AURA_SCOPES,
+        type = "int", min = -4000, max = 4000, default = 0 })
+    Settings.Define({ key = group .. "FreeY", code = codes[2], scope = "frame", only = Settings.FREE_AURA_SCOPES,
+        type = "int", min = -4000, max = 4000, default = group == "buffs" and 200 or 160 })
 end
 
 -- Buff borders by caster: yours in one colour, everyone else's in another

@@ -95,8 +95,26 @@ end
 -- The region a group hangs from. live: the frame's aura containers
 -- (Elements/AuraContainers.lua) rather than its holders hang from each
 -- other.
+-- FREE: a group on the screen, on its own handle (a CurseForge wish);
+-- single frames only (Settings.FREE_AURA_SCOPES).
+function Auras.Free(frame, key)
+    return ns.Settings.FREE_AURA_SCOPES[frame.key] == true and (key == "buffs" or key == "debuffs")
+        and Config.Get(frame.key, key .. "Anchor") == "FREE"
+end
+
+-- The point on the anchor region: free, the group's own point on its
+-- handle (the handle is the block).
+function Auras.FramePoint(frame, key)
+    if Auras.Free(frame, key) then return Config.Get(frame.key, key .. "Point") end
+    return Config.Get(frame.key, key .. "FramePoint")
+end
+
 function Auras.AnchorRegion(frame, key, live)
     local scope, to = frame.key, Config.Get(frame.key, key .. "Anchor")
+    if Auras.Free(frame, key) then
+        local holder = frame.auras[key].holder
+        if holder.mover then return holder.mover end
+    end
     -- The frame means the unit's block: a docked castbar included.
     local unit = frame.unitBox or frame
     if to == "HEALTH" then return frame.health end
@@ -117,6 +135,32 @@ function Auras.AnchorRegion(frame, key, live)
         return frame.auras[other].holder
     end
     return unit
+end
+
+-- The handle of a free group: as big as the group full (its maximum).
+function Auras.MoverSpec(frame, key)
+    local scope = frame.key
+    return {
+        id = "auras:" .. key .. ":" .. scope, scope = scope, xKey = key .. "FreeX", yKey = key .. "FreeY",
+        anchor = false,
+        label = function() return ns.L["MOVER_" .. key]:format(ns.L["FRAME_" .. scope]) end,
+        size = function()
+            local group = frame.auras[key]
+            if not group.size then return 1, 1 end
+            local w, h = Layout.AuraBlock(group, 0, group.max)
+            return math.max(w, group.size), math.max(h, group.size)
+        end,
+        active = function() return ns.FrameEnabled(scope) and Auras.Free(frame, key) and frame.auras[key].enabled end,
+    }
+end
+
+-- Handles for the groups that may be free, made with the frames.
+function Auras.AttachMovers(frame)
+    if not frame.auras or not ns.Settings.FREE_AURA_SCOPES[frame.key] then return end
+    for _, key in ipairs({ "buffs", "debuffs" }) do
+        ns.Movers.Attach(frame.auras[key].holder, Auras.MoverSpec(frame, key))
+    end
+    ns.AfterCombat("aurasStyle:" .. frame.key, function() Auras.Style(frame) end)
 end
 
 -- Horizontal and vertical side of each anchor point.
@@ -143,6 +187,7 @@ end
 -- the place of yours placed freely (OwnX, OwnFramePoint, ...).
 function Auras.AnchorOffset(frame, key, region, part)
     local scope, prefix = frame.key, key .. (part or "")
+    if not part and Auras.Free(frame, key) then return 0, 0 end
     local x, y = Pixel.Snap(Config.Get(scope, prefix .. "X")), Pixel.Snap(Config.Get(scope, prefix .. "Y"))
     local ringed = region == frame.unitBox or (frame.castbar ~= nil and region == frame.castbar.box)
     if not ringed then return x, y end
@@ -330,8 +375,9 @@ function Auras.Style(frame)
         local group = frame.auras[key]
         group.holder:ClearAllPoints()
         local region = Auras.AnchorRegion(frame, key)
-        group.holder:SetPoint(get(frame, group, "Point"), region, get(frame, group, "FramePoint"),
+        group.holder:SetPoint(get(frame, group, "Point"), region, Auras.FramePoint(frame, key),
             Auras.AnchorOffset(frame, key, region))
+        if group.holder.mover then ns.Movers.Sync(group.holder) end
         group.free.holder:ClearAllPoints()
         if group.ownFree then
             local unit = frame.unitBox or frame

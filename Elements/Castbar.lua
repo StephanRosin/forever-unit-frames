@@ -384,9 +384,12 @@ function Castbar.DockedDepth(scope)
     return barHeight(scope) + reach + ns.Single.Gap(scope, "docked")
 end
 
--- Whole castbar size, icon included: the frame's width.
+-- Whole castbar size, icon included: the frame's width; detached, its own
+-- when set (castbarWidth, 0 = the frame's).
 local function size(scope)
-    return ns.Pixel.Snap(Config.Get(scope, "width")), barHeight(scope)
+    local width = Castbar.Placement(scope) == "DETACHED" and Config.Get(scope, "castbarWidth") or 0
+    if width == 0 then width = Config.Get(scope, "width") end
+    return ns.Pixel.Snap(width), barHeight(scope)
 end
 
 -- Over the portrait: along its bottom edge, at most as tall as it (the

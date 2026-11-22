@@ -37,11 +37,13 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <tr><td><b>Hide permanent</b></td><td>Everything without a duration, e.g. paladin auras, stances</td><td>On, Off</td><td>Player, Target, Target of Target, Focus, Pet, Boss: Off; Party: On</td><td>all</td></tr>
 <tr><td><b>Hide longer than (min)</b></td><td>Hour potions, food, long buffs; also auras without a duration</td><td>0 – 120 (0: Off)</td><td>Player: 71; Target, Target of Target, Focus, Pet, Boss: Off; Party: 26</td><td>all</td></tr>
 <tr><td><b>Show time left</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
-<tr><td><b>Anchor to</b></td><td>Debuffs: next to the debuff icons</td><td>Frame, Health bar, Power bar, Castbar, Debuffs</td><td>Player, Target, Party: Frame; Target of Target, Focus, Pet, Boss: Debuffs</td><td>all</td></tr>
+<tr><td><b>Anchor to</b></td><td>Debuffs: next to the debuff icons</td><td>Frame, Health bar, Power bar, Castbar, Debuffs, Free (moved when unlocked)</td><td>Player, Target, Party: Frame; Target of Target, Focus, Pet, Boss: Debuffs</td><td>all</td></tr>
 <tr><td><b>Point on the anchor</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Player, Target, Target of Target, Focus, Pet, Party: Top left; Boss: Top right</td><td>all</td></tr>
 <tr><td><b>Point of the icons</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Player, Target, Target of Target, Focus, Pet: Bottom left; Party: Top right; Boss: Top left</td><td>all</td></tr>
 <tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>Player, Target of Target, Focus, Pet, Boss: 0; Target: -1; Party: -18</td><td>all</td></tr>
 <tr><td><b>Offset Y</b></td><td></td><td>-200 – 200</td><td>Player, Target: 3; Target of Target, Focus, Pet, Boss: 2; Party: 0</td><td>all</td></tr>
+<tr><td><b>Free X</b></td><td></td><td>-4000 – 4000</td><td>0</td><td>Player, Target, Target of Target, Focus, Pet</td></tr>
+<tr><td><b>Free Y</b></td><td></td><td>-4000 – 4000</td><td>200</td><td>Player, Target, Target of Target, Focus, Pet</td></tr>
 <tr><td><b>Grow</b></td><td></td><td>Right, Left, Up, Down</td><td>Player, Target, Target of Target, Focus, Pet, Boss: Right; Party: Left</td><td>all</td></tr>
 <tr><td><b>New rows</b></td><td>Across the growth direction</td><td>Right, Left, Up, Down</td><td>Player, Target, Target of Target, Focus, Pet, Boss: Up; Party: Down</td><td>all</td></tr>
 <tr><td><b>Icon size</b></td><td></td><td>8 – 64</td><td>Player, Target, Boss: 18; Target of Target: 14; Focus: 20; Pet: 16; Party: 17</td><td>all</td></tr>
@@ -84,11 +86,13 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <tr><td><b>Only dispellable</b></td><td>Debuffs you can remove</td><td>On, Off</td><td>Off</td><td>all</td></tr>
 <tr><td><b>Hide permanent</b></td><td>Everything without a duration, e.g. an enemy's aura on you</td><td>On, Off</td><td>Off</td><td>all</td></tr>
 <tr><td><b>Show time left</b></td><td></td><td>On, Off</td><td>On</td><td>all</td></tr>
-<tr><td><b>Anchor to</b></td><td>Buffs: next to the buff icons</td><td>Frame, Health bar, Power bar, Castbar, Buffs</td><td>Player, Target: Castbar; Target of Target, Focus, Pet, Party, Boss: Frame</td><td>all</td></tr>
+<tr><td><b>Anchor to</b></td><td>Buffs: next to the buff icons</td><td>Frame, Health bar, Power bar, Castbar, Buffs, Free (moved when unlocked)</td><td>Player, Target: Castbar; Target of Target, Focus, Pet, Party, Boss: Frame</td><td>all</td></tr>
 <tr><td><b>Point on the anchor</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Player, Target: Bottom left; Target of Target, Focus, Pet: Top left; Party, Boss: Top right</td><td>all</td></tr>
 <tr><td><b>Point of the icons</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Player, Target, Boss: Top left; Target of Target, Focus, Pet: Bottom left; Party: Left</td><td>all</td></tr>
 <tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>Player: -1; Target, Target of Target, Focus, Pet: 0; Party: 16; Boss: 8</td><td>all</td></tr>
 <tr><td><b>Offset Y</b></td><td></td><td>-200 – 200</td><td>Player: -3; Target: -4; Target of Target, Focus, Pet: 2; Party: -15; Boss: 0</td><td>all</td></tr>
+<tr><td><b>Free X</b></td><td></td><td>-4000 – 4000</td><td>0</td><td>Player, Target, Target of Target, Focus, Pet</td></tr>
+<tr><td><b>Free Y</b></td><td></td><td>-4000 – 4000</td><td>160</td><td>Player, Target, Target of Target, Focus, Pet</td></tr>
 <tr><td><b>Grow</b></td><td></td><td>Right, Left, Up, Down</td><td>Right</td><td>all</td></tr>
 <tr><td><b>New rows</b></td><td>Across the growth direction</td><td>Right, Left, Up, Down</td><td>Player, Target of Target, Focus, Pet: Up; Target, Party, Boss: Down</td><td>all</td></tr>
 <tr><td><b>Icon size</b></td><td></td><td>8 – 64</td><td>Player, Target, Boss: 18; Target of Target: 14; Focus: 20; Pet: 16; Party: 17</td><td>all</td></tr>
@@ -125,7 +129,7 @@ The **Auras** tab on each frame's page in `/fuf`. The last column says which fra
 <tbody>
 <tr><td><b>Show separately</b></td><td>Debuffs you can dispel, in their own place and size</td><td>On, Off</td><td>On</td><td>Party</td></tr>
 <tr><td><b>Show time left</b></td><td></td><td>On, Off</td><td>On</td><td>Party</td></tr>
-<tr><td><b>Anchor to</b></td><td>Debuffs: next to the debuff icons</td><td>Frame, Health bar, Power bar, Castbar, Debuffs</td><td>Frame</td><td>Party</td></tr>
+<tr><td><b>Anchor to</b></td><td>Debuffs: next to the debuff icons</td><td>Frame, Health bar, Power bar, Castbar, Debuffs, Free (moved when unlocked)</td><td>Frame</td><td>Party</td></tr>
 <tr><td><b>Point on the anchor</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Center</td><td>Party</td></tr>
 <tr><td><b>Point of the icons</b></td><td></td><td>Any of the 9 points (corners, edges, center)</td><td>Center</td><td>Party</td></tr>
 <tr><td><b>Offset X</b></td><td></td><td>-200 – 200</td><td>0</td><td>Party</td></tr>

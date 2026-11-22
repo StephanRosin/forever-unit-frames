@@ -29,7 +29,7 @@ H.check("no dispellable for buffs", S.Get("buffsDispellable"), nil)
 -- Enum orders are permanent.
 H.check("points", table.concat(S.Get("buffsPoint").values, ","),
     "TOPLEFT,TOP,TOPRIGHT,LEFT,CENTER,RIGHT,BOTTOMLEFT,BOTTOM,BOTTOMRIGHT")
-H.check("anchors", table.concat(S.Get("debuffsAnchor").values, ","), "FRAME,HEALTH,POWER,CASTBAR,OTHER")
+H.check("anchors", table.concat(S.Get("debuffsAnchor").values, ","), "FRAME,HEALTH,POWER,CASTBAR,OTHER,FREE")
 H.check("directions", table.concat(S.Get("buffsGrowth").values, ","), "RIGHT,LEFT,UP,DOWN")
 H.check("row directions", table.concat(S.Get("buffsRowGrowth").values, ","), "RIGHT,LEFT,UP,DOWN")
 

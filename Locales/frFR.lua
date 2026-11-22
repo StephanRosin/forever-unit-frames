@@ -1899,3 +1899,23 @@ L.RAID_ENUM_cellTheme_GLASS_HD = "Vitrail HD"
 L.RAID_ENUM_cellTheme_COMIC_HD = "Bande dessinée HD"
 L.RAID_ENUM_cellTheme_FROST_HD = "Givre HD"
 L.RAID_ENUM_cellTheme_GOBLIN = "Atelier gobelin"
+
+-- Mirrored portrait, detached castbar width, free auras, text offsets.
+L.SETTING_portraitMirror = "Image 2D en miroir"
+L.HINT_portraitMirror = "Le visage regarde de l'autre côté"
+L.SETTING_castbarWidth = "Détachée largeur"
+L.HINT_castbarWidth = "Icône comprise ; Auto : la largeur du cadre"
+L.ENUM_buffsAnchor_FREE = "Libre (déplacé une fois déverrouillé)"; L.ENUM_debuffsAnchor_FREE = "Libre (déplacé une fois déverrouillé)"; L.ENUM_dispelsAnchor_FREE = "Libre (déplacé une fois déverrouillé)"
+L.SETTING_buffsFreeX = "Libre X"; L.SETTING_debuffsFreeX = "Libre X"
+L.SETTING_buffsFreeY = "Libre Y"; L.SETTING_debuffsFreeY = "Libre Y"
+L.MOVER_buffs = "Améliorations : %s"
+L.MOVER_debuffs = "Affaiblissements : %s"
+for key, name in pairs({ titleText = "Texte gauche", titleTextCenter = "Texte central", titleTextRight = "Texte droit",
+    textHealthLeft = "Texte gauche", textHealthCenter = "Texte central", textHealthRight = "Texte droit",
+    textPowerLeft = "Texte gauche", textPowerCenter = "Texte central", textPowerRight = "Texte droit",
+    footerTextLeft = "Texte gauche", footerTextCenter = "Texte central", footerTextRight = "Texte droit" }) do
+    L["SETTING_" .. key .. "X"] = name .. " X"
+    L["SETTING_" .. key .. "Y"] = name .. " Y"
+    L["HINT_" .. key .. "X"] = "Déplace le texte de sa place, en pixels"
+    L["HINT_" .. key .. "Y"] = "Déplace le texte de sa place, en pixels"
+end

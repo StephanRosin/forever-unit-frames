@@ -39,6 +39,12 @@ Level, class and race reads e.g. 60 Mage Gnome, or 60 Humanoid for a creature.
 <tr><td><b>Class icon Y</b></td><td>Badge center from the frame's top edge; positive moves it up</td><td>-64 – 64</td><td>-7</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
 <tr><td><b>Badge ring</b></td><td>Ring thickness around the icon; 0 = no ring</td><td>0 – 4</td><td>2</td><td>Player, Target, Target of Target, Focus, Party</td></tr>
 <tr><td><b>Badge ring color</b></td><td>Color of the badge's ring</td><td>Color</td><td><code>#c7c7cc</code></td><td>Player, Target, Target of Target, Focus, Party</td></tr>
+<tr><td><b>Left text X</b></td><td>Moves the text from its place, in pixels</td><td>-200 – 200</td><td>0</td><td>all</td></tr>
+<tr><td><b>Left text Y</b></td><td>Moves the text from its place, in pixels</td><td>-100 – 100</td><td>0</td><td>all</td></tr>
+<tr><td><b>Centre text X</b></td><td>Moves the text from its place, in pixels</td><td>-200 – 200</td><td>0</td><td>all</td></tr>
+<tr><td><b>Centre text Y</b></td><td>Moves the text from its place, in pixels</td><td>-100 – 100</td><td>0</td><td>all</td></tr>
+<tr><td><b>Right text X</b></td><td>Moves the text from its place, in pixels</td><td>-200 – 200</td><td>0</td><td>all</td></tr>
+<tr><td><b>Right text Y</b></td><td>Moves the text from its place, in pixels</td><td>-100 – 100</td><td>0</td><td>all</td></tr>
 </tbody>
 </table>
 
@@ -52,6 +58,12 @@ Each row (title, health and power) can have a center text as well. While one is 
 <tr><td><b>Health bar, left text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>Player, Target, Party: Current / max; Target of Target, Pet, Boss: Name; Focus: None</td><td>all</td></tr>
 <tr><td><b>Health bar, center text</b></td><td>Left and right then keep to a third each</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>None</td><td>all</td></tr>
 <tr><td><b>Health bar, right text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>Player, Target, Focus, Pet, Party: Percent; Target of Target, Boss: None</td><td>all</td></tr>
+<tr><td><b>Left text X</b></td><td>Moves the text from its place, in pixels</td><td>-200 – 200</td><td>0</td><td>all</td></tr>
+<tr><td><b>Left text Y</b></td><td>Moves the text from its place, in pixels</td><td>-100 – 100</td><td>0</td><td>all</td></tr>
+<tr><td><b>Centre text X</b></td><td>Moves the text from its place, in pixels</td><td>-200 – 200</td><td>0</td><td>all</td></tr>
+<tr><td><b>Centre text Y</b></td><td>Moves the text from its place, in pixels</td><td>-100 – 100</td><td>0</td><td>all</td></tr>
+<tr><td><b>Right text X</b></td><td>Moves the text from its place, in pixels</td><td>-200 – 200</td><td>0</td><td>all</td></tr>
+<tr><td><b>Right text Y</b></td><td>Moves the text from its place, in pixels</td><td>-100 – 100</td><td>0</td><td>all</td></tr>
 </tbody>
 </table>
 
@@ -63,6 +75,12 @@ Each row (title, health and power) can have a center text as well. While one is 
 <tr><td><b>Power bar, left text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>Player, Target, Party: Current / max; Target of Target, Focus, Pet, Boss: None</td><td>all</td></tr>
 <tr><td><b>Power bar, center text</b></td><td>Left and right then keep to a third each</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>None</td><td>all</td></tr>
 <tr><td><b>Power bar, right text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>Player, Target, Pet, Party: Percent; Target of Target, Focus, Boss: None</td><td>all</td></tr>
+<tr><td><b>Left text X</b></td><td>Moves the text from its place, in pixels</td><td>-200 – 200</td><td>0</td><td>all</td></tr>
+<tr><td><b>Left text Y</b></td><td>Moves the text from its place, in pixels</td><td>-100 – 100</td><td>0</td><td>all</td></tr>
+<tr><td><b>Centre text X</b></td><td>Moves the text from its place, in pixels</td><td>-200 – 200</td><td>0</td><td>all</td></tr>
+<tr><td><b>Centre text Y</b></td><td>Moves the text from its place, in pixels</td><td>-100 – 100</td><td>0</td><td>all</td></tr>
+<tr><td><b>Right text X</b></td><td>Moves the text from its place, in pixels</td><td>-200 – 200</td><td>0</td><td>all</td></tr>
+<tr><td><b>Right text Y</b></td><td>Moves the text from its place, in pixels</td><td>-100 – 100</td><td>0</td><td>all</td></tr>
 </tbody>
 </table>
 
@@ -75,6 +93,12 @@ Each row (title, health and power) can have a center text as well. While one is 
 <tr><td><b>Footer row, left text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>None</td><td>all</td></tr>
 <tr><td><b>Footer row, center text</b></td><td>Left and right then keep to a third each</td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>None</td><td>all</td></tr>
 <tr><td><b>Footer row, right text</b></td><td></td><td>None, Name, Level and name, Level, Current, Current / max, Percent, Deficit, Level, class and race, Power: current / max, Role icon</td><td>None</td><td>all</td></tr>
+<tr><td><b>Left text X</b></td><td>Moves the text from its place, in pixels</td><td>-200 – 200</td><td>0</td><td>all</td></tr>
+<tr><td><b>Left text Y</b></td><td>Moves the text from its place, in pixels</td><td>-100 – 100</td><td>0</td><td>all</td></tr>
+<tr><td><b>Centre text X</b></td><td>Moves the text from its place, in pixels</td><td>-200 – 200</td><td>0</td><td>all</td></tr>
+<tr><td><b>Centre text Y</b></td><td>Moves the text from its place, in pixels</td><td>-100 – 100</td><td>0</td><td>all</td></tr>
+<tr><td><b>Right text X</b></td><td>Moves the text from its place, in pixels</td><td>-200 – 200</td><td>0</td><td>all</td></tr>
+<tr><td><b>Right text Y</b></td><td>Moves the text from its place, in pixels</td><td>-100 – 100</td><td>0</td><td>all</td></tr>
 </tbody>
 </table>
 

@@ -379,7 +379,7 @@ local function place(frame, key)
     local x, y = ns.Auras.AnchorOffset(frame, key, region)
     local _, dx, dy = AuraContainers.Lead(frame, key)
     frame.auraContainers[key].container:SetPoint(Config.Get(scope, key .. "Point"),
-        region, Config.Get(scope, key .. "FramePoint"), x + dx, y + dy)
+        region, ns.Auras.FramePoint(frame, key), x + dx, y + dy)
 end
 
 -- Yours placed freely hang from the unit's block by their own points.

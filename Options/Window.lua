@@ -129,11 +129,15 @@ end
 
 -- enumText (optional): the words of the choices; the unit frames' by
 -- default (the raid window has its own).
-local function enumItems(def, enumText)
+-- def.valueOnly (optional): value -> the scopes it is offered on.
+local function enumItems(def, enumText, scope)
     enumText = enumText or Schema.EnumText
     return function()
         local items = {}
-        for _, v in ipairs(def.values) do items[#items + 1] = { value = v, text = enumText(def, v) } end
+        for _, v in ipairs(def.values) do
+            local only = def.valueOnly and def.valueOnly[v]
+            if not only or only[scope] then items[#items + 1] = { value = v, text = enumText(def, v) } end
+        end
         return items
     end
 end
@@ -170,7 +174,7 @@ local ROW_BUILDERS = {
     end,
     bool = function(parent, _, opts) return Widgets.Checkbox(parent, opts) end,
     enum = function(parent, def, opts)
-        opts.items = opts.items or enumItems(def, opts.enumText)
+        opts.items = opts.items or enumItems(def, opts.enumText, opts.scope)
         return Widgets.Dropdown(parent, opts)
     end,
     media = function(parent, def, opts)

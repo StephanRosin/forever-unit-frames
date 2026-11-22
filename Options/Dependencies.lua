@@ -95,6 +95,16 @@ local function iconRows(prefix, extra)
     return keys
 end
 
+-- Each text's offsets (Core/Settings.lua: TEXT_KEYS).
+local function textOffsetRows(texts)
+    local keys = {}
+    for _, key in ipairs(texts) do
+        keys[#keys + 1] = key .. "X"
+        keys[#keys + 1] = key .. "Y"
+    end
+    return keys
+end
+
 -- The four gaps of the frame's parts (Units/Single.lua).
 local GAP_KEYS = { "spacingTitle", "spacingPower", "spacingPortrait", "spacingDocked" }
 
@@ -144,16 +154,17 @@ local RULES = {
     { on("fsrSpark"), { "fsrSparkDirection", "fsrSparkWidth", "fsrSparkColor" } },
     { on("fsrText"), { "fsrTextPoint", "fsrTextTenths" } },
     { on("fsrDim"), { "fsrDimAlpha" } },
-    { isNot("portraitMode", "OFF"), { "spacingPortrait", "portraitStyle", "portraitSquare", "portraitHeight", "portraitZoom", "portraitOffsetY",
+    { isNot("portraitMode", "OFF"), { "spacingPortrait", "portraitStyle", "portraitSquare", "portraitMirror", "portraitHeight", "portraitZoom", "portraitOffsetY",
         "portraitAura", "portraitAuraDefensive" } },
     { on("portraitAura"), { "portraitAuraDefensive" } },
     { is("portraitMode", "TOP"), { "portraitHeight" } },
     { is("portraitStyle", "3D"), { "portraitZoom", "portraitOffsetY" } },
-    { isNot("portraitStyle", "3D"), { "portraitSquare" } },
+    { isNot("portraitStyle", "3D"), { "portraitSquare", "portraitMirror" } },
     -- Only matters while ours is off (Core/Blizzard.lua).
     { is("enabled", false), { "hideBlizzardFrame" } },
     { on("enabled"), { "playerHideInGroup" } },
     { isNot("footerHeight", 0), { "footerTextLeft", "footerTextCenter", "footerTextRight" } },
+    { isNot("footerHeight", 0), textOffsetRows({ "footerTextLeft", "footerTextCenter", "footerTextRight" }) },
     -- Elements/ManaWarning.lua: everything with the warning; the icon's
     -- rows with an icon shown, the text's with a text.
     { on("manaWarn"), { "manaWarnBelow", "manaWarnGroupOnly", "manaWarnOutOfCombat", "manaWarnShow", "manaWarnIcon", "manaWarnSize",
@@ -208,6 +219,12 @@ local RULES = {
     { on("weaponEnchants"), { "weaponEnchantsSameRow" } },
     { on("debuffsEnabled"), auraRows("debuffs", {}) },
     { on("dispelsEnabled"), auraRows("dispels", {}) },
+    -- Free on the screen: its handle places it; the frame's point and
+    -- offsets mean nothing then (Elements/Auras.lua).
+    { is("buffsAnchor", "FREE"), { "buffsFreeX", "buffsFreeY" } },
+    { isNot("buffsAnchor", "FREE"), { "buffsFramePoint", "buffsX", "buffsY" } },
+    { is("debuffsAnchor", "FREE"), { "debuffsFreeX", "debuffsFreeY" } },
+    { isNot("debuffsAnchor", "FREE"), { "debuffsFramePoint", "debuffsX", "debuffsY" } },
     { on("buffsHighlightOwn"), ownRows("buffs", { "OwnSize", "OwnSameRow", "OwnPlacement" }) },
     { on("debuffsHighlightOwn"), ownRows("debuffs", { "OwnSize", "OwnSameRow", "OwnPlacement" }) },
     -- Elements/Auras.lua: placed freely, yours share no rows with the rest,
@@ -222,9 +239,9 @@ local RULES = {
     { on("buffsCasterBorder"), { "buffsOwnBorderColor", "buffsOtherBorderColor" } },
     -- Hiding Blizzard's castbar does not depend on ours.
     { on("castbarEnabled"), { "castbarAlwaysShow", "castbarHideOwn", "castbarPosition", "castbarDock", "castbarHeight", "castbarIcon",
-        "castbarName", "castbarTime", "castbarInterrupt", "castbarLatency", "castbarLatencyPoint", "castbarLatencyX", "castbarX", "castbarY" } },
+        "castbarName", "castbarTime", "castbarInterrupt", "castbarLatency", "castbarLatencyPoint", "castbarLatencyX", "castbarWidth", "castbarX", "castbarY" } },
     { on("castbarLatency"), { "castbarLatencyPoint", "castbarLatencyX" } },
-    { is("castbarPosition", "DETACHED"), { "castbarX", "castbarY" } },
+    { is("castbarPosition", "DETACHED"), { "castbarWidth", "castbarX", "castbarY" } },
     { on("threatBar"), { "threatBarHeight", "threatBarWarn", "threatBarRole", "threatBarSolo" } },
     { on("combatIcon"), iconRows("combatIcon") },
     { on("pvpIcon"), iconRows("pvpIcon", { "pvpIconNPC" }) },
@@ -250,6 +267,10 @@ local RULES = {
     { on("playerFadeOOC"), { "playerFadeAlpha", "playerFadeTarget", "playerFadeHurt", "playerFadeGroup", "playerFadePet" } },
     { on("minimapShow"), { "minimapAngle" } },
 }
+-- A text's offsets only while it shows something.
+for _, key in ipairs(ns.Settings.TEXT_KEYS) do
+    RULES[#RULES + 1] = { isNot(key, "NONE"), textOffsetRows({ key }) }
+end
 
 local tests = {}
 for _, rule in ipairs(RULES) do
