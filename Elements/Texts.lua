@@ -97,8 +97,9 @@ local function infoWrap(unit, isPlayer, scope)
     local r, g, b
     if isPlayer then
         local ok, _, token = pcall(UnitClass, unit)
-        local c = ok and not Secrets.IsSecret(token) and RAID_CLASS_COLORS and RAID_CLASS_COLORS[token]
-        if c then r, g, b = c.r, c.g, c.b end
+        if ok and type(token) == "string" and not Secrets.IsSecret(token) then
+            r, g, b = ns.Health.ClassTokenColor(token)
+        end
     else
         local c = ns.Health.ReactionColor(unit, scope)
         if c then r, g, b = c[1], c[2], c[3] end

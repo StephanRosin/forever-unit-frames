@@ -1956,6 +1956,11 @@ function M.Reset()
         if d.playerControlled ~= nil then return d.playerControlled end
         return d.isPlayer or false
     end
+    -- d.family: creature family ID (pets), the name only as a stand-in.
+    _G.UnitCreatureFamily = function(unit)
+        local d = u(unit)
+        if d and d.family then return "Family" .. d.family, d.family end
+    end
     _G.UnitIsPVP = function(unit) local d = u(unit); if d and d.pvp ~= nil then return d.pvp end; return false end
     _G.UnitIsPVPFreeForAll = function(unit) local d = u(unit); if d and d.ffa ~= nil then return d.ffa end; return false end
     _G.UnitFactionGroup = function(unit) local d = u(unit); if d then return d.faction, d.faction end end

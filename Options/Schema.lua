@@ -65,6 +65,14 @@ Schema.GENERAL = {
         { id = "healPrediction", keys = { "healMyColor", "healOtherColor" } },
         { id = "powerColors", keys = { "powerColorMode", "powerColorMana", "powerColorRage", "powerColorFocus", "powerColorEnergy" } },
     } },
+    -- Own class colours and pet colours by kind (Elements/Health.lua),
+    -- each list under its switch.
+    { id = "colors", sections = {
+        { id = "classColors", keys = { "classColorsCustom", "classColorWARRIOR", "classColorPALADIN", "classColorHUNTER", "classColorROGUE",
+            "classColorPRIEST", "classColorSHAMAN", "classColorMAGE", "classColorWARLOCK", "classColorDRUID" } },
+        { id = "petColors", keys = { "petColorsCustom", "petColorHunter", "petColorImp", "petColorVoidwalker",
+            "petColorSuccubus", "petColorFelhunter" } },
+    } },
     -- The combat swords, the target highlight's colour; how range fading
     -- measures (its opacity: Appearance > Visibility; the switches are per
     -- frame, Layout > Visibility on each page).

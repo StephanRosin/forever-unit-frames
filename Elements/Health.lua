@@ -46,6 +46,42 @@ function Health.ReactionColor(unit, scope)
     return REACTION[kind]
 end
 
+-- r, g, b of a readable class token: the player's own colour where own
+-- class colours are on (Core/Settings.lua), else Blizzard's; nothing for
+-- an unknown class.
+function Health.ClassTokenColor(class)
+    if Config.Get("general", "classColorsCustom") and ns.Settings.Get("classColor" .. class) then
+        local c = Config.Get("general", "classColor" .. class)
+        return c[1], c[2], c[3]
+    end
+    local c = RAID_CLASS_COLORS and RAID_CLASS_COLORS[class]
+    if c then return c.r, c.g, c.b end
+end
+
+-- Warlock demons by creature family ID (UnitCreatureFamily's second
+-- return, the same in every language); any other family on a pet is a
+-- hunter's beast. Demons without a colour of their own (Doomguard 19,
+-- Felguard 29) get none.
+local DEMON_COLOR_KEYS = { [23] = "petColorImp", [16] = "petColorVoidwalker", [17] = "petColorSuccubus",
+    [15] = "petColorFelhunter" }
+local OTHER_DEMONS = { [19] = true, [29] = true }
+
+-- r, g, b of a player's pet by its kind where pet colours are on, or
+-- nothing (off, not a pet, kind unknown or secret).
+function Health.PetColor(unit)
+    if not Config.Get("general", "petColorsCustom") then return end
+    if Secrets.Bool(UnitPlayerControlled, unit) ~= true or Secrets.Bool(UnitIsPlayer, unit) ~= false then return end
+    local ok, _, family = pcall(UnitCreatureFamily, unit)
+    if not ok or type(family) ~= "number" then return end   -- a secret is no number to type()
+    local key = DEMON_COLOR_KEYS[family]
+    if not key then
+        if OTHER_DEMONS[family] then return end
+        key = "petColorHunter"
+    end
+    local c = Config.Get("general", key)
+    return c[1], c[2], c[3]
+end
+
 -- r, g, b of a player's class, or nothing (not a player, class unknown).
 -- The class token is secret where the unit's identity is (target of
 -- target in combat): it cannot index RAID_CLASS_COLORS, but the client's
@@ -55,11 +91,7 @@ end
 local function classRGB(unit)
     local _, class = UnitClass(unit)
     if type(class) == "nil" then return end
-    if not Secrets.IsSecret(class) then
-        local c = RAID_CLASS_COLORS[class]
-        if c then return c.r, c.g, c.b end
-        return
-    end
+    if not Secrets.IsSecret(class) then return Health.ClassTokenColor(class) end
     if C_ClassColor and C_ClassColor.GetClassColor then
         local c = C_ClassColor.GetClassColor(class)
         return c.r, c.g, c.b
@@ -72,12 +104,15 @@ function Health.ClassColor(unit)
     if ok and type(r) ~= "nil" then return r, g, b end
 end
 
--- Class colour for players, reaction colour for everyone else.
+-- Class colour for players, a pet's own colour (if on), reaction colour
+-- for everyone else.
 function Health.UnitColor(unit, mode, scope)
     if mode == "CLASS" then
         local r, g, b = Health.ClassColor(unit)
         -- Presence by type(): the colour may be secret.
         if type(r) ~= "nil" then return r, g, b end
+        r, g, b = Health.PetColor(unit)
+        if r then return r, g, b end
     end
     local c = Health.ReactionColor(unit, scope)
     return c[1], c[2], c[3]
@@ -94,8 +129,8 @@ end
 function Health.FrameColor(frame, mode)
     local sample = Health.Sample(frame)
     if sample and mode == "CLASS" then
-        local c = RAID_CLASS_COLORS and RAID_CLASS_COLORS[sample.class]
-        if c then return c.r, c.g, c.b end
+        local r, g, b = Health.ClassTokenColor(sample.class)
+        if r then return r, g, b end
     end
     return Health.UnitColor(frame.unit, mode, frame.key)
 end

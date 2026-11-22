@@ -13,6 +13,7 @@ Profiles, export, import and reset are on the **Profiles** page at the bottom of
 - **[Appearance](#appearance):** [Font](#font) · [Presentation](#presentation) · [Title row](#title-row) · [Border and corners](#border-and-corners) · [Shadow](#shadow) · [Visibility and fading](#visibility-and-fading)
 - **[Auras](#auras):** [Aura icons](#aura-icons) · [Hidden auras](#hidden-auras)
 - **[Bars](#bars):** [Health bar](#health-bar) · [Textures](#textures) · [Absorb shields](#absorb-shields) · [Incoming heals](#incoming-heals) · [Power colors](#power-colors)
+- **[Colors](#colors):** [Class colors](#class-colors) · [Pet colors](#pet-colors)
 - **[Status](#status):** [Combat icon](#combat-icon) · [Highlights](#highlights) · [Range](#range)
 
 ## Frames & addon
@@ -232,6 +233,40 @@ Auras hidden by spell, such as a campfire or a food buff: the list under General
 <tr><td><b>Rage</b></td><td></td><td>Color</td><td><code>#d93333</code></td></tr>
 <tr><td><b>Focus</b></td><td></td><td>Color</td><td><code>#ff8040</code></td></tr>
 <tr><td><b>Energy</b></td><td></td><td>Color</td><td><code>#ffd933</code></td></tr>
+</tbody>
+</table>
+
+## Colors
+
+### Class colors
+
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Own class colors</b></td><td>Your own color per class wherever a class color shows; off, Blizzard's colors</td><td>On, Off</td><td>Off</td></tr>
+<tr><td><b>Warrior</b></td><td></td><td>Color</td><td><code>#c79c6e</code></td></tr>
+<tr><td><b>Paladin</b></td><td></td><td>Color</td><td><code>#f58cba</code></td></tr>
+<tr><td><b>Hunter</b></td><td></td><td>Color</td><td><code>#abd473</code></td></tr>
+<tr><td><b>Rogue</b></td><td></td><td>Color</td><td><code>#fff569</code></td></tr>
+<tr><td><b>Priest</b></td><td></td><td>Color</td><td><code>#ffffff</code></td></tr>
+<tr><td><b>Shaman</b></td><td></td><td>Color</td><td><code>#0070de</code></td></tr>
+<tr><td><b>Mage</b></td><td></td><td>Color</td><td><code>#40c7eb</code></td></tr>
+<tr><td><b>Warlock</b></td><td></td><td>Color</td><td><code>#8787ed</code></td></tr>
+<tr><td><b>Druid</b></td><td></td><td>Color</td><td><code>#ff7d0a</code></td></tr>
+</tbody>
+</table>
+
+### Pet colors
+
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Pet colors by kind</b></td><td>Pets colored by class get a color by kind; off, the reaction color</td><td>On, Off</td><td>Off</td></tr>
+<tr><td><b>Hunter pet</b></td><td></td><td>Color</td><td><code>#abd473</code></td></tr>
+<tr><td><b>Imp</b></td><td></td><td>Color</td><td><code>#ff8026</code></td></tr>
+<tr><td><b>Voidwalker</b></td><td></td><td>Color</td><td><code>#734dd9</code></td></tr>
+<tr><td><b>Succubus</b></td><td></td><td>Color</td><td><code>#e65999</code></td></tr>
+<tr><td><b>Felhunter</b></td><td></td><td>Color</td><td><code>#4dbf59</code></td></tr>
 </tbody>
 </table>
 

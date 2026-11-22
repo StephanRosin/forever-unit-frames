@@ -45,9 +45,11 @@ end
 
 local function colour(item)
     if not item.reach then return Names.GREY end
-    local c = item.class and RAID_CLASS_COLORS and RAID_CLASS_COLORS[item.class]
     local r, g, b = 1, 1, 1
-    if c then r, g, b = c.r, c.g, c.b end
+    if item.class then
+        local cr, cg, cb = ns.Health.ClassTokenColor(item.class)
+        if cr then r, g, b = cr, cg, cb end
+    end
     if not item.missing then r, g, b = r * Names.DIM, g * Names.DIM, b * Names.DIM end
     return hex(r, g, b)
 end

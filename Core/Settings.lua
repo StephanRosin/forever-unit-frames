@@ -113,6 +113,45 @@ Settings.Define({ key = "powerColorEnergy", code = "UE", scope = "inherit", type
 Settings.Define({ key = "powerColorMode", code = "UT", scope = "inherit", type = "enum", values = { "TYPE", "CLASS" },
     default = "TYPE" })
 
+-- Own class colours (CurseForge wish: classes hard to tell apart on a TV):
+-- off, Blizzard's colours as before. Each starts at Blizzard's colour on
+-- this client. Personal: every theme's set and every profile keeps them.
+-- A class that is secret (target of target in combat) keeps Blizzard's.
+Settings.CLASSES = { "WARRIOR", "PALADIN", "HUNTER", "ROGUE", "PRIEST", "SHAMAN", "MAGE", "WARLOCK", "DRUID" }
+local CLASS_CODES = { WARRIOR = "WW", PALADIN = "WN", HUNTER = "WU", ROGUE = "WR", PRIEST = "WI", SHAMAN = "WK",
+    MAGE = "WM", WARLOCK = "WL", DRUID = "WD" }
+-- Blizzard's colours where the client has none at load (tests).
+local FALLBACK_CLASS_COLORS = { WARRIOR = { 0.78, 0.61, 0.43 }, PALADIN = { 0.96, 0.55, 0.73 },
+    HUNTER = { 0.67, 0.83, 0.45 }, ROGUE = { 1, 0.96, 0.41 }, PRIEST = { 1, 1, 1 }, SHAMAN = { 0, 0.44, 0.87 },
+    MAGE = { 0.25, 0.78, 0.92 }, WARLOCK = { 0.53, 0.53, 0.93 }, DRUID = { 1, 0.49, 0.04 } }
+local function blizzardClassColor(class)
+    local c = RAID_CLASS_COLORS and RAID_CLASS_COLORS[class]
+    if c then return { c.r, c.g, c.b, 1 } end
+    local f = FALLBACK_CLASS_COLORS[class]
+    return { f[1], f[2], f[3], 1 }
+end
+Settings.Define({ key = "classColorsCustom", code = "WC", scope = "general", type = "bool", personal = true,
+    default = false })
+for _, class in ipairs(Settings.CLASSES) do
+    Settings.Define({ key = "classColor" .. class, code = CLASS_CODES[class], scope = "general", type = "color",
+        personal = true, default = blizzardClassColor(class) })
+end
+-- Pets in a colour by kind (health and texts coloured "by class"): one for
+-- every hunter pet, one per warlock demon. Off, pets keep the reaction
+-- colour as before. Elements/Health.lua tells the kinds apart.
+Settings.Define({ key = "petColorsCustom", code = "WJ", scope = "general", type = "bool", personal = true,
+    default = false })
+Settings.Define({ key = "petColorHunter", code = "WO", scope = "general", type = "color", personal = true,
+    default = { 0.67, 0.83, 0.45, 1 } })
+Settings.Define({ key = "petColorImp", code = "WQ", scope = "general", type = "color", personal = true,
+    default = { 1, 0.5, 0.15, 1 } })
+Settings.Define({ key = "petColorVoidwalker", code = "WV", scope = "general", type = "color", personal = true,
+    default = { 0.45, 0.3, 0.85, 1 } })
+Settings.Define({ key = "petColorSuccubus", code = "WX", scope = "general", type = "color", personal = true,
+    default = { 0.9, 0.35, 0.6, 1 } })
+Settings.Define({ key = "petColorFelhunter", code = "WY", scope = "general", type = "color", personal = true,
+    default = { 0.3, 0.75, 0.35, 1 } })
+
 -- The master switch "Use unit frames": off, every unit frame counts as
 -- switched off (ns.FrameEnabled), each frame's own "enabled" kept as it
 -- is, so switching it back on restores them. The raid frames do not

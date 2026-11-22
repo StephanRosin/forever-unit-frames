@@ -123,6 +123,10 @@ local RULES = {
     { is("healthColorMode", "STATIC"), { "healthColor" } },
     { on("absorbEnabled"), { "absorbMode", "absorbColor" } },
     { on("healthMissingCustom"), { "healthMissingColor" } },
+    { on("classColorsCustom"), { "classColorWARRIOR", "classColorPALADIN", "classColorHUNTER", "classColorROGUE", "classColorPRIEST",
+        "classColorSHAMAN", "classColorMAGE", "classColorWARLOCK", "classColorDRUID" } },
+    { on("petColorsCustom"), { "petColorHunter", "petColorImp", "petColorVoidwalker", "petColorSuccubus",
+        "petColorFelhunter" } },
     { on("healPrediction"), { "healOverflow", "healBeyond", "healMyColor", "healOtherColor", "powerMatchesHealth" } },
     -- Units/Single.lua: the lane only with heal prediction and overflow.
     { on("healOverflow"), { "powerMatchesHealth" } },
