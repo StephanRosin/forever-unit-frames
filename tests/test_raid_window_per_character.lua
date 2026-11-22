@@ -19,7 +19,7 @@ local function click(button) button:GetScript("OnClick")(button) end
 local ids = {}
 for _, tab in ipairs(S.TABS) do ids[#ids + 1] = tab.id end
 H.check("tab order", table.concat(ids, ","),
-    "general,cell,texts,debuffs,indicators,icons,layout,panels,arrangement,clickCast,buffs,tools")
+    "general,cell,texts,debuffs,indicators,icons,layout,panels,arrangement,clickCast,colors,buffs,tools")
 H.check("special panels", S.TabTitle("panels"), "Special panels")
 H.check("own panels", S.TabTitle("arrangement"), "Own panels")
 H.check("German special panels", ns.Locales.deDE.RAID_TAB_panels, "Sonderfelder")
@@ -27,7 +27,7 @@ H.check("German own panels", ns.Locales.deDE.RAID_TAB_arrangement, "Eigene Felde
 
 local per = {}
 for _, tab in ipairs(S.TABS) do if S.PerCharacter(tab) then per[#per + 1] = tab.id end end
-H.check("per character", table.concat(per, ","), "general,clickCast,buffs,tools")
+H.check("per character", table.concat(per, ","), "general,clickCast,colors,buffs,tools")
 
 -- The tabs shown, in their order; the rows they take.
 local function shownTabs()
@@ -64,7 +64,7 @@ RO.SelectTab("layout")
 -- General: the character's tabs in one row, no size underlined.
 click(RO.generalTab)
 H.check("General picked", RO.view, "general")
-H.check("the character's tabs", shownTabs(), "general,clickCast,buffs,tools")
+H.check("the character's tabs", shownTabs(), "general,clickCast,colors,buffs,tools")
 H.check("its first tab", RO.currentTab, "general")
 H.check("one row", rowCount(), 1)
 H.check("the row's height", RO.frame.tabRow:GetHeight(), TAB_H)

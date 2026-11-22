@@ -11,7 +11,7 @@ local function ids(list)
     return table.concat(out, ",")
 end
 H.check("tabs", ids(Schema.TABS),
-    "general,cell,texts,debuffs,indicators,icons,layout,panels,arrangement,clickCast,buffs,tools")
+    "general,cell,texts,debuffs,indicators,icons,layout,panels,arrangement,clickCast,colors,buffs,tools")
 -- Export and import are on the Profiles page (the size bar's tab), not a
 -- menu tab.
 -- Arrangement: the window's board, then a section per own panel.

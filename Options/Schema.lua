@@ -71,7 +71,8 @@ Schema.GENERAL = {
         { id = "classColors", keys = { "classColorsCustom", "classColorWARRIOR", "classColorPALADIN", "classColorHUNTER", "classColorROGUE",
             "classColorPRIEST", "classColorSHAMAN", "classColorMAGE", "classColorWARLOCK", "classColorDRUID" } },
         { id = "petColors", keys = { "petColorsCustom", "petColorHunter", "petColorImp", "petColorVoidwalker",
-            "petColorSuccubus", "petColorFelhunter" } },
+            "petColorSuccubus", "petColorFelhunter", "petColorIncubus", "petColorFelguard", "petColorDoomguard",
+            "petColorInfernal" } },
     } },
     -- The combat swords, the target highlight's colour; how range fading
     -- measures (its opacity: Appearance > Visibility; the switches are per

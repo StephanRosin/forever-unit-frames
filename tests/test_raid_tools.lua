@@ -132,8 +132,8 @@ H.check("test mode off: hidden", bar:IsShown(), false)
 
 -- The raid window: a Tools tab; the position as - / + numbers that stop
 -- at the screen's edge for the bar's size.
-local tab = ns.RaidSchema.TABS[12]
-H.check("Tools tab before Profile", tab.id, "tools")
+local tab = ns.RaidSchema.TABS[#ns.RaidSchema.TABS]
+H.check("Tools tab the last, before Profile", tab.id, "tools")
 H.check("the bar's section", table.concat(tab.sections[1].keys, ","), "toolsShow,toolsMode,toolsOpen,toolsX,toolsY")
 H.check("the tools: the icons first", tab.sections[2].keys[1], "toolsTargets")
 H.check("its position", ns.RaidPanel.ByPositionKey("toolsX"), Tools)

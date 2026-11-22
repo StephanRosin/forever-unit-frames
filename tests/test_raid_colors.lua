@@ -94,6 +94,18 @@ RC.Set("r10", "healthColorMode", "CLASS")
 H.check("back: background colour again", color(cell.healthBg._color), "0.1 0.1 0.1 0.8")
 H.check("back: fill in the class colour", table.concat(cell.health._color, " ", 1, 3), table.concat({ r, g, b }, " "))
 
+-- Own class colours (General > Colors, shared with the unit frames) reach
+-- the cells at once: health and the name in the class colour.
+M.units[cell.unit].isPlayer = true   -- the roster's stand-ins are not players by default
+C.Set("general", "classColorsCustom", true)
+C.Set("general", "classColorMAGE", { 0.1, 0.3, 0.9, 1 })
+M.RunTimers()
+H.check("own class colour: health", table.concat(cell.health._color, " ", 1, 3), "0.1 0.3 0.9")
+H.check("own class colour: name", color(cell.texts.healthLeft._color), "0.1 0.3 0.9 1")
+C.Set("general", "classColorsCustom", false)
+M.units[cell.unit].isPlayer = nil
+ns.Single.UpdateAll(cell)
+
 -- Test mode shows it: each pretend member's class colour behind.
 RC.Set("r10", "healthColorMode", "INVERTED_CLASS")
 M.units.player = { name = "Me", class = "MAGE", isPlayer = true, health = 50, healthMax = 100, healthMissing = 50 }
@@ -128,3 +140,4 @@ H.check("fixed colour choice", ns.RaidSchema.EnumText(RS.Get("healthColorMode"),
 H.check("label", ns.RaidSchema.Label("nameColor"), "Name color")
 H.check("the cell's note", ns.RaidSchema.Note("cell"), "Heals, shields and the power strip keep the unit frames' standard colors.")
 H.check("nothing blocked", #M.blocked, 0)
+

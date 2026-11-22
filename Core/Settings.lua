@@ -151,6 +151,14 @@ Settings.Define({ key = "petColorSuccubus", code = "WX", scope = "general", type
     default = { 0.9, 0.35, 0.6, 1 } })
 Settings.Define({ key = "petColorFelhunter", code = "WY", scope = "general", type = "color", personal = true,
     default = { 0.3, 0.75, 0.35, 1 } })
+Settings.Define({ key = "petColorIncubus", code = "WB", scope = "general", type = "color", personal = true,
+    default = { 0.65, 0.25, 0.55, 1 } })
+Settings.Define({ key = "petColorFelguard", code = "WZ", scope = "general", type = "color", personal = true,
+    default = { 0.55, 0.75, 0.2, 1 } })
+Settings.Define({ key = "petColorDoomguard", code = "QW", scope = "general", type = "color", personal = true,
+    default = { 0.75, 0.15, 0.15, 1 } })
+Settings.Define({ key = "petColorInfernal", code = "QP", scope = "general", type = "color", personal = true,
+    default = { 0.4, 0.8, 0.25, 1 } })
 
 -- The master switch "Use unit frames": off, every unit frame counts as
 -- switched off (ns.FrameEnabled), each frame's own "enabled" kept as it

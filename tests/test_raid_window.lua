@@ -46,7 +46,7 @@ H.check("size switch", RO.sizeModeRow.button.text:GetText(), "Automatic")
 -- The menu.
 local titles = {}
 for i, b in ipairs(RO.tabButtons) do titles[i] = b.text:GetText() end
-H.check("tabs", table.concat(titles, ","), "General,Cell,Text,Debuffs,Indicators,Icons & states,Layout,Special panels,Own panels,Click-casting,Buffs,Tools")
+H.check("tabs", table.concat(titles, ","), "General,Cell,Text,Debuffs,Indicators,Icons & states,Layout,Special panels,Own panels,Click-casting,Colors,Buffs,Tools")
 -- Opens on the size's first tab (decision 71); General in the top bar.
 H.check("first tab", RO.currentTab, "cell")
 click(RO.generalTab)

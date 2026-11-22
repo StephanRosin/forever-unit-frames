@@ -32,7 +32,11 @@ M.units.pet.family = 1
 H.check("a beast: the hunter pet's", Health.PetColor("pet"), C.Get("general", "petColorHunter")[1])
 H.check("in the health colour", Health.UnitColor("pet", "CLASS", "pet"), C.Get("general", "petColorHunter")[1])
 M.units.pet.family = 29
-H.check("felguard: none of its own", Health.PetColor("pet"), nil)
+H.check("felguard", Health.PetColor("pet"), C.Get("general", "petColorFelguard")[1])
+M.units.pet.family = 302
+H.check("incubus: its own", Health.PetColor("pet"), C.Get("general", "petColorIncubus")[1])
+M.units.pet.family = 101
+H.check("voidlord: the voidwalker's", Health.PetColor("pet"), C.Get("general", "petColorVoidwalker")[1])
 M.units.pet.family = nil
 H.check("no family: none", Health.PetColor("pet"), nil)
 M.units.target = { name = "Wolf", health = 1, healthMax = 1, family = 1 }

@@ -877,6 +877,10 @@ end
 ns.Listen("RAID_CONFIG_CHANGED", function()
     if RaidOptions.IsOpen() then refreshAll() end
 end)
+-- The unit frames' general values a page shows (Raid/Options/Colors.lua).
+ns.Listen("CONFIG_CHANGED", function(scope)
+    if RaidOptions.IsOpen() and (scope == nil or scope == "general") then refreshAll() end
+end)
 ns.Listen("RAID_SIZE_CHANGED", function()
     if RaidOptions.IsOpen() then renderSizeTabs() end
 end)

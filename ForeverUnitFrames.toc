@@ -126,6 +126,7 @@ Raid\MinimapButton.lua
 Raid\Options\Board.lua
 Raid\Options\Arrangement.lua
 Raid\Options\ClickCast.lua
+Raid\Options\Colors.lua
 Raid\Options\Buffs.lua
 Raid\Options\Dependencies.lua
 Raid\Options\Templates.lua

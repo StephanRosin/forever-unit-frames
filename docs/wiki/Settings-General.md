@@ -267,6 +267,10 @@ Auras hidden by spell, such as a campfire or a food buff: the list under General
 <tr><td><b>Voidwalker</b></td><td></td><td>Color</td><td><code>#734dd9</code></td></tr>
 <tr><td><b>Succubus</b></td><td></td><td>Color</td><td><code>#e65999</code></td></tr>
 <tr><td><b>Felhunter</b></td><td></td><td>Color</td><td><code>#4dbf59</code></td></tr>
+<tr><td><b>Incubus</b></td><td></td><td>Color</td><td><code>#a6408c</code></td></tr>
+<tr><td><b>Felguard</b></td><td></td><td>Color</td><td><code>#8cbf33</code></td></tr>
+<tr><td><b>Doomguard</b></td><td></td><td>Color</td><td><code>#bf2626</code></td></tr>
+<tr><td><b>Infernal</b></td><td></td><td>Color</td><td><code>#66cc40</code></td></tr>
 </tbody>
 </table>
 

@@ -59,12 +59,19 @@ function Health.ClassTokenColor(class)
 end
 
 -- Warlock demons by creature family ID (UnitCreatureFamily's second
--- return, the same in every language); any other family on a pet is a
--- hunter's beast. Demons without a colour of their own (Doomguard 19,
--- Felguard 29) get none.
-local DEMON_COLOR_KEYS = { [23] = "petColorImp", [16] = "petColorVoidwalker", [17] = "petColorSuccubus",
-    [15] = "petColorFelhunter" }
-local OTHER_DEMONS = { [19] = true, [29] = true }
+-- return, the same in every language; CreatureFamily.db2); any other
+-- family on a pet is a hunter's beast. The later variants (Fel Imp,
+-- Voidlord, Shivarra, Observer, Wrathguard) share their demon's colour.
+local DEMON_COLOR_KEYS = {
+    [23] = "petColorImp", [100] = "petColorImp",
+    [16] = "petColorVoidwalker", [101] = "petColorVoidwalker",
+    [17] = "petColorSuccubus", [102] = "petColorSuccubus",
+    [302] = "petColorIncubus",
+    [15] = "petColorFelhunter", [103] = "petColorFelhunter",
+    [29] = "petColorFelguard", [104] = "petColorFelguard",
+    [19] = "petColorDoomguard",
+    [108] = "petColorInfernal",
+}
 
 -- r, g, b of a player's pet by its kind where pet colours are on, or
 -- nothing (off, not a pet, kind unknown or secret).
@@ -73,11 +80,7 @@ function Health.PetColor(unit)
     if Secrets.Bool(UnitPlayerControlled, unit) ~= true or Secrets.Bool(UnitIsPlayer, unit) ~= false then return end
     local ok, _, family = pcall(UnitCreatureFamily, unit)
     if not ok or type(family) ~= "number" then return end   -- a secret is no number to type()
-    local key = DEMON_COLOR_KEYS[family]
-    if not key then
-        if OTHER_DEMONS[family] then return end
-        key = "petColorHunter"
-    end
+    local key = DEMON_COLOR_KEYS[family] or "petColorHunter"
     local c = Config.Get("general", key)
     return c[1], c[2], c[3]
 end

@@ -131,6 +131,10 @@ Schema.TABS = {
     -- Click-casting, per character (Raid/Options/ClickCast.lua builds the
     -- page: a binding and its value per row).
     { id = "clickCast", custom = "clickCast", note = "clickCast", sections = clickCastSections() },
+    -- The unit frames' class and pet colours, shared (Raid/Options/Colors.lua
+    -- builds the page from General > Colors). unitFrames: no raid settings
+    -- of its own; character-wide, its wiki page is the unit frames'.
+    { id = "colors", custom = "colors", note = "colors", unitFrames = true, sections = {} },
     -- The buff watch, per character: the note says that buffing waits
     -- for the end of combat and which buffs are offered.
     { id = "buffs", note = "buffs", sections = {
@@ -227,6 +231,7 @@ function Schema.Note(id) return word("RAID_NOTE_", id) end
 -- Whether every setting of a tab belongs to the character (the same at
 -- every size); a tab without settings does not.
 function Schema.PerCharacter(tab)
+    if tab.unitFrames then return true end
     local any = false
     for _, sec in ipairs(tab.sections) do
         for _, key in ipairs(sec.keys) do

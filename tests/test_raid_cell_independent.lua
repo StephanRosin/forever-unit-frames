@@ -57,7 +57,7 @@ for _, def in ipairs(Settings.All()) do
         end
     end
 end
-H.check("party and General settings changed", changed, 360)
+H.check("party and General settings changed", changed, 364)
 H.check("the party frame's texture did change", C.Get(ns.Party.KEY, "barTexture"), "Another")
 
 -- Not one raid answer follows.

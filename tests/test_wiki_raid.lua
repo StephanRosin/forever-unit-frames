@@ -48,7 +48,8 @@ for _, general in ipairs({ true, false }) do
         if #tab.sections > 0 and Schema.PerCharacter(tab) == general then settingTabs[#settingTabs + 1] = tab end
     end
 end
-H.check("every tab has settings", #Schema.TABS - #settingTabs, 0)
+-- Colors edits the unit frames' values: their wiki has it.
+H.check("every tab has settings", #Schema.TABS - #settingTabs, 1)
 H.check("one page per settings tab", #raid, #settingTabs)
 for i, tab in ipairs(settingTabs) do
     local text = read(raid[i] .. ".md")
