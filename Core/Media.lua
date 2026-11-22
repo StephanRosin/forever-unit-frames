@@ -103,12 +103,22 @@ function Media.InFamily(file, path)
 end
 
 function Media.ForgetFamily(file, size, flags)
-    families[file .. "|" .. size .. "|" .. flags] = nil
+    local key = file .. "|" .. size .. "|" .. flags
+    families[key .. "|"], families[key .. "|shadow"] = nil, nil
 end
 
-function Media.Family(file, size, flags)
+-- The shadow a family hands its texts: Blizzard's families carry it on
+-- every member (Fonts.xml), CreateFontFamily takes none, and the client
+-- can hand a family's own (none) to its texts again later (CurseForge
+-- 23.11.2026: shadow gone after a relog although ticked).
+local function shade(font, shadow)
+    pcall(font.SetShadowOffset, font, shadow and 1 or 0, shadow and -1 or 0)
+    pcall(font.SetShadowColor, font, 0, 0, 0, 1)
+end
+
+function Media.Family(file, size, flags, shadow)
     if type(CreateFontFamily) ~= "function" or type(file) ~= "string" then return nil end
-    local key = file .. "|" .. size .. "|" .. flags
+    local key = file .. "|" .. size .. "|" .. flags .. "|" .. (shadow and "shadow" or "")
     local family = families[key]
     if family == nil then
         local members = {
@@ -121,6 +131,13 @@ function Media.Family(file, size, flags)
         familyCount = familyCount + 1
         local ok, made = pcall(CreateFontFamily, "ForeverUnitFramesFont" .. familyCount, members)
         family = ok and made or false
+        if family then
+            shade(family, shadow)
+            for _, member in ipairs(members) do
+                local ok2, font = pcall(family.GetFontObjectForAlphabet, family, member.alphabet)
+                if ok2 and font then shade(font, shadow) end
+            end
+        end
         families[key] = family
     end
     return family or nil

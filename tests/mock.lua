@@ -1210,8 +1210,9 @@ function methods:SetFontObject(o)
     -- in the client (seen in game, 21.11.2026).
     local roman = type(o) == "table" and o.members and o.members[1]
     if roman and not fileSet[self] then self._font = { roman.file, roman.height, roman.flags } end
-    -- A font object brings its own shadow: none for a family made by code.
-    if roman then self._shadow = { 0, 0 } end
+    -- A font object brings its own shadow: none for a family made by code
+    -- unless one was set on it.
+    if roman then self._shadow = o._shadow or { 0, 0 } end
 end
 function methods:SetText(t)
     if self._kind == "EditBox" or self._kind == "FontString" then

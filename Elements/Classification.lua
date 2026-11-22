@@ -275,10 +275,9 @@ function Classification.Style(frame)
         frame.eliteMode = "ICON"
     end
     local text = frame.eliteText
+    ns.Texts.SetShadow(text, Config.Get(scope, "fontShadow"))
     ns.Texts.SetFont(text, ns.Media.Font(Config.Get(scope, "fontFace")), Classification.TextSize(scope),
         Config.Get(scope, "fontOutline"))
-    local shadow = Config.Get(scope, "fontShadow")
-    text:SetShadowOffset(shadow and 1 or 0, shadow and -1 or 0)
     show(frame, frame.eliteKind, true)
 end
 

@@ -6,6 +6,7 @@ local M = H.M
 local made = {}
 _G.CreateFontFamily = function(name, members)
     local family = { name = name, members = members }
+    function family:SetShadowOffset(x, y) self._shadow = { x, y } end
     made[#made + 1] = family
     return family
 end
@@ -72,6 +73,15 @@ M.RunTimers()
 local shadowed = ns.Frames.player.texts.healthLeft
 H.check("shadow kept after the redraw", select(1, shadowed:GetShadowOffset()), 1)
 H.check("shadow kept: below", select(2, shadowed:GetShadowOffset()), -1)
+-- The family carries it too: the client handing the family's own to the
+-- text again (relog) keeps it.
+shadowed:SetFontObject(shadowed._fontObject)
+H.check("family re-applied: shadow stays", select(1, shadowed:GetShadowOffset()), 1)
+-- Unticked: a family without one, and the text without one.
+C.Set("player", "fontShadow", false)
+M.RunTimers()
+shadowed:SetFontObject(shadowed._fontObject)
+H.check("unticked: no shadow", select(1, shadowed:GetShadowOffset()), 0)
 
 -- A client without families: the file alone.
 _G.CreateFontFamily = nil

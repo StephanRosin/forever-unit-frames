@@ -329,17 +329,22 @@ end
 -- once set with SetFont wins over any font object for good (in game,
 -- 21.11.2026). The file alone where the client makes no families.
 local function setFont(fs, font, size, flags)
-    local family = ns.Media.Family(font, size, flags)
-    -- A font object brings its own shadow (none): the text keeps its own
-    -- (fontShadow), or the redraw after login took it away (CurseForge
-    -- 22.11.2026).
-    local shadowX, shadowY = fs:GetShadowOffset()
-    if family and pcall(fs.SetFontObject, fs, family) then
-        fs:SetShadowOffset(shadowX, shadowY)
-        return
+    local shadow = fs.fontShadow
+    local family = ns.Media.Family(font, size, flags, shadow)
+    if not (family and pcall(fs.SetFontObject, fs, family)) then
+        -- A file the client refuses may raise: hasFont then sees the refusal.
+        pcall(fs.SetFont, fs, font, size, flags)
     end
-    -- A file the client refuses may raise: hasFont then sees the refusal.
-    pcall(fs.SetFont, fs, font, size, flags)
+    -- A font object brings its own shadow: the text's comes from its
+    -- setting every time (Texts.SetShadow), never from what it had.
+    fs:SetShadowOffset(shadow and 1 or 0, shadow and -1 or 0)
+end
+
+-- Whether a text draws the font shadow (setting fontShadow); kept on the
+-- text so every later font change, the redraw after login too, keeps it.
+function Texts.SetShadow(fs, on)
+    fs.fontShadow = on or nil
+    fs:SetShadowOffset(on and 1 or 0, on and -1 or 0)
 end
 
 local function makeCopies(fs)
@@ -412,6 +417,7 @@ local function redrawLater(fs, font, size, flags, wanted)
         setFont(fs, font, size, flags)
         local text = fs:GetText()
         if text then fs:SetText(""); fs:SetText(text) end
+        Texts.SetShadow(fs, fs.fontShadow)
     end
     for _, delay in ipairs(REDRAW_DELAYS) do C_Timer.After(delay, redraw) end
 end
@@ -865,8 +871,8 @@ function Texts.Style(frame)
         end
         -- Value texts (numbers, percent) may have a size of their own.
         local isValue = valueKind(slot, Config.Get(scope, slot.setting)) ~= nil
+        Texts.SetShadow(fs, shadow)
         Texts.SetFont(fs, font, (isValue and valueSize > 0) and valueSize or size, outline)
-        fs:SetShadowOffset(shadow and 1 or 0, shadow and -1 or 0)
         fs:ClearAllPoints()
         if not slot.center then
             -- The title clears a theme's title wedge (Elements/ThemeArt.lua).

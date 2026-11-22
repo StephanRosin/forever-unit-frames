@@ -115,10 +115,9 @@ end
 
 function CombatFeedback.Style(frame)
     local scope, text = frame.key, frame.feedbackText
+    ns.Texts.SetShadow(text, Config.Get(scope, "fontShadow"))
     setFont(frame, CombatFeedback.Size(scope))
     place(frame)
-    local shadow = Config.Get(scope, "fontShadow")
-    text:SetShadowOffset(shadow and 1 or 0, shadow and -1 or 0)
     local on = Config.Get(scope, "combatFeedback")
     if frame.feedback.preview then
         frame.feedback:SetShown(on)
