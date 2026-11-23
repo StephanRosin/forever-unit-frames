@@ -241,6 +241,9 @@ News.ENTRIES = {
     ["0.79.0"] = {
         lines = { "NEWS_0_79_0_PARTY_PROFILE" },
     },
+    ["0.79.1"] = {
+        lines = { "NEWS_0_79_1_SMART_BUFF_RAID" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

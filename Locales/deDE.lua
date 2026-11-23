@@ -1741,6 +1741,7 @@ L.NEWS_0_64_0_MISSING = "Reiter Leisten, Texturen: „Farbe fehlender Gesundheit
 L.NEWS_0_64_0_ENCHANT_ROW = "Korrektur: Mit „In der Buff-Reihe“ wandern die Waffenverzauberungen jetzt mit der ersten Buff-Reihe mit, wenn eine zweite Reihe dazukommt."
 L.NEWS_0_65_0_FILL = "Reiter Anordnung, Abstände & Kästen: „Lücken füllen“ legt eine Platte hinter die Teile, die Lücken erscheinen als Fugen in ihrer Farbe, mit eigenem Rand rund um den Rahmen."
 L.NEWS_0_79_0_PARTY_PROFILE = "Raid-Frames: Die Schlachtzugsansicht in der Gruppe hat ein eigenes Profil, Gruppe (neben 10, 20 und 40). Es beginnt so, wie deine Gruppe bisher aussah. Der Schalter steht auch unter Gruppe > Gruppenanordnung."
+L.NEWS_0_79_1_SMART_BUFF_RAID = "Smart Buffs: In WoW Forever erreicht ein Gruppenbuff den ganzen Schlachtzug, die Gruppenform kommt deshalb, sobald genug Mitglieder irgendwo ihn brauchen (Segen weiterhin je Klasse). „Gruppenform ab“ geht bis 40."
 L.NEWS_OPEN_THEME = "Theme öffnen"
 
 -- Themes (Core/Themes.lua)

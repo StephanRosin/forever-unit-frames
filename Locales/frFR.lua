@@ -1741,6 +1741,7 @@ L.NEWS_0_64_0_MISSING = "Onglet Barres, Textures : « Couleur de la santé manqu
 L.NEWS_0_64_0_ENCHANT_ROW = "Correction : avec « Dans la rangée des buffs », les enchantements d'arme suivent maintenant la première rangée d'améliorations quand une deuxième rangée apparaît."
 L.NEWS_0_65_0_FILL = "Onglet Disposition, Espacements et cases : « Remplir les espaces » place une plaque derrière les parties ; les espaces apparaissent comme des joints de sa couleur, avec une marge propre autour du cadre."
 L.NEWS_0_79_0_PARTY_PROFILE = "Cadres de raid : la vue de raid en groupe a son propre profil, Groupe (à côté de 10, 20 et 40). Il commence tel que votre groupe apparaissait jusqu'ici. L'interrupteur est aussi sous Groupe > Disposition du groupe."
+L.NEWS_0_79_1_SMART_BUFF_RAID = "Smart Buffs : dans WoW Forever, un buff de groupe atteint tout le raid ; la forme de groupe est donc lancée dès qu'assez de membres, où qu'ils soient, en ont besoin (bénédictions toujours par classe). Le seuil va jusqu'à 40."
 L.NEWS_OPEN_THEME = "Ouvrir le thème"
 
 -- Themes (Core/Themes.lua)

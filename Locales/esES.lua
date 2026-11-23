@@ -1742,6 +1742,7 @@ L.NEWS_0_64_0_MISSING = "Pestaña Barras, Texturas: «Color de salud perdida» d
 L.NEWS_0_64_0_ENCHANT_ROW = "Corrección: con «En la fila de beneficios», los encantamientos de arma se mueven ahora con la primera fila de beneficios cuando aparece una segunda fila."
 L.NEWS_0_65_0_FILL = "Pestaña Diseño, Espacios y cajas: «Rellenar los espacios» pone una placa detrás de las partes; los espacios se ven como juntas de su color, con un margen propio alrededor del marco."
 L.NEWS_0_79_0_PARTY_PROFILE = "Marcos de banda: la vista de banda en grupo tiene un perfil propio, Grupo (junto a 10, 20 y 40). Empieza como se veía tu grupo hasta ahora. El interruptor también está en Grupo > Disposición del grupo."
+L.NEWS_0_79_1_SMART_BUFF_RAID = "Smart Buffs: en WoW Forever un beneficio de grupo llega a toda la banda, así que la forma de grupo se lanza cuando suficientes miembros en cualquier parte lo necesitan (bendiciones aún por clase). El umbral llega hasta 40."
 L.NEWS_OPEN_THEME = "Abrir el tema"
 
 -- Themes (Core/Themes.lua)
