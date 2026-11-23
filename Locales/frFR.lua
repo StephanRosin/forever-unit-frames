@@ -1739,6 +1739,7 @@ L.NEWS_0_63_0_ENCHANTS = "Améliorations (onglet Auras) : « Dans la rangée des
 L.NEWS_0_64_0_MISSING = "Onglet Barres, Textures : « Couleur de la santé manquante » donne à la partie vide de la barre de santé une couleur propre."
 L.NEWS_0_64_0_ENCHANT_ROW = "Correction : avec « Dans la rangée des buffs », les enchantements d'arme suivent maintenant la première rangée d'améliorations quand une deuxième rangée apparaît."
 L.NEWS_0_65_0_FILL = "Onglet Disposition, Espacements et cases : « Remplir les espaces » place une plaque derrière les parties ; les espaces apparaissent comme des joints de sa couleur, avec une marge propre autour du cadre."
+L.NEWS_0_79_0_PARTY_PROFILE = "Cadres de raid : la vue de raid en groupe a son propre profil, Groupe (à côté de 10, 20 et 40). Il commence tel que votre groupe apparaissait jusqu'ici. L'interrupteur est aussi sous Groupe > Disposition du groupe."
 L.NEWS_OPEN_THEME = "Ouvrir le thème"
 
 -- Themes (Core/Themes.lua)

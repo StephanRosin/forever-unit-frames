@@ -1740,6 +1740,7 @@ L.NEWS_0_63_0_ENCHANTS = "Beneficios (pestaña Auras): «En la fila de beneficio
 L.NEWS_0_64_0_MISSING = "Pestaña Barras, Texturas: «Color de salud perdida» da a la parte vacía de la barra de salud un color propio."
 L.NEWS_0_64_0_ENCHANT_ROW = "Corrección: con «En la fila de beneficios», los encantamientos de arma se mueven ahora con la primera fila de beneficios cuando aparece una segunda fila."
 L.NEWS_0_65_0_FILL = "Pestaña Diseño, Espacios y cajas: «Rellenar los espacios» pone una placa detrás de las partes; los espacios se ven como juntas de su color, con un margen propio alrededor del marco."
+L.NEWS_0_79_0_PARTY_PROFILE = "Marcos de banda: la vista de banda en grupo tiene un perfil propio, Grupo (junto a 10, 20 y 40). Empieza como se veía tu grupo hasta ahora. El interruptor también está en Grupo > Disposición del grupo."
 L.NEWS_OPEN_THEME = "Abrir el tema"
 
 -- Themes (Core/Themes.lua)

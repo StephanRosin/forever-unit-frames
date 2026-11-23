@@ -1768,6 +1768,7 @@ L.NEWS_0_63_0_ENCHANTS = "Buffs (Auras tab): \"Enchants in the buff row\" puts y
 L.NEWS_0_64_0_MISSING = "Bars tab, Textures: \"Missing health color\" gives the empty part of the health bar a color of its own."
 L.NEWS_0_64_0_ENCHANT_ROW = "Fix: with \"Enchants in the buff row\", the enchants now move with the first buff row when a second row is added."
 L.NEWS_0_65_0_FILL = "Layout tab, Spacing & boxes: \"Fill the gaps\" puts one plate behind the parts, so the gaps show as seams in its color, with a padding of its own around the frame."
+L.NEWS_0_79_0_PARTY_PROFILE = "Raid frames: the raid view in a party has a profile of its own, Party (beside 10, 20 and 40). It starts as your party looked so far. The switch is also under Party > Group layout."
 L.NEWS_OPEN_THEME = "Open the theme"
 
 -- Themes (Core/Themes.lua)
