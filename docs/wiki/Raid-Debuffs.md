@@ -16,7 +16,7 @@ The **Debuffs** tab of the raid options window (`/fuf raid`), under a raid size 
 <tr><td><b>Show the debuff</b></td><td></td><td>On, Off</td><td>On</td></tr>
 <tr><td><b>Which debuffs</b></td><td>Dispellable by me: only what your class can remove</td><td>Dispellable by me, Any dispellable</td><td>Dispellable by me</td></tr>
 <tr><td><b>Shown as</b></td><td></td><td>Icon in the center, Square in a corner</td><td>Icon in the center</td></tr>
-<tr><td><b>Icon size</b></td><td></td><td>8 – 40</td><td>10 players: 20; 20 players: 18; 40 players: 16</td></tr>
+<tr><td><b>Icon size</b></td><td></td><td>8 – 40</td><td>Party, 10 players: 20; 20 players: 18; 40 players: 16</td></tr>
 <tr><td><b>Corner of the square</b></td><td>Beside a corner indicator in the same corner</td><td>Top left, Top right, Bottom left, Bottom right</td><td>Top right</td></tr>
 <tr><td><b>Square size</b></td><td>In pixels, from 1</td><td>1 – 16</td><td>6</td></tr>
 <tr><td><b>Tint the cell</b></td><td>The whole cell in the debuff type's color</td><td>On, Off</td><td>Off</td></tr>
@@ -33,7 +33,7 @@ The **Debuffs** tab of the raid options window (`/fuf raid`), under a raid size 
 <tbody>
 <tr><td><b>Show the row</b></td><td>Every debuff, along the bottom of the cell</td><td>On, Off</td><td>Off</td></tr>
 <tr><td><b>Number of icons</b></td><td></td><td>1 – 6</td><td>3</td></tr>
-<tr><td><b>Icon size</b></td><td></td><td>8 – 32</td><td>10 players: 14; 20 players: 13; 40 players: 12</td></tr>
+<tr><td><b>Icon size</b></td><td></td><td>8 – 32</td><td>Party, 10 players: 14; 20 players: 13; 40 players: 12</td></tr>
 </tbody>
 </table>
 

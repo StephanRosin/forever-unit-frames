@@ -13,7 +13,7 @@ The **General** tab of the raid options window (`/fuf raid`), under **General** 
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
-<tr><td><b>Raid size shown</b></td><td>Automatic: the raid instance's size, else the group's</td><td>Automatic, 10 players, 20 players, 40 players</td><td>Automatic</td></tr>
+<tr><td><b>Raid size shown</b></td><td>Raids only. Automatic: the raid instance's size, else the group's</td><td>Automatic, 10 players, 20 players, 40 players</td><td>Automatic</td></tr>
 </tbody>
 </table>
 

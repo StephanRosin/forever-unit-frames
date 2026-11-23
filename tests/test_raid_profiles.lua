@@ -5,9 +5,10 @@ local M = H.M
 local ns = H.LoadAddon()
 local Raid, RS, RC, P = ns.Raid, ns.RaidSettings, ns.RaidConfig, ns.RaidProfiles
 
-H.check("sizes", table.concat(Raid.SIZES, ","), "10,20,40")
+H.check("sizes", table.concat(Raid.SIZES, ","), "5,10,20,40")
 H.check("scope of a size", Raid.Scope(20), "r20")
-H.check("scopes", table.concat(RS.SCOPES, ","), "general,r10,r20,r40")
+H.check("the party's scope", Raid.Scope(Raid.PARTY_SIZE), "r5")
+H.check("scopes", table.concat(RS.SCOPES, ","), "general,r5,r10,r20,r40")
 H.check("size mode code", RS.Get("sizeMode").code, "SM")
 H.check("x is per size", RS.AppliesTo(RS.Get("x"), "general"), false)
 H.check("size mode is per character", RS.AppliesTo(RS.Get("sizeMode"), "r10"), false)

@@ -128,7 +128,7 @@ end
 local TAB_INTRO = {
     layout = "Size, position, the rows of the frame, portrait, border and corners, shadow, and how see-through the"
         .. " frame is: its opacity, range fading and (player) fading out of combat.",
-    group = "The party only: how the members are arranged (also sorted by role), their pets and their targets. Its Buffs section at the end holds the raid window's smart buff key, Also when solo and the buff window's switch: the same values, in effect while the raid frames are on.",
+    group = "The party only: how the members are arranged (also sorted by role), their pets and their targets. Its Buffs section at the end holds the raid window's smart buff key, Also when solo and the buff window's switch, and its Raid view section the raid window's Raid view in a party (the party as raid cells, with the raid window's Party profile): the same values, in effect while the raid frames are on.",
     bars = "Colors and textures of the bars, shields (the player's shield watch too), incoming heals, power colors"
         .. " and the druid's mana.",
     text = "The font first, then what the texts on the title row and the bars show, the damage and heal numbers"
@@ -588,12 +588,12 @@ do
             .. " [[Templates|Raid-Templates]]."):format(L.RAID_TEMPLATE_PICK, L.RAID_TEMPLATE_TARGET,
             L.RAID_TEMPLATE_APPLY, L.RAID_TEMPLATE_UNDO, L.RAID_WIZARD_TITLE), "",
         "## Own profiles", "",
-        ("**Save as** keeps your raid settings under a name, for every character of your account: **All three"
+        ("**Save as** keeps your raid settings under a name, for every character of your account: **All"
             .. " sizes** (the default) or one size, every setting as it shows (positions included; not the"
             .. " character's own settings such as click-casting or the buff watch). A name has at most %d letters;"
             .. " a name in use asks for a second click and then replaces that profile. Up to %d own profiles."
             .. " **Apply** puts a profile of all sizes into each size it holds; a profile of one size goes to the"
-            .. " size you pick under **Apply to**, or to all three. **Delete** takes two clicks. Profiles saved by"
+            .. " size you pick under **Apply to**, or to all of them. **Delete** takes two clicks. Profiles saved by"
             .. " earlier versions (one size) still load; a profile of all sizes needs this version or newer:"
             .. " going back to an older version loses the profiles of all sizes (they load there empty)."):format(
             T.OWN_NAME_LETTERS, T.OWN_MAX), "",
@@ -633,10 +633,11 @@ do
         "## Reset", "",
         "Puts one size back to its defaults, after a second click.", "",
         "## Export", "",
-        "**All three sizes** (the default) gives one text with the 10, 20 and 40 player settings; or pick one"
-            .. " size. The character's own settings are not in it. Copy the text to share it or keep a backup. A"
+        "**All sizes** (the default) gives one text with the Party, 10, 20 and 40 player settings; or pick"
+            .. " one size. The character's own settings are not in it. Copy the text to share it or keep a backup. A"
             .. " text of all sizes has a format of its own: an older version refuses it (\"made by a newer"
-            .. " version\") rather than setting only some sizes.", "",
+            .. " version\") rather than setting only some sizes. A text of all sizes from 0.78 or older has no Party:"
+            .. " importing it leaves the Party profile as it is.", "",
         "## Import", "",
         "Paste a text and click **" .. L.IMPORT .. "**. A text of one size replaces the size picked under **"
             .. L.RAID_PROFILES_IMPORT_TO .. "**. A text of all sizes names them and asks for a second click,"
@@ -714,7 +715,7 @@ do
     local lines = { GENERATED, "", "# Raid frames: Templates and setup wizard", "",
         "A template sets many raid settings in one go. The **Templates** section at the top of the raid window's"
             .. " **Profiles** page (the last entry of the top bar) applies a role template or a look to the size you edit or to all"
-            .. " three sizes. A template sets only the settings listed below; everything else stays as it is."
+            .. " sizes. A template sets only the settings listed below; everything else stays as it is."
             .. " Applying is one change, and **Undo** takes back the last one (once; any other change to the raid"
             .. " settings, and logging out, ends it). Nothing"
             .. " is applied in combat.", "",
@@ -764,7 +765,7 @@ do
     end
     htmlTable(lines, heads, widths, rows)
     for _, l in ipairs({ "## Own templates", "",
-        ("Your own templates are your own profiles, on the [[Profiles|Raid-Profiles]] tab: all three sizes or"
+        ("Your own templates are your own profiles, on the [[Profiles|Raid-Profiles]] tab: all sizes or"
             .. " one under a name (at most %d letters; a name in use replaces it after a second click), for every"
             .. " character of your account, applied like the shipped ones (with **Undo**), deleted after a second"
             .. " click. Up to %d own templates."):format(T.OWN_NAME_LETTERS, T.OWN_MAX), "",

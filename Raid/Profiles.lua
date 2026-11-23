@@ -2,7 +2,7 @@ local _, ns = ...
 
 -- Raid profiles, one set per character, kept in the account-wide
 -- SavedVariables: ForeverUnitFramesDB.raid["Name-Realm"] = { general = {},
--- r10 = {}, r20 = {}, r40 = {} }, overrides only, like the unit-frame
+-- r5 = {}, r10 = {}, r20 = {}, r40 = {} }, overrides only, like the unit-frame
 -- profile. Having every character in one table is what lets one copy
 -- another's sizes. The table in use is the saved one itself: every change
 -- is in SavedVariables at once, nothing has to be flushed.
@@ -89,12 +89,44 @@ local function retireClickCastParty(db)
     db.clickCastPartyRetired = true
 end
 
+-- Every per-size setting of scope `to` as scope `from` of a profile shows
+-- it, kept only where it differs from to's default (as Config stores).
+local function storedAs(profile, from, to)
+    local values = {}
+    for _, def in ipairs(RaidSettings.All()) do
+        if RaidSettings.AppliesTo(def, to) then
+            local v = profile[from][def.key]
+            if v == nil then v = RaidSettings.Default(def, from) end
+            if not ns.SameValue(v, RaidSettings.Default(def, to)) then values[def.key] = copied(v) end
+        end
+    end
+    return values
+end
+
+-- Up to 0.78 a party in the raid view showed the 10 profile, or the size
+-- sizeMode fixed. Once per account, at the first login with this version,
+-- every character's party profile becomes the one its party showed, so
+-- nothing looks different. db.raidPartyProfileAdded marks it done.
+local function addPartyProfile(db)
+    if db.raidPartyProfileAdded then return end
+    local party = Raid.Scope(Raid.PARTY_SIZE)
+    for _, profile in pairs(db.raid) do
+        if type(profile) == "table" and profile[party] == nil then
+            local clean = RaidSettings.Sanitise(profile)
+            local fixed = tonumber(clean.general.sizeMode or "")
+            profile[party] = storedAs(clean, Raid.Scope(fixed or 10), party)
+        end
+    end
+    db.raidPartyProfileAdded = true
+end
+
 -- At PLAYER_LOGIN: this character's profile, cleaned, becomes the one in use.
 function Profiles.Attach(db)
     if type(db.raid) ~= "table" then db.raid = {} end
     keepOldToolsSpot(db)
     openFreeBars(db)
     retireClickCastParty(db)
+    addPartyProfile(db)
     store = db.raid
     charKey = Profiles.CharKey()
     local own = store[charKey]
@@ -203,10 +235,12 @@ function Profiles.Export(size)
 end
 
 -- Every size in one string, under its own format version (decision 56):
--- version 2 is "every size", entries as version 1 writes them (a size left
+-- version 3 is "every size", entries as version 1 writes them (a size left
 -- at the defaults has none). A build that reads only version 1 refuses it
 -- (CODEC_VERSION) instead of setting only the sizes with entries.
-Profiles.ALL_VERSION = 2
+-- Version 2 (up to 0.78) is every size but the party's, which it leaves.
+Profiles.ALL_VERSION = 3
+local ALL_SIZES = { ["2"] = { 10, 20, 40 }, ["3"] = Raid.SIZES }
 function Profiles.ExportAll()
     local scopes = {}
     for i, size in ipairs(Raid.SIZES) do scopes[i] = Raid.Scope(size) end
@@ -214,24 +248,27 @@ function Profiles.ExportAll()
     return (str:gsub("^%d+", tostring(Profiles.ALL_VERSION), 1))
 end
 
--- A string as the codec reads it, and whether it is one of every size.
--- Version 2: the version alone or followed by ";", the rest read as
--- version 1; glued to anything else it is malformed (CODEC_FORMAT).
+-- A string as the codec reads it, and the sizes it holds when it is one of
+-- every size (else nil). Such a version: the version alone or followed by
+-- ";", the rest read as version 1; glued to anything else it is malformed
+-- (CODEC_FORMAT).
 local function decode(str)
-    if type(str) == "string" and str:match("^%d+") == tostring(Profiles.ALL_VERSION) then
-        local rest = str:sub(#tostring(Profiles.ALL_VERSION) + 1)
+    local version = type(str) == "string" and str:match("^%d+")
+    local all = version and ALL_SIZES[version]
+    if all then
+        local rest = str:sub(#version + 1)
         if rest ~= "" and rest:sub(1, 1) ~= ";" then return nil, "CODEC_FORMAT" end
         local decoded, err, rejected = RaidCodec.Decode(RaidCodec.VERSION .. rest)
-        return decoded, err, rejected, true
+        return decoded, err, rejected, all
     end
     local decoded, err, rejected = RaidCodec.Decode(str)
-    return decoded, err, rejected, false
+    return decoded, err, rejected, nil
 end
 
--- The sizes a string holds (in order): all three for a string of every
--- size, else each that has an entry. nil and an error key for a string
--- the codec refuses; also the decoded profile and how many entries it
--- left out.
+-- The sizes a string holds (in order): those of its version for a string
+-- of every size, else each that has an entry. nil and an error key for a
+-- string the codec refuses; also the decoded profile and how many entries
+-- it left out.
 function Profiles.ImportSizes(str)
     local decoded, err, rejected, all = decode(str)
     if not decoded then return nil, err end
@@ -241,7 +278,7 @@ function Profiles.ImportSizes(str)
         if not RAID_LETTERS[letter] then return nil, "RAID_NO_SIZE" end
     end
     local sizes = {}
-    for _, size in ipairs(Raid.SIZES) do
+    for _, size in ipairs(all or Raid.SIZES) do
         if all or next(decoded[Raid.Scope(size)]) then sizes[#sizes + 1] = size end
     end
     return sizes, nil, decoded, rejected

@@ -2,7 +2,7 @@
 
 Clean, fully configurable unit frames for **WoW: Forever**: player, target, target of target, focus,
 pet and party, with auras that keep updating in combat, threat, range and dispel indicators, and raid
-frames for 10, 20 and 40 players.
+frames for 10, 20 and 40 players and, if you like, for your party.
 English, Deutsch, Español, Français, 한국어.
 
 Download: [CurseForge](https://www.curseforge.com/projects/1708698) ·
@@ -31,13 +31,14 @@ Source: [GitHub](https://github.com/StephanRosin/forever-unit-frames)
 
 - **`/fuf raid`** opens the raid options window (also: the **Raid frames…** button at the bottom of `/fuf`, the raid
   frames' own minimap button, or their entry in the addon compartment).
-- The top bar of the raid window reads **General | 10 | 20 | 40 | Profiles**. **General** holds the
+- The top bar of the raid window reads **General | Party | 10 | 20 | 40 | Profiles**. **General** holds the
   settings of your character, the same at every size (General, Click-casting, Buffs, Tools). Each character
-  has **three raid profiles**, one per raid size: 10, 20 and 40; picking a size shows its tabs and edits its
+  has **four profiles**: **Party** for the raid view in a party (*Raid view in a party*, also under
+  `/fuf` > Party > Group) and one per raid size: 10, 20 and 40; picking one shows its tabs and edits its
   profile, the one shown right now is marked *(shown)*. **Profiles** holds what acts on sizes as a whole
   (see below).
   **Raid size shown** next to them follows the raid instance (outside one the group's size), or fixes
-  one size.
+  one size; it only counts in a raid, a party always shows Party.
 - **Unlock frames** in the raid window lets you drag the raid panels and the raid tools bar (only these;
   `/fuf lock` locks them too). **Test mode** in the raid window shows a pretend raid of the size you edit, at
   that size's place, with every option you switched on, and pretend players in the special panels you switched
@@ -60,7 +61,7 @@ Source: [GitHub](https://github.com/StephanRosin/forever-unit-frames)
   follows changes of who leads only out of combat; in combat only the handle folds it (`/fuf tools` and the
   minimap button wait for the end of combat).
 - The **Profiles** tab (beside the sizes) starts with the role templates, the looks and the setup wizard's
-  button (see [[Templates|Raid-Templates]]). Below them it keeps your own profiles (all three sizes or one, under a
+  button (see [[Templates|Raid-Templates]]). Below them it keeps your own profiles (all sizes or one, under a
   name, for every character of your account), copies one size onto another (everything, or without layout and sizes)
   or a size of another of your characters, resets a size, and exports all sizes or one as a text and imports
   it again. Applying, copying between sizes and importing several sizes can be undone once.

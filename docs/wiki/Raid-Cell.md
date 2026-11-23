@@ -15,8 +15,8 @@ Heals, shields and the power strip keep the unit frames' standard colors.
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
-<tr><td><b>Cell width</b></td><td></td><td>30 – 200</td><td>10 players: 96; 20 players: 88; 40 players: 80</td></tr>
-<tr><td><b>Cell height</b></td><td></td><td>16 – 100</td><td>10 players: 44; 20 players: 40; 40 players: 38</td></tr>
+<tr><td><b>Cell width</b></td><td></td><td>30 – 200</td><td>Party, 10 players: 96; 20 players: 88; 40 players: 80</td></tr>
+<tr><td><b>Cell height</b></td><td></td><td>16 – 100</td><td>Party, 10 players: 44; 20 players: 40; 40 players: 38</td></tr>
 </tbody>
 </table>
 
@@ -46,7 +46,7 @@ Heals, shields and the power strip keep the unit frames' standard colors.
 <tr><td><b>Border style</b></td><td></td><td>Flat, Gold, Bronze, Shaded (own color)</td><td>Gold</td></tr>
 <tr><td><b>Border size</b></td><td></td><td>1 – 8</td><td>1</td></tr>
 <tr><td><b>Border color</b></td><td>For the flat and shaded styles</td><td>Color</td><td><code>#000000</code></td></tr>
-<tr><td><b>Corner radius</b></td><td>0 = square corners</td><td>0 – 12</td><td>10 players: 4; 20 players: 3; 40 players: 2</td></tr>
+<tr><td><b>Corner radius</b></td><td>0 = square corners</td><td>0 – 12</td><td>Party, 10 players: 4; 20 players: 3; 40 players: 2</td></tr>
 </tbody>
 </table>
 

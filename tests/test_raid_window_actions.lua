@@ -59,7 +59,7 @@ RO.SelectSize(40)
 click(RO.profilesTab)
 
 -- Copy from another character: every size of each, onto the size picked.
-H.check("characters offered", items(P.character), "Healer-Testrealm: 10 players,Healer-Testrealm: 20 players,"
+H.check("characters offered", items(P.character), "Healer-Testrealm: Party,Healer-Testrealm: 10 players,Healer-Testrealm: 20 players,"
     .. "Healer-Testrealm: 40 players")
 H.check("onto: the edited size", P.characterTo.button.text:GetText(), "40 players")
 pick(P.character, "Healer-Testrealm: 20 players")
@@ -166,14 +166,14 @@ RC.Set("r40", "cellWidth", 61)
 P.importArea:SetText(all)
 click(P.importButton)
 H.check("all sizes: asks", P.importMessage:GetText(),
-    L.RAID_IMPORT_ALL_ASK:format("10 players, 20 players, 40 players"))
+    L.RAID_IMPORT_ALL_ASK:format("Party, 10 players, 20 players, 40 players"))
 H.check("all sizes: armed", P.importButton.text:GetText(), L.CONFIRM)
 H.check("all sizes: nothing yet", RC.Get("r10", "cellWidth"), 60)
 click(P.importButton)
 H.check("all sizes: 10", RC.Get("r10", "cellWidth"), 111)
 H.check("all sizes: 40", RC.Get("r40", "cellWidth"), 95)
 H.check("all sizes: said", P.importMessage:GetText(),
-    L.RAID_IMPORT_ALL_DONE:format("10 players, 20 players, 40 players"))
+    L.RAID_IMPORT_ALL_DONE:format("Party, 10 players, 20 players, 40 players"))
 click(P.copyUndoButton)
 H.check("all sizes: one undo", RC.Get("r10", "cellWidth"), 60)
 H.check("all sizes: one undo 40", RC.Get("r40", "cellWidth"), 61)
@@ -193,7 +193,7 @@ P.importArea:SetText(all .. ";junk")
 click(P.importButton)
 click(P.importButton)
 H.check("all sizes, entries left out: said", P.importMessage:GetText(),
-    L.RAID_IMPORT_ALL_SKIPPED:format("10 players, 20 players, 40 players", 1))
+    L.RAID_IMPORT_ALL_SKIPPED:format("Party, 10 players, 20 players, 40 players", 1))
 click(P.copyUndoButton)
 
 -- Shown again: the messages cleared.

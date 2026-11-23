@@ -131,7 +131,7 @@ H.check("profiles page before templates", WIKI_PAGES[#WIKI_PAGES - 1] and WIKI_P
 local profiles = read("Raid-Profiles.md")
 H.checkTrue("profiles: title", profiles:find("# Raid frames: Profiles", 1, true))
 for _, t in ipairs({ "## Own profiles", "## Copy between sizes", "## Copy from another character", "## Reset",
-    "## Export", "## Import", "Without layout and sizes", "**Undo**", "All three sizes", "Cell width",
+    "## Export", "## Import", "Without layout and sizes", "**Undo**", "All sizes", "Cell width",
     "Position X" }) do
     H.checkTrue("profiles: " .. t, profiles:find(t, 1, true))
 end

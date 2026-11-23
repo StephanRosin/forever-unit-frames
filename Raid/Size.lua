@@ -1,12 +1,12 @@
 local _, ns = ...
 
--- Which size profile is active: 10, 20 or 40. A fixed sizeMode wins.
--- AUTO: inside a raid instance its size (GetInstanceInfo's maxPlayers,
--- never secret), so a raid that is not full yet already gets its layout;
--- elsewhere the member count, and in a raid the highest occupied group
--- as well (five to a group), so nobody sits in a group the profile does
--- not show. A 5-player group is 10. RAID_SIZE_CHANGED (size) fires when
--- it changes.
+-- Which size profile is active: the party's, 5, while a party shows the
+-- raid view (showInParty). Else 10, 20 or 40: a fixed sizeMode wins. AUTO: inside
+-- a raid instance its size (GetInstanceInfo's maxPlayers, never secret),
+-- so a raid that is not full yet already gets its layout; elsewhere the
+-- member count and the highest occupied group (five to a group), so
+-- nobody sits in a group the profile does not show. RAID_SIZE_CHANGED
+-- (size) fires when it changes.
 local Size = {}
 ns.RaidSize = Size
 
@@ -15,7 +15,7 @@ local function bucket(n)
     return 40
 end
 
--- Pure. mode: the sizeMode setting; instanceType and maxPlayers as
+-- Pure, for anything but the party's view. mode: the sizeMode setting; instanceType and maxPlayers as
 -- GetInstanceInfo returns them; members: GetNumGroupMembers();
 -- highestGroup: the highest occupied raid group, nil when unknown.
 function Size.Detect(mode, instanceType, maxPlayers, members, highestGroup)
@@ -52,8 +52,11 @@ function Size.Update()
     if not ns.RaidConfig.Profile() then return nil end
     local _, instanceType, _, _, maxPlayers = GetInstanceInfo()
     local members = GetNumGroupMembers()
-    local size = Size.Detect(ns.RaidConfig.Get("general", "sizeMode"), instanceType, maxPlayers, members,
-        Size.HighestGroup(members))
+    local size = ns.Raid.PARTY_SIZE
+    if IsInRaid() or not IsInGroup() or ns.RaidConfig.Get("general", "showInParty") ~= true then
+        size = Size.Detect(ns.RaidConfig.Get("general", "sizeMode"), instanceType, maxPlayers, members,
+            Size.HighestGroup(members))
+    end
     if size ~= current then
         current = size
         ns.Fire("RAID_SIZE_CHANGED", size)
@@ -67,7 +70,10 @@ for _, event in ipairs(EVENTS) do
     ns.On(event, function() Size.Update() end)
 end
 
--- sizeMode changed, or everything at once (a reset or an import).
+-- sizeMode or showInParty changed, or everything at once (a reset or an
+-- import).
 ns.Listen("RAID_CONFIG_CHANGED", function(scope, key)
-    if scope == nil or (scope == "general" and (key == nil or key == "sizeMode")) then Size.Update() end
+    if scope == nil or (scope == "general" and (key == nil or key == "sizeMode" or key == "showInParty")) then
+        Size.Update()
+    end
 end)

@@ -11,7 +11,8 @@ local _, ns = ...
 --
 -- template = { id =, values = { key = value }, extra = function(class)
 -- (optional): more key -> value for the player's class }. A value that
--- differs per size is Templates.BySize(v10, v20, v40).
+-- differs per size is Templates.BySize(v10, v20, v40) (the party takes
+-- the 10's, as its defaults do).
 local Templates = {}
 ns.RaidTemplates = Templates
 
@@ -19,7 +20,7 @@ local Raid, RaidSettings, RaidConfig, Secrets = ns.Raid, ns.RaidSettings, ns.Rai
 
 local BY_SIZE = {}
 function Templates.BySize(v10, v20, v40)
-    return { [BY_SIZE] = true, [10] = v10, [20] = v20, [40] = v40 }
+    return { [BY_SIZE] = true, [5] = v10, [10] = v10, [20] = v20, [40] = v40 }
 end
 
 local function isBySize(v) return type(v) == "table" and v[BY_SIZE] == true end
@@ -330,7 +331,7 @@ function Templates.OwnExists(name)
     return name ~= "" and ownIndex(name) ~= nil
 end
 
--- Saves a size's settings (size: 10, 20 or 40), or every size's ("ALL"),
+-- Saves a size's settings (size: 5, 10, 20 or 40), or every size's ("ALL"),
 -- under a name (the same name, any case, replaces that template). nil
 -- and why: EMPTY, TOO_LONG, FULL.
 function Templates.SaveOwn(name, size)

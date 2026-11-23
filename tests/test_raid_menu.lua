@@ -120,6 +120,7 @@ M.SetRaidRoster({})
 M.units.player = { name = "Me", class = "MAGE", isPlayer = true }
 M.units.party1 = { name = "Lea", surname = "Stone", class = "PRIEST", isPlayer = true }
 M.SetGroup({ "party1" })
+RC.Set("r5", "favouritesShow", true)   -- the party's own profile
 RC.Set("general", "showInParty", true)
 M.RunTimers()
 local lea

@@ -2,7 +2,7 @@
 
 # Raid frames: Templates and setup wizard
 
-A template sets many raid settings in one go. The **Templates** section at the top of the raid window's **Profiles** page (the last entry of the top bar) applies a role template or a look to the size you edit or to all three sizes. A template sets only the settings listed below; everything else stays as it is. Applying is one change, and **Undo** takes back the last one (once; any other change to the raid settings, and logging out, ends it). Nothing is applied in combat.
+A template sets many raid settings in one go. The **Templates** section at the top of the raid window's **Profiles** page (the last entry of the top bar) applies a role template or a look to the size you edit or to all sizes. A template sets only the settings listed below; everything else stays as it is. Applying is one change, and **Undo** takes back the last one (once; any other change to the raid settings, and logging out, ends it). Nothing is applied in combat.
 
 **On this page:** [Role templates](#role-templates) · [Looks](#looks) · [Own templates](#own-templates) · [Setup wizard](#setup-wizard)
 
@@ -26,8 +26,8 @@ Wider cells with the missing health, heals, overheal and shields, the debuff row
 <tr><td><b>Heals and shields: Absorb shields</b></td><td>On</td></tr>
 <tr><td><b>Heals and shields: Incoming heals</b></td><td>On</td></tr>
 <tr><td><b>Heals and shields: Overheal lane</b></td><td>On</td></tr>
-<tr><td><b>Size: Cell height</b></td><td>10 players: 48; 20 players: 44; 40 players: 40</td></tr>
-<tr><td><b>Size: Cell width</b></td><td>10 players: 120; 20 players: 104; 40 players: 92</td></tr>
+<tr><td><b>Size: Cell height</b></td><td>Party: 48; 10 players: 48; 20 players: 44; 40 players: 40</td></tr>
+<tr><td><b>Size: Cell width</b></td><td>Party: 120; 10 players: 120; 20 players: 104; 40 players: 92</td></tr>
 <tr><td><b>States: Fade out of range</b></td><td>On</td></tr>
 <tr><td><b>Texts: Second line</b></td><td>Missing health</td></tr>
 </tbody>
@@ -46,8 +46,8 @@ Compact cells, the aggro border, the main tanks panel. No filter for boss debuff
 <tr><td><b>Heals and shields: Incoming heals</b></td><td>Off</td></tr>
 <tr><td><b>Main tanks: Show the panel</b></td><td>On</td></tr>
 <tr><td><b>Main tanks: Title above it</b></td><td>On</td></tr>
-<tr><td><b>Size: Cell height</b></td><td>10 players: 36; 20 players: 32; 40 players: 30</td></tr>
-<tr><td><b>Size: Cell width</b></td><td>10 players: 80; 20 players: 72; 40 players: 64</td></tr>
+<tr><td><b>Size: Cell height</b></td><td>Party: 36; 10 players: 36; 20 players: 32; 40 players: 30</td></tr>
+<tr><td><b>Size: Cell width</b></td><td>Party: 80; 10 players: 80; 20 players: 72; 40 players: 64</td></tr>
 <tr><td><b>States: Red line on aggro</b></td><td>On</td></tr>
 </tbody>
 </table>
@@ -68,8 +68,8 @@ Small cells by group, every group in one line, no second line, no heal predictio
 <tr><td><b>Grouping: Group by</b></td><td>Group</td></tr>
 <tr><td><b>Heals and shields: Incoming heals</b></td><td>Off</td></tr>
 <tr><td><b>Heals and shields: Overheal lane</b></td><td>Off</td></tr>
-<tr><td><b>Size: Cell height</b></td><td>10 players: 32; 20 players: 30; 40 players: 26</td></tr>
-<tr><td><b>Size: Cell width</b></td><td>10 players: 72; 20 players: 64; 40 players: 56</td></tr>
+<tr><td><b>Size: Cell height</b></td><td>Party: 32; 10 players: 32; 20 players: 30; 40 players: 26</td></tr>
+<tr><td><b>Size: Cell width</b></td><td>Party: 72; 10 players: 72; 20 players: 64; 40 players: 56</td></tr>
 <tr><td><b>Texts: Second line</b></td><td>None</td></tr>
 </tbody>
 </table>
@@ -84,7 +84,7 @@ The DPS template, with the dispel icon large and the cell tinted in the debuff's
 <tr><td><b>Blocks and cells: Blocks</b></td><td>Side by side</td></tr>
 <tr><td><b>Blocks and cells: Blocks per line</b></td><td>8</td></tr>
 <tr><td><b>Debuff row: Show the row</b></td><td>Off</td></tr>
-<tr><td><b>Dispellable debuff: Icon size</b></td><td>10 players: 28; 20 players: 24; 40 players: 22</td></tr>
+<tr><td><b>Dispellable debuff: Icon size</b></td><td>Party: 28; 10 players: 28; 20 players: 24; 40 players: 22</td></tr>
 <tr><td><b>Dispellable debuff: Show the debuff</b></td><td>On</td></tr>
 <tr><td><b>Dispellable debuff: Shown as</b></td><td>Icon in the center</td></tr>
 <tr><td><b>Dispellable debuff: Tint the cell</b></td><td>On</td></tr>
@@ -92,8 +92,8 @@ The DPS template, with the dispel icon large and the cell tinted in the debuff's
 <tr><td><b>Grouping: Group by</b></td><td>Group</td></tr>
 <tr><td><b>Heals and shields: Incoming heals</b></td><td>Off</td></tr>
 <tr><td><b>Heals and shields: Overheal lane</b></td><td>Off</td></tr>
-<tr><td><b>Size: Cell height</b></td><td>10 players: 32; 20 players: 30; 40 players: 26</td></tr>
-<tr><td><b>Size: Cell width</b></td><td>10 players: 72; 20 players: 64; 40 players: 56</td></tr>
+<tr><td><b>Size: Cell height</b></td><td>Party: 32; 10 players: 32; 20 players: 30; 40 players: 26</td></tr>
+<tr><td><b>Size: Cell width</b></td><td>Party: 72; 10 players: 72; 20 players: 64; 40 players: 56</td></tr>
 <tr><td><b>Texts: Second line</b></td><td>None</td></tr>
 </tbody>
 </table>
@@ -113,7 +113,7 @@ A look sets only how the cells look; a role template never touches these, so a r
 <tr><td><b>Border and corners: Border color</b></td><td><code>#000000</code></td><td><code>#000000</code></td><td><code>#000000</code></td></tr>
 <tr><td><b>Border and corners: Border size</b></td><td>1</td><td>1</td><td>1</td></tr>
 <tr><td><b>Border and corners: Border style</b></td><td>Gold</td><td>Flat</td><td>Flat</td></tr>
-<tr><td><b>Border and corners: Corner radius</b></td><td>10 players: 4; 20 players: 3; 40 players: 2</td><td>0</td><td>0</td></tr>
+<tr><td><b>Border and corners: Corner radius</b></td><td>Party: 4; 10 players: 4; 20 players: 3; 40 players: 2</td><td>0</td><td>0</td></tr>
 <tr><td><b>Borders: Around each block</b></td><td>Off</td><td>Off</td><td>On</td></tr>
 <tr><td><b>Borders: Around the panel</b></td><td>On</td><td>Off</td><td>Off</td></tr>
 <tr><td><b>Font: Font</b></td><td>Friz Quadrata</td><td>Arial Narrow</td><td>Friz Quadrata</td></tr>
@@ -129,7 +129,7 @@ A look sets only how the cells look; a role template never touches these, so a r
 
 ## Own templates
 
-Your own templates are your own profiles, on the [[Profiles|Raid-Profiles]] tab: all three sizes or one under a name (at most 32 letters; a name in use replaces it after a second click), for every character of your account, applied like the shipped ones (with **Undo**), deleted after a second click. Up to 20 own templates.
+Your own templates are your own profiles, on the [[Profiles|Raid-Profiles]] tab: all sizes or one under a name (at most 32 letters; a name in use replaces it after a second click), for every character of your account, applied like the shipped ones (with **Undo**), deleted after a second click. Up to 20 own templates.
 
 ## Setup wizard
 

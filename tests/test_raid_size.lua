@@ -1,5 +1,6 @@
--- Raid size (Raid/Size.lua): fixed mode, raid instance, member count; the
--- change event and what triggers a new look.
+-- Raid size (Raid/Size.lua): the party's while a party shows the raid
+-- view; else fixed mode, raid instance, member count; the change event and what triggers a
+-- new look.
 local M = H.M
 local ns = H.LoadAddon()
 local Size, RC = ns.RaidSize, ns.RaidConfig
@@ -100,3 +101,21 @@ H.check("roster: a 10 raid instance wins", Size.Current(), 10)
 M.instance = { type = "none", maxPlayers = 0 }
 M.SetRaidRoster({})
 H.check("left the raid", Size.Current(), 10)
+
+-- A party in the raid view is the party's whatever sizeMode says (it
+-- fixes raids only), also in a raid instance.
+M.inRaid = false
+M.SetGroup({ "party1" })
+RC.Set("general", "sizeMode", "40")
+H.check("party without the raid view: as before", Size.Current(), 40)
+RC.Set("general", "showInParty", true)
+H.check("party, fixed 40", Size.Current(), 5)
+M.instance = { type = "raid", maxPlayers = 40 }
+M.FireEvent("PLAYER_ENTERING_WORLD", false, false)
+H.check("party in a raid instance", Size.Current(), 5)
+M.inRaid = true
+M.FireEvent("GROUP_ROSTER_UPDATE")
+H.check("converted to a raid: fixed 40", Size.Current(), 40)
+M.inRaid = false
+M.SetGroup({})
+H.check("alone: not the party's", Size.Current(), 40)

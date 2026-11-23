@@ -45,7 +45,7 @@ end
 
 -- The top bar's entries, left to right.
 RO.Open()
-local order = { RO.generalTab, RO.sizeTabs[10], RO.sizeTabs[20], RO.sizeTabs[40], RO.profilesTab }
+local order = { RO.generalTab, RO.sizeTabs[5], RO.sizeTabs[10], RO.sizeTabs[20], RO.sizeTabs[40], RO.profilesTab }
 H.check("General first", select(2, RO.generalTab:GetPoint(1)), RO.frame.sizeBar)
 for i = 2, #order do H.check("entry " .. i .. " beside the one before", select(2, order[i]:GetPoint(1)), order[i - 1]) end
 H.check("General's word", RO.generalTab.text:GetText(), "General")

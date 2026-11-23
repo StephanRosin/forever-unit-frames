@@ -1,13 +1,16 @@
 local _, ns = ...
 
 -- Every raid-frame setting, in a registry of its own (Core/Registry.lua).
--- "general" holds what applies to the character as a whole; r10, r20 and
--- r40 are one profile per raid size. Codes are permanent, as in
+-- "general" holds what applies to the character as a whole; r5 (the raid
+-- view in a party), r10, r20 and r40 are one profile per size. Codes are permanent, as in
 -- Core/Settings.lua, but only unique within this registry.
 local Raid = {}
 ns.Raid = Raid
 
-Raid.SIZES = { 10, 20, 40 }
+Raid.SIZES = { 5, 10, 20, 40 }
+-- The party's size: outside a raid (Raid/Size.lua). Its defaults are the
+-- 10's (one group of the 10 profile), so a size default names both.
+Raid.PARTY_SIZE = 5
 -- A raid group holds five; the largest size has GROUP_COUNT groups.
 -- Defined here once, Raid/Layout.lua uses them.
 Raid.GROUP_SIZE = 5
@@ -15,10 +18,10 @@ Raid.GROUP_COUNT = Raid.SIZES[#Raid.SIZES] / Raid.GROUP_SIZE
 -- The assigned roles in Blizzard's order: the role blocks and their
 -- tokens.
 Raid.ROLES = { "TANK", "HEALER", "DAMAGER" }
-local IS_SIZE = { [10] = true, [20] = true, [40] = true }
+local IS_SIZE = { [5] = true, [10] = true, [20] = true, [40] = true }
 
--- The scope that holds the profile of a raid size; anything but 10, 20
--- or 40 is a mistake in the caller.
+-- The scope that holds the profile of a size; anything but 5, 10, 20 or
+-- 40 is a mistake in the caller.
 function Raid.Scope(size)
     assert(IS_SIZE[size], "unknown raid size " .. tostring(size))
     return "r" .. size
@@ -85,18 +88,19 @@ function Raid.ParseClassOrder(text)
 end
 
 local RaidSettings = ns.NewRegistry(
-    { "general", "r10", "r20", "r40" },
-    { general = "g", r10 = "a", r20 = "b", r40 = "c" })
+    { "general", "r5", "r10", "r20", "r40" },
+    -- "d": no unit-frame scope has it, so a party export is a raid text.
+    { general = "g", r5 = "d", r10 = "a", r20 = "b", r40 = "c" })
 ns.RaidSettings = RaidSettings
 
 -- Character-wide ----------------------------------------------------------------
 RaidSettings.Define({ key = "enabled", code = "E", scope = "general", type = "bool", default = true })
--- Which size profile shows (Raid/Size.lua): AUTO follows the raid
--- instance, elsewhere the member count; a number fixes it. Stored by
--- index: append only.
+-- Which size profile a raid shows (Raid/Size.lua): AUTO follows the raid
+-- instance, elsewhere the member count; a number fixes it. A party always
+-- shows the party profile. Stored by index: append only.
 RaidSettings.Define({ key = "sizeMode", code = "SM", scope = "general", type = "enum",
     values = { "AUTO", "10", "20", "40" }, default = "AUTO" })
--- A 5-player group in the raid view (10-player profile), party frames hidden.
+-- A 5-player group in the raid view (the party profile), party frames hidden.
 RaidSettings.Define({ key = "showInParty", code = "SP", scope = "general", type = "bool", default = false })
 -- Blizzard's raid frames hidden while ours are on.
 RaidSettings.Define({ key = "hideBlizzard", code = "HB", scope = "general", type = "bool", default = true })
@@ -159,9 +163,9 @@ RaidSettings.Define({ key = "cellGrowth", code = "CG", scope = "frame", class = 
 RaidSettings.Define({ key = "cellsPerLine", code = "CL", scope = "frame", class = "layout", type = "int", min = 1, max = 40,
     default = 5 })
 RaidSettings.Define({ key = "cellWidth", code = "CW", scope = "frame", class = "layout", type = "int", min = 30, max = 200,
-    default = { r10 = 96, r20 = 88, _ = 80 } })
+    default = { r5 = 96, r10 = 96, r20 = 88, _ = 80 } })
 RaidSettings.Define({ key = "cellHeight", code = "CH", scope = "frame", class = "layout", type = "int", min = 16, max = 100,
-    default = { r10 = 44, r20 = 40, _ = 38 } })
+    default = { r5 = 44, r10 = 44, r20 = 40, _ = 38 } })
 -- Room between two cells, and between two blocks (border to border).
 RaidSettings.Define({ key = "cellSpacing", code = "CS", scope = "frame", class = "layout", type = "int", min = 0, max = 20, default = 2 })
 RaidSettings.Define({ key = "blockSpacing", code = "BS", scope = "frame", class = "layout", type = "int", min = 0, max = 40,
@@ -184,7 +188,7 @@ RaidSettings.Define({ key = "cellBorderStyle", code = "CY", scope = "frame", cla
 RaidSettings.Define({ key = "cellBorderSize", code = "CZ", scope = "frame", class = "layout", type = "int", min = 1, max = 8, default = 1 })
 RaidSettings.Define({ key = "cellBorderColor", code = "CK", scope = "frame", class = "behaviour", type = "color", default = { 0, 0, 0, 1 } })
 RaidSettings.Define({ key = "cellCornerRadius", code = "CR", scope = "frame", class = "layout", type = "int", min = 0, max = 12,
-    default = { r10 = 4, r20 = 3, _ = 2 } })
+    default = { r5 = 4, r10 = 4, r20 = 3, _ = 2 } })
 
 -- The cell (Raid/Cell.lua). Health in the class colour, a fixed colour
 -- (healthColor), or a gradient by health; INVERTED_* paint the missing
@@ -250,7 +254,7 @@ RaidSettings.Define({ key = "dispelIcon", code = "DI", scope = "frame", class = 
 RaidSettings.Define({ key = "dispelFilter", code = "DF", scope = "frame", class = "behaviour", type = "enum",
     values = { "MINE", "ALL" }, default = "MINE" })
 RaidSettings.Define({ key = "dispelIconSize", code = "DZ", scope = "frame", class = "layout", type = "int", min = 8, max = 40,
-    default = { r10 = 20, r20 = 18, _ = 16 } })
+    default = { r5 = 20, r10 = 20, r20 = 18, _ = 16 } })
 -- How it shows: the centre icon, or a small square in the type's colour
 -- in one of the cell's corners (from a single pixel). Stored by index:
 -- append only.
@@ -274,7 +278,7 @@ RaidSettings.Define({ key = "dispelPulse", code = "DU", scope = "frame", class =
 RaidSettings.Define({ key = "debuffRow", code = "DR", scope = "frame", class = "behaviour", type = "bool", default = false })
 RaidSettings.Define({ key = "debuffCount", code = "DC", scope = "frame", class = "behaviour", type = "int", min = 1, max = 6, default = 3 })
 RaidSettings.Define({ key = "debuffSize", code = "DS", scope = "frame", class = "layout", type = "int", min = 8, max = 32,
-    default = { r10 = 14, r20 = 13, _ = 12 } })
+    default = { r5 = 14, r10 = 14, r20 = 13, _ = 12 } })
 
 -- Hidden auras of this size (Core/AuraBlocklist.lua): with the unit
 -- frames' account list, the buff indicators and the debuff row leave
@@ -346,7 +350,7 @@ for _, icon in ipairs({
 end
 RaidSettings.Define({ key = "roleIconDamager", code = "RD", scope = "frame", class = "behaviour", type = "bool", default = false })
 RaidSettings.Define({ key = "iconSize", code = "IZ", scope = "frame", class = "layout", type = "int", min = 8, max = 32,
-    default = { r10 = 14, r20 = 13, _ = 12 } })
+    default = { r5 = 14, r10 = 14, r20 = 13, _ = 12 } })
 
 -- States (Raid/CellStates.lua, Elements/Range.lua): out of range faded
 -- to rangeAlpha percent; a red inner border while the unit has aggro, a

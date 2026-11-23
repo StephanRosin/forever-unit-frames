@@ -2,7 +2,7 @@
 
 # Settings: Group layout
 
-The party only: how the members are arranged (also sorted by role), their pets and their targets. Its Buffs section at the end holds the raid window's smart buff key, Also when solo and the buff window's switch: the same values, in effect while the raid frames are on.
+The party only: how the members are arranged (also sorted by role), their pets and their targets. Its Buffs section at the end holds the raid window's smart buff key, Also when solo and the buff window's switch, and its Raid view section the raid window's Raid view in a party (the party as raid cells, with the raid window's Party profile): the same values, in effect while the raid frames are on.
 
 The **Group layout** tab on each frame's page in `/fuf`. The last column says which frames have the option; a default that differs per frame is listed per frame.
 

@@ -12,7 +12,7 @@
 
 ## Own profiles
 
-**Save as** keeps your raid settings under a name, for every character of your account: **All three sizes** (the default) or one size, every setting as it shows (positions included; not the character's own settings such as click-casting or the buff watch). A name has at most 32 letters; a name in use asks for a second click and then replaces that profile. Up to 20 own profiles. **Apply** puts a profile of all sizes into each size it holds; a profile of one size goes to the size you pick under **Apply to**, or to all three. **Delete** takes two clicks. Profiles saved by earlier versions (one size) still load; a profile of all sizes needs this version or newer: going back to an older version loses the profiles of all sizes (they load there empty).
+**Save as** keeps your raid settings under a name, for every character of your account: **All sizes** (the default) or one size, every setting as it shows (positions included; not the character's own settings such as click-casting or the buff watch). A name has at most 32 letters; a name in use asks for a second click and then replaces that profile. Up to 20 own profiles. **Apply** puts a profile of all sizes into each size it holds; a profile of one size goes to the size you pick under **Apply to**, or to all of them. **Delete** takes two clicks. Profiles saved by earlier versions (one size) still load; a profile of all sizes needs this version or newer: going back to an older version loses the profiles of all sizes (they load there empty).
 
 ## Copy between sizes
 
@@ -61,7 +61,7 @@ Puts one size back to its defaults, after a second click.
 
 ## Export
 
-**All three sizes** (the default) gives one text with the 10, 20 and 40 player settings; or pick one size. The character's own settings are not in it. Copy the text to share it or keep a backup. A text of all sizes has a format of its own: an older version refuses it ("made by a newer version") rather than setting only some sizes.
+**All sizes** (the default) gives one text with the Party, 10, 20 and 40 player settings; or pick one size. The character's own settings are not in it. Copy the text to share it or keep a backup. A text of all sizes has a format of its own: an older version refuses it ("made by a newer version") rather than setting only some sizes. A text of all sizes from 0.78 or older has no Party: importing it leaves the Party profile as it is.
 
 ## Import
 

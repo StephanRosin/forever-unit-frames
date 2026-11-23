@@ -13,7 +13,7 @@ The **Icons & states** tab of the raid options window (`/fuf raid`), under a rai
 <table>
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
-<tr><td><b>Icon size</b></td><td></td><td>8 – 32</td><td>10 players: 14; 20 players: 13; 40 players: 12</td></tr>
+<tr><td><b>Icon size</b></td><td></td><td>8 – 32</td><td>Party, 10 players: 14; 20 players: 13; 40 players: 12</td></tr>
 </tbody>
 </table>
 

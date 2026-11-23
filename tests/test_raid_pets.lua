@@ -97,6 +97,7 @@ M.units.pet = { name = "Cat", health = 100, healthMax = 100 }
 M.units.party1 = { name = "Ann", class = "WARLOCK", isPlayer = true }
 M.units.partypet1 = { name = "Imp", health = 100, healthMax = 100 }
 M.SetGroup({ "party1" })
+RC.Set("r5", "petsShow", true)   -- the party's own profile
 RC.Set("general", "showInParty", true)
 M.RunTimers()
 H.check("party: your pet first", h:GetAttribute("child1").unit, "pet")
