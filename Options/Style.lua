@@ -42,7 +42,11 @@ end
 
 function Style.Text(parent, size, colorKey, layer)
     local fs = parent:CreateFontString(nil, layer or "OVERLAY")
-    fs:SetFont(ns.Media.Font("Friz Quadrata"), size, "")
+    -- In a family (Media.Family), or names in Cyrillic, Hangul or Hanzi
+    -- become squares (smart buff window, CurseForge 23.11.2026).
+    local font = ns.Media.Font("Friz Quadrata")
+    local family = ns.Media.Family(font, size, "", true)
+    if not (family and pcall(fs.SetFontObject, fs, family)) then fs:SetFont(font, size, "") end
     local c = Style.COLORS[colorKey or "text"]
     fs:SetTextColor(c[1], c[2], c[3], c[4])
     fs:SetShadowOffset(1, -1)

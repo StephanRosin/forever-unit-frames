@@ -83,6 +83,12 @@ M.RunTimers()
 shadowed:SetFontObject(shadowed._fontObject)
 H.check("unticked: no shadow", select(1, shadowed:GetShadowOffset()), 0)
 
+-- Window texts (smart buff names, options): a family too, no file.
+local label = ns.Style.Text(UIParent, 11)
+H.checkTrue("window text: in a family", label._fontObject and label._fontObject.members ~= nil)
+H.check("window text: Cyrillic member", byAlphabet(label._fontObject).russian ~= nil, true)
+H.check("window text: shadow", select(1, label:GetShadowOffset()), 1)
+
 -- A client without families: the file alone.
 _G.CreateFontFamily = nil
 H.check("no families: nil", Media.Family("Fonts\\ARIALN.TTF", 30, ""), nil)
