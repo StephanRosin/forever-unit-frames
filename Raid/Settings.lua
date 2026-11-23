@@ -797,13 +797,14 @@ for _, class in ipairs(BuffData.CLASSES) do
     Raid.BLESSING_KEYS[#Raid.BLESSING_KEYS + 1] = key
 end
 -- A buff runs out with less than this many minutes left (at most a third
--- of how long it lasts); the group form is cast when this many members of
--- one group (raid group, or class for a blessing) miss it or have it
--- running out and its reagent is in your bags.
+-- of how long it lasts); the group form is cast when this many members
+-- (of one class for a blessing; a group form reaches the whole raid in
+-- WoW Forever) miss it or have it running out and its reagent is in your
+-- bags.
 RaidSettings.Define({ key = "buffExpiring", code = "BE", scope = "general", type = "int", min = 1, max = 30,
     default = 3 })
 RaidSettings.Define({ key = "buffGroupMin", code = "BN", scope = "general", type = "int", min = 1,
-    max = Raid.GROUP_SIZE, default = 3 })
+    max = Raid.SIZES[#Raid.SIZES], default = 3 })
 -- The smart buff key: casts the next buff out of combat (a key as
 -- Raid.ParseKey stores it; "" none).
 RaidSettings.Define({ key = "buffKey", code = "BK", scope = "general", type = "text", keyInput = true,

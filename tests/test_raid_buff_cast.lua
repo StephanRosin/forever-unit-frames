@@ -1,5 +1,5 @@
 -- The best next cast (Raid/BuffWatch.lua): the group form when enough
--- members of one group need the buff and its reagent is in the bags, else
+-- members need the buff (it reaches the whole raid in WoW Forever) and its reagent is in the bags, else
 -- the single form on the member with the least time left (missing first),
 -- in range; a range that is unknown counts as in range.
 local M = H.M
@@ -39,16 +39,17 @@ H.check("the next cast overall", Watch.Next().unit, "raid2")
 M.known[21564] = true
 Watch.Scan()
 H.check("no reagent: single", Watch.Best(Watch.state.entries[1]).spell, 1244)
--- Sacred Candles in the bags: the group with three missing gets it.
+-- Sacred Candles in the bags: five need it across groups 1 and 2, the
+-- group form is for everyone (neither group alone has more than three).
 M.bagItems[17029] = 5
 Watch.Scan()
 cast = Watch.Best(Watch.state.entries[1])
 H.check("group form", cast.spell, 21564)
 H.check("group form flagged", cast.groupForm, true)
-H.check("on group 2", cast.group, 2)
-H.check("on a member of it", cast.unit, "raid4")
--- The threshold is a setting: four needed, group 2 has three.
-RC.Set("general", "buffGroupMin", 4)
+H.check("for everyone", cast.group, Watch.EVERYONE)
+H.check("described", ns.SmartBuff.Describe(cast), "Prayer of Fortitude: Everyone")
+-- The threshold is a setting, beyond one group's five: six needed, five need it.
+RC.Set("general", "buffGroupMin", 6)
 Watch.Scan()
 H.check("below the threshold: single", Watch.Best(Watch.state.entries[1]).spell, 1244)
 RC.Set("general", "buffGroupMin", 3)

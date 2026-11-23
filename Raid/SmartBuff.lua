@@ -96,15 +96,13 @@ local function nameOf(unit)
 end
 
 local function groupText(group)
-    if type(group) == "number" then
-        return type(GROUP_NUMBER) == "string" and GROUP_NUMBER:format(group) or tostring(group)
-    end
+    if group == ns.RaidBuffWatch.EVERYONE then return ns.L.RAID_BUFF_EVERYONE end
     local names = rawget(_G, "LOCALIZED_CLASS_NAMES_MALE")
     return type(names) == "table" and type(names[group]) == "string" and names[group] or tostring(group)
 end
 
 -- What a cast does, in words ("Power Word: Fortitude: Ann", "Prayer of
--- Fortitude: Group 2"), or nil for none.
+-- Fortitude: Everyone"), or nil for none.
 function SmartBuff.Describe(cast)
     if not cast then return nil end
     local who = cast.groupForm and groupText(cast.group) or nameOf(cast.unit)

@@ -328,13 +328,17 @@ local function groupReady(entry)
     return type(count) == "number" and count > 0
 end
 
+-- In WoW Forever a group form reaches the whole raid, not only the
+-- target's raid group; a greater blessing every member of the class.
+BuffWatch.EVERYONE = "ALL"
 local function groupKey(entry, member)
     if entry.by == "CLASS" then return member.class end
-    return member.group
+    return BuffWatch.EVERYONE
 end
 
--- The group (raid group, or class) with the most members needing the
--- buff, at least buffGroupMin of them; nil when none has that many.
+-- Who the group form is for (everyone, or for a blessing the class with
+-- the most members needing it), when at least buffGroupMin need it; nil
+-- when not that many.
 local function crowdedGroup(entry, needs)
     local counts, best = {}, nil
     for _, need in ipairs(needs) do
@@ -350,8 +354,8 @@ end
 
 -- The best cast of one watched buff's state, or nil (also for a test
 -- mode preview, which has no needs): { entry, spell (a rank's ID), name,
--- unit, groupForm, group (the raid group or class the group form is
--- for) }.
+-- unit, groupForm, group (BuffWatch.EVERYONE, or the class a greater
+-- blessing is for) }.
 function BuffWatch.Best(st)
     if not BuffWatch.armed or not st or st.unknown or not st.needs or #st.needs == 0 then return nil end
     local entry = st.entry
