@@ -385,6 +385,9 @@ Settings.Define({ key = "partyGrowReverse", code = "GR", scope = "frame", only =
 -- Grow from the middle: the header hangs from the block's centre line and
 -- stays centred on it, whatever the number of members; off by default.
 Settings.Define({ key = "partyGrowCenter", code = "GM", scope = "frame", only = PARTY, type = "bool", default = false })
+-- Members in one line (a column, or a row when horizontal); the next ones
+-- start a new line beside it (below it). 5: everyone in one line.
+Settings.Define({ key = "partyPerLine", code = "PR", scope = "frame", only = PARTY, type = "int", min = 1, max = 5, default = 5 })
 -- Tanks, healers, damage, no role: the party header's own grouping. The
 -- pet list keeps the group's order (its header cannot group by this role).
 Settings.Define({ key = "partySortRole", code = "SR", scope = "frame", only = PARTY, type = "bool", default = false })

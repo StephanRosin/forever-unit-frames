@@ -44,15 +44,28 @@ function Party.Spacing()
     return spacing + ns.Castbar.DockedDepth(Party.KEY)
 end
 
+-- Members in one line, and the number of lines a full block needs.
+function Party.PerLine() return math.min(get("partyPerLine"), Party.Slots()) end
+function Party.Lines() return math.ceil(Party.Slots() / Party.PerLine()) end
+
+-- Distance between two lines. Rows: a castbar docked below (or above)
+-- each member sits in between, as in a column.
+function Party.LineGap()
+    local spacing = Pixel.Snap(get("partySpacing"))
+    if not Party.Horizontal() then return spacing end
+    return spacing + ns.Castbar.DockedDepth(Party.KEY)
+end
+
 -- Width and height of the whole block with every slot filled.
 -- Everything below is on the pixel grid: button size, spacing, block.
 function Party.BlockSize()
     local w, h = Single.Size(Party.KEY)
-    local s, n = Party.Spacing(), Party.Slots()
+    local s, n = Party.Spacing(), Party.PerLine()
+    local lines, gap = Party.Lines(), Party.LineGap()
     if Party.Horizontal() then
-        return n * w + (n - 1) * s, h
+        return n * w + (n - 1) * s, lines * h + (lines - 1) * gap
     end
-    return w, n * h + (n - 1) * s
+    return lines * w + (lines - 1) * gap, n * h + (n - 1) * s
 end
 
 -- Pets (Units/PartyPets.lua) form their own list under the members.
@@ -88,18 +101,21 @@ function Party.Corner()
     return Party.Horizontal() and "TOPRIGHT" or "BOTTOMLEFT"
 end
 
--- Offset of slot i (1-based) from the block's top-left corner.
+-- Offset of slot i (1-based) from the block's top-left corner. A new
+-- line starts to the right of a column, below a row; growing the other
+-- way turns each line, not the order of the lines.
 function Party.SlotOffset(i)
-    local step = i - 1
+    local line, step = math.floor((i - 1) / Party.PerLine()), (i - 1) % Party.PerLine()
     local w, h = Single.Size(Party.KEY)
     local reverse = get("partyGrowReverse")
     local blockW, blockH = Party.BlockSize()
+    local gap = Party.LineGap()
     if Party.Horizontal() then
         local x = step * (w + Party.Spacing())
-        return reverse and blockW - w - x or x, 0
+        return reverse and blockW - w - x or x, -line * (h + gap)
     end
     local y = step * (h + Party.Spacing())
-    return 0, -(reverse and blockH - h - y or y)
+    return line * (w + gap), -(reverse and blockH - h - y or y)
 end
 
 -- No handle while the party frame is switched off. The header hangs from
@@ -148,6 +164,8 @@ local function headerAttributes()
         point = point,
         xOffset = horizontal and (reverse and -spacing or spacing) or 0,
         yOffset = horizontal and 0 or (reverse and spacing or -spacing),
+        unitsPerColumn = Party.PerLine(), maxColumns = Party.Lines(),
+        columnSpacing = Party.LineGap(), columnAnchorPoint = horizontal and "TOP" or "LEFT",
     }
 end
 

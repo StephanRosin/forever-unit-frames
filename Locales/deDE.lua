@@ -89,6 +89,8 @@ L.HINT_castbarLatencyPoint = "Leistenende: rechts bei Zaubern, links bei Kanalis
 L.SETTING_castbarLatencyX = "Versatz X"
 L.ENUM_castbarLatencyPoint_END = "Leistenende"; L.ENUM_castbarLatencyPoint_LEFT = "Links"; L.ENUM_castbarLatencyPoint_RIGHT = "Rechts"
 L.SETTING_partyOrientation = "Ausrichtung"
+L.SETTING_partyPerLine = "Mitglieder pro Reihe"
+L.HINT_partyPerLine = "Danach eine neue Spalte (Reihe)"
 L.SETTING_partyGrowReverse = "Nach oben wachsen"
 L.HINT_partyGrowReverse = "Von unten nach oben; horizontal von rechts nach links"
 L.SETTING_partyGrowCenter = "Von der Mitte aus wachsen"

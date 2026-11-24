@@ -89,6 +89,8 @@ L.HINT_castbarLatencyPoint = "Fin de la barre : à droite pour les incantations,
 L.SETTING_castbarLatencyX = "Décalage X"
 L.ENUM_castbarLatencyPoint_END = "Fin de la barre"; L.ENUM_castbarLatencyPoint_LEFT = "Gauche"; L.ENUM_castbarLatencyPoint_RIGHT = "Droite"
 L.SETTING_partyOrientation = "Orientation"
+L.SETTING_partyPerLine = "Membres par ligne"
+L.HINT_partyPerLine = "Puis une nouvelle colonne (ou ligne)"
 L.SETTING_partyGrowReverse = "Croître vers le haut"
 L.HINT_partyGrowReverse = "De bas en haut ; de droite à gauche en horizontal"
 L.SETTING_partyGrowCenter = "Croître depuis le centre"

@@ -34,7 +34,7 @@ end
 H.check("party: buffs, debuffs and dispellable per slot", containers, 3 * slots)
 H.check("party: header attributes as before", table.concat({ tostring(header:GetAttribute("startingIndex")),
     tostring(header:GetAttribute("unitsPerColumn")), tostring(header:GetAttribute("maxColumns")) }, " "),
-    "nil nil nil")
+    "nil 4 1")
 H.check("party: solo, header hidden", header:IsShown() and header:IsVisible() and header:GetAttribute("child1"):IsShown(),
     false)
 

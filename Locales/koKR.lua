@@ -91,6 +91,8 @@ L.HINT_castbarLatencyPoint = "바 끝: 일반 시전은 오른쪽, 채널링은 
 L.SETTING_castbarLatencyX = "오프셋 X"
 L.ENUM_castbarLatencyPoint_END = "바 끝부분"; L.ENUM_castbarLatencyPoint_LEFT = "왼쪽"; L.ENUM_castbarLatencyPoint_RIGHT = "오른쪽"
 L.SETTING_partyOrientation = "정렬 방향"
+L.SETTING_partyPerLine = "한 줄당 인원"
+L.HINT_partyPerLine = "그다음 새 열 (또는 줄)"
 L.SETTING_partyGrowReverse = "위로 쌓기"
 L.HINT_partyGrowReverse = "아래에서 위로, 가로일 때는 오른쪽에서 왼쪽으로"
 L.SETTING_partyGrowCenter = "가운데에서 늘어나기"

@@ -129,7 +129,7 @@ Schema.FRAME = {
     -- The party's arrangement and what hangs beside its members.
     -- The note: the raid window's click-casting may act on the party too.
     { id = "group", note = "partyClickCast", sections = {
-        { id = "group", keys = { "partyOrientation", "partyGrowReverse", "partyGrowCenter", "partySortRole", "partySpacing", "partyShowPlayer", "partyShowSolo", "partyHideInRaid" } },
+        { id = "group", keys = { "partyOrientation", "partyPerLine", "partyGrowReverse", "partyGrowCenter", "partySortRole", "partySpacing", "partyShowPlayer", "partyShowSolo", "partyHideInRaid" } },
         { id = "pets", keys = { "partyShowPets", "partyPetLayout", "partyPetSide", "partyPetWidth", "partyPetHeight",
             "partyPetGap", "partyPetsX", "partyPetsY", "partyPetTextLeft", "partyPetTextCenter", "partyPetTextRight" } },
         { id = "petAuras", keys = { "partyPetAuras", "partyPetAuraSize", "partyPetAuraMax", "partyPetAuraSide",

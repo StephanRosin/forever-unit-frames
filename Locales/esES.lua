@@ -90,6 +90,8 @@ L.HINT_castbarLatencyPoint = "Final de la barra: derecha al lanzar, izquierda al
 L.SETTING_castbarLatencyX = "Desplazamiento X"
 L.ENUM_castbarLatencyPoint_END = "Final de la barra"; L.ENUM_castbarLatencyPoint_LEFT = "Izquierda"; L.ENUM_castbarLatencyPoint_RIGHT = "Derecha"
 L.SETTING_partyOrientation = "Orientación"
+L.SETTING_partyPerLine = "Miembros por línea"
+L.HINT_partyPerLine = "Luego una nueva columna (o fila)"
 L.SETTING_partyGrowReverse = "Crecer hacia arriba"
 L.HINT_partyGrowReverse = "De abajo arriba; de derecha a izquierda en horizontal"
 L.SETTING_partyGrowCenter = "Crecer desde el centro"
