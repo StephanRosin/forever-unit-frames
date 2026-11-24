@@ -15,7 +15,8 @@ H.check("text colour by default", C.Get("target", "levelColorMode"), "TEXT")
 
 -- The rule against a level-30 player (grey from 22 down).
 H.check("grey level at 30", T.GreyLevel(30), 22)
-H.check("grey level at 60", T.GreyLevel(60), 51)
+H.check("grey level at 60", T.GreyLevel(60), 47)
+H.check("grey level at 40", T.GreyLevel(40), 31)
 H.check("grey level at 5", T.GreyLevel(5), 0)
 local function col(level) return table.concat({ T.DifficultyColor(level) }, ",") end
 local D = T.DIFFICULTY

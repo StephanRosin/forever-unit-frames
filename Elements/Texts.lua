@@ -50,12 +50,12 @@ Texts.DIFFICULTY = {
     standard = { 0.25, 0.75, 0.25 }, trivial = { 0.5, 0.5, 0.5 },
 }
 
--- The highest level that is grey for a player of level p (Classic rule).
+-- The highest level that is grey for a player of level p (Classic rule;
+-- the "level - 9" from 60 on is TBC's and would make 48-51 green at 60).
 function Texts.GreyLevel(p)
     if p <= 5 then return 0 end
     if p <= 39 then return p - math.floor(p / 10) - 5 end
-    if p <= 59 then return p - math.floor(p / 5) - 1 end
-    return p - 9
+    return p - math.floor(p / 5) - 1
 end
 
 -- r, g, b of a level (-1 or less: a boss, "??").
