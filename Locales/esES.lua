@@ -1764,6 +1764,7 @@ L.NEWS_0_79_1_SMART_BUFF_RAID = "Smart Buffs: en WoW Forever un beneficio de gru
 L.NEWS_0_80_0_PARTY_LINES = "Grupo: \"Miembros por línea\" (Grupo > Disposición del grupo) reparte el grupo en varias columnas, o filas en horizontal, p. ej. 2 por columna."
 L.NEWS_0_81_0_CELL_COLORS = "Marcos de banda: cada perfil (Grupo, 10, 20, 40) tiene sus propios colores para sanaciones, escudos, salud perdida y la barra de recurso (/fuf raid > Celda). Empiezan como antes."
 L.NEWS_0_81_0_PARTY_GRID = "Grupo en varias líneas: la lista de mascotas se reparte como las filas, y las columnas dejan sitio a los objetivos y mascotas junto a su miembro."
+L.NEWS_0_81_1_GREY_LEVEL = "Color del nivel: a nivel 60, los enemigos son grises hasta el 47 (regla Classic), ya no hasta el 51."
 L.NEWS_OPEN_THEME = "Abrir el tema"
 
 -- Themes (Core/Themes.lua)

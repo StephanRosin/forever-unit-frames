@@ -1763,6 +1763,7 @@ L.NEWS_0_79_1_SMART_BUFF_RAID = "Smart Buffs: In WoW Forever erreicht ein Gruppe
 L.NEWS_0_80_0_PARTY_LINES = "Gruppe: „Mitglieder pro Reihe“ (Gruppe > Gruppenanordnung) verteilt die Gruppe auf mehrere Spalten, horizontal auf mehrere Zeilen, etwa 2 pro Spalte."
 L.NEWS_0_81_0_CELL_COLORS = "Raid-Frames: Jedes Profil (Gruppe, 10, 20, 40) hat eigene Farben für Heilungen, Schilde, fehlende Gesundheit und die Ressourcenleiste (/fuf raid > Zelle). Sie beginnen wie bisher."
 L.NEWS_0_81_0_PARTY_GRID = "Gruppe in mehreren Reihen: Die Begleiterliste bricht wie die Reihen um, und zwischen Spalten bleibt Platz für Gruppenziele und Begleiter neben ihrem Mitglied."
+L.NEWS_0_81_1_GREY_LEVEL = "Levelfarbe: Auf Level 60 sind Gegner bis 47 grau (Classic-Regel), nicht mehr bis 51."
 L.NEWS_OPEN_THEME = "Theme öffnen"
 
 -- Themes (Core/Themes.lua)
