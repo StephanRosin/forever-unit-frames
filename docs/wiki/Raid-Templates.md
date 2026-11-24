@@ -107,8 +107,10 @@ A look sets only how the cells look; a role template never touches these, so a r
 <tbody>
 <tr><td><b>Bars: Background color</b></td><td><code>#000000</code>, 60 % opaque</td><td><code>#1a1a1a</code>, 80 % opaque</td><td><code>#000000</code>, 80 % opaque</td></tr>
 <tr><td><b>Bars: Bar texture</b></td><td>Raid</td><td>Flat</td><td>Raid</td></tr>
+<tr><td><b>Bars: Color of missing health</b></td><td><code>#731414</code>, 80 % opaque</td><td><code>#731414</code>, 80 % opaque</td><td><code>#731414</code>, 80 % opaque</td></tr>
 <tr><td><b>Bars: Fixed health color</b></td><td><code>#33bf4d</code></td><td><code>#33bf4d</code></td><td><code>#33bf4d</code></td></tr>
 <tr><td><b>Bars: Health color</b></td><td>Class</td><td>Class</td><td>Class</td></tr>
+<tr><td><b>Bars: Missing health color</b></td><td>Off</td><td>Off</td><td>Off</td></tr>
 <tr><td><b>Border and corners: Border around the cell</b></td><td>Off</td><td>On</td><td>Off</td></tr>
 <tr><td><b>Border and corners: Border color</b></td><td><code>#000000</code></td><td><code>#000000</code></td><td><code>#000000</code></td></tr>
 <tr><td><b>Border and corners: Border size</b></td><td>1</td><td>1</td><td>1</td></tr>
@@ -121,6 +123,14 @@ A look sets only how the cells look; a role template never touches these, so a r
 <tr><td><b>Font: Font style</b></td><td>Outline</td><td>Outline</td><td>None</td></tr>
 <tr><td><b>Font: Name size</b></td><td>11</td><td>11</td><td>10</td></tr>
 <tr><td><b>Font: Second line size</b></td><td>10</td><td>10</td><td>9</td></tr>
+<tr><td><b>Heals and shields: Absorb shield color</b></td><td><code>#ffffff</code>, 65 % opaque</td><td><code>#ffffff</code>, 65 % opaque</td><td><code>#ffffff</code>, 65 % opaque</td></tr>
+<tr><td><b>Heals and shields: Other heals color</b></td><td><code>#26a64d</code>, 55 % opaque</td><td><code>#26a64d</code>, 55 % opaque</td><td><code>#26a64d</code>, 55 % opaque</td></tr>
+<tr><td><b>Heals and shields: Your heals color</b></td><td><code>#4df273</code>, 65 % opaque</td><td><code>#4df273</code>, 65 % opaque</td><td><code>#4df273</code>, 65 % opaque</td></tr>
+<tr><td><b>Power strip colors: Energy</b></td><td><code>#ffd933</code></td><td><code>#ffd933</code></td><td><code>#ffd933</code></td></tr>
+<tr><td><b>Power strip colors: Focus</b></td><td><code>#ff8040</code></td><td><code>#ff8040</code></td><td><code>#ff8040</code></td></tr>
+<tr><td><b>Power strip colors: Mana</b></td><td><code>#4080ff</code></td><td><code>#4080ff</code></td><td><code>#4080ff</code></td></tr>
+<tr><td><b>Power strip colors: Power color</b></td><td>By power type</td><td>By power type</td><td>By power type</td></tr>
+<tr><td><b>Power strip colors: Rage</b></td><td><code>#d93333</code></td><td><code>#d93333</code></td><td><code>#d93333</code></td></tr>
 <tr><td><b>Texts: Name color</b></td><td><code>#ffffff</code></td><td><code>#ffffff</code></td><td><code>#ffffff</code></td></tr>
 <tr><td><b>Texts: Name in class color</b></td><td>Off</td><td>Off</td><td>Off</td></tr>
 <tr><td><b>Texts: Second line color</b></td><td><code>#ffffff</code></td><td><code>#ffffff</code></td><td><code>#b3b3b3</code></td></tr>

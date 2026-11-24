@@ -64,7 +64,7 @@ local RULES = {
     { on("healthMissingCustom"), { "healthMissingColor" } },
     -- Raid/Cell.lua: no strip, no height, no colours.
     { isNot("powerStrip", "OFF"), { "powerStripHeight", "powerFill", "powerColorMode", "powerColorMana", "powerColorRage",
-        "powerColorEnergy", "powerColorFocus" } },
+        "powerColorFocus", "powerColorEnergy" } },
     -- Raid/CellAuras.lua: the tint and the border are switches of their
     -- own and take the filter too.
     { on("dispelIcon"), { "dispelStyle", "dispelIconSize", "dispelSquarePoint", "dispelSquareSize" } },

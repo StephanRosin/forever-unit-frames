@@ -29,6 +29,10 @@ Test.SAMPLES = {
     { "SHAMAN", "HEALER" }, { "WARRIOR", "DAMAGER" },
 }
 Test.HEALTH = { 1, 0.85, 0.6, 0.35, 0.15, 0.95, 0.7, 0.5 }
+-- Power type by class (Enum.PowerType: 1 rage, 3 energy; everyone else
+-- mana); a hunter's pet has focus (2), a warlock's demon mana.
+Test.POWER = { WARRIOR = 1, ROGUE = 3 }
+Test.PET_POWER = { HUNTER = 2, WARLOCK = 0 }
 -- Member 3 is dead, member 7 offline: both in every size.
 Test.STATUS = { [3] = "DEAD", [7] = "OFFLINE" }
 -- Debuffs by place in the ten (indices into Raid/CellAuras.lua's
@@ -112,7 +116,7 @@ Test.PETS = { HUNTER = "RAID_TEST_PET_HUNTER", WARLOCK = "RAID_TEST_PET_WARLOCK"
 
 -- The pretend raid of a size: { subgroup, class, assignedRole, name,
 -- health, status, role, debuffs, marker, groupIcons, outOfRange, aggro,
--- target } per member, in raid order.
+-- target, powerType } per member, in raid order.
 function Test.Members(size)
     local list = {}
     for i = 1, size do
@@ -125,7 +129,7 @@ function Test.Members(size)
             debuffs = Test.DEBUFFS[(i - 1) % #Test.SAMPLES + 1] or {}, marker = Test.MARKERS[i],
             groupIcons = Test.GROUP_ICONS[i] or {},
             outOfRange = Test.OUT_OF_RANGE[(i - 1) % #Test.SAMPLES + 1] == true,
-            aggro = Test.AGGRO[i] == true, target = i == Test.TARGET,
+            aggro = Test.AGGRO[i] == true, target = i == Test.TARGET, powerType = Test.POWER[s[1]] or 0,
         }
     end
     return list
@@ -141,7 +145,7 @@ function Test.PanelMembers(id, size)
             local word = Test.PETS[m.class]
             if word then
                 list[#list + 1] = { subgroup = m.subgroup, class = m.class, name = ns.L[word], health = m.health,
-                    role = "NONE", assignedRole = "NONE",
+                    role = "NONE", assignedRole = "NONE", pet = true, powerType = Test.PET_POWER[m.class],
                     status = false, debuffs = {}, groupIcons = {}, outOfRange = false, aggro = false, target = false }
             end
         end

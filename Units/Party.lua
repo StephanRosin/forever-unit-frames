@@ -48,12 +48,22 @@ end
 function Party.PerLine() return math.min(get("partyPerLine"), Party.Slots()) end
 function Party.Lines() return math.ceil(Party.Slots() / Party.PerLine()) end
 
--- Distance between two lines. Rows: a castbar docked below (or above)
--- each member sits in between, as in a column.
+-- Distance between two lines: the spacing, plus what hangs between them.
+-- Rows: a castbar docked below (or above) each member, as in a column,
+-- and party targets above or below. Columns: party targets and pets
+-- beside their member, on either side (one column's right is the next
+-- one's left).
 function Party.LineGap()
-    local spacing = Pixel.Snap(get("partySpacing"))
-    if not Party.Horizontal() then return spacing end
-    return spacing + ns.Castbar.DockedDepth(Party.KEY)
+    local gap = Pixel.Snap(get("partySpacing"))
+    local horizontal = Party.Horizontal()
+    if horizontal then gap = gap + ns.Castbar.DockedDepth(Party.KEY) end
+    local targets, pets = ns.PartyTargets, ns.PartyPets
+    if targets and targets.Enabled() then
+        local side, room = targets.Room()
+        if (side == "ABOVE" or side == "BELOW") == horizontal then gap = gap + room end
+    end
+    if pets and not horizontal and get("partyShowPets") and pets.Beside() then gap = gap + pets.BesideRoom() end
+    return gap
 end
 
 -- Width and height of the whole block with every slot filled.

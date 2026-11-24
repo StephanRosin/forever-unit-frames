@@ -219,14 +219,15 @@ RaidSettings.Define({ key = "absorbs", code = "AS", scope = "frame", class = "be
 RaidSettings.Define({ key = "combatText", code = "CT", scope = "frame", class = "behaviour", type = "bool", default = false })
 -- The colours of heals, shields, missing health and the power strip, as
 -- the unit frames' settings of the same names (Raid/Cell.lua maps them);
--- the defaults are theirs, the colours cells always had.
-local function unitDefault(key) return ns.Settings.Get(key).default end
+-- the defaults are theirs, the colours cells always had (a copy: never
+-- the unit registry's own table).
+local function unitDefault(key) return ns.CopyValue(ns.Settings.Default(ns.Settings.Get(key), "party")) end
 for _, d in ipairs({
     { key = "healMyColor", code = "HY" }, { key = "healOtherColor", code = "HO" }, { key = "absorbColor", code = "CX" },
     { key = "healthMissingCustom", code = "HZ", type = "bool" }, { key = "healthMissingColor", code = "HQ" },
     { key = "powerColorMode", code = "CM", type = "enum", values = { "TYPE", "CLASS" } },
     { key = "powerColorMana", code = "CN" }, { key = "powerColorRage", code = "CQ" },
-    { key = "powerColorEnergy", code = "CE" }, { key = "powerColorFocus", code = "CF" },
+    { key = "powerColorFocus", code = "CF" }, { key = "powerColorEnergy", code = "CE" },
 }) do
     RaidSettings.Define({ key = d.key, code = d.code, scope = "frame", class = "behaviour", type = d.type or "color",
         values = d.values, default = unitDefault(d.key) })

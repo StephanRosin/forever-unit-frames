@@ -125,3 +125,11 @@ H.check("the earlier change undone", RC.Get("r20", "cellWidth"), 88)
 
 -- A snapshot of a scope the profile does not have: nothing, as Restore.
 H.check("snapshot of an unknown scope", #RC.Snapshot("r99", { "cellWidth" }), 0)
+
+-- A look resets the heal, shield, missing-health and power colours to
+-- the standard ones (the unit frames' colours).
+RC.Set("r10", "healthMissingCustom", true)
+RC.Set("r10", "powerColorMana", { 1, 0, 0, 1 })
+T.Apply(T.Find("flat"), { 10 })
+H.check("flat: missing-health colour off again", RC.Get("r10", "healthMissingCustom"), false)
+H.check("flat: mana colour the standard one", table.concat(RC.Get("r10", "powerColorMana"), " "), "0.25 0.5 1 1")

@@ -125,16 +125,17 @@ local function rowFromRight()
 end
 
 -- Offset of pet i (1-based) from the pet list's top-left corner (the
--- block's left edge).
+-- block's left edge). A row wraps like the members' rows (partyPerLine),
+-- so it stays within the block's width.
 function Pets.SlotOffset(i)
     local w, h = Single.Size(Pets.KEY)
-    local step = (i - 1) * Pets.Gap()
     if Party.Horizontal() then
-        local x = (i - 1) * w + step
+        local line, pos = math.floor((i - 1) / Party.PerLine()), (i - 1) % Party.PerLine()
+        local x = pos * (w + Pets.Gap())
         if rowFromRight() then x = Party.BlockSize() - w - x end
-        return x, 0
+        return x, -line * (h + Party.PetStep())
     end
-    return 0, -((i - 1) * h + step)
+    return 0, -((i - 1) * (h + Pets.Gap()))
 end
 
 local setAttributes = ns.Units.SetAttributes
@@ -151,6 +152,10 @@ local function headerAttributes()
         point = horizontal and (fromRight and "RIGHT" or "LEFT") or "TOP",
         xOffset = horizontal and (fromRight and -step or step) or 0,
         yOffset = horizontal and 0 or -step,
+        -- A row wraps like the members' (Pets.SlotOffset); a column never.
+        unitsPerColumn = horizontal and Party.PerLine() or Party.Slots(),
+        maxColumns = horizontal and Party.Lines() or 1,
+        columnSpacing = Party.PetStep(), columnAnchorPoint = "TOP",
     }
 end
 
@@ -185,6 +190,13 @@ function Pets.BesideAnchor()
     local dx, dy = Pets.ListOffset()
     if get("partyPetSide") == "LEFT" then return "TOPRIGHT", "TOPLEFT", -gap + dx, dy end
     return "TOPLEFT", "TOPRIGHT", gap + dx, dy
+end
+
+-- The room a pet beside its member takes from the member's edge: the
+-- gap, the pet and its border, and the next member's border (Party.LineGap).
+function Pets.BesideRoom()
+    local gap = ns.Border.Extent(Party.KEY) + Party.PetGap() + ns.Border.Extent(Pets.KEY)
+    return gap + Single.Size(Pets.KEY) + ns.Border.Extent(Pets.KEY) + ns.Border.Extent(Party.KEY)
 end
 
 local function placeBeside(button, member)

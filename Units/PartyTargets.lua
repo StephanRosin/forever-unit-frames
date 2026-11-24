@@ -72,6 +72,17 @@ function Targets.Anchor()
     return "TOPLEFT", "TOPRIGHT", gap, 0
 end
 
+-- The target's side and the room it takes from its member's edge: the
+-- anchor's gap, the target and its border, and the next member's border
+-- (Party.LineGap keeps it free between two lines). X / Y not counted.
+function Targets.Room()
+    local side = get("partyTargetSide")
+    local _, _, x, y = Targets.Anchor()
+    local w, h = Single.Size(Targets.KEY)
+    local size = (side == "ABOVE" or side == "BELOW") and h or w
+    return side, math.abs(x) + math.abs(y) + size + ns.Border.Extent(Targets.KEY) + ns.Border.Extent(Party.KEY)
+end
+
 -- Out of combat: size and place (protected on a secure button).
 local function place(button, member)
     local point, relPoint, x, y = Targets.Anchor()

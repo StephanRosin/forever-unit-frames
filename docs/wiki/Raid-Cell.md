@@ -45,8 +45,8 @@ The **Cell** tab of the raid options window (`/fuf raid`), under a raid size in 
 <tr><td><b>Power color</b></td><td>Class: players in their class color, everyone else by power type</td><td>By power type, Class (players)</td><td>By power type</td></tr>
 <tr><td><b>Mana</b></td><td></td><td>Color</td><td><code>#4080ff</code></td></tr>
 <tr><td><b>Rage</b></td><td></td><td>Color</td><td><code>#d93333</code></td></tr>
-<tr><td><b>Energy</b></td><td></td><td>Color</td><td><code>#ffd933</code></td></tr>
 <tr><td><b>Focus</b></td><td></td><td>Color</td><td><code>#ff8040</code></td></tr>
+<tr><td><b>Energy</b></td><td></td><td>Color</td><td><code>#ffd933</code></td></tr>
 </tbody>
 </table>
 

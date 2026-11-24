@@ -132,8 +132,8 @@ local MAPPED = {
     powerColorMode = function() return get("powerColorMode") end,
     powerColorMana = function() return get("powerColorMana") end,
     powerColorRage = function() return get("powerColorRage") end,
-    powerColorEnergy = function() return get("powerColorEnergy") end,
     powerColorFocus = function() return get("powerColorFocus") end,
+    powerColorEnergy = function() return get("powerColorEnergy") end,
     textHealthRight = function() return get("secondLine") end,
     barNameColorMode = function() return get("nameClassColor") and "CLASS" or "WHITE" end,
     fontFace = themed("fontFace", function() return get("fontFace") end),
@@ -167,8 +167,8 @@ local MAPPED = {
 -- (Core/Settings.lua with the look of Core/Preset.lua), whatever the party
 -- frame or General is set to: the aura icons' border, and what a cell has
 -- no use for (title texts, the party's aura groups, castbar details ...).
--- The party frame is the
--- derived scope's base only in name: every key is answered here.
+-- The party frame is the derived scope's base only in name: every key is
+-- answered here.
 local function shipped(key)
     return ns.Settings.Default(ns.Settings.Get(key), ns.Party.KEY)
 end

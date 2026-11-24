@@ -69,21 +69,34 @@ local function checkEmpty(frame)
     ns.Single.LayoutBars(frame)
 end
 
+-- The colour by power type, or by class for a player. A pretend raid
+-- cell (Raid/TestMode.lua) sits on you: its sample's power type and
+-- class count, not yours.
+local function colorOf(frame)
+    local unit, sample = frame.unit, ns.Health.Sample(frame)
+    local powerType = sample and sample.powerType
+    if powerType == nil then powerType = UnitPowerType(unit) end
+    local key = Power.COLOR_KEYS[ns.Secrets.Number(powerType) or -1]
+    local c = key and Config.Get(frame.key, key) or DEFAULT
+    if Config.Get(frame.key, "powerColorMode") ~= "CLASS" then return c[1], c[2], c[3] end
+    -- By class: players only (the colour may be secret, so presence by type()).
+    local cr, cg, cb
+    if sample then
+        if not sample.pet then cr, cg, cb = ns.Health.ClassTokenColor(sample.class) end
+    else
+        cr, cg, cb = ns.Health.ClassColor(unit)
+    end
+    if type(cr) ~= "nil" then return cr, cg, cb end
+    return c[1], c[2], c[3]
+end
+
 function Power.Update(frame)
     local unit = frame.unit
     checkEmpty(frame)
-    local powerType = UnitPowerType(unit)
-    local key = Power.COLOR_KEYS[ns.Secrets.Number(powerType) or -1]
-    local c = key and Config.Get(frame.key, key) or DEFAULT
-    local r, g, b = c[1], c[2], c[3]
-    -- By class: players only (the colour may be secret, so presence by type()).
-    if Config.Get(frame.key, "powerColorMode") == "CLASS" then
-        local cr, cg, cb = ns.Health.ClassColor(unit)
-        if type(cr) ~= "nil" then r, g, b = cr, cg, cb end
-    end
+    local r, g, b = colorOf(frame)
     -- Dead, ghost and offline units (Elements/UnitStatus.lua) are grey.
     if ns.UnitStatus.Of(frame) then
-        c = ns.UnitStatus.GREY
+        local c = ns.UnitStatus.GREY
         r, g, b = c[1], c[2], c[3]
     end
     frame.power:SetStatusBarColor(r, g, b)

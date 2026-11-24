@@ -86,7 +86,12 @@ Templates.ROLES = {
 Templates.LOOK_KEYS = { "cellBorder", "cellBorderStyle", "cellBorderSize", "cellBorderColor", "cellCornerRadius",
     "panelBorder", "blockBorder", "barTexture", "backgroundColor", "healthColorMode", "healthColor",
     "nameClassColor", "nameColor", "secondLineColor", "fontFace", "nameFontSize", "secondFontSize", "fontOutline",
-    "fontShadow" }
+    "fontShadow", "healthMissingCustom", "healthMissingColor", "healMyColor", "healOtherColor", "absorbColor",
+    "powerColorMode", "powerColorMana", "powerColorRage", "powerColorFocus", "powerColorEnergy" }
+-- The heal, shield, missing-health and power colours: every look keeps
+-- the defaults (the unit frames' colours), so applying one resets them.
+Templates.STANDARD_COLOR_KEYS = { "healthMissingCustom", "healthMissingColor", "healMyColor", "healOtherColor",
+    "absorbColor", "powerColorMode", "powerColorMana", "powerColorRage", "powerColorFocus", "powerColorEnergy" }
 Templates.LOOK_KEYS_SORTED = {}
 for i, key in ipairs(Templates.LOOK_KEYS) do Templates.LOOK_KEYS_SORTED[i] = key end
 table.sort(Templates.LOOK_KEYS_SORTED)
@@ -109,10 +114,14 @@ function Templates.SizeDefaults(keys)
 end
 
 local WHITE, BLACK = { 1, 1, 1, 1 }, { 0, 0, 0, 1 }
+local function withStandardColors(values)
+    for key, v in pairs(Templates.SizeDefaults(Templates.STANDARD_COLOR_KEYS)) do values[key] = v end
+    return values
+end
 Templates.LOOKS = {
     { id = "forever", kind = "look", values = Templates.SizeDefaults(Templates.LOOK_KEYS) },
     -- No ring: a thin flat border, square corners, flat bars.
-    { id = "flat", kind = "look", values = {
+    { id = "flat", kind = "look", values = withStandardColors({
         cellBorder = true, cellBorderStyle = "FLAT", cellBorderSize = 1, cellBorderColor = BLACK,
         cellCornerRadius = 0, panelBorder = false, blockBorder = false,
         barTexture = "Flat", backgroundColor = { 0.1, 0.1, 0.1, 0.8 },
@@ -120,10 +129,10 @@ Templates.LOOKS = {
         nameClassColor = false, nameColor = WHITE, secondLineColor = WHITE,
         fontFace = "Arial Narrow", nameFontSize = 11, secondFontSize = 10, fontOutline = "OUTLINE",
         fontShadow = false,
-    } },
+    }) },
     -- Blizzard-like: the raid bar texture, square cells, a border around
     -- each group, plain text with a shadow, the second line grey.
-    { id = "classic", kind = "look", values = {
+    { id = "classic", kind = "look", values = withStandardColors({
         cellBorder = false, cellBorderStyle = "FLAT", cellBorderSize = 1, cellBorderColor = BLACK,
         cellCornerRadius = 0, panelBorder = false, blockBorder = true,
         barTexture = "Raid", backgroundColor = { 0, 0, 0, 0.8 },
@@ -131,7 +140,7 @@ Templates.LOOKS = {
         nameClassColor = false, nameColor = WHITE, secondLineColor = { 0.7, 0.7, 0.7, 1 },
         fontFace = "Friz Quadrata", nameFontSize = 10, secondFontSize = 9, fontOutline = "NONE",
         fontShadow = true,
-    } },
+    }) },
 }
 
 -- A shipped template by id, or nil.
