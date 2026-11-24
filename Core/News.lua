@@ -247,6 +247,9 @@ News.ENTRIES = {
     ["0.80.0"] = {
         lines = { "NEWS_0_80_0_PARTY_LINES" },
     },
+    ["0.81.0"] = {
+        lines = { "NEWS_0_81_0_CELL_COLORS", "NEWS_0_81_0_PARTY_GRID" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

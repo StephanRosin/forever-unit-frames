@@ -1761,6 +1761,8 @@ L.NEWS_0_65_0_FILL = "Onglet Disposition, Espacements et cases : « Remplir les 
 L.NEWS_0_79_0_PARTY_PROFILE = "Cadres de raid : la vue de raid en groupe a son propre profil, Groupe (à côté de 10, 20 et 40). Il commence tel que votre groupe apparaissait jusqu'ici. L'interrupteur est aussi sous Groupe > Disposition du groupe."
 L.NEWS_0_79_1_SMART_BUFF_RAID = "Smart Buffs : dans WoW Forever, un buff de groupe atteint tout le raid ; la forme de groupe est donc lancée dès qu'assez de membres, où qu'ils soient, en ont besoin (bénédictions toujours par classe). Le seuil va jusqu'à 40."
 L.NEWS_0_80_0_PARTY_LINES = "Groupe : « Membres par ligne » (Groupe > Disposition du groupe) répartit le groupe sur plusieurs colonnes, ou rangées en horizontal, p. ex. 2 par colonne."
+L.NEWS_0_81_0_CELL_COLORS = "Cadres de raid : chaque profil (Groupe, 10, 20, 40) a ses propres couleurs pour les soins, boucliers, la santé manquante et la barre de ressource (/fuf raid > Cellule). Elles commencent comme avant."
+L.NEWS_0_81_0_PARTY_GRID = "Groupe sur plusieurs lignes : la liste des familiers suit les rangées, et les colonnes laissent de la place aux cibles et familiers à côté de leur membre."
 L.NEWS_OPEN_THEME = "Ouvrir le thème"
 
 -- Themes (Core/Themes.lua)

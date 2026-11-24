@@ -1790,6 +1790,8 @@ L.NEWS_0_65_0_FILL = "Layout tab, Spacing & boxes: \"Fill the gaps\" puts one pl
 L.NEWS_0_79_0_PARTY_PROFILE = "Raid frames: the raid view in a party has a profile of its own, Party (beside 10, 20 and 40). It starts as your party looked so far. The switch is also under Party > Group layout."
 L.NEWS_0_79_1_SMART_BUFF_RAID = "Smart buffs: in WoW Forever a group buff reaches the whole raid, so the group form is now cast when enough members anywhere miss it (blessings still per class). \"Group form from\" goes up to 40."
 L.NEWS_0_80_0_PARTY_LINES = "Party: \"Members per line\" (Party > Group layout) puts the party in several columns, or rows when horizontal, e.g. 2 per column."
+L.NEWS_0_81_0_CELL_COLORS = "Raid frames: each profile (Party, 10, 20, 40) has its own colors for heals, shields, missing health and the power strip (/fuf raid > Cell). They start as before."
+L.NEWS_0_81_0_PARTY_GRID = "Party in several lines: the pet list wraps like the rows, and columns leave room for party targets and pets beside their member."
 L.NEWS_OPEN_THEME = "Open the theme"
 
 -- Themes (Core/Themes.lua)

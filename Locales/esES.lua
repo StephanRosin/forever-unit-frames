@@ -1762,6 +1762,8 @@ L.NEWS_0_65_0_FILL = "Pestaña Diseño, Espacios y cajas: «Rellenar los espacio
 L.NEWS_0_79_0_PARTY_PROFILE = "Marcos de banda: la vista de banda en grupo tiene un perfil propio, Grupo (junto a 10, 20 y 40). Empieza como se veía tu grupo hasta ahora. El interruptor también está en Grupo > Disposición del grupo."
 L.NEWS_0_79_1_SMART_BUFF_RAID = "Smart Buffs: en WoW Forever un beneficio de grupo llega a toda la banda, así que la forma de grupo se lanza cuando suficientes miembros en cualquier parte lo necesitan (bendiciones aún por clase). El umbral llega hasta 40."
 L.NEWS_0_80_0_PARTY_LINES = "Grupo: \"Miembros por línea\" (Grupo > Disposición del grupo) reparte el grupo en varias columnas, o filas en horizontal, p. ej. 2 por columna."
+L.NEWS_0_81_0_CELL_COLORS = "Marcos de banda: cada perfil (Grupo, 10, 20, 40) tiene sus propios colores para sanaciones, escudos, salud perdida y la barra de recurso (/fuf raid > Celda). Empiezan como antes."
+L.NEWS_0_81_0_PARTY_GRID = "Grupo en varias líneas: la lista de mascotas se reparte como las filas, y las columnas dejan sitio a los objetivos y mascotas junto a su miembro."
 L.NEWS_OPEN_THEME = "Abrir el tema"
 
 -- Themes (Core/Themes.lua)
