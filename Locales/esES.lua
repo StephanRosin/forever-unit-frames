@@ -1745,6 +1745,7 @@ L.NEWS_0_64_0_ENCHANT_ROW = "Corrección: con «En la fila de beneficios», los 
 L.NEWS_0_65_0_FILL = "Pestaña Diseño, Espacios y cajas: «Rellenar los espacios» pone una placa detrás de las partes; los espacios se ven como juntas de su color, con un margen propio alrededor del marco."
 L.NEWS_0_79_0_PARTY_PROFILE = "Marcos de banda: la vista de banda en grupo tiene un perfil propio, Grupo (junto a 10, 20 y 40). Empieza como se veía tu grupo hasta ahora. El interruptor también está en Grupo > Disposición del grupo."
 L.NEWS_0_79_1_SMART_BUFF_RAID = "Smart Buffs: en WoW Forever un beneficio de grupo llega a toda la banda, así que la forma de grupo se lanza cuando suficientes miembros en cualquier parte lo necesitan (bendiciones aún por clase). El umbral llega hasta 40."
+L.NEWS_0_80_0_PARTY_LINES = "Grupo: \"Miembros por línea\" (Grupo > Disposición del grupo) reparte el grupo en varias columnas, o filas en horizontal, p. ej. 2 por columna."
 L.NEWS_OPEN_THEME = "Abrir el tema"
 
 -- Themes (Core/Themes.lua)

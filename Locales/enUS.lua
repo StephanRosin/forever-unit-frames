@@ -1773,6 +1773,7 @@ L.NEWS_0_64_0_ENCHANT_ROW = "Fix: with \"Enchants in the buff row\", the enchant
 L.NEWS_0_65_0_FILL = "Layout tab, Spacing & boxes: \"Fill the gaps\" puts one plate behind the parts, so the gaps show as seams in its color, with a padding of its own around the frame."
 L.NEWS_0_79_0_PARTY_PROFILE = "Raid frames: the raid view in a party has a profile of its own, Party (beside 10, 20 and 40). It starts as your party looked so far. The switch is also under Party > Group layout."
 L.NEWS_0_79_1_SMART_BUFF_RAID = "Smart buffs: in WoW Forever a group buff reaches the whole raid, so the group form is now cast when enough members anywhere miss it (blessings still per class). \"Group form from\" goes up to 40."
+L.NEWS_0_80_0_PARTY_LINES = "Party: \"Members per line\" (Party > Group layout) puts the party in several columns, or rows when horizontal, e.g. 2 per column."
 L.NEWS_OPEN_THEME = "Open the theme"
 
 -- Themes (Core/Themes.lua)
