@@ -75,7 +75,8 @@ H.check("set on 40", RC.Get("r40", "blocksPerLine"), 2)
 H.check("10 untouched", RC.Get("r10", "blocksPerLine"), 8)
 RO.SelectTab("cell")
 H.check("cell width of 40", rowFor("cellWidth").edit:GetText(), "80")
-H.check("the cell's note", RO.page.note:GetText(), L.RAID_NOTE_cell)
+RO.SelectTab("panels")
+H.check("a tab's note", RO.page.note:GetText(), L.RAID_NOTE_panels)
 
 -- The size switch: the panel shows 20; the marker follows.
 click(RO.sizeModeRow.button)

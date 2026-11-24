@@ -64,7 +64,7 @@ H.check("point choices: the unit frames' words", Schema.EnumText(RS.Get("roleIco
 H.check("raid's own choice", Schema.EnumText(RS.Get("sizeMode"), "AUTO"), "Automatic")
 H.check("hint", Schema.Hint("indicatorTopLeftSpells"), "Spell IDs, or names from your spell book")
 H.check("no hint", Schema.Hint("cellWidth"), nil)
-H.checkTrue("the cell's note", Schema.Note("cell"))
+H.checkTrue("a tab's note", Schema.Note("colors"))
 
 -- Every word in every language: labels, sections, tabs, notes, choices.
 local needed = {}

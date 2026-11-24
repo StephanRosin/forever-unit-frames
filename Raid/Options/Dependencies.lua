@@ -56,9 +56,15 @@ local RULES = {
     { function() return get("nameClassColor") ~= true end, { "nameColor" } },
     { isNot("secondLine", "NONE"), { "secondFontSize" } },
     -- Units/Single.lua: the lane only with heal prediction.
-    { on("healPrediction"), { "overheal" } },
-    -- Raid/Cell.lua: no strip, no height.
-    { isNot("powerStrip", "OFF"), { "powerStripHeight", "powerFill" } },
+    { on("healPrediction"), { "overheal", "healMyColor", "healOtherColor" } },
+    { on("absorbs"), { "absorbColor" } },
+    -- Elements/Health.lua: inverted, the empty part takes the health
+    -- colour, so its own colour goes unused.
+    { function() return get("healthColorMode"):find("^INVERTED") == nil end, { "healthMissingCustom", "healthMissingColor" } },
+    { on("healthMissingCustom"), { "healthMissingColor" } },
+    -- Raid/Cell.lua: no strip, no height, no colours.
+    { isNot("powerStrip", "OFF"), { "powerStripHeight", "powerFill", "powerColorMode", "powerColorMana", "powerColorRage",
+        "powerColorEnergy", "powerColorFocus" } },
     -- Raid/CellAuras.lua: the tint and the border are switches of their
     -- own and take the filter too.
     { on("dispelIcon"), { "dispelStyle", "dispelIconSize", "dispelSquarePoint", "dispelSquareSize" } },

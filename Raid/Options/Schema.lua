@@ -80,15 +80,17 @@ Schema.TABS = {
         { id = "minimap", keys = { "minimapShow", "minimapAngle" } },
         { id = "appearance", keys = { "cellTheme", "frameAlpha" } },
     } },
-    -- Heals, shields and the power strip keep the unit frames' shipped
-    -- colours (Raid/Cell.lua): the note says so.
-    { id = "cell", note = "cell", sections = {
+    { id = "cell", sections = {
         { id = "size", keys = { "cellWidth", "cellHeight" } },
-        { id = "bars", keys = { "healthColorMode", "healthColor", "barTexture", "backgroundColor", "fillVertical",
-            "fillReverse", "powerStrip", "powerStripHeight", "powerFill" } },
+        { id = "bars", keys = { "healthColorMode", "healthColor", "barTexture", "backgroundColor",
+            "healthMissingCustom", "healthMissingColor", "fillVertical", "fillReverse", "powerStrip", "powerStripHeight",
+            "powerFill" } },
+        { id = "powerColors", keys = { "powerColorMode", "powerColorMana", "powerColorRage", "powerColorEnergy",
+            "powerColorFocus" } },
         { id = "cellShape", keys = { "cellBorder", "cellBorderStyle", "cellBorderSize", "cellBorderColor",
             "cellCornerRadius" } },
-        { id = "heals", keys = { "healPrediction", "overheal", "absorbs", "combatText" } },
+        { id = "heals", keys = { "healPrediction", "healMyColor", "healOtherColor", "overheal", "absorbs", "absorbColor",
+            "combatText" } },
     } },
     { id = "texts", sections = {
         { id = "texts", keys = { "nameClassColor", "nameColor", "secondLine", "secondLineColor" } },

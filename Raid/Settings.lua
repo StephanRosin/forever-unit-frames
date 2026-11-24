@@ -217,6 +217,20 @@ RaidSettings.Define({ key = "healPrediction", code = "IH", scope = "frame", clas
 RaidSettings.Define({ key = "overheal", code = "OV", scope = "frame", class = "behaviour", type = "bool", default = false })
 RaidSettings.Define({ key = "absorbs", code = "AS", scope = "frame", class = "behaviour", type = "bool", default = true })
 RaidSettings.Define({ key = "combatText", code = "CT", scope = "frame", class = "behaviour", type = "bool", default = false })
+-- The colours of heals, shields, missing health and the power strip, as
+-- the unit frames' settings of the same names (Raid/Cell.lua maps them);
+-- the defaults are theirs, the colours cells always had.
+local function unitDefault(key) return ns.Settings.Get(key).default end
+for _, d in ipairs({
+    { key = "healMyColor", code = "HY" }, { key = "healOtherColor", code = "HO" }, { key = "absorbColor", code = "CX" },
+    { key = "healthMissingCustom", code = "HZ", type = "bool" }, { key = "healthMissingColor", code = "HQ" },
+    { key = "powerColorMode", code = "CM", type = "enum", values = { "TYPE", "CLASS" } },
+    { key = "powerColorMana", code = "CN" }, { key = "powerColorRage", code = "CQ" },
+    { key = "powerColorEnergy", code = "CE" }, { key = "powerColorFocus", code = "CF" },
+}) do
+    RaidSettings.Define({ key = d.key, code = d.code, scope = "frame", class = "behaviour", type = d.type or "color",
+        values = d.values, default = unitDefault(d.key) })
+end
 -- The power strip at the bottom: everyone, mana users, healers, nobody.
 RaidSettings.Define({ key = "powerStrip", code = "PS", scope = "frame", class = "behaviour", type = "enum",
     values = { "ALL", "MANA", "HEALERS", "OFF" }, default = "MANA" })

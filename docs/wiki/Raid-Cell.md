@@ -6,9 +6,7 @@ The size of a cell, its bars and colors (the power strip's height too), its bord
 
 The **Cell** tab of the raid options window (`/fuf raid`), under a raid size in the top bar (General | 10 | 20 | 40 | Profiles). Each raid size (10, 20, 40) has a profile of its own: the size picked at the top is the one you edit; a default that differs per size is listed per size.
 
-Heals, shields and the power strip keep the unit frames' standard colors.
-
-**On this page:** [Size](#size) · [Bars](#bars) · [Border and corners](#border-and-corners) · [Heals and shields](#heals-and-shields)
+**On this page:** [Size](#size) · [Bars](#bars) · [Power strip colors](#power-strip-colors) · [Border and corners](#border-and-corners) · [Heals and shields](#heals-and-shields)
 
 ## Size
 
@@ -29,11 +27,26 @@ Heals, shields and the power strip keep the unit frames' standard colors.
 <tr><td><b>Fixed health color</b></td><td></td><td>Color</td><td><code>#33bf4d</code></td></tr>
 <tr><td><b>Bar texture</b></td><td></td><td>Texture</td><td>Raid</td></tr>
 <tr><td><b>Background color</b></td><td></td><td>Color</td><td><code>#000000</code>, 60 % opaque</td></tr>
+<tr><td><b>Missing health color</b></td><td>Own color for the empty part of the health bar; off, it shows the background color</td><td>On, Off</td><td>Off</td></tr>
+<tr><td><b>Color of missing health</b></td><td></td><td>Color</td><td><code>#731414</code>, 80 % opaque</td></tr>
 <tr><td><b>Vertical fill</b></td><td>The bars fill from bottom to top</td><td>On, Off</td><td>Off</td></tr>
 <tr><td><b>Reverse fill</b></td><td>From the right, or the top when vertical</td><td>On, Off</td><td>Off</td></tr>
 <tr><td><b>Power strip</b></td><td></td><td>Everyone, Mana users, Healers, Off</td><td>Mana users</td></tr>
 <tr><td><b>Power strip height (%)</b></td><td>Share of the cell's height; the health bar takes the rest</td><td>5 – 40</td><td>10</td></tr>
 <tr><td><b>Power strip fill</b></td><td>Its own direction, or as the health bar</td><td>Like health, Left to right, Right to left, Bottom to top, Top to bottom</td><td>Like health</td></tr>
+</tbody>
+</table>
+
+## Power strip colors
+
+<table>
+<thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
+<tbody>
+<tr><td><b>Power color</b></td><td>Class: players in their class color, everyone else by power type</td><td>By power type, Class (players)</td><td>By power type</td></tr>
+<tr><td><b>Mana</b></td><td></td><td>Color</td><td><code>#4080ff</code></td></tr>
+<tr><td><b>Rage</b></td><td></td><td>Color</td><td><code>#d93333</code></td></tr>
+<tr><td><b>Energy</b></td><td></td><td>Color</td><td><code>#ffd933</code></td></tr>
+<tr><td><b>Focus</b></td><td></td><td>Color</td><td><code>#ff8040</code></td></tr>
 </tbody>
 </table>
 
@@ -56,8 +69,11 @@ Heals, shields and the power strip keep the unit frames' standard colors.
 <thead><tr><th align="left" width="190">Option</th><th align="left" width="350">What it does</th><th align="left" width="190">Choices</th><th align="left" width="160">Default</th></tr></thead>
 <tbody>
 <tr><td><b>Incoming heals</b></td><td></td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Your heals color</b></td><td></td><td>Color</td><td><code>#4df273</code>, 65 % opaque</td></tr>
+<tr><td><b>Other heals color</b></td><td></td><td>Color</td><td><code>#26a64d</code>, 55 % opaque</td></tr>
 <tr><td><b>Overheal lane</b></td><td>Heals past full health at the bar's end</td><td>On, Off</td><td>Off</td></tr>
 <tr><td><b>Absorb shields</b></td><td></td><td>On, Off</td><td>On</td></tr>
+<tr><td><b>Absorb shield color</b></td><td>Stripes, the lit empty part and the glow when the shield runs past full health</td><td>Color</td><td><code>#ffffff</code>, 65 % opaque</td></tr>
 <tr><td><b>Damage and heal numbers</b></td><td>Shown briefly inside the cell</td><td>On, Off</td><td>Off</td></tr>
 </tbody>
 </table>

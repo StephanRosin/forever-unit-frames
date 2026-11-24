@@ -79,8 +79,8 @@ local function tab(id)
         if t.id == id then return t end
     end
 end
-H.check("cell section", tab("cell").sections[3].id, "cellShape")
-H.check("cell section keys", table.concat(tab("cell").sections[3].keys, ","),
+H.check("cell section", tab("cell").sections[4].id, "cellShape")
+H.check("cell section keys", table.concat(tab("cell").sections[4].keys, ","),
     "cellBorder,cellBorderStyle,cellBorderSize,cellBorderColor,cellCornerRadius")
 H.check("layout borders", table.concat(tab("layout").sections[4].keys, ","), "panelBorder,blockBorder")
 H.check("section title", ns.RaidSchema.SectionTitle("cellShape"), "Border and corners")

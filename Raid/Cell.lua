@@ -124,6 +124,16 @@ local MAPPED = {
     healOverflow = function() return get("overheal") end,
     absorbEnabled = function() return get("absorbs") end,
     combatFeedback = function() return get("combatText") end,
+    healMyColor = function() return get("healMyColor") end,
+    healOtherColor = function() return get("healOtherColor") end,
+    absorbColor = function() return get("absorbColor") end,
+    healthMissingCustom = function() return get("healthMissingCustom") end,
+    healthMissingColor = function() return get("healthMissingColor") end,
+    powerColorMode = function() return get("powerColorMode") end,
+    powerColorMana = function() return get("powerColorMana") end,
+    powerColorRage = function() return get("powerColorRage") end,
+    powerColorEnergy = function() return get("powerColorEnergy") end,
+    powerColorFocus = function() return get("powerColorFocus") end,
     textHealthRight = function() return get("secondLine") end,
     barNameColorMode = function() return get("nameClassColor") and "CLASS" or "WHITE" end,
     fontFace = themed("fontFace", function() return get("fontFace") end),
@@ -155,9 +165,9 @@ local MAPPED = {
 
 -- Everything else is the unit frames' shipped default for a party frame
 -- (Core/Settings.lua with the look of Core/Preset.lua), whatever the party
--- frame or General is set to: the heal, shield and power colours, the
--- aura icons' border, and what a cell has no use for (title texts, the
--- party's aura groups, castbar details ...). The party frame is the
+-- frame or General is set to: the aura icons' border, and what a cell has
+-- no use for (title texts, the party's aura groups, castbar details ...).
+-- The party frame is the
 -- derived scope's base only in name: every key is answered here.
 local function shipped(key)
     return ns.Settings.Default(ns.Settings.Get(key), ns.Party.KEY)

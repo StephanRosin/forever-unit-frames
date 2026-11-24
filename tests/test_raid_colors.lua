@@ -133,11 +133,15 @@ local function tab(id)
     end
 end
 H.check("bars section", table.concat(tab("cell").sections[2].keys, ","),
-    "healthColorMode,healthColor,barTexture,backgroundColor,fillVertical,fillReverse,powerStrip,powerStripHeight,powerFill")
+    "healthColorMode,healthColor,barTexture,backgroundColor,healthMissingCustom,healthMissingColor,fillVertical,"
+    .. "fillReverse,powerStrip,powerStripHeight,powerFill")
 H.check("texts section", table.concat(tab("texts").sections[1].keys, ","),
     "nameClassColor,nameColor,secondLine,secondLineColor")
 H.check("fixed colour choice", ns.RaidSchema.EnumText(RS.Get("healthColorMode"), "STATIC"), "Fixed color")
 H.check("label", ns.RaidSchema.Label("nameColor"), "Name color")
-H.check("the cell's note", ns.RaidSchema.Note("cell"), "Heals, shields and the power strip keep the unit frames' standard colors.")
+H.check("the cell tab: no note any more", ns.RaidSchema.Note("cell"), nil)
+H.check("power colours: the unit frames' word", ns.RaidSchema.Label("powerColorMana"), "Mana")
+H.check("power colour mode: the unit frames' choice", ns.RaidSchema.EnumText(RS.Get("powerColorMode"), "CLASS"),
+    "Class (players)")
 H.check("nothing blocked", #M.blocked, 0)
 

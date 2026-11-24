@@ -864,7 +864,6 @@ L.RAID_TAB_texts = "Texte"
 L.RAID_TAB_debuffs = "Debuffs"
 L.RAID_TAB_indicators = "Indikatoren"
 L.RAID_TAB_icons = "Symbole & Zustände"
-L.RAID_NOTE_cell = "Heilungen, Schilde und der Ressourcenstreifen behalten die Standardfarben der Einheitenrahmen."
 L.RAID_SECTION_raidFrames = "Schlachtzugsrahmen"
 L.RAID_SECTION_grouping = "Gruppierung"
 L.RAID_SECTION_arrangement = "Blöcke und Zellen"
@@ -1054,6 +1053,23 @@ L.RAID_SETTING_healPrediction = "Eingehende Heilung"
 L.RAID_SETTING_overheal = "Überheilungsspur"
 L.RAID_SETTING_absorbs = "Absorptionsschilde"
 L.RAID_SETTING_combatText = "Schadens- und Heilungszahlen"
+-- The unit frames' words for the same colours.
+L.RAID_SECTION_powerColors = "Farben der Ressourcenleiste"
+L.RAID_SETTING_healMyColor = L.SETTING_healMyColor
+L.RAID_SETTING_healOtherColor = L.SETTING_healOtherColor
+L.RAID_SETTING_absorbColor = L.SETTING_absorbColor
+L.RAID_SETTING_healthMissingCustom = L.SETTING_healthMissingCustom
+L.RAID_SETTING_healthMissingColor = L.SETTING_healthMissingColor
+L.RAID_SETTING_powerColorMode = L.SETTING_powerColorMode
+L.RAID_SETTING_powerColorMana = L.SETTING_powerColorMana
+L.RAID_SETTING_powerColorRage = L.SETTING_powerColorRage
+L.RAID_SETTING_powerColorEnergy = L.SETTING_powerColorEnergy
+L.RAID_SETTING_powerColorFocus = L.SETTING_powerColorFocus
+L.RAID_HINT_absorbColor = L.HINT_absorbColor
+L.RAID_HINT_healthMissingCustom = L.HINT_healthMissingCustom
+L.RAID_HINT_powerColorMode = L.HINT_powerColorMode
+L.RAID_ENUM_powerColorMode_TYPE = L.ENUM_powerColorMode_TYPE
+L.RAID_ENUM_powerColorMode_CLASS = L.ENUM_powerColorMode_CLASS
 L.RAID_HINT_overheal = "Heilung über volle Gesundheit am Leistenende"
 
 -- Schlachtzugsrahmen: der bannbare Debuff als Quadrat in einer Ecke.

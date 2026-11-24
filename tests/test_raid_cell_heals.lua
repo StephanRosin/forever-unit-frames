@@ -55,9 +55,9 @@ local cellTab
 for _, t in ipairs(ns.RaidSchema.TABS) do
     if t.id == "cell" then cellTab = t end
 end
-H.check("heals section", cellTab.sections[4].id, "heals")
-H.check("heals section keys", table.concat(cellTab.sections[4].keys, ","),
-    "healPrediction,overheal,absorbs,combatText")
+H.check("heals section", cellTab.sections[5].id, "heals")
+H.check("heals section keys", table.concat(cellTab.sections[5].keys, ","),
+    "healPrediction,healMyColor,healOtherColor,overheal,absorbs,absorbColor,combatText")
 H.check("section title", ns.RaidSchema.SectionTitle("heals"), "Heals and shields")
 H.check("label", ns.RaidSchema.Label("overheal"), "Overheal lane")
 H.check("nothing blocked", #M.blocked, 0)
