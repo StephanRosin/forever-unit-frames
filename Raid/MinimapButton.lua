@@ -61,8 +61,10 @@ function RaidMinimapButton.Create()
     if RaidMinimapButton.button or not Minimap then return end
     RaidMinimapButton.button = ns.MinimapButton.New({
         -- The global name is what button collectors show for a button without
-        -- LibDBIcon (Leatrix Plus: its tooltip), hence readable (reported).
-        name = "Forever Unit Frames Raid", icon = RaidMinimapButton.ICON,
+        -- LibDBIcon (Leatrix Plus: its tooltip), hence readable (reported); it
+        -- ends in "Minimap" because Minimap Button Button collects only names
+        -- like that (reported).
+        name = "Forever Unit Frames Raid Minimap", icon = RaidMinimapButton.ICON,
         clicks = { "LeftButtonUp", "RightButtonUp" }, onClick = onClick, title = L.RAID_COMPARTMENT,
         lines = buttonTooltipLines,
         config = ns.RaidConfig, show = "minimapShow", angle = "minimapAngle",

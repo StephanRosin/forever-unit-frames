@@ -197,8 +197,10 @@ function MinimapButton.Create()
     if MinimapButton.button or not Minimap then return end
     MinimapButton.button = MinimapButton.New({
         -- The global name is what button collectors show for a button without
-        -- LibDBIcon (Leatrix Plus: its tooltip), hence readable (reported).
-        name = "Forever Unit Frames", icon = MinimapButton.ICON,
+        -- LibDBIcon (Leatrix Plus: its tooltip), hence readable (reported); it
+        -- ends in "Minimap" because Minimap Button Button collects only names
+        -- like that (reported).
+        name = "Forever Unit Frames Minimap", icon = MinimapButton.ICON,
         clicks = { "LeftButtonUp", "RightButtonUp" }, onClick = onClick, lines = tooltipLines,
         config = Config, show = "minimapShow", angle = "minimapAngle",
     })

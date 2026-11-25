@@ -1793,6 +1793,7 @@ L.NEWS_0_80_0_PARTY_LINES = "Party: \"Members per line\" (Party > Group layout) 
 L.NEWS_0_81_0_CELL_COLORS = "Raid frames: each profile (Party, 10, 20, 40) has its own colors for heals, shields, missing health and the power strip (/fuf raid > Cell). They start as before."
 L.NEWS_0_81_0_PARTY_GRID = "Party in several lines: the pet list wraps like the rows, and columns leave room for party targets and pets beside their member."
 L.NEWS_0_81_1_GREY_LEVEL = "Level colour: at level 60, mobs up to 47 are grey (Classic rule), no longer up to 51."
+L.NEWS_0_81_2_MBB = "Minimap Button Button collects the minimap buttons again (named \"Forever Unit Frames Minimap\" and \"Forever Unit Frames Raid Minimap\")."
 L.NEWS_OPEN_THEME = "Open the theme"
 
 -- Themes (Core/Themes.lua)

@@ -253,6 +253,9 @@ News.ENTRIES = {
     ["0.81.1"] = {
         lines = { "NEWS_0_81_1_GREY_LEVEL" },
     },
+    ["0.81.2"] = {
+        lines = { "NEWS_0_81_2_MBB" },
+    },
 }
 
 -- The version this client loaded (## Version in the TOC).

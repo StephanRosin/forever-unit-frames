@@ -42,7 +42,7 @@ do
     local RC, RO = ns.RaidConfig, ns.RaidOptions
     local button = ns.RaidMinimapButton.button
     H.checkTrue("button built", button)
-    H.check("its name", button:GetName(), "Forever Unit Frames Raid")
+    H.check("its name", button:GetName(), "Forever Unit Frames Raid Minimap")
     H.check("on the minimap", button:GetParent(), Minimap)
     H.check("not the unit frames' button", button ~= ns.MinimapButton.button, true)
     H.check("not secure", button._template, nil)

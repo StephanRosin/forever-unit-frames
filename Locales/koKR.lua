@@ -1702,6 +1702,7 @@ L.NEWS_0_80_0_PARTY_LINES = "파티: \"한 줄당 인원\"(파티 > 그룹 배�
 L.NEWS_0_81_0_CELL_COLORS = "공격대 프레임: 각 프로필(파티, 10, 20, 40)이 치유, 보호막, 잃은 생명력, 자원 막대 색상을 따로 가집니다 (/fuf raid > 셀). 처음에는 이전과 같습니다."
 L.NEWS_0_81_0_PARTY_GRID = "여러 줄 파티: 소환수 목록도 줄처럼 나뉘고, 열 사이에 파티 대상과 옆에 붙은 소환수를 위한 공간이 남습니다."
 L.NEWS_0_81_1_GREY_LEVEL = "레벨 색상: 60레벨에서 47레벨까지의 적이 회색입니다 (클래식 규칙). 더 이상 51레벨까지가 아닙니다."
+L.NEWS_0_81_2_MBB = "Minimap Button Button이 미니맵 버튼을 다시 모읍니다 (이름 \"Forever Unit Frames Minimap\", \"Forever Unit Frames Raid Minimap\")."
 L.NEWS_OPEN_THEME = "테마 열기"
 
 -- Themes (Core/Themes.lua)
