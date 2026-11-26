@@ -1703,6 +1703,7 @@ L.NEWS_0_81_0_CELL_COLORS = "공격대 프레임: 각 프로필(파티, 10, 20, 
 L.NEWS_0_81_0_PARTY_GRID = "여러 줄 파티: 소환수 목록도 줄처럼 나뉘고, 열 사이에 파티 대상과 옆에 붙은 소환수를 위한 공간이 남습니다."
 L.NEWS_0_81_1_GREY_LEVEL = "레벨 색상: 60레벨에서 47레벨까지의 적이 회색입니다 (클래식 규칙). 더 이상 51레벨까지가 아닙니다."
 L.NEWS_0_81_2_MBB = "Minimap Button Button이 미니맵 버튼을 다시 모읍니다 (이름 \"Forever Unit Frames Minimap\", \"Forever Unit Frames Raid Minimap\")."
+L.NEWS_0_81_3_CAST_NAME = "시전바가 블리자드처럼 표시 이름을 보여줍니다 (\"Opening - No Text\" 대신 \"열기\")."
 L.NEWS_OPEN_THEME = "테마 열기"
 
 -- Themes (Core/Themes.lua)

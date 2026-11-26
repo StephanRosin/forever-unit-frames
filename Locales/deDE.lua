@@ -1765,6 +1765,7 @@ L.NEWS_0_81_0_CELL_COLORS = "Raid-Frames: Jedes Profil (Gruppe, 10, 20, 40) hat 
 L.NEWS_0_81_0_PARTY_GRID = "Gruppe in mehreren Reihen: Die Begleiterliste bricht wie die Reihen um, und zwischen Spalten bleibt Platz für Gruppenziele und Begleiter neben ihrem Mitglied."
 L.NEWS_0_81_1_GREY_LEVEL = "Levelfarbe: Auf Level 60 sind Gegner bis 47 grau (Classic-Regel), nicht mehr bis 51."
 L.NEWS_0_81_2_MBB = "Minimap Button Button sammelt die Minimap-Knöpfe wieder ein (Namen „Forever Unit Frames Minimap“ und „Forever Unit Frames Raid Minimap“)."
+L.NEWS_0_81_3_CAST_NAME = "Zauberleisten zeigen den Anzeigenamen wie Blizzards eigene („Öffnen“ statt „Opening - No Text“)."
 L.NEWS_OPEN_THEME = "Theme öffnen"
 
 -- Themes (Core/Themes.lua)

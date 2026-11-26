@@ -1765,6 +1765,7 @@ L.NEWS_0_81_0_CELL_COLORS = "Cadres de raid : chaque profil (Groupe, 10, 20, 40)
 L.NEWS_0_81_0_PARTY_GRID = "Groupe sur plusieurs lignes : la liste des familiers suit les rangées, et les colonnes laissent de la place aux cibles et familiers à côté de leur membre."
 L.NEWS_0_81_1_GREY_LEVEL = "Couleur du niveau : au niveau 60, les monstres sont gris jusqu'au 47 (règle Classic), plus jusqu'au 51."
 L.NEWS_0_81_2_MBB = "Minimap Button Button regroupe de nouveau les boutons de la minicarte (noms « Forever Unit Frames Minimap » et « Forever Unit Frames Raid Minimap »)."
+L.NEWS_0_81_3_CAST_NAME = "Les barres d'incantation affichent le nom affiché comme celles de Blizzard (« Ouverture » au lieu de « Opening - No Text »)."
 L.NEWS_OPEN_THEME = "Ouvrir le thème"
 
 -- Themes (Core/Themes.lua)
