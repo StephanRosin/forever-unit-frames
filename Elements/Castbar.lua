@@ -276,7 +276,11 @@ function Castbar.Begin(bar, unit, channel, castGUID)
     bar:SetMinMaxValues(info[4], info[5])
     bar:SetReverseFill(channel)
     paint(bar)
-    bar.text:SetText(info[1])
+    -- The display name, as Blizzard's bar shows: the name itself can be an
+    -- internal one ("Opening - No Text"). type(), as either may be secret.
+    local text = info[2]
+    if type(text) == "nil" then text = info[1] end
+    bar.text:SetText(text)
     bar.icon:SetTexture(info[3])
     bar:SetValue(now())
     if startTimer(bar, bar.cast) then bar.timing = true end

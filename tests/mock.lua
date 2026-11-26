@@ -1975,15 +1975,16 @@ function M.Reset()
         return p
     end
     -- Casts: d.cast / d.channel hold the values UnitCastingInfo /
-    -- UnitChannelInfo return, in the client's order; d.castDuration the
+    -- UnitChannelInfo return, in the client's order (text: the display
+    -- name, else the name); d.castDuration the
     -- object UnitCastingDuration / UnitChannelDuration return.
     _G.UnitCastingInfo = function(unit)
         local d = u(unit); local c = d and d.cast
-        if c then return c.name, c.name, c.texture, c.startMs, c.endMs, false, c.castID, c.notInterruptible, 1 end
+        if c then return c.name, c.text or c.name, c.texture, c.startMs, c.endMs, false, c.castID, c.notInterruptible, 1 end
     end
     _G.UnitChannelInfo = function(unit)
         local d = u(unit); local c = d and d.channel
-        if c then return c.name, c.name, c.texture, c.startMs, c.endMs, false, c.notInterruptible, 1 end
+        if c then return c.name, c.text or c.name, c.texture, c.startMs, c.endMs, false, c.notInterruptible, 1 end
     end
     _G.C_DurationUtil = { CreateDuration = function() return { _empty = true } end }
     _G.UnitCastingDuration = function(unit) local d = u(unit); return d and d.castDuration end

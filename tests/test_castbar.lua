@@ -54,6 +54,13 @@ M.Tick(1)
 H.check("value follows the clock", bar:GetValue(), 1001000)
 H.check("time counts down", bar.time._args[1], 1.5)
 
+-- The display name, not the spell's internal name (reported: opening a chest).
+M.units.target.cast = { name = "Opening - No Text", text = "Opening", startMs = 1001000, endMs = 1006000 }
+M.FireEvent("UNIT_SPELLCAST_START", "target", "cast-1", 6478)
+H.check("display name", bar.text:GetText(), "Opening")
+M.units.target.cast = { name = "Fireball", texture = 135812, startMs = 1000000, endMs = 1002500 }
+M.FireEvent("UNIT_SPELLCAST_START", "target", "cast-1", 133)
+
 -- A late stop for an earlier cast leaves the new one alone.
 M.FireEvent("UNIT_SPELLCAST_STOP", "target", "cast-0", 133)
 H.checkTrue("other cast's stop ignored", bar:IsShown())
